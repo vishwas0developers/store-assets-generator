@@ -58,6 +58,26 @@ All three fixes were verified with real, non-mocked runs of the actual `.bat` fi
 
 **Takeaway for future edits to these files:** always verify `.bat` changes with a real `cmd.exe` run, not just Git Bash/`sh` — the two have meaningfully different parsers, and Bash was silently passing scripts that were broken on native Windows.
 
+### Fixed/built in a third follow-up pass: multi-provider AI management was missing entirely
+
+Reported symptoms: (1) the web UI's elements rendered pinned to the top-left corner instead of centered, and (2) there was no model selector and no way to configure providers/models — exactly the gap flagged against the OCR reference tool (`ocr_for_documents`), which manages providers/models/keys through popups with dynamic discovery.
+
+**CSS fix**: `body` was a plain block element with no centering rule, so on any viewport wider than the content it rendered flush left. Fixed with `body { display:flex; flex-direction:column; align-items:center }` plus a `.page { max-width:1100px }` wrapper — horizontally centers the whole page without touching the existing grid/card layout, verified with an actual Playwright screenshot (symmetric margins at a 1400px viewport), not just by reading the CSS.
+
+**AI provider system, built for real against the OCR tool's proven model** (`docs/AI-PROVIDERS.md` §2 has the full pattern analysis):
+
+- `src/ai/registry.ts` — provider registry (`config/providers.json`, seeded with 8 providers across the 3 adapters) and model inventory (`config/models.json`), mirroring the reference's `engines`/`saved_models` table split. Adding an OpenAI-compatible provider is a config entry, not code.
+- `src/ai/adapters.ts` — live dynamic model discovery for all three adapter kinds, using the reference's exact graceful-degradation contract: a missing key returns `{error, requiresApiKey: true, message}`, never a thrown exception or a bare 500. Verified against the real `/models` endpoint shape for each adapter kind.
+- `src/ai/keystore.ts` — per-provider API key storage, same AES-256-GCM-at-rest pattern as the demo-auth credential store, sharing one encryption key file. Extracted the shared crypto primitives into `src/auth/crypto.ts` (`encrypt`/`decrypt`/key management) so both stores use one implementation instead of two copies.
+- `web/index.html` — Settings popup (⚙ icon) with Providers / Models / Add Provider tabs: per-provider Save Key / Test / Delete, model discovery → checkbox curation → Save Selected → set-default, and a model selector dropdown on the Generate panel reading the saved inventory. Same popup-driven workflow as the OCR reference, built as a plain modal (no framework, no new dependency).
+- Full HTTP API mirrored for CLI/MCP consistency: `GET/POST /api/ai/providers`, `DELETE /api/ai/providers/:id`, `POST /api/ai/providers/:id/test`, `GET /api/ai/providers/:id/fetch-models`, `GET/POST /api/ai/models`, `DELETE /api/ai/models/:provider/:modelId`, `POST /api/ai/models/default`.
+
+**A real bug found through testing, not by inspection**: setting only an API key on an existing provider was silently wiping its `adapter`/`baseUrl`/`enabled`/`requiresKey` fields to `undefined` — because the route always passed all four fields to `upsertProvider`, and object-spreading an object whose keys are explicitly `undefined` overwrites the existing values. Caught by testing the actual sequence a user would perform (add a key to a seeded provider, then re-read it back) rather than trusting the code on read-through. Fixed at the root, in `upsertProvider` itself (filters out `undefined` entries before spreading), not just in the one caller that happened to trigger it — so CLI/MCP callers built later can't hit the same bug.
+
+Every piece above was exercised with real HTTP requests against a running server (not mocked): registry seeding, discovery's graceful-degradation path for both a keyed provider with no key and an unreachable local provider, the full save → curate → set-default cycle, key set/status, custom-provider add/delete, and the exact bug-reproduction sequence before and after the fix.
+
+**Deliberately not built in this pass**: the actual chat-completion call that consumes a selected model to generate feature copy — this pass built the provider/model management system (registry, discovery, keys, UI) that a future copy-generation stage will read from, per `AI-PROVIDERS.md` §4 (per-task model bindings) and §7 (MCP surface: `generate_screen_copy`, etc.). The model selector on the Generate panel currently records the selection but the generation pipeline doesn't call out to it yet.
+
 ### Deliberately not built this pass, and why
 
 The full scope in `PRD.md`/`ARCHITECTURE.md`/`AI-PROVIDERS.md` is a multi-week system: multi-provider AI with dynamic model discovery, a full local web UI serving as a true third client of the core service layer, the `.sagtpl` template package format and scene-graph interpreter, the complete `workspace-sync`-derived multi-agent installer, and the Android capture backend with hygiene/deep-linking.
