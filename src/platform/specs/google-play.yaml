@@ -1,0 +1,40 @@
+id: google-play
+name: Google Play Console
+specVersion: 1.0.0
+deviceClasses:
+  phone:
+    name: Phone Listing
+    width: 1080
+    height: 2400
+    aspectRatio: 9:20
+    minScreenshots: 2
+    maxScreenshots: 8
+    required: true
+  tablet7:
+    name: 7-inch Tablet
+    width: 1200
+    height: 1920
+    aspectRatio: 10:16
+    minScreenshots: 0
+    maxScreenshots: 8
+    required: false
+  tablet10:
+    name: 10-inch Tablet
+    width: 1600
+    height: 2560
+    aspectRatio: 10:16
+    minScreenshots: 0
+    maxScreenshots: 8
+    required: false
+video:
+  required: false
+  formats:
+    - mp4
+  minDurationSeconds: 30
+  maxDurationSeconds: 120
+  maxSizeBytes: 524288000
+  resolutions:
+    - width: 1920
+      height: 1080
+    - width: 1080
+      height: 1920

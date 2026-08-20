@@ -1,0 +1,49 @@
+id: apple-app-store
+name: Apple App Store Connect
+specVersion: 1.0.0
+deviceClasses:
+  iphone67:
+    name: iPhone 15 Pro Max / 14 Pro Max (6.7-inch)
+    width: 1290
+    height: 2796
+    aspectRatio: 9:19.5
+    minScreenshots: 2
+    maxScreenshots: 10
+    required: true
+  iphone65:
+    name: iPhone XS Max / 11 Pro Max (6.5-inch)
+    width: 1242
+    height: 2688
+    aspectRatio: 9:19.5
+    minScreenshots: 0
+    maxScreenshots: 10
+    required: false
+  iphone55:
+    name: iPhone 8 Plus / 7 Plus (5.5-inch)
+    width: 1242
+    height: 2208
+    aspectRatio: 9:16
+    minScreenshots: 2
+    maxScreenshots: 10
+    required: true
+  ipadPro129:
+    name: iPad Pro 12.9-inch
+    width: 2048
+    height: 2732
+    aspectRatio: 3:4
+    minScreenshots: 0
+    maxScreenshots: 10
+    required: false
+video:
+  required: false
+  formats:
+    - mp4
+    - mov
+  minDurationSeconds: 15
+  maxDurationSeconds: 30
+  maxSizeBytes: 524288000
+  resolutions:
+    - width: 886
+      height: 1920
+    - width: 1200
+      height: 1600

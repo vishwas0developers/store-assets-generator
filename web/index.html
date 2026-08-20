@@ -1,0 +1,469 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Store Assets Generator</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; min-height: 100%; font-family: -apple-system, Segoe UI, Roboto, sans-serif;
+    background: #0f1115; color: #e6e6e6;
+  }
+  body {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 2rem 1.5rem;
+  }
+  .page { width: 100%; max-width: 1100px; }
+  .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: .25rem; }
+  h1 { font-size: 1.4rem; margin: 0; }
+  .sub { color: #9aa0a6; margin-bottom: 1.5rem; font-size: .9rem; }
+  .icon-btn {
+    width: 2.25rem; height: 2.25rem; border-radius: 8px; border: 1px solid #2a2f3a;
+    background: #171a21; color: #e6e6e6; cursor: pointer; font-size: 1.1rem;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .icon-btn:hover { background: #1d212b; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; width: 100%; }
+  .card { background: #171a21; border: 1px solid #262a33; border-radius: 10px; padding: 1.25rem; }
+  .card h2 { font-size: 1rem; margin: 0 0 1rem; }
+  label { display: block; font-size: .8rem; color: #9aa0a6; margin: .75rem 0 .25rem; }
+  input, select { width: 100%; padding: .5rem .6rem; background: #0f1115; border: 1px solid #2a2f3a;
+    border-radius: 6px; color: #e6e6e6; font-size: .9rem; }
+  button { margin-top: 1rem; padding: .6rem 1rem; border-radius: 6px; border: none;
+    background: #3b82f6; color: white; font-weight: 600; cursor: pointer; font-size: .9rem; }
+  button:disabled { opacity: .5; cursor: not-allowed; }
+  button.secondary { background: #2a2f3a; }
+  button.danger { background: #7f1d1d; }
+  button.small { margin-top: 0; padding: .35rem .6rem; font-size: .8rem; }
+  .status { display: inline-block; padding: .15rem .5rem; border-radius: 999px; font-size: .75rem; font-weight: 600; }
+  .status.ok { background: #14532d; color: #86efac; }
+  .status.bad { background: #450a0a; color: #fca5a5; }
+  .status.warn { background: #451a03; color: #fdba74; }
+  pre { background: #0a0c10; border: 1px solid #262a33; border-radius: 6px; padding: .75rem;
+    font-size: .8rem; overflow: auto; max-height: 320px; white-space: pre-wrap; word-break: break-word; }
+  .row { display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; }
+  .full { grid-column: 1 / -1; }
+
+  /* Modal */
+  .modal-backdrop {
+    position: fixed; inset: 0; background: rgba(0,0,0,.6);
+    display: none; align-items: flex-start; justify-content: center;
+    padding: 3rem 1rem; overflow-y: auto; z-index: 50;
+  }
+  .modal-backdrop.open { display: flex; }
+  .modal {
+    background: #14161c; border: 1px solid #262a33; border-radius: 12px;
+    width: 100%; max-width: 720px; padding: 1.5rem;
+  }
+  .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+  .modal-header h2 { margin: 0; font-size: 1.1rem; }
+  .close-btn { background: none; border: none; color: #9aa0a6; font-size: 1.3rem; cursor: pointer; margin: 0; padding: 0; }
+  .tabs { display: flex; gap: .25rem; border-bottom: 1px solid #262a33; margin-bottom: 1rem; }
+  .tab { padding: .5rem .9rem; cursor: pointer; color: #9aa0a6; font-size: .85rem; border-bottom: 2px solid transparent; }
+  .tab.active { color: #e6e6e6; border-bottom-color: #3b82f6; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+  .provider-row, .model-row {
+    display: flex; align-items: center; gap: .6rem; padding: .6rem 0;
+    border-bottom: 1px solid #1e222b; flex-wrap: wrap;
+  }
+  .provider-row:last-child, .model-row:last-child { border-bottom: none; }
+  .provider-name { font-weight: 600; min-width: 8rem; }
+  .provider-meta { color: #9aa0a6; font-size: .75rem; flex: 1; min-width: 10rem; }
+  .badge { padding: .1rem .45rem; border-radius: 4px; font-size: .7rem; background: #2a2f3a; }
+  .badge.vision { background: #1e3a5f; color: #93c5fd; }
+  .key-input { width: 10rem; }
+  .checkbox-row { display: flex; align-items: center; gap: .5rem; padding: .3rem 0; }
+  .checkbox-row input[type=checkbox] { width: auto; }
+  .discovery-msg { font-size: .8rem; padding: .5rem; border-radius: 6px; margin-top: .5rem; }
+  .discovery-msg.error { background: #2a1414; color: #fca5a5; }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="topbar">
+    <div>
+      <h1>Store Assets Generator</h1>
+      <div class="sub">Manual workflow surface — the same core pipeline the CLI and MCP server use.</div>
+    </div>
+    <button id="open-settings" class="icon-btn" title="AI providers & models">&#9881;</button>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Credentials (demo/test account)</h2>
+      <div class="row">
+        <span id="auth-status" class="status warn">checking…</span>
+      </div>
+      <label>Email</label>
+      <input id="auth-email" type="text" placeholder="demo@example.com" />
+      <label>Password <span style="opacity:.6">(blank = keep existing)</span></label>
+      <input id="auth-password" type="password" placeholder="••••••••" />
+      <div class="row">
+        <button id="auth-save">Save</button>
+        <button id="auth-clear" class="secondary">Clear</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Generate Assets</h2>
+      <label>App URL</label>
+      <input id="gen-url" type="text" placeholder="https://example.com" />
+      <label>Platform</label>
+      <select id="gen-platform">
+        <option value="google-play">Google Play</option>
+        <option value="apple-app-store">Apple App Store</option>
+      </select>
+      <label>App slug <span style="opacity:.6">(optional — resolves apps/&lt;slug&gt;/auth.json)</span></label>
+      <input id="gen-slug" type="text" placeholder="auto from URL hostname" />
+      <label>AI model <span style="opacity:.6">(used for copy generation once configured)</span></label>
+      <div class="row">
+        <select id="gen-model" style="flex:1"><option value="">Default (none configured)</option></select>
+        <button id="gen-model-refresh" class="secondary small" type="button">&#8635;</button>
+      </div>
+      <button id="gen-run">Generate</button>
+    </div>
+
+    <div class="card full">
+      <h2>Output</h2>
+      <pre id="output">Ready.</pre>
+    </div>
+  </div>
+</div>
+
+<!-- Settings modal: AI provider + model management, mirrors the OCR reference tool's popup workflow -->
+<div class="modal-backdrop" id="settings-backdrop">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>AI Providers &amp; Models</h2>
+      <button class="close-btn" id="settings-close">&times;</button>
+    </div>
+    <div class="tabs">
+      <div class="tab active" data-tab="providers">Providers</div>
+      <div class="tab" data-tab="models">Models</div>
+      <div class="tab" data-tab="add">Add Provider</div>
+    </div>
+
+    <div class="tab-panel active" id="tab-providers">
+      <div id="providers-list">Loading…</div>
+    </div>
+
+    <div class="tab-panel" id="tab-models">
+      <label>Provider</label>
+      <div class="row">
+        <select id="discover-provider" style="flex:1"></select>
+        <button id="discover-run" class="small" type="button">Fetch Models</button>
+      </div>
+      <div id="discover-result"></div>
+
+      <h3 style="font-size:.9rem; margin-top:1.25rem;">Saved models</h3>
+      <div id="saved-models-list">None yet.</div>
+    </div>
+
+    <div class="tab-panel" id="tab-add">
+      <label>Provider ID <span style="opacity:.6">(lowercase, no spaces — e.g. "my-local-llm")</span></label>
+      <input id="add-id" type="text" placeholder="together" />
+      <label>Adapter</label>
+      <select id="add-adapter">
+        <option value="openai-compatible">OpenAI-compatible (OpenAI, OpenRouter, Groq, DeepSeek, Ollama, LM Studio, ...)</option>
+        <option value="anthropic">Anthropic</option>
+        <option value="gemini">Gemini</option>
+      </select>
+      <label>Base URL</label>
+      <input id="add-baseurl" type="text" placeholder="https://api.together.xyz/v1" />
+      <div class="checkbox-row">
+        <input id="add-requires-key" type="checkbox" checked />
+        <label style="margin:0">Requires an API key</label>
+      </div>
+      <button id="add-provider-save">Add Provider</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const outputEl = $("output");
+
+function log(text) {
+  outputEl.textContent = typeof text === "string" ? text : JSON.stringify(text, null, 2);
+}
+
+async function api(path, options) {
+  const resp = await fetch(path, {
+    method: options?.method ?? "GET",
+    headers: options?.body ? { "Content-Type": "application/json" } : undefined,
+    body: options?.body ? JSON.stringify(options.body) : undefined,
+  });
+  const data = await resp.json().catch(() => ({}));
+  if (!resp.ok) throw new Error(data.error || `HTTP ${resp.status}`);
+  return data;
+}
+
+/* ---------- Credentials ---------- */
+
+async function refreshAuthStatus() {
+  try {
+    const status = await api("/api/auth/status");
+    const el = $("auth-status");
+    if (status.passwordSet) {
+      el.textContent = `configured (${status.source}) — ${status.email}`;
+      el.className = "status ok";
+    } else {
+      el.textContent = "not configured";
+      el.className = "status warn";
+    }
+  } catch (e) {
+    $("auth-status").textContent = "error checking status";
+    $("auth-status").className = "status bad";
+  }
+}
+
+$("auth-save").onclick = async () => {
+  const email = $("auth-email").value.trim();
+  const password = $("auth-password").value;
+  if (!email) return log("Email is required.");
+  try {
+    await api("/api/auth/credentials", { method: "POST", body: { email, password: password || undefined } });
+    $("auth-password").value = "";
+    log("Credentials saved.");
+    refreshAuthStatus();
+  } catch (e) {
+    log("Failed to save credentials: " + e.message);
+  }
+};
+
+$("auth-clear").onclick = async () => {
+  try {
+    await api("/api/auth/credentials", { method: "DELETE" });
+    log("Credentials cleared.");
+    refreshAuthStatus();
+  } catch (e) {
+    log("Failed to clear credentials: " + e.message);
+  }
+};
+
+/* ---------- Generate ---------- */
+
+$("gen-run").onclick = async () => {
+  const url = $("gen-url").value.trim();
+  if (!url) return log("App URL is required.");
+  const platform = $("gen-platform").value;
+  const slug = $("gen-slug").value.trim() || undefined;
+  const model = $("gen-model").value || undefined;
+
+  $("gen-run").disabled = true;
+  log("Running… this can take a minute (capture, composition, video, validation).");
+  try {
+    const result = await api("/api/generate", { method: "POST", body: { url, platform, slug, model } });
+    log(result);
+  } catch (e) {
+    log("Generation failed: " + e.message);
+  } finally {
+    $("gen-run").disabled = false;
+  }
+};
+
+async function refreshModelSelector() {
+  try {
+    const { models, defaultModel } = await api("/api/ai/models");
+    const select = $("gen-model");
+    select.innerHTML = "";
+    if (models.length === 0) {
+      select.innerHTML = '<option value="">No models configured — open Settings (⚙)</option>';
+      return;
+    }
+    for (const m of models) {
+      const opt = document.createElement("option");
+      opt.value = `${m.provider}/${m.modelId}`;
+      opt.textContent = `${m.provider} / ${m.displayName}${m.vision ? " 👁" : ""}`;
+      if (defaultModel && defaultModel.provider === m.provider && defaultModel.modelId === m.modelId) {
+        opt.selected = true;
+      }
+      select.appendChild(opt);
+    }
+  } catch (e) {
+    $("gen-model").innerHTML = '<option value="">Error loading models</option>';
+  }
+}
+$("gen-model-refresh").onclick = refreshModelSelector;
+
+/* ---------- Settings modal ---------- */
+
+const backdrop = $("settings-backdrop");
+$("open-settings").onclick = () => { backdrop.classList.add("open"); loadProviders(); loadModelsTab(); };
+$("settings-close").onclick = () => backdrop.classList.remove("open");
+backdrop.onclick = (e) => { if (e.target === backdrop) backdrop.classList.remove("open"); };
+
+for (const tab of document.querySelectorAll(".tab")) {
+  tab.onclick = () => {
+    for (const t of document.querySelectorAll(".tab")) t.classList.remove("active");
+    for (const p of document.querySelectorAll(".tab-panel")) p.classList.remove("active");
+    tab.classList.add("active");
+    $("tab-" + tab.dataset.tab).classList.add("active");
+  };
+}
+
+async function loadProviders() {
+  const container = $("providers-list");
+  container.textContent = "Loading…";
+  try {
+    const { providers } = await api("/api/ai/providers");
+    container.innerHTML = "";
+    const discoverSelect = $("discover-provider");
+    discoverSelect.innerHTML = "";
+
+    for (const p of providers) {
+      const row = document.createElement("div");
+      row.className = "provider-row";
+      row.innerHTML = `
+        <span class="provider-name">${p.id}</span>
+        <span class="badge">${p.adapter}</span>
+        <span class="provider-meta">${p.baseUrl}</span>
+        <input class="key-input" type="password" placeholder="${p.keySet ? '•••••••• (set)' : p.requiresKey ? 'API key' : 'no key needed'}" ${p.requiresKey ? '' : 'disabled'} />
+        <button class="small secondary" data-act="save-key">Save Key</button>
+        <button class="small secondary" data-act="test">Test</button>
+        <button class="small danger" data-act="delete">Delete</button>
+        <span class="test-result" style="font-size:.75rem;"></span>
+      `;
+
+      row.querySelector('[data-act="save-key"]').onclick = async () => {
+        const keyInput = row.querySelector(".key-input");
+        const apiKey = keyInput.value;
+        if (!apiKey) return;
+        await api("/api/ai/providers", { method: "POST", body: { id: p.id, apiKey } });
+        keyInput.value = "";
+        keyInput.placeholder = "•••••••• (set)";
+      };
+
+      row.querySelector('[data-act="test"]').onclick = async () => {
+        const resultEl = row.querySelector(".test-result");
+        resultEl.textContent = "testing…";
+        try {
+          const r = await api(`/api/ai/providers/${encodeURIComponent(p.id)}/test`, { method: "POST" });
+          resultEl.textContent = r.ok ? `OK (${r.latencyMs}ms, ${r.modelCount} models)` : `FAILED: ${r.reason}`;
+          resultEl.style.color = r.ok ? "#86efac" : "#fca5a5";
+        } catch (e) {
+          resultEl.textContent = "error: " + e.message;
+          resultEl.style.color = "#fca5a5";
+        }
+      };
+
+      row.querySelector('[data-act="delete"]').onclick = async () => {
+        await api(`/api/ai/providers/${encodeURIComponent(p.id)}`, { method: "DELETE" });
+        loadProviders();
+      };
+
+      container.appendChild(row);
+
+      const opt = document.createElement("option");
+      opt.value = p.id;
+      opt.textContent = `${p.id} (${p.adapter})`;
+      discoverSelect.appendChild(opt);
+    }
+  } catch (e) {
+    container.textContent = "Failed to load providers: " + e.message;
+  }
+}
+
+async function loadModelsTab() {
+  const listEl = $("saved-models-list");
+  try {
+    const { models, defaultModel } = await api("/api/ai/models");
+    if (models.length === 0) {
+      listEl.textContent = "None yet.";
+      return;
+    }
+    listEl.innerHTML = "";
+    for (const m of models) {
+      const row = document.createElement("div");
+      row.className = "model-row";
+      const isDefault = defaultModel && defaultModel.provider === m.provider && defaultModel.modelId === m.modelId;
+      row.innerHTML = `
+        <span>${m.provider} / ${m.displayName}</span>
+        ${m.vision ? '<span class="badge vision">vision</span>' : ""}
+        ${isDefault ? '<span class="badge">default</span>' : '<button class="small secondary" data-act="default">Set default</button>'}
+        <button class="small danger" data-act="delete">Remove</button>
+      `;
+      const defaultBtn = row.querySelector('[data-act="default"]');
+      if (defaultBtn) defaultBtn.onclick = async () => {
+        await api("/api/ai/models/default", { method: "POST", body: { provider: m.provider, modelId: m.modelId } });
+        loadModelsTab();
+        refreshModelSelector();
+      };
+      row.querySelector('[data-act="delete"]').onclick = async () => {
+        await api(`/api/ai/models/${encodeURIComponent(m.provider)}/${encodeURIComponent(m.modelId)}`, { method: "DELETE" });
+        loadModelsTab();
+        refreshModelSelector();
+      };
+      listEl.appendChild(row);
+    }
+  } catch (e) {
+    listEl.textContent = "Failed to load: " + e.message;
+  }
+}
+
+$("discover-run").onclick = async () => {
+  const providerId = $("discover-provider").value;
+  const resultEl = $("discover-result");
+  if (!providerId) return;
+  resultEl.innerHTML = "Fetching…";
+  try {
+    const { models, error, message } = await api(`/api/ai/providers/${encodeURIComponent(providerId)}/fetch-models`);
+    if (error) {
+      resultEl.innerHTML = `<div class="discovery-msg error">${message}</div>`;
+      return;
+    }
+    if (models.length === 0) {
+      resultEl.innerHTML = `<div class="discovery-msg error">No models returned.</div>`;
+      return;
+    }
+    resultEl.innerHTML = "";
+    const list = document.createElement("div");
+    for (const m of models) {
+      const row = document.createElement("div");
+      row.className = "checkbox-row";
+      row.innerHTML = `<input type="checkbox" data-model-id="${m.modelId}" data-vision="${m.vision}" /> <span>${m.displayName}${m.vision ? " 👁" : ""}</span>`;
+      list.appendChild(row);
+    }
+    resultEl.appendChild(list);
+    const saveBtn = document.createElement("button");
+    saveBtn.className = "small";
+    saveBtn.textContent = "Save Selected";
+    saveBtn.onclick = async () => {
+      const checked = [...list.querySelectorAll("input[type=checkbox]:checked")];
+      const toSave = checked.map((c) => ({
+        provider: providerId,
+        modelId: c.dataset.modelId,
+        displayName: c.parentElement.querySelector("span").textContent.replace(" 👁", ""),
+        vision: c.dataset.vision === "true",
+      }));
+      if (toSave.length === 0) return;
+      await api("/api/ai/models", { method: "POST", body: { models: toSave } });
+      loadModelsTab();
+      refreshModelSelector();
+    };
+    resultEl.appendChild(saveBtn);
+  } catch (e) {
+    resultEl.innerHTML = `<div class="discovery-msg error">${e.message}</div>`;
+  }
+};
+
+$("add-provider-save").onclick = async () => {
+  const id = $("add-id").value.trim();
+  const adapter = $("add-adapter").value;
+  const baseUrl = $("add-baseurl").value.trim();
+  const requiresKey = $("add-requires-key").checked;
+  if (!id || !baseUrl) return;
+  await api("/api/ai/providers", { method: "POST", body: { id, adapter, baseUrl, enabled: true, requiresKey } });
+  $("add-id").value = ""; $("add-baseurl").value = "";
+  document.querySelector('.tab[data-tab="providers"]').click();
+  loadProviders();
+};
+
+refreshAuthStatus();
+refreshModelSelector();
+</script>
+</body>
+</html>

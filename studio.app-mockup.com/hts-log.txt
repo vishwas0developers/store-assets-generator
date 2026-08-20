@@ -1,0 +1,31 @@
+HTTrack3.49-2+htsswf+htsjava launched on Thu, 22 Dec 2022 20:56:25 at https://studio.app-mockup.com/ +*.png +*.gif +*.jpg +*.jpeg +*.css +*.js -ad.doubleclick.net/* -mime:application/foobar
+(winhttrack -qwC2%Ps2u1%s%uN0%I0p3DaK0H0%kf2A25000%f#f -F "Mozilla/4.5 (compatible; HTTrack 3.0x; Windows 98)" -%F "<!-- Mirrored from %s%s by HTTrack Website Copier/3.x [XR&CO'2014], %s -->" -%l "en, *" https://studio.app-mockup.com/ -O1 "C:\My Web Sites\studio.app-mockup.com" +*.png +*.gif +*.jpg +*.jpeg +*.css +*.js -ad.doubleclick.net/* -mime:application/foobar )
+
+Information, Warnings and Errors reported for this mirror:
+note:	the hts-log.txt file, and hts-cache folder, may contain sensitive information,
+	such as username/password authentication for websites mirrored in this project
+	do not share these files/folders if you want these information to remain private
+
+20:56:50	Error: 	"Not Found" (404) at link https://app-mockup.com/assets/img/favicon/apple-touch-icon-57x57.png (from https://studio.app-mockup.com/)
+20:56:50	Error: 	"Not Found" (404) at link https://app-mockup.com/assets/img/favicon/apple-touch-icon-114x114.png (from https://studio.app-mockup.com/)
+20:56:50	Error: 	"Not Found" (404) at link https://app-mockup.com/assets/img/favicon/apple-touch-icon-72x72.png (from https://studio.app-mockup.com/)
+20:56:50	Error: 	"Not Found" (404) at link https://app-mockup.com/assets/img/favicon/apple-touch-icon-144x144.png (from https://studio.app-mockup.com/)
+20:56:50	Error: 	"Not Found" (404) at link https://app-mockup.com/assets/img/favicon/apple-touch-icon-60x60.png (from https://studio.app-mockup.com/)
+20:56:50	Error: 	"Not Found" (404) at link https://app-mockup.com/assets/img/favicon/apple-touch-icon-120x120.png (from https://studio.app-mockup.com/)
+20:56:50	Error: 	"Not Found" (404) at link https://app-mockup.com/assets/img/favicon/apple-touch-icon-76x76.png (from https://studio.app-mockup.com/)
+20:56:50	Error: 	"Not Found" (404) at link https://app-mockup.com/assets/img/favicon/apple-touch-icon-152x152.png (from https://studio.app-mockup.com/)
+20:56:50	Error: 	"Not Found" (404) at link https://app-mockup.com/assets/img/favicon/favicon-196x196.png (from https://studio.app-mockup.com/)
+20:56:50	Error: 	"Not Found" (404) at link https://app-mockup.com/assets/img/favicon/favicon-96x96.png (from https://studio.app-mockup.com/)
+20:56:50	Error: 	"Not Found" (404) at link https://app-mockup.com/assets/img/favicon/favicon-32x32.png (from https://studio.app-mockup.com/)
+20:56:50	Error: 	"Not Found" (404) at link https://app-mockup.com/assets/img/favicon/favicon-16x16.png (from https://studio.app-mockup.com/)
+20:56:50	Error: 	"Not Found" (404) at link https://app-mockup.com/assets/img/favicon/favicon-128.png (from https://studio.app-mockup.com/)
+20:56:50	Error: 	"Not Found" (404) at link https://app-mockup.com/assets/img/favicon/mstile-144x144.png (from https://studio.app-mockup.com/)
+20:56:50	Error: 	"Not Found" (404) at link https://app-mockup.com/assets/img/favicon/mstile-70x70.png (from https://studio.app-mockup.com/)
+20:56:50	Error: 	"Not Found" (404) at link https://app-mockup.com/assets/img/favicon/mstile-150x150.png (from https://studio.app-mockup.com/)
+20:56:50	Error: 	"Not Found" (404) at link https://app-mockup.com/assets/img/favicon/mstile-310x150.png (from https://studio.app-mockup.com/)
+20:56:50	Error: 	"Not Found" (404) at link https://app-mockup.com/assets/img/favicon/mstile-310x310.png (from https://studio.app-mockup.com/)
+20:56:50	Error: 	"Not Found" (404) at link https://app-mockup.com/assets/img/opengraph/og-main.png (from https://studio.app-mockup.com/)
+20:56:50	Error: 	"Not Found" (404) at link https://app-mockup.com/assets/img/opengraph/og-main-twitter.jpg (from https://studio.app-mockup.com/)
+
+HTTrack Website Copier/3.49-2 mirror complete in 27 seconds : 25 links scanned, 4 files written (2942296 bytes overall) [903748 bytes received at 33472 bytes/sec], 3907709 bytes transferred using HTTP compression in 25 files, ratio 22%, 5.0 requests per connection
+(20 errors, 0 warnings, 0 messages)
