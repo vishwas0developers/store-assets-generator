@@ -1,3 +1,6 @@
+import { loadEnvFile } from "../src/config/env.js";
+loadEnvFile();
+
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import {
@@ -13,7 +16,7 @@ import { AssetValidator } from "../src/validate/report.js";
 import { loadPlatformSpec } from "../src/platform/index.js";
 import { DEVICE_REGISTRY } from "../src/devices/registry.js";
 import { type ProjectDocument } from "../src/project/schema.js";
-import { loadAuthConfig, slugify } from "../src/auth/appConfig.js";
+import { resolveAuthConfig, slugify } from "../src/auth/appConfig.js";
 import { defaultSessionStatePath } from "../src/capture/auth.js";
 import { setCredentials, getCredentialStatus, clearCredentials } from "../src/auth/credentials.js";
 
@@ -183,7 +186,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         await backend.initialize();
         const { url, filename, width = 1080, height = 2400, outputDir, slug: slugArg } = args as any;
         const slug = slugArg ?? slugify(url);
-        const auth = loadAuthConfig(slug);
+        const auth = resolveAuthConfig(url, slug);
         if (auth && !auth.sessionStatePath) auth.sessionStatePath = defaultSessionStatePath(slug);
 
         try {

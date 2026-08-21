@@ -92,10 +92,20 @@ async function tryFormLogin(page: Page, email: string, password: string, loginUr
 }
 
 /**
- * Runs the configured auth strategy chain and verifies the result.
- * Never returns ok:true on a bare timeout — verification against a real
- * authenticated-UI marker (and absence of the login gate) is mandatory
- * whenever any strategy other than a cached storage-state was used.
+ * Runs the configured auth strategy chain. Called by capture/browser.ts
+ * BEFORE the target page navigates anywhere (the page is still about:blank
+ * at this point) — so this function only performs the login mechanics
+ * (apply a cached storageState, or run a real login and inject the
+ * resulting session/cookies) and reports which stage produced them. It
+ * must NOT verify the authenticated UI here: there is no target-app DOM to
+ * check yet, so any verifyAuthenticated() call at this point is checking a
+ * blank page and can only ever time out and fail — exactly the bug this
+ * fixes (every capture reported "authenticated marker never appeared" and
+ * was skipped, or — with no verify configured — silently proceeded to
+ * capture the still-unauthenticated login screen). The authoritative check
+ * happens once, in capture/browser.ts, immediately after the real
+ * page.goto() to the target URL — never trust a bare timeout as proof of
+ * login, but check it on the page that actually has something to check.
  */
 export async function authenticate(page: Page, context: BrowserContext, config: AuthConfig): Promise<AuthResult> {
   const strategies = config.strategies ?? ["storage-state", "api-session", "form"];
@@ -103,12 +113,9 @@ export async function authenticate(page: Page, context: BrowserContext, config: 
 
   if (strategies.includes("storage-state") && sessionStatePath && hasStoredSession(sessionStatePath)) {
     // storageState is applied at context-creation time by the caller (see
-    // capture/browser.ts) — here we only need to verify it still holds.
-    const result = config.verify ? await verifyAuthenticated(page, config.verify) : { ok: true };
-    if (result.ok) {
-      return { ok: true, stage: "storage-state", shouldSave: false };
-    }
-    // Cached session is stale — fall through to a fresh login below.
+    // capture/browser.ts) — nothing further to do here; the caller's
+    // post-navigation verify confirms it still holds.
+    return { ok: true, stage: "storage-state", shouldSave: false };
   }
 
   const creds = resolveCredentials();
@@ -119,12 +126,6 @@ export async function authenticate(page: Page, context: BrowserContext, config: 
     if (email && password) {
       try {
         await authenticateViaApiSession(context, { ...config.apiSession, email, password } as ApiSessionConfig);
-        if (config.verify) {
-          const result = await verifyAuthenticated(page, config.verify);
-          if (!result.ok) {
-            return { ok: false, stage: "verification", reason: result.reason, shouldSave: false };
-          }
-        }
         return { ok: true, stage: "api-session", shouldSave: true };
       } catch (e) {
         const err = e as ApiSessionAuthError;

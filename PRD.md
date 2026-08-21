@@ -395,7 +395,7 @@ Full design in `docs/AUTHENTICATION.md`.
 
 Demo access **expires** and the password **changes frequently**. Updating it must never require code changes.
 
-- **Environment variables** (`SAG_AUTH_EMAIL`, `SAG_AUTH_PASSWORD`, …) for CI and overrides.
+- **Environment variables** (`DEMO_GEN_DEMO_ACCOUNT_EMAIL`, `DEMO_GEN_DEMO_ACCOUNT_PASSWORD_ENC`, `DEMO_GEN_ADMIN_API_BASE_URL`, `DEMO_GEN_APP_CODE`) for CI and overrides.
 - **Local web interface** (`store-assets ui`, loopback only) to view and update email/password, with the password masked and **blank meaning "keep existing"**.
 - **CLI**: `auth set`, `auth status`, `auth test`, `auth clear`.
 - Passwords encrypted at rest (AES-256-GCM, local gitignored key); plaintext in memory only; never logged, echoed, or written into any manifest, report, or bundle.

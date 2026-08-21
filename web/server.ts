@@ -1,9 +1,13 @@
+import { loadEnvFile } from "../src/config/env.js";
+loadEnvFile();
+
 import http from "http";
 import fs from "fs";
 import path from "path";
 import { exec } from "child_process";
 import { fileURLToPath } from "url";
 import { setCredentials, getCredentialStatus, clearCredentials } from "../src/auth/credentials.js";
+import { getDemoAccessConfig, setDemoAccessConfig } from "../src/auth/appConfig.js";
 import {
   listProviders,
   getProvider,
@@ -151,16 +155,22 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
       return;
     }
 
-    // --- Demo access credentials (shared config, not tab-scoped) ---
+    // --- Demo access config (shared, not tab-scoped): demo account
+    // credentials (encrypted) + the two non-secret endpoint settings
+    // (admin panel domain, app code) that make login automatic for any
+    // captured URL — see src/auth/appConfig.ts's loadDefaultAuthConfig().
+    // Frontend/target URLs are deliberately NOT part of this: each capture
+    // supplies its own URL, and the cookie domain is derived from it.
 
     if (method === "GET" && p === "/api/auth/status") {
-      sendJson(res, 200, getCredentialStatus());
+      sendJson(res, 200, { ...getCredentialStatus(), ...getDemoAccessConfig() });
       return;
     }
     if (method === "POST" && p === "/api/auth/credentials") {
       const body = await readJsonBody(req);
       if (!body.email) return sendError(res, 400, "email is required");
       setCredentials(body.email, body.password);
+      setDemoAccessConfig({ adminApiBaseUrl: body.adminApiBaseUrl, appCode: body.appCode });
       sendJson(res, 200, { ok: true });
       return;
     }

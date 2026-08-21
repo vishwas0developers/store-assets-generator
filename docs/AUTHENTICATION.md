@@ -153,7 +153,7 @@ The demo password **changes frequently** and access **expires**. Updating it mus
 Resolved in order, later overriding earlier:
 
 1. **Config file** — non-secret values (`email`, endpoints, `APP_CODE`, device id).
-2. **Environment variables** — `SAG_AUTH_EMAIL`, `SAG_AUTH_PASSWORD`, `SAG_APP_CODE`, `SAG_ADMIN_API_BASE_URL`. Suits CI and one-off overrides.
+2. **Environment variables** — `DEMO_GEN_DEMO_ACCOUNT_EMAIL`, `DEMO_GEN_DEMO_ACCOUNT_PASSWORD_ENC`, `DEMO_GEN_APP_CODE`, `DEMO_GEN_ADMIN_API_BASE_URL` (see .env.example). The Demo Access panel in the web UI writes all four for you.
 3. **Encrypted local store** — what the web UI and CLI write. Wins, because it is the most recently and deliberately set.
 
 The password is **never** written to a config file in plaintext, and never committed.

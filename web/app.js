@@ -48,8 +48,11 @@ async function refreshAuthStatus() {
   try {
     const status = await api("/api/auth/status");
     const el = $("cred-status");
-    if (status.passwordSet) { el.textContent = `configured (${status.source}) — ${status.email}`; el.className = "status ok"; }
+    if (status.passwordSet) { el.textContent = `configured — ${status.email}`; el.className = "status ok"; }
     else { el.textContent = "not configured"; el.className = "status warn"; }
+    if (document.activeElement !== $("cred-email")) $("cred-email").value = status.email || "";
+    if (document.activeElement !== $("cred-admin-domain")) $("cred-admin-domain").value = status.adminApiBaseUrl || "";
+    if (document.activeElement !== $("cred-app-code")) $("cred-app-code").value = status.appCode || "";
   } catch (e) { $("cred-status").textContent = "error"; $("cred-status").className = "status bad"; }
 }
 $("open-credentials").onclick = () => { $("credentials-backdrop").classList.add("open"); refreshAuthStatus(); };
@@ -58,7 +61,15 @@ $("cred-save").onclick = async () => {
   const email = $("cred-email").value.trim();
   const password = $("cred-password").value;
   if (!email) return alert("Email is required.");
-  await api("/api/auth/credentials", { method: "POST", body: { email, password: password || undefined } });
+  await api("/api/auth/credentials", {
+    method: "POST",
+    body: {
+      email,
+      password: password || undefined,
+      adminApiBaseUrl: $("cred-admin-domain").value.trim(),
+      appCode: $("cred-app-code").value.trim(),
+    },
+  });
   $("cred-password").value = "";
   refreshAuthStatus();
 };
