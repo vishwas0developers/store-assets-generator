@@ -505,7 +505,9 @@ async function renderLiveBrowserCaptures() {
         <img src="${fileUrl}" style="cursor: pointer; width: 100%; height: auto; max-height: 220px; display: block; aspect-ratio: 9/16; object-fit: contain; background: #000;" />
         <div class="cap" style="display: flex; justify-content: space-between; align-items: center; padding: 0.35rem 0.5rem; background: #14171f; border-top: 1px solid #21252f;">
           <span style="font-weight: 600; color: #e5e7eb; font-size: 0.75rem;">Screen ${c.id}</span>
-          <button class="small danger delete-cap-btn" style="padding: 0.1rem 0.35rem; font-size: 0.85rem; line-height: 1; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center;" title="Delete screenshot">&times;</button>
+          <button class="small danger delete-cap-btn" style="padding: 0.25rem 0.35rem; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; background: #dc2626; border: none;" title="Delete screenshot">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="pointer-events: none;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+          </button>
         </div>
       `;
 
@@ -520,9 +522,20 @@ async function renderLiveBrowserCaptures() {
 
       item.querySelector(".delete-cap-btn").onclick = async (e) => {
         e.stopPropagation();
-        if (await confirm(`Delete screenshot ${c.id}?`)) {
-          await api(`/api/projects/${activeProjectId}/file?p=${encodeURIComponent(c.file)}`, { method: "DELETE" });
-          await renderLiveBrowserCaptures();
+        e.preventDefault();
+        const confirmed = await showConfirm(`Delete Screenshot ${c.id}?`, "Delete Screenshot");
+        if (confirmed) {
+          try {
+            await api(`/api/projects/${activeProjectId}/file?p=${encodeURIComponent(c.file)}`, { method: "DELETE" });
+            showToast(`Deleted Screenshot ${c.id}`, "info");
+            activeProject = await api(`/api/projects/${activeProjectId}`);
+            await renderLiveBrowserCaptures();
+            if (typeof refreshFileExplorer === "function") {
+              await refreshFileExplorer();
+            }
+          } catch (err) {
+            await showAlert("Failed to delete screenshot: " + err.message, "error");
+          }
         }
       };
 
