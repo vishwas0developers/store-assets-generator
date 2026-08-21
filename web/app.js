@@ -21,84 +21,54 @@ async function uploadFile(path, file) {
 /* ================= Custom Dialog & Toast System ================= */
 
 function showAlert(message, type = "warning", title = "Alert") {
-  return new Promise((resolve) => {
-    const modal = $("custom-alert-modal");
-    const titleEl = $("custom-alert-title");
-    const msgEl = $("custom-alert-message");
-    const iconEl = $("custom-alert-icon");
-    const okBtn = $("custom-alert-ok-btn");
+  let icon = "warning";
+  if (type === "error") icon = "error";
+  if (type === "success") icon = "success";
+  if (type === "info") icon = "info";
 
-    titleEl.textContent = title;
-    msgEl.textContent = message;
-    
-    if (type === "error") { iconEl.innerHTML = "&#10060;"; iconEl.style.color = "#ef4444"; }
-    else if (type === "success") { iconEl.innerHTML = "&#9989;"; iconEl.style.color = "#10b981"; }
-    else if (type === "warning") { iconEl.innerHTML = "&#9888;"; iconEl.style.color = "#f59e0b"; }
-    else { iconEl.innerHTML = "&#8505;"; iconEl.style.color = "#3b82f6"; }
-
-    modal.classList.add("open");
-
-    okBtn.onclick = () => {
-      modal.classList.remove("open");
-      resolve();
-    };
+  return Swal.fire({
+    title: title,
+    text: message,
+    icon: icon,
+    confirmButtonText: "OK",
+    background: "#14161c",
+    color: "#e6e6e6",
+    confirmButtonColor: "#3b82f6"
   });
 }
 
-function showConfirm(message, title = "Confirm Action") {
-  return new Promise((resolve) => {
-    const modal = $("custom-confirm-modal");
-    const titleEl = $("custom-confirm-title");
-    const msgEl = $("custom-confirm-message");
-    const okBtn = $("custom-confirm-ok-btn");
-    const cancelBtn = $("custom-confirm-cancel-btn");
-
-    titleEl.textContent = title;
-    msgEl.textContent = message;
-    modal.classList.add("open");
-
-    okBtn.onclick = () => {
-      modal.classList.remove("open");
-      resolve(true);
-    };
-
-    cancelBtn.onclick = () => {
-      modal.classList.remove("open");
-      resolve(false);
-    };
+function showConfirm(message, title = "Confirm Action", danger = false) {
+  return Swal.fire({
+    title: title,
+    text: message,
+    icon: danger ? "warning" : "question",
+    showCancelButton: true,
+    confirmButtonText: danger ? "Delete" : "Confirm",
+    cancelButtonText: "Cancel",
+    background: "#14161c",
+    color: "#e6e6e6",
+    confirmButtonColor: danger ? "#dc2626" : "#3b82f6",
+    cancelButtonColor: "#374151"
+  }).then((result) => {
+    return result.isConfirmed;
   });
 }
 
 function showPrompt(message, defaultValue = "", title = "Input Required") {
-  return new Promise((resolve) => {
-    const modal = $("custom-prompt-modal");
-    const titleEl = $("custom-prompt-title");
-    const msgEl = $("custom-prompt-message");
-    const inputEl = $("custom-prompt-input");
-    const submitBtn = $("custom-prompt-submit-btn");
-    const cancelBtn = $("custom-prompt-cancel-btn");
-
-    titleEl.textContent = title;
-    msgEl.textContent = message;
-    inputEl.value = defaultValue;
-    modal.classList.add("open");
-    inputEl.focus();
-
-    submitBtn.onclick = () => {
-      modal.classList.remove("open");
-      resolve(inputEl.value);
-    };
-
-    cancelBtn.onclick = () => {
-      modal.classList.remove("open");
-      resolve(null);
-    };
-    
-    inputEl.onkeydown = (e) => {
-      if (e.key === "Enter") {
-        submitBtn.click();
-      }
-    };
+  return Swal.fire({
+    title: title,
+    text: message,
+    input: "text",
+    inputValue: defaultValue,
+    showCancelButton: true,
+    confirmButtonText: "Submit",
+    cancelButtonText: "Cancel",
+    background: "#14161c",
+    color: "#e6e6e6",
+    confirmButtonColor: "#3b82f6",
+    cancelButtonColor: "#374151"
+  }).then((result) => {
+    return result.value !== undefined ? result.value : null;
   });
 }
 
@@ -520,55 +490,35 @@ async function renderLiveBrowserCaptures() {
       delBtn.title = "Delete screenshot";
       delBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>`;
 
-      // Two-click inline confirm — no modal dependency
-      let confirmTimer = null;
-      let confirming = false;
-
       delBtn.addEventListener("click", async (e) => {
         e.stopPropagation();
         e.preventDefault();
 
-        if (!confirming) {
-          // First click: enter confirm state
-          confirming = true;
-          delBtn.style.background = "#f59e0b";
-          delBtn.title = "Click again to confirm delete";
-          delBtn.innerHTML = `<span style="font-size:10px; font-weight:800;">✓?</span>`;
-          confirmTimer = setTimeout(() => {
-            // Timed out without second click — reset
-            confirming = false;
-            delBtn.style.background = "#dc2626";
-            delBtn.title = "Delete screenshot";
-            delBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>`;
-          }, 2500);
-        } else {
-          // Second click: confirmed — execute delete
-          clearTimeout(confirmTimer);
-          confirming = false;
+        const confirmed = await showConfirm(`Delete Screenshot ${c.id}? This cannot be undone.`, "Delete Screenshot", true);
+        if (!confirmed) return;
 
-          // Remove from DOM immediately for instant feedback
-          item.remove();
-          if (gallery.children.length === 0) {
-            gallery.innerHTML = `<div class="hint" style="grid-column:span 2; text-align:center; padding:2rem 0;">No screenshots captured yet.</div>`;
-          }
-
-          try {
-            await api(`/api/projects/${activeProjectId}/captures/${c.id}`, { method: "DELETE" });
-          } catch (_) {
-            // Fallback to file path delete
-            try {
-              await api(`/api/projects/${activeProjectId}/file?p=${encodeURIComponent(c.file)}`, { method: "DELETE" });
-            } catch (err2) {
-              showToast("Delete failed: " + err2.message, "error");
-              renderLiveBrowserCaptures();
-              return;
-            }
-          }
-
-          showToast(`Screenshot ${c.id} deleted`, "info");
-          activeProject = await api(`/api/projects/${activeProjectId}`).catch(() => activeProject);
-          if (typeof refreshFileExplorer === "function") refreshFileExplorer();
+        // Remove from DOM immediately for instant feedback
+        item.remove();
+        if (gallery.children.length === 0) {
+          gallery.innerHTML = `<div class="hint" style="grid-column:span 2; text-align:center; padding:2rem 0;">No screenshots captured yet.</div>`;
         }
+
+        try {
+          await api(`/api/projects/${activeProjectId}/captures/${c.id}`, { method: "DELETE" });
+        } catch (_) {
+          // Fallback to file path delete
+          try {
+            await api(`/api/projects/${activeProjectId}/file?p=${encodeURIComponent(c.file)}`, { method: "DELETE" });
+          } catch (err2) {
+            showToast("Delete failed: " + err2.message, "error");
+            renderLiveBrowserCaptures();
+            return;
+          }
+        }
+
+        showToast(`Screenshot ${c.id} deleted`, "info");
+        activeProject = await api(`/api/projects/${activeProjectId}`).catch(() => activeProject);
+        if (typeof refreshFileExplorer === "function") refreshFileExplorer();
       });
 
       img.addEventListener("click", () => {
@@ -622,7 +572,15 @@ async function connectLiveBrowser() {
     });
 
     if (res.sessionExpired) {
-      await alert(res.message || "Demo login session has expired or is invalid. Please log in again.", "warning");
+      await Swal.fire({
+        title: "Session Expired",
+        text: "Demo login session has expired. Please login again.",
+        icon: "warning",
+        background: "#14161c",
+        color: "#e6e6e6",
+        confirmButtonColor: "#3b82f6",
+        confirmButtonText: "OK"
+      });
     }
 
     browserConnected = true;
@@ -644,7 +602,33 @@ async function connectLiveBrowser() {
     // Start frame streaming interval
     startFrameStream();
   } catch (e) {
-    await alert("Connection failed: " + e.message);
+    let cleanMsg = e.message || "Unknown error";
+    cleanMsg = cleanMsg.replace(/Call log:[\s\S]*/gi, "").replace(/\[2m|\[22m/g, "").trim();
+
+    if (/expired|session.*invalid|login again/i.test(cleanMsg)) {
+      await Swal.fire({
+        title: "Session Expired",
+        text: "Demo login session has expired. Please login again.",
+        icon: "warning",
+        background: "#14161c",
+        color: "#e6e6e6",
+        confirmButtonColor: "#3b82f6",
+        confirmButtonText: "OK"
+      });
+    } else if (/timeout|timed out/i.test(cleanMsg)) {
+      await Swal.fire({
+        title: "Connection Timeout",
+        text: "The website took too long to respond. Please check the URL and try again.",
+        icon: "error",
+        background: "#14161c",
+        color: "#e6e6e6",
+        confirmButtonColor: "#3b82f6",
+        confirmButtonText: "OK"
+      });
+    } else {
+      await showAlert("Connection failed: " + cleanMsg, "error", "Connection Failed");
+    }
+
     $("browser-connect-btn").disabled = false;
     $("browser-connect-btn").textContent = "Connect";
     $("live-browser-status").textContent = "Connection failed. Please check the URL and try again.";

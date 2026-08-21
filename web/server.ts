@@ -491,8 +491,14 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
         return sendError(res, 400, "projectId and url are required");
       }
       const resolution = body.resolution ?? (body.width && body.height ? `${body.width}x${body.height}` : "1290x2796");
-      const result = await startBrowserSession(body.projectId, body.url, resolution);
-      sendJson(res, 200, { ok: true, ...result });
+      try {
+        const result = await startBrowserSession(body.projectId, body.url, resolution);
+        sendJson(res, 200, { ok: true, ...result });
+      } catch (err: any) {
+        let msg = err.message || "Failed to start browser session";
+        msg = msg.replace(/Call log:[\s\S]*/, "").replace(/\[2m|\[22m/g, "").trim();
+        sendError(res, 500, msg);
+      }
       return;
     }
 
