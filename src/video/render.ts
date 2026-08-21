@@ -226,6 +226,14 @@ export function listVideoBackgrounds() {
 }
 
 const CANVAS = { width: 1080, height: 1920 };
+const CANVAS_LANDSCAPE = { width: 1920, height: 1080 };
+
+/** A scene's canvas is landscape only when its template opted in; every
+ *  existing template (and any scene without an explicit aspectRatio)
+ *  keeps the original 9:16 portrait canvas app stores require. */
+function canvasFor(scene: VideoScene): { width: number; height: number } {
+  return scene.aspectRatio === "16:9" ? CANVAS_LANDSCAPE : CANVAS;
+}
 
 function sourceUriFor(project: VideoProject, scene: VideoScene, resolveUri: (rel: string) => string): string {
   const source = project.sources.find((s) => s.id === scene.sourceId) ?? project.sources[0];
@@ -331,13 +339,24 @@ function textBlockStyle(durationMs: number): string {
   `;
 }
 
+/** Backgrounds pale/bright enough that white text loses contrast against
+ *  them -- text color and its shadow flip to dark on these, keeping every
+ *  scene readable regardless of which background a template picks. */
+const LIGHT_BACKGROUNDS = new Set(["light", "candy", "citrus"]);
+function textColorFor(background: string): string {
+  return LIGHT_BACKGROUNDS.has(background) ? "#141821" : "#ffffff";
+}
+function textShadowFor(background: string): string {
+  return LIGHT_BACKGROUNDS.has(background) ? "0 1px 3px rgba(255,255,255,.55)" : "0 2px 12px rgba(0,0,0,.4)";
+}
+
 function textBlockHtml(scene: VideoScene): string {
   if (!scene.text) return "";
   const title = `<div class="label">${wordSpans(scene.text, "word", 60, 55)}</div>`;
   const sub = scene.subtext
     ? `<div class="subtext">${wordSpans(scene.subtext, "word", 260 + scene.text.split(/\s+/).length * 55, 45)}</div>`
     : "";
-  return `<div class="copy">${title}${sub}</div>`;
+  return `<div class="copy" style="color:${textColorFor(scene.background)};text-shadow:${textShadowFor(scene.background)}">${title}${sub}</div>`;
 }
 
 /** CSS for the fold-open device hook -- both variant frames stacked and
@@ -360,7 +379,9 @@ export function sceneHtml(scene: VideoScene, screenshotUris: string[], seekable 
   const animation = SCENE_ANIMATIONS[scene.sceneTemplate] ?? SCENE_ANIMATIONS["hero-rise"];
   const device = DEVICE_REGISTRY[scene.device] ?? DEVICE_REGISTRY["phone"];
   if (!device) throw new Error(`Device '${scene.device}' not found in registry`);
-  const deviceScale = deviceScaleFor(device, CANVAS.height, scene.variant, scene.deviceFraction ?? 0.58);
+  const canvas = canvasFor(scene);
+  const isLandscape = scene.aspectRatio === "16:9";
+  const deviceScale = deviceScaleFor(device, canvas.height, scene.variant, scene.deviceFraction ?? 0.58);
   const geometry = resolveGeometry(device, scene.variant);
   const stageWidth = Math.round(geometry.width * deviceScale);
   const stageHeight = Math.round(geometry.height * deviceScale);
@@ -370,18 +391,19 @@ export function sceneHtml(scene: VideoScene, screenshotUris: string[], seekable 
   return `<!doctype html>
 <html><head><meta charset="utf-8" /><style>
   * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; width: ${CANVAS.width}px; height: ${CANVAS.height}px; overflow: hidden; }
+  html, body { margin: 0; padding: 0; width: ${canvas.width}px; height: ${canvas.height}px; overflow: hidden; }
   .canvas {
-    position: relative; width: ${CANVAS.width}px; height: ${CANVAS.height}px;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    position: relative; width: ${canvas.width}px; height: ${canvas.height}px;
+    display: flex; flex-direction: ${isLandscape ? "row" : "column"}; align-items: center; justify-content: center;
+    ${isLandscape ? "gap: 4%; padding: 0 6%;" : ""}
     font-family: "Segoe UI", Roboto, -apple-system, sans-serif; color: #fff; overflow: hidden;
   }
   .backdrop { position: absolute; inset: -8%; background: ${backgroundCss(scene.background)}; animation: bgPlay ${durationMs}ms ease-out forwards; }
   .vignette { position: absolute; inset: 0; background: radial-gradient(circle at 50% 42%, rgba(0,0,0,0) 45%, rgba(0,0,0,.35) 100%); }
-  .copy { position: relative; text-align: center; padding: 0 8%; margin-bottom: 4%; z-index: 3; }
-  .label { font-size: 58px; font-weight: 800; line-height: 1.15; }
-  .subtext { font-size: 30px; opacity: .82; margin-top: .5em; font-weight: 500; }
-  .stage { position: relative; width: ${stageWidth}px; height: ${stageHeight}px; perspective: 1600px; z-index: 2; }
+  .copy { position: relative; text-align: ${isLandscape ? "left" : "center"}; padding: 0 8%; margin-bottom: ${isLandscape ? "0" : "4%"}; z-index: 3; ${isLandscape ? "flex: 1; padding-left: 0;" : ""} }
+  .label { font-size: ${isLandscape ? 64 : 58}px; font-weight: 800; line-height: 1.15; }
+  .subtext { font-size: ${isLandscape ? 32 : 30}px; opacity: .82; margin-top: .5em; font-weight: 500; }
+  .stage { position: relative; width: ${stageWidth}px; height: ${stageHeight}px; perspective: 1600px; z-index: 2; flex-shrink: 0; }
   .stage-scale { position: absolute; inset: 0; transform: scale(${deviceScale}); transform-origin: top left; }
   .stage-inner { animation: play ${durationMs}ms ${animation.easing} forwards; }
   ${DEVICE_CSS}
@@ -423,13 +445,20 @@ export function templatePreviewHtml(project: VideoProject): string {
   const resolveUri = previewResolveUri(project.id);
   const scenes = [...project.scenes].sort((a, b) => a.order - b.order);
 
+  const canvas = canvasFor(scenes[0] ?? ({} as VideoScene));
+
   const scenesCss = scenes
     .map((scene, i) => {
       const animation = SCENE_ANIMATIONS[scene.sceneTemplate] ?? SCENE_ANIMATIONS["hero-rise"];
       const durationMs = Math.max(1, scene.durationSeconds) * 1000;
       const backdropKf = (animation.backdropKeyframes ?? defaultBackdrop)(scene);
       const exitDelay = Math.max(0, durationMs - 480);
+      const isLandscape = scene.aspectRatio === "16:9";
       return `
+        .scene-${i} { flex-direction: ${isLandscape ? "row" : "column"}; ${isLandscape ? "gap: 4%; padding: 0 6%;" : ""} }
+        .scene-${i} .copy { text-align: ${isLandscape ? "left" : "center"}; ${isLandscape ? "flex: 1; margin-bottom: 0;" : ""} }
+        .scene-${i} .label { font-size: ${isLandscape ? 64 : 58}px; }
+        .scene-${i} .subtext { font-size: ${isLandscape ? 32 : 30}px; }
         .scene-${i} .backdrop { background:${backgroundCss(scene.background)}; }
         .scene-${i}.playing .stage-inner { animation: play-${i} ${durationMs}ms ${animation.easing} forwards; }
         .scene-${i}.playing .backdrop { animation: bg-${i} ${durationMs}ms ease-out forwards; }
@@ -447,7 +476,8 @@ export function templatePreviewHtml(project: VideoProject): string {
     .map((scene, i) => {
       const animation = SCENE_ANIMATIONS[scene.sceneTemplate] ?? SCENE_ANIMATIONS["hero-rise"];
       const device = DEVICE_REGISTRY[scene.device] ?? DEVICE_REGISTRY["phone"];
-      const deviceScale = deviceScaleFor(device, CANVAS.height, scene.variant, scene.deviceFraction ?? 0.58);
+      const sceneCanvas = canvasFor(scene);
+      const deviceScale = deviceScaleFor(device, sceneCanvas.height, scene.variant, scene.deviceFraction ?? 0.58);
       const geometry = resolveGeometry(device, scene.variant);
       const stageWidth = Math.round(geometry.width * deviceScale);
       const stageHeight = Math.round(geometry.height * deviceScale);
@@ -457,7 +487,7 @@ export function templatePreviewHtml(project: VideoProject): string {
         <div class="backdrop"></div>
         <div class="vignette"></div>
         ${textBlockHtml(scene)}
-        <div class="stage" style="width:${stageWidth}px;height:${stageHeight}px;"><div class="stage-scale" style="transform:scale(${deviceScale})"><div class="stage-inner">${deviceInnerMarkup(animation, device, scene, uris, durationMs)}</div></div></div>
+        <div class="stage" style="width:${stageWidth}px;height:${stageHeight}px;flex-shrink:0;"><div class="stage-scale" style="transform:scale(${deviceScale})"><div class="stage-inner">${deviceInnerMarkup(animation, device, scene, uris, durationMs)}</div></div></div>
       </div>`;
     })
     .join("\n");
@@ -466,8 +496,8 @@ export function templatePreviewHtml(project: VideoProject): string {
 
   return `<!doctype html><html><head><meta charset="utf-8" /><style>
     * { box-sizing: border-box; }
-    html, body { margin:0; width:${CANVAS.width}px; height:${CANVAS.height}px; overflow:hidden; font-family:"Segoe UI",Roboto,-apple-system,sans-serif; color:#fff; }
-    .scene { position:absolute; inset:0; width:${CANVAS.width}px; height:${CANVAS.height}px; display:none; flex-direction:column; align-items:center; justify-content:center; }
+    html, body { margin:0; width:${canvas.width}px; height:${canvas.height}px; overflow:hidden; font-family:"Segoe UI",Roboto,-apple-system,sans-serif; color:#fff; }
+    .scene { position:absolute; inset:0; width:${canvas.width}px; height:${canvas.height}px; display:none; align-items:center; justify-content:center; }
     .scene.playing { display:flex; }
     .backdrop { position:absolute; inset:-8%; }
     .vignette { position:absolute; inset:0; background: radial-gradient(circle at 50% 42%, rgba(0,0,0,0) 45%, rgba(0,0,0,.35) 100%); }
@@ -558,9 +588,10 @@ export async function renderVideo(project: VideoProject): Promise<string> {
   const resolveUri = (rel: string) => dataUri(videoFile(project.id, rel));
 
   try {
-    const page = await browser.newPage({ viewport: CANVAS });
     const scenes = [...project.scenes].sort((a, b) => a.order - b.order);
+    const page = await browser.newPage({ viewport: canvasFor(scenes[0] ?? ({} as VideoScene)) });
     for (const scene of scenes) {
+      await page.setViewportSize(canvasFor(scene));
       const html = sceneHtml(scene, sourceUrisFor(project, scene, resolveUri), true);
       await page.setContent(html, { waitUntil: "load" });
 
