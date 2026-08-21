@@ -19,111 +19,91 @@ export interface MockupStarterTemplate {
   columnCount: number;
   layout: string;
   background: ColumnStyle["background"];
+  titles?: string[];
+  subtitles?: string[];
 }
 
 export const MOCKUP_TEMPLATES: MockupStarterTemplate[] = [
   {
     id: "ios-starter-template",
-    name: "iOS Starter",
+    name: "iOS Starter Pro",
     category: "Starter",
-    devices: [{ deviceId: "apple-iphone-15-pro", label: "6.5 Inch" }],
+    devices: [{ deviceId: "apple-iphone-15-pro", label: "6.5 Inch Phone" }],
     columnCount: 4,
     layout: "single-title-above",
     background: { type: "gradient", value: "royal" },
+    titles: ["Welcome Guide", "Modern Design", "Instant Sync", "Get Started"],
+    subtitles: ["Discover a new way of living", "Clean and customizable components", "Your data is always with you", "Join our community today"]
   },
   {
     id: "android-starter-template",
-    name: "Android Starter",
+    name: "Android Starter Pro",
     category: "Starter",
-    devices: [{ deviceId: "phone", label: "Phone" }],
+    devices: [{ deviceId: "phone", label: "Android Phone" }],
     columnCount: 4,
     layout: "single-title-above",
     background: { type: "gradient", value: "graphite" },
+    titles: ["Explore Features", "Intuitive Layout", "Secure Lock", "Stay Connected"],
+    subtitles: ["Designed for modern Android devices", "Simple navigation and gestures", "Keep your private data safe", "Never miss a single update"]
   },
   {
-    id: "ios-android-starter-template",
-    name: "iOS + Android Starter",
-    category: "Starter",
+    id: "saas-wave-template",
+    name: "SaaS Gradient Wave",
+    category: "SaaS & Tech",
     devices: [
-      { deviceId: "apple-iphone-15-pro", label: "6.5 Inch" },
-      { deviceId: "phone", label: "Phone" },
+      { deviceId: "apple-iphone-15-pro", label: "6.5 Inch Phone" },
+      { deviceId: "phone", label: "Android Phone" }
     ],
-    columnCount: 4,
-    layout: "single-title-above",
-    background: { type: "gradient", value: "ocean" },
-  },
-  {
-    id: "books-app-template-1",
-    name: "Books App Template 1",
-    category: "Books",
-    devices: [{ deviceId: "apple-iphone-15-pro", label: "6.5 Inch" }],
     columnCount: 5,
-    layout: "tilted-left-caption-below",
-    background: { type: "solid", value: "solid-cream" },
+    layout: "the-airbnb-left-1-title-above",
+    background: { type: "gradient", value: "ocean" },
+    titles: ["Grow Fast", "Deep Insights", "Collaboration", "Integrations", "Cloud Sync"],
+    subtitles: ["Scale your startup smoothly", "Interactive analytics charts", "Work with your team live", "Connect with all your tools", "Deploy instantly to the cloud"]
   },
   {
     id: "business-app-template-1",
-    name: "Business App Template 1",
+    name: "Fintech Business Pro",
     category: "Business",
-    devices: [{ deviceId: "phone", label: "Phone" }],
+    devices: [{ deviceId: "apple-iphone-15-pro", label: "6.5 Inch Phone" }],
     columnCount: 5,
     layout: "left-side-title-above",
-    background: { type: "gradient", value: "royal" },
+    background: { type: "solid", value: "solid-indigo" },
+    titles: ["Send Money", "Realtime Rates", "Smart Budget", "Crypto Wallet", "Premium Care"],
+    subtitles: ["Zero transfer fees worldwide", "Track live currency markets", "Analyze monthly expenses", "Buy, sell and hold tokens", "24/7 priority support team"]
   },
   {
-    id: "entertainment-app-template-1",
-    name: "Entertainment App Template 1",
-    category: "Entertainment",
-    devices: [{ deviceId: "apple-iphone-15-pro", label: "6.5 Inch" }],
-    columnCount: 5,
-    layout: "rotated-left-1-caption-above",
-    background: { type: "pattern", value: "mesh" },
-  },
-  {
-    id: "food-template-3",
-    name: "Food Template 3",
-    category: "Food",
-    devices: [{ deviceId: "phone", label: "Phone" }],
+    id: "food-lifestyle-template",
+    name: "Warm Sunset Food",
+    category: "Food & Lifestyle",
+    devices: [{ deviceId: "apple-iphone-15-pro", label: "6.5 Inch Phone" }],
     columnCount: 4,
-    layout: "two-devices-title-below",
-    background: { type: "solid", value: "solid-forest" },
-  },
-  {
-    id: "food-template-4",
-    name: "Food Template 4",
-    category: "Food",
-    devices: [{ deviceId: "phone", label: "Phone" }],
-    columnCount: 4,
-    layout: "single-caption-below",
+    layout: "tilted-left-caption-below",
     background: { type: "gradient", value: "sunset" },
+    titles: ["Order Food", "Fresh Ingredients", "Fast Delivery", "Enjoy Meal"],
+    subtitles: ["Get dishes from top chefs", "Sourced from local farms", "Delivered hot in 20 minutes", "Delicious food at your door"]
   },
   {
-    id: "photo-video-template-1",
-    name: "Photo & Video Template 1",
-    category: "Photo & Video",
-    devices: [{ deviceId: "apple-iphone-15-pro", label: "6.5 Inch" }],
-    columnCount: 5,
-    layout: "snapshot-single-no-text",
-    background: { type: "solid", value: "solid-charcoal" },
-  },
-  {
-    id: "to-do-app-template-1",
-    name: "To Do App Template 1",
-    category: "To Do",
-    devices: [{ deviceId: "phone", label: "Phone" }],
+    id: "health-fitness-template",
+    name: "Fresh Mint Health",
+    category: "Health & Fitness",
+    devices: [{ deviceId: "apple-iphone-15-pro", label: "6.5 Inch Phone" }],
     columnCount: 4,
-    layout: "right-side-title-above",
+    layout: "snapshot-single-title-above",
     background: { type: "gradient", value: "mint" },
+    titles: ["Workouts", "Nutrition", "Sleep Tracker", "Achieve Goals"],
+    subtitles: ["Daily personalized gym plans", "Log meals and water intake", "Monitor deep sleep cycles", "Unlock health badges weekly"]
   },
   {
-    id: "utility-app-template-1",
-    name: "Utility App Template 1",
-    category: "Utility",
-    devices: [{ deviceId: "phone", label: "Phone" }],
-    columnCount: 4,
-    layout: "single-title-above",
-    background: { type: "gradient", value: "violet" },
-  },
+    id: "ecommerce-retail-template",
+    name: "Classic Cream Retail",
+    category: "E-Commerce",
+    devices: [{ deviceId: "phone", label: "Android Phone" }],
+    columnCount: 5,
+    layout: "two-devices-title-below",
+    background: { type: "solid", value: "solid-cream" },
+    titles: ["New Arrivals", "Easy Cart", "Secure Checkout", "Track Order", "Get Rewards"],
+    subtitles: ["Curated items every week", "One-tap addition to cart", "All major cards accepted", "Realtime delivery routing", "Earn points on every purchase"]
+  }
 ];
 
 /** Applies a starter template: replaces devices/columns/cells with the
@@ -140,7 +120,11 @@ export function applyMockupTemplate(project: MockupProject, templateId: string):
 
   template.devices.forEach((d, i) => addDeviceRow(project, { deviceId: d.deviceId, label: d.label, previewsVisible: true, isBase: i === 0 }));
   for (let i = 0; i < template.columnCount; i++) {
-    const style = defaultColumnStyle(`Feature ${i + 1}`);
+    const defaultTitle = (template.titles && template.titles[i]) || `Feature ${i + 1}`;
+    const defaultSub = (template.subtitles && template.subtitles[i]) || "Lorem ipsum dolor sit amet";
+    
+    const style = defaultColumnStyle(defaultTitle);
+    style.subtitle.text = defaultSub;
     style.layout = template.layout;
     style.background = template.background;
     addColumn(project, style);

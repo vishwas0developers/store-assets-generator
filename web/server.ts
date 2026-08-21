@@ -621,7 +621,17 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
 
     // Templates section
     if (method === "GET" && p === "/api/mockups/templates") {
-      sendJson(res, 200, { templates: MOCKUP_TEMPLATES.map((t) => ({ id: t.id, name: t.name, category: t.category })) });
+      sendJson(res, 200, {
+        templates: MOCKUP_TEMPLATES.map((t) => ({
+          id: t.id,
+          name: t.name,
+          category: t.category,
+          columnCount: t.columnCount,
+          layout: t.layout,
+          background: t.background,
+          devices: t.devices
+        }))
+      });
       return;
     }
     {

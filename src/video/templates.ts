@@ -71,6 +71,35 @@ export function applyVideoTemplate(project: VideoProject, templateId: string, de
   const template = VIDEO_TEMPLATES.find((t) => t.id === templateId);
   if (!template) throw new Error(`Unknown video template '${templateId}'.`);
 
+  // Pre-configured titles and subtitles per template for premium default appearance
+  const defaultTexts: Record<string, Array<{ text: string; subtext: string }>> = {
+    "feature-showcase": [
+      { text: "Welcome to AppName", subtext: "The ultimate companion" },
+      { text: "Realtime Statistics", subtext: "Track everything instantly" },
+      { text: "Global Connections", subtext: "Work seamlessly everywhere" },
+      { text: "Premium Safety", subtext: "Bank-grade file protection" },
+      { text: "Collaborate Together", subtext: "Invite your team in one click" },
+      { text: "Get Started Now", subtext: "Available on all major platforms" }
+    ],
+    "quick-teaser": [
+      { text: "Fast & Powerful", subtext: "Experience the new speed" },
+      { text: "Intelligent AI", subtext: "Automate your daily workflows" },
+      { text: "Stunning Graphics", subtext: "Visuals that amaze" },
+      { text: "Join Millions", subtext: "Start your journey today" }
+    ],
+    "cinematic-tour": [
+      { text: "A New Vision", subtext: "Crafted for simplicity" },
+      { text: "Explore Details", subtext: "No feature left behind" },
+      { text: "Seamless Experience", subtext: "Optimized for all viewports" },
+      { text: "Stay Organized", subtext: "Everything in one secure place" },
+      { text: "Share Progress", subtext: "Connect and export anywhere" },
+      { text: "Advanced Settings", subtext: "Customize it to your liking" },
+      { text: "Ready to Level Up?", subtext: "Download from stores now" }
+    ]
+  };
+
+  const texts = defaultTexts[templateId] || [];
+
   project.template = templateId;
   project.scenes = template.scenes.map((s, i): VideoScene => ({
     id: `scene_${i + 1}`,
@@ -79,8 +108,8 @@ export function applyVideoTemplate(project: VideoProject, templateId: string, de
     sourceId: project.sources[i]?.id,
     device: defaultDevice,
     background: s.background,
-    text: "",
-    subtext: "",
+    text: texts[i]?.text || "",
+    subtext: texts[i]?.subtext || "",
     durationSeconds: s.durationSeconds,
     rotate: s.rotate,
     zoom: s.zoom,

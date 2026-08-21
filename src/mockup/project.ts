@@ -27,6 +27,8 @@ export interface MockupSourceImage {
   file: string; // relative to project dir, e.g. "sources/img_1.png"
   width: number;
   height: number;
+  resolution?: string;   // e.g. "1242x2688"
+  deviceLabel?: string;  // e.g. "Phone – 6.5\" Display"
 }
 
 export interface MockupDeviceRow {
