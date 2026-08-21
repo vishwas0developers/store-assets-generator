@@ -459,6 +459,17 @@ async function renderLiveBrowserCaptures() {
 
   if (!activeProjectId) return;
 
+  const selectedResolution = $("browser-resolution-select").value;
+  const dims = selectedResolution.split("x");
+  const targetWidth = Number(dims[0]);
+  const targetHeight = Number(dims[1]);
+
+  // Update Section Title with size info
+  const titleEl = $("session-captures-title");
+  if (titleEl) {
+    titleEl.textContent = `Session Captures (${selectedResolution})`;
+  }
+
   try {
     const proj = await api(`/api/projects/${activeProjectId}`);
     if (!proj.captures || proj.captures.length === 0) {
@@ -466,7 +477,18 @@ async function renderLiveBrowserCaptures() {
       return;
     }
 
-    for (const c of proj.captures) {
+    const filtered = proj.captures.filter(c => {
+      if (c.resolution === selectedResolution) return true;
+      // Fallback matching logic for old/unlabeled captures
+      return c.width === targetWidth && c.height === targetHeight;
+    });
+
+    if (filtered.length === 0) {
+      gallery.innerHTML = `<div class="hint" style="grid-column: span 2; text-align: center; padding: 2rem 0;">No screenshots captured for ${selectedResolution} yet.<br><br><span style="font-size:0.8rem; color:#888;">Change resolution or capture a new screenshot at this size.</span></div>`;
+      return;
+    }
+
+    for (const c of filtered) {
       const item = document.createElement("div");
       item.className = "thumb";
       item.style = "height: fit-content; align-self: start;";
@@ -500,7 +522,7 @@ async function renderLiveBrowserCaptures() {
         // Remove from DOM immediately for instant feedback
         item.remove();
         if (gallery.children.length === 0) {
-          gallery.innerHTML = `<div class="hint" style="grid-column:span 2; text-align:center; padding:2rem 0;">No screenshots captured yet.</div>`;
+          gallery.innerHTML = `<div class="hint" style="grid-column: span 2; text-align: center; padding: 2rem 0;">No screenshots captured for ${selectedResolution} yet.</div>`;
         }
 
         try {
@@ -554,6 +576,7 @@ if (disconnectBtn) {
 
 // Auto-reconnect when user changes resolution select while connected
 $("browser-resolution-select").addEventListener("change", async () => {
+  await renderLiveBrowserCaptures();
   if (browserConnected) {
     await disconnectLiveBrowser();
     await connectLiveBrowser();
@@ -1048,18 +1071,104 @@ async function ensureMockupReferenceData() {
   }
 }
 
+function getTemplateBackgroundStyle(bg) {
+  if (!bg) return "background: #1e3c72;";
+  if (bg.type === "solid") {
+    const solids = {
+      "solid-navy": "#0f1115",
+      "solid-charcoal": "#1c1c1c",
+      "solid-white": "#f8fafc",
+      "solid-cream": "#f5f0e6",
+      "solid-indigo": "#2a2a72",
+      "solid-forest": "#0b3d2e",
+    };
+    return `background: ${solids[bg.value] || bg.value};`;
+  }
+  if (bg.type === "pattern") {
+    const patterns = {
+      dots: "radial-gradient(circle, rgba(255,255,255,.18) 3px, transparent 3px) 0 0/28px 28px, linear-gradient(135deg,#1e3c72 0%,#2a5298 100%)",
+      grid: "linear-gradient(rgba(255,255,255,.12) 1px, transparent 1px) 0 0/40px 40px, linear-gradient(90deg, rgba(255,255,255,.12) 1px, transparent 1px) 0 0/40px 40px, linear-gradient(135deg,#232526 0%,#414345 100%)",
+      diagonal: "repeating-linear-gradient(45deg, rgba(255,255,255,.08) 0 12px, transparent 12px 24px), linear-gradient(135deg,#0f2027 0%,#2c5364 100%)",
+      mesh: "radial-gradient(at 20% 20%, rgba(255,100,150,.35) 0, transparent 50%), radial-gradient(at 80% 0%, rgba(100,150,255,.35) 0, transparent 50%), radial-gradient(at 50% 100%, rgba(150,255,200,.3) 0, transparent 50%), #14161c",
+      waves: "repeating-radial-gradient(circle at 50% 120%, rgba(255,255,255,.10) 0 6px, transparent 6px 40px), linear-gradient(135deg,#134e5e 0%,#71b280 100%)",
+    };
+    return `background: ${patterns[bg.value] || "linear-gradient(135deg,#1e3c72 0%,#2a5298 100%)"};`;
+  }
+  const gradients = {
+    ocean: "linear-gradient(135deg,#0f2027 0%,#203a43 50%,#2c5364 100%)",
+    royal: "linear-gradient(135deg,#1e3c72 0%,#2a5298 100%)",
+    sunset: "linear-gradient(135deg,#ff512f 0%,#dd2476 100%)",
+    mint: "linear-gradient(135deg,#134e5e 0%,#71b280 100%)",
+    graphite: "linear-gradient(135deg,#232526 0%,#414345 100%)",
+    light: "linear-gradient(135deg,#f8fafc 0%,#e2e8f0 100%)",
+    candy: "linear-gradient(135deg,#ee9ca7 0%,#ffdde1 100%)",
+    aurora: "linear-gradient(135deg,#00c6ff 0%,#0072ff 100%)",
+    citrus: "linear-gradient(135deg,#f7971e 0%,#ffd200 100%)",
+    violet: "linear-gradient(135deg,#654ea3 0%,#eaafc8 100%)",
+  };
+  return `background: ${gradients[bg.value] || "linear-gradient(135deg,#1e3c72 0%,#2a5298 100%)"};`;
+}
+
 /* ---- Templates section ---- */
 async function renderMockupTemplateGrid() {
   const { templates } = await api("/api/mockups/templates");
   const grid = $("mockup-template-grid");
   grid.innerHTML = "";
+  
+  // Style the grid for Visual Cards
+  grid.style.cssText = "display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; padding: 0.5rem 0;";
+
   for (const t of templates) {
     const card = document.createElement("div");
     card.className = "template-card";
-    card.innerHTML = `<div class="cat">${t.category}</div><h4>${t.name}</h4>`;
+    card.style.cssText = "display:flex; flex-direction:column; overflow:hidden; border-radius:12px; background:#141721; border:1px solid #232733; cursor:pointer; transition:all 0.2s ease-in-out; box-shadow:0 4px 12px rgba(0,0,0,0.15);";
+    
+    // Add hover scale effect via JS listeners
+    card.onmouseenter = () => {
+      card.style.transform = "translateY(-4px)";
+      card.style.borderColor = "#3b82f6";
+      card.style.boxShadow = "0 8px 24px rgba(59,130,246,0.15)";
+    };
+    card.onmouseleave = () => {
+      card.style.transform = "translateY(0)";
+      card.style.borderColor = "#232733";
+      card.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
+    };
+
+    const cleanLayoutName = t.layout.replace("snapshot-", "Snapshot ").replace(/-/g, " ");
+
+    card.innerHTML = `
+      <div style="height:120px; ${getTemplateBackgroundStyle(t.background)} display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; border-bottom:1px solid #232733;">
+        <div style="display:flex; gap:8px; transform:scale(0.85);">
+          ${Array.from({ length: Math.min(3, t.columnCount || 3) }).map((_, idx) => `
+            <div style="width:34px; height:62px; background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.25); border-radius:4px; box-shadow:0 3px 6px rgba(0,0,0,0.3); display:flex; flex-direction:column; align-items:center; justify-content:space-between; padding:3px 2px;">
+              <div style="width:10px; height:1px; background:rgba(255,255,255,0.3); border-radius:0.5px;"></div>
+              <div style="font-size:6px; color:rgba(255,255,255,0.4); text-align:center; transform:scale(0.8);">App</div>
+              <div style="width:3px; height:3px; border-radius:50%; background:rgba(255,255,255,0.3);"></div>
+            </div>
+          `).join('')}
+        </div>
+        <div style="position:absolute; bottom:6px; right:8px; font-size:9px; background:rgba(0,0,0,0.7); padding:2px 6px; border-radius:10px; color:#fff; font-weight:600;">
+          ${t.columnCount} Screens
+        </div>
+      </div>
+      <div style="padding:1rem; flex:1; display:flex; flex-direction:column; justify-content:space-between;">
+        <div>
+          <div class="cat" style="font-size:0.75rem; text-transform:uppercase; color:#3b82f6; font-weight:700; margin-bottom:0.25rem;">${t.category}</div>
+          <h4 style="margin:0; font-size:0.95rem; font-weight:600; color:#e5e7eb;">${t.name}</h4>
+          <div style="font-size:0.8rem; color:#8892b0; margin-top:0.35rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+            Layout: <span style="color:#d1d5db;">${cleanLayoutName}</span>
+          </div>
+        </div>
+        <div style="margin-top:0.75rem; font-size:0.75rem; color:#4e5873; display:flex; gap:6px; flex-wrap:wrap;">
+          ${t.devices.map(d => `<span style="background:#1d212c; padding:2px 6px; border-radius:4px; border:1px solid #2c3344; color:#9ca3af;">${d.label}</span>`).join('')}
+        </div>
+      </div>
+    `;
+
     card.onclick = async () => {
       if (!mockupId) {
-        await alert("Start a project first.");
+        await alert("Start a mockup project first.");
         return;
       }
       mockupProject = await api(`/api/mockups/${mockupId}/apply-template`, { method: "POST", body: { templateId: t.id } });
@@ -1139,7 +1248,21 @@ function selectCell(deviceRowId, columnId) {
   $("mk-bg-type").value = style.background.type;
   populateBgValueSelect(style.background.type, style.background.value);
 
-  $("mk-source").innerHTML = mockupProject.sources.map((s) => `<option value="${s.id}">${s.name}</option>`).join("");
+  const mockupGroups = {};
+  for (const s of mockupProject.sources || []) {
+    const res = s.resolution || "Uploads / General";
+    if (!mockupGroups[res]) mockupGroups[res] = [];
+    mockupGroups[res].push(s);
+  }
+  let mockupSourceHtml = '<option value="">(None)</option>';
+  for (const [res, items] of Object.entries(mockupGroups)) {
+    mockupSourceHtml += `<optgroup label="${res}">`;
+    for (const s of items) {
+      mockupSourceHtml += `<option value="${s.id}">${s.name}</option>`;
+    }
+    mockupSourceHtml += `</optgroup>`;
+  }
+  $("mk-source").innerHTML = mockupSourceHtml;
   if (style.deviceOne.sourceId) $("mk-source").value = style.deviceOne.sourceId;
 
   $("mk-d1-size").value = style.deviceOne.size; $("mk-d1-size-val").textContent = style.deviceOne.size;
@@ -1416,19 +1539,48 @@ async function renderVideoTemplateGrid() {
   const { templates } = await api("/api/videos/templates");
   const grid = $("video-template-grid");
   grid.innerHTML = "";
+
+  // Set grid template for premium layout
+  grid.style.cssText = "display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; padding: 0.5rem 0;";
+
   for (const t of templates) {
     const card = document.createElement("div");
     card.className = "template-card";
-    card.innerHTML = `<h4>${t.name}</h4><div class="desc">${t.description}</div><div class="hint">${t.sceneCount} scenes</div>`;
+    card.style.cssText = "display:flex; flex-direction:column; overflow:hidden; border-radius:12px; background:#141721; border:1px solid #232733; cursor:pointer; transition:all 0.2s ease-in-out; box-shadow:0 4px 12px rgba(0,0,0,0.15); padding:1.25rem; justify-content:space-between; min-height: 160px;";
+    
+    // Add hover scale effect via JS listeners
+    card.onmouseenter = () => {
+      card.style.transform = "translateY(-4px)";
+      card.style.borderColor = "#3b82f6";
+      card.style.boxShadow = "0 8px 24px rgba(59,130,246,0.15)";
+    };
+    card.onmouseleave = () => {
+      card.style.transform = "translateY(0)";
+      card.style.borderColor = "#232733";
+      card.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
+    };
+
+    card.innerHTML = `
+      <div>
+        <h4 style="margin:0 0 0.5rem 0; font-size:1.05rem; font-weight:600; color:#e5e7eb;">${t.name}</h4>
+        <div style="font-size:0.8rem; color:#8892b0; line-height:1.45; margin-bottom:1rem;">${t.description}</div>
+      </div>
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-size:0.75rem; background:#1e293b; color:#3b82f6; padding:3px 10px; border-radius:12px; font-weight:600;">${t.sceneCount} Scenes</span>
+        <span style="font-size:0.8rem; color:#3b82f6; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">Preview & Apply &rarr;</span>
+      </div>
+    `;
+
     card.onclick = async () => {
       if (!videoId) {
-        await alert("Start a project first.");
+        await alert("Start a video project first.");
         return;
       }
       videoProject = await api(`/api/videos/${videoId}/apply-template`, { method: "POST", body: { templateId: t.id, device: "phone" } });
       renderVideoScenes();
       $("video-template-preview-card").style.display = "block";
       $("video-template-preview").src = `/api/videos/${videoId}/template-preview?t=${Date.now()}`;
+      await alert(`Applied "${t.name}" successfully! Scene navigation and values are ready below. Check the preview to watch it play live.`);
     };
     grid.appendChild(card);
   }
@@ -1438,7 +1590,21 @@ function renderVideoScenes() {
   $("sc-template").innerHTML = videoSceneOptions.animations.map((a) => `<option value="${a.id}">${a.name}</option>`).join("");
   $("sc-background").innerHTML = videoSceneOptions.backgrounds.map((b) => `<option value="${b}">${b}</option>`).join("");
   $("sc-device").innerHTML = videoDevices.map((d) => `<option value="${d.id}">${d.vendor} — ${d.name}</option>`).join("");
-  $("sc-source").innerHTML = (videoProject.sources || []).map((s) => `<option value="${s.id}">${s.name}</option>`).join("");
+  const videoGroups = {};
+  for (const s of videoProject.sources || []) {
+    const res = s.resolution || "Uploads / General";
+    if (!videoGroups[res]) videoGroups[res] = [];
+    videoGroups[res].push(s);
+  }
+  let videoSourceHtml = '<option value="">(None)</option>';
+  for (const [res, items] of Object.entries(videoGroups)) {
+    videoSourceHtml += `<optgroup label="${res}">`;
+    for (const s of items) {
+      videoSourceHtml += `<option value="${s.id}">${s.name}</option>`;
+    }
+    videoSourceHtml += `</optgroup>`;
+  }
+  $("sc-source").innerHTML = videoSourceHtml;
 
   const nav = $("video-scene-nav");
   nav.innerHTML = "";

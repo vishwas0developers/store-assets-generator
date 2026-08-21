@@ -313,6 +313,9 @@ export async function captureBrowserScreen(projectId: string): Promise<{ id: num
   });
   fs.writeFileSync(absPath, screenshotBuffer);
 
+  const resolutionKey = `${currentPreset.outputWidth}x${currentPreset.outputHeight}`;
+  const deviceLabelClean = currentPreset.name || "Phone";
+
   const captureInfo = {
     id: nextId,
     file: relPath,
@@ -320,6 +323,8 @@ export async function captureBrowserScreen(projectId: string): Promise<{ id: num
     capturedAt: new Date().toISOString(),
     width: currentPreset.outputWidth,
     height: currentPreset.outputHeight,
+    resolution: resolutionKey,
+    deviceLabel: deviceLabelClean,
   };
 
   project.captures.push(captureInfo);
@@ -328,18 +333,22 @@ export async function captureBrowserScreen(projectId: string): Promise<{ id: num
   
   project.mockup.sources.push({
     id: srcId,
-    name: `Screenshot ${nextId}`,
+    name: `Screenshot ${nextId} (${resolutionKey})`,
     file: `captures/${filename}`,
     width: currentPreset.outputWidth,
     height: currentPreset.outputHeight,
+    resolution: resolutionKey,
+    deviceLabel: deviceLabelClean,
   });
 
   project.video.sources.push({
     id: srcId,
-    name: `Screenshot ${nextId}`,
+    name: `Screenshot ${nextId} (${resolutionKey})`,
     file: `captures/${filename}`,
     width: currentPreset.outputWidth,
     height: currentPreset.outputHeight,
+    resolution: resolutionKey,
+    deviceLabel: deviceLabelClean,
   });
 
   saveProject(project);

@@ -8,6 +8,8 @@ export interface ProjectCapture {
   capturedAt: string;
   width: number;
   height: number;
+  resolution?: string;   // e.g. "1242x2688"
+  deviceLabel?: string;  // e.g. "Phone – 6.5\" Display"
 }
 
 export interface ProjectState {
