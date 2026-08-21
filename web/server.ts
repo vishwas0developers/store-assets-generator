@@ -370,14 +370,20 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
         }
         if (method === "DELETE") {
           if (fs.existsSync(abs)) {
-            fs.unlinkSync(abs);
+            try { fs.unlinkSync(abs); } catch (e) {}
           }
-          // If it was a capture screenshot, remove it from the captures array in project.json
-          if (rel.startsWith("captures/")) {
-            const project = loadProject(id);
-            project.captures = project.captures.filter((c) => c.file !== rel);
-            saveProject(project);
+          const normRel = rel.replace(/\\/g, "/");
+          // If it was a capture screenshot or media file, clean up project.json arrays
+          const project = loadProject(id);
+          project.captures = (project.captures || []).filter((c: any) => (c.file || "").replace(/\\/g, "/") !== normRel);
+          if (project.mockup && project.mockup.sources) {
+            project.mockup.sources = project.mockup.sources.filter((s: any) => (s.file || "").replace(/\\/g, "/") !== normRel);
           }
+          if (project.video && project.video.sources) {
+            project.video.sources = project.video.sources.filter((s: any) => (s.file || "").replace(/\\/g, "/") !== normRel);
+          }
+          saveProject(project);
+
           sendJson(res, 200, { ok: true });
           return;
         }
