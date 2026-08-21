@@ -1,0 +1,60 @@
+{
+  "providers": [
+    {
+      "id": "openai",
+      "adapter": "openai-compatible",
+      "baseUrl": "https://api.openai.com/v1",
+      "enabled": true,
+      "requiresKey": true
+    },
+    {
+      "id": "openrouter",
+      "adapter": "openai-compatible",
+      "baseUrl": "https://openrouter.ai/api/v1",
+      "enabled": false,
+      "requiresKey": true
+    },
+    {
+      "id": "groq",
+      "adapter": "openai-compatible",
+      "baseUrl": "https://api.groq.com/openai/v1",
+      "enabled": false,
+      "requiresKey": true
+    },
+    {
+      "id": "deepseek",
+      "adapter": "openai-compatible",
+      "baseUrl": "https://api.deepseek.com/v1",
+      "enabled": false,
+      "requiresKey": true
+    },
+    {
+      "id": "ollama",
+      "adapter": "openai-compatible",
+      "baseUrl": "http://localhost:11434/v1",
+      "enabled": true,
+      "requiresKey": false
+    },
+    {
+      "id": "lm-studio",
+      "adapter": "openai-compatible",
+      "baseUrl": "http://localhost:1234/v1",
+      "enabled": false,
+      "requiresKey": false
+    },
+    {
+      "id": "anthropic",
+      "adapter": "anthropic",
+      "baseUrl": "https://api.anthropic.com/v1",
+      "enabled": true,
+      "requiresKey": true
+    },
+    {
+      "id": "gemini",
+      "adapter": "gemini",
+      "baseUrl": "https://generativelanguage.googleapis.com/v1beta",
+      "enabled": true,
+      "requiresKey": true
+    }
+  ]
+}
