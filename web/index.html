@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=1280" />
 <title>Store Assets Generator</title>
 <link rel="stylesheet" href="/app.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css" />
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
 <div style="display:flex; flex-direction:column; height:100vh;">
@@ -516,40 +518,7 @@
       <button id="add-provider-save" style="margin-top:1rem;">Add Provider</button>
     </div>
   </div>
-<!-- Custom Alert Dialog -->
-<div class="modal-backdrop" id="custom-alert-modal">
-  <div class="modal" style="width: 420px; max-width: 90%; text-align: center; padding: 2rem;">
-    <div id="custom-alert-icon" style="font-size: 3rem; margin-bottom: 1rem;">&#9888;</div>
-    <h3 id="custom-alert-title" style="margin: 0 0 1rem; font-size: 1.2rem;">Alert</h3>
-    <p id="custom-alert-message" style="margin: 0 0 1.5rem; font-size: 0.9rem; color: #c7cad1; line-height: 1.5;"></p>
-    <button id="custom-alert-ok-btn" style="width: 100%; padding: 0.65rem;">OK</button>
-  </div>
-</div>
-
-<!-- Custom Confirm Dialog -->
-<div class="modal-backdrop" id="custom-confirm-modal">
-  <div class="modal" style="width: 420px; max-width: 90%; padding: 2rem;">
-    <h3 id="custom-confirm-title" style="margin: 0 0 1rem; font-size: 1.2rem;">Confirm Action</h3>
-    <p id="custom-confirm-message" style="margin: 0 0 1.5rem; font-size: 0.9rem; color: #c7cad1; line-height: 1.5;"></p>
-    <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
-      <button id="custom-confirm-cancel-btn" class="secondary" style="padding: 0.55rem 1rem;">Cancel</button>
-      <button id="custom-confirm-ok-btn" style="padding: 0.55rem 1rem; background: #3b82f6;">Confirm</button>
-    </div>
-  </div>
-</div>
-
-<!-- Custom Prompt Dialog -->
-<div class="modal-backdrop" id="custom-prompt-modal">
-  <div class="modal" style="width: 420px; max-width: 90%; padding: 2rem;">
-    <h3 id="custom-prompt-title" style="margin: 0 0 1rem; font-size: 1.2rem;">Input Required</h3>
-    <p id="custom-prompt-message" style="margin: 0 0 1rem; font-size: 0.9rem; color: #c7cad1;"></p>
-    <input id="custom-prompt-input" type="text" style="width: 100%; margin-bottom: 1.5rem;" />
-    <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
-      <button id="custom-prompt-cancel-btn" class="secondary" style="padding: 0.55rem 1rem;">Cancel</button>
-      <button id="custom-prompt-submit-btn" style="padding: 0.55rem 1rem; background: #3b82f6;">Submit</button>
-    </div>
-  </div>
-</div>
+<!-- SweetAlert2 renders all dialogs dynamically -->
 
 <!-- Custom Toasts Container -->
 <div id="custom-toast-container" style="position: fixed; top: 1.5rem; right: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; z-index: 100; pointer-events: none;"></div>

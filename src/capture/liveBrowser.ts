@@ -121,16 +121,21 @@ export async function startBrowserSession(
 
   // Try authentication
   const authConfig = resolveAuthConfig(url, slug);
+  let authResult: any = null;
   if (authConfig) {
     authConfig.sessionStatePath = sessionStatePath;
     console.log(`[SAG-BROWSER] Resolving authentication with strategy...`);
     try {
-      const authResult = await authenticate(activePage, activeContext, authConfig);
+      authResult = await authenticate(activePage, activeContext, authConfig);
       console.log(`[SAG-BROWSER] Authentication status: ok=${authResult.ok}, stage=${authResult.stage}, reason=${authResult.reason || "none"}`);
       if (authResult.ok && authResult.shouldSave) {
         fs.mkdirSync(path.dirname(sessionStatePath), { recursive: true });
         await activeContext.storageState({ path: sessionStatePath });
         console.log(`[SAG-BROWSER] Storage state updated at ${sessionStatePath}`);
+      } else if (!authResult.ok && authResult.reason && /expired|disabled|invalid/i.test(authResult.reason)) {
+        if (fs.existsSync(sessionStatePath)) {
+          try { fs.unlinkSync(sessionStatePath); } catch {}
+        }
       }
     } catch (authError: any) {
       console.error(`[SAG-BROWSER] Auth error during session init:`, authError.message);
@@ -138,7 +143,31 @@ export async function startBrowserSession(
   }
 
   console.log(`[SAG-BROWSER] Navigating to ${url} with mobile viewport (${currentPreset.cssWidth}x${currentPreset.cssHeight}, DPR: ${currentPreset.scaleFactor})...`);
-  const response = await activePage.goto(url, { waitUntil: "domcontentloaded", timeout: 30000 });
+  
+  let navigationError: Error | null = null;
+  let response: any = null;
+  try {
+    response = await activePage.goto(url, { waitUntil: "domcontentloaded", timeout: 35000 });
+  } catch (err: any) {
+    navigationError = err;
+    console.warn(`[SAG-BROWSER] Initial page.goto warning/timeout:`, err.message);
+
+    // If navigation timed out waiting for domcontentloaded, check if the page loaded or was redirected
+    const currentUrl = activePage.url();
+    if (!currentUrl || currentUrl === "about:blank") {
+      // Try fallback with waitUntil: "commit"
+      try {
+        response = await activePage.goto(url, { waitUntil: "commit", timeout: 20000 });
+        navigationError = null;
+      } catch (commitErr: any) {
+        navigationError = commitErr;
+      }
+    } else {
+      // URL has changed from about:blank (e.g. redirected to login or content started rendering)
+      navigationError = null;
+    }
+  }
+
   const finalUrl = activePage.url();
   const status = response?.status() ?? null;
   console.log(`[SAG-BROWSER] Landed at URL: ${finalUrl} (HTTP Status: ${status})`);
@@ -146,13 +175,27 @@ export async function startBrowserSession(
   // Expired session detection logic
   const hasPasswordField = await activePage.locator("input[type='password']").first().isVisible().catch(() => false);
   const isLoginPage = finalUrl.includes("/login") || finalUrl.includes("/signin") || finalUrl.includes("/auth");
+  const isAuthFailed = authResult && !authResult.ok && /expired|disabled|unauthenticated|login/i.test(authResult.reason || "");
   
-  if (authConfig && (isLoginPage || hasPasswordField)) {
-    console.warn(`[SAG-BROWSER] Expired session warning: redirected to login/has password input.`);
+  if (authConfig && (isLoginPage || hasPasswordField || isAuthFailed)) {
+    console.warn(`[SAG-BROWSER] Expired session detected: redirected to login / password input found.`);
+    if (fs.existsSync(sessionStatePath)) {
+      try { fs.unlinkSync(sessionStatePath); } catch {}
+    }
     return {
       sessionExpired: true,
-      message: "Demo login session has expired or is invalid. Please log in again."
+      message: "Demo login session has expired. Please login again."
     };
+  }
+
+  if (navigationError) {
+    const isTimeout = /timeout/i.test(navigationError.message);
+    if (isTimeout) {
+      throw new Error(`Connection timed out while loading ${url}. The server took too long to respond. Please verify the URL and try again.`);
+    } else {
+      const cleanMsg = navigationError.message.replace(/Call log:[\s\S]*/, "").replace(/\[2m|\[22m/g, "").trim();
+      throw new Error(`Failed to load ${url}: ${cleanMsg}`);
+    }
   }
 
   return {};
