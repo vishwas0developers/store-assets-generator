@@ -542,12 +542,23 @@ async function renderLiveBrowserCaptures() {
 
 // Connect / Disconnect Live Session
 $("browser-connect-btn").onclick = async () => {
+  await connectLiveBrowser();
+};
+
+const disconnectBtn = $("browser-disconnect-btn");
+if (disconnectBtn) {
+  disconnectBtn.onclick = async () => {
+    await disconnectLiveBrowser();
+  };
+}
+
+// Auto-reconnect when user changes resolution select while connected
+$("browser-resolution-select").addEventListener("change", async () => {
   if (browserConnected) {
     await disconnectLiveBrowser();
-  } else {
     await connectLiveBrowser();
   }
-};
+});
 
 async function connectLiveBrowser() {
   const url = $("browser-url-input").value.trim();
@@ -584,9 +595,13 @@ async function connectLiveBrowser() {
     }
 
     browserConnected = true;
+    $("browser-connect-btn").style.display = "none";
     $("browser-connect-btn").disabled = false;
-    $("browser-connect-btn").textContent = "Disconnect";
-    $("browser-connect-btn").style.background = "#ef4444";
+    $("browser-connect-btn").textContent = "Connect";
+    if ($("browser-disconnect-btn")) {
+      $("browser-disconnect-btn").style.display = "inline-flex";
+      $("browser-disconnect-btn").disabled = false;
+    }
     $("live-browser-status").textContent = "Live mobile session active. Click inside the device frame to interact.";
     $("browser-device-frame").style.display = "block";
     $("browser-bottom-controls").style.display = "flex";
@@ -629,25 +644,34 @@ async function connectLiveBrowser() {
       await showAlert("Connection failed: " + cleanMsg, "error", "Connection Failed");
     }
 
+    $("browser-connect-btn").style.display = "inline-flex";
     $("browser-connect-btn").disabled = false;
     $("browser-connect-btn").textContent = "Connect";
+    if ($("browser-disconnect-btn")) $("browser-disconnect-btn").style.display = "none";
     $("live-browser-status").textContent = "Connection failed. Please check the URL and try again.";
   }
 }
 
 async function disconnectLiveBrowser() {
   clearInterval(frameIntervalId);
-  $("browser-connect-btn").disabled = true;
-  $("browser-connect-btn").textContent = "Disconnecting...";
+  if ($("browser-disconnect-btn")) {
+    $("browser-disconnect-btn").disabled = true;
+    $("browser-disconnect-btn").textContent = "Disconnecting...";
+  }
 
   try {
     await api("/api/browser/stop", { method: "POST" });
   } catch (e) {}
 
   browserConnected = false;
+  $("browser-connect-btn").style.display = "inline-flex";
   $("browser-connect-btn").disabled = false;
   $("browser-connect-btn").textContent = "Connect";
-  $("browser-connect-btn").style.background = "#3b82f6";
+  if ($("browser-disconnect-btn")) {
+    $("browser-disconnect-btn").disabled = false;
+    $("browser-disconnect-btn").textContent = "Disconnect";
+    $("browser-disconnect-btn").style.display = "none";
+  }
   $("live-browser-status").textContent = "Session closed. Click 'Connect' to start a new live session.";
   $("browser-device-frame").style.display = "none";
   $("browser-bottom-controls").style.display = "none";
@@ -1054,13 +1078,6 @@ async function ensureMockupReferenceData() {
   }
 }
 
-$("mockup-new-project").onclick = async () => {
-  const name = await prompt("Project name?", "My App");
-  if (!name) return;
-  const project = await api("/api/mockups", { method: "POST", body: { name } });
-  await loadMockupProjectInto(project.id);
-};
-
 /* ---- Templates section ---- */
 async function renderMockupTemplateGrid() {
   const { templates } = await api("/api/mockups/templates");
@@ -1424,12 +1441,6 @@ async function loadVideoProjectInto(id) {
   renderVideoTemplateGrid();
   renderVideoScenes();
 }
-$("video-new-project").onclick = async () => {
-  const name = await prompt("Project name?", "Promo Video");
-  if (!name) return;
-  const project = await api("/api/videos", { method: "POST", body: { name } });
-  await loadVideoProjectInto(project.id);
-};
 
 async function renderVideoTemplateGrid() {
   const { templates } = await api("/api/videos/templates");
