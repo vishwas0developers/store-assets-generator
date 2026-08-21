@@ -2,6 +2,13 @@
 
 **Companion documents:** [`PRD.md`](../PRD.md) · [`ARCHITECTURE.md`](./ARCHITECTURE.md) · [`AGENT-MCP-DISTRIBUTION.md`](./AGENT-MCP-DISTRIBUTION.md) · [`IMPLEMENTATION_PLAN.md`](./IMPLEMENTATION_PLAN.md)
 
+> **Status (Phase 9):** retained and unaffected by the four-step manual
+> workflow rework. `src/android/capture.ts` and its MCP tools stay
+> available as an **alternate source for Step 1 (Capture)** — screenshots
+> pulled from a live/physical device via `adb`, alongside the web
+> (Playwright) capture path. Unlike `src/orchestrator.ts` and
+> `src/render/video.ts`, nothing here was disabled.
+
 ---
 
 ## 1. Verified Environment

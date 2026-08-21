@@ -1,6 +1,6 @@
 # Store Assets Generator — Implementation Plan
 
-**Companion documents:** [`PRD.md`](../PRD.md) · [`ARCHITECTURE.md`](./ARCHITECTURE.md) · [`AGENT-MCP-DISTRIBUTION.md`](./AGENT-MCP-DISTRIBUTION.md) · [`ANDROID-CAPTURE.md`](./ANDROID-CAPTURE.md) · [`AUTHENTICATION.md`](./AUTHENTICATION.md) · [`AI-PROVIDERS.md`](./AI-PROVIDERS.md) · [`architecture.mmd`](./architecture.mmd)
+**Companion documents:** [`PRD.md`](../PRD.md) · [`ARCHITECTURE.md`](./ARCHITECTURE.md) · [`AGENT-MCP-DISTRIBUTION.md`](./AGENT-MCP-DISTRIBUTION.md) · [`ANDROID-CAPTURE.md`](./ANDROID-CAPTURE.md) · [`AUTHENTICATION.md`](./AUTHENTICATION.md) · [`AI-PROVIDERS.md`](./AI-PROVIDERS.md) · [`DEVICE-FRAMES.md`](./DEVICE-FRAMES.md) · [`DIAGRAMS.md`](./DIAGRAMS.md)
 
 ---
 
@@ -24,7 +24,10 @@ Built and confirmed working end to end against `https://web.iticareer.com` on th
 | Template system (`.sagtpl`, scene graph interpreter) | ⚠️ Schema only | `TemplateSchema` in `project/schema.ts`; no import/export/registry yet |
 | **Multi-provider AI layer — registry, discovery, key management** | ✅ Real, working | `src/ai/{registry,adapters,keystore}.ts` — provider registry seeded with 8 providers (OpenAI, OpenRouter, Groq, DeepSeek, Ollama, LM Studio, Anthropic, Gemini) across 3 adapters; live dynamic model discovery with the graceful `{error, requiresApiKey, message}` contract; per-provider AES-256-GCM key storage; custom-provider add with no code change. Wired into the Settings popup (⚙) in the web UI: Providers tab (list, add, save key, test, delete), Models tab (fetch → curate → save → set default), model selector on the Generate panel. **Not yet built:** the actual copy-generation call (chat completion) that *uses* a selected model — this pass built the provider/model management system the copy stage will consume, not the copy stage itself |
 | **Local Web UI** | ✅ Real, working, and now the default startup surface | `store-assets ui` (`web/server.ts` + `web/index.html`) — loopback-only, same core (`AssetPipeline`, credential store, AI registry/adapters) the CLI/MCP use. Covers: credential set/status/clear, generate, full AI provider/model management via the Settings popup. Not yet the full workflow surface (per-step capture/copy/render/validate panels) from Phase 2.6 |
-| Device frame assets | ❌ Blocked | Still the standing blocker from §0 below — `DEVICE_REGISTRY` exists but frame sourcing/licensing is unresolved |
+| Device frame assets | ✅ Resolved by decision (Phase 9) | `src/devices/frame.ts` generates frames parametrically from `config/devices.json` geometry/traits — no licensed art, no CDN dependency. Standing blocker from §0 below is closed. |
+| **Four-step session workflow** (Capture → Studio Mockups → Store Package → Animation Video) | ✅ Built this pass | `src/session/store.ts`, `src/capture/step1.ts`, `src/render/{mockup,scene}.ts`, `src/package/store.ts` — see Phase 9 below. Replaces the one-shot `AssetPipeline` as the primary manual surface. |
+| Chat-completion call (`src/ai/chat.ts`) | ✅ Built this pass | The piece flagged missing above ("not yet built: the actual chat-completion call") — used by the Step 2/4 AI-assist buttons only, no streaming/retry/tool-use. |
+| Store asset ZIP packaging (`src/package/store.ts`) | ✅ Built this pass | Per-platform, per-required-device-class render + `MANIFEST.json` + `archiver` zip, with min/max screenshot-count warnings. |
 
 ### What was fixed this pass, and why it mattered
 
@@ -94,7 +97,7 @@ Three questions gate real work. Resolve them first.
 
 | # | Decision | Blocks | Why it is blocking |
 |---|---|---|---|
-| 1 | **Device frame sourcing + licensing** | Everything visual | There are no frame assets anywhere in the project. The legacy mirror captured none — they were served from `media.app-mockup.com` and are third-party proprietary. Without frames there is no mockup, and without mockups there are no store screenshots and no video. Options: licence a commercial pack, adopt an appropriately licensed open set, or author SVG frames in-house. **Highest priority — blocks the MVP itself.** |
+| 1 | ~~**Device frame sourcing + licensing**~~ **Resolved (Phase 9)** | Everything visual | Was: no frame assets anywhere in the project; the legacy mirror captured none, and third-party packs carry licensing risk. **Resolved by decision:** author frames in-house, but parametrically — `config/devices.json` + `src/devices/frame.ts` generate a bezel/cutout/fold-seam SVG per device from geometry and a few named traits, rather than one hand-drawn SVG per model. No licensing exposure, and a new device is a data entry. Detail in `docs/DEVICE-FRAMES.md`. |
 | 2 | **Apple App Store preview policy** | Apple video scope | Apple has historically expected previews to reflect actual in-app experience. If a stills-derived preview does not satisfy review, Apple video is out of scope and only Google Play video ships. |
 | 3 | **Music licensing** | Video audio | BGM shipped inside template packages needs a clear licence — more so if the package is published publicly. |
 
@@ -427,6 +430,37 @@ Explicitly **not** in the initial release. Listed so the architecture accommodat
 | **Store upload** | Must stay strictly separate from generation, require explicit confirmation, and never publish automatically. |
 | **CI/CD integration** | Only after the local workflow is reliable. |
 | **Shared template registry** | Internal distribution for cross-project reuse. |
+
+---
+
+## Phase 9 — Four-Step Manual Workflow (session-based)
+
+**Goal:** replace the one-shot `AssetPipeline.run()` — no place to intervene, no visibility into what happened at each stage — with four reviewable steps sharing one set of raw screenshots, and stop generating video with the old hardcoded single-scene engine.
+
+```
+Demo Access → Raw Screenshots → Store Device Sizes → Studio Mockups → Store Asset ZIP
+Raw Screenshots → Scene Templates → HTML/CSS/JS Animation Preview → Scene Editing → BGM → Final Video
+```
+
+Full design in `docs/ARCHITECTURE.md` §6.1 and §7; device catalogue design in `docs/DEVICE-FRAMES.md`.
+
+- **Session model** (`src/session/store.ts`) — `output/<session-id>/` holding `session.json` plus every step's artifacts. No database; the folder is the state.
+- **Step 1 — Capture** (`src/capture/step1.ts`) — reuses `DiscoveryEngine`/`WebCaptureBackend`/the auth chain unchanged; captures at one viewport (the largest 9:x phone class across selected platforms); reports the captured-screen count; screens that fail auth are skipped with a recorded reason.
+- **Device frame catalogue** (`src/devices/frame.ts` + `config/devices.json`) — parametric SVG generation replacing the two hand-authored inline frames, so any commercially available device (standard phones, Samsung, iPhone through the newest model, tablets, foldables with folded/unfolded variants) is a data entry, not new art. Resolves §0 blocker #1.
+- **Step 2 — Studio Mockups** (`src/render/mockup.ts`) — `MOCKUP_TEMPLATES` (caption-above/below, angled 3D tilt, full-bleed) over `mockupHtml()`, the single generator used by both the live preview and the final render. Manual or AI-assisted labels via the new `src/ai/chat.ts`.
+- **Step 3 — Store Asset Package** (`src/package/store.ts`) — renders each selected platform × required device class at its exact spec dimensions, checks min/max screenshot counts, zips with `archiver` into a manual-upload-ready `store-assets.zip`.
+- **Step 4 — Animation Video** (`src/render/scene.ts`) — reusable scene templates over `sceneHtml()`, one scene per raw screenshot, each independently configurable (template, text, device, rotation, zoom, movement, duration) and previewable; renders deterministically via a `document.getAnimations()` + `seek(ms)` frame-step, never an AI video engine; combines with uploaded BGM into one FFmpeg mux.
+- **`src/ai/chat.ts`** — the chat-completion call flagged as missing in this file's own status table below (§-1); consumed by the Step 2/4 AI-assist buttons only.
+- **Web UI** (`web/index.html`, `web/server.ts`) — icon-button popups for AI Providers (existing), Demo Access credentials (moved out of the main grid), and Sessions; the Generate button replaced by four step tabs.
+
+**Disabled, not deleted:**
+- `src/orchestrator.ts` (`AssetPipeline`) — superseded by the session workflow; body commented out with a re-enable note, `run()` throws a clear "superseded" message. CLI `generate` and MCP `run_pipeline` print the same notice.
+- `src/render/video.ts` (`PlaywrightFFmpegVideoEngine`) — superseded by `src/render/scene.ts`'s multi-scene templates; same treatment.
+- **Explicitly kept, not disabled:** `src/android/capture.ts` (retained as an alternate Step 1 capture source — see `docs/ANDROID-CAPTURE.md`), `src/templates/package.ts` (`.sagtpl` import/export), `src/render/still.ts`, the auth and AI layers.
+
+**Exit criteria:** a real session, run end to end through the web UI against a reachable app — Capture reports a real screenshot count, a mockup preview visibly changes when its config changes, the Step 3 ZIP unzips to pixel-correct per-device-class PNGs, and a Step 4 video plays with scene-accurate duration and muxed BGM.
+
+**Verification:** see the Verification section of the Phase 9 plan (real runs, not typechecks, per this doc's own standard in §-1) — build, `ui` health check, Step 1 real capture with an auth-skip case, Step 2 preview diff, device-catalogue frame/aperture check plus a no-code-change catalogue addition, Step 3 ZIP dimension/count check, Step 4 scene playback + rendered MP4 duration/audio check, and a regression pass over auth/AI-provider/Android MCP tooling plus a real `cmd.exe` run of `start.bat`.
 
 ---
 

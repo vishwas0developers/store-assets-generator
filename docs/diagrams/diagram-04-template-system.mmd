@@ -1,0 +1,74 @@
+%% Diagram 4 — Template System
+%% Companion to ../ARCHITECTURE.md §4 · describes the .sagtpl format (kept, not disabled)
+flowchart TB
+    subgraph PKG[".sagtpl Package &mdash; portable ZIP"]
+        MAN["template.json<br/>manifest + scene graph"]
+        PRV["preview.png / preview.mp4"]
+        AST["assets/<br/>fonts | backgrounds | overlays | music"]
+    end
+
+    subgraph MANIFEST["template.json Structure"]
+        META["meta<br/>id | version | engineVersion | category"]
+        COMPAT["compatibility<br/>platforms | outputs | aspect ratios<br/>min/max screenshots"]
+        SLOTS["slots<br/>appName | logo | screenshots[]<br/>featureText[] | palette | music | cta"]
+        THEME["theme<br/>background | typography | device"]
+        SCR["screenshots<br/>layout presets"]
+        TIME["timeline<br/>fps | scenes | layers | animations"]
+        AUD["audio<br/>track + fades"]
+        PANO["panoramic<br/>optional wide background"]
+    end
+
+    subgraph SRC["Registry Resolution &mdash; later overrides earlier"]
+        B1["1. Built-in<br/>src/templates/builtin/"]
+        B2["2. User<br/>templates/"]
+        B3["3. Imported<br/>via .sagtpl"]
+    end
+
+    subgraph CLI["Lifecycle Commands"]
+        C1["template list"]
+        C2["template import &lt;file&gt;"]
+        C3["template export &lt;id&gt;"]
+        C4["template new &lt;id&gt; --from &lt;base&gt;"]
+        C5["template validate &lt;id&gt;"]
+        C6["template preview &lt;id&gt;"]
+    end
+
+    subgraph SEC["Security Boundary &mdash; untrusted input"]
+        V1["Zod schema validation"]
+        V2["Asset paths confined to package root<br/><i>no traversal</i>"]
+        V3["No code execution<br/><i>declarative only</i>"]
+        V4["engineVersion compatibility check"]
+    end
+
+    MIG["migrate.ts<br/>engineVersion migrations"]
+    REG["Template Registry"]
+    INT["Scene Graph Interpreter"]
+    RS["renderStill &rarr; store/*.png"]
+    RM["renderMedia &rarr; video/promo.mp4"]
+
+    MAN --- META & COMPAT & SLOTS & THEME & SCR & TIME & AUD & PANO
+
+    C2 --> SEC
+    SEC --> V1 --> V2 --> V3 --> V4
+    V4 --> MIG --> B3
+
+    B1 --> REG
+    B2 --> REG
+    B3 --> REG
+    PKG -.-> B3
+
+    C1 --> REG
+    C3 --> REG
+    C4 --> REG
+    C5 --> V1
+    C6 --> INT
+
+    REG --> INT
+    INT --> RS
+    INT --> RM
+
+    NOTE["One template drives BOTH outputs<br/>&rarr; stills and video share one visual language"]
+    INT -.-> NOTE
+
+    classDef sec fill:#4a1f1f,stroke:#ff6b6b,color:#fff
+    class V1,V2,V3,V4 sec

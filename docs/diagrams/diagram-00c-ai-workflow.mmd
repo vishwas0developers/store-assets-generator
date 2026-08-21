@@ -1,0 +1,69 @@
+%% Diagram 0c — AI-Driven End-to-End Workflow
+%% Companion to ../ARCHITECTURE.md
+sequenceDiagram
+    actor U as User
+    participant A as AI Agent
+    participant S as Skills
+    participant M as MCP
+    participant E as Engine
+
+    U->>A: "Generate Store Assets for this application"
+    A->>S: load store-assets-overview
+    S-->>A: workflow + layer separation
+
+    rect rgb(45,31,74)
+    Note over A: INSPECT — understand the real app
+    A->>A: read source, routes, UI labels, docs
+    A->>M: list_screens(url)
+    M->>E: discovery (sitemap + crawl + rank)
+    E-->>M: ranked candidates
+    M-->>A: screen list
+    A->>A: select marketable screens
+    end
+
+    rect rgb(31,61,47)
+    Note over A,E: CAPTURE — deterministic
+    A->>M: capture_web_screen(screen, profile)
+    M->>E: Playwright @ DPR 3
+    E-->>M: raw PNG
+    A->>M: capture_android_screen(screen)
+    Note right of M: only for native UI /<br/>WebView divergence
+    M->>E: adb screencap
+    E-->>M: raw PNG
+    end
+
+    rect rgb(45,31,74)
+    Note over A: ANALYSE & WRITE — the differentiator
+    A->>A: screenshot + source code → identify real feature
+    A->>A: write headline / description / CTA
+    Note right of A: grounded in actual code,<br/>never invented
+    A->>M: set_screen_copy(screen, headline, desc, cta)
+    end
+
+    rect rgb(31,61,47)
+    Note over A,E: RENDER — deterministic
+    A->>M: create_mockup / create_marketing_image
+    A->>M: create_video_scene(scene)
+    M->>E: interpret template scene graph
+    E-->>M: scene preview
+    A->>M: create_video()
+    E-->>M: promo.mp4
+    end
+
+    rect rgb(74,31,31)
+    Note over A,E: REVIEW & ITERATE
+    A->>M: preview_asset(...)
+    M-->>A: low-res preview
+    A->>A: "text too long" / "scene too slow"
+    A->>M: update_scene(id, duration)
+    Note right of M: re-renders ONE scene,<br/>not the whole project
+    A->>M: validate_package()
+    M->>E: rules engine + ffprobe
+    E-->>M: report.json
+    end
+
+    M-->>A: validated package
+    A->>U: preview + summary
+    U->>A: approve
+    A->>M: package_assets()
+    M-->>U: Final Store Asset Package

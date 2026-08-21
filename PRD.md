@@ -71,17 +71,41 @@ Frontend / Android → Important Screens → Mobile Screenshots
 
 ## 3. Primary Workflow
 
-1. The user manually enters the app URL.
-2. The user selects the target store/platform:
-   - Google Play Store
-   - Apple App Store
-3. Based on the selected platform, the system automatically determines the required screenshot dimensions, formats, and asset specifications.
-4. The system automatically captures multiple relevant screenshots from the provided app URL.
-5. The captured screenshots are placed inside realistic mobile device frames/mockups, comparable to the functionality of the `studio.app-mockup.com` project.
-6. The system automatically generates visually polished assets using predefined templates and animations.
-7. The system generates an ideal, review-ready promotional video for the selected platform and app.
-8. The final output is suitable for app store review/submission and looks like a professionally produced promotional / app preview video.
-9. The entire process after URL entry and platform selection is as automated as possible, with minimal manual intervention.
+The manual surface (`store-assets ui`) presents this as **four reviewable
+steps**, sharing one set of raw screenshots per session. Each step's output
+is inspected and adjusted before moving to the next — this is the
+concrete form the "hybrid automation with explicit override" principle in
+§0 takes for the day-to-day workflow (Phase 9, see
+`docs/IMPLEMENTATION_PLAN.md`):
+
+```
+Demo Access → Raw Screenshots → Store Device Sizes → Studio Mockups → Store Asset ZIP
+Raw Screenshots → Scene Templates → HTML/CSS/JS Animation Preview → Scene Editing → BGM → Final Video
+```
+
+1. **Capture (Step 1).** The user enters the app URL, selects target
+   platform(s) (Google Play, Apple App Store, or both), and supplies
+   demo/test-account access if the app requires authentication (§7). The
+   system captures the required screens automatically and reports **how
+   many screenshots were captured**. These originals are kept as the
+   single raw source for both downstream branches.
+2. **Studio Mockups (Step 2).** Each raw screenshot is composited into a
+   realistic device mockup — frame, label, sub-text, background,
+   layout — configurable manually or AI-assisted, with a live preview
+   before anything is finalized.
+3. **Store Asset Package (Step 3).** The finalized mockups are rendered at
+   each required device-class size for the selected store(s) and packaged
+   into a ZIP shaped for a manual Google Play Console / App Store Connect
+   upload or listing update.
+4. **Animation Video (Step 4).** The same raw screenshots drive an
+   HTML/CSS/JS-animated promotional video, one scene per screenshot, built
+   from reusable scene templates. Every scene is previewed and can be
+   individually edited (screenshot, text/labels, device, 3D rotation,
+   movement, zoom, duration) before the scenes are combined with BGM into
+   the final rendered video.
+
+MCP/CLI automation (§4.15) exposes the same steps as granular tool calls,
+so an agent can drive the identical workflow non-interactively.
 
 ---
 
@@ -118,13 +142,16 @@ The system must support two capture backends behind one interface:
 
 The **agent decides which source is appropriate per screen**. Downstream processing is identical regardless of origin.
 
-### 4.3 Screenshot Capture
+### 4.3 Screenshot Capture — Step 1
 
 - Render the app at device-accurate viewports (width, height, device pixel ratio, user agent, orientation).
 - Wait for genuine content readiness (network idle plus content assertions), not fixed timeouts.
 - Suppress cookie banners, consent dialogs, ads, notification prompts, chat widgets, debug overlays, and loading indicators.
 - Capture at high DPR so downstream compositing and video rendering never upscale a low-resolution source.
 - Detect and reject blank, error, and still-loading captures automatically.
+- Use the configured demo access (§7) when the app requires authentication.
+- **Report how many screenshots were captured** as the visible outcome of the step, before the user moves on.
+- Keep the raw/original captures available, unmodified, as the input to both Step 2 (mockups) and Step 4 (video) — nothing downstream re-captures.
 
 ### 4.4 Platform Specification Engine
 
@@ -133,14 +160,18 @@ The **agent decides which source is appropriate per screen**. Downstream process
 - Support updating a platform requirement by editing a data file, with no code change and no redesign.
 - Validate every produced asset against the active specification before it is considered complete.
 
-### 4.5 Device Mockups
+### 4.5 Device Mockups — Step 2 (Studio Mockups)
 
+- Send each Step 1 raw screenshot into the Studio Mockup workflow, converting it into an actual device mockup.
 - Composite each screenshot into a realistic device frame (bezel, rounded corners, notch/dynamic island, buttons, accurate screen inset geometry).
-- Provide a catalogue of modern iOS and Android devices, comparable in breadth to `studio.app-mockup.com` (iPhone, iPad, Pixel, Galaxy families).
+- Provide a catalogue of modern iOS and Android devices — including foldables — comparable in breadth to `studio.app-mockup.com` (iPhone, iPad, Pixel, Galaxy families) but built as **data, not per-device artwork**: adding a new commercially available device (a new iPhone, a new Samsung, a new foldable) must be a catalogue entry, not new art (see `docs/DEVICE-FRAMES.md`).
 - Correctly mask the screenshot to the frame's screen aperture, including corner radii and cutouts.
-- Support frame colour variants, shadows, reflections, and perspective transforms.
+- Support frame colour variants (light/dark), and — via layout templates — angled/3D presentation.
+- Support multiple mockup templates (layout, caption placement, presentation style), selectable per screen.
+- Allow frame, label, text, and layout details to be configured **manually or generated/assisted by the AI Agent**.
+- Show a live preview of the mockup before it is used downstream.
 
-### 4.6 Marketing Screenshot Generation
+### 4.6 Marketing Screenshot Generation — feeds Step 3 (Store Asset Package)
 
 Beyond the raw UI capture, produce composed store screenshots containing:
 
@@ -149,20 +180,39 @@ Beyond the raw UI capture, produce composed store screenshots containing:
 - Background (gradient, solid, pattern, or image)
 - App logo and branding
 - Decorative elements and layout variations
-- Correct final output dimensions for the selected platform
+- Correct final output dimensions for the selected platform, rendered once per required device class of the selected store(s), and packaged as a ZIP ready for a manual Google Play Store / Apple App Store upload or listing update.
 
-### 4.7 Automated Video Generation
+### 4.7 Automated Video Generation — Step 4 (Animation Video)
 
-The promotional video is **generated from stills**, and must support:
+The promotional video is generated from the **same raw/original
+screenshots** captured in Step 1 (not the Step 2 mockup renders), each
+automatically placed inside a phone/device mockup for its scene.
 
-- Animated transitions between screenshots
-- Device entrance and exit animations
-- 3D phone rotations and spins
-- Screenshot zooms, pans, and camera movements
-- Text overlays and feature callouts
-- Intro and outro sequences with branding
-- Background music, with optional sound effects and voice-over
-- A clear call-to-action closing frame
+**The video must be produced by HTML/CSS/JavaScript-based animation,
+never by an AI video-generation engine.** The animation *workflow*
+(scene templates, timing model, rendering mechanics) is static; the
+*content* — screenshots, text, labels, device, duration, and other
+template-defined properties — is dynamic per run. Concretely:
+
+- Support **multiple reusable scene templates** (e.g. hero rise, 3D tilt,
+  zoom focus, slide/pan) — the template defines the animation shape, not
+  a one-off hardcoded sequence.
+- **Each screenshot represents one scene.** For every scene, the user (or
+  the AI Agent) selects a template and customizes: screenshot, text/
+  labels, device/mockup, 3D rotation, movement, zoom, animation, duration,
+  and any other properties the template exposes.
+- Provide a **visual preview/playback of every scene** before final
+  rendering, and allow reviewing and modifying scenes individually in
+  order — Scene 1 → Scene 2 → Scene 3 → etc.
+- After all scenes are finalized, render the complete video by combining
+  the HTML animations with final BGM/audio into one encoded file.
+- Support device entrance/exit animation, 3D phone rotation, screenshot
+  zoom/pan/camera movement, and text overlays/feature callouts, all as
+  scene-template-defined, per-scene-configurable properties — not global
+  hardcoded behaviour.
+- Background music, with optional sound effects and voice-over.
+- A clear call-to-action closing frame is supported as a scene like any
+  other.
 
 The output must meet the selected platform's video specification (resolution, aspect ratio, duration bounds, codec, container, file size).
 
@@ -236,8 +286,9 @@ Produce a machine-readable and human-readable report listing every asset with pa
 
 ### 4.10 Output Packaging
 
-- Produce a versioned output package per app per platform.
+- Produce a versioned output package per app per platform, organized as one session folder holding everything the four steps produced (raw captures, per-device-class store renders, the store ZIP, and the video/BGM).
 - Separate raw screenshots, composed store screenshots, and video into distinct output directories.
+- Step 3's package is a **ZIP**, structured per platform and required device class, ready for a manual Google Play Store / Apple App Store upload or listing update — not an automated upload (§4.11 remains deferred).
 - Regenerating after a UI change must reproduce the same asset structure without manual redesign.
 
 ### 4.11 Upload (Deferred)
@@ -403,8 +454,9 @@ Do not copy its implementation blindly — its domain model (projects, SSH envir
 
 - `docs/ARCHITECTURE.md` — layered architecture, engine pipeline, legacy concept inventory, technology and renderer decisions.
 - `docs/AGENT-MCP-DISTRIBUTION.md` — agent/skill/MCP layers, NPM package architecture, multi-agent installation, `workspace-sync` analysis.
-- `docs/ANDROID-CAPTURE.md` — Android capture feasibility (verified) and backend architecture.
-- `docs/architecture.mmd` — Mermaid diagrams: layered architecture, distribution/installation, AI-driven workflow, system overview, pipeline data flow, video pipeline, template system, legacy migration, module structure, capture sources.
+- `docs/ANDROID-CAPTURE.md` — Android capture feasibility (verified) and backend architecture; retained in Phase 9 as an alternate Step 1 capture source.
+- `docs/DEVICE-FRAMES.md` — the device frame catalogue: parametric SVG generation, `config/devices.json` shape, foldable variants, how to add a device.
+- `docs/DIAGRAMS.md` — index of the Mermaid diagrams in `docs/diagrams/` (one pure-Mermaid `.mmd` file per diagram, so each previews standalone): layered architecture, distribution/installation, AI-driven workflow, system overview, the current four-step workflow, the historical pipeline it superseded, video pipeline, template system, legacy migration, module structure, capture sources.
 - `docs/IMPLEMENTATION_PLAN.md` — MVP vertical slice, phased plan, blocking decisions.
 - `docs/PRD-v1-discovery.md` — archived v1 discovery brief, retained for history.
 
@@ -422,6 +474,7 @@ Do not:
 
 - Build any screen-recording or screencast capability
 - Derive video from a recording of a live session
+- Generate the promotional video with an AI video-generation engine — it is always rendered from HTML/CSS/JavaScript-based animation, driven by reusable scene templates (§4.7). Screen-recording and other systems not needed for the current capture → mockup → HTML animation → video workflow are disabled, not deleted, so they can be re-enabled later if required.
 - Treat `5.demo-assets-generator` as the reference architecture
 - Hard-code platform dimensions into application logic
 - Embed app-specific logic in the core engine
@@ -438,7 +491,7 @@ Do not:
 
 Detail in `docs/IMPLEMENTATION_PLAN.md` §0.
 
-1. **Device frame sourcing and licensing** — no frame assets exist in the project; without them there are no mockups, no store screenshots, and no video. Highest priority; blocks the MVP itself.
+1. **Device frame sourcing and licensing** — **resolved by decision (Phase 9).** Frames are generated in-house by a parametric SVG builder (`src/devices/frame.ts`) driven by a data catalogue (`config/devices.json`, see `docs/DEVICE-FRAMES.md`) rather than sourced as licensed or third-party artwork. No frame-pack dependency, no licensing risk; a new device (including future hardware, e.g. a not-yet-released iPhone) is added as a catalogue entry.
 2. **Apple App Store preview policy** — whether a stills-derived preview satisfies current review requirements, and therefore whether Apple video is in scope.
 3. **Music licensing** — for background audio shipped with templates, especially if published publicly.
 

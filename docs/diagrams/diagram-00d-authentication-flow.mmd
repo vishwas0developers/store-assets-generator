@@ -1,0 +1,41 @@
+%% Diagram 0d — Authentication Flow
+%% Companion to ../ARCHITECTURE.md · ../AUTHENTICATION.md
+flowchart TB
+    START["Capture run starts"] --> CACHE{"Cached storageState<br/>exists?"}
+
+    CACHE -->|yes| LOADS["Create context<br/>with saved state"]
+    LOADS --> VERIFY
+    CACHE -->|no| STRAT{"Configured strategy"}
+
+    STRAT -->|api-session<br/><i>default</i>| PRE["Preflight<br/>GET /api/demo/status"]
+    STRAT -->|form| FORM["Fill email + password<br/><i>only if fields exist</i>"]
+    STRAT -->|manual| MAN["Headed browser<br/>human logs in once"]
+
+    PRE --> PCHK{"enabled &amp;&amp;<br/>not expired?"}
+    PCHK -->|"404"| PROD["ABORT: production build<br/>demo endpoints absent"]
+    PCHK -->|expired| EXP["ABORT: access expired<br/>re-enable + update password"]
+    PCHK -->|ok| LOGIN["POST /api/demo/login<br/>X-Device-Id (FIXED)<br/>X-Platform · X-App-Code"]
+
+    LOGIN --> INJ["Inject session"]
+    INJ --> I1["add_cookies: session_id httpOnly"]
+    INJ --> I2["add_init_script BEFORE app scripts<br/>sessionId · userId<br/>web_device_id · device_id"]
+    I2 --> GUARD["top-frame guard + try/catch<br/><i>opaque iframes throw SecurityError</i>"]
+
+    I1 --> VERIFY
+    GUARD --> VERIFY
+    FORM --> VERIFY
+    MAN --> SAVE
+
+    VERIFY{"VERIFY &mdash; never a bare timeout<br/>authenticated marker PRESENT<br/>AND login gate ABSENT"}
+    VERIFY -->|pass| SAVE["Save storageState<br/><i>secret, gitignored</i>"]
+    VERIFY -->|fail| FAIL["ABORT with stage:<br/>preflight | login | injection | verification"]
+
+    SAVE --> CAP["Capture authenticated UI"]
+
+    NOTE["Why not form-driving this app:<br/>login modal offers Mobile Number or Google only.<br/>NO password field exists."]
+    FORM -.-> NOTE
+
+    classDef bad fill:#4a1f1f,stroke:#ff6b6b,color:#fff
+    classDef good fill:#1f3d2f,stroke:#4ad48a,color:#fff
+    class PROD,EXP,FAIL,NOTE bad
+    class CAP,SAVE good

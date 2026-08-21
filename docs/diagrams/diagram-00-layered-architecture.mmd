@@ -1,0 +1,66 @@
+%% Diagram 0 — Layered Architecture (Agent · Skills · MCP · Engine)
+%% Companion to ../ARCHITECTURE.md §0
+flowchart TB
+    subgraph L1["Intelligence Layer"]
+        AGENT["AI Agent<br/><i>judgement, copy, screen selection</i>"]
+    end
+
+    subgraph L2["Knowledge Layer"]
+        SKILLS["Skills<br/>overview · inspect-project · select-screens<br/>capture · write-copy · compose<br/>video · validate-iterate"]
+        PROJECT["Actual Project<br/>source code · frontend · Android<br/>routes · docs · requirements · assets"]
+    end
+
+    subgraph L3["Capability Layer &mdash; deterministic, typed"]
+        MCP["MCP Server<br/><i>store-assets mcp</i>"]
+        T1["list_screens · list_templates<br/>list_device_profiles · get_platform_spec"]
+        T2["capture_web_screen<br/>capture_android_screen"]
+        T3["create_mockup · create_marketing_image"]
+        T4["create_video_scene · update_scene · create_video"]
+        T5["set_screen_copy · preview_asset<br/>validate_asset · package_assets"]
+    end
+
+    subgraph L4["Execution Layer &mdash; NO AI, no API keys"]
+        ENGINE["Store Assets Generator Engine"]
+        CAPW["Frontend Capture<br/>Playwright"]
+        CAPA["Android Capture<br/>adb"]
+        TPLS["Templates &amp; Mockups"]
+        PIPE["Asset Pipeline"]
+    end
+
+    subgraph L5["Output"]
+        IMG["Store Images"]
+        VID["Animated Video"]
+        VALD["Validation"]
+        PKG["Final Package"]
+    end
+
+    AGENT --> SKILLS
+    AGENT --> PROJECT
+    SKILLS -.->|teaches workflow| AGENT
+    PROJECT -.->|grounds copy in reality| AGENT
+
+    AGENT -->|tool calls| MCP
+    MCP --- T1 & T2 & T3 & T4 & T5
+    MCP --> ENGINE
+
+    ENGINE --> CAPW & CAPA & TPLS
+    CAPW --> PIPE
+    CAPA --> PIPE
+    TPLS --> PIPE
+
+    PIPE --> IMG
+    PIPE --> VID
+    IMG --> VALD
+    VID --> VALD
+    VALD --> PKG
+
+    PKG -.->|preview for review| AGENT
+    AGENT -.->|iterate: rewrite copy,<br/>adjust scene duration| T4
+
+    CLI["CLI &mdash; store-assets generate<br/><i>engine fully usable without any agent</i>"]
+    CLI --> ENGINE
+
+    classDef ai fill:#2d1f4a,stroke:#a68aff,color:#fff
+    classDef det fill:#1f3d2f,stroke:#4ad48a,color:#fff
+    class AGENT,SKILLS ai
+    class ENGINE,CAPW,CAPA,TPLS,PIPE,CLI det
