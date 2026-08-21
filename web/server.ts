@@ -645,7 +645,7 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
         const outDir = path.join(process.cwd(), "output", ".template-thumbs");
         const thumbPath = path.join(outDir, `${slug}.png`);
         if (!fs.existsSync(thumbPath)) await renderTemplateThumbs(outDir, MOCKUP_TEMPLATES);
-        res.writeHead(200, { "Content-Type": "image/png", "Cache-Control": "public, max-age=31536000, immutable" });
+        res.writeHead(200, { "Content-Type": "image/png", "Cache-Control": "no-cache" });
         fs.createReadStream(thumbPath).pipe(res);
         return;
       }
@@ -659,7 +659,7 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
         const outDir = path.join(process.cwd(), "output", ".template-thumbs");
         const thumbPath = path.join(outDir, `${slug}-detail.png`);
         if (!fs.existsSync(thumbPath)) await renderTemplateDetailThumbs(outDir, MOCKUP_TEMPLATES);
-        res.writeHead(200, { "Content-Type": "image/png", "Cache-Control": "public, max-age=31536000, immutable" });
+        res.writeHead(200, { "Content-Type": "image/png", "Cache-Control": "no-cache" });
         fs.createReadStream(thumbPath).pipe(res);
         return;
       }
@@ -956,7 +956,7 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
         const outDir = path.join(process.cwd(), "output", ".template-thumbs");
         const thumbPath = path.join(outDir, `video-${slug}.png`);
         if (!fs.existsSync(thumbPath)) await renderVideoTemplateThumbs(outDir, VIDEO_TEMPLATES);
-        res.writeHead(200, { "Content-Type": "image/png", "Cache-Control": "public, max-age=31536000, immutable" });
+        res.writeHead(200, { "Content-Type": "image/png", "Cache-Control": "no-cache" });
         fs.createReadStream(thumbPath).pipe(res);
         return;
       }

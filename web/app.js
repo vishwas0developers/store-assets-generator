@@ -1096,6 +1096,7 @@ const CATEGORY_LABELS = {
   "food-and-drink": "Food & Drink",
   "photo-and-video": "Photo & Video",
   utilities: "Utilities",
+  education: "Education",
 };
 
 function categoryLabel(id) { return CATEGORY_LABELS[id] || id; }

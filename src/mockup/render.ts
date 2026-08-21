@@ -66,7 +66,11 @@ export function cellHtml(project: MockupProject, deviceRowId: string, columnId: 
   const transform = presentationTransform(preset.presentation);
 
   const source = project.sources.find((s) => s.id === style.deviceOne.sourceId) ?? project.sources[ctx.columnIndex] ?? project.sources[0];
-  const screenshotUri = source ? ctx.resolveUri(source.file) : "";
+  // No screenshot uploaded yet (the default state right after applying a
+  // template) -- fall back to a realistic dummy screen instead of leaving
+  // the device frame empty, varied per column so a multi-screen template
+  // doesn't repeat the exact same placeholder in every cell.
+  const screenshotUri = source ? ctx.resolveUri(source.file) : placeholderScreenUri(ctx.columnIndex);
 
   const bg = resolveBackground(style.background, ctx.resolveUri, ctx.columnIndex, ctx.columnCount);
 
@@ -77,7 +81,7 @@ export function cellHtml(project: MockupProject, deviceRowId: string, columnId: 
   if (preset.twoDevices && style.deviceTwo && transform.deviceTwo) {
     const d2 = style.deviceTwo;
     const source2 = project.sources.find((s) => s.id === d2.sourceId) ?? source;
-    const uri2 = source2 ? ctx.resolveUri(source2.file) : screenshotUri;
+    const uri2 = source2 ? ctx.resolveUri(source2.file) : placeholderScreenUri(ctx.columnIndex + 1);
     const d2Transform = `translate(${transform.deviceTwo.xPct + d2.x}%, ${transform.deviceTwo.yPct + d2.y}%) scale(${d2.size / 90}) rotate(${transform.deviceTwo.rotate + d2.rotation}deg)`;
     deviceLayers += `<div class="layer" style="transform:${d2Transform}">${layerMarkup(deviceRow.deviceId, uri2, d2, deviceRow.variant)}</div>`;
   }
@@ -230,8 +234,16 @@ function templateThumbHtmlSized(template: MockupStarterTemplate, size: { width: 
   const scratch = buildScratchProject(template);
   const deviceRow = scratch.devices[0];
   const shownColumns = scratch.columns.slice(0, Math.min(panelCount, scratch.columns.length));
+  const n = shownColumns.length;
 
-  const cellScale = size.height / THUMB_CANVAS.height;
+  // Play Store screenshots are never edge-to-edge -- each shot sits in its
+  // own frame with visible breathing room from its neighbours. Reserve that
+  // gap out of the same total width the un-gapped panels used to fill, so
+  // the filmstrip doesn't get wider (or clipped) than before.
+  const rawScale = size.height / THUMB_CANVAS.height;
+  const rawCellWidth = THUMB_CANVAS.width * rawScale;
+  const gapPx = Math.round(rawCellWidth * 0.07);
+  const cellScale = n > 1 ? (rawCellWidth * n - gapPx * (n - 1)) / (THUMB_CANVAS.width * n) : rawScale;
   const cellWidth = THUMB_CANVAS.width * cellScale;
 
   const panels = shownColumns
@@ -253,8 +265,8 @@ function templateThumbHtmlSized(template: MockupStarterTemplate, size: { width: 
 <html><head><meta charset="utf-8" /><style>
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; width: ${size.width}px; height: ${size.height}px; overflow: hidden; background: #f4f6f8; }
-  .row { display: flex; justify-content: center; width: ${size.width}px; height: ${size.height}px; overflow: hidden; }
-  .panel { overflow: hidden; flex-shrink: 0; }
+  .row { display: flex; justify-content: center; align-items: center; gap: ${gapPx}px; width: ${size.width}px; height: ${size.height}px; overflow: hidden; }
+  .panel { overflow: hidden; flex-shrink: 0; border-radius: 6px; }
 </style></head>
 <body><div class="row">${panels}</div></body></html>`;
 }
