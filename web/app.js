@@ -110,7 +110,7 @@ let activeProject = null;
 for (const tab of document.querySelectorAll(".topbar-tab")) {
   tab.onclick = async () => {
     const targetTab = tab.dataset.tab;
-    if (targetTab !== "projects" && !activeProjectId) {
+    if (targetTab === "capture" && !activeProjectId) {
       await alert("Please select or create a project first from the Projects List.");
       return;
     }
@@ -136,16 +136,13 @@ for (const tab of document.querySelectorAll(".topbar-tab")) {
 
 // Enable/disable navigation tabs dynamically based on active project state
 function updateTabGating() {
-  const tabs = ["capture", "mockup", "video"];
-  for (const t of tabs) {
-    const el = $("tab-nav-" + t);
-    if (activeProjectId) {
-      el.classList.remove("disabled");
-      el.removeAttribute("title");
-    } else {
-      el.classList.add("disabled");
-      el.setAttribute("title", "Select a project first");
-    }
+  const el = $("tab-nav-capture");
+  if (activeProjectId) {
+    el.classList.remove("disabled");
+    el.removeAttribute("title");
+  } else {
+    el.classList.add("disabled");
+    el.setAttribute("title", "Select a project first");
   }
 
   const brand = $("brand-title");
@@ -1039,14 +1036,31 @@ function mockupFileUrl(rel) { return `/api/mockups/${mockupId}/file?p=${encodeUR
 
 async function loadMockupProjectInto(id) {
   mockupId = id;
-  mockupProject = await api(`/api/mockups/${id}`);
-  $("mockup-project-label").textContent = mockupProject.name;
+  if (id) {
+    try {
+      mockupProject = await api(`/api/mockups/${id}`);
+      $("mockup-project-label").textContent = mockupProject.name;
+      $("mockup-panorama-flip").checked = mockupProject.globalPanoramic?.flip || false;
+    } catch (e) {
+      console.error("Failed to load mockup project:", e);
+      mockupProject = null;
+      $("mockup-project-label").textContent = "No mockup project loaded";
+    }
+  } else {
+    mockupProject = null;
+    $("mockup-project-label").textContent = "No mockup project selected";
+  }
+
   await ensureMockupReferenceData();
   renderMockupTemplateGrid();
-  renderMockupMatrix();
-  renderMockupDevicesSection();
-  renderMockupSettingsSection();
-  $("mockup-panorama-flip").checked = mockupProject.globalPanoramic.flip;
+
+  if (mockupProject) {
+    renderMockupMatrix();
+    renderMockupDevicesSection();
+    renderMockupSettingsSection();
+  } else {
+    $("mockup-matrix").innerHTML = `<tr><td class="hint" style="padding:2rem; text-align:center;">Select or create a project first from the Projects List.</td></tr>`;
+  }
 }
 
 async function ensureMockupReferenceData() {
@@ -1493,6 +1507,62 @@ $("mockup-settings-save").onclick = async () => {
   $("mockup-inspector").classList.toggle("left", mockupProject.settings.inspectorPosition === "left");
 };
 
+/* ---- Template level import/export ---- */
+$("mockup-export-template-btn").onclick = async () => {
+  if (!mockupId || !mockupProject) {
+    await alert("Please select or create a project first from the Projects List.");
+    return;
+  }
+  const exportData = {
+    devices: mockupProject.devices,
+    columns: mockupProject.columns,
+    cells: mockupProject.cells,
+    globalPanoramic: mockupProject.globalPanoramic
+  };
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportData, null, 2));
+  const downloadAnchor = document.createElement("a");
+  downloadAnchor.setAttribute("href", dataStr);
+  downloadAnchor.setAttribute("download", `${mockupProject.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-template.json`);
+  document.body.appendChild(downloadAnchor);
+  downloadAnchor.click();
+  downloadAnchor.remove();
+};
+
+$("mockup-import-template-btn").onclick = async () => {
+  if (!mockupId || !mockupProject) {
+    await alert("Please select or create a project first from the Projects List.");
+    return;
+  }
+  $("mockup-import-file-input").click();
+};
+
+$("mockup-import-file-input").onchange = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = async (event) => {
+    try {
+      const data = JSON.parse(event.target.result);
+      if (!data.devices || !data.columns) {
+        throw new Error("Invalid template format: Missing devices or columns");
+      }
+      mockupProject = await api(`/api/mockups/${mockupId}/import-template`, {
+        method: "POST",
+        body: data
+      });
+      await alert("Template imported successfully!", "success");
+      // Reload UI
+      renderMockupMatrix();
+      renderMockupDevicesSection();
+      renderMockupSettingsSection();
+    } catch (err) {
+      await alert("Failed to import template: " + err.message, "error");
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = "";
+};
+
 /* ---- Export section ---- */
 $("mockup-export-run").onclick = async () => {
   $("mockup-export-run").disabled = true;
@@ -1524,15 +1594,36 @@ function videoFileUrl(rel) { return `/api/videos/${videoId}/file?p=${encodeURICo
 
 async function loadVideoProjectInto(id) {
   videoId = id;
-  videoProject = await api(`/api/videos/${id}`);
-  $("video-project-label").textContent = videoProject.name;
-  if (videoDevices.length === 0) {
-    const { devices } = await api("/api/devices");
-    videoDevices = devices;
+  if (id) {
+    try {
+      videoProject = await api(`/api/videos/${id}`);
+      $("video-project-label").textContent = videoProject.name;
+    } catch (e) {
+      console.error("Failed to load video project:", e);
+      videoProject = null;
+      $("video-project-label").textContent = "No video project loaded";
+    }
+  } else {
+    videoProject = null;
+    $("video-project-label").textContent = "No video project selected";
   }
-  if (videoSceneOptions.animations.length === 0) videoSceneOptions = await api("/api/videos/scene-options");
+
+  try {
+    if (videoDevices.length === 0) {
+      const { devices } = await api("/api/devices");
+      videoDevices = devices;
+    }
+    if (videoSceneOptions.animations.length === 0) videoSceneOptions = await api("/api/videos/scene-options");
+  } catch (e) {
+    console.error("Failed to load video reference data:", e);
+  }
+
   renderVideoTemplateGrid();
-  renderVideoScenes();
+  if (videoProject) {
+    renderVideoScenes();
+  } else {
+    $("video-scene-nav").innerHTML = "";
+  }
 }
 
 async function renderVideoTemplateGrid() {

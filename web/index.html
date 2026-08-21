@@ -200,7 +200,14 @@
         <div class="section-page active" id="mockup-section-templates">
           <div class="card">
             <h3>Templates</h3>
-            <div class="hint">Selecting a template prepares device rows and starter columns/layouts -- edit from there.</div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+              <div class="hint" style="margin:0;">Selecting a template prepares device rows and starter columns/layouts -- edit from there.</div>
+              <div style="display:flex; gap:0.5rem;">
+                <button id="mockup-export-template-btn" class="secondary small" type="button" title="Export current project configuration as a template JSON file">Export Template</button>
+                <button id="mockup-import-template-btn" class="secondary small" type="button" title="Import a template JSON file to apply to the current project">Import Template</button>
+                <input type="file" id="mockup-import-file-input" accept=".json" style="display:none;" />
+              </div>
+            </div>
             <div id="mockup-template-grid" class="template-grid"></div>
           </div>
         </div>
