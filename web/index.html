@@ -2,252 +2,332 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=1280" />
 <title>Store Assets Generator</title>
-<style>
-  :root { color-scheme: dark; }
-  * { box-sizing: border-box; }
-  html, body {
-    margin: 0; min-height: 100%; font-family: -apple-system, Segoe UI, Roboto, sans-serif;
-    background: #0f1115; color: #e6e6e6;
-  }
-  body { display: flex; flex-direction: column; align-items: center; padding: 2rem 1.5rem; }
-  .page { width: 100%; max-width: 1180px; }
-  .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: .25rem; gap: 1rem; }
-  .topbar-icons { display: flex; gap: .5rem; }
-  h1 { font-size: 1.4rem; margin: 0; }
-  .sub { color: #9aa0a6; margin-bottom: 1.5rem; font-size: .9rem; }
-  .icon-btn {
-    width: 2.25rem; height: 2.25rem; border-radius: 8px; border: 1px solid #2a2f3a;
-    background: #171a21; color: #e6e6e6; cursor: pointer; font-size: 1.1rem;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .icon-btn:hover { background: #1d212b; }
-  .card { background: #171a21; border: 1px solid #262a33; border-radius: 10px; padding: 1.25rem; }
-  .card h2 { font-size: 1rem; margin: 0 0 1rem; }
-  label { display: block; font-size: .8rem; color: #9aa0a6; margin: .75rem 0 .25rem; }
-  input, select, textarea { width: 100%; padding: .5rem .6rem; background: #0f1115; border: 1px solid #2a2f3a;
-    border-radius: 6px; color: #e6e6e6; font-size: .9rem; font-family: inherit; }
-  input[type=range] { padding: 0; }
-  button { margin-top: 1rem; padding: .6rem 1rem; border-radius: 6px; border: none;
-    background: #3b82f6; color: white; font-weight: 600; cursor: pointer; font-size: .9rem; }
-  button:disabled { opacity: .5; cursor: not-allowed; }
-  button.secondary { background: #2a2f3a; }
-  button.danger { background: #7f1d1d; }
-  button.small { margin-top: 0; padding: .35rem .6rem; font-size: .8rem; }
-  .status { display: inline-block; padding: .15rem .5rem; border-radius: 999px; font-size: .75rem; font-weight: 600; }
-  .status.ok { background: #14532d; color: #86efac; }
-  .status.bad { background: #450a0a; color: #fca5a5; }
-  .status.warn { background: #451a03; color: #fdba74; }
-  pre { background: #0a0c10; border: 1px solid #262a33; border-radius: 6px; padding: .75rem;
-    font-size: .8rem; overflow: auto; max-height: 320px; white-space: pre-wrap; word-break: break-word; }
-  .row { display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; }
-  .full { grid-column: 1 / -1; }
-  .count-badge { font-size: 1.6rem; font-weight: 800; color: #86efac; }
-
-  /* Step tabs */
-  .steps { display: flex; gap: .25rem; border-bottom: 1px solid #262a33; margin-bottom: 1.25rem; }
-  .step-tab { padding: .7rem 1.1rem; cursor: pointer; color: #9aa0a6; font-size: .9rem; border-bottom: 2px solid transparent; font-weight: 600; }
-  .step-tab.active { color: #e6e6e6; border-bottom-color: #3b82f6; }
-  .step-panel { display: none; }
-  .step-panel.active { display: block; }
-
-  .thumb-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: .75rem; margin-top: 1rem; }
-  .thumb { background: #0a0c10; border: 1px solid #262a33; border-radius: 8px; overflow: hidden; cursor: pointer; }
-  .thumb.selected { border-color: #3b82f6; }
-  .thumb img { width: 100%; display: block; aspect-ratio: 9/16; object-fit: cover; }
-  .thumb .cap { padding: .35rem .5rem; font-size: .7rem; color: #9aa0a6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-  .two-col { display: grid; grid-template-columns: 320px 1fr; gap: 1.25rem; }
-  .preview-frame { background: #0a0c10; border: 1px solid #262a33; border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center; min-height: 480px; }
-  .preview-frame iframe { border: none; width: 100%; height: 640px; }
-
-  .scene-nav { display: flex; gap: .35rem; flex-wrap: wrap; margin-bottom: 1rem; }
-  .scene-chip { padding: .4rem .8rem; border-radius: 999px; background: #2a2f3a; cursor: pointer; font-size: .8rem; }
-  .scene-chip.active { background: #3b82f6; color: #fff; }
-
-  .checkbox-row { display: flex; align-items: center; gap: .5rem; padding: .3rem 0; }
-  .checkbox-row input[type=checkbox] { width: auto; }
-  .warn-list { font-size: .8rem; color: #fdba74; margin-top: .5rem; }
-  .range-label { display: flex; justify-content: space-between; font-size: .75rem; color: #9aa0a6; }
-
-  /* Modal */
-  .modal-backdrop {
-    position: fixed; inset: 0; background: rgba(0,0,0,.6);
-    display: none; align-items: flex-start; justify-content: center;
-    padding: 3rem 1rem; overflow-y: auto; z-index: 50;
-  }
-  .modal-backdrop.open { display: flex; }
-  .modal {
-    background: #14161c; border: 1px solid #262a33; border-radius: 12px;
-    width: 100%; max-width: 720px; padding: 1.5rem;
-  }
-  .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-  .modal-header h2 { margin: 0; font-size: 1.1rem; }
-  .close-btn { background: none; border: none; color: #9aa0a6; font-size: 1.3rem; cursor: pointer; margin: 0; padding: 0; }
-  .tabs { display: flex; gap: .25rem; border-bottom: 1px solid #262a33; margin-bottom: 1rem; }
-  .tab { padding: .5rem .9rem; cursor: pointer; color: #9aa0a6; font-size: .85rem; border-bottom: 2px solid transparent; }
-  .tab.active { color: #e6e6e6; border-bottom-color: #3b82f6; }
-  .tab-panel { display: none; }
-  .tab-panel.active { display: block; }
-  .provider-row, .model-row, .session-row {
-    display: flex; align-items: center; gap: .6rem; padding: .6rem 0;
-    border-bottom: 1px solid #1e222b; flex-wrap: wrap;
-  }
-  .provider-row:last-child, .model-row:last-child, .session-row:last-child { border-bottom: none; }
-  .provider-name { font-weight: 600; min-width: 8rem; }
-  .provider-meta { color: #9aa0a6; font-size: .75rem; flex: 1; min-width: 10rem; }
-  .badge { padding: .1rem .45rem; border-radius: 4px; font-size: .7rem; background: #2a2f3a; }
-  .badge.vision { background: #1e3a5f; color: #93c5fd; }
-  .key-input { width: 10rem; }
-  .discovery-msg { font-size: .8rem; padding: .5rem; border-radius: 6px; margin-top: .5rem; }
-  .discovery-msg.error { background: #2a1414; color: #fca5a5; }
-</style>
+<link rel="stylesheet" href="/app.css" />
 </head>
 <body>
-<div class="page">
+<div style="display:flex; flex-direction:column; height:100vh;">
+
   <div class="topbar">
-    <div>
-      <h1>Store Assets Generator</h1>
-      <div class="sub">Capture &rarr; Studio Mockups &rarr; Store Package &rarr; Animation Video</div>
+    <div class="brand">Store Assets Generator</div>
+    <div class="topbar-tabs">
+      <div class="topbar-tab active" data-tab="capture">Screen Capture</div>
+      <div class="topbar-tab" data-tab="mockup">Studio Mockup</div>
+      <div class="topbar-tab" data-tab="video">Video</div>
     </div>
     <div class="topbar-icons">
-      <button id="open-sessions" class="icon-btn" title="Sessions">&#128193;</button>
-      <button id="open-credentials" class="icon-btn" title="Demo access credentials">&#128273;</button>
-      <button id="open-settings" class="icon-btn" title="AI providers & models">&#9881;</button>
+      <button id="open-sessions" class="icon-btn" title="Projects">&#128193;</button>
+      <button id="open-credentials" class="icon-btn" title="Demo Access">&#128273;</button>
+      <button id="open-settings" class="icon-btn" title="AI Providers">&#9881;</button>
     </div>
   </div>
 
-  <div class="card" style="margin-bottom:1.25rem;">
-    <div class="row">
-      <span id="session-label" style="font-weight:600;">No session — start one below</span>
-      <span id="auth-status" class="status warn">checking&hellip;</span>
-    </div>
-    <div class="row" style="margin-top:.75rem;">
-      <input id="new-url" type="text" placeholder="https://example.com" style="flex:2; min-width:220px;" />
-      <label class="checkbox-row" style="margin:0;"><input id="plat-google" type="checkbox" checked /> Google Play</label>
-      <label class="checkbox-row" style="margin:0;"><input id="plat-apple" type="checkbox" /> Apple App Store</label>
-      <input id="new-slug" type="text" placeholder="slug (optional)" style="flex:1; min-width:140px;" />
-      <button id="new-session-btn" class="small">New Session</button>
-    </div>
-  </div>
-
-  <div class="steps">
-    <div class="step-tab active" data-step="1">1. Capture</div>
-    <div class="step-tab" data-step="2">2. Studio Mockups</div>
-    <div class="step-tab" data-step="3">3. Store Package</div>
-    <div class="step-tab" data-step="4">4. Animation Video</div>
-  </div>
-
-  <!-- Step 1 -->
-  <div class="step-panel active" id="step-1">
-    <div class="card">
-      <h2>Capture raw screenshots</h2>
-      <div class="row">
-        <label style="margin:0;">Max pages</label>
-        <input id="cap-max-pages" type="number" value="6" style="width:5rem;" />
-        <button id="cap-run">Capture</button>
+  <!-- ============ TAB: Screen Capture ============ -->
+  <div class="tab-page active" id="tab-capture">
+    <div class="app-body">
+      <div class="rail">
+        <div class="rail-btn active" data-section="website"><span class="ico">&#127760;</span>Website</div>
+        <div class="rail-btn" data-section="android"><span class="ico">&#128241;</span>Android</div>
       </div>
-      <div id="cap-result" style="margin-top:1rem;"></div>
-      <div id="cap-thumbs" class="thumb-grid"></div>
-    </div>
-  </div>
-
-  <!-- Step 2 -->
-  <div class="step-panel" id="step-2">
-    <div class="card">
-      <h2>Studio Mockups</h2>
-      <div class="row">
-        <div id="mockup-screen-picker" class="row" style="flex:1;"></div>
-        <button id="mockup-ai-assist" class="secondary small" type="button">&#10024; AI Assist (all screens)</button>
-      </div>
-      <div class="two-col" style="margin-top:1rem;">
-        <div>
-          <label>Template</label>
-          <select id="mk-template"></select>
-          <label>Device</label>
-          <select id="mk-device"></select>
-          <label>Variant <span style="opacity:.6">(foldables)</span></label>
-          <select id="mk-variant"><option value="">default</option></select>
-          <label>Background</label>
-          <select id="mk-background"></select>
-          <label>Label</label>
-          <input id="mk-label" type="text" />
-          <label>Sub-label</label>
-          <input id="mk-subtext" type="text" />
-          <label>Text colour</label>
-          <input id="mk-textcolor" type="text" value="#ffffff" />
-          <button id="mk-save">Save & Preview</button>
+      <div class="content">
+        <div class="row" style="margin-bottom:1rem;">
+          <span id="capture-session-label" style="font-weight:600;">No capture project</span>
         </div>
-        <div class="preview-frame"><iframe id="mk-preview"></iframe></div>
+
+        <!-- Website Capture -->
+        <div class="section-page active" id="capture-section-website">
+          <div class="card">
+            <h3>Website Capture</h3>
+            <label>App URL</label>
+            <input id="cap-url" type="text" placeholder="https://example.com" />
+            <div class="row" style="margin-top:.5rem;">
+              <label class="checkbox-row" style="margin:0;"><input id="cap-plat-google" type="checkbox" checked /> Google Play</label>
+              <label class="checkbox-row" style="margin:0;"><input id="cap-plat-apple" type="checkbox" /> Apple App Store</label>
+            </div>
+            <label>Slug <span class="hint">(optional -- resolves apps/&lt;slug&gt;/auth.json)</span></label>
+            <input id="cap-slug" type="text" />
+            <label>Max pages</label>
+            <input id="cap-max-pages" type="number" value="6" style="width:6rem;" />
+            <div class="row" style="margin-top:1rem;">
+              <button id="cap-new-session">New Website Project</button>
+              <button id="cap-run" class="secondary">Capture</button>
+            </div>
+            <div id="cap-result" style="margin-top:1rem;"></div>
+            <div id="cap-thumbs-website" class="thumb-grid"></div>
+          </div>
+        </div>
+
+        <!-- Android Capture -->
+        <div class="section-page" id="capture-section-android">
+          <div class="card">
+            <h3>Android Capture</h3>
+            <div class="row">
+              <select id="cap-android-device" style="flex:1"></select>
+              <button id="cap-android-refresh" class="secondary small" type="button">Refresh Devices</button>
+            </div>
+            <label>Deep link <span class="hint">(optional -- am start -a VIEW -d)</span></label>
+            <input id="cap-android-deeplink" type="text" placeholder="myapp://screen/dashboard" />
+            <label>Screen title</label>
+            <input id="cap-android-title" type="text" placeholder="Dashboard" />
+            <div class="row" style="margin-top:1rem;">
+              <button id="cap-android-new-session">New Android Project</button>
+              <button id="cap-android-run" class="secondary">Capture Screen</button>
+            </div>
+            <div id="cap-android-result" style="margin-top:1rem;"></div>
+            <div id="cap-thumbs-android" class="thumb-grid"></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Step 3 -->
-  <div class="step-panel" id="step-3">
-    <div class="card">
-      <h2>Store Asset Package</h2>
-      <div id="pkg-targets"></div>
-      <button id="pkg-build">Build Package</button>
-      <div id="pkg-result" style="margin-top:1rem;"></div>
+  <!-- ============ TAB: Studio Mockup ============ -->
+  <div class="tab-page" id="tab-mockup">
+    <div class="app-body">
+      <div class="rail">
+        <div class="rail-btn active" data-section="templates"><span class="ico">&#9636;</span>Templates</div>
+        <div class="rail-btn" data-section="editor"><span class="ico">&#9998;</span>Editor</div>
+        <div class="rail-btn" data-section="devices"><span class="ico">&#128241;</span>Devices</div>
+        <div class="rail-btn" data-section="panoramic"><span class="ico">&#127916;</span>Panoramic</div>
+        <div class="rail-btn" data-section="preview"><span class="ico">&#128065;</span>Preview</div>
+        <div class="rail-btn" data-section="settings"><span class="ico">&#9881;</span>Settings</div>
+        <div class="rail-btn" data-section="export"><span class="ico">&#11015;</span>Export</div>
+      </div>
+      <div class="content">
+        <div class="row" style="margin-bottom:1rem;">
+          <span id="mockup-project-label" style="font-weight:600;">No mockup project</span>
+          <button id="mockup-new-project" class="small secondary" type="button">New Project</button>
+        </div>
+
+        <div class="section-page active" id="mockup-section-templates">
+          <div class="card">
+            <h3>Templates</h3>
+            <div class="hint">Selecting a template prepares device rows and starter columns/layouts -- edit from there.</div>
+            <div id="mockup-template-grid" class="template-grid"></div>
+          </div>
+        </div>
+
+        <div class="section-page" id="mockup-section-editor">
+          <div class="card">
+            <div class="row" style="justify-content:space-between;">
+              <h3 style="margin:0;">Editor -- devices &times; screens</h3>
+              <button id="mockup-add-column" class="secondary small" type="button">+ Add Screen (column)</button>
+            </div>
+            <div class="hint">Click a cell to edit it. Editing applies to the whole column (all device rows) unless "Override this cell only" is checked.</div>
+            <div class="matrix-scroll" style="margin-top:1rem;">
+              <table class="matrix" id="mockup-matrix"></table>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-page" id="mockup-section-devices">
+          <div class="card">
+            <h3>Devices</h3>
+            <div class="row">
+              <select id="mockup-add-device-select" style="flex:1"></select>
+              <select id="mockup-add-device-variant"><option value="">default</option></select>
+              <input id="mockup-add-device-label" type="text" placeholder="Row label, e.g. 6.5 Inch" style="flex:1" />
+              <button id="mockup-add-device-btn" type="button">Add Row</button>
+            </div>
+            <div id="mockup-device-list" style="margin-top:1rem;"></div>
+          </div>
+        </div>
+
+        <div class="section-page" id="mockup-section-panoramic">
+          <div class="card">
+            <h3>Panoramic</h3>
+            <div class="hint">One wide image, sliced evenly across every column so the set reads as one continuous backdrop.</div>
+            <input id="mockup-panorama-file" type="file" accept="image/*" style="margin-top:.5rem;" />
+            <button id="mockup-panorama-upload" class="secondary small" type="button" style="margin-top:.5rem;">Upload</button>
+            <label class="checkbox-row" style="margin-top:1rem;"><input id="mockup-panorama-flip" type="checkbox" /> Flip</label>
+            <div class="hint" style="margin-top:.5rem;">Set a column's background type to "Panoramic" in the Editor to use this image.</div>
+          </div>
+        </div>
+
+        <div class="section-page" id="mockup-section-preview">
+          <div class="card">
+            <h3>Preview</h3>
+            <div class="row">
+              <label style="margin:0;">Device row</label>
+              <select id="mockup-preview-device"></select>
+              <button id="mockup-preview-refresh" class="secondary small" type="button">Refresh</button>
+            </div>
+            <div id="mockup-preview-strip" style="margin-top:1rem; display:flex; gap:.75rem; overflow-x:auto;"></div>
+          </div>
+        </div>
+
+        <div class="section-page" id="mockup-section-settings">
+          <div class="card">
+            <h3>Settings</h3>
+            <label>Project name</label>
+            <input id="mockup-set-name" type="text" />
+            <label>App category</label>
+            <input id="mockup-set-category" type="text" />
+            <label>Inspector position</label>
+            <select id="mockup-set-inspector-position">
+              <option value="right">Right</option>
+              <option value="left">Left</option>
+            </select>
+            <button id="mockup-settings-save" style="margin-top:1rem;">Save Settings</button>
+          </div>
+        </div>
+
+        <div class="section-page" id="mockup-section-export">
+          <div class="card">
+            <h3>Export</h3>
+            <div class="hint">Exports every visible device row (from Devices) across every screen (column), zipped.</div>
+            <button id="mockup-export-run" style="margin-top:1rem;">Export Screenshots (ZIP)</button>
+            <div id="mockup-export-result" style="margin-top:1rem;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="inspector" id="mockup-inspector" style="display:none;">
+        <h3>Cell Inspector</h3>
+        <div id="mockup-inspector-target" class="hint" style="margin-bottom:.5rem;"></div>
+        <label class="checkbox-row"><input id="mk-cell-override" type="checkbox" /> Override this cell only</label>
+
+        <label>Layout</label>
+        <select id="mk-layout"></select>
+
+        <label>Title</label>
+        <input id="mk-title" type="text" />
+        <label>Title colour</label>
+        <input id="mk-title-color" type="text" value="#ffffff" />
+        <label>Subtitle</label>
+        <input id="mk-subtitle" type="text" />
+        <button id="mk-ai-text" class="secondary small" type="button" style="margin-top:.5rem;">&#10024; AI Assist</button>
+
+        <label>Background type</label>
+        <select id="mk-bg-type">
+          <option value="gradient">Gradient</option>
+          <option value="solid">Solid colour</option>
+          <option value="pattern">Pattern / mesh</option>
+          <option value="image">Custom image</option>
+          <option value="panoramic">Panoramic (spans the set)</option>
+        </select>
+        <select id="mk-bg-value" style="margin-top:.4rem;"></select>
+
+        <label>Screenshot source</label>
+        <select id="mk-source"></select>
+        <input id="mk-source-file" type="file" accept="image/*" style="margin-top:.4rem;" />
+        <button id="mk-source-upload" class="secondary small" type="button" style="margin-top:.4rem;">Upload New Source</button>
+
+        <h4 style="margin-top:1rem; font-size:.82rem; color:#c7cad1;">Device One</h4>
+        <div class="range-label"><span>Size</span><span id="mk-d1-size-val">90</span></div>
+        <input id="mk-d1-size" type="range" min="0" max="200" value="90" />
+        <div class="range-label"><span>X offset</span><span id="mk-d1-x-val">0</span></div>
+        <input id="mk-d1-x" type="range" min="-50" max="50" value="0" />
+        <div class="range-label"><span>Y offset</span><span id="mk-d1-y-val">0</span></div>
+        <input id="mk-d1-y" type="range" min="-50" max="50" value="0" />
+        <div class="range-label"><span>Rotation</span><span id="mk-d1-rotate-val">0</span></div>
+        <input id="mk-d1-rotate" type="range" min="-45" max="45" value="0" />
+        <div class="range-label"><span>Brightness</span><span id="mk-d1-brightness-val">100</span></div>
+        <input id="mk-d1-brightness" type="range" min="40" max="160" value="100" />
+        <label class="checkbox-row"><input id="mk-d1-frameless" type="checkbox" /> Frameless (snapshot)</label>
+
+        <h4 style="font-size:.82rem; color:#c7cad1;">Decorations</h4>
+        <div id="mk-decorations"></div>
+        <button id="mk-decoration-add" class="secondary small" type="button">+ Add sticker/badge/shape</button>
+
+        <button id="mk-save" style="margin-top:1.25rem; width:100%;">Save Cell</button>
+        <button id="mk-copy-style" class="secondary small" style="margin-top:.5rem; width:100%;" type="button">Copy Style Across All Devices</button>
+      </div>
     </div>
   </div>
 
-  <!-- Step 4 -->
-  <div class="step-panel" id="step-4">
-    <div class="card">
-      <h2>Animation Video</h2>
-      <div class="row">
-        <div id="scene-nav" class="scene-nav" style="flex:1;"></div>
-        <button id="scene-ai-assist" class="secondary small" type="button">&#10024; AI Assist (all scenes)</button>
+  <!-- ============ TAB: Video ============ -->
+  <div class="tab-page" id="tab-video">
+    <div class="app-body">
+      <div class="rail">
+        <div class="rail-btn active" data-section="templates"><span class="ico">&#9636;</span>Templates</div>
+        <div class="rail-btn" data-section="scenes"><span class="ico">&#127909;</span>Scenes</div>
       </div>
-      <div class="two-col">
-        <div>
-          <label>Template</label>
-          <select id="sc-template"></select>
-          <label>Device</label>
-          <select id="sc-device"></select>
-          <label>Variant <span style="opacity:.6">(foldables)</span></label>
-          <select id="sc-variant"><option value="">default</option></select>
-          <label>Background</label>
-          <select id="sc-background"></select>
-          <label>Text</label>
-          <input id="sc-text" type="text" />
-          <label>Sub-text</label>
-          <input id="sc-subtext" type="text" />
-          <label>Duration (seconds)</label>
-          <input id="sc-duration" type="number" min="1" max="10" value="3" />
-          <div class="range-label"><span>Rotation</span><span id="sc-rotate-val">20</span></div>
-          <input id="sc-rotate" type="range" min="0" max="60" value="20" />
-          <div class="range-label"><span>Zoom</span><span id="sc-zoom-val">8</span></div>
-          <input id="sc-zoom" type="range" min="0" max="40" value="8" />
-          <div class="range-label"><span>Movement</span><span id="sc-move-val">40</span></div>
-          <input id="sc-move" type="range" min="0" max="200" value="40" />
-          <button id="sc-save">Save & Preview</button>
+      <div class="content">
+        <div class="row" style="margin-bottom:1rem;">
+          <span id="video-project-label" style="font-weight:600;">No video project</span>
+          <button id="video-new-project" class="small secondary" type="button">New Project</button>
         </div>
-        <div class="preview-frame"><iframe id="sc-preview"></iframe></div>
-      </div>
-      <div class="card" style="margin-top:1rem;">
-        <h2>BGM & Render</h2>
-        <label>Background music <span style="opacity:.6">(mp3/wav/ogg, optional)</span></label>
-        <input id="bgm-file" type="file" accept="audio/*" />
-        <button id="bgm-upload" class="secondary small" type="button">Upload BGM</button>
-        <div class="row" style="margin-top:1rem;">
-          <button id="video-render">Render Final Video</button>
-          <a id="video-download" href="#" style="display:none;"><button type="button" class="secondary small">Download video</button></a>
+
+        <div class="section-page active" id="video-section-templates">
+          <div class="card">
+            <h3>Templates</h3>
+            <div class="hint">Each template is a complete ~60s HTML/CSS/JS animation sequence -- click Preview to play it live.</div>
+            <div id="video-template-grid" class="template-grid"></div>
+          </div>
+          <div class="card" id="video-template-preview-card" style="display:none;">
+            <h3>Template Preview</h3>
+            <div class="preview-frame"><iframe id="video-template-preview"></iframe></div>
+          </div>
         </div>
-        <div id="video-result" style="margin-top:1rem;"></div>
+
+        <div class="section-page" id="video-section-scenes">
+          <div class="card">
+            <div class="row">
+              <div id="video-scene-nav" class="scene-nav" style="flex:1;"></div>
+            </div>
+            <div class="two-col">
+              <div>
+                <label>Screenshot source</label>
+                <select id="sc-source"></select>
+                <input id="sc-source-file" type="file" accept="image/*" style="margin-top:.4rem;" />
+                <button id="sc-source-upload" class="secondary small" type="button" style="margin-top:.4rem;">Upload New Source</button>
+                <label>Animation</label>
+                <select id="sc-template"></select>
+                <label>Device</label>
+                <select id="sc-device"></select>
+                <label>Variant <span class="hint">(foldables)</span></label>
+                <select id="sc-variant"><option value="">default</option></select>
+                <label>Background</label>
+                <select id="sc-background"></select>
+                <label>Text</label>
+                <input id="sc-text" type="text" />
+                <label>Sub-text</label>
+                <input id="sc-subtext" type="text" />
+                <button id="sc-ai-text" class="secondary small" type="button" style="margin-top:.5rem;">&#10024; AI Assist</button>
+                <label>Duration (seconds)</label>
+                <input id="sc-duration" type="number" min="1" max="20" value="10" />
+                <div class="range-label"><span>Rotation</span><span id="sc-rotate-val">20</span></div>
+                <input id="sc-rotate" type="range" min="0" max="60" value="20" />
+                <div class="range-label"><span>Zoom</span><span id="sc-zoom-val">8</span></div>
+                <input id="sc-zoom" type="range" min="0" max="40" value="8" />
+                <div class="range-label"><span>Movement</span><span id="sc-move-val">40</span></div>
+                <input id="sc-move" type="range" min="0" max="200" value="40" />
+                <button id="sc-save" style="margin-top:1rem;">Save Scene</button>
+              </div>
+              <div class="preview-frame"><iframe id="sc-preview"></iframe></div>
+            </div>
+          </div>
+          <div class="card">
+            <h3>BGM &amp; Render</h3>
+            <label>Background music <span class="hint">(mp3/wav/ogg, optional)</span></label>
+            <input id="bgm-file" type="file" accept="audio/*" />
+            <button id="bgm-upload" class="secondary small" type="button" style="margin-top:.5rem;">Upload BGM</button>
+            <div class="row" style="margin-top:1rem;">
+              <button id="video-render">Render Final Video</button>
+              <a id="video-download" href="#" style="display:none;"><button type="button" class="secondary small">Download video</button></a>
+            </div>
+            <div id="video-result" style="margin-top:1rem;"></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Sessions modal -->
+<!-- Sessions/Projects modal -->
 <div class="modal-backdrop" id="sessions-backdrop">
   <div class="modal">
-    <div class="modal-header"><h2>Sessions</h2><button class="close-btn" id="sessions-close">&times;</button></div>
-    <div id="sessions-list">Loading&hellip;</div>
+    <div class="modal-header"><h2>Projects</h2><button class="close-btn" id="sessions-close">&times;</button></div>
+    <div class="tabs">
+      <div class="tab active" data-ptab="capture">Screen Capture</div>
+      <div class="tab" data-ptab="mockup">Studio Mockup</div>
+      <div class="tab" data-ptab="video">Video</div>
+    </div>
+    <div class="tab-panel active" id="ptab-capture"><div id="sessions-list-capture">Loading&hellip;</div></div>
+    <div class="tab-panel" id="ptab-mockup"><div id="sessions-list-mockup">Loading&hellip;</div></div>
+    <div class="tab-panel" id="ptab-video"><div id="sessions-list-video">Loading&hellip;</div></div>
   </div>
 </div>
 
@@ -258,9 +338,9 @@
     <div class="row"><span id="cred-status" class="status warn">checking&hellip;</span></div>
     <label>Email</label>
     <input id="cred-email" type="text" placeholder="demo@example.com" />
-    <label>Password <span style="opacity:.6">(blank = keep existing)</span></label>
+    <label>Password <span class="hint">(blank = keep existing)</span></label>
     <input id="cred-password" type="password" placeholder="••••••••" />
-    <div class="row">
+    <div class="row" style="margin-top:1rem;">
       <button id="cred-save">Save</button>
       <button id="cred-clear" class="secondary">Clear</button>
     </div>
@@ -291,13 +371,12 @@
         <button id="discover-run" class="small" type="button">Fetch Models</button>
       </div>
       <div id="discover-result"></div>
-
       <h3 style="font-size:.9rem; margin-top:1.25rem;">Saved models</h3>
       <div id="saved-models-list">None yet.</div>
     </div>
 
     <div class="tab-panel" id="tab-add">
-      <label>Provider ID <span style="opacity:.6">(lowercase, no spaces — e.g. "my-local-llm")</span></label>
+      <label>Provider ID <span class="hint">(lowercase, no spaces)</span></label>
       <input id="add-id" type="text" placeholder="together" />
       <label>Adapter</label>
       <select id="add-adapter">
@@ -311,547 +390,11 @@
         <input id="add-requires-key" type="checkbox" checked />
         <label style="margin:0">Requires an API key</label>
       </div>
-      <button id="add-provider-save">Add Provider</button>
+      <button id="add-provider-save" style="margin-top:1rem;">Add Provider</button>
     </div>
   </div>
 </div>
 
-<script>
-const $ = (id) => document.getElementById(id);
-let currentSessionId = null;
-let currentSession = null;
-let mockupOptions = { templates: [], backgrounds: [] };
-let sceneOptions = { templates: [], backgrounds: [] };
-let devices = [];
-let selectedScreenId = null;
-let selectedSceneId = null;
-
-async function api(path, options) {
-  const resp = await fetch(path, {
-    method: options?.method ?? "GET",
-    headers: options?.body ? { "Content-Type": "application/json" } : undefined,
-    body: options?.body ? JSON.stringify(options.body) : undefined,
-  });
-  const data = await resp.json().catch(() => ({}));
-  if (!resp.ok) throw new Error(data.error || `HTTP ${resp.status}`);
-  return data;
-}
-
-function fileUrl(rel) {
-  return `/api/sessions/${currentSessionId}/file?p=${encodeURIComponent(rel)}`;
-}
-
-/* ---------- Session lifecycle ---------- */
-
-function selectedPlatforms() {
-  const platforms = [];
-  if ($("plat-google").checked) platforms.push("google-play");
-  if ($("plat-apple").checked) platforms.push("apple-app-store");
-  return platforms.length ? platforms : ["google-play"];
-}
-
-$("new-session-btn").onclick = async () => {
-  const url = $("new-url").value.trim();
-  if (!url) return alert("App URL is required.");
-  const session = await api("/api/sessions", { method: "POST", body: { url, slug: $("new-slug").value.trim() || undefined, platforms: selectedPlatforms() } });
-  await loadSessionInto(session.id);
-};
-
-async function loadSessionInto(id) {
-  currentSessionId = id;
-  currentSession = await api(`/api/sessions/${id}`);
-  $("session-label").textContent = `Session: ${currentSession.id} — ${currentSession.url}`;
-  renderCaptureThumbs();
-  await refreshMockupOptions();
-  await refreshPackageTargets();
-  await refreshScenes();
-}
-
-async function refreshSessionsList() {
-  const { sessions } = await api("/api/sessions");
-  const el = $("sessions-list");
-  if (sessions.length === 0) { el.textContent = "No sessions yet."; return; }
-  el.innerHTML = "";
-  for (const s of sessions) {
-    const row = document.createElement("div");
-    row.className = "session-row";
-    row.innerHTML = `<span style="flex:1">${s.url}</span><span class="badge">${s.screenshots} screenshots</span><span class="provider-meta">${new Date(s.createdAt).toLocaleString()}</span>`;
-    const btn = document.createElement("button");
-    btn.className = "small secondary";
-    btn.textContent = "Open";
-    btn.onclick = async () => { await loadSessionInto(s.id); $("sessions-backdrop").classList.remove("open"); };
-    row.appendChild(btn);
-    el.appendChild(row);
-  }
-}
-
-$("open-sessions").onclick = () => { $("sessions-backdrop").classList.add("open"); refreshSessionsList(); };
-$("sessions-close").onclick = () => $("sessions-backdrop").classList.remove("open");
-
-/* ---------- Step tabs ---------- */
-
-for (const tab of document.querySelectorAll(".step-tab")) {
-  tab.onclick = () => {
-    for (const t of document.querySelectorAll(".step-tab")) t.classList.remove("active");
-    for (const p of document.querySelectorAll(".step-panel")) p.classList.remove("active");
-    tab.classList.add("active");
-    $("step-" + tab.dataset.step).classList.add("active");
-  };
-}
-
-/* ---------- Credentials ---------- */
-
-async function refreshAuthStatus() {
-  try {
-    const status = await api("/api/auth/status");
-    for (const el of [$("auth-status"), $("cred-status")]) {
-      if (status.passwordSet) { el.textContent = `configured (${status.source}) — ${status.email}`; el.className = "status ok"; }
-      else { el.textContent = "not configured"; el.className = "status warn"; }
-    }
-  } catch (e) {
-    $("auth-status").textContent = "error"; $("auth-status").className = "status bad";
-  }
-}
-
-$("open-credentials").onclick = () => $("credentials-backdrop").classList.add("open");
-$("credentials-close").onclick = () => $("credentials-backdrop").classList.remove("open");
-
-$("cred-save").onclick = async () => {
-  const email = $("cred-email").value.trim();
-  const password = $("cred-password").value;
-  if (!email) return alert("Email is required.");
-  await api("/api/auth/credentials", { method: "POST", body: { email, password: password || undefined } });
-  $("cred-password").value = "";
-  refreshAuthStatus();
-};
-$("cred-clear").onclick = async () => { await api("/api/auth/credentials", { method: "DELETE" }); refreshAuthStatus(); };
-
-/* ---------- Step 1: Capture ---------- */
-
-function renderCaptureThumbs() {
-  const grid = $("cap-thumbs");
-  grid.innerHTML = "";
-  if (!currentSession) return;
-  for (const r of currentSession.raw) {
-    const t = document.createElement("div");
-    t.className = "thumb";
-    t.innerHTML = `<img src="${fileUrl(r.file)}" /><div class="cap">${r.title}</div>`;
-    grid.appendChild(t);
-  }
-}
-
-$("cap-run").onclick = async () => {
-  if (!currentSessionId) return alert("Start a session first.");
-  $("cap-run").disabled = true;
-  $("cap-result").textContent = "Capturing… this can take a minute.";
-  try {
-    const result = await api(`/api/sessions/${currentSessionId}/capture`, { method: "POST", body: { maxPages: Number($("cap-max-pages").value) || 6 } });
-    currentSession.raw = result.raw;
-    $("cap-result").innerHTML = `<span class="count-badge">${result.count}</span> screenshots captured.`;
-    renderCaptureThumbs();
-    await refreshMockupOptions();
-    await refreshScenes();
-  } catch (e) {
-    $("cap-result").textContent = "Capture failed: " + e.message;
-  } finally {
-    $("cap-run").disabled = false;
-  }
-};
-
-/* ---------- Step 2: Studio Mockups ---------- */
-
-async function refreshMockupOptions() {
-  if (!currentSessionId) return;
-  const [mockupsRes, devicesRes] = await Promise.all([
-    api(`/api/sessions/${currentSessionId}/mockups`),
-    api("/api/devices"),
-  ]);
-  mockupOptions = mockupsRes.options;
-  devices = devicesRes.devices;
-  currentSession.mockups = mockupsRes.mockups;
-
-  $("mk-template").innerHTML = mockupOptions.templates.map((t) => `<option value="${t.id}">${t.name}</option>`).join("");
-  $("mk-background").innerHTML = mockupOptions.backgrounds.map((b) => `<option value="${b}">${b}</option>`).join("");
-  $("mk-device").innerHTML = devices.map((d) => `<option value="${d.id}">${d.vendor} — ${d.name}</option>`).join("");
-
-  const picker = $("mockup-screen-picker");
-  picker.innerHTML = "";
-  if (!currentSession || currentSession.raw.length === 0) { picker.textContent = "Capture screenshots first."; return; }
-  const select = document.createElement("select");
-  select.id = "mk-screen-select";
-  for (const r of currentSession.raw) {
-    const opt = document.createElement("option");
-    opt.value = r.id; opt.textContent = r.title;
-    select.appendChild(opt);
-  }
-  select.onchange = () => loadMockupConfig(select.value);
-  picker.appendChild(select);
-  loadMockupConfig(currentSession.raw[0].id);
-}
-
-function loadMockupConfig(screenId) {
-  selectedScreenId = screenId;
-  const screen = currentSession.raw.find((r) => r.id === screenId);
-  const cfg = currentSession.mockups[screenId] ?? { template: "caption-above", device: devices[0]?.id ?? "phone", variant: "", label: screen.title, subtext: "", background: "ocean", textColor: "#ffffff" };
-  $("mk-template").value = cfg.template;
-  $("mk-device").value = cfg.device;
-  $("mk-background").value = cfg.background;
-  $("mk-label").value = cfg.label;
-  $("mk-subtext").value = cfg.subtext;
-  $("mk-textcolor").value = cfg.textColor;
-  updateVariantSelect("mk-device", "mk-variant", cfg.variant);
-  showMockupPreview();
-}
-
-function updateVariantSelect(deviceSelectId, variantSelectId, current) {
-  const deviceId = $(deviceSelectId).value;
-  const device = devices.find((d) => d.id === deviceId);
-  const select = $(variantSelectId);
-  select.innerHTML = '<option value="">default</option>';
-  if (device?.variants) {
-    for (const v of device.variants) {
-      const opt = document.createElement("option");
-      opt.value = v.id; opt.textContent = v.name;
-      select.appendChild(opt);
-    }
-  }
-  select.value = current || "";
-}
-$("mk-device").onchange = () => updateVariantSelect("mk-device", "mk-variant", "");
-
-function showMockupPreview() {
-  $("mk-preview").src = `/api/sessions/${currentSessionId}/mockup-preview/${selectedScreenId}?t=${Date.now()}`;
-}
-
-$("mk-save").onclick = async () => {
-  const config = {
-    template: $("mk-template").value, device: $("mk-device").value, variant: $("mk-variant").value || undefined,
-    label: $("mk-label").value, subtext: $("mk-subtext").value, background: $("mk-background").value, textColor: $("mk-textcolor").value,
-  };
-  await api(`/api/sessions/${currentSessionId}/mockups`, { method: "POST", body: { screenId: selectedScreenId, config } });
-  currentSession.mockups[selectedScreenId] = config;
-  showMockupPreview();
-};
-
-$("mockup-ai-assist").onclick = async () => {
-  $("mockup-ai-assist").disabled = true;
-  try {
-    const result = await api(`/api/sessions/${currentSessionId}/mockups/ai`, { method: "POST" });
-    currentSession.mockups = result.mockups;
-    if (selectedScreenId) loadMockupConfig(selectedScreenId);
-  } catch (e) { alert("AI assist failed: " + e.message); }
-  finally { $("mockup-ai-assist").disabled = false; }
-};
-
-/* ---------- Step 3: Store Package ---------- */
-
-async function refreshPackageTargets() {
-  if (!currentSessionId) return;
-  const { platforms } = await api("/api/platforms");
-  const container = $("pkg-targets");
-  container.innerHTML = "";
-  for (const plat of platforms) {
-    const section = document.createElement("div");
-    section.innerHTML = `<h3 style="font-size:.9rem;margin:1rem 0 .5rem;">${plat.name}</h3>`;
-    for (const [classId, cls] of Object.entries(plat.deviceClasses)) {
-      const row = document.createElement("label");
-      row.className = "checkbox-row";
-      row.innerHTML = `<input type="checkbox" data-platform="${plat.id}" data-class="${classId}" ${cls.required ? "checked" : ""} /> ${cls.name} (${cls.width}&times;${cls.height})`;
-      section.appendChild(row);
-    }
-    container.appendChild(section);
-  }
-}
-
-$("pkg-build").onclick = async () => {
-  const targets = {};
-  for (const cb of document.querySelectorAll('#pkg-targets input[type=checkbox]:checked')) {
-    const plat = cb.dataset.platform;
-    (targets[plat] = targets[plat] || []).push(cb.dataset.class);
-  }
-  $("pkg-build").disabled = true;
-  $("pkg-result").textContent = "Building…";
-  try {
-    const result = await api(`/api/sessions/${currentSessionId}/package`, { method: "POST", body: { targets } });
-    const kb = (result.bytes / 1024).toFixed(1);
-    let html = `<div>ZIP ready — ${kb} KB. <a href="/api/sessions/${currentSessionId}/download/zip" target="_blank"><button type="button" class="secondary small">Download ZIP</button></a></div>`;
-    html += "<ul>" + result.entries.map((e) => `<li>${e.platform}/${e.deviceClass}: ${e.files} files (${e.width}&times;${e.height})</li>`).join("") + "</ul>";
-    if (result.warnings.length) html += `<div class="warn-list">${result.warnings.join("<br/>")}</div>`;
-    $("pkg-result").innerHTML = html;
-  } catch (e) {
-    $("pkg-result").textContent = "Build failed: " + e.message;
-  } finally {
-    $("pkg-build").disabled = false;
-  }
-};
-
-/* ---------- Step 4: Animation Video ---------- */
-
-async function refreshScenes() {
-  if (!currentSessionId || !currentSession || currentSession.raw.length === 0) return;
-  const result = await api(`/api/sessions/${currentSessionId}/scenes`);
-  sceneOptions = result.options;
-  currentSession.scenes = result.scenes;
-
-  $("sc-template").innerHTML = sceneOptions.templates.map((t) => `<option value="${t.id}">${t.name}</option>`).join("");
-  $("sc-background").innerHTML = sceneOptions.backgrounds.map((b) => `<option value="${b}">${b}</option>`).join("");
-  $("sc-device").innerHTML = devices.map((d) => `<option value="${d.id}">${d.vendor} — ${d.name}</option>`).join("");
-
-  const nav = $("scene-nav");
-  nav.innerHTML = "";
-  currentSession.scenes.forEach((s, i) => {
-    const chip = document.createElement("div");
-    chip.className = "scene-chip" + (i === 0 ? " active" : "");
-    chip.textContent = `Scene ${i + 1}`;
-    chip.onclick = () => selectScene(s.id);
-    chip.dataset.sceneId = s.id;
-    nav.appendChild(chip);
-  });
-  if (currentSession.scenes.length) selectScene(currentSession.scenes[0].id);
-}
-
-function selectScene(sceneId) {
-  selectedSceneId = sceneId;
-  for (const chip of document.querySelectorAll(".scene-chip")) chip.classList.toggle("active", chip.dataset.sceneId === sceneId);
-  const scene = currentSession.scenes.find((s) => s.id === sceneId);
-  $("sc-template").value = scene.template;
-  $("sc-device").value = scene.device;
-  $("sc-background").value = scene.background;
-  $("sc-text").value = scene.text;
-  $("sc-subtext").value = scene.subtext;
-  $("sc-duration").value = scene.durationSeconds;
-  $("sc-rotate").value = scene.rotate; $("sc-rotate-val").textContent = scene.rotate;
-  $("sc-zoom").value = scene.zoom; $("sc-zoom-val").textContent = scene.zoom;
-  $("sc-move").value = scene.move; $("sc-move-val").textContent = scene.move;
-  updateVariantSelect("sc-device", "sc-variant", scene.variant);
-  showScenePreview();
-}
-$("sc-device").onchange = () => updateVariantSelect("sc-device", "sc-variant", "");
-
-for (const [id, out] of [["sc-rotate", "sc-rotate-val"], ["sc-zoom", "sc-zoom-val"], ["sc-move", "sc-move-val"]]) {
-  $(id).oninput = () => { $(out).textContent = $(id).value; };
-}
-
-function showScenePreview() {
-  $("sc-preview").src = `/api/sessions/${currentSessionId}/scene-preview/${selectedSceneId}?t=${Date.now()}`;
-}
-
-$("sc-save").onclick = async () => {
-  const config = {
-    template: $("sc-template").value, device: $("sc-device").value, variant: $("sc-variant").value || undefined,
-    background: $("sc-background").value, text: $("sc-text").value, subtext: $("sc-subtext").value,
-    durationSeconds: Number($("sc-duration").value) || 3,
-    rotate: Number($("sc-rotate").value), zoom: Number($("sc-zoom").value), move: Number($("sc-move").value),
-  };
-  await api(`/api/sessions/${currentSessionId}/scenes`, { method: "POST", body: { sceneId: selectedSceneId, config } });
-  const idx = currentSession.scenes.findIndex((s) => s.id === selectedSceneId);
-  currentSession.scenes[idx] = { ...currentSession.scenes[idx], ...config };
-  showScenePreview();
-};
-
-$("scene-ai-assist").onclick = async () => {
-  $("scene-ai-assist").disabled = true;
-  try {
-    const result = await api(`/api/sessions/${currentSessionId}/scenes/ai`, { method: "POST" });
-    currentSession.scenes = result.scenes;
-    if (selectedSceneId) selectScene(selectedSceneId);
-  } catch (e) { alert("AI assist failed: " + e.message); }
-  finally { $("scene-ai-assist").disabled = false; }
-};
-
-$("bgm-upload").onclick = async () => {
-  const file = $("bgm-file").files[0];
-  if (!file) return alert("Choose an audio file first.");
-  const resp = await fetch(`/api/sessions/${currentSessionId}/bgm`, { method: "POST", headers: { "Content-Type": file.type || "audio/mpeg" }, body: file });
-  if (!resp.ok) return alert("BGM upload failed.");
-  alert("BGM uploaded.");
-};
-
-$("video-render").onclick = async () => {
-  $("video-render").disabled = true;
-  $("video-result").textContent = "Rendering… this can take a while.";
-  try {
-    const result = await api(`/api/sessions/${currentSessionId}/video`, { method: "POST" });
-    $("video-result").textContent = "Video rendered: " + result.videoPath;
-    const link = $("video-download");
-    link.href = `/api/sessions/${currentSessionId}/download/video`;
-    link.style.display = "inline-block";
-  } catch (e) {
-    $("video-result").textContent = "Render failed: " + e.message;
-  } finally {
-    $("video-render").disabled = false;
-  }
-};
-
-/* ---------- Settings modal (AI providers/models) ---------- */
-
-const backdrop = $("settings-backdrop");
-$("open-settings").onclick = () => { backdrop.classList.add("open"); loadProviders(); loadModelsTab(); };
-$("settings-close").onclick = () => backdrop.classList.remove("open");
-backdrop.onclick = (e) => { if (e.target === backdrop) backdrop.classList.remove("open"); };
-$("credentials-backdrop").onclick = (e) => { if (e.target === $("credentials-backdrop")) $("credentials-backdrop").classList.remove("open"); };
-$("sessions-backdrop").onclick = (e) => { if (e.target === $("sessions-backdrop")) $("sessions-backdrop").classList.remove("open"); };
-
-for (const tab of document.querySelectorAll(".tab")) {
-  tab.onclick = () => {
-    for (const t of document.querySelectorAll(".tab")) t.classList.remove("active");
-    for (const p of document.querySelectorAll(".tab-panel")) p.classList.remove("active");
-    tab.classList.add("active");
-    $("tab-" + tab.dataset.tab).classList.add("active");
-  };
-}
-
-async function loadProviders() {
-  const container = $("providers-list");
-  container.textContent = "Loading…";
-  try {
-    const { providers } = await api("/api/ai/providers");
-    container.innerHTML = "";
-    const discoverSelect = $("discover-provider");
-    discoverSelect.innerHTML = "";
-
-    for (const p of providers) {
-      const row = document.createElement("div");
-      row.className = "provider-row";
-      row.innerHTML = `
-        <span class="provider-name">${p.id}</span>
-        <span class="badge">${p.adapter}</span>
-        <span class="provider-meta">${p.baseUrl}</span>
-        <input class="key-input" type="password" placeholder="${p.keySet ? '•••••••• (set)' : p.requiresKey ? 'API key' : 'no key needed'}" ${p.requiresKey ? '' : 'disabled'} />
-        <button class="small secondary" data-act="save-key">Save Key</button>
-        <button class="small secondary" data-act="test">Test</button>
-        <button class="small danger" data-act="delete">Delete</button>
-        <span class="test-result" style="font-size:.75rem;"></span>
-      `;
-
-      row.querySelector('[data-act="save-key"]').onclick = async () => {
-        const keyInput = row.querySelector(".key-input");
-        const apiKey = keyInput.value;
-        if (!apiKey) return;
-        await api("/api/ai/providers", { method: "POST", body: { id: p.id, apiKey } });
-        keyInput.value = "";
-        keyInput.placeholder = "•••••••• (set)";
-      };
-
-      row.querySelector('[data-act="test"]').onclick = async () => {
-        const resultEl = row.querySelector(".test-result");
-        resultEl.textContent = "testing…";
-        try {
-          const r = await api(`/api/ai/providers/${encodeURIComponent(p.id)}/test`, { method: "POST" });
-          resultEl.textContent = r.ok ? `OK (${r.latencyMs}ms, ${r.modelCount} models)` : `FAILED: ${r.reason}`;
-          resultEl.style.color = r.ok ? "#86efac" : "#fca5a5";
-        } catch (e) {
-          resultEl.textContent = "error: " + e.message;
-          resultEl.style.color = "#fca5a5";
-        }
-      };
-
-      row.querySelector('[data-act="delete"]').onclick = async () => {
-        await api(`/api/ai/providers/${encodeURIComponent(p.id)}`, { method: "DELETE" });
-        loadProviders();
-      };
-
-      container.appendChild(row);
-
-      const opt = document.createElement("option");
-      opt.value = p.id;
-      opt.textContent = `${p.id} (${p.adapter})`;
-      discoverSelect.appendChild(opt);
-    }
-  } catch (e) {
-    container.textContent = "Failed to load providers: " + e.message;
-  }
-}
-
-async function loadModelsTab() {
-  const listEl = $("saved-models-list");
-  try {
-    const { models, defaultModel } = await api("/api/ai/models");
-    if (models.length === 0) { listEl.textContent = "None yet."; return; }
-    listEl.innerHTML = "";
-    for (const m of models) {
-      const row = document.createElement("div");
-      row.className = "model-row";
-      const isDefault = defaultModel && defaultModel.provider === m.provider && defaultModel.modelId === m.modelId;
-      row.innerHTML = `
-        <span>${m.provider} / ${m.displayName}</span>
-        ${m.vision ? '<span class="badge vision">vision</span>' : ""}
-        ${isDefault ? '<span class="badge">default</span>' : '<button class="small secondary" data-act="default">Set default</button>'}
-        <button class="small danger" data-act="delete">Remove</button>
-      `;
-      const defaultBtn = row.querySelector('[data-act="default"]');
-      if (defaultBtn) defaultBtn.onclick = async () => {
-        await api("/api/ai/models/default", { method: "POST", body: { provider: m.provider, modelId: m.modelId } });
-        loadModelsTab();
-      };
-      row.querySelector('[data-act="delete"]').onclick = async () => {
-        await api(`/api/ai/models/${encodeURIComponent(m.provider)}/${encodeURIComponent(m.modelId)}`, { method: "DELETE" });
-        loadModelsTab();
-      };
-      listEl.appendChild(row);
-    }
-  } catch (e) {
-    listEl.textContent = "Failed to load: " + e.message;
-  }
-}
-
-$("discover-run").onclick = async () => {
-  const providerId = $("discover-provider").value;
-  const resultEl = $("discover-result");
-  if (!providerId) return;
-  resultEl.innerHTML = "Fetching…";
-  try {
-    const { models, error, message } = await api(`/api/ai/providers/${encodeURIComponent(providerId)}/fetch-models`);
-    if (error) { resultEl.innerHTML = `<div class="discovery-msg error">${message}</div>`; return; }
-    if (models.length === 0) { resultEl.innerHTML = `<div class="discovery-msg error">No models returned.</div>`; return; }
-    resultEl.innerHTML = "";
-    const list = document.createElement("div");
-    for (const m of models) {
-      const row = document.createElement("div");
-      row.className = "checkbox-row";
-      row.innerHTML = `<input type="checkbox" data-model-id="${m.modelId}" data-vision="${m.vision}" /> <span>${m.displayName}${m.vision ? " 👁" : ""}</span>`;
-      list.appendChild(row);
-    }
-    resultEl.appendChild(list);
-    const saveBtn = document.createElement("button");
-    saveBtn.className = "small";
-    saveBtn.textContent = "Save Selected";
-    saveBtn.onclick = async () => {
-      const checked = [...list.querySelectorAll("input[type=checkbox]:checked")];
-      const toSave = checked.map((c) => ({
-        provider: providerId, modelId: c.dataset.modelId,
-        displayName: c.parentElement.querySelector("span").textContent.replace(" 👁", ""),
-        vision: c.dataset.vision === "true",
-      }));
-      if (toSave.length === 0) return;
-      await api("/api/ai/models", { method: "POST", body: { models: toSave } });
-      loadModelsTab();
-    };
-    resultEl.appendChild(saveBtn);
-  } catch (e) {
-    resultEl.innerHTML = `<div class="discovery-msg error">${e.message}</div>`;
-  }
-};
-
-$("add-provider-save").onclick = async () => {
-  const id = $("add-id").value.trim();
-  const adapter = $("add-adapter").value;
-  const baseUrl = $("add-baseurl").value.trim();
-  const requiresKey = $("add-requires-key").checked;
-  if (!id || !baseUrl) return;
-  await api("/api/ai/providers", { method: "POST", body: { id, adapter, baseUrl, enabled: true, requiresKey } });
-  $("add-id").value = ""; $("add-baseurl").value = "";
-  document.querySelector('.tab[data-tab="providers"]').click();
-  loadProviders();
-};
-
-/* ---------- Init ---------- */
-
-refreshAuthStatus();
-(async () => {
-  const { sessions } = await api("/api/sessions");
-  if (sessions.length > 0) await loadSessionInto(sessions[0].id);
-})();
-</script>
+<script src="/app.js"></script>
 </body>
 </html>

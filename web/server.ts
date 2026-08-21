@@ -20,29 +20,58 @@ import { fetchModelsForProvider, testProvider, isDiscoveryError } from "../src/a
 import { chat, extractJsonArray } from "../src/ai/chat.js";
 import { listDevices } from "../src/devices/registry.js";
 import { loadPlatformSpec } from "../src/platform/index.js";
+
 import {
-  createSession,
-  listSessions,
-  loadSession,
-  saveSession,
-  sessionDir,
-  sessionFile,
-  type MockupConfig,
-  type SceneConfig,
-} from "../src/session/store.js";
-import { captureRawScreens } from "../src/capture/step1.js";
-import { defaultMockupConfig, listMockupOptions, mockupHtmlForScreen } from "../src/render/mockup.js";
-import { buildStorePackage } from "../src/package/store.js";
-import { defaultSceneConfig, listSceneOptions, renderVideo, scenePreviewHtml } from "../src/render/scene.js";
+  captureDir,
+  captureFile,
+  createCaptureSession,
+  deleteCaptureSession,
+  listCaptureSessions,
+  loadCaptureSession,
+  saveCaptureSession,
+} from "../src/capture/store.js";
+import { captureWebsiteScreens } from "../src/capture/websiteCapture.js";
+import { captureAndroidScreen, listAndroidDevices } from "../src/capture/androidCapture.js";
+
+import {
+  addColumn,
+  addDeviceRow,
+  createMockupProject,
+  defaultColumnStyle,
+  listMockupProjects,
+  loadMockupProject,
+  mockupDir,
+  mockupFile,
+  saveMockupProject,
+  setCellOverride,
+  updateColumnStyle,
+  type ColumnStyle,
+  type MockupDeviceRow,
+} from "../src/mockup/project.js";
+import { groupedLayoutPresets, listLayoutPresets } from "../src/mockup/layouts.js";
+import { cellPreviewHtml } from "../src/mockup/render.js";
+import { exportMockupProject } from "../src/mockup/export.js";
+import { MOCKUP_TEMPLATES, applyMockupTemplate } from "../src/mockup/templates.js";
+
+import {
+  createVideoProject,
+  listVideoProjects,
+  loadVideoProject,
+  saveVideoProject,
+  videoDir,
+  videoFile,
+} from "../src/video/project.js";
+import { listSceneAnimations, listVideoBackgrounds, renderVideo, scenePreviewHtml, templatePreviewHtml } from "../src/video/render.js";
+import { VIDEO_TEMPLATES, applyVideoTemplate } from "../src/video/templates.js";
 
 /**
- * Local-only manual workflow surface — a thin HTTP adapter over the same
- * core (session model, capture/render/package modules, credential store)
- * that the CLI and MCP server use. No separate implementation: whatever
- * this UI can do, the CLI/MCP can do, and vice versa (see ARCHITECTURE.md
- * "One Core, Three Surfaces").
+ * Local-only manual workflow surface -- a thin HTTP adapter over three
+ * fully independent project stores (Screen Capture / Studio Mockup /
+ * Video, see src/{capture,mockup,video}/*), matching the three-tab shell
+ * in web/index.html. Nothing here carries state from one namespace to
+ * another; that is by design (see docs/ARCHITECTURE.md).
  *
- * Binds to 127.0.0.1 only — never exposed to the network, per
+ * Binds to 127.0.0.1 only -- never exposed to the network, per
  * docs/AUTHENTICATION.md's security requirements around credential handling.
  */
 
@@ -64,9 +93,8 @@ async function readRawBody(req: http.IncomingMessage): Promise<Buffer> {
 }
 
 function sendJson(res: http.ServerResponse, status: number, body: unknown): void {
-  const payload = JSON.stringify(body);
   res.writeHead(status, { "Content-Type": "application/json; charset=utf-8" });
-  res.end(payload);
+  res.end(JSON.stringify(body));
 }
 
 function sendError(res: http.ServerResponse, status: number, message: string): void {
@@ -82,7 +110,16 @@ function sendFile(res: http.ServerResponse, filePath: string, contentType: strin
   fs.createReadStream(filePath).pipe(res);
 }
 
-const MOCKUP_PREVIEW_CANVAS = { width: 540, height: 960 };
+function imageExtFromContentType(contentType: string | undefined): string {
+  if (contentType?.includes("jpeg") || contentType?.includes("jpg")) return "jpg";
+  if (contentType?.includes("webp")) return "webp";
+  return "png";
+}
+
+function pngSize(absPath: string): { width: number; height: number } {
+  const buf = fs.readFileSync(absPath);
+  return { width: buf.readUInt32BE(16), height: buf.readUInt32BE(20) };
+}
 
 async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse): Promise<void> {
   const url = new URL(req.url ?? "/", "http://localhost");
@@ -95,9 +132,17 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
         sendError(res, 500, `Web UI asset missing: ${INDEX_HTML_PATH}. Reinstall or rebuild the package.`);
         return;
       }
-      const html = fs.readFileSync(INDEX_HTML_PATH, "utf-8");
       res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
-      res.end(html);
+      res.end(fs.readFileSync(INDEX_HTML_PATH, "utf-8"));
+      return;
+    }
+
+    if (method === "GET" && p === "/app.css") {
+      sendFile(res, path.join(__dirname, "app.css"), "text/css; charset=utf-8");
+      return;
+    }
+    if (method === "GET" && p === "/app.js") {
+      sendFile(res, path.join(__dirname, "app.js"), "application/javascript; charset=utf-8");
       return;
     }
 
@@ -106,134 +151,95 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
       return;
     }
 
-    // --- Demo access credentials ---
+    // --- Demo access credentials (shared config, not tab-scoped) ---
 
     if (method === "GET" && p === "/api/auth/status") {
       sendJson(res, 200, getCredentialStatus());
       return;
     }
-
     if (method === "POST" && p === "/api/auth/credentials") {
       const body = await readJsonBody(req);
-      if (!body.email) {
-        sendError(res, 400, "email is required");
-        return;
-      }
+      if (!body.email) return sendError(res, 400, "email is required");
       setCredentials(body.email, body.password);
       sendJson(res, 200, { ok: true });
       return;
     }
-
     if (method === "DELETE" && p === "/api/auth/credentials") {
       clearCredentials();
       sendJson(res, 200, { ok: true });
       return;
     }
 
-    // --- AI provider / model management (mirrors CLI/MCP core — no
-    // separate logic; the settings UI is just an HTTP client of registry.ts
-    // and adapters.ts, exactly like the CLI would be if it exposed these) ---
+    // --- AI provider / model management (shared config, not tab-scoped) ---
 
     if (method === "GET" && p === "/api/ai/providers") {
       sendJson(res, 200, { providers: listProviders() });
       return;
     }
-
     if (method === "POST" && p === "/api/ai/providers") {
       const body = await readJsonBody(req);
-      if (!body.id) {
-        sendError(res, 400, "id is required");
-        return;
-      }
-      upsertProvider(body.id, {
-        adapter: body.adapter,
-        baseUrl: body.baseUrl,
-        enabled: body.enabled,
-        requiresKey: body.requiresKey,
-      });
+      if (!body.id) return sendError(res, 400, "id is required");
+      upsertProvider(body.id, { adapter: body.adapter, baseUrl: body.baseUrl, enabled: body.enabled, requiresKey: body.requiresKey });
       if (body.apiKey) setProviderKey(body.id, body.apiKey);
       sendJson(res, 200, { ok: true });
       return;
     }
-
     {
-      const providerMatch = p.match(/^\/api\/ai\/providers\/([^/]+)$/);
-      if (providerMatch && method === "DELETE") {
-        deleteProvider(decodeURIComponent(providerMatch[1]));
-        clearProviderKey(decodeURIComponent(providerMatch[1]));
+      const m = p.match(/^\/api\/ai\/providers\/([^/]+)$/);
+      if (m && method === "DELETE") {
+        deleteProvider(decodeURIComponent(m[1]));
+        clearProviderKey(decodeURIComponent(m[1]));
         sendJson(res, 200, { ok: true });
         return;
       }
     }
-
     {
-      const testMatch = p.match(/^\/api\/ai\/providers\/([^/]+)\/test$/);
-      if (testMatch && method === "POST") {
-        const provider = getProvider(decodeURIComponent(testMatch[1]));
-        if (!provider) {
-          sendError(res, 404, `Unknown provider '${testMatch[1]}'`);
-          return;
-        }
+      const m = p.match(/^\/api\/ai\/providers\/([^/]+)\/test$/);
+      if (m && method === "POST") {
+        const provider = getProvider(decodeURIComponent(m[1]));
+        if (!provider) return sendError(res, 404, `Unknown provider '${m[1]}'`);
         sendJson(res, 200, await testProvider(provider));
         return;
       }
     }
-
     {
-      const fetchMatch = p.match(/^\/api\/ai\/providers\/([^/]+)\/fetch-models$/);
-      if (fetchMatch && method === "GET") {
-        const provider = getProvider(decodeURIComponent(fetchMatch[1]));
-        if (!provider) {
-          sendError(res, 404, `Unknown provider '${fetchMatch[1]}'`);
-          return;
-        }
+      const m = p.match(/^\/api\/ai\/providers\/([^/]+)\/fetch-models$/);
+      if (m && method === "GET") {
+        const provider = getProvider(decodeURIComponent(m[1]));
+        if (!provider) return sendError(res, 404, `Unknown provider '${m[1]}'`);
         const result = await fetchModelsForProvider(provider);
-        if (isDiscoveryError(result)) {
-          sendJson(res, 200, { models: [], ...result });
-        } else {
-          sendJson(res, 200, { models: result });
-        }
+        sendJson(res, 200, isDiscoveryError(result) ? { models: [], ...result } : { models: result });
         return;
       }
     }
-
     if (method === "GET" && p === "/api/ai/models") {
       sendJson(res, 200, { models: listModels(), defaultModel: getDefaultModel() });
       return;
     }
-
     if (method === "POST" && p === "/api/ai/models") {
       const body = await readJsonBody(req);
-      if (!Array.isArray(body.models)) {
-        sendError(res, 400, "models array is required");
-        return;
-      }
+      if (!Array.isArray(body.models)) return sendError(res, 400, "models array is required");
       saveModels(body.models);
       sendJson(res, 200, { ok: true });
       return;
     }
-
     if (method === "POST" && p === "/api/ai/models/default") {
       const body = await readJsonBody(req);
-      if (!body.provider || !body.modelId) {
-        sendError(res, 400, "provider and modelId are required");
-        return;
-      }
+      if (!body.provider || !body.modelId) return sendError(res, 400, "provider and modelId are required");
       setDefaultModel(body.provider, body.modelId);
       sendJson(res, 200, { ok: true });
       return;
     }
-
     {
-      const deleteModelMatch = p.match(/^\/api\/ai\/models\/([^/]+)\/([^/]+)$/);
-      if (deleteModelMatch && method === "DELETE") {
-        deleteModel(decodeURIComponent(deleteModelMatch[1]), decodeURIComponent(deleteModelMatch[2]));
+      const m = p.match(/^\/api\/ai\/models\/([^/]+)\/([^/]+)$/);
+      if (m && method === "DELETE") {
+        deleteModel(decodeURIComponent(m[1]), decodeURIComponent(m[2]));
         sendJson(res, 200, { ok: true });
         return;
       }
     }
 
-    // --- Devices & platform specs (Step 2/3/4 pickers) ---
+    // --- Shared reference data (devices, platform specs) ---
 
     if (method === "GET" && p === "/api/devices") {
       const platform = (url.searchParams.get("platform") as any) || undefined;
@@ -241,7 +247,6 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
       sendJson(res, 200, { devices: listDevices({ platform, formFactor }) });
       return;
     }
-
     if (method === "GET" && p === "/api/platforms") {
       sendJson(res, 200, {
         platforms: ["google-play", "apple-app-store"].map((id) => {
@@ -252,273 +257,463 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
       return;
     }
 
-    // --- Sessions (four-step workflow) ---
+    // =========================================================
+    // Screen Capture tab -- Website Capture + Android Capture
+    // =========================================================
 
-    if (method === "GET" && p === "/api/sessions") {
-      sendJson(res, 200, { sessions: listSessions() });
+    if (method === "GET" && p === "/api/captures") {
+      sendJson(res, 200, { sessions: listCaptureSessions() });
       return;
     }
-
-    if (method === "POST" && p === "/api/sessions") {
+    if (method === "POST" && p === "/api/captures") {
       const body = await readJsonBody(req);
-      if (!body.url) {
-        sendError(res, 400, "url is required");
-        return;
-      }
-      const platforms: string[] = Array.isArray(body.platforms) && body.platforms.length > 0 ? body.platforms : ["google-play"];
-      const session = createSession({ url: body.url, slug: body.slug, platforms });
+      const source = body.source === "android" ? "android" : "website";
+      if (source === "website" && !body.url) return sendError(res, 400, "url is required for website capture");
+      const session = createCaptureSession({
+        source,
+        url: body.url,
+        slug: body.slug,
+        name: body.name,
+        platforms: Array.isArray(body.platforms) && body.platforms.length ? body.platforms : ["google-play"],
+      });
       sendJson(res, 200, session);
       return;
     }
-
     {
-      const sessionMatch = p.match(/^\/api\/sessions\/([^/]+)$/);
-      if (sessionMatch && method === "GET") {
-        sendJson(res, 200, loadSession(decodeURIComponent(sessionMatch[1])));
+      const m = p.match(/^\/api\/captures\/([^/]+)$/);
+      if (m && method === "GET") return sendJson(res, 200, loadCaptureSession(decodeURIComponent(m[1])));
+      if (m && method === "DELETE") {
+        deleteCaptureSession(decodeURIComponent(m[1]));
+        sendJson(res, 200, { ok: true });
         return;
       }
     }
-
     {
-      const captureMatch = p.match(/^\/api\/sessions\/([^/]+)\/capture$/);
-      if (captureMatch && method === "POST") {
-        const id = decodeURIComponent(captureMatch[1]);
+      const m = p.match(/^\/api\/captures\/([^/]+)\/file$/);
+      if (m && method === "GET") {
+        const rel = url.searchParams.get("p");
+        if (!rel) return sendError(res, 400, "query param 'p' is required");
+        sendFile(res, captureFile(decodeURIComponent(m[1]), rel), "image/png");
+        return;
+      }
+    }
+    {
+      const m = p.match(/^\/api\/captures\/([^/]+)\/website$/);
+      if (m && method === "POST") {
         const body = await readJsonBody(req);
-        const session = loadSession(id);
-        const updated = await captureRawScreens(session, {
-          maxPages: body.maxPages,
-          email: body.email,
-          password: body.password,
-        });
+        const session = loadCaptureSession(decodeURIComponent(m[1]));
+        const updated = await captureWebsiteScreens(session, { maxPages: body.maxPages, email: body.email, password: body.password });
+        sendJson(res, 200, { count: updated.raw.length, raw: updated.raw });
+        return;
+      }
+    }
+    {
+      const m = p.match(/^\/api\/captures\/([^/]+)\/android\/devices$/);
+      if (m && method === "GET") {
+        sendJson(res, 200, { devices: await listAndroidDevices() });
+        return;
+      }
+    }
+    {
+      const m = p.match(/^\/api\/captures\/([^/]+)\/android$/);
+      if (m && method === "POST") {
+        const body = await readJsonBody(req);
+        const session = loadCaptureSession(decodeURIComponent(m[1]));
+        const updated = await captureAndroidScreen(session, { deviceId: body.deviceId, deepLink: body.deepLink, title: body.title });
         sendJson(res, 200, { count: updated.raw.length, raw: updated.raw });
         return;
       }
     }
 
+    // =========================================================
+    // Studio Mockup tab -- Templates / Editor / Devices /
+    // Panoramic / Preview / Settings / Export
+    // =========================================================
+
+    if (method === "GET" && p === "/api/mockups") {
+      sendJson(res, 200, { projects: listMockupProjects() });
+      return;
+    }
+    if (method === "POST" && p === "/api/mockups") {
+      const body = await readJsonBody(req);
+      if (!body.name) return sendError(res, 400, "name is required");
+      sendJson(res, 200, createMockupProject({ name: body.name, appCategory: body.appCategory }));
+      return;
+    }
     {
-      const fileMatch = p.match(/^\/api\/sessions\/([^/]+)\/file$/);
-      if (fileMatch && method === "GET") {
-        const id = decodeURIComponent(fileMatch[1]);
+      const m = p.match(/^\/api\/mockups\/([^/]+)$/);
+      if (m && method === "GET") return sendJson(res, 200, loadMockupProject(decodeURIComponent(m[1])));
+    }
+    {
+      const m = p.match(/^\/api\/mockups\/([^/]+)\/file$/);
+      if (m && method === "GET") {
         const rel = url.searchParams.get("p");
-        if (!rel) {
-          sendError(res, 400, "query param 'p' is required");
-          return;
-        }
-        const abs = sessionFile(id, rel);
+        if (!rel) return sendError(res, 400, "query param 'p' is required");
+        const abs = mockupFile(decodeURIComponent(m[1]), rel);
         const ext = path.extname(abs).toLowerCase();
-        const type = ext === ".png" ? "image/png" : ext === ".mp4" ? "video/mp4" : ext === ".zip" ? "application/zip" : "application/octet-stream";
-        sendFile(res, abs, type);
+        sendFile(res, abs, ext === ".zip" ? "application/zip" : "image/png");
         return;
       }
     }
 
-    // --- Step 2: Studio Mockups ---
-
+    // Templates section
+    if (method === "GET" && p === "/api/mockups/templates") {
+      sendJson(res, 200, { templates: MOCKUP_TEMPLATES.map((t) => ({ id: t.id, name: t.name, category: t.category })) });
+      return;
+    }
     {
-      const mockupsMatch = p.match(/^\/api\/sessions\/([^/]+)\/mockups$/);
-      if (mockupsMatch && method === "GET") {
-        const id = decodeURIComponent(mockupsMatch[1]);
-        const session = loadSession(id);
-        sendJson(res, 200, { mockups: session.mockups, options: listMockupOptions() });
+      const m = p.match(/^\/api\/mockups\/([^/]+)\/apply-template$/);
+      if (m && method === "POST") {
+        const body = await readJsonBody(req);
+        const project = loadMockupProject(decodeURIComponent(m[1]));
+        applyMockupTemplate(project, body.templateId);
+        saveMockupProject(project);
+        sendJson(res, 200, project);
         return;
       }
-      if (mockupsMatch && method === "POST") {
-        const id = decodeURIComponent(mockupsMatch[1]);
+    }
+
+    // Source images (uploads)
+    {
+      const m = p.match(/^\/api\/mockups\/([^/]+)\/sources$/);
+      if (m && method === "POST") {
+        const id = decodeURIComponent(m[1]);
+        const project = loadMockupProject(id);
+        const name = url.searchParams.get("name") ?? `image_${project.sources.length + 1}`;
+        const ext = imageExtFromContentType(req.headers["content-type"]);
+        const relPath = `sources/img_${Date.now()}.${ext}`;
+        const abs = mockupFile(id, relPath);
+        fs.writeFileSync(abs, await readRawBody(req));
+        const { width, height } = pngSize(abs);
+        const source = { id: `src_${Date.now()}`, name, file: relPath, width, height };
+        project.sources.push(source);
+        saveMockupProject(project);
+        sendJson(res, 200, source);
+        return;
+      }
+    }
+
+    // Devices section (rows)
+    {
+      const m = p.match(/^\/api\/mockups\/([^/]+)\/devices$/);
+      if (m && method === "POST") {
+        const id = decodeURIComponent(m[1]);
         const body = await readJsonBody(req);
-        if (!body.screenId || !body.config) {
-          sendError(res, 400, "screenId and config are required");
-          return;
-        }
-        const session = loadSession(id);
-        session.mockups[body.screenId] = body.config as MockupConfig;
-        saveSession(session);
+        const project = loadMockupProject(id);
+        const row = addDeviceRow(project, {
+          deviceId: body.deviceId,
+          variant: body.variant,
+          label: body.label ?? body.deviceId,
+          previewsVisible: true,
+          isBase: project.devices.length === 0,
+        } as Omit<MockupDeviceRow, "id">);
+        saveMockupProject(project);
+        sendJson(res, 200, { row, project });
+        return;
+      }
+    }
+    {
+      const m = p.match(/^\/api\/mockups\/([^/]+)\/devices\/([^/]+)$/);
+      if (m && method === "DELETE") {
+        const project = loadMockupProject(decodeURIComponent(m[1]));
+        project.devices = project.devices.filter((d) => d.id !== decodeURIComponent(m[2]));
+        saveMockupProject(project);
+        sendJson(res, 200, { ok: true });
+        return;
+      }
+      if (m && method === "PATCH") {
+        const body = await readJsonBody(req);
+        const project = loadMockupProject(decodeURIComponent(m[1]));
+        const idx = project.devices.findIndex((d) => d.id === decodeURIComponent(m[2]));
+        if (idx === -1) return sendError(res, 404, "Device row not found");
+        project.devices[idx] = { ...project.devices[idx], ...body };
+        saveMockupProject(project);
+        sendJson(res, 200, project.devices[idx]);
+        return;
+      }
+    }
+
+    // Editor section (columns + cell overrides)
+    if (method === "GET" && p === "/api/mockups/layouts") {
+      sendJson(res, 200, { presets: listLayoutPresets(), grouped: groupedLayoutPresets() });
+      return;
+    }
+    {
+      const m = p.match(/^\/api\/mockups\/([^/]+)\/columns$/);
+      if (m && method === "POST") {
+        const project = loadMockupProject(decodeURIComponent(m[1]));
+        const column = addColumn(project, defaultColumnStyle(`Feature ${project.columns.length + 1}`));
+        saveMockupProject(project);
+        sendJson(res, 200, { column, project });
+        return;
+      }
+    }
+    {
+      const m = p.match(/^\/api\/mockups\/([^/]+)\/columns\/([^/]+)$/);
+      if (m && method === "PUT") {
+        const body = await readJsonBody(req);
+        const project = loadMockupProject(decodeURIComponent(m[1]));
+        updateColumnStyle(project, decodeURIComponent(m[2]), body.style as ColumnStyle);
+        saveMockupProject(project);
+        sendJson(res, 200, { ok: true });
+        return;
+      }
+      if (m && method === "DELETE") {
+        const project = loadMockupProject(decodeURIComponent(m[1]));
+        project.columns = project.columns.filter((c) => c.id !== decodeURIComponent(m[2]));
+        saveMockupProject(project);
         sendJson(res, 200, { ok: true });
         return;
       }
     }
-
     {
-      const mockupAiMatch = p.match(/^\/api\/sessions\/([^/]+)\/mockups\/ai$/);
-      if (mockupAiMatch && method === "POST") {
-        const id = decodeURIComponent(mockupAiMatch[1]);
-        const session = loadSession(id);
-        const prompt =
-          `You are writing short app-store screenshot labels. For each screen below, ` +
-          `write a punchy label (max 6 words) and an optional one-line subtext (max 10 words), ` +
-          `grounded only in the given title/URL — never invent features. ` +
-          `Reply with ONLY a JSON array of {"screenId","label","subtext"} objects, one per screen.\n\n` +
-          session.raw.map((r) => `- screenId: ${r.id}, title: "${r.title}", url: ${r.url}`).join("\n");
-        const reply = await chat(prompt);
-        const items = extractJsonArray(reply);
-        for (const item of items) {
-          const existing = session.mockups[item.screenId] ?? defaultMockupConfig(
-            session.raw.find((r) => r.id === item.screenId)!,
-            session.platforms[0],
-          );
-          session.mockups[item.screenId] = { ...existing, label: item.label ?? existing.label, subtext: item.subtext ?? existing.subtext };
-        }
-        saveSession(session);
-        sendJson(res, 200, { mockups: session.mockups });
+      const m = p.match(/^\/api\/mockups\/([^/]+)\/cells\/([^/]+)\/([^/]+)$/);
+      if (m && method === "PUT") {
+        const body = await readJsonBody(req);
+        const project = loadMockupProject(decodeURIComponent(m[1]));
+        setCellOverride(project, decodeURIComponent(m[2]), decodeURIComponent(m[3]), body.override ?? null);
+        saveMockupProject(project);
+        sendJson(res, 200, { ok: true });
         return;
       }
     }
-
     {
-      const previewMatch = p.match(/^\/api\/sessions\/([^/]+)\/mockup-preview\/([^/]+)$/);
-      if (previewMatch && method === "GET") {
-        const id = decodeURIComponent(previewMatch[1]);
-        const screenId = decodeURIComponent(previewMatch[2]);
-        const session = loadSession(id);
-        const html = mockupHtmlForScreen(session, screenId, MOCKUP_PREVIEW_CANVAS);
+      const m = p.match(/^\/api\/mockups\/([^/]+)\/cell-preview\/([^/]+)\/([^/]+)$/);
+      if (m && method === "GET") {
+        const project = loadMockupProject(decodeURIComponent(m[1]));
+        const width = Number(url.searchParams.get("width")) || 300;
+        const height = Number(url.searchParams.get("height")) || 640;
+        const html = cellPreviewHtml(project, decodeURIComponent(m[2]), decodeURIComponent(m[3]), { width, height });
         res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
         res.end(html);
         return;
       }
     }
 
-    // --- Step 3: Store Asset Package ---
-
+    // AI assist -- text fields only
     {
-      const packageMatch = p.match(/^\/api\/sessions\/([^/]+)\/package$/);
-      if (packageMatch && method === "POST") {
-        const id = decodeURIComponent(packageMatch[1]);
+      const m = p.match(/^\/api\/mockups\/([^/]+)\/ai-text$/);
+      if (m && method === "POST") {
         const body = await readJsonBody(req);
-        const session = loadSession(id);
-        const result = await buildStorePackage(session, { targets: body.targets ?? {} });
-        sendJson(res, 200, result);
-        return;
-      }
-    }
-
-    {
-      const zipMatch = p.match(/^\/api\/sessions\/([^/]+)\/download\/zip$/);
-      if (zipMatch && method === "GET") {
-        const id = decodeURIComponent(zipMatch[1]);
-        sendFile(res, path.join(sessionDir(id), "store-assets.zip"), "application/zip");
-        return;
-      }
-    }
-
-    // --- Step 4: Animation Video ---
-
-    {
-      const scenesMatch = p.match(/^\/api\/sessions\/([^/]+)\/scenes$/);
-      if (scenesMatch && method === "GET") {
-        const id = decodeURIComponent(scenesMatch[1]);
-        const session = loadSession(id);
-        if (session.scenes.length === 0 && session.raw.length > 0) {
-          session.scenes = session.raw.map((r, i) => defaultSceneConfig(r.id, session.platforms[0], i));
-          saveSession(session);
-        }
-        sendJson(res, 200, { scenes: session.scenes, options: listSceneOptions() });
-        return;
-      }
-      if (scenesMatch && method === "POST") {
-        const id = decodeURIComponent(scenesMatch[1]);
-        const body = await readJsonBody(req);
-        if (!body.sceneId || !body.config) {
-          sendError(res, 400, "sceneId and config are required");
-          return;
-        }
-        const session = loadSession(id);
-        const idx = session.scenes.findIndex((s) => s.id === body.sceneId);
-        if (idx === -1) {
-          sendError(res, 404, `Scene '${body.sceneId}' not found`);
-          return;
-        }
-        session.scenes[idx] = { ...session.scenes[idx], ...(body.config as Partial<SceneConfig>) };
-        saveSession(session);
-        sendJson(res, 200, { ok: true });
-        return;
-      }
-    }
-
-    {
-      const sceneAiMatch = p.match(/^\/api\/sessions\/([^/]+)\/scenes\/ai$/);
-      if (sceneAiMatch && method === "POST") {
-        const id = decodeURIComponent(sceneAiMatch[1]);
-        const session = loadSession(id);
         const prompt =
-          `You are writing short promo-video scene captions. For each scene below, ` +
-          `write a punchy on-screen line (max 6 words) and an optional subtext (max 10 words), ` +
-          `grounded only in the given screen title/URL — never invent features. ` +
-          `Reply with ONLY a JSON array of {"sceneId","text","subtext"} objects, one per scene.\n\n` +
-          session.scenes
-            .map((s) => {
-              const screen = session.raw.find((r) => r.id === s.screenId);
-              return `- sceneId: ${s.id}, title: "${screen?.title ?? ""}", url: ${screen?.url ?? ""}`;
-            })
-            .join("\n");
+          `Write a short app-store screenshot title (max 6 words) and an optional one-line subtitle ` +
+          `(max 10 words) for a screen described as: "${body.hint ?? ""}". Never invent features not implied by the hint. ` +
+          `Reply with ONLY JSON: {"title":"...","subtitle":"..."}`;
         const reply = await chat(prompt);
-        const items = extractJsonArray(reply);
-        for (const item of items) {
-          const idx = session.scenes.findIndex((s) => s.id === item.sceneId);
-          if (idx !== -1) {
-            session.scenes[idx] = { ...session.scenes[idx], text: item.text ?? session.scenes[idx].text, subtext: item.subtext ?? session.scenes[idx].subtext };
-          }
-        }
-        saveSession(session);
-        sendJson(res, 200, { scenes: session.scenes });
+        const match = reply.match(/\{[\s\S]*\}/);
+        sendJson(res, 200, match ? JSON.parse(match[0]) : { title: "", subtitle: "" });
         return;
       }
     }
 
+    // Panoramic section
     {
-      const scenePreviewMatch = p.match(/^\/api\/sessions\/([^/]+)\/scene-preview\/([^/]+)$/);
-      if (scenePreviewMatch && method === "GET") {
-        const id = decodeURIComponent(scenePreviewMatch[1]);
-        const sceneId = decodeURIComponent(scenePreviewMatch[2]);
-        const session = loadSession(id);
-        const html = scenePreviewHtml(session, sceneId);
+      const m = p.match(/^\/api\/mockups\/([^/]+)\/panoramic$/);
+      if (m && method === "POST") {
+        const id = decodeURIComponent(m[1]);
+        const project = loadMockupProject(id);
+        const ext = imageExtFromContentType(req.headers["content-type"]);
+        const relPath = `sources/panorama.${ext}`;
+        fs.writeFileSync(mockupFile(id, relPath), await readRawBody(req));
+        project.globalPanoramic = { file: relPath, flip: project.globalPanoramic.flip };
+        saveMockupProject(project);
+        sendJson(res, 200, project.globalPanoramic);
+        return;
+      }
+      if (m && method === "PATCH") {
+        const body = await readJsonBody(req);
+        const project = loadMockupProject(decodeURIComponent(m[1]));
+        project.globalPanoramic.flip = Boolean(body.flip);
+        saveMockupProject(project);
+        sendJson(res, 200, project.globalPanoramic);
+        return;
+      }
+    }
+
+    // Settings section
+    {
+      const m = p.match(/^\/api\/mockups\/([^/]+)\/settings$/);
+      if (m && method === "PATCH") {
+        const body = await readJsonBody(req);
+        const project = loadMockupProject(decodeURIComponent(m[1]));
+        project.settings = { ...project.settings, ...body };
+        if (body.name) project.name = body.name;
+        if (body.appCategory) project.appCategory = body.appCategory;
+        saveMockupProject(project);
+        sendJson(res, 200, project);
+        return;
+      }
+    }
+
+    // Export section
+    {
+      const m = p.match(/^\/api\/mockups\/([^/]+)\/export$/);
+      if (m && method === "POST") {
+        const project = loadMockupProject(decodeURIComponent(m[1]));
+        const result = await exportMockupProject(project);
+        sendJson(res, 200, { bytes: result.bytes, entries: result.entries });
+        return;
+      }
+    }
+    {
+      const m = p.match(/^\/api\/mockups\/([^/]+)\/download\/zip$/);
+      if (m && method === "GET") {
+        sendFile(res, path.join(mockupDir(decodeURIComponent(m[1])), "exports", "mockup-export.zip"), "application/zip");
+        return;
+      }
+    }
+
+    // =========================================================
+    // Video tab -- Templates / Scenes
+    // =========================================================
+
+    if (method === "GET" && p === "/api/videos") {
+      sendJson(res, 200, { projects: listVideoProjects() });
+      return;
+    }
+    if (method === "POST" && p === "/api/videos") {
+      const body = await readJsonBody(req);
+      if (!body.name) return sendError(res, 400, "name is required");
+      sendJson(res, 200, createVideoProject(body.name));
+      return;
+    }
+    {
+      const m = p.match(/^\/api\/videos\/([^/]+)$/);
+      if (m && method === "GET") return sendJson(res, 200, loadVideoProject(decodeURIComponent(m[1])));
+    }
+    {
+      const m = p.match(/^\/api\/videos\/([^/]+)\/file$/);
+      if (m && method === "GET") {
+        const rel = url.searchParams.get("p");
+        if (!rel) return sendError(res, 400, "query param 'p' is required");
+        const abs = videoFile(decodeURIComponent(m[1]), rel);
+        const ext = path.extname(abs).toLowerCase();
+        sendFile(res, abs, ext === ".mp4" ? "video/mp4" : "image/png");
+        return;
+      }
+    }
+
+    if (method === "GET" && p === "/api/videos/templates") {
+      sendJson(res, 200, { templates: VIDEO_TEMPLATES.map((t) => ({ id: t.id, name: t.name, description: t.description, sceneCount: t.scenes.length })) });
+      return;
+    }
+    {
+      const m = p.match(/^\/api\/videos\/([^/]+)\/apply-template$/);
+      if (m && method === "POST") {
+        const body = await readJsonBody(req);
+        const project = loadVideoProject(decodeURIComponent(m[1]));
+        applyVideoTemplate(project, body.templateId, body.device ?? "phone");
+        saveVideoProject(project);
+        sendJson(res, 200, project);
+        return;
+      }
+    }
+    {
+      const m = p.match(/^\/api\/videos\/([^/]+)\/template-preview$/);
+      if (m && method === "GET") {
+        const project = loadVideoProject(decodeURIComponent(m[1]));
         res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
-        res.end(html);
+        res.end(templatePreviewHtml(project));
         return;
       }
     }
 
+    if (method === "GET" && p === "/api/videos/scene-options") {
+      sendJson(res, 200, { animations: listSceneAnimations(), backgrounds: listVideoBackgrounds() });
+      return;
+    }
     {
-      const bgmMatch = p.match(/^\/api\/sessions\/([^/]+)\/bgm$/);
-      if (bgmMatch && method === "POST") {
-        const id = decodeURIComponent(bgmMatch[1]);
-        const session = loadSession(id);
+      const m = p.match(/^\/api\/videos\/([^/]+)\/sources$/);
+      if (m && method === "POST") {
+        const id = decodeURIComponent(m[1]);
+        const project = loadVideoProject(id);
+        const name = url.searchParams.get("name") ?? `image_${project.sources.length + 1}`;
+        const ext = imageExtFromContentType(req.headers["content-type"]);
+        const relPath = `sources/img_${Date.now()}.${ext}`;
+        const abs = videoFile(id, relPath);
+        fs.writeFileSync(abs, await readRawBody(req));
+        const { width, height } = pngSize(abs);
+        const source = { id: `src_${Date.now()}`, name, file: relPath, width, height };
+        project.sources.push(source);
+        saveVideoProject(project);
+        sendJson(res, 200, source);
+        return;
+      }
+    }
+    {
+      const m = p.match(/^\/api\/videos\/([^/]+)\/scenes\/([^/]+)$/);
+      if (m && method === "PUT") {
+        const body = await readJsonBody(req);
+        const project = loadVideoProject(decodeURIComponent(m[1]));
+        const idx = project.scenes.findIndex((s) => s.id === decodeURIComponent(m[2]));
+        if (idx === -1) return sendError(res, 404, "Scene not found");
+        project.scenes[idx] = { ...project.scenes[idx], ...body };
+        saveVideoProject(project);
+        sendJson(res, 200, project.scenes[idx]);
+        return;
+      }
+    }
+    {
+      const m = p.match(/^\/api\/videos\/([^/]+)\/scenes\/([^/]+)\/ai-text$/);
+      if (m && method === "POST") {
+        const body = await readJsonBody(req);
+        const prompt =
+          `Write a short promo-video on-screen line (max 6 words) and an optional subtext (max 10 words) ` +
+          `for a scene described as: "${body.hint ?? ""}". Never invent features not implied by the hint. ` +
+          `Reply with ONLY JSON: {"text":"...","subtext":"..."}`;
+        const reply = await chat(prompt);
+        const match = reply.match(/\{[\s\S]*\}/);
+        sendJson(res, 200, match ? JSON.parse(match[0]) : { text: "", subtext: "" });
+        return;
+      }
+    }
+    {
+      const m = p.match(/^\/api\/videos\/([^/]+)\/scene-preview\/([^/]+)$/);
+      if (m && method === "GET") {
+        const project = loadVideoProject(decodeURIComponent(m[1]));
+        res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
+        res.end(scenePreviewHtml(project, decodeURIComponent(m[2])));
+        return;
+      }
+    }
+    {
+      const m = p.match(/^\/api\/videos\/([^/]+)\/bgm$/);
+      if (m && method === "POST") {
+        const id = decodeURIComponent(m[1]);
+        const project = loadVideoProject(id);
         const contentType = req.headers["content-type"] ?? "audio/mpeg";
         const ext = contentType.includes("wav") ? "wav" : contentType.includes("ogg") ? "ogg" : "mp3";
         const relPath = `bgm.${ext}`;
-        const abs = sessionFile(id, relPath);
-        const body = await readRawBody(req);
-        fs.writeFileSync(abs, body);
-        session.bgm = relPath;
-        saveSession(session);
+        fs.writeFileSync(videoFile(id, relPath), await readRawBody(req));
+        project.bgm = relPath;
+        saveVideoProject(project);
         sendJson(res, 200, { ok: true, bgm: relPath });
         return;
       }
     }
-
     {
-      const videoMatch = p.match(/^\/api\/sessions\/([^/]+)\/video$/);
-      if (videoMatch && method === "POST") {
-        const id = decodeURIComponent(videoMatch[1]);
-        const session = loadSession(id);
-        const videoPath = await renderVideo(session);
-        session.outputs.video = path.relative(sessionDir(id), videoPath).split(path.sep).join("/");
-        saveSession(session);
-        sendJson(res, 200, { videoPath: session.outputs.video });
+      const m = p.match(/^\/api\/videos\/([^/]+)\/render$/);
+      if (m && method === "POST") {
+        const id = decodeURIComponent(m[1]);
+        const project = loadVideoProject(id);
+        const videoPath = await renderVideo(project);
+        project.outputs.video = path.relative(videoDir(id), videoPath).split(path.sep).join("/");
+        saveVideoProject(project);
+        sendJson(res, 200, { videoPath: project.outputs.video });
         return;
       }
     }
-
     {
-      const videoDownloadMatch = p.match(/^\/api\/sessions\/([^/]+)\/download\/video$/);
-      if (videoDownloadMatch && method === "GET") {
-        const id = decodeURIComponent(videoDownloadMatch[1]);
-        sendFile(res, path.join(sessionDir(id), "video", "promo.mp4"), "video/mp4");
+      const m = p.match(/^\/api\/videos\/([^/]+)\/download$/);
+      if (m && method === "GET") {
+        sendFile(res, path.join(videoDir(decodeURIComponent(m[1])), "video", "promo.mp4"), "video/mp4");
         return;
       }
     }
 
     sendError(res, 404, `No route for ${method} ${p}`);
   } catch (err) {
-    // Every failure surfaces as a real, readable message — never a silent
+    // Every failure surfaces as a real, readable message -- never a silent
     // 500 or a hung request. This is the same "fail loud" discipline as
     // the capture/auth layers.
     sendError(res, 500, (err as Error).message || String(err));
@@ -570,14 +765,10 @@ export async function startUiServer(options: UiServerOptions = {}): Promise<http
 function openInBrowser(url: string): void {
   const platform = process.platform;
   try {
-    if (platform === "win32") {
-      exec(`start "" "${url}"`);
-    } else if (platform === "darwin") {
-      exec(`open "${url}"`);
-    } else {
-      exec(`xdg-open "${url}"`);
-    }
+    if (platform === "win32") exec(`start "" "${url}"`);
+    else if (platform === "darwin") exec(`open "${url}"`);
+    else exec(`xdg-open "${url}"`);
   } catch {
-    // Non-fatal — the URL is already printed to the console above.
+    // Non-fatal -- the URL is already printed to the console above.
   }
 }
