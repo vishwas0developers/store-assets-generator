@@ -20,6 +20,9 @@ export interface MockupStarterTemplate {
   columnCount: number;
   layout: string;
   background: ColumnStyle["background"];
+  /** Title/subtitle color override -- defaultColumnStyle always sets white
+   *  text, which is invisible on a light background (cream/white). */
+  textColor?: string;
   titles?: string[];
   subtitles?: string[];
 }
@@ -80,11 +83,14 @@ export const MOCKUP_TEMPLATES: MockupStarterTemplate[] = [
     id: "books-app-template-1",
     name: "Books App Template 1",
     category: "books",
-    description: "Rotated frameless screens for a reading and e-book app.",
+    description: "Rotated framed screens for a reading and e-book app.",
     devices: [{ deviceId: "ipad-pro-12-9", label: "12.9 Inch Tablet" }],
     columnCount: 4,
     layout: "rotated-left-1-caption-above",
-    background: { type: "solid", value: "solid-charcoal" },
+    // Warm cream, not solid-charcoal (#1c1c1c) -- that was the exact same
+    // hex as the iPad's frame body color, so the frame was invisible.
+    background: { type: "solid", value: "solid-cream" },
+    textColor: "#1c1c1c",
     titles: ["Read Books", "Offline Mode", "Audiobooks", "Bookmark"],
     subtitles: ["Your library in your pocket", "Download stories to read anywhere", "Listen to high-quality audio", "Never lose your place"],
   },
@@ -96,7 +102,7 @@ export const MOCKUP_TEMPLATES: MockupStarterTemplate[] = [
     devices: [{ deviceId: "google-pixel-9", label: "Pixel Phone" }],
     columnCount: 4,
     layout: "left-side-title-above",
-    background: { type: "solid", value: "solid-forest" },
+    background: { type: "gradient", value: "royal" },
     titles: ["Store Files", "Auto Backup", "Share Links", "Access Anywhere"],
     subtitles: ["Keep everything in the cloud", "Never lose a document again", "Send large files instantly", "Sync across every device"],
   },
@@ -124,6 +130,7 @@ export const MOCKUP_TEMPLATES: MockupStarterTemplate[] = [
     columnCount: 4,
     layout: "single-caption-below",
     background: { type: "solid", value: "solid-white" },
+    textColor: "#1c1c1c",
     titles: ["Read Stories", "Follow Writers", "Save for Later", "Curated Feed"],
     subtitles: ["Long-form articles worth your time", "Get updates from favorite authors", "Build your own reading list", "Personalized to your interests"],
   },
@@ -135,7 +142,7 @@ export const MOCKUP_TEMPLATES: MockupStarterTemplate[] = [
     devices: [{ deviceId: "ipad-pro-12-9", label: "12.9 Inch Tablet" }],
     columnCount: 5,
     layout: "single-title-above",
-    background: { type: "solid", value: "solid-navy" },
+    background: { type: "solid", value: "solid-indigo" },
     titles: ["Watch Anywhere", "New Releases", "Download Offline", "Multiple Profiles", "4K Streaming"],
     subtitles: ["Stream on any screen", "Fresh titles every week", "Take shows on the go", "One account, every viewer", "Crisp picture, every time"],
   },
@@ -197,8 +204,12 @@ export const MOCKUP_TEMPLATES: MockupStarterTemplate[] = [
     description: "Cream-toned layout for a recipe and meal-planning app.",
     devices: [{ deviceId: "samsung-galaxy-s24", label: "Galaxy Phone" }],
     columnCount: 4,
-    layout: "snapshot-single-caption-above",
+    // Framed (was "snapshot-" -- frameless -- which made the device chrome
+    // invisible by design; the near-black Galaxy frame reads clearly here
+    // against the cream background).
+    layout: "single-caption-above",
     background: { type: "solid", value: "solid-cream" },
+    textColor: "#1c1c1c",
     titles: ["Browse Recipes", "Plan Your Week", "Shopping List", "Cook Along"],
     subtitles: ["Thousands of dishes to try", "Meals mapped to your days", "Ingredients synced automatically", "Step-by-step guided cooking"],
   },
@@ -221,11 +232,14 @@ export const MOCKUP_TEMPLATES: MockupStarterTemplate[] = [
     id: "photo-video-template-1",
     name: "Photo & Video Template 1",
     category: "photo-and-video",
-    description: "Frameless snapshot layout for a camera/editing app.",
+    description: "Framed layout for a camera/editing app.",
     devices: [{ deviceId: "apple-iphone-17-pro-max", label: "6.9 Inch Phone" }],
     columnCount: 5,
-    layout: "snapshot-single-title-above",
-    background: { type: "gradient", value: "graphite" },
+    // Framed (was "snapshot-", frameless) on "aurora" instead of "graphite" --
+    // graphite's dark gradient (#232526) was nearly identical to the
+    // iPhone's #262626 frame body, so the frame all but disappeared.
+    layout: "single-title-above",
+    background: { type: "gradient", value: "aurora" },
     titles: ["Shoot & Edit", "Pro Filters", "Layer Tools", "Quick Export", "Share Everywhere"],
     subtitles: ["Capture in stunning detail", "Cinematic color grades", "Non-destructive editing", "Save in seconds", "Post directly to any platform"],
   },
@@ -237,7 +251,7 @@ export const MOCKUP_TEMPLATES: MockupStarterTemplate[] = [
     devices: [{ deviceId: "google-pixel-9", label: "Pixel Phone" }],
     columnCount: 4,
     layout: "single-caption-above",
-    background: { type: "solid", value: "solid-forest" },
+    background: { type: "gradient", value: "mint" },
     titles: ["Add Tasks", "Set Reminders", "Organize Lists", "Track Progress"],
     subtitles: ["Capture to-dos in a tap", "Never miss a deadline", "Group tasks by project", "See how far you've come"],
   },
@@ -262,8 +276,30 @@ export const MOCKUP_TEMPLATES: MockupStarterTemplate[] = [
     columnCount: 5,
     layout: "two-devices-title-below",
     background: { type: "solid", value: "solid-cream" },
+    textColor: "#1c1c1c",
     titles: ["New Arrivals", "Easy Cart", "Secure Checkout", "Track Order", "Get Rewards"],
     subtitles: ["Curated items every week", "One-tap addition to cart", "All major cards accepted", "Realtime delivery routing", "Earn points on every purchase"],
+  },
+  {
+    id: "learnhub-education-template",
+    name: "LearnHub Online Courses",
+    category: "education",
+    description: "Premium right-aligned layout for an online learning and course platform.",
+    devices: [{ deviceId: "apple-iphone-18-pro-max", label: "6.9 Inch Phone" }],
+    columnCount: 5,
+    layout: "right-side-title-above",
+    // Citrus (a bright orange/yellow gradient) reads clearly against the
+    // iPhone 18 Pro Max's near-black frame (#282828) -- checked against the
+    // same contrast audit used to fix the other low-contrast templates.
+    background: { type: "gradient", value: "citrus" },
+    titles: ["Learn Anything", "Expert-Led Courses", "Track Your Progress", "Learn Offline", "Join the Community"],
+    subtitles: [
+      "Thousands of courses across every subject",
+      "Taught by industry professionals",
+      "Certificates and skill milestones",
+      "Download lessons for any connection",
+      "Study groups and live Q&A sessions",
+    ],
   },
 ];
 
@@ -279,10 +315,17 @@ const CANVAS_WIDTH = 1080;
  *  overflows the canvas entirely at the slider default. Starter templates
  *  pick a size that fits the device to a sensible fraction of the canvas
  *  instead of blindly using the slider default. */
-function sizeForDevice(deviceId: string, variant: string | undefined, targetWidthPx: number): number {
+/** Canvas is 1080x1920, but sizing purely by target width breaks down for
+ *  unusually tall/wide geometries (e.g. a foldable's unfolded variant can be
+ *  ~2640px tall) -- constraining width alone leaves the device overflowing
+ *  the canvas height and getting clipped, cropping away the frame edges
+ *  entirely. Fit both axes and take whichever is smaller. */
+function sizeForDevice(deviceId: string, variant: string | undefined, targetWidthPx: number, maxHeightPx = 1920 * 0.82): number {
   const device = DEVICE_REGISTRY[deviceId] ?? DEVICE_REGISTRY["phone"];
   const geometry = resolveGeometry(device, variant);
-  return Math.round(90 * (targetWidthPx / geometry.width));
+  const widthScale = targetWidthPx / geometry.width;
+  const heightScale = maxHeightPx / geometry.height;
+  return Math.round(90 * Math.min(widthScale, heightScale));
 }
 
 export function applyMockupTemplate(project: MockupProject, templateId: string): void {
@@ -308,6 +351,10 @@ export function applyMockupTemplate(project: MockupProject, templateId: string):
     style.subtitle.text = defaultSub;
     style.layout = template.layout;
     style.background = template.background;
+    if (template.textColor) {
+      style.title.color = template.textColor;
+      style.subtitle.color = template.textColor;
+    }
     style.deviceOne.size = deviceSize;
     // A "snapshot-" layout is frameless by design (screenshot only, no
     // device chrome) -- without this the preset's frameless flag was never
