@@ -188,7 +188,7 @@ export async function executeBrowserAction(action: {
       if (action.xPct !== undefined && action.yPct !== undefined) {
         const x = Math.round((action.xPct / 100) * currentPreset.cssWidth);
         const y = Math.round((action.yPct / 100) * currentPreset.cssHeight);
-        console.log(`[SAG-BROWSER] Mobile Click / Touch at (${x}, ${y}) [${action.xPct}%, ${action.yPct}%]`);
+        console.log(`[SAG-BROWSER] Mobile Click / Touch at (${x}, ${y})`);
         if (currentPreset.hasTouch) {
           await activePage.touchscreen.tap(x, y).catch(() => {});
         }
@@ -199,9 +199,12 @@ export async function executeBrowserAction(action: {
     case "scroll": {
       const deltaX = action.deltaX ?? 0;
       const deltaY = action.deltaY ?? 0;
-      await activePage.evaluate(({ dx, dy }) => {
-        window.scrollBy(dx, dy);
-      }, { dx: deltaX, dy: deltaY });
+      if (action.xPct !== undefined && action.yPct !== undefined) {
+        const x = Math.round((action.xPct / 100) * currentPreset.cssWidth);
+        const y = Math.round((action.yPct / 100) * currentPreset.cssHeight);
+        await activePage.mouse.move(x, y).catch(() => {});
+      }
+      await activePage.mouse.wheel(deltaX, deltaY).catch(() => {});
       break;
     }
     case "type": {

@@ -611,48 +611,251 @@ async function disconnectLiveBrowser() {
   $("browser-bottom-controls").style.display = "none";
 }
 
+let frameInFlight = false;
+let isFastStream = false;
+let boostTimer = null;
+
+const loadNextFrame = () => {
+  if (!browserConnected || frameInFlight) return;
+  frameInFlight = true;
+  const img = $("browser-frame-img");
+  const newImg = new Image();
+  newImg.onload = () => {
+    img.src = newImg.src;
+    frameInFlight = false;
+  };
+  newImg.onerror = () => {
+    frameInFlight = false;
+  };
+  newImg.src = `/api/browser/frame?t=${Date.now()}`;
+};
+
 function startFrameStream() {
   clearInterval(frameIntervalId);
-  
-  const img = $("browser-frame-img");
-  const loadNextFrame = () => {
-    if (!browserConnected) return;
-    img.src = `/api/browser/frame?t=${Date.now()}`;
-  };
-
   loadNextFrame();
-  frameIntervalId = setInterval(loadNextFrame, 250);
+  frameIntervalId = setInterval(loadNextFrame, 200);
 }
 
-// Interactive events on the device frame
-const imgEl = $("browser-frame-img");
-imgEl.onmousedown = async (e) => {
+function boostFrameStream() {
   if (!browserConnected) return;
+  if (!isFastStream) {
+    isFastStream = true;
+    clearInterval(frameIntervalId);
+    frameIntervalId = setInterval(loadNextFrame, 75); // ~13 fps during active motion
+  }
+  clearTimeout(boostTimer);
+  boostTimer = setTimeout(() => {
+    isFastStream = false;
+    clearInterval(frameIntervalId);
+    frameIntervalId = setInterval(loadNextFrame, 200); // idle 5 fps
+  }, 1000);
+}
+
+// Interactive touch & scroll events on the device frame
+const imgEl = $("browser-frame-img");
+
+let isPointerDown = false;
+let hasDragged = false;
+let startX = 0;
+let startY = 0;
+let lastX = 0;
+let lastY = 0;
+let pointerStartTime = 0;
+
+// Velocity Tracker History (last 120ms)
+let moveHistory = [];
+
+function recordMoveSample(x, y) {
+  const now = performance.now();
+  moveHistory.push({ x, y, t: now });
+  while (moveHistory.length > 0 && now - moveHistory[0].t > 120) {
+    moveHistory.shift();
+  }
+}
+
+function getInstantVelocity() {
+  if (moveHistory.length < 2) return { vx: 0, vy: 0 };
+  const first = moveHistory[0];
+  const last = moveHistory[moveHistory.length - 1];
+  const dt = last.t - first.t;
+  if (dt <= 0) return { vx: 0, vy: 0 };
+  return {
+    vx: (last.x - first.x) / dt,
+    vy: (last.y - first.y) / dt
+  };
+}
+
+// Kinetic Inertia Loop
+let inertiaRafId = null;
+
+function startMomentumInertia(vx, vy, xPct, yPct) {
+  cancelAnimationFrame(inertiaRafId);
+  const speed = Math.hypot(vx, vy);
+  if (speed < 0.12) return; // Ignore very subtle slow releases
+
+  // Initial impulse scaled to frame rate
+  let momentumDx = -vx * 18 * 1.5;
+  let momentumDy = -vy * 18 * 1.5;
+  const friction = 0.91; // Smooth mobile friction deceleration
+
+  const stepInertia = () => {
+    if (!browserConnected) return;
+    
+    queueScroll(momentumDx, momentumDy, xPct, yPct);
+    boostFrameStream();
+
+    momentumDx *= friction;
+    momentumDy *= friction;
+
+    if (Math.hypot(momentumDx, momentumDy) > 0.4) {
+      inertiaRafId = requestAnimationFrame(stepInertia);
+    }
+  };
+
+  inertiaRafId = requestAnimationFrame(stepInertia);
+}
+
+// Non-blocking rAF scroll accumulator
+let accumDeltaX = 0;
+let accumDeltaY = 0;
+let lastCursorXPct = 50;
+let lastCursorYPct = 50;
+let rafScheduled = false;
+
+function flushScrollAccumulator() {
+  if (!browserConnected) {
+    accumDeltaX = 0;
+    accumDeltaY = 0;
+    rafScheduled = false;
+    return;
+  }
+
+  const dx = accumDeltaX;
+  const dy = accumDeltaY;
+  const xPct = lastCursorXPct;
+  const yPct = lastCursorYPct;
+
+  accumDeltaX = 0;
+  accumDeltaY = 0;
+  rafScheduled = false;
+
+  if (dx !== 0 || dy !== 0) {
+    // Non-blocking fire-and-forget POST
+    fetch("/api/browser/action", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: "scroll", deltaX: dx, deltaY: dy, xPct, yPct })
+    }).catch(() => {});
+  }
+}
+
+function queueScroll(dx, dy, xPct, yPct) {
+  accumDeltaX += dx;
+  accumDeltaY += dy;
+  if (xPct !== undefined) lastCursorXPct = xPct;
+  if (yPct !== undefined) lastCursorYPct = yPct;
+
+  if (!rafScheduled) {
+    rafScheduled = true;
+    requestAnimationFrame(flushScrollAccumulator);
+  }
+}
+
+imgEl.addEventListener("pointerdown", (e) => {
+  if (!browserConnected) return;
+  e.preventDefault();
+  cancelAnimationFrame(inertiaRafId); // Catch moving screen instantly
+  isPointerDown = true;
+  hasDragged = false;
+  startX = e.clientX;
+  startY = e.clientY;
+  lastX = e.clientX;
+  lastY = e.clientY;
+  pointerStartTime = Date.now();
+  moveHistory = [{ x: e.clientX, y: e.clientY, t: performance.now() }];
+  try { imgEl.setPointerCapture(e.pointerId); } catch (err) {}
+});
+
+imgEl.addEventListener("pointermove", (e) => {
+  if (!browserConnected || !isPointerDown) return;
+  e.preventDefault();
+
+  recordMoveSample(e.clientX, e.clientY);
+
+  const totalDist = Math.hypot(e.clientX - startX, e.clientY - startY);
+  if (totalDist > 3) {
+    hasDragged = true;
+  }
+
+  if (hasDragged) {
+    const distX = e.clientX - lastX;
+    const distY = e.clientY - lastY;
+
+    if (distX !== 0 || distY !== 0) {
+      lastX = e.clientX;
+      lastY = e.clientY;
+
+      const rect = imgEl.getBoundingClientRect();
+      const xPct = ((e.clientX - rect.left) / rect.width) * 100;
+      const yPct = ((e.clientY - rect.top) / rect.height) * 100;
+
+      // Dynamic velocity-sensitive scroll multiplier
+      const stepSpeed = Math.hypot(distX, distY);
+      const sensitivity = Math.min(Math.max(stepSpeed * 0.16, 1.4), 3.8);
+
+      const deltaX = -distX * sensitivity;
+      const deltaY = -distY * sensitivity;
+
+      queueScroll(deltaX, deltaY, xPct, yPct);
+      boostFrameStream();
+    }
+  }
+});
+
+const handlePointerEnd = async (e) => {
+  if (!browserConnected || !isPointerDown) return;
+  const elapsed = Date.now() - pointerStartTime;
+  
+  try { imgEl.releasePointerCapture(e.pointerId); } catch (err) {}
+
   const rect = imgEl.getBoundingClientRect();
   const xPct = ((e.clientX - rect.left) / rect.width) * 100;
   const yPct = ((e.clientY - rect.top) / rect.height) * 100;
 
-  try {
-    await api("/api/browser/action", {
-      method: "POST",
-      body: { type: "click", xPct, yPct }
-    });
-    // Instant frame update on click
-    imgEl.src = `/api/browser/frame?t=${Date.now()}`;
-  } catch (e) {}
+  if (!hasDragged && elapsed < 350) {
+    // Instant single tap
+    try {
+      await api("/api/browser/action", {
+        method: "POST",
+        body: { type: "click", xPct, yPct }
+      });
+      boostFrameStream();
+      imgEl.src = `/api/browser/frame?t=${Date.now()}`;
+    } catch (err) {}
+  } else if (hasDragged) {
+    // Launch natural momentum inertia glide
+    const { vx, vy } = getInstantVelocity();
+    startMomentumInertia(vx, vy, xPct, yPct);
+  }
+
+  isPointerDown = false;
+  hasDragged = false;
 };
 
-imgEl.addEventListener("wheel", async (e) => {
+imgEl.addEventListener("pointerup", handlePointerEnd);
+imgEl.addEventListener("pointercancel", handlePointerEnd);
+
+// Wheel & Trackpad scroll listener
+imgEl.addEventListener("wheel", (e) => {
   if (!browserConnected) return;
   e.preventDefault();
+  cancelAnimationFrame(inertiaRafId);
+  const rect = imgEl.getBoundingClientRect();
+  const xPct = ((e.clientX - rect.left) / rect.width) * 100;
+  const yPct = ((e.clientY - rect.top) / rect.height) * 100;
   
-  try {
-    await api("/api/browser/action", {
-      method: "POST",
-      body: { type: "scroll", deltaY: e.deltaY }
-    });
-    imgEl.src = `/api/browser/frame?t=${Date.now()}`;
-  } catch (e) {}
+  queueScroll(e.deltaX * 1.5, e.deltaY * 1.5, xPct, yPct);
+  boostFrameStream();
 }, { passive: false });
 
 // Keyboard text input helper when focusing the browser URL input
