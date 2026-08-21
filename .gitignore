@@ -2,6 +2,7 @@ node_modules/
 dist/
 output/
 .auth/
+.env
 *.log
 .DS_Store
 graphify-out/

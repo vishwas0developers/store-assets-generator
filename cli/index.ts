@@ -1,11 +1,14 @@
 #!/usr/bin/env node
+import { loadEnvFile } from "../src/config/env.js";
+loadEnvFile();
+
 import { Command } from "commander";
 import { AssetPipeline } from "../src/orchestrator.js";
 import { startMcpServer } from "../mcp/server.js";
 import { startUiServer } from "../web/server.js";
 import { installSkillsAndMcp } from "../install/index.js";
 import { setCredentials, getCredentialStatus, clearCredentials, resolveCredentials } from "../src/auth/credentials.js";
-import { loadAuthConfig, slugify } from "../src/auth/appConfig.js";
+import { resolveAuthConfig, slugify } from "../src/auth/appConfig.js";
 import { defaultSessionStatePath } from "../src/capture/auth.js";
 import { WebCaptureBackend } from "../src/capture/browser.js";
 import path from "path";
@@ -112,9 +115,9 @@ auth
   .option("--slug <slug>", "App slug — resolves apps/<slug>/auth.json (defaults to the URL hostname)")
   .action(async (options) => {
     const slug = options.slug ?? slugify(options.url);
-    const authConfig = loadAuthConfig(slug);
+    const authConfig = resolveAuthConfig(options.url, slug);
     if (!authConfig) {
-      console.error(`No apps/${slug}/auth.json found — nothing to test. Public/unauthenticated capture will still work.`);
+      console.error(`No auth config found for "${options.url}" (no apps/${slug}/auth.json, and DEMO_GEN_ADMIN_API_BASE_URL is not set for the global default). Public/unauthenticated capture will still work.`);
       process.exit(1);
     }
     const creds = resolveCredentials();

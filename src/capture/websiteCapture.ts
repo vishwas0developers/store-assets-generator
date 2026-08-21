@@ -3,7 +3,7 @@ import path from "path";
 import { DiscoveryEngine } from "../discovery/crawl.js";
 import { WebCaptureBackend } from "./browser.js";
 import { defaultSessionStatePath } from "./auth.js";
-import { loadAuthConfig, slugify } from "../auth/appConfig.js";
+import { resolveAuthConfig, slugify } from "../auth/appConfig.js";
 import { loadPlatformSpec } from "../platform/index.js";
 import { saveCaptureSession, captureDir, type RawScreenshot, type CaptureSession } from "./store.js";
 
@@ -41,7 +41,7 @@ function captureViewport(platforms: string[]): { width: number; height: number }
 export async function captureWebsiteScreens(session: CaptureSession, request: CaptureRequest = {}): Promise<CaptureSession> {
   if (!session.url) throw new Error("Website capture requires a url on the capture session.");
   const slug = session.slug || slugify(session.url);
-  const authConfig = loadAuthConfig(slug);
+  const authConfig = resolveAuthConfig(session.url, slug);
   if (authConfig && !authConfig.sessionStatePath) {
     authConfig.sessionStatePath = defaultSessionStatePath(slug);
   }
