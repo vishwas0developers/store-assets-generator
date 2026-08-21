@@ -499,12 +499,13 @@ async function renderLiveBrowserCaptures() {
     for (const c of proj.captures) {
       const item = document.createElement("div");
       item.className = "thumb";
+      item.style = "height: fit-content; align-self: start;";
       const fileUrl = `/api/projects/${activeProjectId}/file?p=${encodeURIComponent(c.file)}`;
       item.innerHTML = `
-        <img src="${fileUrl}" style="cursor: pointer;" />
-        <div class="cap" style="display: flex; justify-content: space-between; align-items: center; padding: 0.35rem 0.5rem;">
-          <span>Screen ${c.id}</span>
-          <button class="small danger delete-cap-btn" style="padding: 0.1rem 0.3rem;">&times;</button>
+        <img src="${fileUrl}" style="cursor: pointer; width: 100%; height: auto; max-height: 220px; display: block; aspect-ratio: 9/16; object-fit: contain; background: #000;" />
+        <div class="cap" style="display: flex; justify-content: space-between; align-items: center; padding: 0.35rem 0.5rem; background: #14171f; border-top: 1px solid #21252f;">
+          <span style="font-weight: 600; color: #e5e7eb; font-size: 0.75rem;">Screen ${c.id}</span>
+          <button class="small danger delete-cap-btn" style="padding: 0.1rem 0.35rem; font-size: 0.85rem; line-height: 1; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center;" title="Delete screenshot">&times;</button>
         </div>
       `;
 
