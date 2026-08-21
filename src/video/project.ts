@@ -49,10 +49,12 @@ export interface VideoProject {
   outputs: { video?: string };
 }
 
-const ROOT = path.join(process.cwd(), "output", "videos");
+import { loadProject, saveProject, listProjects } from "../project/projectStore.js";
+
+const ROOT = path.join(process.cwd(), "output", "projects");
 
 export function videoDir(id: string): string {
-  const dir = path.join(ROOT, id);
+  const dir = path.join(ROOT, id, "video");
   const rel = path.relative(ROOT, dir);
   if (rel.startsWith("..") || path.isAbsolute(rel)) throw new Error(`Invalid video project id '${id}'.`);
   return dir;
@@ -67,41 +69,23 @@ export function videoFile(id: string, relative: string): string {
 }
 
 export function createVideoProject(name: string): VideoProject {
-  const id = `video-${Date.now()}`;
-  const project: VideoProject = {
-    id,
-    createdAt: new Date().toISOString(),
-    name,
-    template: null,
-    sources: [],
-    scenes: [],
-    bgm: null,
-    outputs: {},
-  };
-  fs.mkdirSync(path.join(videoDir(id), "sources"), { recursive: true });
-  saveVideoProject(project);
-  return project;
+  throw new Error("Deprecated: Use createProject from projectStore instead");
 }
 
 export function saveVideoProject(project: VideoProject): void {
-  fs.mkdirSync(videoDir(project.id), { recursive: true });
-  fs.writeFileSync(path.join(videoDir(project.id), "project.json"), JSON.stringify(project, null, 2), "utf-8");
+  const unified = loadProject(project.id);
+  unified.video = project;
+  saveProject(unified);
 }
 
 export function loadVideoProject(id: string): VideoProject {
-  const file = path.join(videoDir(id), "project.json");
-  if (!fs.existsSync(file)) throw new Error(`Video project '${id}' not found.`);
-  return JSON.parse(fs.readFileSync(file, "utf-8"));
+  const unified = loadProject(id);
+  return unified.video;
 }
 
 export function listVideoProjects(): Array<{ id: string; createdAt: string; name: string; scenes: number }> {
-  if (!fs.existsSync(ROOT)) return [];
-  return fs
-    .readdirSync(ROOT)
-    .filter((n) => fs.existsSync(path.join(ROOT, n, "project.json")))
-    .map((n) => {
-      const p = loadVideoProject(n);
-      return { id: p.id, createdAt: p.createdAt, name: p.name, scenes: p.scenes.length };
-    })
-    .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  return listProjects().map((p) => {
+    const v = p.video;
+    return { id: p.id, createdAt: p.createdAt, name: p.name, scenes: v.scenes?.length ?? 0 };
+  });
 }

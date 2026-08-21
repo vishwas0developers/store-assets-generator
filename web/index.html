@@ -10,81 +10,170 @@
 <div style="display:flex; flex-direction:column; height:100vh;">
 
   <div class="topbar">
-    <div class="brand">Store Assets Generator</div>
+    <div class="brand" id="brand-title">Store Assets Generator</div>
     <div class="topbar-tabs">
-      <div class="topbar-tab active" data-tab="capture">Screen Capture</div>
-      <div class="topbar-tab" data-tab="mockup">Studio Mockup</div>
-      <div class="topbar-tab" data-tab="video">Video</div>
+      <div class="topbar-tab active" data-tab="projects">Projects List</div>
+      <div class="topbar-tab disabled" data-tab="capture" id="tab-nav-capture">Screen Capture</div>
+      <div class="topbar-tab disabled" data-tab="mockup" id="tab-nav-mockup">Studio Mockup</div>
+      <div class="topbar-tab disabled" data-tab="video" id="tab-nav-video">Video Studio</div>
     </div>
     <div class="topbar-icons">
-      <button id="open-sessions" class="icon-btn" title="Projects">&#128193;</button>
       <button id="open-credentials" class="icon-btn" title="Demo Access">&#128273;</button>
       <button id="open-settings" class="icon-btn" title="AI Providers">&#9881;</button>
     </div>
   </div>
 
-  <!-- ============ TAB: Screen Capture ============ -->
-  <div class="tab-page active" id="tab-capture">
+  <!-- ============ TAB: Projects List ============ -->
+  <div class="tab-page active" id="tab-projects">
     <div class="app-body">
-      <div class="rail">
-        <div class="rail-btn active" data-section="website"><span class="ico">&#127760;</span>Website</div>
-        <div class="rail-btn" data-section="android"><span class="ico">&#128241;</span>Android</div>
+      <div class="content" style="max-width: 1200px; margin: 0 auto; width: 100%;">
+        <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 1.5rem;">
+          <!-- Create Project / Active Info -->
+          <div>
+            <div class="card">
+              <h3>Create New Project</h3>
+              <label>Project Name</label>
+              <input id="proj-new-name" type="text" placeholder="e.g. My Shopping App" />
+              <label>App Category</label>
+              <select id="proj-new-category" style="width: 100%; margin-bottom: 0.5rem;">
+                <option value="Education">Education</option>
+                <option value="Shopping & E-Commerce">Shopping & E-Commerce</option>
+                <option value="Finance & Banking">Finance & Banking</option>
+                <option value="Productivity & Business">Productivity & Business</option>
+                <option value="Social & Communication">Social & Communication</option>
+                <option value="Health & Fitness">Health & Fitness</option>
+                <option value="Tools & Utilities">Tools & Utilities</option>
+                <option value="Entertainment & Games">Entertainment & Games</option>
+              </select>
+              <label>Starting URL</label>
+              <input id="proj-new-url" type="text" placeholder="https://example.com" />
+              <button id="proj-create-btn" style="margin-top: 1rem; width: 100%;">Create Project</button>
+            </div>
+            
+            <div class="card" id="active-project-card" style="display: none; margin-top: 1rem;">
+              <h3>Active Project Details</h3>
+              <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.85rem;">
+                <div><strong>Name:</strong> <span id="active-proj-name-display">-</span></div>
+                <div><strong>Category:</strong> <span id="active-proj-cat-display">-</span></div>
+                <div><strong>Starting URL:</strong> <span id="active-proj-url-display">-</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Projects List -->
+          <div>
+            <div class="card">
+              <h3>Projects</h3>
+              <div id="projects-list-container" style="max-height: 400px; overflow-y: auto;">
+                Loading projects...
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Embedded File Explorer -->
+        <div class="card" id="project-explorer-card" style="margin-top: 1.5rem; display: none;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h3 style="margin: 0;">Project Files & Outputs</h3>
+            <div>
+              <button id="proj-download-zip-btn" class="secondary small">Download All as ZIP</button>
+            </div>
+          </div>
+          <div class="tabs" style="margin-bottom: 1rem;">
+            <div class="tab active" data-file-filter="all">All Files</div>
+            <div class="tab" data-file-filter="captures">Screenshots</div>
+            <div class="tab" data-file-filter="mockup">Mockups</div>
+            <div class="tab" data-file-filter="video">Videos</div>
+            <div class="tab" data-file-filter="uploads">Uploads</div>
+          </div>
+          <div id="project-files-list" style="max-height: 400px; overflow-y: auto;">
+            Select a project to inspect files.
+          </div>
+        </div>
       </div>
-      <div class="content">
-        <div class="row" style="margin-bottom:1rem;">
-          <span id="capture-session-label" style="font-weight:600;">No capture project</span>
+    </div>
+  </div>
+
+  <!-- ============ TAB: Screen Capture ============ -->
+  <div class="tab-page" id="tab-capture">
+    <div class="app-body">
+      <div class="content" style="max-width: 1100px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 1rem;">
+        
+        <!-- Browser Navigation Bar -->
+        <div class="card" style="display: flex; gap: 0.5rem; align-items: center; padding: 0.75rem 1rem;">
+          <button id="browser-back" class="secondary icon-btn" title="Back">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          </button>
+          <button id="browser-forward" class="secondary icon-btn" title="Forward">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </button>
+          <button id="browser-reload" class="secondary icon-btn" title="Reload">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+          </button>
+          <button id="browser-top-capture-btn" class="secondary icon-btn" title="Capture Screenshot (Alt+C)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+          </button>
+          
+          <div style="flex: 1; display: flex; align-items: center; background: #14171f; border: 1px solid #262a33; border-radius: 6px; padding: 0 0.65rem;">
+            <span style="color: #9aa0a6; margin-right: 0.5rem; display: flex; align-items: center;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+            </span>
+            <input id="browser-url-input" type="text" placeholder="Enter starting URL (e.g. https://example.com)" style="flex: 1; border: none; background: transparent; padding: 0.5rem 0; outline: none;" />
+          </div>
+
+          <select id="browser-resolution-select" style="width: 15rem;">
+            <option value="1290x2796">Phone – 6.7" / Standard (1290 × 2796)</option>
+            <option value="1242x2688">Phone – 6.5" Display (1242 × 2688)</option>
+            <option value="2048x2732">Tablet – 10" / 12.9" Pro (2048 × 2732)</option>
+            <option value="1200x1920">Tablet – 7" Display (1200 × 1920)</option>
+          </select>
+          <button id="browser-connect-btn">Connect</button>
+          <button id="browser-autofill-btn" class="secondary" title="Auto-Fill Demo Credentials">Auto-Fill Demo</button>
         </div>
 
-        <!-- Website Capture -->
-        <div class="section-page active" id="capture-section-website">
-          <div class="card">
-            <h3>Website Capture</h3>
-            <label>App URL <span class="hint">(base domain, used for demo-access login)</span></label>
-            <input id="cap-url" type="text" placeholder="https://example.com" />
-            <div class="row" style="margin-top:.5rem;">
-              <label class="checkbox-row" style="margin:0;"><input id="cap-plat-google" type="checkbox" checked /> Google Play</label>
-              <label class="checkbox-row" style="margin:0;"><input id="cap-plat-apple" type="checkbox" /> Apple App Store</label>
+        <div style="display: grid; grid-template-columns: 1fr 320px; gap: 1.5rem; align-items: start;">
+          <!-- Live Interactive Screen Viewport -->
+          <div class="card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 500px; padding: 2rem; background: #0a0c10;">
+            <div id="live-browser-status" class="hint" style="margin-bottom: 0.75rem;">Click 'Connect' to start live browser session.</div>
+            
+            <!-- Clean Simple Device Frame (No Dynamic Island, No Thick Bezels) -->
+            <div id="browser-device-frame" style="display: none; position: relative; border: 1px solid #2d3341; border-radius: 12px; background: #000; overflow: hidden; box-shadow: 0 12px 36px rgba(0,0,0,0.6);">
+              <!-- Frame Display -->
+              <div id="browser-viewport-container" style="position: relative; overflow: hidden; width: 360px; height: 780px;">
+                <img id="browser-frame-img" class="touch-pointer" style="width: 100%; height: 100%; object-fit: contain; user-select: none;" />
+              </div>
             </div>
-            <label>Slug <span class="hint">(optional -- resolves apps/&lt;slug&gt;/auth.json)</span></label>
-            <input id="cap-slug" type="text" />
 
-            <label>Number of screenshots</label>
-            <input id="cap-url-count" type="number" min="1" max="30" value="1" style="width:6rem;" />
-            <div class="hint" style="margin-top:.3rem;">
-              Each numbered field below is captured strictly in this order, from exactly the URL you enter --
-              nothing is discovered or guessed. The number is just a slot label, not a page name.
+            <!-- Controls bar just below the phone preview -->
+            <div id="browser-bottom-controls" style="display: none; margin-top: 1rem; align-items: center; justify-content: center; gap: 0.5rem; background: #14171f; border: 1px solid #232733; padding: 0.4rem 0.75rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+              <button id="browser-bottom-back" class="secondary icon-btn" title="Back">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+              </button>
+              <button id="browser-bottom-forward" class="secondary icon-btn" title="Forward">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+              </button>
+              <button id="browser-bottom-reload" class="secondary icon-btn" title="Refresh">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+              </button>
+              <button id="browser-bottom-capture" class="secondary icon-btn" title="Capture Screenshot (Alt+C)">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+              </button>
             </div>
-            <div id="cap-url-grid" class="url-grid" style="margin-top:.6rem;"></div>
+          </div>
 
-            <div class="row" style="margin-top:1rem;">
-              <button id="cap-new-session">New Website Project</button>
-              <button id="cap-run" class="secondary">Capture</button>
+          <!-- Capture Gallery & Shortcuts Info -->
+          <div class="card" style="align-self: stretch; display: flex; flex-direction: column;">
+            <h3>Session Captures</h3>
+            <div class="hint" style="margin-bottom: 1rem;">
+              Navigate to the target screen in the device view, then click the red capture button or press <kbd>Alt + C</kbd> to save. Screenshots are automatically numbered sequentially.
             </div>
-            <div id="cap-result" style="margin-top:1rem;"></div>
-            <div id="cap-thumbs-website" class="thumb-grid"></div>
+            <div id="live-captures-gallery" class="thumb-grid" style="grid-template-columns: 1fr 1fr; gap: 0.5rem; overflow-y: auto; flex: 1; max-height: 400px;">
+              <!-- Captured images list -->
+              <div class="hint" style="grid-column: span 2; text-align: center; padding: 2rem 0;">No screenshots captured yet.</div>
+            </div>
           </div>
         </div>
 
-        <!-- Android Capture -->
-        <div class="section-page" id="capture-section-android">
-          <div class="card">
-            <h3>Android Capture</h3>
-            <div class="row">
-              <select id="cap-android-device" style="flex:1"></select>
-              <button id="cap-android-refresh" class="secondary small" type="button">Refresh Devices</button>
-            </div>
-            <label>Deep link <span class="hint">(optional -- am start -a VIEW -d)</span></label>
-            <input id="cap-android-deeplink" type="text" placeholder="myapp://screen/dashboard" />
-            <label>Screen title</label>
-            <input id="cap-android-title" type="text" placeholder="Dashboard" />
-            <div class="row" style="margin-top:1rem;">
-              <button id="cap-android-new-session">New Android Project</button>
-              <button id="cap-android-run" class="secondary">Capture Screen</button>
-            </div>
-            <div id="cap-android-result" style="margin-top:1rem;"></div>
-            <div id="cap-thumbs-android" class="thumb-grid"></div>
-          </div>
-        </div>
       </div>
     </div>
   </div>
@@ -323,18 +412,38 @@
   </div>
 </div>
 
-<!-- Sessions/Projects modal -->
-<div class="modal-backdrop" id="sessions-backdrop">
-  <div class="modal">
-    <div class="modal-header"><h2>Projects</h2><button class="close-btn" id="sessions-close">&times;</button></div>
-    <div class="tabs">
-      <div class="tab active" data-ptab="capture">Screen Capture</div>
-      <div class="tab" data-ptab="mockup">Studio Mockup</div>
-      <div class="tab" data-ptab="video">Video</div>
+<!-- Universal Screenshot Upload modal -->
+<div class="modal-backdrop" id="universal-upload-backdrop">
+  <div class="modal" style="width: 700px; max-width: 90%;">
+    <div class="modal-header">
+      <h2>Select Screenshot</h2>
+      <button class="close-btn" id="universal-upload-close">&times;</button>
     </div>
-    <div class="tab-panel active" id="ptab-capture"><div id="sessions-list-capture">Loading&hellip;</div></div>
-    <div class="tab-panel" id="ptab-mockup"><div id="sessions-list-mockup">Loading&hellip;</div></div>
-    <div class="tab-panel" id="ptab-video"><div id="sessions-list-video">Loading&hellip;</div></div>
+    <div class="tabs">
+      <div class="tab active" id="tab-btn-project-assets" data-upload-tab="project">From Current Project</div>
+      <div class="tab" id="tab-btn-computer-upload" data-upload-tab="computer">Upload from Computer</div>
+    </div>
+    
+    <!-- Project Assets Grid -->
+    <div class="tab-panel active" id="upload-panel-project">
+      <div id="universal-project-assets-grid" class="thumb-grid" style="grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); max-height: 350px; overflow-y: auto;">
+        Loading project screenshots...
+      </div>
+      <div style="display: flex; justify-content: flex-end; margin-top: 1rem;">
+        <button id="universal-use-selected-btn" disabled>Use Selected</button>
+      </div>
+    </div>
+
+    <!-- Computer File Upload -->
+    <div class="tab-panel" id="upload-panel-computer">
+      <div style="border: 2px dashed #262a33; border-radius: 8px; padding: 3rem; text-align: center; background: #0b0d12; cursor: pointer;" id="universal-dropzone">
+        <span style="font-size: 2rem; display: block; margin-bottom: 0.5rem;">&#11014;</span>
+        <strong>Drag & Drop Image Here</strong>
+        <div class="hint" style="margin-top: 0.5rem;">or click to browse files from your computer</div>
+        <input type="file" id="universal-file-picker" accept="image/*" style="display: none;" />
+      </div>
+      <div id="computer-upload-status" class="hint" style="margin-top: 1rem; text-align: center;"></div>
+    </div>
   </div>
 </div>
 
@@ -407,7 +516,43 @@
       <button id="add-provider-save" style="margin-top:1rem;">Add Provider</button>
     </div>
   </div>
+<!-- Custom Alert Dialog -->
+<div class="modal-backdrop" id="custom-alert-modal">
+  <div class="modal" style="width: 420px; max-width: 90%; text-align: center; padding: 2rem;">
+    <div id="custom-alert-icon" style="font-size: 3rem; margin-bottom: 1rem;">&#9888;</div>
+    <h3 id="custom-alert-title" style="margin: 0 0 1rem; font-size: 1.2rem;">Alert</h3>
+    <p id="custom-alert-message" style="margin: 0 0 1.5rem; font-size: 0.9rem; color: #c7cad1; line-height: 1.5;"></p>
+    <button id="custom-alert-ok-btn" style="width: 100%; padding: 0.65rem;">OK</button>
+  </div>
 </div>
+
+<!-- Custom Confirm Dialog -->
+<div class="modal-backdrop" id="custom-confirm-modal">
+  <div class="modal" style="width: 420px; max-width: 90%; padding: 2rem;">
+    <h3 id="custom-confirm-title" style="margin: 0 0 1rem; font-size: 1.2rem;">Confirm Action</h3>
+    <p id="custom-confirm-message" style="margin: 0 0 1.5rem; font-size: 0.9rem; color: #c7cad1; line-height: 1.5;"></p>
+    <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+      <button id="custom-confirm-cancel-btn" class="secondary" style="padding: 0.55rem 1rem;">Cancel</button>
+      <button id="custom-confirm-ok-btn" style="padding: 0.55rem 1rem; background: #3b82f6;">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- Custom Prompt Dialog -->
+<div class="modal-backdrop" id="custom-prompt-modal">
+  <div class="modal" style="width: 420px; max-width: 90%; padding: 2rem;">
+    <h3 id="custom-prompt-title" style="margin: 0 0 1rem; font-size: 1.2rem;">Input Required</h3>
+    <p id="custom-prompt-message" style="margin: 0 0 1rem; font-size: 0.9rem; color: #c7cad1;"></p>
+    <input id="custom-prompt-input" type="text" style="width: 100%; margin-bottom: 1.5rem;" />
+    <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+      <button id="custom-prompt-cancel-btn" class="secondary" style="padding: 0.55rem 1rem;">Cancel</button>
+      <button id="custom-prompt-submit-btn" style="padding: 0.55rem 1rem; background: #3b82f6;">Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- Custom Toasts Container -->
+<div id="custom-toast-container" style="position: fixed; top: 1.5rem; right: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; z-index: 100; pointer-events: none;"></div>
 
 <script src="/app.js"></script>
 </body>

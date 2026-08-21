@@ -26,21 +26,29 @@ import { listDevices } from "../src/devices/registry.js";
 import { loadPlatformSpec } from "../src/platform/index.js";
 
 import {
-  captureDir,
-  captureFile,
-  createCaptureSession,
-  deleteCaptureSession,
-  listCaptureSessions,
-  loadCaptureSession,
-  saveCaptureSession,
-} from "../src/capture/store.js";
+  createProject,
+  listProjects,
+  loadProject,
+  saveProject,
+  deleteProject,
+  projectDir,
+  projectFile,
+} from "../src/project/projectStore.js";
+import {
+  startBrowserSession,
+  stopBrowserSession,
+  executeBrowserAction,
+  getBrowserFrame,
+  captureBrowserScreen,
+} from "../src/capture/liveBrowser.js";
+import archiver from "archiver";
+
 import { captureWebsiteScreens } from "../src/capture/websiteCapture.js";
 import { captureAndroidScreen, listAndroidDevices } from "../src/capture/androidCapture.js";
 
 import {
   addColumn,
   addDeviceRow,
-  createMockupProject,
   defaultColumnStyle,
   listMockupProjects,
   loadMockupProject,
@@ -58,7 +66,6 @@ import { exportMockupProject } from "../src/mockup/export.js";
 import { MOCKUP_TEMPLATES, applyMockupTemplate } from "../src/mockup/templates.js";
 
 import {
-  createVideoProject,
   listVideoProjects,
   loadVideoProject,
   saveVideoProject,
@@ -129,6 +136,8 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
   const url = new URL(req.url ?? "/", "http://localhost");
   const method = req.method ?? "GET";
   const p = url.pathname;
+
+  console.log(`[SAG-SERVER] [${new Date().toLocaleTimeString()}] ${method} ${p}${url.search}`);
 
   try {
     if (method === "GET" && p === "/") {
@@ -270,75 +279,272 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
     // =========================================================
     // Screen Capture tab -- Website Capture + Android Capture
     // =========================================================
+    // Unified Projects List & File Manager
+    // =========================================================
 
-    if (method === "GET" && p === "/api/captures") {
-      sendJson(res, 200, { sessions: listCaptureSessions() });
+    if (method === "GET" && p === "/api/projects") {
+      sendJson(res, 200, { projects: listProjects() });
       return;
     }
-    if (method === "POST" && p === "/api/captures") {
+
+    if (method === "POST" && p === "/api/projects") {
       const body = await readJsonBody(req);
-      const source = body.source === "android" ? "android" : "website";
-      if (source === "website" && !body.url) return sendError(res, 400, "url is required for website capture");
-      const session = createCaptureSession({
-        source,
-        url: body.url,
-        slug: body.slug,
-        name: body.name,
-        platforms: Array.isArray(body.platforms) && body.platforms.length ? body.platforms : ["google-play"],
-      });
-      sendJson(res, 200, session);
+      if (!body.name) return sendError(res, 400, "name is required");
+      const project = createProject(body.name, body.appCategory, body.targetUrl);
+      sendJson(res, 200, project);
       return;
     }
+
     {
-      const m = p.match(/^\/api\/captures\/([^/]+)$/);
-      if (m && method === "GET") return sendJson(res, 200, loadCaptureSession(decodeURIComponent(m[1])));
-      if (m && method === "DELETE") {
-        deleteCaptureSession(decodeURIComponent(m[1]));
-        sendJson(res, 200, { ok: true });
+      const m = p.match(/^\/api\/projects\/([^/]+)$/);
+      if (m) {
+        const id = decodeURIComponent(m[1]);
+        if (method === "GET") {
+          sendJson(res, 200, loadProject(id));
+          return;
+        }
+        if (method === "PATCH") {
+          const body = await readJsonBody(req);
+          const project = loadProject(id);
+          if (body.name) project.name = body.name;
+          if (body.appCategory) project.appCategory = body.appCategory;
+          if (body.targetUrl !== undefined) project.targetUrl = body.targetUrl;
+          saveProject(project);
+          sendJson(res, 200, project);
+          return;
+        }
+        if (method === "DELETE") {
+          deleteProject(id);
+          sendJson(res, 200, { ok: true });
+          return;
+        }
+      }
+    }
+
+    {
+      const m = p.match(/^\/api\/projects\/([^/]+)\/files$/);
+      if (m && method === "GET") {
+        const id = decodeURIComponent(m[1]);
+        const dir = projectDir(id);
+        
+        // Scan directory recursively
+        const getFiles = (currentDir: string): any[] => {
+          const entries = fs.readdirSync(currentDir, { withFileTypes: true });
+          let files: any[] = [];
+          for (const entry of entries) {
+            const fullPath = path.join(currentDir, entry.name);
+            if (entry.isDirectory()) {
+              files = files.concat(getFiles(fullPath));
+            } else {
+              const rel = path.relative(dir, fullPath).split(path.sep).join("/");
+              const stat = fs.statSync(fullPath);
+              files.push({
+                path: rel,
+                name: entry.name,
+                size: stat.size,
+                mtime: stat.mtime.toISOString(),
+              });
+            }
+          }
+          return files;
+        };
+
+        sendJson(res, 200, { files: getFiles(dir) });
         return;
       }
     }
+
     {
-      const m = p.match(/^\/api\/captures\/([^/]+)\/file$/);
-      if (m && method === "GET") {
+      const m = p.match(/^\/api\/projects\/([^/]+)\/file$/);
+      if (m) {
+        const id = decodeURIComponent(m[1]);
         const rel = url.searchParams.get("p");
         if (!rel) return sendError(res, 400, "query param 'p' is required");
-        sendFile(res, captureFile(decodeURIComponent(m[1]), rel), "image/png");
-        return;
+        const abs = projectFile(id, rel);
+
+        if (method === "GET") {
+          const ext = path.extname(abs).toLowerCase();
+          const mime = ext === ".mp4" ? "video/mp4" : ext === ".zip" ? "application/zip" : "image/png";
+          sendFile(res, abs, mime);
+          return;
+        }
+        if (method === "DELETE") {
+          if (fs.existsSync(abs)) {
+            fs.unlinkSync(abs);
+          }
+          // If it was a capture screenshot, remove it from the captures array in project.json
+          if (rel.startsWith("captures/")) {
+            const project = loadProject(id);
+            project.captures = project.captures.filter((c) => c.file !== rel);
+            saveProject(project);
+          }
+          sendJson(res, 200, { ok: true });
+          return;
+        }
       }
     }
+
     {
-      const m = p.match(/^\/api\/captures\/([^/]+)\/website$/);
+      const m = p.match(/^\/api\/projects\/([^/]+)\/upload$/);
       if (m && method === "POST") {
-        const body = await readJsonBody(req);
-        const session = loadCaptureSession(decodeURIComponent(m[1]));
-        const pages = Array.isArray(body.pages) ? body.pages.map((p: any) => ({ id: Number(p.id), url: String(p.url ?? "") })) : [];
-        const updated = await captureWebsiteScreens(session, { pages, email: body.email, password: body.password });
-        sendJson(res, 200, { count: updated.raw.length, raw: updated.raw });
+        const id = decodeURIComponent(m[1]);
+        const project = loadProject(id);
+        const name = url.searchParams.get("name") ?? `upload_${Date.now()}`;
+        const ext = imageExtFromContentType(req.headers["content-type"]);
+        const relPath = `uploads/img_${Date.now()}.${ext}`;
+        const abs = projectFile(id, relPath);
+        
+        fs.mkdirSync(path.dirname(abs), { recursive: true });
+        fs.writeFileSync(abs, await readRawBody(req));
+        
+        const { width, height } = pngSize(abs);
+        const sourceId = `src_${Date.now()}`;
+        const source = { id: sourceId, name, file: relPath, width, height };
+        
+        // Add to both mockup and video sources
+        project.mockup.sources.push(source);
+        project.video.sources.push(source);
+        saveProject(project);
+        
+        sendJson(res, 200, source);
         return;
       }
     }
+
     {
-      const m = p.match(/^\/api\/captures\/([^/]+)\/android\/devices$/);
+      const m = p.match(/^\/api\/projects\/([^/]+)\/download-zip$/);
       if (m && method === "GET") {
-        sendJson(res, 200, { devices: await listAndroidDevices() });
-        return;
-      }
-    }
-    {
-      const m = p.match(/^\/api\/captures\/([^/]+)\/android$/);
-      if (m && method === "POST") {
-        const body = await readJsonBody(req);
-        const session = loadCaptureSession(decodeURIComponent(m[1]));
-        const updated = await captureAndroidScreen(session, { deviceId: body.deviceId, deepLink: body.deepLink, title: body.title });
-        sendJson(res, 200, { count: updated.raw.length, raw: updated.raw });
+        const id = decodeURIComponent(m[1]);
+        const dir = projectDir(id);
+        const zipFile = path.join(dir, "exports", `${id}-export.zip`);
+        
+        fs.mkdirSync(path.dirname(zipFile), { recursive: true });
+        
+        const output = fs.createWriteStream(zipFile);
+        const archive = archiver("zip", { zlib: { level: 9 } });
+
+        output.on("close", () => {
+          sendFile(res, zipFile, "application/zip");
+        });
+
+        archive.on("error", (err) => {
+          sendError(res, 500, err.message);
+        });
+
+        archive.pipe(output);
+        // Exclude the generated zip itself if it is stored in the project directory
+        archive.glob("**/*", {
+          cwd: dir,
+          ignore: ["exports/*-export.zip", "project.json"],
+        });
+        archive.finalize();
         return;
       }
     }
 
     // =========================================================
-    // Studio Mockup tab -- Templates / Editor / Devices /
-    // Panoramic / Preview / Settings / Export
+    // Live Browser Engine Routes
+    // =========================================================
+
+    if (method === "POST" && p === "/api/browser/start") {
+      const body = await readJsonBody(req);
+      if (!body.projectId || !body.url) {
+        return sendError(res, 400, "projectId and url are required");
+      }
+      const resolution = body.resolution ?? (body.width && body.height ? `${body.width}x${body.height}` : "1290x2796");
+      const result = await startBrowserSession(body.projectId, body.url, resolution);
+      sendJson(res, 200, { ok: true, ...result });
+      return;
+    }
+
+    if (method === "POST" && p === "/api/browser/action") {
+      const body = await readJsonBody(req);
+      await executeBrowserAction(body);
+      sendJson(res, 200, { ok: true });
+      return;
+    }
+
+    if (method === "GET" && p === "/api/browser/frame") {
+      const frameBuffer = await getBrowserFrame();
+      res.writeHead(200, { "Content-Type": "image/jpeg" });
+      res.end(frameBuffer);
+      return;
+    }
+
+    if (method === "POST" && p === "/api/browser/capture") {
+      const body = await readJsonBody(req);
+      if (!body.projectId) {
+        return sendError(res, 400, "projectId is required");
+      }
+      const capture = await captureBrowserScreen(body.projectId);
+      sendJson(res, 200, capture);
+      return;
+    }
+
+    if (method === "POST" && p === "/api/browser/stop") {
+      await stopBrowserSession();
+      sendJson(res, 200, { ok: true });
+      return;
+    }
+
+    // =========================================================
+    // Screen Capture tab -- Fallback legacy routes (redirecting to projects)
+    // =========================================================
+
+    if (method === "GET" && p === "/api/captures") {
+      const sessions = listProjects().map((p) => ({
+        id: p.id,
+        createdAt: p.createdAt,
+        name: p.name,
+        source: "website",
+        screenshots: p.captures.length,
+      }));
+      sendJson(res, 200, { sessions });
+      return;
+    }
+
+    if (method === "POST" && p === "/api/captures") {
+      const body = await readJsonBody(req);
+      const project = createProject(body.name || body.url || "Untitled Project", "Utility", body.url);
+      sendJson(res, 200, {
+        id: project.id,
+        createdAt: project.createdAt,
+        name: project.name,
+        source: "website",
+        url: project.targetUrl,
+        platforms: ["google-play"],
+        raw: [],
+      });
+      return;
+    }
+
+    {
+      const m = p.match(/^\/api\/captures\/([^/]+)$/);
+      if (m && method === "GET") {
+        const project = loadProject(decodeURIComponent(m[1]));
+        sendJson(res, 200, {
+          id: project.id,
+          createdAt: project.createdAt,
+          name: project.name,
+          source: "website",
+          url: project.targetUrl,
+          platforms: ["google-play"],
+          raw: project.captures.map((c) => ({
+            id: `screen_${c.id}`,
+            url: c.url,
+            title: `Screen ${c.id}`,
+            file: c.file,
+            width: c.width,
+            height: c.height,
+            source: "website",
+          })),
+        });
+        return;
+      }
+    }
+
+    // =========================================================
+    // Studio Mockup tab -- Fallback legacy /api/mockups redirect
     // =========================================================
 
     if (method === "GET" && p === "/api/mockups") {
@@ -348,7 +554,8 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
     if (method === "POST" && p === "/api/mockups") {
       const body = await readJsonBody(req);
       if (!body.name) return sendError(res, 400, "name is required");
-      sendJson(res, 200, createMockupProject({ name: body.name, appCategory: body.appCategory }));
+      const project = createProject(body.name, body.appCategory);
+      sendJson(res, 200, project.mockup);
       return;
     }
     {
@@ -585,7 +792,8 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
     if (method === "POST" && p === "/api/videos") {
       const body = await readJsonBody(req);
       if (!body.name) return sendError(res, 400, "name is required");
-      sendJson(res, 200, createVideoProject(body.name));
+      const project = createProject(body.name);
+      sendJson(res, 200, project.video);
       return;
     }
     {

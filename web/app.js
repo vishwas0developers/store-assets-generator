@@ -18,16 +18,408 @@ async function uploadFile(path, file) {
   return data;
 }
 
-/* ================= Top-level tab / rail navigation ================= */
+/* ================= Custom Dialog & Toast System ================= */
 
+function showAlert(message, type = "warning", title = "Alert") {
+  return new Promise((resolve) => {
+    const modal = $("custom-alert-modal");
+    const titleEl = $("custom-alert-title");
+    const msgEl = $("custom-alert-message");
+    const iconEl = $("custom-alert-icon");
+    const okBtn = $("custom-alert-ok-btn");
+
+    titleEl.textContent = title;
+    msgEl.textContent = message;
+    
+    if (type === "error") { iconEl.innerHTML = "&#10060;"; iconEl.style.color = "#ef4444"; }
+    else if (type === "success") { iconEl.innerHTML = "&#9989;"; iconEl.style.color = "#10b981"; }
+    else if (type === "warning") { iconEl.innerHTML = "&#9888;"; iconEl.style.color = "#f59e0b"; }
+    else { iconEl.innerHTML = "&#8505;"; iconEl.style.color = "#3b82f6"; }
+
+    modal.classList.add("open");
+
+    okBtn.onclick = () => {
+      modal.classList.remove("open");
+      resolve();
+    };
+  });
+}
+
+function showConfirm(message, title = "Confirm Action") {
+  return new Promise((resolve) => {
+    const modal = $("custom-confirm-modal");
+    const titleEl = $("custom-confirm-title");
+    const msgEl = $("custom-confirm-message");
+    const okBtn = $("custom-confirm-ok-btn");
+    const cancelBtn = $("custom-confirm-cancel-btn");
+
+    titleEl.textContent = title;
+    msgEl.textContent = message;
+    modal.classList.add("open");
+
+    okBtn.onclick = () => {
+      modal.classList.remove("open");
+      resolve(true);
+    };
+
+    cancelBtn.onclick = () => {
+      modal.classList.remove("open");
+      resolve(false);
+    };
+  });
+}
+
+function showPrompt(message, defaultValue = "", title = "Input Required") {
+  return new Promise((resolve) => {
+    const modal = $("custom-prompt-modal");
+    const titleEl = $("custom-prompt-title");
+    const msgEl = $("custom-prompt-message");
+    const inputEl = $("custom-prompt-input");
+    const submitBtn = $("custom-prompt-submit-btn");
+    const cancelBtn = $("custom-prompt-cancel-btn");
+
+    titleEl.textContent = title;
+    msgEl.textContent = message;
+    inputEl.value = defaultValue;
+    modal.classList.add("open");
+    inputEl.focus();
+
+    submitBtn.onclick = () => {
+      modal.classList.remove("open");
+      resolve(inputEl.value);
+    };
+
+    cancelBtn.onclick = () => {
+      modal.classList.remove("open");
+      resolve(null);
+    };
+    
+    inputEl.onkeydown = (e) => {
+      if (e.key === "Enter") {
+        submitBtn.click();
+      }
+    };
+  });
+}
+
+function showToast(message, type = "info") {
+  const container = $("custom-toast-container");
+  if (!container) return;
+
+  const toast = document.createElement("div");
+  toast.className = `custom-toast ${type}`;
+  
+  let icon = "&#8505;";
+  if (type === "success") icon = "&#9989;";
+  if (type === "error") icon = "&#10060;";
+  if (type === "warning") icon = "&#9888;";
+
+  toast.innerHTML = `<span style="font-size:1.1rem;">${icon}</span><span style="flex:1;">${message}</span>`;
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.animation = "fadeOut 0.3s ease-in forwards";
+    toast.addEventListener("animationend", () => {
+      toast.remove();
+    });
+  }, 3500);
+}
+
+// Mask native blocking alerts with async wrapper calls
+const alert = (msg, type = "warning") => showAlert(msg, type);
+const confirm = (msg) => showConfirm(msg);
+const prompt = (msg, def) => showPrompt(msg, def);
+
+
+/* ================= Project State & Navigation Gating ================= */
+
+let activeProjectId = localStorage.getItem("activeProjectId") || null;
+let activeProject = null;
+
+// Gated tab navigation click handlers
 for (const tab of document.querySelectorAll(".topbar-tab")) {
-  tab.onclick = () => {
+  tab.onclick = async () => {
+    const targetTab = tab.dataset.tab;
+    if (targetTab !== "projects" && !activeProjectId) {
+      await alert("Please select or create a project first from the Projects List.");
+      return;
+    }
+    
+    // Switch active tab styling
     for (const t of document.querySelectorAll(".topbar-tab")) t.classList.remove("active");
     for (const p of document.querySelectorAll(".tab-page")) p.classList.remove("active");
     tab.classList.add("active");
-    $("tab-" + tab.dataset.tab).classList.add("active");
+    $("tab-" + targetTab).classList.add("active");
+
+    // Load content dynamically for target tab
+    if (targetTab === "projects") {
+      await refreshProjectsList();
+    } else if (targetTab === "capture") {
+      await loadCaptureTab();
+    } else if (targetTab === "mockup") {
+      await loadMockupProjectInto(activeProjectId);
+    } else if (targetTab === "video") {
+      await loadVideoProjectInto(activeProjectId);
+    }
   };
 }
+
+// Enable/disable navigation tabs dynamically based on active project state
+function updateTabGating() {
+  const tabs = ["capture", "mockup", "video"];
+  for (const t of tabs) {
+    const el = $("tab-nav-" + t);
+    if (activeProjectId) {
+      el.classList.remove("disabled");
+      el.removeAttribute("title");
+    } else {
+      el.classList.add("disabled");
+      el.setAttribute("title", "Select a project first");
+    }
+  }
+
+  const brand = $("brand-title");
+  if (activeProject) {
+    brand.textContent = `Store Assets Generator - ${activeProject.name}`;
+    $("active-project-card").style.display = "block";
+    $("active-proj-name-display").textContent = activeProject.name;
+    $("active-proj-cat-display").textContent = activeProject.appCategory || "Education";
+    $("active-proj-url-display").textContent = activeProject.targetUrl || "None";
+    $("project-explorer-card").style.display = "block";
+    refreshFileExplorer();
+  } else {
+    brand.textContent = "Store Assets Generator";
+    $("active-project-card").style.display = "none";
+    $("project-explorer-card").style.display = "none";
+  }
+}
+
+async function selectProject(id) {
+  try {
+    activeProjectId = id;
+    localStorage.setItem("activeProjectId", id);
+    activeProject = await api(`/api/projects/${id}`);
+    updateTabGating();
+    await refreshProjectsList();
+  } catch (e) {
+    await alert("Failed to select project: " + e.message);
+  }
+}
+
+/* ================= Projects List Tab Logic ================= */
+
+$("proj-create-btn").onclick = async () => {
+  const name = $("proj-new-name").value.trim();
+  const category = $("proj-new-category").value;
+  const targetUrl = $("proj-new-url").value.trim();
+
+  if (!name) {
+    await alert("Project Name is required.");
+    return;
+  }
+
+  try {
+    const project = await api("/api/projects", {
+      method: "POST",
+      body: { name, appCategory: category, targetUrl }
+    });
+    
+    // Clear inputs
+    $("proj-new-name").value = "";
+    $("proj-new-category").value = "Education";
+    $("proj-new-url").value = "";
+
+    await selectProject(project.id);
+  } catch (e) {
+    await alert("Failed to create project: " + e.message);
+  }
+};
+
+async function refreshProjectsList() {
+  const container = $("projects-list-container");
+  container.innerHTML = "Loading projects...";
+  
+  try {
+    const { projects } = await api("/api/projects");
+    container.innerHTML = "";
+    
+    if (projects.length === 0) {
+      container.textContent = "No projects found. Create one to get started!";
+      return;
+    }
+
+    // If active project is set, make sure we sync it
+    if (activeProjectId && !activeProject) {
+      activeProject = projects.find(p => p.id === activeProjectId);
+      updateTabGating();
+    }
+
+    for (const p of projects) {
+      const isActive = p.id === activeProjectId;
+      const card = document.createElement("div");
+      card.className = `project-item ${isActive ? 'active' : ''}`;
+      
+      card.innerHTML = `
+        <div style="flex: 1;">
+          <div class="project-item-title">
+            ${isActive ? '<span class="active-check">&#10003;</span>' : ''}
+            <span>${p.name}</span>
+          </div>
+          <div class="project-item-meta">Created: ${new Date(p.createdAt).toLocaleString()}</div>
+          <div class="project-stats">
+            <span>Screenshots: ${p.captures?.length ?? 0}</span>
+            <span>Mockup screens: ${p.mockup?.columns?.length ?? 0}</span>
+            <span>Video scenes: ${p.video?.scenes?.length ?? 0}</span>
+          </div>
+        </div>
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+          <button class="small select-btn" style="${isActive ? 'background:#10b981;' : 'background:#262a33;'}">${isActive ? 'Active' : 'Select'}</button>
+          <button class="small danger delete-btn">&#128465;</button>
+        </div>
+      `;
+
+      card.querySelector(".select-btn").onclick = () => selectProject(p.id);
+      card.querySelector(".delete-btn").onclick = async () => {
+        if (await confirm(`Are you sure you want to delete project "${p.name}"? This deletes all files and is irreversible.`)) {
+          await api(`/api/projects/${p.id}`, { method: "DELETE" });
+          if (activeProjectId === p.id) {
+            activeProjectId = null;
+            activeProject = null;
+            localStorage.removeItem("activeProjectId");
+            updateTabGating();
+          }
+          await refreshProjectsList();
+        }
+      };
+
+      container.appendChild(card);
+    }
+  } catch (e) {
+    container.textContent = "Failed to load projects: " + e.message;
+  }
+}
+
+/* ================= Embedded Project File Explorer ================= */
+
+let currentFileFilter = "all";
+document.querySelectorAll("#project-explorer-card .tab").forEach(tab => {
+  tab.onclick = () => {
+    document.querySelectorAll("#project-explorer-card .tab").forEach(t => t.classList.remove("active"));
+    tab.classList.add("active");
+    currentFileFilter = tab.dataset.fileFilter;
+    refreshFileExplorer();
+  };
+});
+
+$("proj-download-zip-btn").onclick = () => {
+  if (!activeProjectId) return;
+  window.open(`/api/projects/${activeProjectId}/download-zip`);
+};
+
+async function refreshFileExplorer() {
+  const container = $("project-files-list");
+  if (!activeProjectId) {
+    container.innerHTML = "Select a project to inspect files.";
+    return;
+  }
+  container.innerHTML = "Loading files...";
+
+  try {
+    const { files } = await api(`/api/projects/${activeProjectId}/files`);
+    container.innerHTML = "";
+
+    // Filter files
+    const filtered = files.filter(f => {
+      if (currentFileFilter === "all") return true;
+      if (currentFileFilter === "captures") return f.path.startsWith("captures/");
+      if (currentFileFilter === "mockup") return f.path.startsWith("mockup/");
+      if (currentFileFilter === "video") return f.path.startsWith("video/");
+      if (currentFileFilter === "uploads") return f.path.startsWith("uploads/");
+      return true;
+    });
+
+    if (filtered.length === 0) {
+      container.innerHTML = `<div style="text-align:center; padding: 2rem 0;" class="hint">No files found matching the "${currentFileFilter}" category.</div>`;
+      return;
+    }
+
+    const table = document.createElement("table");
+    table.className = "file-table";
+    table.innerHTML = `
+      <thead>
+        <tr>
+          <th>File Path</th>
+          <th>Size</th>
+          <th>Last Modified</th>
+          <th style="text-align: right;">Actions</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    `;
+    const tbody = table.querySelector("tbody");
+
+    for (const f of filtered) {
+      const tr = document.createElement("tr");
+      const sizeKB = (f.size / 1024).toFixed(1);
+      tr.innerHTML = `
+        <td><strong style="color: #3b82f6; cursor: pointer;" class="preview-link">${f.path}</strong></td>
+        <td>${sizeKB} KB</td>
+        <td>${new Date(f.mtime).toLocaleString()}</td>
+        <td style="text-align: right; display: flex; gap: 0.5rem; justify-content: flex-end;">
+          <button class="small secondary download-file-btn">Download</button>
+          <button class="small danger delete-file-btn">&#128465;</button>
+        </td>
+      `;
+
+      const downloadUrl = `/api/projects/${activeProjectId}/file?p=${encodeURIComponent(f.path)}`;
+
+      const triggerPreview = async () => {
+        const ext = f.path.split('.').pop().toLowerCase();
+        if (["png", "jpg", "jpeg", "webp"].includes(ext)) {
+          // Open fullscreen lightbox
+          const box = document.createElement("div");
+          box.style = "position:fixed; inset:0; background:rgba(0,0,0,0.85); display:flex; align-items:center; justify-content:center; z-index:100; cursor:pointer;";
+          box.innerHTML = `<img src="${downloadUrl}" style="max-width:90%; max-height:90%; border-radius:8px; box-shadow:0 10px 30px rgba(0,0,0,0.5);" />`;
+          box.onclick = () => box.remove();
+          document.body.appendChild(box);
+        } else if (ext === "mp4") {
+          const box = document.createElement("div");
+          box.style = "position:fixed; inset:0; background:rgba(0,0,0,0.85); display:flex; align-items:center; justify-content:center; z-index:100; cursor:pointer;";
+          box.innerHTML = `<video src="${downloadUrl}" controls autoplay style="max-width:90%; max-height:90%; border-radius:8px;" />`;
+          box.onclick = (e) => { if (e.target === box) box.remove(); };
+          document.body.appendChild(box);
+        } else {
+          await alert(`Cannot preview this file type. Please click 'Download' to view.`);
+        }
+      };
+
+      tr.querySelector(".preview-link").onclick = triggerPreview;
+      tr.querySelector(".download-file-btn").onclick = () => window.open(downloadUrl);
+      tr.querySelector(".delete-file-btn").onclick = async () => {
+        if (await confirm(`Delete file "${f.path}"?`)) {
+          await api(`/api/projects/${activeProjectId}/file?p=${encodeURIComponent(f.path)}`, { method: "DELETE" });
+          refreshFileExplorer();
+        }
+      };
+
+      tbody.appendChild(tr);
+    }
+
+    container.appendChild(table);
+  } catch (e) {
+    container.textContent = "Failed to load files: " + e.message;
+  }
+}
+
+// Initial loading check on start
+setTimeout(() => {
+  refreshProjectsList();
+  if (activeProjectId) {
+    selectProject(activeProjectId);
+  } else {
+    updateTabGating();
+  }
+}, 100);
 
 for (const railBtn of document.querySelectorAll(".rail-btn")) {
   railBtn.onclick = () => {
@@ -60,7 +452,7 @@ $("credentials-close").onclick = () => $("credentials-backdrop").classList.remov
 $("cred-save").onclick = async () => {
   const email = $("cred-email").value.trim();
   const password = $("cred-password").value;
-  if (!email) return alert("Email is required.");
+  if (!email) return await alert("Email is required.");
   await api("/api/auth/credentials", {
     method: "POST",
     body: {
@@ -75,167 +467,300 @@ $("cred-save").onclick = async () => {
 };
 $("cred-clear").onclick = async () => { await api("/api/auth/credentials", { method: "DELETE" }); refreshAuthStatus(); };
 
-/* ================= Projects modal ================= */
-
-$("open-sessions").onclick = () => { $("sessions-backdrop").classList.add("open"); refreshAllProjectLists(); };
-$("sessions-close").onclick = () => $("sessions-backdrop").classList.remove("open");
-for (const tab of document.querySelectorAll("#sessions-backdrop .tab")) {
-  tab.onclick = () => {
-    for (const t of document.querySelectorAll("#sessions-backdrop .tab")) t.classList.remove("active");
-    for (const p of document.querySelectorAll("#sessions-backdrop .tab-panel")) p.classList.remove("active");
-    tab.classList.add("active");
-    $("ptab-" + tab.dataset.ptab).classList.add("active");
-  };
-}
-async function refreshAllProjectLists() {
-  const { sessions } = await api("/api/captures");
-  renderProjectRows($("sessions-list-capture"), sessions, (id) => loadCaptureProject(id));
-  const { projects: mockups } = await api("/api/mockups");
-  renderProjectRows($("sessions-list-mockup"), mockups, (id) => loadMockupProjectInto(id));
-  const { projects: videos } = await api("/api/videos");
-  renderProjectRows($("sessions-list-video"), videos, (id) => loadVideoProjectInto(id));
-}
-function renderProjectRows(container, rows, onOpen) {
-  container.innerHTML = "";
-  if (rows.length === 0) { container.textContent = "None yet."; return; }
-  for (const r of rows) {
-    const row = document.createElement("div");
-    row.className = "session-row";
-    row.innerHTML = `<span style="flex:1">${r.name || r.url || r.id}</span><span class="provider-meta">${new Date(r.createdAt).toLocaleString()}</span>`;
-    const btn = document.createElement("button");
-    btn.className = "small secondary";
-    btn.textContent = "Open";
-    btn.onclick = async () => { await onOpen(r.id); $("sessions-backdrop").classList.remove("open"); };
-    row.appendChild(btn);
-    container.appendChild(row);
-  }
-}
-
 /* ============================================================
-   Screen Capture tab
+   Screen Capture tab -- Live Interactive Playwright Browser
    ============================================================ */
 
-let captureId = null;
-let captureProject = null;
+let browserConnected = false;
+let frameIntervalId = null;
 
-async function loadCaptureProject(id) {
-  captureId = id;
-  captureProject = await api(`/api/captures/${id}`);
-  $("capture-session-label").textContent = `${captureProject.name} (${captureProject.source})`;
-  renderCaptureThumbs();
-}
-function captureFileUrl(rel) { return `/api/captures/${captureId}/file?p=${encodeURIComponent(rel)}`; }
-function renderCaptureThumbs() {
-  const websiteGrid = $("cap-thumbs-website");
-  const androidGrid = $("cap-thumbs-android");
-  websiteGrid.innerHTML = ""; androidGrid.innerHTML = "";
-  if (!captureProject) return;
-  const grid = captureProject.source === "android" ? androidGrid : websiteGrid;
-  for (const r of captureProject.raw) {
-    const t = document.createElement("div");
-    t.className = "thumb";
-    t.innerHTML = `<img src="${captureFileUrl(r.file)}" /><div class="cap">${r.title}</div>`;
-    grid.appendChild(t);
+async function loadCaptureTab() {
+  if (activeProject && activeProject.targetUrl) {
+    if (!$("browser-url-input").value) {
+      $("browser-url-input").value = activeProject.targetUrl;
+    }
   }
+  await renderLiveBrowserCaptures();
 }
 
-/* Numbered URL slots -- one per screenshot to capture, count-driven.
-   Each slot pairs a numeric identifier (auto 1..N, editable, digits only --
-   just a slot label, never a page name) with the actual URL to capture
-   from, entered separately and associated with that identifier. Capture
-   order follows slot order, not the identifier value. */
-function renderUrlGrid(count) {
-  const grid = $("cap-url-grid");
-  const existing = [...grid.children].map((slot) => ({
-    id: slot.querySelector(".slot-id").value,
-    url: slot.querySelector(".slot-url").value,
-  }));
-  grid.innerHTML = "";
-  const n = Math.max(1, Math.min(30, Number(count) || 1));
-  for (let i = 0; i < n; i++) {
-    const prev = existing[i];
-    const slot = document.createElement("div");
-    slot.className = "url-slot";
-    slot.innerHTML = `
-      <input class="slot-id" type="number" min="1" step="1" inputmode="numeric" style="width:2.6rem;flex:0 0 auto;" value="${prev ? prev.id : i + 1}" title="Numeric identifier (slot label only, not order)" />
-      <input class="slot-url" type="url" placeholder="https://example.com/page-${i + 1}" value="${prev ? prev.url : ""}" style="flex:1;" />
-    `;
-    // Digits only in the identifier field -- reject anything else as typed.
-    slot.querySelector(".slot-id").addEventListener("input", (e) => {
-      e.target.value = e.target.value.replace(/[^0-9]/g, "");
-    });
-    grid.appendChild(slot);
-  }
-}
-$("cap-url-count").oninput = () => renderUrlGrid($("cap-url-count").value);
-renderUrlGrid($("cap-url-count").value);
+async function renderLiveBrowserCaptures() {
+  const gallery = $("live-captures-gallery");
+  gallery.innerHTML = "";
 
-function collectUrlEntries() {
-  return [...$("cap-url-grid").children]
-    .map((slot) => ({ id: Number(slot.querySelector(".slot-id").value) || 0, url: slot.querySelector(".slot-url").value.trim() }))
-    .filter((entry) => entry.url.length > 0);
-}
+  if (!activeProjectId) return;
 
-$("cap-new-session").onclick = async () => {
-  const url = $("cap-url").value.trim();
-  if (!url) return alert("App URL is required.");
-  const platforms = [];
-  if ($("cap-plat-google").checked) platforms.push("google-play");
-  if ($("cap-plat-apple").checked) platforms.push("apple-app-store");
-  const session = await api("/api/captures", { method: "POST", body: { source: "website", url, slug: $("cap-slug").value.trim() || undefined, platforms: platforms.length ? platforms : ["google-play"] } });
-  await loadCaptureProject(session.id);
-};
-$("cap-run").onclick = async () => {
-  if (!captureId) return alert("Start a website capture project first.");
-  const pages = collectUrlEntries();
-  if (pages.length === 0) return alert("Enter at least one URL in the numbered fields above.");
-  $("cap-run").disabled = true;
-  $("cap-result").textContent = "Capturing… this can take a minute.";
   try {
-    const result = await api(`/api/captures/${captureId}/website`, { method: "POST", body: { pages } });
-    captureProject.raw = result.raw;
-    $("cap-result").innerHTML = `<span class="count-badge">${result.count}</span> screenshots captured.`;
-    renderCaptureThumbs();
+    const proj = await api(`/api/projects/${activeProjectId}`);
+    if (!proj.captures || proj.captures.length === 0) {
+      gallery.innerHTML = `<div class="hint" style="grid-column: span 2; text-align: center; padding: 2rem 0;">No screenshots captured yet.</div>`;
+      return;
+    }
+
+    for (const c of proj.captures) {
+      const item = document.createElement("div");
+      item.className = "thumb";
+      const fileUrl = `/api/projects/${activeProjectId}/file?p=${encodeURIComponent(c.file)}`;
+      item.innerHTML = `
+        <img src="${fileUrl}" style="cursor: pointer;" />
+        <div class="cap" style="display: flex; justify-content: space-between; align-items: center; padding: 0.35rem 0.5rem;">
+          <span>Screen ${c.id}</span>
+          <button class="small danger delete-cap-btn" style="padding: 0.1rem 0.3rem;">&times;</button>
+        </div>
+      `;
+
+      item.querySelector("img").onclick = () => {
+        // Lightbox preview
+        const box = document.createElement("div");
+        box.style = "position:fixed; inset:0; background:rgba(0,0,0,0.85); display:flex; align-items:center; justify-content:center; z-index:100; cursor:pointer;";
+        box.innerHTML = `<img src="${fileUrl}" style="max-width:90%; max-height:90%; border-radius:8px;" />`;
+        box.onclick = () => box.remove();
+        document.body.appendChild(box);
+      };
+
+      item.querySelector(".delete-cap-btn").onclick = async (e) => {
+        e.stopPropagation();
+        if (await confirm(`Delete screenshot ${c.id}?`)) {
+          await api(`/api/projects/${activeProjectId}/file?p=${encodeURIComponent(c.file)}`, { method: "DELETE" });
+          await renderLiveBrowserCaptures();
+        }
+      };
+
+      gallery.appendChild(item);
+    }
   } catch (e) {
-    $("cap-result").textContent = "Capture failed: " + e.message;
-  } finally {
-    $("cap-run").disabled = false;
+    gallery.innerHTML = `<div class="hint">Failed to load captures: ${e.message}</div>`;
+  }
+}
+
+// Connect / Disconnect Live Session
+$("browser-connect-btn").onclick = async () => {
+  if (browserConnected) {
+    await disconnectLiveBrowser();
+  } else {
+    await connectLiveBrowser();
   }
 };
 
-async function refreshAndroidDevices() {
-  if (!captureId) return;
-  try {
-    const { devices } = await api(`/api/captures/${captureId}/android/devices`);
-    $("cap-android-device").innerHTML = devices.length ? devices.map((d) => `<option value="${d}">${d}</option>`).join("") : '<option value="">No devices found</option>';
-  } catch (e) {
-    $("cap-android-device").innerHTML = '<option value="">Error listing devices</option>';
+async function connectLiveBrowser() {
+  const url = $("browser-url-input").value.trim();
+  if (!url) {
+    await alert("Please enter a starting URL.");
+    return;
   }
-}
-$("cap-android-new-session").onclick = async () => {
-  const session = await api("/api/captures", { method: "POST", body: { source: "android", name: "Android capture" } });
-  await loadCaptureProject(session.id);
-  refreshAndroidDevices();
-};
-$("cap-android-refresh").onclick = refreshAndroidDevices;
-$("cap-android-run").onclick = async () => {
-  if (!captureId) return alert("Start an Android capture project first.");
-  $("cap-android-run").disabled = true;
-  $("cap-android-result").textContent = "Capturing…";
+
+  const resolutionKey = $("browser-resolution-select").value;
+  const dims = resolutionKey.split("x");
+  const width = Number(dims[0]);
+  const height = Number(dims[1]);
+
+  $("browser-connect-btn").disabled = true;
+  $("browser-connect-btn").textContent = "Connecting...";
+  $("live-browser-status").textContent = "Launching Playwright mobile Chromium browser...";
+
   try {
-    const result = await api(`/api/captures/${captureId}/android`, {
+    const res = await api("/api/browser/start", {
       method: "POST",
-      body: { deviceId: $("cap-android-device").value || undefined, deepLink: $("cap-android-deeplink").value.trim() || undefined, title: $("cap-android-title").value.trim() || undefined },
+      body: { projectId: activeProjectId, url, resolution: resolutionKey, width, height }
     });
-    captureProject.raw = result.raw;
-    $("cap-android-result").innerHTML = `<span class="count-badge">${result.count}</span> screenshots captured.`;
-    renderCaptureThumbs();
+
+    if (res.sessionExpired) {
+      await alert(res.message || "Demo login session has expired or is invalid. Please log in again.", "warning");
+    }
+
+    browserConnected = true;
+    $("browser-connect-btn").disabled = false;
+    $("browser-connect-btn").textContent = "Disconnect";
+    $("browser-connect-btn").style.background = "#ef4444";
+    $("live-browser-status").textContent = "Live mobile session active. Click inside the device frame to interact.";
+    $("browser-device-frame").style.display = "block";
+    $("browser-bottom-controls").style.display = "flex";
+
+    // Set viewport scaling preview aspect ratio matching the target mobile resolution
+    const isTablet = resolutionKey === "2048x2732" || resolutionKey === "1200x1920";
+    const previewWidth = isTablet ? 420 : 360;
+    const aspect = height / width;
+    const frameEl = $("browser-viewport-container");
+    frameEl.style.width = `${previewWidth}px`;
+    frameEl.style.height = `${Math.round(previewWidth * aspect)}px`;
+
+    // Start frame streaming interval
+    startFrameStream();
   } catch (e) {
-    $("cap-android-result").textContent = "Capture failed: " + e.message;
-  } finally {
-    $("cap-android-run").disabled = false;
+    await alert("Connection failed: " + e.message);
+    $("browser-connect-btn").disabled = false;
+    $("browser-connect-btn").textContent = "Connect";
+    $("live-browser-status").textContent = "Connection failed. Please check the URL and try again.";
+  }
+}
+
+async function disconnectLiveBrowser() {
+  clearInterval(frameIntervalId);
+  $("browser-connect-btn").disabled = true;
+  $("browser-connect-btn").textContent = "Disconnecting...";
+
+  try {
+    await api("/api/browser/stop", { method: "POST" });
+  } catch (e) {}
+
+  browserConnected = false;
+  $("browser-connect-btn").disabled = false;
+  $("browser-connect-btn").textContent = "Connect";
+  $("browser-connect-btn").style.background = "#3b82f6";
+  $("live-browser-status").textContent = "Session closed. Click 'Connect' to start a new live session.";
+  $("browser-device-frame").style.display = "none";
+  $("browser-bottom-controls").style.display = "none";
+}
+
+function startFrameStream() {
+  clearInterval(frameIntervalId);
+  
+  const img = $("browser-frame-img");
+  const loadNextFrame = () => {
+    if (!browserConnected) return;
+    img.src = `/api/browser/frame?t=${Date.now()}`;
+  };
+
+  loadNextFrame();
+  frameIntervalId = setInterval(loadNextFrame, 250);
+}
+
+// Interactive events on the device frame
+const imgEl = $("browser-frame-img");
+imgEl.onmousedown = async (e) => {
+  if (!browserConnected) return;
+  const rect = imgEl.getBoundingClientRect();
+  const xPct = ((e.clientX - rect.left) / rect.width) * 100;
+  const yPct = ((e.clientY - rect.top) / rect.height) * 100;
+
+  try {
+    await api("/api/browser/action", {
+      method: "POST",
+      body: { type: "click", xPct, yPct }
+    });
+    // Instant frame update on click
+    imgEl.src = `/api/browser/frame?t=${Date.now()}`;
+  } catch (e) {}
+};
+
+imgEl.addEventListener("wheel", async (e) => {
+  if (!browserConnected) return;
+  e.preventDefault();
+  
+  try {
+    await api("/api/browser/action", {
+      method: "POST",
+      body: { type: "scroll", deltaY: e.deltaY }
+    });
+    imgEl.src = `/api/browser/frame?t=${Date.now()}`;
+  } catch (e) {}
+}, { passive: false });
+
+// Keyboard text input helper when focusing the browser URL input
+$("browser-url-input").addEventListener("keydown", async (e) => {
+  if (e.key === "Enter" && browserConnected) {
+    const url = $("browser-url-input").value.trim();
+    if (url) {
+      await api("/api/browser/action", {
+        method: "POST",
+        body: { type: "navigate", url }
+      });
+    }
+  }
+});
+
+// Browser Navigation Actions
+$("browser-back").onclick = async () => {
+  if (!browserConnected) return;
+  await api("/api/browser/action", { method: "POST", body: { type: "back" } });
+};
+$("browser-forward").onclick = async () => {
+  if (!browserConnected) return;
+  await api("/api/browser/action", { method: "POST", body: { type: "forward" } });
+};
+$("browser-reload").onclick = async () => {
+  if (!browserConnected) return;
+  await api("/api/browser/action", { method: "POST", body: { type: "reload" } });
+};
+
+// Bottom Controls Bar Actions
+$("browser-bottom-back").onclick = async () => {
+  if (!browserConnected) return;
+  await api("/api/browser/action", { method: "POST", body: { type: "back" } });
+};
+$("browser-bottom-forward").onclick = async () => {
+  if (!browserConnected) return;
+  await api("/api/browser/action", { method: "POST", body: { type: "forward" } });
+};
+$("browser-bottom-reload").onclick = async () => {
+  if (!browserConnected) return;
+  await api("/api/browser/action", { method: "POST", body: { type: "reload" } });
+};
+
+// Auto-fill Demo credentials helper
+$("browser-autofill-btn").onclick = async () => {
+  if (!browserConnected) {
+    await alert("Start session and connect first.");
+    return;
+  }
+  try {
+    const status = await api("/api/auth/status");
+    if (!status.email) {
+      await alert("Demo email/password not set. Please configure in the Demo Access modal (key icon).");
+      return;
+    }
+    
+    // Type credentials sequentially using Playwright action keyboard dispatching
+    // We send tab and typing actions
+    await alert("Attempting to auto-fill. Click in the email field first, then click OK.");
+    await api("/api/browser/action", { method: "POST", body: { type: "type", text: status.email } });
+    await api("/api/browser/action", { method: "POST", body: { type: "press", key: "Tab" } });
+    if (status.passwordSet) {
+      // Prompt user or type placeholder/real password
+      const pw = await prompt("Please enter password to type:", "");
+      if (pw) {
+        await api("/api/browser/action", { method: "POST", body: { type: "type", text: pw } });
+      }
+    }
+  } catch (e) {
+    await alert("Autofill failed: " + e.message);
   }
 };
+
+// Capture Button Trigger
+async function triggerScreenshotCapture() {
+  if (!browserConnected || !activeProjectId) {
+    await alert("Please connect to a live browser session first before capturing.", "warning");
+    return;
+  }
+  
+  // Visual flash feedback on the preview frame
+  imgEl.style.opacity = "0.3";
+  setTimeout(() => { imgEl.style.opacity = "1"; }, 150);
+
+  try {
+    const capture = await api("/api/browser/capture", {
+      method: "POST",
+      body: { projectId: activeProjectId }
+    });
+    showToast(`Captured Screen ${capture.id} (${capture.file})`, "success");
+    await renderLiveBrowserCaptures();
+  } catch (e) {
+    await alert("Capture failed: " + e.message);
+  }
+}
+
+// Bind Capture buttons (top bar and below phone frame)
+$("browser-top-capture-btn").onclick = triggerScreenshotCapture;
+$("browser-bottom-capture").onclick = triggerScreenshotCapture;
+
+// Global hotkey Alt+C to capture screen when capture tab is active
+document.addEventListener("keydown", async (e) => {
+  const isCaptureTabActive = $("tab-capture").classList.contains("active");
+  if (isCaptureTabActive && e.altKey && e.key.toLowerCase() === 'c') {
+    e.preventDefault();
+    await triggerScreenshotCapture();
+  }
+});
 
 /* ============================================================
    Studio Mockup tab
@@ -285,7 +810,7 @@ async function ensureMockupReferenceData() {
 }
 
 $("mockup-new-project").onclick = async () => {
-  const name = prompt("Project name?", "My App");
+  const name = await prompt("Project name?", "My App");
   if (!name) return;
   const project = await api("/api/mockups", { method: "POST", body: { name } });
   await loadMockupProjectInto(project.id);
@@ -301,11 +826,14 @@ async function renderMockupTemplateGrid() {
     card.className = "template-card";
     card.innerHTML = `<div class="cat">${t.category}</div><h4>${t.name}</h4>`;
     card.onclick = async () => {
-      if (!mockupId) return alert("Start a project first.");
+      if (!mockupId) {
+        await alert("Start a project first.");
+        return;
+      }
       mockupProject = await api(`/api/mockups/${mockupId}/apply-template`, { method: "POST", body: { templateId: t.id } });
       renderMockupMatrix();
       renderMockupDevicesSection();
-      alert(`Applied "${t.name}" — ${mockupProject.devices.length} device row(s), ${mockupProject.columns.length} screen(s). Switch to Editor to customize.`);
+      await alert(`Applied "${t.name}" — ${mockupProject.devices.length} device row(s), ${mockupProject.columns.length} screen(s). Switch to Editor to customize.`);
     };
     grid.appendChild(card);
   }
@@ -348,7 +876,10 @@ function renderMockupMatrix() {
 }
 
 $("mockup-add-column").onclick = async () => {
-  if (!mockupId) return alert("Start a project first.");
+  if (!mockupId) {
+    await alert("Start a project first.");
+    return;
+  }
   const { project } = await api(`/api/mockups/${mockupId}/columns`, { method: "POST" });
   mockupProject = project;
   renderMockupMatrix();
@@ -462,11 +993,21 @@ function buildCellStyleFromForm() {
 }
 
 $("mk-source-upload").onclick = async () => {
-  const file = $("mk-source-file").files[0];
-  if (!file || !mockupId) return alert("Choose an image first.");
-  const source = await uploadFile(`/api/mockups/${mockupId}/sources`, file);
-  mockupProject.sources.push(source);
-  if (selectedCell) selectCell(selectedCell.deviceRowId, selectedCell.columnId);
+  if (!activeProjectId) {
+    await alert("Select a project first.");
+    return;
+  }
+  openUniversalUploadModal((selectedPath) => {
+    setTimeout(async () => {
+      mockupProject = await api(`/api/mockups/${activeProjectId}`);
+      // Re-populate the source dropdown and select the newly selected screenshot
+      $("mk-source").innerHTML = (mockupProject.sources || []).map((s) => `<option value="${s.id}">${s.name}</option>`).join("");
+      const src = mockupProject.sources.find(s => s.file === selectedPath);
+      if (src) {
+        $("mk-source").value = src.id;
+      }
+    }, 200);
+  });
 };
 
 $("mk-save").onclick = async () => {
@@ -491,17 +1032,17 @@ $("mk-copy-style").onclick = async () => {
   }
   mockupProject = await api(`/api/mockups/${mockupId}`);
   renderMockupMatrix();
-  alert("Style copied across all device rows for this screen.");
+  await alert("Style copied across all device rows for this screen.");
 };
 
 $("mk-ai-text").onclick = async () => {
-  const hint = prompt("Briefly describe this screen (used only to generate the title/subtitle):", $("mk-title").value);
+  const hint = await prompt("Briefly describe this screen (used only to generate the title/subtitle):", $("mk-title").value);
   if (hint === null) return;
   try {
     const { title, subtitle } = await api(`/api/mockups/${mockupId}/ai-text`, { method: "POST", body: { hint } });
     if (title) $("mk-title").value = title;
     if (subtitle) $("mk-subtitle").value = subtitle;
-  } catch (e) { alert("AI assist failed: " + e.message); }
+  } catch (e) { await alert("AI assist failed: " + e.message); }
 };
 
 /* ---- Devices section ---- */
@@ -539,7 +1080,10 @@ $("mockup-add-device-select").onchange = () => {
   if (device?.variants) for (const v of device.variants) select.innerHTML += `<option value="${v.id}">${v.name}</option>`;
 };
 $("mockup-add-device-btn").onclick = async () => {
-  if (!mockupId) return alert("Start a project first.");
+  if (!mockupId) {
+    await alert("Start a project first.");
+    return;
+  }
   const deviceId = $("mockup-add-device-select").value;
   const label = $("mockup-add-device-label").value.trim() || deviceId;
   const { project } = await api(`/api/mockups/${mockupId}/devices`, { method: "POST", body: { deviceId, variant: $("mockup-add-device-variant").value || undefined, label } });
@@ -552,9 +1096,12 @@ $("mockup-add-device-btn").onclick = async () => {
 /* ---- Panoramic section ---- */
 $("mockup-panorama-upload").onclick = async () => {
   const file = $("mockup-panorama-file").files[0];
-  if (!file || !mockupId) return alert("Choose an image first.");
+  if (!file || !mockupId) {
+    await alert("Choose an image first.");
+    return;
+  }
   await uploadFile(`/api/mockups/${mockupId}/panoramic`, file);
-  alert("Panorama uploaded. Set a column's background type to Panoramic in the Editor to use it.");
+  await alert("Panorama uploaded. Set a column's background type to Panoramic in the Editor to use it.");
 };
 $("mockup-panorama-flip").onchange = async () => {
   await api(`/api/mockups/${mockupId}/panoramic`, { method: "PATCH", body: { flip: $("mockup-panorama-flip").checked } });
@@ -633,7 +1180,7 @@ async function loadVideoProjectInto(id) {
   renderVideoScenes();
 }
 $("video-new-project").onclick = async () => {
-  const name = prompt("Project name?", "Promo Video");
+  const name = await prompt("Project name?", "Promo Video");
   if (!name) return;
   const project = await api("/api/videos", { method: "POST", body: { name } });
   await loadVideoProjectInto(project.id);
@@ -648,7 +1195,10 @@ async function renderVideoTemplateGrid() {
     card.className = "template-card";
     card.innerHTML = `<h4>${t.name}</h4><div class="desc">${t.description}</div><div class="hint">${t.sceneCount} scenes</div>`;
     card.onclick = async () => {
-      if (!videoId) return alert("Start a project first.");
+      if (!videoId) {
+        await alert("Start a project first.");
+        return;
+      }
       videoProject = await api(`/api/videos/${videoId}/apply-template`, { method: "POST", body: { templateId: t.id, device: "phone" } });
       renderVideoScenes();
       $("video-template-preview-card").style.display = "block";
@@ -708,12 +1258,21 @@ for (const [id, out] of [["sc-rotate", "sc-rotate-val"], ["sc-zoom", "sc-zoom-va
 function showScenePreview() { $("sc-preview").src = `/api/videos/${videoId}/scene-preview/${selectedSceneId}?t=${Date.now()}`; }
 
 $("sc-source-upload").onclick = async () => {
-  const file = $("sc-source-file").files[0];
-  if (!file || !videoId) return alert("Choose an image first.");
-  const source = await uploadFile(`/api/videos/${videoId}/sources`, file);
-  videoProject.sources.push(source);
-  $("sc-source").innerHTML = videoProject.sources.map((s) => `<option value="${s.id}">${s.name}</option>`).join("");
-  $("sc-source").value = source.id;
+  if (!activeProjectId) {
+    await alert("Select a project first.");
+    return;
+  }
+  openUniversalUploadModal((selectedPath) => {
+    setTimeout(async () => {
+      videoProject = await api(`/api/videos/${activeProjectId}`);
+      // Re-populate the source dropdown and select the newly selected screenshot
+      $("sc-source").innerHTML = (videoProject.sources || []).map((s) => `<option value="${s.id}">${s.name}</option>`).join("");
+      const src = videoProject.sources.find(s => s.file === selectedPath);
+      if (src) {
+        $("sc-source").value = src.id;
+      }
+    }, 200);
+  });
 };
 
 $("sc-save").onclick = async () => {
@@ -730,20 +1289,23 @@ $("sc-save").onclick = async () => {
 };
 
 $("sc-ai-text").onclick = async () => {
-  const hint = prompt("Briefly describe this scene (used only to generate the text/subtext):", $("sc-text").value);
+  const hint = await prompt("Briefly describe this scene (used only to generate the text/subtext):", $("sc-text").value);
   if (hint === null) return;
   try {
     const { text, subtext } = await api(`/api/videos/${videoId}/scenes/${selectedSceneId}/ai-text`, { method: "POST", body: { hint } });
     if (text) $("sc-text").value = text;
     if (subtext) $("sc-subtext").value = subtext;
-  } catch (e) { alert("AI assist failed: " + e.message); }
+  } catch (e) { await alert("AI assist failed: " + e.message); }
 };
 
 $("bgm-upload").onclick = async () => {
   const file = $("bgm-file").files[0];
-  if (!file) return alert("Choose an audio file first.");
+  if (!file) {
+    await alert("Choose an audio file first.");
+    return;
+  }
   await uploadFile(`/api/videos/${videoId}/bgm`, file);
-  alert("BGM uploaded.");
+  await alert("BGM uploaded.");
 };
 $("video-render").onclick = async () => {
   $("video-render").disabled = true;
@@ -893,6 +1455,143 @@ $("add-provider-save").onclick = async () => {
   document.querySelector('#settings-backdrop .tab[data-tab="providers"]').click();
   loadProviders();
 };
+
+/* ============================================================
+   Universal Screenshot Upload Popup
+   ============================================================ */
+
+let currentUploadCallback = null;
+
+function openUniversalUploadModal(onSelectCallback) {
+  currentUploadCallback = onSelectCallback;
+  $("universal-upload-backdrop").classList.add("open");
+  
+  // Reset tabs to project view
+  document.querySelectorAll("#universal-upload-backdrop .tab").forEach(t => t.classList.remove("active"));
+  document.querySelectorAll("#universal-upload-backdrop .tab-panel").forEach(p => p.classList.remove("active"));
+  $("tab-btn-project-assets").classList.add("active");
+  $("upload-panel-project").classList.add("active");
+  
+  refreshUniversalProjectAssets();
+}
+
+$("universal-upload-close").onclick = () => {
+  $("universal-upload-backdrop").classList.remove("open");
+};
+
+// Switch tabs inside upload modal
+document.querySelectorAll("#universal-upload-backdrop .tab").forEach(tab => {
+  tab.onclick = () => {
+    document.querySelectorAll("#universal-upload-backdrop .tab").forEach(t => t.classList.remove("active"));
+    document.querySelectorAll("#universal-upload-backdrop .tab-panel").forEach(p => p.classList.remove("active"));
+    tab.classList.add("active");
+    $("upload-panel-" + tab.dataset.uploadTab).classList.add("active");
+  };
+});
+
+async function refreshUniversalProjectAssets() {
+  const grid = $("universal-project-assets-grid");
+  grid.innerHTML = "Loading assets...";
+  $("universal-use-selected-btn").disabled = true;
+  
+  if (!activeProjectId) return;
+
+  try {
+    const { files } = await api(`/api/projects/${activeProjectId}/files`);
+    grid.innerHTML = "";
+    
+    // Only captures (screenshots) or uploads
+    const assets = files.filter(f => f.path.startsWith("captures/") || f.path.startsWith("uploads/"));
+    
+    if (assets.length === 0) {
+      grid.innerHTML = '<div style="grid-column: span 4; text-align: center; padding: 2rem 0;" class="hint">No screenshots captured or uploaded yet.</div>';
+      return;
+    }
+    
+    let selectedPath = null;
+    
+    for (const asset of assets) {
+      const card = document.createElement("div");
+      card.className = "asset-select-card";
+      const fileUrl = `/api/projects/${activeProjectId}/file?p=${encodeURIComponent(asset.path)}`;
+      card.innerHTML = `
+        <img src="${fileUrl}" />
+        <div class="badge-overlay">${asset.path.startsWith("captures/") ? 'Cap ' : ''}${asset.name}</div>
+      `;
+      
+      card.onclick = () => {
+        document.querySelectorAll(".asset-select-card").forEach(c => c.classList.remove("selected"));
+        card.classList.add("selected");
+        selectedPath = asset.path;
+        $("universal-use-selected-btn").disabled = false;
+      };
+      
+      grid.appendChild(card);
+    }
+    
+    $("universal-use-selected-btn").onclick = () => {
+      if (selectedPath && currentUploadCallback) {
+        currentUploadCallback(selectedPath);
+        $("universal-upload-backdrop").classList.remove("open");
+      }
+    };
+  } catch (e) {
+    grid.innerHTML = "Error loading assets: " + e.message;
+  }
+}
+
+// Drag & Drop / File Picker for direct uploads
+const dropzone = $("universal-dropzone");
+const filePicker = $("universal-file-picker");
+
+dropzone.onclick = () => filePicker.click();
+
+filePicker.onchange = async () => {
+  const file = filePicker.files[0];
+  if (!file) return;
+  await handleDirectComputerUpload(file);
+};
+
+dropzone.ondragover = (e) => {
+  e.preventDefault();
+  dropzone.style.borderColor = "#3b82f6";
+};
+
+dropzone.ondragleave = () => {
+  dropzone.style.borderColor = "#262a33";
+};
+
+dropzone.ondrop = async (e) => {
+  e.preventDefault();
+  dropzone.style.borderColor = "#262a33";
+  const file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith("image/")) {
+    await handleDirectComputerUpload(file);
+  }
+};
+
+async function handleDirectComputerUpload(file) {
+  const statusEl = $("computer-upload-status");
+  statusEl.textContent = "Uploading image...";
+  statusEl.style.color = "#9aa0a6";
+
+  try {
+    const url = `/api/projects/${activeProjectId}/upload?name=${encodeURIComponent(file.name)}`;
+    const source = await uploadFile(url, file);
+    
+    statusEl.textContent = `Upload successful: ${file.name}`;
+    statusEl.style.color = "#10b981";
+    
+    // Switch to project assets tab, refresh list, and auto-select new upload
+    setTimeout(() => {
+      document.querySelector('#universal-upload-backdrop .tab[data-upload-tab="project"]').click();
+      refreshUniversalProjectAssets();
+    }, 800);
+  } catch (e) {
+    statusEl.textContent = "Upload failed: " + e.message;
+    statusEl.style.color = "#ef4444";
+  }
+}
 
 /* ============================================================
    Init
