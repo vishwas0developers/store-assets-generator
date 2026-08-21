@@ -81,8 +81,6 @@ export function buildFrameSvg(device: DeviceModel, colorway: "light" | "dark" = 
   return `<svg viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
     <rect x="${bezelWidth / 2}" y="${bezelWidth / 2}" width="${width - bezelWidth}" height="${height - bezelWidth}"
           rx="${outerRadius}" fill="none" stroke="${bodyFill}" stroke-width="${bezelWidth}" />
-    <rect x="${screenInset.left}" y="${screenInset.top}" width="${screenInset.width}" height="${screenInset.height}"
-          rx="${cornerRadius ?? 0}" fill="none" stroke="${strokeColor}" stroke-width="4" />
     ${cutoutMarkup(device, width)}
     ${buttonsMarkup(device, geometry)}
     ${foldSeamMarkup(device, geometry)}

@@ -1714,6 +1714,10 @@ function totalDuration(t) {
  *  vertical list of template cards down the left side of the section,
  *  always visible, with the selected one's preview shown in the stage next
  *  to it -- no separate browse/detail screens to navigate between. */
+function isLandscapeTemplate(t) { return t.aspectRatio === "16:9"; }
+function canvasSizeFor(t) { return isLandscapeTemplate(t) ? "1920 × 1080 (16:9)" : "1080 × 1920 (9:16)"; }
+function orientationFor(t) { return isLandscapeTemplate(t) ? "Landscape" : "Portrait"; }
+
 function renderVideoTemplateList(templates, activeId) {
   const list = $("video-template-list");
   list.innerHTML = templates
@@ -1725,7 +1729,12 @@ function renderVideoTemplateList(templates, activeId) {
       </div>
       <div class="video-list-info">
         <h4>${t.name}</h4>
-        <div class="hint" style="margin:.15rem 0 0;">${t.scenes.length} scenes &middot; ${Math.round(totalDuration(t))}s</div>
+        <div class="hint video-list-subtitle">${t.description}</div>
+        <div class="video-list-tags">
+          <span class="pill">${orientationFor(t)}</span>
+          <span class="pill">${canvasSizeFor(t)}</span>
+        </div>
+        <div class="hint" style="margin:.3rem 0 0;">${t.scenes.length} scenes &middot; ${Math.round(totalDuration(t))}s</div>
       </div>
     </div>`
     )
@@ -1853,7 +1862,21 @@ function openVideoTemplateDetail(id) {
     <div class="template-detail template-detail-video">
       <div class="video-detail-main">
         <div class="video-player">
-          <div class="video-preview-scale"><iframe id="video-detail-preview"></iframe></div>
+          <div class="video-preview-scale ${t.aspectRatio === "16:9" ? "landscape" : "portrait"}"><iframe id="video-detail-preview"></iframe></div>
+        </div>
+      </div>
+      <div class="template-detail-side">
+        <div class="video-screen-list">
+          ${t.scenes
+            .map(
+              (s, i) => `
+            <div class="video-screen-card" data-scene-jump="${i}">
+              <div class="video-screen-num">Screen ${i + 1}</div>
+              <div class="video-screen-name">${s.label}</div>
+              <div class="hint">${s.durationSeconds}s &middot; ${s.sceneTemplate.replace(/-/g, " ")} &middot; ${s.background}</div>
+            </div>`
+            )
+            .join("")}
         </div>
         <div class="video-scene-controls">
           <button type="button" class="secondary small" id="video-detail-prev">&laquo; Prev</button>
@@ -1863,23 +1886,6 @@ function openVideoTemplateDetail(id) {
           <div class="video-scene-dots" id="video-detail-dots">
             ${t.scenes.map((s, i) => `<div class="video-scene-dot" title="${s.label}" data-scene-jump="${i}"></div>`).join("")}
           </div>
-        </div>
-      </div>
-      <div class="template-detail-side">
-        <div class="detail-facts">
-          <div><span>Device</span><strong>${t.device.replace(/-/g, " ")}</strong></div>
-          <div><span>Aspect ratio</span><strong>${t.aspectRatio}</strong></div>
-          <div><span>Duration</span><strong>~${Math.round(totalDuration(t))}s</strong></div>
-          <div><span>Use case</span><strong>${t.useCase}</strong></div>
-          <div><span>Design style</span><strong>${t.designStyle}</strong></div>
-        </div>
-        <div class="detail-screens">
-          <span>Key features</span>
-          <ul>${t.features.map((f) => `<li>${f}</li>`).join("")}</ul>
-        </div>
-        <div class="detail-screens">
-          <span>Scenes</span>
-          <ul>${t.scenes.map((s, i) => `<li data-scene-jump="${i}">${s.label} &mdash; ${s.durationSeconds}s, ${s.sceneTemplate.replace(/-/g, " ")}</li>`).join("")}</ul>
         </div>
       </div>
     </div>
@@ -1892,9 +1898,40 @@ function openVideoTemplateDetail(id) {
     el.onclick = () => videoDetailShowScene(id, Number(el.dataset.sceneJump));
   });
 
+  // The rendered document is always native pixel size (1080x1920 portrait or
+  // 1920x1080 landscape) and CSS-scaled down to fit whichever shaped box
+  // (.portrait/.landscape) this template got above. The box's width is set
+  // directly here (not left to the CSS class alone) so it can never end up
+  // stretched to the flex column's full width -- a narrow mobile-shaped
+  // player for portrait, a wider one for landscape, always exactly this size.
+  const isLandscape = t.aspectRatio === "16:9";
+  const nativeWidth = isLandscape ? 1920 : 1080;
+  const nativeHeight = isLandscape ? 1080 : 1920;
+  // Portrait stays a deliberately compact, mobile-shaped preview. Landscape
+  // is a real widescreen player -- as large as the center column allows
+  // (up to 720px), not a small box shrunk to match the portrait player.
+  const mainCol = stage.querySelector(".video-detail-main");
+  const availableWidth = Math.max(320, mainCol.clientWidth - 16);
+  const boxWidth = isLandscape ? Math.min(720, availableWidth) : 280;
+  const box = stage.querySelector(".video-preview-scale");
+  box.style.width = `${boxWidth}px`;
+  box.style.maxWidth = `${boxWidth}px`;
+  box.style.aspectRatio = isLandscape ? "16 / 9" : "9 / 16";
   const frame = $("video-detail-preview");
+  frame.style.width = `${nativeWidth}px`;
+  frame.style.height = `${nativeHeight}px`;
+  const scale = boxWidth / nativeWidth;
+  frame.style.transform = `scale(${scale})`;
   frame.onload = () => videoDetailShowScene(id, 0);
   frame.src = `/api/videos/templates/${encodeURIComponent(id)}/preview?${videoDetailPreviewQuery().toString()}`;
+
+  // Pin the side panel's height to exactly the rendered .video-player box
+  // (the card around the stage, including its padding) -- never to the
+  // taller of the two columns, never to the section's own height. The
+  // screen list scrolls internally if it doesn't fit.
+  const player = stage.querySelector(".video-player");
+  const side = stage.querySelector(".template-detail-side");
+  side.style.height = `${player.getBoundingClientRect().height}px`;
 }
 
 async function loadVideoTemplateNow(id) {

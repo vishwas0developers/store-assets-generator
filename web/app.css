@@ -166,7 +166,7 @@ pre { background: #0a0c10; border: 1px solid #21252f; border-radius: 6px; paddin
 .detail-topbar #mockup-detail-load-btn, .detail-topbar #video-detail-load-btn { padding: .55rem 1.4rem; font-weight: 600; }
 
 .template-detail { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 1.5rem; align-items: start; }
-.template-detail-side { display: flex; flex-direction: column; gap: 0; }
+.template-detail-side { display: flex; flex-direction: column; gap: 0; overflow: hidden; }
 
 /* Mockup: horizontally-wide, vertically-compact filmstrip of the template's
    own screens at their real device proportions -- not a single tall phone. */
@@ -188,39 +188,72 @@ pre { background: #0a0c10; border: 1px solid #21252f; border-radius: 6px; paddin
    template cards) down the left, mirroring Studio Mockup's rail + content
    pattern, with the selected template's preview in the stage next to it --
    no separate browse/detail screens to navigate between. */
-.video-template-shell { display: flex; gap: 1.25rem; align-items: flex-start; }
-.video-template-list { flex: 0 0 260px; display: flex; flex-direction: column; gap: .6rem; max-height: calc(100vh - 220px); overflow-y: auto; }
+/* Single source of truth for the left (template list) and right (screen
+   list + controls) column width -- both must always match exactly. */
+.video-template-shell { --video-side-col: 500px; display: flex; gap: 1.25rem; align-items: flex-start; }
+.video-template-list { flex: 0 0 var(--video-side-col); display: flex; flex-direction: column; gap: .6rem; max-height: calc(100vh - 220px); overflow-y: auto; }
+.video-list-subtitle { margin: .2rem 0 0; }
+.video-list-tags { display: flex; gap: .35rem; margin-top: .4rem; flex-wrap: wrap; }
+.video-list-tags .pill { font-size: .68rem; background: #1e293b; color: #93c5fd; padding: 2px 8px; border-radius: 999px; font-weight: 600; }
 .video-list-card { display: flex; gap: .7rem; padding: .55rem; border-radius: 10px; border: 1px solid #232733; background: #141721; cursor: pointer; transition: border-color .15s ease, background .15s ease; }
 .video-list-card:hover { border-color: #3b82f6; }
 .video-list-card.active { border-color: #3b82f6; background: #16223a; }
-.video-list-thumb { flex: 0 0 64px; width: 64px; height: 88px; border-radius: 6px; overflow: hidden; background: #0a0c10; position: relative; }
+/* Cards widened more than heightened (84x104, was 64x88) -- width +20, height +16. */
+.video-list-thumb { flex: 0 0 84px; width: 84px; height: 104px; border-radius: 6px; overflow: hidden; background: #0a0c10; position: relative; }
 .video-list-thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .2s ease; }
 .video-list-thumb img.loaded { opacity: 1; }
 .video-list-info h4 { margin: 0; font-size: .85rem; font-weight: 600; color: #e5e7eb; }
 .video-template-stage { flex: 1; min-width: 0; }
 
-/* The player itself: a real 9:16 stage (not a tiny Shorts-style preview),
-   width-capped so it stays balanced on ultrawide instead of dominating the
-   screen -- the cap is on the player, not the whole layout, so the side
-   panel/controls never get squeezed by it. */
-.template-detail-video { grid-template-columns: minmax(0, 1fr) 300px; }
+/* The player is a compact, YouTube-normal-view-sized 9:16 stage, not a
+   full-bleed preview. The side panel absorbs exactly what the player gives
+   up (300px, was 300 -> now +160 = 460px) so nothing is wasted, and it now
+   also owns every playback control -- nothing sits below the video. */
+/* The side panel's height is pinned in JS to exactly the rendered .video-player
+   box's height (see openVideoTemplateDetail) -- deliberately NOT CSS grid
+   stretch, which would size it to the max of both columns (and, via any
+   ancestor with a definite height, to the whole section). If the screen list
+   has more entries than fit, it scrolls internally; the panel's own height
+   never grows past the player. */
+.template-detail-video { grid-template-columns: minmax(0, 1fr) var(--video-side-col); align-items: start; }
 .video-detail-main { display: flex; flex-direction: column; gap: .6rem; align-items: center; }
-.video-player { width: 100%; background: #05060a; border: 1px solid #232733; border-radius: 12px; padding: 1rem; display: flex; justify-content: center; }
-.video-preview-scale { position: relative; width: 100%; max-width: 460px; aspect-ratio: 9 / 16; flex: 0 0 auto; border-radius: 10px; overflow: hidden; background: #000; box-shadow: 0 10px 30px rgba(0,0,0,.5); }
-.video-preview-scale iframe { position: absolute; top: 0; left: 0; width: 1080px; height: 1920px; border: 0; transform-origin: top left; }
+/* Hugs the actual video box (fit-content, not 100%) -- a full-width card
+   around a narrow 9:16 box was reading as a thick black border/padding
+   around the video. Any leftover space is the page background, not a card. */
+.video-player { width: fit-content; max-width: 100%; background: #05060a; border: 1px solid #232733; border-radius: 12px; padding: .5rem; display: flex; justify-content: center; }
+.video-preview-scale { position: relative; flex: 0 0 auto; border-radius: 10px; overflow: hidden; background: #000; box-shadow: 0 10px 30px rgba(0,0,0,.5); }
+/* Short/portrait templates get a narrow, YouTube-normal-view-sized vertical
+   stage; 16:9 templates get a proper widescreen stage -- the two shapes
+   must never share one box, per the "distinctly different appearance"
+   requirement. */
+.video-preview-scale.portrait { width: 100%; max-width: 280px; aspect-ratio: 9 / 16; }
+.video-preview-scale.landscape { width: 100%; max-width: 400px; aspect-ratio: 16 / 9; }
+.video-preview-scale iframe { position: absolute; top: 0; left: 0; border: 0; transform-origin: top left; }
 
-.video-scene-controls { display: flex; align-items: center; justify-content: center; gap: .5rem; flex-wrap: wrap; width: 100%; max-width: 460px; }
+/* Controls live in the side panel now, above the facts/features/scenes. */
+/* Right panel: just the individual screens, nothing else -- clicking one
+   jumps the player to it, matching the existing scene-dot behaviour. */
+.video-screen-list { display: flex; flex-direction: column; gap: .5rem; overflow-y: auto; flex: 1; min-height: 0; }
+.video-screen-card { padding: .6rem .75rem; border-radius: 8px; border: 1px solid #232733; cursor: pointer; transition: border-color .15s ease, background .15s ease; }
+.video-screen-card:hover { border-color: #3b82f6; }
+.video-screen-card.active { border-color: #3b82f6; background: #16223a; }
+.video-screen-num { font-size: .68rem; text-transform: uppercase; letter-spacing: .03em; color: #3b82f6; font-weight: 700; }
+.video-screen-name { font-size: .88rem; font-weight: 600; color: #e5e7eb; margin-top: .1rem; }
+
+/* Controls always pinned to the panel's bottom edge, even when the panel is
+   stretched taller than its own content (see .template-detail-video above). */
+.video-scene-controls { display: flex; align-items: center; justify-content: center; gap: .5rem; flex-wrap: wrap; width: 100%; padding-top: 1rem; margin-top: auto; border-top: 1px solid #232733; }
 .video-scene-controls button { padding: .45rem .9rem; font-size: .8rem; }
 .video-scene-controls #video-detail-play { padding: .45rem 1.4rem; font-weight: 600; }
 .scene-indicator { flex-basis: 100%; text-align: center; font-size: .78rem; color: #9aa0a6; margin-top: .15rem; }
-.video-scene-dots { display: flex; gap: .3rem; justify-content: center; flex-basis: 100%; margin-top: .3rem; }
+.video-scene-dots { display: flex; gap: .3rem; justify-content: center; flex-basis: 100%; margin-top: .3rem; flex-wrap: wrap; }
 .video-scene-dot { width: 26px; height: 4px; border-radius: 2px; background: #2b3040; cursor: pointer; }
 .video-scene-dot.active { background: #3b82f6; }
 
 @media (max-width: 900px) {
   .video-template-shell { flex-direction: column; }
   .video-template-list { flex-direction: row; flex-wrap: wrap; max-height: none; width: 100%; }
-  .video-list-card { flex: 1 1 220px; }
+  .video-list-card { flex: 1 1 240px; }
 }
 
 @media (max-width: 1100px) {

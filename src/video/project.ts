@@ -37,6 +37,9 @@ export interface VideoScene {
    *  template-specific so a tablet and a phone aren't forced to the same
    *  on-screen size. Falls back to 0.58 when unset. */
   deviceFraction?: number;
+  /** "16:9" renders a landscape canvas (1920x1080); anything else (or unset)
+   *  keeps the app-store-standard 9:16 portrait canvas (1080x1920). */
+  aspectRatio?: "9:16" | "16:9";
   background: string;
   text: string;
   subtext: string;
