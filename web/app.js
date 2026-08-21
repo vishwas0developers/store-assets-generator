@@ -501,44 +501,88 @@ async function renderLiveBrowserCaptures() {
       item.className = "thumb";
       item.style = "height: fit-content; align-self: start;";
       const fileUrl = `/api/projects/${activeProjectId}/file?p=${encodeURIComponent(c.file)}`;
-      item.innerHTML = `
-        <img src="${fileUrl}" style="cursor: pointer; width: 100%; height: auto; max-height: 220px; display: block; aspect-ratio: 9/16; object-fit: contain; background: #000;" />
-        <div class="cap" style="display: flex; justify-content: space-between; align-items: center; padding: 0.35rem 0.5rem; background: #14171f; border-top: 1px solid #21252f;">
-          <span style="font-weight: 600; color: #e5e7eb; font-size: 0.75rem;">Screen ${c.id}</span>
-          <button class="small danger delete-cap-btn" style="padding: 0.25rem 0.35rem; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; background: #dc2626; border: none;" title="Delete screenshot">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="pointer-events: none;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
-          </button>
-        </div>
-      `;
 
-      item.querySelector("img").onclick = () => {
-        // Lightbox preview
-        const box = document.createElement("div");
-        box.style = "position:fixed; inset:0; background:rgba(0,0,0,0.85); display:flex; align-items:center; justify-content:center; z-index:100; cursor:pointer;";
-        box.innerHTML = `<img src="${fileUrl}" style="max-width:90%; max-height:90%; border-radius:8px;" />`;
-        box.onclick = () => box.remove();
-        document.body.appendChild(box);
-      };
+      // Build card manually via DOM (no innerHTML) to guarantee onclick works
+      const img = document.createElement("img");
+      img.src = fileUrl;
+      img.style.cssText = "cursor:pointer; width:100%; height:auto; max-height:220px; display:block; aspect-ratio:9/16; object-fit:contain; background:#000;";
 
-      item.querySelector(".delete-cap-btn").onclick = async (e) => {
+      const cap = document.createElement("div");
+      cap.style.cssText = "display:flex; justify-content:space-between; align-items:center; padding:0.35rem 0.5rem; background:#14171f; border-top:1px solid #21252f;";
+
+      const label = document.createElement("span");
+      label.style.cssText = "font-weight:600; color:#e5e7eb; font-size:0.75rem;";
+      label.textContent = `Screen ${c.id}`;
+
+      const delBtn = document.createElement("button");
+      delBtn.type = "button";
+      delBtn.style.cssText = "padding:0.25rem 0.35rem; border-radius:4px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; color:#fff; background:#dc2626; border:none; transition:background 0.2s;";
+      delBtn.title = "Delete screenshot";
+      delBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>`;
+
+      // Two-click inline confirm — no modal dependency
+      let confirmTimer = null;
+      let confirming = false;
+
+      delBtn.addEventListener("click", async (e) => {
         e.stopPropagation();
         e.preventDefault();
-        const confirmed = await showConfirm(`Delete Screenshot ${c.id}?`, "Delete Screenshot");
-        if (confirmed) {
-          try {
-            await api(`/api/projects/${activeProjectId}/file?p=${encodeURIComponent(c.file)}`, { method: "DELETE" });
-            showToast(`Deleted Screenshot ${c.id}`, "info");
-            activeProject = await api(`/api/projects/${activeProjectId}`);
-            await renderLiveBrowserCaptures();
-            if (typeof refreshFileExplorer === "function") {
-              await refreshFileExplorer();
-            }
-          } catch (err) {
-            await showAlert("Failed to delete screenshot: " + err.message, "error");
-          }
-        }
-      };
 
+        if (!confirming) {
+          // First click: enter confirm state
+          confirming = true;
+          delBtn.style.background = "#f59e0b";
+          delBtn.title = "Click again to confirm delete";
+          delBtn.innerHTML = `<span style="font-size:10px; font-weight:800;">✓?</span>`;
+          confirmTimer = setTimeout(() => {
+            // Timed out without second click — reset
+            confirming = false;
+            delBtn.style.background = "#dc2626";
+            delBtn.title = "Delete screenshot";
+            delBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>`;
+          }, 2500);
+        } else {
+          // Second click: confirmed — execute delete
+          clearTimeout(confirmTimer);
+          confirming = false;
+
+          // Remove from DOM immediately for instant feedback
+          item.remove();
+          if (gallery.children.length === 0) {
+            gallery.innerHTML = `<div class="hint" style="grid-column:span 2; text-align:center; padding:2rem 0;">No screenshots captured yet.</div>`;
+          }
+
+          try {
+            await api(`/api/projects/${activeProjectId}/captures/${c.id}`, { method: "DELETE" });
+          } catch (_) {
+            // Fallback to file path delete
+            try {
+              await api(`/api/projects/${activeProjectId}/file?p=${encodeURIComponent(c.file)}`, { method: "DELETE" });
+            } catch (err2) {
+              showToast("Delete failed: " + err2.message, "error");
+              renderLiveBrowserCaptures();
+              return;
+            }
+          }
+
+          showToast(`Screenshot ${c.id} deleted`, "info");
+          activeProject = await api(`/api/projects/${activeProjectId}`).catch(() => activeProject);
+          if (typeof refreshFileExplorer === "function") refreshFileExplorer();
+        }
+      });
+
+      img.addEventListener("click", () => {
+        const box = document.createElement("div");
+        box.style.cssText = "position:fixed; inset:0; background:rgba(0,0,0,0.85); display:flex; align-items:center; justify-content:center; z-index:200; cursor:pointer;";
+        box.innerHTML = `<img src="${fileUrl}" style="max-width:90%; max-height:90%; border-radius:8px;" />`;
+        box.addEventListener("click", () => box.remove());
+        document.body.appendChild(box);
+      });
+
+      cap.appendChild(label);
+      cap.appendChild(delBtn);
+      item.appendChild(img);
+      item.appendChild(cap);
       gallery.appendChild(item);
     }
   } catch (e) {
@@ -1545,11 +1589,11 @@ $("video-render").onclick = async () => {
    ============================================================ */
 
 const settingsBackdrop = $("settings-backdrop");
-$("open-settings").onclick = () => { settingsBackdrop.classList.add("open"); loadProviders(); loadModelsTab(); };
-$("settings-close").onclick = () => settingsBackdrop.classList.remove("open");
-settingsBackdrop.onclick = (e) => { if (e.target === settingsBackdrop) settingsBackdrop.classList.remove("open"); };
-$("credentials-backdrop").onclick = (e) => { if (e.target === $("credentials-backdrop")) $("credentials-backdrop").classList.remove("open"); };
-$("sessions-backdrop").onclick = (e) => { if (e.target === $("sessions-backdrop")) $("sessions-backdrop").classList.remove("open"); };
+if ($("open-settings")) $("open-settings").onclick = () => { if (settingsBackdrop) settingsBackdrop.classList.add("open"); loadProviders(); loadModelsTab(); };
+if ($("settings-close")) $("settings-close").onclick = () => { if (settingsBackdrop) settingsBackdrop.classList.remove("open"); };
+if (settingsBackdrop) settingsBackdrop.onclick = (e) => { if (e.target === settingsBackdrop) settingsBackdrop.classList.remove("open"); };
+if ($("credentials-backdrop")) $("credentials-backdrop").onclick = (e) => { if (e.target === $("credentials-backdrop")) $("credentials-backdrop").classList.remove("open"); };
+if ($("sessions-backdrop")) $("sessions-backdrop").onclick = (e) => { if (e.target === $("sessions-backdrop")) $("sessions-backdrop").classList.remove("open"); };
 
 for (const tab of document.querySelectorAll("#settings-backdrop .tab")) {
   tab.onclick = () => {

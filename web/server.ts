@@ -159,6 +159,12 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
       return;
     }
 
+    if (method === "GET" && p === "/favicon.ico") {
+      res.writeHead(204);
+      res.end();
+      return;
+    }
+
     if (method === "GET" && p === "/api/health") {
       sendJson(res, 200, { ok: true });
       return;
@@ -387,6 +393,33 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
           sendJson(res, 200, { ok: true });
           return;
         }
+      }
+    }
+
+    {
+      const m = p.match(/^\/api\/projects\/([^/]+)\/captures\/(\d+)$/);
+      if (m && method === "DELETE") {
+        const id = decodeURIComponent(m[1]);
+        const captureId = Number(m[2]);
+        const project = loadProject(id);
+        const capture = (project.captures || []).find((c: any) => c.id === captureId);
+        if (capture) {
+          const abs = projectFile(id, capture.file);
+          if (fs.existsSync(abs)) {
+            try { fs.unlinkSync(abs); } catch (e) {}
+          }
+          const normRel = capture.file.replace(/\\/g, "/");
+          project.captures = (project.captures || []).filter((c: any) => c.id !== captureId);
+          if (project.mockup && project.mockup.sources) {
+            project.mockup.sources = project.mockup.sources.filter((s: any) => (s.file || "").replace(/\\/g, "/") !== normRel);
+          }
+          if (project.video && project.video.sources) {
+            project.video.sources = project.video.sources.filter((s: any) => (s.file || "").replace(/\\/g, "/") !== normRel);
+          }
+          saveProject(project);
+        }
+        sendJson(res, 200, { ok: true });
+        return;
       }
     }
 
