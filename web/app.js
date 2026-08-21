@@ -139,6 +139,43 @@ function renderCaptureThumbs() {
   }
 }
 
+/* Numbered URL slots -- one per screenshot to capture, count-driven.
+   Each slot pairs a numeric identifier (auto 1..N, editable, digits only --
+   just a slot label, never a page name) with the actual URL to capture
+   from, entered separately and associated with that identifier. Capture
+   order follows slot order, not the identifier value. */
+function renderUrlGrid(count) {
+  const grid = $("cap-url-grid");
+  const existing = [...grid.children].map((slot) => ({
+    id: slot.querySelector(".slot-id").value,
+    url: slot.querySelector(".slot-url").value,
+  }));
+  grid.innerHTML = "";
+  const n = Math.max(1, Math.min(30, Number(count) || 1));
+  for (let i = 0; i < n; i++) {
+    const prev = existing[i];
+    const slot = document.createElement("div");
+    slot.className = "url-slot";
+    slot.innerHTML = `
+      <input class="slot-id" type="number" min="1" step="1" inputmode="numeric" style="width:2.6rem;flex:0 0 auto;" value="${prev ? prev.id : i + 1}" title="Numeric identifier (slot label only, not order)" />
+      <input class="slot-url" type="url" placeholder="https://example.com/page-${i + 1}" value="${prev ? prev.url : ""}" style="flex:1;" />
+    `;
+    // Digits only in the identifier field -- reject anything else as typed.
+    slot.querySelector(".slot-id").addEventListener("input", (e) => {
+      e.target.value = e.target.value.replace(/[^0-9]/g, "");
+    });
+    grid.appendChild(slot);
+  }
+}
+$("cap-url-count").oninput = () => renderUrlGrid($("cap-url-count").value);
+renderUrlGrid($("cap-url-count").value);
+
+function collectUrlEntries() {
+  return [...$("cap-url-grid").children]
+    .map((slot) => ({ id: Number(slot.querySelector(".slot-id").value) || 0, url: slot.querySelector(".slot-url").value.trim() }))
+    .filter((entry) => entry.url.length > 0);
+}
+
 $("cap-new-session").onclick = async () => {
   const url = $("cap-url").value.trim();
   if (!url) return alert("App URL is required.");
@@ -150,10 +187,12 @@ $("cap-new-session").onclick = async () => {
 };
 $("cap-run").onclick = async () => {
   if (!captureId) return alert("Start a website capture project first.");
+  const pages = collectUrlEntries();
+  if (pages.length === 0) return alert("Enter at least one URL in the numbered fields above.");
   $("cap-run").disabled = true;
   $("cap-result").textContent = "Capturing… this can take a minute.";
   try {
-    const result = await api(`/api/captures/${captureId}/website`, { method: "POST", body: { maxPages: Number($("cap-max-pages").value) || 6 } });
+    const result = await api(`/api/captures/${captureId}/website`, { method: "POST", body: { pages } });
     captureProject.raw = result.raw;
     $("cap-result").innerHTML = `<span class="count-badge">${result.count}</span> screenshots captured.`;
     renderCaptureThumbs();

@@ -1,6 +1,5 @@
 import fs from "fs";
 import path from "path";
-import { DiscoveryEngine } from "../discovery/crawl.js";
 import { WebCaptureBackend } from "./browser.js";
 import { defaultSessionStatePath } from "./auth.js";
 import { resolveAuthConfig, slugify } from "../auth/appConfig.js";
@@ -9,13 +8,24 @@ import { saveCaptureSession, captureDir, type RawScreenshot, type CaptureSession
 
 /**
  * Website Capture — Screen Capture tab. Captures raw, unframed application
- * screens using the configured demo access. Independent of Studio Mockup
- * and Video (see src/capture/store.ts) — nothing here writes into their
- * project stores.
+ * screens using the configured demo access, strictly from the exact URLs
+ * the user provides (no discovery/crawling, no page selected at random —
+ * see docs/IMPLEMENTATION_PLAN.md). Independent of Studio Mockup and Video
+ * (see src/capture/store.ts) — nothing here writes into their project
+ * stores.
  */
 
+/** One user-entered target. `id` is a plain numeric identifier the user
+ *  assigns to this URL slot in the UI (1, 2, 3, ...) — it does NOT imply a
+ *  fixed page order (it is not "Home", "Dashboard", etc.); the actual
+ *  capture order is simply the order these entries arrive in. */
+export interface CaptureUrlEntry {
+  id: number;
+  url: string;
+}
+
 export interface CaptureRequest {
-  maxPages?: number;
+  pages: CaptureUrlEntry[];
   email?: string;
   password?: string;
 }
@@ -38,10 +48,18 @@ function captureViewport(platforms: string[]): { width: number; height: number }
   return best;
 }
 
-export async function captureWebsiteScreens(session: CaptureSession, request: CaptureRequest = {}): Promise<CaptureSession> {
-  if (!session.url) throw new Error("Website capture requires a url on the capture session.");
-  const slug = session.slug || slugify(session.url);
-  const authConfig = resolveAuthConfig(session.url, slug);
+export async function captureWebsiteScreens(session: CaptureSession, request: CaptureRequest): Promise<CaptureSession> {
+  const pages = (request.pages ?? []).filter((p) => p.url && p.url.trim().length > 0);
+  if (pages.length === 0) {
+    throw new Error("At least one URL is required — enter the pages to capture before running Capture.");
+  }
+
+  // Auth is resolved once, against the session's own URL (or the first
+  // entered page, if the session was created without one) — every entered
+  // URL is assumed to belong to the same app/demo account.
+  const authBaseUrl = session.url || pages[0].url;
+  const slug = session.slug || slugify(authBaseUrl);
+  const authConfig = resolveAuthConfig(authBaseUrl, slug);
   if (authConfig && !authConfig.sessionStatePath) {
     authConfig.sessionStatePath = defaultSessionStatePath(slug);
   }
@@ -53,26 +71,18 @@ export async function captureWebsiteScreens(session: CaptureSession, request: Ca
   const rawDir = path.join(captureDir(session.id), "raw");
   fs.mkdirSync(rawDir, { recursive: true });
 
-  const discover = new DiscoveryEngine();
-  await discover.initialize();
-  let pages;
-  try {
-    pages = await discover.crawl(session.url, { maxPages: request.maxPages ?? 6 });
-  } finally {
-    await discover.close();
-  }
-  if (pages.length === 0) throw new Error(`Could not discover any pages at ${session.url}`);
-
   const backend = new WebCaptureBackend();
   await backend.initialize();
   const raw: RawScreenshot[] = [];
   const skipped: string[] = [];
 
   try {
-    for (let i = 0; i < pages.length; i++) {
-      const filename = `screen_${session.raw.length + i + 1}.png`;
+    // Strictly the order the user provided — never re-sorted, never
+    // re-ranked, never substituted with a discovered/guessed page.
+    for (const entry of pages) {
+      const filename = `screen_${entry.id}.png`;
       try {
-        await backend.captureScreen(pages[i].url, filename, {
+        await backend.captureScreen(entry.url, filename, {
           width: viewport.width,
           height: viewport.height,
           deviceScaleFactor: 1,
@@ -80,16 +90,16 @@ export async function captureWebsiteScreens(session: CaptureSession, request: Ca
           auth: authConfig ?? undefined,
         });
         raw.push({
-          id: `screen_${session.raw.length + i + 1}`,
-          url: pages[i].url,
-          title: pages[i].title || `Screen ${i + 1}`,
+          id: `screen_${entry.id}`,
+          url: entry.url,
+          title: `Screen ${entry.id}`,
           file: path.posix.join("raw", filename),
           width: viewport.width,
           height: viewport.height,
           source: "website",
         });
       } catch (err) {
-        skipped.push(`${pages[i].url}: ${(err as Error).message}`);
+        skipped.push(`#${entry.id} (${entry.url}): ${(err as Error).message}`);
       }
     }
   } finally {
@@ -100,7 +110,10 @@ export async function captureWebsiteScreens(session: CaptureSession, request: Ca
     throw new Error(`No screens captured. Reasons:\n${skipped.join("\n") || "unknown"}`);
   }
 
-  session.raw = [...session.raw, ...raw];
+  // Replace, not append — a re-run of the same numeric slots should
+  // overwrite those exact screens rather than pile up duplicates.
+  const replacedIds = new Set(raw.map((r) => r.id));
+  session.raw = [...session.raw.filter((r) => !replacedIds.has(r.id)), ...raw];
   saveCaptureSession(session);
   return session;
 }

@@ -312,7 +312,8 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
       if (m && method === "POST") {
         const body = await readJsonBody(req);
         const session = loadCaptureSession(decodeURIComponent(m[1]));
-        const updated = await captureWebsiteScreens(session, { maxPages: body.maxPages, email: body.email, password: body.password });
+        const pages = Array.isArray(body.pages) ? body.pages.map((p: any) => ({ id: Number(p.id), url: String(p.url ?? "") })) : [];
+        const updated = await captureWebsiteScreens(session, { pages, email: body.email, password: body.password });
         sendJson(res, 200, { count: updated.raw.length, raw: updated.raw });
         return;
       }
