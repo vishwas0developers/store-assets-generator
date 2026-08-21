@@ -103,6 +103,61 @@ export const MOCKUP_TEMPLATES: MockupStarterTemplate[] = [
     background: { type: "solid", value: "solid-cream" },
     titles: ["New Arrivals", "Easy Cart", "Secure Checkout", "Track Order", "Get Rewards"],
     subtitles: ["Curated items every week", "One-tap addition to cart", "All major cards accepted", "Realtime delivery routing", "Earn points on every purchase"]
+  },
+  {
+    id: "books-app-template",
+    name: "Sleek Books & Reader",
+    category: "Books",
+    devices: [{ deviceId: "apple-iphone-15-pro", label: "6.5 Inch Phone" }],
+    columnCount: 4,
+    layout: "rotated-left-1-caption-above",
+    background: { type: "solid", value: "solid-charcoal" },
+    titles: ["Read Books", "Offline Mode", "Audiobooks", "Bookmark"],
+    subtitles: ["Your library in your pocket", "Download stories to read anywhere", "Listen to high-quality audio", "Never lose your place"]
+  },
+  {
+    id: "music-app-template",
+    name: "Beats Music Player",
+    category: "Entertainment",
+    devices: [{ deviceId: "apple-iphone-15-pro", label: "6.5 Inch Phone" }],
+    columnCount: 5,
+    layout: "two-devices-title-below",
+    background: { type: "gradient", value: "violet" },
+    titles: ["Stream Beats", "Create Playlists", "Offline Mode", "Hi-Fi Sound", "Join Live"],
+    subtitles: ["Access millions of songs", "Curate for any mood", "Listen without connection", "Lossless audio quality", "Interact with your favorite artists"]
+  },
+  {
+    id: "notes-app-template",
+    name: "Smart Notes & Journal",
+    category: "Productivity",
+    devices: [{ deviceId: "phone", label: "Android Phone" }],
+    columnCount: 4,
+    layout: "left-side-title-above",
+    background: { type: "solid", value: "solid-forest" },
+    titles: ["Smart Notes", "Organize Ideas", "Sync Everywhere", "Rich Formatting"],
+    subtitles: ["Quick capturing made simple", "Folders, tags, and colors", "Access notes on any platform", "Markdown and sketch support"]
+  },
+  {
+    id: "travel-app-template",
+    name: "Travel Explorer Guide",
+    category: "Travel",
+    devices: [{ deviceId: "apple-iphone-15-pro", label: "6.5 Inch Phone" }],
+    columnCount: 5,
+    layout: "the-airbnb-right-2-title-above",
+    background: { type: "gradient", value: "aurora" },
+    titles: ["Find Stays", "Local Guides", "Realtime Maps", "Book Tickets", "Share Trip"],
+    subtitles: ["Discover unique cabins & homes", "Handpicked recommendations", "Interactive offline maps", "Seamless booking for flights", "Plan with friends in real time"]
+  },
+  {
+    id: "utility-app-template",
+    name: "Convert Pro Calculator",
+    category: "Utilities",
+    devices: [{ deviceId: "phone", label: "Android Phone" }],
+    columnCount: 4,
+    layout: "single-caption-above",
+    background: { type: "gradient", value: "graphite" },
+    titles: ["Quick Convert", "Smart History", "Widget Support", "Pro Mode"],
+    subtitles: ["Convert units in one tap", "Access past calculations", "Add tools to your home screen", "Unlock advanced math features"]
   }
 ];
 

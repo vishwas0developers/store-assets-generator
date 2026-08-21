@@ -65,6 +65,18 @@ export const VIDEO_TEMPLATES: VideoTemplate[] = [
       { sceneTemplate: "zoom-focus", durationSeconds: 10, background: "ocean", rotate: 0, zoom: 14, move: 0 },
     ],
   },
+  {
+    id: "social-promo",
+    name: "Social Promo",
+    description: "Five fast-paced scenes, ~50s -- ideal for social media sharing and promo reels.",
+    scenes: [
+      { sceneTemplate: "slide-pan", durationSeconds: 10, background: "candy", rotate: -10, zoom: 6, move: 110 },
+      { sceneTemplate: "hero-rise", durationSeconds: 10, background: "violet", rotate: 12, zoom: 12, move: 50 },
+      { sceneTemplate: "zoom-focus", durationSeconds: 10, background: "citrus", rotate: 0, zoom: 15, move: 0 },
+      { sceneTemplate: "tilt-3d", durationSeconds: 10, background: "aurora", rotate: 20, zoom: 8, move: 45 },
+      { sceneTemplate: "hero-rise", durationSeconds: 10, background: "sunset", rotate: -15, zoom: 10, move: 70 },
+    ],
+  },
 ];
 
 export function applyVideoTemplate(project: VideoProject, templateId: string, defaultDevice: string): void {
@@ -95,6 +107,13 @@ export function applyVideoTemplate(project: VideoProject, templateId: string, de
       { text: "Share Progress", subtext: "Connect and export anywhere" },
       { text: "Advanced Settings", subtext: "Customize it to your liking" },
       { text: "Ready to Level Up?", subtext: "Download from stores now" }
+    ],
+    "social-promo": [
+      { text: "Discover Something New", subtext: "Swipe to explore" },
+      { text: "Designed for You", subtext: "Tailored experience" },
+      { text: "Boost Productivity", subtext: "Save 10+ hours weekly" },
+      { text: "Interactive Panels", subtext: "Engaging dashboard views" },
+      { text: "Try it Free Today", subtext: "No credit card required" }
     ]
   };
 

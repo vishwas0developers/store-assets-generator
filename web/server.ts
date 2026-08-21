@@ -604,7 +604,7 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
       return;
     }
     {
-      const m = p.match(/^\/api\/mockups\/([^/]+)$/);
+      const m = p.match(/^\/api\/mockups\/(?!templates$|layouts$)([^/]+)$/);
       if (m && method === "GET") return sendJson(res, 200, loadMockupProject(decodeURIComponent(m[1])));
     }
     {
@@ -640,6 +640,20 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
         const body = await readJsonBody(req);
         const project = loadMockupProject(decodeURIComponent(m[1]));
         applyMockupTemplate(project, body.templateId);
+        saveMockupProject(project);
+        sendJson(res, 200, project);
+        return;
+      }
+    }
+    {
+      const m = p.match(/^\/api\/mockups\/([^/]+)\/import-template$/);
+      if (m && method === "POST") {
+        const body = await readJsonBody(req);
+        const project = loadMockupProject(decodeURIComponent(m[1]));
+        if (body.devices) project.devices = body.devices;
+        if (body.columns) project.columns = body.columns;
+        if (body.cells) project.cells = body.cells;
+        if (body.globalPanoramic) project.globalPanoramic = body.globalPanoramic;
         saveMockupProject(project);
         sendJson(res, 200, project);
         return;
@@ -852,7 +866,7 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
       return;
     }
     {
-      const m = p.match(/^\/api\/videos\/([^/]+)$/);
+      const m = p.match(/^\/api\/videos\/(?!templates$|scene-options$)([^/]+)$/);
       if (m && method === "GET") return sendJson(res, 200, loadVideoProject(decodeURIComponent(m[1])));
     }
     {
