@@ -16,8 +16,8 @@
     <div class="topbar-tabs">
       <div class="topbar-tab active" data-tab="projects">Projects List</div>
       <div class="topbar-tab disabled" data-tab="capture" id="tab-nav-capture">Screen Capture</div>
-      <div class="topbar-tab disabled" data-tab="mockup" id="tab-nav-mockup">Studio Mockup</div>
-      <div class="topbar-tab disabled" data-tab="video" id="tab-nav-video">Video Studio</div>
+      <div class="topbar-tab" data-tab="mockup" id="tab-nav-mockup">Studio Mockup</div>
+      <div class="topbar-tab" data-tab="video" id="tab-nav-video">Video Studio</div>
     </div>
     <div class="topbar-icons">
       <button id="open-credentials" class="icon-btn" title="Demo Access">&#128273;</button>
@@ -198,18 +198,22 @@
         </div>
 
         <div class="section-page active" id="mockup-section-templates">
-          <div class="card">
+          <div class="card" id="mockup-template-browse">
             <h3>Templates</h3>
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
-              <div class="hint" style="margin:0;">Selecting a template prepares device rows and starter columns/layouts -- edit from there.</div>
+              <div class="hint" style="margin:0;">Click a template to preview it, then choose Load to apply it to your project.</div>
               <div style="display:flex; gap:0.5rem;">
                 <button id="mockup-export-template-btn" class="secondary small" type="button" title="Export current project configuration as a template JSON file">Export Template</button>
                 <button id="mockup-import-template-btn" class="secondary small" type="button" title="Import a template JSON file to apply to the current project">Import Template</button>
                 <input type="file" id="mockup-import-file-input" accept=".json" style="display:none;" />
               </div>
             </div>
-            <div id="mockup-template-grid" class="template-grid"></div>
+            <div class="template-browser">
+              <div id="mockup-template-filters" class="template-filters"></div>
+              <div id="mockup-template-grid" class="template-grid"></div>
+            </div>
           </div>
+          <div class="card" id="mockup-template-detail" style="display:none;"></div>
         </div>
 
         <div class="section-page" id="mockup-section-editor">
@@ -354,14 +358,9 @@
         </div>
 
         <div class="section-page active" id="video-section-templates">
-          <div class="card">
-            <h3>Templates</h3>
-            <div class="hint">Each template is a complete ~60s HTML/CSS/JS animation sequence -- click Preview to play it live.</div>
-            <div id="video-template-grid" class="template-grid"></div>
-          </div>
-          <div class="card" id="video-template-preview-card" style="display:none;">
-            <h3>Template Preview</h3>
-            <div class="preview-frame"><iframe id="video-template-preview"></iframe></div>
+          <div class="card video-template-shell">
+            <div class="video-template-list" id="video-template-list"></div>
+            <div class="video-template-stage" id="video-template-stage"></div>
           </div>
         </div>
 

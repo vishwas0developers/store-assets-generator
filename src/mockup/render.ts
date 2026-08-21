@@ -17,6 +17,7 @@ import {
   type DeviceLayerStyle,
   type MockupProject,
 } from "./project.js";
+import { applyMockupTemplate, type MockupStarterTemplate } from "./templates.js";
 
 /**
  * Studio Mockup renderer -- the single HTML generator used by both the
@@ -147,4 +148,159 @@ export async function renderDeviceRowExport(project: MockupProject, deviceRowId:
     await browser.close();
   }
   return written;
+}
+
+/** Synthetic placeholder screens -- no real screenshot exists for a template
+ *  that hasn't been applied to a project yet, so the thumbnail shows a
+ *  varied, plausible app-screen silhouette (list/grid/hero/profile) instead
+ *  of the same blank card repeated across every column. */
+const PLACEHOLDER_LAYOUTS = ["list", "grid", "hero", "profile"] as const;
+function placeholderScreenUri(index = 0): string {
+  const layout = PLACEHOLDER_LAYOUTS[index % PLACEHOLDER_LAYOUTS.length];
+  const header = `<rect x="0" y="0" width="360" height="88" fill="#ffffff"/>
+    <circle cx="36" cy="44" r="16" fill="#c7d0dc"/>
+    <rect x="64" y="34" width="140" height="10" rx="5" fill="#c7d0dc"/>
+    <rect x="64" y="50" width="90" height="8" rx="4" fill="#dbe1ea"/>`;
+  let body = "";
+  if (layout === "list") {
+    body = [0, 1, 2]
+      .map((i) => `<rect x="24" y="${128 + i * 190}" width="312" height="160" rx="16" fill="#ffffff"/>
+      <rect x="44" y="${152 + i * 190}" width="180" height="14" rx="7" fill="#c7d0dc"/>
+      <rect x="44" y="${176 + i * 190}" width="240" height="10" rx="5" fill="#dbe1ea"/>
+      <rect x="44" y="${196 + i * 190}" width="150" height="10" rx="5" fill="#dbe1ea"/>`)
+      .join("");
+  } else if (layout === "grid") {
+    body = [0, 1, 2, 3]
+      .map((i) => {
+        const col = i % 2;
+        const row = Math.floor(i / 2);
+        return `<rect x="${24 + col * 160}" y="${128 + row * 190}" width="148" height="170" rx="14" fill="#ffffff"/>
+      <rect x="${40 + col * 160}" y="${256 + row * 190}" width="110" height="12" rx="6" fill="#c7d0dc"/>`;
+      })
+      .join("");
+  } else if (layout === "hero") {
+    body = `<rect x="24" y="128" width="312" height="220" rx="20" fill="#ffffff"/>
+      <rect x="44" y="370" width="220" height="18" rx="9" fill="#c7d0dc"/>
+      <rect x="44" y="398" width="270" height="12" rx="6" fill="#dbe1ea"/>
+      <rect x="44" y="418" width="200" height="12" rx="6" fill="#dbe1ea"/>
+      <rect x="44" y="460" width="272" height="70" rx="14" fill="#e1e6ee"/>`;
+  } else {
+    body = `<circle cx="180" cy="200" r="56" fill="#c7d0dc"/>
+      <rect x="100" y="270" width="160" height="16" rx="8" fill="#c7d0dc"/>
+      <rect x="130" y="292" width="100" height="10" rx="5" fill="#dbe1ea"/>
+      ${[0, 1].map((i) => `<rect x="24" y="${330 + i * 130}" width="312" height="110" rx="16" fill="#ffffff"/>`).join("")}`;
+  }
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="360" height="780">
+    <rect width="360" height="780" fill="#e9edf3"/>
+    ${header}
+    ${body}
+  </svg>`;
+  return `data:image/svg+xml;base64,${Buffer.from(svg).toString("base64")}`;
+}
+
+const THUMB_CANVAS = { width: 1080, height: 1920 };
+const THUMB_SIZE = { width: 720, height: 389 };
+/** Wider/shorter than the grid thumbnail -- horizontally spacious, still
+ *  compact vertically -- so the detail view reads as a filmstrip of the
+ *  template's actual screens rather than a single tall phone shot. */
+const DETAIL_THUMB_SIZE = { width: 1240, height: 420 };
+
+function buildScratchProject(template: MockupStarterTemplate): MockupProject {
+  const scratch: MockupProject = {
+    id: "__template_thumb__",
+    createdAt: new Date().toISOString(),
+    name: template.name,
+    appCategory: template.category,
+    sources: [],
+    devices: [],
+    columns: [],
+    cells: {},
+    globalPanoramic: { flip: false },
+    settings: { inspectorPosition: "right", screenshotSizeLabel: "", palette: [] },
+  };
+  applyMockupTemplate(scratch, template.id);
+  return scratch;
+}
+
+/** A landscape thumbnail showing up to `panelCount` of the template's
+ *  columns side by side, each rendered through the real cellHtml() pipeline
+ *  -- so the thumbnail is literally what applying the template produces,
+ *  not a CSS approximation. */
+function templateThumbHtmlSized(template: MockupStarterTemplate, size: { width: number; height: number }, panelCount: number): string {
+  const scratch = buildScratchProject(template);
+  const deviceRow = scratch.devices[0];
+  const shownColumns = scratch.columns.slice(0, Math.min(panelCount, scratch.columns.length));
+
+  const cellScale = size.height / THUMB_CANVAS.height;
+  const cellWidth = THUMB_CANVAS.width * cellScale;
+
+  const panels = shownColumns
+    .map((col, i) => {
+      const placeholder = placeholderScreenUri(i);
+      const inner = cellHtml(scratch, deviceRow.id, col.id, THUMB_CANVAS, {
+        resolveUri: () => placeholder,
+        columnIndex: i,
+        columnCount: shownColumns.length,
+      });
+      const srcdoc = escapeHtml(inner);
+      return `<div class="panel" style="width:${cellWidth}px;height:${size.height}px">
+        <iframe srcdoc="${srcdoc}" style="width:${THUMB_CANVAS.width}px;height:${THUMB_CANVAS.height}px;border:0;transform:scale(${cellScale});transform-origin:top left;"></iframe>
+      </div>`;
+    })
+    .join("");
+
+  return `<!doctype html>
+<html><head><meta charset="utf-8" /><style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; width: ${size.width}px; height: ${size.height}px; overflow: hidden; background: #f4f6f8; }
+  .row { display: flex; justify-content: center; width: ${size.width}px; height: ${size.height}px; overflow: hidden; }
+  .panel { overflow: hidden; flex-shrink: 0; }
+</style></head>
+<body><div class="row">${panels}</div></body></html>`;
+}
+
+/** One 720x389 landscape thumbnail for the grid card -- up to 3 screens. */
+export function templateThumbHtml(template: MockupStarterTemplate): string {
+  return templateThumbHtmlSized(template, THUMB_SIZE, 3);
+}
+
+/** One 1240x420 landscape filmstrip for the detail view -- up to 5 screens. */
+export function templateDetailThumbHtml(template: MockupStarterTemplate): string {
+  return templateThumbHtmlSized(template, DETAIL_THUMB_SIZE, 5);
+}
+
+async function renderThumbSet(
+  outDir: string,
+  templates: MockupStarterTemplate[],
+  suffix: string,
+  size: { width: number; height: number },
+  htmlFor: (t: MockupStarterTemplate) => string,
+): Promise<void> {
+  fs.mkdirSync(outDir, { recursive: true });
+  const missing = templates.filter((t) => !fs.existsSync(path.join(outDir, `${t.id}${suffix}.png`)));
+  if (missing.length === 0) return;
+
+  const { chromium } = await import("playwright");
+  const browser = await chromium.launch({ headless: true });
+  try {
+    const page = await browser.newPage({ viewport: size });
+    for (const template of missing) {
+      await page.setContent(htmlFor(template), { waitUntil: "load" });
+      await page.waitForTimeout(150);
+      await page.screenshot({ path: path.join(outDir, `${template.id}${suffix}.png`), type: "png" });
+    }
+  } finally {
+    await browser.close();
+  }
+}
+
+/** Renders every template's grid thumbnail once and caches it to disk;
+ *  existing files are left untouched (delete the file to force a re-render). */
+export async function renderTemplateThumbs(outDir: string, templates: MockupStarterTemplate[]): Promise<void> {
+  return renderThumbSet(outDir, templates, "", THUMB_SIZE, templateThumbHtml);
+}
+
+/** Renders every template's wider detail-view filmstrip once and caches it. */
+export async function renderTemplateDetailThumbs(outDir: string, templates: MockupStarterTemplate[]): Promise<void> {
+  return renderThumbSet(outDir, templates, "-detail", DETAIL_THUMB_SIZE, templateDetailThumbHtml);
 }

@@ -120,12 +120,116 @@ pre { background: #0a0c10; border: 1px solid #21252f; border-radius: 6px; paddin
 
 .range-label { display: flex; justify-content: space-between; font-size: .74rem; color: #9aa0a6; }
 
-.template-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; margin-top: 1rem; }
-.template-card { background: #0a0c10; border: 1px solid #21252f; border-radius: 10px; padding: 1rem; cursor: pointer; }
-.template-card:hover { border-color: #3b82f6; }
-.template-card h4 { margin: 0 0 .4rem; font-size: .9rem; }
-.template-card .cat { font-size: .7rem; color: #6b7280; }
-.template-card .desc { font-size: .78rem; color: #9aa0a6; margin-top: .4rem; }
+.template-browser { display: flex; gap: 1.25rem; align-items: flex-start; }
+.template-filters { flex: 0 0 190px; display: flex; flex-direction: column; gap: .15rem; position: sticky; top: 0; }
+.filter-item { display: flex; justify-content: space-between; align-items: center; padding: .45rem .65rem; border-radius: 8px; font-size: .82rem; color: #9aa0a6; cursor: pointer; }
+.filter-item:hover { background: #171a22; color: #d1d5db; }
+.filter-item.active { background: #1d2636; color: #e6e6e6; font-weight: 600; }
+.filter-item .count { font-size: .72rem; color: #6b7280; }
+
+/* Exactly 4 columns that share the full content width -- cards grow with the
+   viewport instead of leaving dead space on ultrawide. Steps down on narrow. */
+.template-grid { flex: 1; min-width: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.25rem; }
+@media (max-width: 1500px) { .template-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 1100px) { .template-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 720px)  { .template-grid { grid-template-columns: minmax(0, 1fr); } }
+.template-empty { grid-column: 1 / -1; padding: 3rem 1rem; text-align: center; color: #6b7280; font-size: .85rem; }
+
+.template-card { display: flex; flex-direction: column; background: #141721; border: 1px solid #232733; border-radius: 12px; overflow: hidden; cursor: pointer; transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease; }
+.template-card:hover, .template-card:focus-within { transform: translateY(-4px); border-color: #3b82f6; box-shadow: 0 8px 24px rgba(59,130,246,.15); }
+
+.template-thumb { position: relative; width: 100%; padding-bottom: 54.03%; background: #0a0c10; overflow: hidden; }
+.template-thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .25s ease; }
+.template-thumb img.loaded { opacity: 1; }
+
+/* Loading state: skeleton cards while the template list + first thumbnail
+   batch resolve (thumbnails render lazily on first request). */
+.skeleton { cursor: default; pointer-events: none; }
+.skeleton-block { background: linear-gradient(100deg, #141721 40%, #1d212c 50%, #141721 60%); background-size: 200% 100%; animation: shimmer 1.4s ease-in-out infinite; }
+.skeleton-line { height: .8rem; border-radius: 4px; margin: .3rem 0; background: linear-gradient(100deg, #191d27 40%, #232733 50%, #191d27 60%); background-size: 200% 100%; animation: shimmer 1.4s ease-in-out infinite; }
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+.template-thumb-video { display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg,#1e293b 0%,#0f172a 100%); padding-bottom: 69.2%; }
+.template-thumb-video img { object-fit: cover; }
+.video-thumb-badge { position: absolute; top: 8px; right: 10px; font-size: .68rem; background: rgba(0,0,0,.55); color: #fff; padding: 2px 8px; border-radius: 10px; z-index: 1; }
+
+.template-card-body { padding: .9rem 1rem 1rem; flex: 1; display: flex; flex-direction: column; gap: .6rem; }
+.template-card-row { display: flex; justify-content: space-between; align-items: flex-start; gap: .5rem; }
+.template-card-row h4 { margin: .15rem 0 0; font-size: .92rem; font-weight: 600; color: #e5e7eb; }
+.template-cat { font-size: .68rem; text-transform: uppercase; letter-spacing: .03em; color: #3b82f6; font-weight: 700; }
+.template-card .pill { flex-shrink: 0; font-size: .7rem; background: #1e293b; color: #93c5fd; padding: 3px 9px; border-radius: 999px; font-weight: 600; white-space: nowrap; }
+.template-card-actions { display: flex; gap: .5rem; margin-top: auto; }
+.template-card-actions button { flex: 1; }
+
+/* Detail view: a top bar with Back (left) and Load (always top-right),
+   then a wide main area + a slim facts-only side column. */
+.detail-topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+.detail-topbar #mockup-detail-load-btn, .detail-topbar #video-detail-load-btn { padding: .55rem 1.4rem; font-weight: 600; }
+
+.template-detail { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 1.5rem; align-items: start; }
+.template-detail-side { display: flex; flex-direction: column; gap: 0; }
+
+/* Mockup: horizontally-wide, vertically-compact filmstrip of the template's
+   own screens at their real device proportions -- not a single tall phone. */
+.template-detail-mockup .template-detail-thumb { width: 100%; border-radius: 10px; overflow: hidden; border: 1px solid #232733; background: #0a0c10; display: flex; align-items: center; justify-content: center; }
+.template-detail-mockup .template-detail-thumb img { width: 100%; display: block; }
+
+.detail-facts { display: grid; grid-template-columns: 1fr; gap: .7rem; margin: 1rem 0; }
+.detail-facts div { display: flex; flex-direction: column; gap: .15rem; }
+.detail-facts span { font-size: .68rem; text-transform: uppercase; color: #6b7280; letter-spacing: .03em; }
+.detail-facts strong { font-size: .85rem; color: #e5e7eb; font-weight: 600; text-transform: capitalize; }
+.detail-screens { margin-top: .9rem; }
+.detail-screens span { font-size: .68rem; text-transform: uppercase; color: #6b7280; letter-spacing: .03em; }
+.detail-screens ul { margin: .4rem 0 0; padding-left: 1.1rem; font-size: .82rem; color: #d1d5db; display: flex; flex-direction: column; gap: .25rem; }
+.detail-screens li[data-scene-jump] { cursor: pointer; list-style: none; margin-left: -1.1rem; padding: .2rem .4rem; border-radius: 6px; }
+.detail-screens li[data-scene-jump]:hover { background: #171a22; }
+.detail-screens li[data-scene-jump].active { color: #93c5fd; background: #1d2636; font-weight: 600; }
+
+/* Video Studio Templates section: a persistent secondary nav (list of
+   template cards) down the left, mirroring Studio Mockup's rail + content
+   pattern, with the selected template's preview in the stage next to it --
+   no separate browse/detail screens to navigate between. */
+.video-template-shell { display: flex; gap: 1.25rem; align-items: flex-start; }
+.video-template-list { flex: 0 0 260px; display: flex; flex-direction: column; gap: .6rem; max-height: calc(100vh - 220px); overflow-y: auto; }
+.video-list-card { display: flex; gap: .7rem; padding: .55rem; border-radius: 10px; border: 1px solid #232733; background: #141721; cursor: pointer; transition: border-color .15s ease, background .15s ease; }
+.video-list-card:hover { border-color: #3b82f6; }
+.video-list-card.active { border-color: #3b82f6; background: #16223a; }
+.video-list-thumb { flex: 0 0 64px; width: 64px; height: 88px; border-radius: 6px; overflow: hidden; background: #0a0c10; position: relative; }
+.video-list-thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .2s ease; }
+.video-list-thumb img.loaded { opacity: 1; }
+.video-list-info h4 { margin: 0; font-size: .85rem; font-weight: 600; color: #e5e7eb; }
+.video-template-stage { flex: 1; min-width: 0; }
+
+/* The player itself: a real 9:16 stage (not a tiny Shorts-style preview),
+   width-capped so it stays balanced on ultrawide instead of dominating the
+   screen -- the cap is on the player, not the whole layout, so the side
+   panel/controls never get squeezed by it. */
+.template-detail-video { grid-template-columns: minmax(0, 1fr) 300px; }
+.video-detail-main { display: flex; flex-direction: column; gap: .6rem; align-items: center; }
+.video-player { width: 100%; background: #05060a; border: 1px solid #232733; border-radius: 12px; padding: 1rem; display: flex; justify-content: center; }
+.video-preview-scale { position: relative; width: 100%; max-width: 460px; aspect-ratio: 9 / 16; flex: 0 0 auto; border-radius: 10px; overflow: hidden; background: #000; box-shadow: 0 10px 30px rgba(0,0,0,.5); }
+.video-preview-scale iframe { position: absolute; top: 0; left: 0; width: 1080px; height: 1920px; border: 0; transform-origin: top left; }
+
+.video-scene-controls { display: flex; align-items: center; justify-content: center; gap: .5rem; flex-wrap: wrap; width: 100%; max-width: 460px; }
+.video-scene-controls button { padding: .45rem .9rem; font-size: .8rem; }
+.video-scene-controls #video-detail-play { padding: .45rem 1.4rem; font-weight: 600; }
+.scene-indicator { flex-basis: 100%; text-align: center; font-size: .78rem; color: #9aa0a6; margin-top: .15rem; }
+.video-scene-dots { display: flex; gap: .3rem; justify-content: center; flex-basis: 100%; margin-top: .3rem; }
+.video-scene-dot { width: 26px; height: 4px; border-radius: 2px; background: #2b3040; cursor: pointer; }
+.video-scene-dot.active { background: #3b82f6; }
+
+@media (max-width: 900px) {
+  .video-template-shell { flex-direction: column; }
+  .video-template-list { flex-direction: row; flex-wrap: wrap; max-height: none; width: 100%; }
+  .video-list-card { flex: 1 1 220px; }
+}
+
+@media (max-width: 1100px) {
+  .template-detail { grid-template-columns: 1fr; }
+}
+@media (max-width: 900px) {
+  .template-browser { flex-direction: column; }
+  .template-filters { flex-direction: row; flex-wrap: wrap; position: static; width: 100%; }
+}
 
 .scene-nav { display: flex; gap: .35rem; flex-wrap: wrap; margin-bottom: 1rem; }
 .scene-chip { padding: .4rem .8rem; border-radius: 999px; background: #262a33; cursor: pointer; font-size: .8rem; }

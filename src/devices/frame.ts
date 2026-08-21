@@ -1,4 +1,4 @@
-import { type DeviceCatalogueEntry } from "./registry.js";
+import { type DeviceCatalogueEntry, type DeviceGeometry } from "./registry.js";
 
 type DeviceModel = DeviceCatalogueEntry;
 
@@ -8,6 +8,10 @@ type DeviceModel = DeviceCatalogueEntry;
  * model. This is what lets `config/devices.json` add a new phone/tablet/
  * foldable as a data entry, with no art and no code change.
  * See docs/DEVICE-FRAMES.md.
+ *
+ * `geometry` is taken as a separate parameter (not read off `device.geometry`)
+ * so a foldable's folded/unfolded variant geometry draws its own correctly
+ * proportioned frame instead of stretching the base geometry's frame.
  */
 
 function cutoutMarkup(device: DeviceModel, width: number): string {
@@ -41,9 +45,9 @@ function cutoutMarkup(device: DeviceModel, width: number): string {
   }
 }
 
-function buttonsMarkup(device: DeviceModel): string {
+function buttonsMarkup(device: DeviceModel, geometry: DeviceGeometry): string {
   if (!device.frame.buttons) return "";
-  const { width, height } = device.geometry;
+  const { width, height } = geometry;
   const { accent, bezelWidth } = device.frame;
   // Short rails on the right edge (power) and left edge (volume) —
   // decorative only, positioned proportionally so any geometry works.
@@ -54,20 +58,22 @@ function buttonsMarkup(device: DeviceModel): string {
   `;
 }
 
-function foldSeamMarkup(device: DeviceModel): string {
+function foldSeamMarkup(device: DeviceModel, geometry: DeviceGeometry): string {
   const fold = device.frame.fold;
   if (!fold) return "";
-  const { width, height } = device.geometry;
+  const { width, height } = geometry;
   if (fold.axis === "horizontal") {
     return `<line x1="0" y1="${fold.seamOffset}" x2="${width}" y2="${fold.seamOffset}" stroke="${device.frame.accent}" stroke-width="3" stroke-dasharray="10 8" opacity="0.6" />`;
   }
   return `<line x1="${fold.seamOffset}" y1="0" x2="${fold.seamOffset}" y2="${height}" stroke="${device.frame.accent}" stroke-width="3" stroke-dasharray="10 8" opacity="0.6" />`;
 }
 
-/** Renders the full frame SVG for a device — outer bezel, screen aperture
- *  outline, cutout, side buttons, and (for foldables) the fold seam. */
-export function buildFrameSvg(device: DeviceModel, colorway: "light" | "dark" = "dark"): string {
-  const { width, height, screenInset, cornerRadius } = device.geometry;
+/** Renders the full frame SVG for a device at the given geometry — outer
+ *  bezel, screen aperture outline, cutout, side buttons, and (for foldables)
+ *  the fold seam. Pass a variant's geometry (via `resolveGeometry`) to get a
+ *  correctly proportioned frame for that variant, not the base device. */
+export function buildFrameSvg(device: DeviceModel, colorway: "light" | "dark" = "dark", geometry: DeviceGeometry = device.geometry): string {
+  const { width, height, screenInset, cornerRadius } = geometry;
   const { bezelWidth, outerRadius, body, accent } = device.frame;
   const bodyFill = colorway === "light" ? "#e8e8e8" : body;
   const strokeColor = colorway === "light" ? "#c9c9c9" : accent;
@@ -78,7 +84,7 @@ export function buildFrameSvg(device: DeviceModel, colorway: "light" | "dark" = 
     <rect x="${screenInset.left}" y="${screenInset.top}" width="${screenInset.width}" height="${screenInset.height}"
           rx="${cornerRadius ?? 0}" fill="none" stroke="${strokeColor}" stroke-width="4" />
     ${cutoutMarkup(device, width)}
-    ${buttonsMarkup(device)}
-    ${foldSeamMarkup(device)}
+    ${buttonsMarkup(device, geometry)}
+    ${foldSeamMarkup(device, geometry)}
   </svg>`;
 }

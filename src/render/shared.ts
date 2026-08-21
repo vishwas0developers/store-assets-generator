@@ -1,5 +1,5 @@
 import fs from "fs";
-import { resolveGeometry, type DeviceModel } from "../devices/registry.js";
+import { frameSvgFor, resolveGeometry, type DeviceModel } from "../devices/registry.js";
 
 /** Inline the screenshot so rendered HTML is self-contained (no file:// or
  *  http fetches to race with the screenshot call). */
@@ -21,7 +21,43 @@ export function deviceMarkup(device: DeviceModel, screenshotUri: string, variant
   return `<div class="device" style="width:${g.width}px;height:${g.height}px">
       <img class="device-screen" src="${screenshotUri}"
            style="top:${g.screenInset.top}px;left:${g.screenInset.left}px;width:${g.screenInset.width}px;height:${g.screenInset.height}px;border-radius:${g.cornerRadius ?? 0}px" />
-      <div class="device-frame">${device.svgFrame}</div>
+      <div class="device-frame">${frameSvgFor(device, variantId)}</div>
+    </div>`;
+}
+
+/** Same as `deviceMarkup` but stacks multiple screenshots inside the screen
+ *  aperture and cross-fades between them on evenly-spaced keyframes across
+ *  `durationMs` -- lets one scene show several UI states inside the same
+ *  device instead of one static screenshot for the whole scene. Pure CSS
+ *  (named per-layer keyframes), so it stays deterministic under
+ *  `window.seek` -> `document.getAnimations()` just like every other
+ *  animation in the render pipeline. */
+export function deviceMarkupMultiScreen(device: DeviceModel, screenshotUris: string[], variantId: string | undefined, durationMs: number): string {
+  const uris = screenshotUris.filter(Boolean);
+  if (uris.length <= 1) return deviceMarkup(device, uris[0] ?? "", variantId);
+
+  const g = resolveGeometry(device, variantId);
+  const holdPct = 100 / uris.length;
+  const fadeMs = 260;
+  const fadePct = Math.min(holdPct * 0.35, (fadeMs / durationMs) * 100);
+
+  const layers = uris
+    .map((uri, i) => {
+      const inPct = i === 0 ? 0 : i * holdPct;
+      const outPct = (i + 1) * holdPct;
+      const kf =
+        i === 0
+          ? `0% { opacity: 1 } ${Math.max(0, outPct - fadePct).toFixed(2)}% { opacity: 1 } ${outPct.toFixed(2)}% { opacity: 0 } 100% { opacity: 0 }`
+          : `0% { opacity: 0 } ${inPct.toFixed(2)}% { opacity: 0 } ${(inPct + fadePct).toFixed(2)}% { opacity: 1 } ${Math.max(inPct + fadePct, outPct - fadePct).toFixed(2)}% { opacity: 1 } ${outPct.toFixed(2)}% { opacity: ${i === uris.length - 1 ? 1 : 0} } 100% { opacity: ${i === uris.length - 1 ? 1 : 0} }`;
+      return `<img class="device-screen device-screen-${i}" src="${uri}"
+           style="top:${g.screenInset.top}px;left:${g.screenInset.left}px;width:${g.screenInset.width}px;height:${g.screenInset.height}px;border-radius:${g.cornerRadius ?? 0}px;animation:screenSwap${i} ${durationMs}ms ease-in-out forwards;" />
+        <style>@keyframes screenSwap${i} { ${kf} }</style>`;
+    })
+    .join("\n");
+
+  return `<div class="device" style="width:${g.width}px;height:${g.height}px">
+      ${layers}
+      <div class="device-frame">${frameSvgFor(device, variantId)}</div>
     </div>`;
 }
 
