@@ -107,10 +107,13 @@ export interface MockupProject {
   settings: { inspectorPosition: "left" | "right"; screenshotSizeLabel: string; palette: string[] };
 }
 
-const ROOT = path.join(process.cwd(), "output", "mockups");
+import { loadProject, saveProject, listProjects } from "../project/projectStore.js";
+
+const ROOT = path.join(process.cwd(), "output", "projects");
 
 export function mockupDir(id: string): string {
-  const dir = path.join(ROOT, id);
+  const dir = path.join(ROOT, id, "mockup");
+  // Containment guard
   const rel = path.relative(ROOT, dir);
   if (rel.startsWith("..") || path.isAbsolute(rel)) throw new Error(`Invalid mockup project id '${id}'.`);
   return dir;
@@ -145,45 +148,25 @@ export function defaultColumnStyle(title = ""): ColumnStyle {
 
 export function createMockupProject(init: { name: string; appCategory?: string }): MockupProject {
   const id = `mockup-${Date.now()}`;
-  const project: MockupProject = {
-    id,
-    createdAt: new Date().toISOString(),
-    name: init.name,
-    appCategory: init.appCategory ?? "Utility",
-    sources: [],
-    devices: [],
-    columns: [],
-    cells: {},
-    globalPanoramic: { flip: false },
-    settings: { inspectorPosition: "right", screenshotSizeLabel: "6.5 Inch", palette: [] },
-  };
-  fs.mkdirSync(path.join(mockupDir(id), "sources"), { recursive: true });
-  fs.mkdirSync(path.join(mockupDir(id), "exports"), { recursive: true });
-  saveMockupProject(project);
-  return project;
+  throw new Error("Deprecated: Use createProject from projectStore instead");
 }
 
 export function saveMockupProject(project: MockupProject): void {
-  fs.mkdirSync(mockupDir(project.id), { recursive: true });
-  fs.writeFileSync(path.join(mockupDir(project.id), "project.json"), JSON.stringify(project, null, 2), "utf-8");
+  const unified = loadProject(project.id);
+  unified.mockup = project;
+  saveProject(unified);
 }
 
 export function loadMockupProject(id: string): MockupProject {
-  const file = path.join(mockupDir(id), "project.json");
-  if (!fs.existsSync(file)) throw new Error(`Mockup project '${id}' not found.`);
-  return JSON.parse(fs.readFileSync(file, "utf-8"));
+  const unified = loadProject(id);
+  return unified.mockup;
 }
 
 export function listMockupProjects(): Array<{ id: string; createdAt: string; name: string; columns: number; devices: number }> {
-  if (!fs.existsSync(ROOT)) return [];
-  return fs
-    .readdirSync(ROOT)
-    .filter((n) => fs.existsSync(path.join(ROOT, n, "project.json")))
-    .map((n) => {
-      const p = loadMockupProject(n);
-      return { id: p.id, createdAt: p.createdAt, name: p.name, columns: p.columns.length, devices: p.devices.length };
-    })
-    .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  return listProjects().map((p) => {
+    const m = p.mockup;
+    return { id: p.id, createdAt: p.createdAt, name: p.name, columns: m.columns?.length ?? 0, devices: m.devices?.length ?? 0 };
+  });
 }
 
 /** Column edit: applies to the column, so every device row picks it up --

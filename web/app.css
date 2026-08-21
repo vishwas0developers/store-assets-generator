@@ -156,3 +156,177 @@ pre { background: #0a0c10; border: 1px solid #21252f; border-radius: 6px; paddin
 .key-input { width: 10rem; }
 .discovery-msg { font-size: .8rem; padding: .5rem; border-radius: 6px; margin-top: .5rem; }
 .discovery-msg.error { background: #2a1414; color: #fca5a5; }
+
+/* ---------- New Project-Centric UI Styles ---------- */
+.topbar-tab.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.topbar-tab.disabled:hover {
+  background: transparent;
+}
+
+.project-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 1rem;
+  border: 1px solid #21252f;
+  border-radius: 8px;
+  background: #0d0f14;
+  margin-bottom: 0.5rem;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+.project-item:hover {
+  border-color: #3b82f6;
+  background: #10131a;
+}
+.project-item.active {
+  border-color: #10b981;
+  background: #0f1c18;
+}
+
+.project-item-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.active-check {
+  color: #10b981;
+  font-weight: bold;
+}
+
+.project-item-meta {
+  font-size: 0.72rem;
+  color: #6b7280;
+  margin-top: 0.2rem;
+}
+
+.project-stats {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+  color: #9aa0a6;
+  margin-top: 0.4rem;
+}
+
+.project-stats span {
+  background: #1e222b;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+}
+
+/* File explorer styling */
+.file-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+.file-table th {
+  text-align: left;
+  padding: 0.5rem;
+  border-bottom: 1px solid #21252f;
+  color: #9aa0a6;
+}
+.file-table td {
+  padding: 0.5rem;
+  border-bottom: 1px solid #1a1d24;
+}
+.file-table tr:hover td {
+  background: #11141c;
+}
+
+/* Universal asset selection grid */
+.asset-select-card {
+  position: relative;
+  background: #0a0c10;
+  border: 1px solid #21252f;
+  border-radius: 6px;
+  overflow: hidden;
+  cursor: pointer;
+}
+.asset-select-card:hover {
+  border-color: #3b82f6;
+}
+.asset-select-card.selected {
+  outline: 2px solid #3b82f6;
+}
+.asset-select-card img {
+  width: 100%;
+  aspect-ratio: 9/16;
+  object-fit: cover;
+}
+.asset-select-card .badge-overlay {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  background: rgba(0,0,0,0.75);
+  color: #e6e6e6;
+  font-size: 0.65rem;
+  padding: 0.1rem 0.3rem;
+  border-radius: 4px;
+}
+
+/* Toast Notification Style */
+.custom-toast {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  background: #14161c;
+  border: 1px solid #21252f;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+  font-size: 0.85rem;
+  color: #e6e6e6;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 250px;
+  max-width: 380px;
+  pointer-events: auto;
+  animation: slideIn 0.3s ease-out forwards;
+}
+
+.custom-toast.success { border-left: 4px solid #10b981; }
+.custom-toast.error { border-left: 4px solid #ef4444; }
+.custom-toast.warning { border-left: 4px solid #f59e0b; }
+.custom-toast.info { border-left: 4px solid #3b82f6; }
+
+@keyframes slideIn {
+  from { transform: translateX(120%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { transform: translateX(0); opacity: 1; }
+  to { transform: translateX(120%); opacity: 0; }
+}
+
+/* Realistic Touch Pointer Cursor for mobile live preview */
+.touch-pointer {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><circle cx="16" cy="16" r="11" fill="rgba(255,255,255,0.3)" stroke="rgba(255,255,255,0.85)" stroke-width="2"/><circle cx="16" cy="16" r="4" fill="rgba(255,255,255,0.9)"/></svg>') 16 16, pointer !important;
+}
+
+.touch-pointer:active {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><circle cx="16" cy="16" r="13" fill="rgba(59,130,246,0.45)" stroke="rgba(255,255,255,0.95)" stroke-width="2.5"/><circle cx="16" cy="16" r="5" fill="rgba(255,255,255,1)"/></svg>') 16 16, pointer !important;
+}
+
+/* Icon Buttons with Perfect Flex Centering & Unified Sizing */
+.icon-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 36px;
+  height: 36px;
+  padding: 0 !important;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.icon-btn svg {
+  display: block;
+  pointer-events: none;
+}
+
