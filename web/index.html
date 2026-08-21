@@ -11,12 +11,10 @@
     margin: 0; min-height: 100%; font-family: -apple-system, Segoe UI, Roboto, sans-serif;
     background: #0f1115; color: #e6e6e6;
   }
-  body {
-    display: flex; flex-direction: column; align-items: center;
-    padding: 2rem 1.5rem;
-  }
-  .page { width: 100%; max-width: 1100px; }
-  .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: .25rem; }
+  body { display: flex; flex-direction: column; align-items: center; padding: 2rem 1.5rem; }
+  .page { width: 100%; max-width: 1180px; }
+  .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: .25rem; gap: 1rem; }
+  .topbar-icons { display: flex; gap: .5rem; }
   h1 { font-size: 1.4rem; margin: 0; }
   .sub { color: #9aa0a6; margin-bottom: 1.5rem; font-size: .9rem; }
   .icon-btn {
@@ -25,12 +23,12 @@
     display: flex; align-items: center; justify-content: center;
   }
   .icon-btn:hover { background: #1d212b; }
-  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; width: 100%; }
   .card { background: #171a21; border: 1px solid #262a33; border-radius: 10px; padding: 1.25rem; }
   .card h2 { font-size: 1rem; margin: 0 0 1rem; }
   label { display: block; font-size: .8rem; color: #9aa0a6; margin: .75rem 0 .25rem; }
-  input, select { width: 100%; padding: .5rem .6rem; background: #0f1115; border: 1px solid #2a2f3a;
-    border-radius: 6px; color: #e6e6e6; font-size: .9rem; }
+  input, select, textarea { width: 100%; padding: .5rem .6rem; background: #0f1115; border: 1px solid #2a2f3a;
+    border-radius: 6px; color: #e6e6e6; font-size: .9rem; font-family: inherit; }
+  input[type=range] { padding: 0; }
   button { margin-top: 1rem; padding: .6rem 1rem; border-radius: 6px; border: none;
     background: #3b82f6; color: white; font-weight: 600; cursor: pointer; font-size: .9rem; }
   button:disabled { opacity: .5; cursor: not-allowed; }
@@ -45,6 +43,33 @@
     font-size: .8rem; overflow: auto; max-height: 320px; white-space: pre-wrap; word-break: break-word; }
   .row { display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; }
   .full { grid-column: 1 / -1; }
+  .count-badge { font-size: 1.6rem; font-weight: 800; color: #86efac; }
+
+  /* Step tabs */
+  .steps { display: flex; gap: .25rem; border-bottom: 1px solid #262a33; margin-bottom: 1.25rem; }
+  .step-tab { padding: .7rem 1.1rem; cursor: pointer; color: #9aa0a6; font-size: .9rem; border-bottom: 2px solid transparent; font-weight: 600; }
+  .step-tab.active { color: #e6e6e6; border-bottom-color: #3b82f6; }
+  .step-panel { display: none; }
+  .step-panel.active { display: block; }
+
+  .thumb-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: .75rem; margin-top: 1rem; }
+  .thumb { background: #0a0c10; border: 1px solid #262a33; border-radius: 8px; overflow: hidden; cursor: pointer; }
+  .thumb.selected { border-color: #3b82f6; }
+  .thumb img { width: 100%; display: block; aspect-ratio: 9/16; object-fit: cover; }
+  .thumb .cap { padding: .35rem .5rem; font-size: .7rem; color: #9aa0a6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .two-col { display: grid; grid-template-columns: 320px 1fr; gap: 1.25rem; }
+  .preview-frame { background: #0a0c10; border: 1px solid #262a33; border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center; min-height: 480px; }
+  .preview-frame iframe { border: none; width: 100%; height: 640px; }
+
+  .scene-nav { display: flex; gap: .35rem; flex-wrap: wrap; margin-bottom: 1rem; }
+  .scene-chip { padding: .4rem .8rem; border-radius: 999px; background: #2a2f3a; cursor: pointer; font-size: .8rem; }
+  .scene-chip.active { background: #3b82f6; color: #fff; }
+
+  .checkbox-row { display: flex; align-items: center; gap: .5rem; padding: .3rem 0; }
+  .checkbox-row input[type=checkbox] { width: auto; }
+  .warn-list { font-size: .8rem; color: #fdba74; margin-top: .5rem; }
+  .range-label { display: flex; justify-content: space-between; font-size: .75rem; color: #9aa0a6; }
 
   /* Modal */
   .modal-backdrop {
@@ -65,18 +90,16 @@
   .tab.active { color: #e6e6e6; border-bottom-color: #3b82f6; }
   .tab-panel { display: none; }
   .tab-panel.active { display: block; }
-  .provider-row, .model-row {
+  .provider-row, .model-row, .session-row {
     display: flex; align-items: center; gap: .6rem; padding: .6rem 0;
     border-bottom: 1px solid #1e222b; flex-wrap: wrap;
   }
-  .provider-row:last-child, .model-row:last-child { border-bottom: none; }
+  .provider-row:last-child, .model-row:last-child, .session-row:last-child { border-bottom: none; }
   .provider-name { font-weight: 600; min-width: 8rem; }
   .provider-meta { color: #9aa0a6; font-size: .75rem; flex: 1; min-width: 10rem; }
   .badge { padding: .1rem .45rem; border-radius: 4px; font-size: .7rem; background: #2a2f3a; }
   .badge.vision { background: #1e3a5f; color: #93c5fd; }
   .key-input { width: 10rem; }
-  .checkbox-row { display: flex; align-items: center; gap: .5rem; padding: .3rem 0; }
-  .checkbox-row input[type=checkbox] { width: auto; }
   .discovery-msg { font-size: .8rem; padding: .5rem; border-radius: 6px; margin-top: .5rem; }
   .discovery-msg.error { background: #2a1414; color: #fca5a5; }
 </style>
@@ -86,54 +109,165 @@
   <div class="topbar">
     <div>
       <h1>Store Assets Generator</h1>
-      <div class="sub">Manual workflow surface — the same core pipeline the CLI and MCP server use.</div>
+      <div class="sub">Capture &rarr; Studio Mockups &rarr; Store Package &rarr; Animation Video</div>
     </div>
-    <button id="open-settings" class="icon-btn" title="AI providers & models">&#9881;</button>
+    <div class="topbar-icons">
+      <button id="open-sessions" class="icon-btn" title="Sessions">&#128193;</button>
+      <button id="open-credentials" class="icon-btn" title="Demo access credentials">&#128273;</button>
+      <button id="open-settings" class="icon-btn" title="AI providers & models">&#9881;</button>
+    </div>
   </div>
 
-  <div class="grid">
+  <div class="card" style="margin-bottom:1.25rem;">
+    <div class="row">
+      <span id="session-label" style="font-weight:600;">No session — start one below</span>
+      <span id="auth-status" class="status warn">checking&hellip;</span>
+    </div>
+    <div class="row" style="margin-top:.75rem;">
+      <input id="new-url" type="text" placeholder="https://example.com" style="flex:2; min-width:220px;" />
+      <label class="checkbox-row" style="margin:0;"><input id="plat-google" type="checkbox" checked /> Google Play</label>
+      <label class="checkbox-row" style="margin:0;"><input id="plat-apple" type="checkbox" /> Apple App Store</label>
+      <input id="new-slug" type="text" placeholder="slug (optional)" style="flex:1; min-width:140px;" />
+      <button id="new-session-btn" class="small">New Session</button>
+    </div>
+  </div>
+
+  <div class="steps">
+    <div class="step-tab active" data-step="1">1. Capture</div>
+    <div class="step-tab" data-step="2">2. Studio Mockups</div>
+    <div class="step-tab" data-step="3">3. Store Package</div>
+    <div class="step-tab" data-step="4">4. Animation Video</div>
+  </div>
+
+  <!-- Step 1 -->
+  <div class="step-panel active" id="step-1">
     <div class="card">
-      <h2>Credentials (demo/test account)</h2>
+      <h2>Capture raw screenshots</h2>
       <div class="row">
-        <span id="auth-status" class="status warn">checking…</span>
+        <label style="margin:0;">Max pages</label>
+        <input id="cap-max-pages" type="number" value="6" style="width:5rem;" />
+        <button id="cap-run">Capture</button>
       </div>
-      <label>Email</label>
-      <input id="auth-email" type="text" placeholder="demo@example.com" />
-      <label>Password <span style="opacity:.6">(blank = keep existing)</span></label>
-      <input id="auth-password" type="password" placeholder="••••••••" />
+      <div id="cap-result" style="margin-top:1rem;"></div>
+      <div id="cap-thumbs" class="thumb-grid"></div>
+    </div>
+  </div>
+
+  <!-- Step 2 -->
+  <div class="step-panel" id="step-2">
+    <div class="card">
+      <h2>Studio Mockups</h2>
       <div class="row">
-        <button id="auth-save">Save</button>
-        <button id="auth-clear" class="secondary">Clear</button>
+        <div id="mockup-screen-picker" class="row" style="flex:1;"></div>
+        <button id="mockup-ai-assist" class="secondary small" type="button">&#10024; AI Assist (all screens)</button>
+      </div>
+      <div class="two-col" style="margin-top:1rem;">
+        <div>
+          <label>Template</label>
+          <select id="mk-template"></select>
+          <label>Device</label>
+          <select id="mk-device"></select>
+          <label>Variant <span style="opacity:.6">(foldables)</span></label>
+          <select id="mk-variant"><option value="">default</option></select>
+          <label>Background</label>
+          <select id="mk-background"></select>
+          <label>Label</label>
+          <input id="mk-label" type="text" />
+          <label>Sub-label</label>
+          <input id="mk-subtext" type="text" />
+          <label>Text colour</label>
+          <input id="mk-textcolor" type="text" value="#ffffff" />
+          <button id="mk-save">Save & Preview</button>
+        </div>
+        <div class="preview-frame"><iframe id="mk-preview"></iframe></div>
       </div>
     </div>
+  </div>
 
+  <!-- Step 3 -->
+  <div class="step-panel" id="step-3">
     <div class="card">
-      <h2>Generate Assets</h2>
-      <label>App URL</label>
-      <input id="gen-url" type="text" placeholder="https://example.com" />
-      <label>Platform</label>
-      <select id="gen-platform">
-        <option value="google-play">Google Play</option>
-        <option value="apple-app-store">Apple App Store</option>
-      </select>
-      <label>App slug <span style="opacity:.6">(optional — resolves apps/&lt;slug&gt;/auth.json)</span></label>
-      <input id="gen-slug" type="text" placeholder="auto from URL hostname" />
-      <label>AI model <span style="opacity:.6">(used for copy generation once configured)</span></label>
-      <div class="row">
-        <select id="gen-model" style="flex:1"><option value="">Default (none configured)</option></select>
-        <button id="gen-model-refresh" class="secondary small" type="button">&#8635;</button>
-      </div>
-      <button id="gen-run">Generate</button>
+      <h2>Store Asset Package</h2>
+      <div id="pkg-targets"></div>
+      <button id="pkg-build">Build Package</button>
+      <div id="pkg-result" style="margin-top:1rem;"></div>
     </div>
+  </div>
 
-    <div class="card full">
-      <h2>Output</h2>
-      <pre id="output">Ready.</pre>
+  <!-- Step 4 -->
+  <div class="step-panel" id="step-4">
+    <div class="card">
+      <h2>Animation Video</h2>
+      <div class="row">
+        <div id="scene-nav" class="scene-nav" style="flex:1;"></div>
+        <button id="scene-ai-assist" class="secondary small" type="button">&#10024; AI Assist (all scenes)</button>
+      </div>
+      <div class="two-col">
+        <div>
+          <label>Template</label>
+          <select id="sc-template"></select>
+          <label>Device</label>
+          <select id="sc-device"></select>
+          <label>Variant <span style="opacity:.6">(foldables)</span></label>
+          <select id="sc-variant"><option value="">default</option></select>
+          <label>Background</label>
+          <select id="sc-background"></select>
+          <label>Text</label>
+          <input id="sc-text" type="text" />
+          <label>Sub-text</label>
+          <input id="sc-subtext" type="text" />
+          <label>Duration (seconds)</label>
+          <input id="sc-duration" type="number" min="1" max="10" value="3" />
+          <div class="range-label"><span>Rotation</span><span id="sc-rotate-val">20</span></div>
+          <input id="sc-rotate" type="range" min="0" max="60" value="20" />
+          <div class="range-label"><span>Zoom</span><span id="sc-zoom-val">8</span></div>
+          <input id="sc-zoom" type="range" min="0" max="40" value="8" />
+          <div class="range-label"><span>Movement</span><span id="sc-move-val">40</span></div>
+          <input id="sc-move" type="range" min="0" max="200" value="40" />
+          <button id="sc-save">Save & Preview</button>
+        </div>
+        <div class="preview-frame"><iframe id="sc-preview"></iframe></div>
+      </div>
+      <div class="card" style="margin-top:1rem;">
+        <h2>BGM & Render</h2>
+        <label>Background music <span style="opacity:.6">(mp3/wav/ogg, optional)</span></label>
+        <input id="bgm-file" type="file" accept="audio/*" />
+        <button id="bgm-upload" class="secondary small" type="button">Upload BGM</button>
+        <div class="row" style="margin-top:1rem;">
+          <button id="video-render">Render Final Video</button>
+          <a id="video-download" href="#" style="display:none;"><button type="button" class="secondary small">Download video</button></a>
+        </div>
+        <div id="video-result" style="margin-top:1rem;"></div>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- Settings modal: AI provider + model management, mirrors the OCR reference tool's popup workflow -->
+<!-- Sessions modal -->
+<div class="modal-backdrop" id="sessions-backdrop">
+  <div class="modal">
+    <div class="modal-header"><h2>Sessions</h2><button class="close-btn" id="sessions-close">&times;</button></div>
+    <div id="sessions-list">Loading&hellip;</div>
+  </div>
+</div>
+
+<!-- Credentials modal -->
+<div class="modal-backdrop" id="credentials-backdrop">
+  <div class="modal">
+    <div class="modal-header"><h2>Demo Access Credentials</h2><button class="close-btn" id="credentials-close">&times;</button></div>
+    <div class="row"><span id="cred-status" class="status warn">checking&hellip;</span></div>
+    <label>Email</label>
+    <input id="cred-email" type="text" placeholder="demo@example.com" />
+    <label>Password <span style="opacity:.6">(blank = keep existing)</span></label>
+    <input id="cred-password" type="password" placeholder="••••••••" />
+    <div class="row">
+      <button id="cred-save">Save</button>
+      <button id="cred-clear" class="secondary">Clear</button>
+    </div>
+  </div>
+</div>
+
+<!-- Settings modal: AI provider + model management -->
 <div class="modal-backdrop" id="settings-backdrop">
   <div class="modal">
     <div class="modal-header">
@@ -147,7 +281,7 @@
     </div>
 
     <div class="tab-panel active" id="tab-providers">
-      <div id="providers-list">Loading…</div>
+      <div id="providers-list">Loading&hellip;</div>
     </div>
 
     <div class="tab-panel" id="tab-models">
@@ -184,11 +318,13 @@
 
 <script>
 const $ = (id) => document.getElementById(id);
-const outputEl = $("output");
-
-function log(text) {
-  outputEl.textContent = typeof text === "string" ? text : JSON.stringify(text, null, 2);
-}
+let currentSessionId = null;
+let currentSession = null;
+let mockupOptions = { templates: [], backgrounds: [] };
+let sceneOptions = { templates: [], backgrounds: [] };
+let devices = [];
+let selectedScreenId = null;
+let selectedSceneId = null;
 
 async function api(path, options) {
   const resp = await fetch(path, {
@@ -201,100 +337,360 @@ async function api(path, options) {
   return data;
 }
 
+function fileUrl(rel) {
+  return `/api/sessions/${currentSessionId}/file?p=${encodeURIComponent(rel)}`;
+}
+
+/* ---------- Session lifecycle ---------- */
+
+function selectedPlatforms() {
+  const platforms = [];
+  if ($("plat-google").checked) platforms.push("google-play");
+  if ($("plat-apple").checked) platforms.push("apple-app-store");
+  return platforms.length ? platforms : ["google-play"];
+}
+
+$("new-session-btn").onclick = async () => {
+  const url = $("new-url").value.trim();
+  if (!url) return alert("App URL is required.");
+  const session = await api("/api/sessions", { method: "POST", body: { url, slug: $("new-slug").value.trim() || undefined, platforms: selectedPlatforms() } });
+  await loadSessionInto(session.id);
+};
+
+async function loadSessionInto(id) {
+  currentSessionId = id;
+  currentSession = await api(`/api/sessions/${id}`);
+  $("session-label").textContent = `Session: ${currentSession.id} — ${currentSession.url}`;
+  renderCaptureThumbs();
+  await refreshMockupOptions();
+  await refreshPackageTargets();
+  await refreshScenes();
+}
+
+async function refreshSessionsList() {
+  const { sessions } = await api("/api/sessions");
+  const el = $("sessions-list");
+  if (sessions.length === 0) { el.textContent = "No sessions yet."; return; }
+  el.innerHTML = "";
+  for (const s of sessions) {
+    const row = document.createElement("div");
+    row.className = "session-row";
+    row.innerHTML = `<span style="flex:1">${s.url}</span><span class="badge">${s.screenshots} screenshots</span><span class="provider-meta">${new Date(s.createdAt).toLocaleString()}</span>`;
+    const btn = document.createElement("button");
+    btn.className = "small secondary";
+    btn.textContent = "Open";
+    btn.onclick = async () => { await loadSessionInto(s.id); $("sessions-backdrop").classList.remove("open"); };
+    row.appendChild(btn);
+    el.appendChild(row);
+  }
+}
+
+$("open-sessions").onclick = () => { $("sessions-backdrop").classList.add("open"); refreshSessionsList(); };
+$("sessions-close").onclick = () => $("sessions-backdrop").classList.remove("open");
+
+/* ---------- Step tabs ---------- */
+
+for (const tab of document.querySelectorAll(".step-tab")) {
+  tab.onclick = () => {
+    for (const t of document.querySelectorAll(".step-tab")) t.classList.remove("active");
+    for (const p of document.querySelectorAll(".step-panel")) p.classList.remove("active");
+    tab.classList.add("active");
+    $("step-" + tab.dataset.step).classList.add("active");
+  };
+}
+
 /* ---------- Credentials ---------- */
 
 async function refreshAuthStatus() {
   try {
     const status = await api("/api/auth/status");
-    const el = $("auth-status");
-    if (status.passwordSet) {
-      el.textContent = `configured (${status.source}) — ${status.email}`;
-      el.className = "status ok";
-    } else {
-      el.textContent = "not configured";
-      el.className = "status warn";
+    for (const el of [$("auth-status"), $("cred-status")]) {
+      if (status.passwordSet) { el.textContent = `configured (${status.source}) — ${status.email}`; el.className = "status ok"; }
+      else { el.textContent = "not configured"; el.className = "status warn"; }
     }
   } catch (e) {
-    $("auth-status").textContent = "error checking status";
-    $("auth-status").className = "status bad";
+    $("auth-status").textContent = "error"; $("auth-status").className = "status bad";
   }
 }
 
-$("auth-save").onclick = async () => {
-  const email = $("auth-email").value.trim();
-  const password = $("auth-password").value;
-  if (!email) return log("Email is required.");
-  try {
-    await api("/api/auth/credentials", { method: "POST", body: { email, password: password || undefined } });
-    $("auth-password").value = "";
-    log("Credentials saved.");
-    refreshAuthStatus();
-  } catch (e) {
-    log("Failed to save credentials: " + e.message);
-  }
+$("open-credentials").onclick = () => $("credentials-backdrop").classList.add("open");
+$("credentials-close").onclick = () => $("credentials-backdrop").classList.remove("open");
+
+$("cred-save").onclick = async () => {
+  const email = $("cred-email").value.trim();
+  const password = $("cred-password").value;
+  if (!email) return alert("Email is required.");
+  await api("/api/auth/credentials", { method: "POST", body: { email, password: password || undefined } });
+  $("cred-password").value = "";
+  refreshAuthStatus();
 };
+$("cred-clear").onclick = async () => { await api("/api/auth/credentials", { method: "DELETE" }); refreshAuthStatus(); };
 
-$("auth-clear").onclick = async () => {
-  try {
-    await api("/api/auth/credentials", { method: "DELETE" });
-    log("Credentials cleared.");
-    refreshAuthStatus();
-  } catch (e) {
-    log("Failed to clear credentials: " + e.message);
+/* ---------- Step 1: Capture ---------- */
+
+function renderCaptureThumbs() {
+  const grid = $("cap-thumbs");
+  grid.innerHTML = "";
+  if (!currentSession) return;
+  for (const r of currentSession.raw) {
+    const t = document.createElement("div");
+    t.className = "thumb";
+    t.innerHTML = `<img src="${fileUrl(r.file)}" /><div class="cap">${r.title}</div>`;
+    grid.appendChild(t);
   }
-};
+}
 
-/* ---------- Generate ---------- */
-
-$("gen-run").onclick = async () => {
-  const url = $("gen-url").value.trim();
-  if (!url) return log("App URL is required.");
-  const platform = $("gen-platform").value;
-  const slug = $("gen-slug").value.trim() || undefined;
-  const model = $("gen-model").value || undefined;
-
-  $("gen-run").disabled = true;
-  log("Running… this can take a minute (capture, composition, video, validation).");
+$("cap-run").onclick = async () => {
+  if (!currentSessionId) return alert("Start a session first.");
+  $("cap-run").disabled = true;
+  $("cap-result").textContent = "Capturing… this can take a minute.";
   try {
-    const result = await api("/api/generate", { method: "POST", body: { url, platform, slug, model } });
-    log(result);
+    const result = await api(`/api/sessions/${currentSessionId}/capture`, { method: "POST", body: { maxPages: Number($("cap-max-pages").value) || 6 } });
+    currentSession.raw = result.raw;
+    $("cap-result").innerHTML = `<span class="count-badge">${result.count}</span> screenshots captured.`;
+    renderCaptureThumbs();
+    await refreshMockupOptions();
+    await refreshScenes();
   } catch (e) {
-    log("Generation failed: " + e.message);
+    $("cap-result").textContent = "Capture failed: " + e.message;
   } finally {
-    $("gen-run").disabled = false;
+    $("cap-run").disabled = false;
   }
 };
 
-async function refreshModelSelector() {
-  try {
-    const { models, defaultModel } = await api("/api/ai/models");
-    const select = $("gen-model");
-    select.innerHTML = "";
-    if (models.length === 0) {
-      select.innerHTML = '<option value="">No models configured — open Settings (⚙)</option>';
-      return;
-    }
-    for (const m of models) {
+/* ---------- Step 2: Studio Mockups ---------- */
+
+async function refreshMockupOptions() {
+  if (!currentSessionId) return;
+  const [mockupsRes, devicesRes] = await Promise.all([
+    api(`/api/sessions/${currentSessionId}/mockups`),
+    api("/api/devices"),
+  ]);
+  mockupOptions = mockupsRes.options;
+  devices = devicesRes.devices;
+  currentSession.mockups = mockupsRes.mockups;
+
+  $("mk-template").innerHTML = mockupOptions.templates.map((t) => `<option value="${t.id}">${t.name}</option>`).join("");
+  $("mk-background").innerHTML = mockupOptions.backgrounds.map((b) => `<option value="${b}">${b}</option>`).join("");
+  $("mk-device").innerHTML = devices.map((d) => `<option value="${d.id}">${d.vendor} — ${d.name}</option>`).join("");
+
+  const picker = $("mockup-screen-picker");
+  picker.innerHTML = "";
+  if (!currentSession || currentSession.raw.length === 0) { picker.textContent = "Capture screenshots first."; return; }
+  const select = document.createElement("select");
+  select.id = "mk-screen-select";
+  for (const r of currentSession.raw) {
+    const opt = document.createElement("option");
+    opt.value = r.id; opt.textContent = r.title;
+    select.appendChild(opt);
+  }
+  select.onchange = () => loadMockupConfig(select.value);
+  picker.appendChild(select);
+  loadMockupConfig(currentSession.raw[0].id);
+}
+
+function loadMockupConfig(screenId) {
+  selectedScreenId = screenId;
+  const screen = currentSession.raw.find((r) => r.id === screenId);
+  const cfg = currentSession.mockups[screenId] ?? { template: "caption-above", device: devices[0]?.id ?? "phone", variant: "", label: screen.title, subtext: "", background: "ocean", textColor: "#ffffff" };
+  $("mk-template").value = cfg.template;
+  $("mk-device").value = cfg.device;
+  $("mk-background").value = cfg.background;
+  $("mk-label").value = cfg.label;
+  $("mk-subtext").value = cfg.subtext;
+  $("mk-textcolor").value = cfg.textColor;
+  updateVariantSelect("mk-device", "mk-variant", cfg.variant);
+  showMockupPreview();
+}
+
+function updateVariantSelect(deviceSelectId, variantSelectId, current) {
+  const deviceId = $(deviceSelectId).value;
+  const device = devices.find((d) => d.id === deviceId);
+  const select = $(variantSelectId);
+  select.innerHTML = '<option value="">default</option>';
+  if (device?.variants) {
+    for (const v of device.variants) {
       const opt = document.createElement("option");
-      opt.value = `${m.provider}/${m.modelId}`;
-      opt.textContent = `${m.provider} / ${m.displayName}${m.vision ? " 👁" : ""}`;
-      if (defaultModel && defaultModel.provider === m.provider && defaultModel.modelId === m.modelId) {
-        opt.selected = true;
-      }
+      opt.value = v.id; opt.textContent = v.name;
       select.appendChild(opt);
     }
-  } catch (e) {
-    $("gen-model").innerHTML = '<option value="">Error loading models</option>';
+  }
+  select.value = current || "";
+}
+$("mk-device").onchange = () => updateVariantSelect("mk-device", "mk-variant", "");
+
+function showMockupPreview() {
+  $("mk-preview").src = `/api/sessions/${currentSessionId}/mockup-preview/${selectedScreenId}?t=${Date.now()}`;
+}
+
+$("mk-save").onclick = async () => {
+  const config = {
+    template: $("mk-template").value, device: $("mk-device").value, variant: $("mk-variant").value || undefined,
+    label: $("mk-label").value, subtext: $("mk-subtext").value, background: $("mk-background").value, textColor: $("mk-textcolor").value,
+  };
+  await api(`/api/sessions/${currentSessionId}/mockups`, { method: "POST", body: { screenId: selectedScreenId, config } });
+  currentSession.mockups[selectedScreenId] = config;
+  showMockupPreview();
+};
+
+$("mockup-ai-assist").onclick = async () => {
+  $("mockup-ai-assist").disabled = true;
+  try {
+    const result = await api(`/api/sessions/${currentSessionId}/mockups/ai`, { method: "POST" });
+    currentSession.mockups = result.mockups;
+    if (selectedScreenId) loadMockupConfig(selectedScreenId);
+  } catch (e) { alert("AI assist failed: " + e.message); }
+  finally { $("mockup-ai-assist").disabled = false; }
+};
+
+/* ---------- Step 3: Store Package ---------- */
+
+async function refreshPackageTargets() {
+  if (!currentSessionId) return;
+  const { platforms } = await api("/api/platforms");
+  const container = $("pkg-targets");
+  container.innerHTML = "";
+  for (const plat of platforms) {
+    const section = document.createElement("div");
+    section.innerHTML = `<h3 style="font-size:.9rem;margin:1rem 0 .5rem;">${plat.name}</h3>`;
+    for (const [classId, cls] of Object.entries(plat.deviceClasses)) {
+      const row = document.createElement("label");
+      row.className = "checkbox-row";
+      row.innerHTML = `<input type="checkbox" data-platform="${plat.id}" data-class="${classId}" ${cls.required ? "checked" : ""} /> ${cls.name} (${cls.width}&times;${cls.height})`;
+      section.appendChild(row);
+    }
+    container.appendChild(section);
   }
 }
-$("gen-model-refresh").onclick = refreshModelSelector;
 
-/* ---------- Settings modal ---------- */
+$("pkg-build").onclick = async () => {
+  const targets = {};
+  for (const cb of document.querySelectorAll('#pkg-targets input[type=checkbox]:checked')) {
+    const plat = cb.dataset.platform;
+    (targets[plat] = targets[plat] || []).push(cb.dataset.class);
+  }
+  $("pkg-build").disabled = true;
+  $("pkg-result").textContent = "Building…";
+  try {
+    const result = await api(`/api/sessions/${currentSessionId}/package`, { method: "POST", body: { targets } });
+    const kb = (result.bytes / 1024).toFixed(1);
+    let html = `<div>ZIP ready — ${kb} KB. <a href="/api/sessions/${currentSessionId}/download/zip" target="_blank"><button type="button" class="secondary small">Download ZIP</button></a></div>`;
+    html += "<ul>" + result.entries.map((e) => `<li>${e.platform}/${e.deviceClass}: ${e.files} files (${e.width}&times;${e.height})</li>`).join("") + "</ul>";
+    if (result.warnings.length) html += `<div class="warn-list">${result.warnings.join("<br/>")}</div>`;
+    $("pkg-result").innerHTML = html;
+  } catch (e) {
+    $("pkg-result").textContent = "Build failed: " + e.message;
+  } finally {
+    $("pkg-build").disabled = false;
+  }
+};
+
+/* ---------- Step 4: Animation Video ---------- */
+
+async function refreshScenes() {
+  if (!currentSessionId || !currentSession || currentSession.raw.length === 0) return;
+  const result = await api(`/api/sessions/${currentSessionId}/scenes`);
+  sceneOptions = result.options;
+  currentSession.scenes = result.scenes;
+
+  $("sc-template").innerHTML = sceneOptions.templates.map((t) => `<option value="${t.id}">${t.name}</option>`).join("");
+  $("sc-background").innerHTML = sceneOptions.backgrounds.map((b) => `<option value="${b}">${b}</option>`).join("");
+  $("sc-device").innerHTML = devices.map((d) => `<option value="${d.id}">${d.vendor} — ${d.name}</option>`).join("");
+
+  const nav = $("scene-nav");
+  nav.innerHTML = "";
+  currentSession.scenes.forEach((s, i) => {
+    const chip = document.createElement("div");
+    chip.className = "scene-chip" + (i === 0 ? " active" : "");
+    chip.textContent = `Scene ${i + 1}`;
+    chip.onclick = () => selectScene(s.id);
+    chip.dataset.sceneId = s.id;
+    nav.appendChild(chip);
+  });
+  if (currentSession.scenes.length) selectScene(currentSession.scenes[0].id);
+}
+
+function selectScene(sceneId) {
+  selectedSceneId = sceneId;
+  for (const chip of document.querySelectorAll(".scene-chip")) chip.classList.toggle("active", chip.dataset.sceneId === sceneId);
+  const scene = currentSession.scenes.find((s) => s.id === sceneId);
+  $("sc-template").value = scene.template;
+  $("sc-device").value = scene.device;
+  $("sc-background").value = scene.background;
+  $("sc-text").value = scene.text;
+  $("sc-subtext").value = scene.subtext;
+  $("sc-duration").value = scene.durationSeconds;
+  $("sc-rotate").value = scene.rotate; $("sc-rotate-val").textContent = scene.rotate;
+  $("sc-zoom").value = scene.zoom; $("sc-zoom-val").textContent = scene.zoom;
+  $("sc-move").value = scene.move; $("sc-move-val").textContent = scene.move;
+  updateVariantSelect("sc-device", "sc-variant", scene.variant);
+  showScenePreview();
+}
+$("sc-device").onchange = () => updateVariantSelect("sc-device", "sc-variant", "");
+
+for (const [id, out] of [["sc-rotate", "sc-rotate-val"], ["sc-zoom", "sc-zoom-val"], ["sc-move", "sc-move-val"]]) {
+  $(id).oninput = () => { $(out).textContent = $(id).value; };
+}
+
+function showScenePreview() {
+  $("sc-preview").src = `/api/sessions/${currentSessionId}/scene-preview/${selectedSceneId}?t=${Date.now()}`;
+}
+
+$("sc-save").onclick = async () => {
+  const config = {
+    template: $("sc-template").value, device: $("sc-device").value, variant: $("sc-variant").value || undefined,
+    background: $("sc-background").value, text: $("sc-text").value, subtext: $("sc-subtext").value,
+    durationSeconds: Number($("sc-duration").value) || 3,
+    rotate: Number($("sc-rotate").value), zoom: Number($("sc-zoom").value), move: Number($("sc-move").value),
+  };
+  await api(`/api/sessions/${currentSessionId}/scenes`, { method: "POST", body: { sceneId: selectedSceneId, config } });
+  const idx = currentSession.scenes.findIndex((s) => s.id === selectedSceneId);
+  currentSession.scenes[idx] = { ...currentSession.scenes[idx], ...config };
+  showScenePreview();
+};
+
+$("scene-ai-assist").onclick = async () => {
+  $("scene-ai-assist").disabled = true;
+  try {
+    const result = await api(`/api/sessions/${currentSessionId}/scenes/ai`, { method: "POST" });
+    currentSession.scenes = result.scenes;
+    if (selectedSceneId) selectScene(selectedSceneId);
+  } catch (e) { alert("AI assist failed: " + e.message); }
+  finally { $("scene-ai-assist").disabled = false; }
+};
+
+$("bgm-upload").onclick = async () => {
+  const file = $("bgm-file").files[0];
+  if (!file) return alert("Choose an audio file first.");
+  const resp = await fetch(`/api/sessions/${currentSessionId}/bgm`, { method: "POST", headers: { "Content-Type": file.type || "audio/mpeg" }, body: file });
+  if (!resp.ok) return alert("BGM upload failed.");
+  alert("BGM uploaded.");
+};
+
+$("video-render").onclick = async () => {
+  $("video-render").disabled = true;
+  $("video-result").textContent = "Rendering… this can take a while.";
+  try {
+    const result = await api(`/api/sessions/${currentSessionId}/video`, { method: "POST" });
+    $("video-result").textContent = "Video rendered: " + result.videoPath;
+    const link = $("video-download");
+    link.href = `/api/sessions/${currentSessionId}/download/video`;
+    link.style.display = "inline-block";
+  } catch (e) {
+    $("video-result").textContent = "Render failed: " + e.message;
+  } finally {
+    $("video-render").disabled = false;
+  }
+};
+
+/* ---------- Settings modal (AI providers/models) ---------- */
 
 const backdrop = $("settings-backdrop");
 $("open-settings").onclick = () => { backdrop.classList.add("open"); loadProviders(); loadModelsTab(); };
 $("settings-close").onclick = () => backdrop.classList.remove("open");
 backdrop.onclick = (e) => { if (e.target === backdrop) backdrop.classList.remove("open"); };
+$("credentials-backdrop").onclick = (e) => { if (e.target === $("credentials-backdrop")) $("credentials-backdrop").classList.remove("open"); };
+$("sessions-backdrop").onclick = (e) => { if (e.target === $("sessions-backdrop")) $("sessions-backdrop").classList.remove("open"); };
 
 for (const tab of document.querySelectorAll(".tab")) {
   tab.onclick = () => {
@@ -371,10 +767,7 @@ async function loadModelsTab() {
   const listEl = $("saved-models-list");
   try {
     const { models, defaultModel } = await api("/api/ai/models");
-    if (models.length === 0) {
-      listEl.textContent = "None yet.";
-      return;
-    }
+    if (models.length === 0) { listEl.textContent = "None yet."; return; }
     listEl.innerHTML = "";
     for (const m of models) {
       const row = document.createElement("div");
@@ -390,12 +783,10 @@ async function loadModelsTab() {
       if (defaultBtn) defaultBtn.onclick = async () => {
         await api("/api/ai/models/default", { method: "POST", body: { provider: m.provider, modelId: m.modelId } });
         loadModelsTab();
-        refreshModelSelector();
       };
       row.querySelector('[data-act="delete"]').onclick = async () => {
         await api(`/api/ai/models/${encodeURIComponent(m.provider)}/${encodeURIComponent(m.modelId)}`, { method: "DELETE" });
         loadModelsTab();
-        refreshModelSelector();
       };
       listEl.appendChild(row);
     }
@@ -411,14 +802,8 @@ $("discover-run").onclick = async () => {
   resultEl.innerHTML = "Fetching…";
   try {
     const { models, error, message } = await api(`/api/ai/providers/${encodeURIComponent(providerId)}/fetch-models`);
-    if (error) {
-      resultEl.innerHTML = `<div class="discovery-msg error">${message}</div>`;
-      return;
-    }
-    if (models.length === 0) {
-      resultEl.innerHTML = `<div class="discovery-msg error">No models returned.</div>`;
-      return;
-    }
+    if (error) { resultEl.innerHTML = `<div class="discovery-msg error">${message}</div>`; return; }
+    if (models.length === 0) { resultEl.innerHTML = `<div class="discovery-msg error">No models returned.</div>`; return; }
     resultEl.innerHTML = "";
     const list = document.createElement("div");
     for (const m of models) {
@@ -434,15 +819,13 @@ $("discover-run").onclick = async () => {
     saveBtn.onclick = async () => {
       const checked = [...list.querySelectorAll("input[type=checkbox]:checked")];
       const toSave = checked.map((c) => ({
-        provider: providerId,
-        modelId: c.dataset.modelId,
+        provider: providerId, modelId: c.dataset.modelId,
         displayName: c.parentElement.querySelector("span").textContent.replace(" 👁", ""),
         vision: c.dataset.vision === "true",
       }));
       if (toSave.length === 0) return;
       await api("/api/ai/models", { method: "POST", body: { models: toSave } });
       loadModelsTab();
-      refreshModelSelector();
     };
     resultEl.appendChild(saveBtn);
   } catch (e) {
@@ -462,8 +845,13 @@ $("add-provider-save").onclick = async () => {
   loadProviders();
 };
 
+/* ---------- Init ---------- */
+
 refreshAuthStatus();
-refreshModelSelector();
+(async () => {
+  const { sessions } = await api("/api/sessions");
+  if (sessions.length > 0) await loadSessionInto(sessions[0].id);
+})();
 </script>
 </body>
 </html>

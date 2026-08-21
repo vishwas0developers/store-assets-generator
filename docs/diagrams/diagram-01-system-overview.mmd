@@ -1,0 +1,79 @@
+%% Diagram 1 — System Overview (historical, pre-Phase-9 orchestrator)
+%% Companion to ../ARCHITECTURE.md §6.2 · superseded by diagram-02-four-step-workflow.mmd
+flowchart TB
+    subgraph INPUT["User Input"]
+        URL["App URL"]
+        PLAT["Platform<br/>Google Play | Apple App Store"]
+        CRED["Credentials<br/><i>optional</i>"]
+        TPL["Template selection<br/><i>optional</i>"]
+    end
+
+    subgraph CORE["Store Assets Generator — Node 22 / TypeScript"]
+        direction TB
+        ORCH["Orchestrator<br/><i>stages 1-7, caching, concurrency</i>"]
+
+        subgraph AUTO["Automated Acquisition &mdash; net-new vs legacy"]
+            S1["1. Discovery<br/>sitemap + nav crawl + ranking"]
+            S2["2. Capture<br/>Playwright @ DPR 3"]
+        end
+
+        subgraph RULES["Specification"]
+            S3["3. Platform Spec<br/>YAML data lookup"]
+        end
+
+        S4["4. Project Assembly<br/>&rarr; Project Document"]
+
+        subgraph RENDER["Rendering &mdash; Remotion"]
+            S5["5. Still Composition<br/>renderStill"]
+            S6["6. Video Generation<br/>renderMedia"]
+        end
+
+        S7["7. Validation &amp; Packaging<br/>FFprobe + rules engine"]
+    end
+
+    subgraph SHARED["Shared Asset Layers"]
+        DEV["Device Registry<br/>SVG frames + geometry JSON"]
+        TPLR["Template Registry<br/>builtin | user | imported"]
+        SPEC["Platform Specs<br/>google-play.yaml<br/>apple-app-store.yaml"]
+    end
+
+    subgraph OUT["output/&lt;app&gt;/&lt;platform&gt;/&lt;version&gt;/"]
+        RAW["raw/*.png"]
+        STORE["store/*.png"]
+        VID["video/promo.mp4"]
+        PROJ["project.json"]
+        REP["report.json"]
+    end
+
+    URL --> ORCH
+    PLAT --> ORCH
+    CRED --> ORCH
+    TPL --> ORCH
+
+    ORCH --> S1 --> S2 --> S4
+    S3 --> S4
+    SPEC --> S3
+    S4 --> S5
+    S4 --> S6
+    S5 --> S7
+    S6 --> S7
+
+    DEV -.-> S5
+    DEV -.-> S6
+    TPLR -.-> S4
+    TPLR -.-> S5
+    TPLR -.-> S6
+    SPEC -.-> S7
+
+    S2 --> RAW
+    S5 --> STORE
+    S6 --> VID
+    S4 --> PROJ
+    S7 --> REP
+
+    classDef new fill:#1e3a5f,stroke:#4a9eff,color:#fff
+    classDef legacy fill:#3d2f1f,stroke:#d4a04a,color:#fff
+    classDef data fill:#1f3d2f,stroke:#4ad48a,color:#fff
+    class S1,S2,S6 new
+    class S4,S5 legacy
+    class DEV,TPLR,SPEC data

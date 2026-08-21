@@ -1,0 +1,81 @@
+%% Diagram 5 — Legacy Concept Migration
+%% Companion to ../ARCHITECTURE.md §2
+flowchart LR
+    subgraph LEG["studio.app-mockup.com &mdash; React + MUI + Canvas, 2020<br/><i>reference only, deleted after migration</i>"]
+        L1["Project design file<br/>JSON save/load"]
+        L2["Template library<br/>by app category"]
+        L3["Device catalogue<br/>35 devices, light/dark"]
+        L4["Frame styles<br/>Default | Clay"]
+        L5["Multi-device<br/>Device One / Two"]
+        L6["Layout presets<br/>rotated, caption above/below"]
+        L7["Global Panoramic"]
+        L8["Background system<br/>gradient presets"]
+        L9["Transforms<br/>position | scale | rotate | flip"]
+        L10["Typography<br/>font | size | alignment"]
+        L11["Caption model"]
+        L12["Style copy/paste"]
+        L13["Localization<br/>Languages"]
+        L14["ZIP export"]
+        L15["Preview mode"]
+        L16["Custom devices / upload"]
+        L17["Canvas rendering"]
+        L18["React + MUI shell"]
+        L19["Minified bundle source"]
+    end
+
+    subgraph NEW["Store Assets Generator"]
+        N1["Project Document<br/><i>pipeline-generated</i>"]
+        N2["Template packages<br/>.sagtpl + category"]
+        N3["Device Registry<br/><i>modernized + extended, now parametric</i>"]
+        N4["Frame style axis"]
+        N5["N devices per scene"]
+        N6["Layout primitives"]
+        N7["Panoramic layer"]
+        N8["Background layer<br/>+ preset library"]
+        N9["Animatable transforms<br/><i>+ time axis</i>"]
+        N10["Text layer<br/>fonts in package"]
+        N11["Positioned caption layer"]
+        N12["Template inheritance<br/><i>solved structurally</i>"]
+        N13["Reserved locale axis"]
+        N14[".sagtpl + output packaging"]
+        N15["Fast draft rendering"]
+        N16["User-added frames<br/><i>config/devices.json entry</i>"]
+        N17["Remotion renderer<br/><i>optional, disabled by default</i>"]
+    end
+
+    subgraph GAP["No Legacy Prior Art &mdash; highest risk"]
+        G1["Discovery<br/>sitemap + crawl + rank"]
+        G2["Automated capture<br/>Playwright"]
+        G3["Video generation<br/>timeline + animation + encode"]
+        G4["Platform spec engine"]
+        G5["Validation + reporting"]
+        G6["CLI / unattended operation"]
+    end
+
+    L1 --> N1
+    L2 --> N2
+    L3 --> N3
+    L4 --> N4
+    L5 --> N5
+    L6 --> N6
+    L7 --> N7
+    L8 --> N8
+    L9 --> N9
+    L10 --> N10
+    L11 --> N11
+    L12 --> N12
+    L13 --> N13
+    L14 --> N14
+    L15 --> N15
+    L16 --> N16
+    L17 -.->|replaced| N17
+
+    L18 -.->|discarded| X1["Rebuilt later<br/>as template editor"]
+    L19 -.->|unrecoverable| X2["No source maps<br/>reimplement"]
+
+    classDef adopt fill:#1f3d2f,stroke:#4ad48a,color:#fff
+    classDef replace fill:#3d2f1f,stroke:#d4a04a,color:#fff
+    classDef gap fill:#4a1f1f,stroke:#ff6b6b,color:#fff
+    class N1,N2,N3,N4,N5,N6,N7,N8,N9,N10,N11,N12,N13,N14,N15,N16 adopt
+    class N17,X1,X2 replace
+    class G1,G2,G3,G4,G5,G6 gap

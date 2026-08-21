@@ -1,0 +1,79 @@
+%% Diagram 6 — Component / Module Structure (historical, pre-Phase-9 proposed layout)
+%% Companion to ../ARCHITECTURE.md §7 · current structure now also includes
+%% src/session/, src/package/, src/render/{shared,mockup,scene}.ts, src/devices/frame.ts
+flowchart TB
+    CLI["cli.ts<br/>generate | render | validate | template"]
+    ORCH["orchestrator.ts"]
+
+    subgraph M1["discovery/"]
+        D1["sitemap.ts"]
+        D2["crawl.ts"]
+        D3["rank.ts"]
+    end
+
+    subgraph M2["capture/"]
+        C1["browser.ts"]
+        C2["auth.ts"]
+        C3["noise.ts"]
+        C4["readiness.ts"]
+        C5["screenshot.ts"]
+    end
+
+    subgraph M3["platform/"]
+        P1["schema.ts"]
+        P2["specs/*.yaml"]
+    end
+
+    subgraph M4["devices/"]
+        V1["registry.ts"]
+        V2["frames/ (SVG)"]
+        V3["geometry/ (JSON)"]
+    end
+
+    subgraph M5["project/"]
+        J1["schema.ts"]
+        J2["assemble.ts"]
+        J3["branding.ts"]
+    end
+
+    subgraph M6["templates/"]
+        T1["schema.ts"]
+        T2["registry.ts"]
+        T3["package.ts"]
+        T4["migrate.ts"]
+        T5["presets/"]
+        T6["builtin/"]
+    end
+
+    subgraph M7["render/"]
+        R1["still.ts"]
+        R2["video.ts"]
+        R3["Root.tsx"]
+        R4["interpreter/"]
+        R5["interpreter/layers/"]
+    end
+
+    subgraph M8["validate/"]
+        W1["image.ts"]
+        W2["video.ts"]
+        W3["report.ts"]
+    end
+
+    PK["package/bundle.ts"]
+
+    CLI --> ORCH
+    CLI --> M6
+    ORCH --> M1 --> M2
+    ORCH --> M3
+    M2 --> M5
+    M3 --> M5
+    M6 --> M5
+    M5 --> M7
+    M4 --> M7
+    M6 --> M7
+    M7 --> M8
+    M3 --> M8
+    M8 --> PK
+    R4 --> R5
+    R1 --> R4
+    R2 --> R4

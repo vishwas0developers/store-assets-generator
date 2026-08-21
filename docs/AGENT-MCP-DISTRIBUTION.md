@@ -1,6 +1,6 @@
 # Agent, MCP, and Distribution Architecture
 
-**Companion documents:** [`PRD.md`](../PRD.md) · [`ARCHITECTURE.md`](./ARCHITECTURE.md) · [`ANDROID-CAPTURE.md`](./ANDROID-CAPTURE.md) · [`IMPLEMENTATION_PLAN.md`](./IMPLEMENTATION_PLAN.md) · [`architecture.mmd`](./architecture.mmd)
+**Companion documents:** [`PRD.md`](../PRD.md) · [`ARCHITECTURE.md`](./ARCHITECTURE.md) · [`ANDROID-CAPTURE.md`](./ANDROID-CAPTURE.md) · [`IMPLEMENTATION_PLAN.md`](./IMPLEMENTATION_PLAN.md) · [`DIAGRAMS.md`](./DIAGRAMS.md)
 
 This document covers the layers added by the final requirements: the AI Agent as the intelligence layer, Skills as the workflow teaching layer, MCP as the controlled capability layer, and NPM as the distribution layer.
 

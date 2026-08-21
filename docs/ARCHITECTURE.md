@@ -1,6 +1,6 @@
 # Store Assets Generator — Architecture
 
-**Companion documents:** [`PRD.md`](../PRD.md) · [`architecture.mmd`](./architecture.mmd) · [`IMPLEMENTATION_PLAN.md`](./IMPLEMENTATION_PLAN.md) · [`AGENT-MCP-DISTRIBUTION.md`](./AGENT-MCP-DISTRIBUTION.md) · [`ANDROID-CAPTURE.md`](./ANDROID-CAPTURE.md)
+**Companion documents:** [`PRD.md`](../PRD.md) · [`DIAGRAMS.md`](./DIAGRAMS.md) · [`IMPLEMENTATION_PLAN.md`](./IMPLEMENTATION_PLAN.md) · [`AGENT-MCP-DISTRIBUTION.md`](./AGENT-MCP-DISTRIBUTION.md) · [`ANDROID-CAPTURE.md`](./ANDROID-CAPTURE.md) · [`DEVICE-FRAMES.md`](./DEVICE-FRAMES.md)
 
 ---
 
@@ -86,6 +86,13 @@ It **is** the successor to `studio.app-mockup.com`. That legacy codebase is a re
 
 ## 2. Legacy Analysis — `studio.app-mockup.com`
 
+> `studio.app-mockup.com` remains **reference-only** — a mirrored,
+> unmodified snapshot kept purely for the concept inventory in §2.2 below.
+> It is not run, imported, or linked at build or runtime. The in-repo
+> "Studio Mockups" workflow (Step 2, `src/render/mockup.ts`, see §6.1) is
+> this project's own composition engine, built from scratch against the
+> concepts this section recovered — not a wrapper around the legacy bundle.
+
 ### 2.1 What the codebase actually is
 
 | Property | Finding |
@@ -108,8 +115,8 @@ Every meaningful concept found in the legacy tool, and its disposition here:
 |---|---|---|---|
 | 1 | **Project document** — a saveable/loadable JSON design file | "Save design file", "Load Project File", "Start New Project", "Project Settings" | **Adopt and formalize.** Becomes the Project Document (§5) — the pipeline's central intermediate representation. |
 | 2 | **Template library** — starter templates by app category | "Load Starter Template", "Load App Template", "Books App Template 1", "Business App Template 1", "Entertainment App Template 1", "Food Template 3/4", "Photo & Video Template 1" | **Adopt and extend.** Becomes the portable template package system (§4), extended to drive video. |
-| 3 | **Device catalogue** — 35 devices, light/dark variants | `apple-iphone-11-*`, `google-pixel-4-*`, `samsung-galaxy-s10-*`, `htc-*`, `huawei-*`, `lg-nexus-*` | **Adopt as data, modernize.** Taxonomy and naming convention reused; catalogue is five years stale and must be extended (§6). |
-| 4 | **Frame style variants** | "Default Frames", "Clay Frames" | **Adopt.** Frame `style` axis alongside device id and colourway. |
+| 3 | **Device catalogue** — 35 devices, light/dark variants | `apple-iphone-11-*`, `google-pixel-4-*`, `samsung-galaxy-s10-*`, `htc-*`, `huawei-*`, `lg-nexus-*` | **Adopted as data, built parametric rather than per-device art.** `config/devices.json` (Phase 9, see `docs/DEVICE-FRAMES.md`) — geometry + a handful of named traits (bezel, cutout style, fold seam) per entry; `src/devices/frame.ts` draws the SVG from those numbers instead of a pasted-in frame image per device. Adding iPhone 18, a new Samsung, or a foldable is a JSON entry, not new artwork — this is how the catalogue outgrows both the legacy tool's 35 fixed devices and this repo's own original 2-device hardcoded `DEVICE_REGISTRY`. |
+| 4 | **Frame style variants** | "Default Frames", "Clay Frames" | **Adopt.** Colourway (`light`/`dark`) is a `buildFrameSvg()` parameter; a `style` axis (`default`/`clay`) remains on `DeviceModel` for a future frame-style variant without a data migration. |
 | 5 | **Multi-device composition** — two devices per screenshot | "Device One", "Device Two", "Add Base Device", "Device One Screen", "Device Two Screen" | **Adopt, generalize.** N devices per scene rather than a fixed two. |
 | 6 | **Layout presets** | "Rotated Left 1/2", "Rotated Right 1/2", "All Devices In Column", "Caption Above/Below", "Left/Right Side Caption Above/Below" | **Adopt.** Become named layout primitives inside templates. |
 | 7 | **Global Panoramic** — one wide image spanning a whole screenshot set | "Global Panoramic", "Flip Global Panoramic", "Panoramic width/height can not exceed 10000 pixels", "Panorama" | **Adopt.** A signature store-listing technique; kept as a first-class template feature. |
@@ -405,6 +412,68 @@ Why this matters architecturally:
 
 ## 6. Pipeline Stages
 
+> **Superseded by the four-step manual workflow (Phase 9, see IMPLEMENTATION_PLAN.md).**
+> The seven linear stages below describe the original one-shot orchestrator
+> (`src/orchestrator.ts`, `AssetPipeline.run()`) and the original
+> `src/render/video.ts`. Both are now **disabled, not deleted** — kept for
+> reference and easy re-enable, superseded by a `Session`-driven four-step
+> workflow that fans one set of raw screenshots out to both the store ZIP
+> and the promo video, with a review/edit point after every step. §6.1
+> describes the current architecture; the rest of §6 is retained as the
+> historical design this grew out of, since most of its stages (discovery,
+> capture, platform spec) are reused unchanged inside the new steps.
+
+### 6.1 Current — Four-Step Session Workflow
+
+A **session** (`src/session/store.ts`) is one folder under `output/<id>/`
+holding `session.json` (raw screenshots, per-screen mockup config, scene
+list, BGM path, output paths) plus the files each step produces. No
+database — the folder *is* the state, so a session survives a server
+restart and can be inspected or zipped by hand. See Diagram 2 in
+`DIAGRAMS.md` (diagram 2) for the full data-flow.
+
+| Step | Module | In | Out |
+|---|---|---|---|
+| **1 — Capture** | `src/capture/step1.ts` | app URL + demo access (`apps/<slug>/auth.json`) | `output/<id>/raw/*.png` + a captured-screen count shown in the UI |
+| **2 — Studio Mockups** | `src/render/mockup.ts` | a raw screenshot + `MockupConfig` (template, device, label, background) | live preview HTML, and (in Step 3) a rendered PNG |
+| **3 — Store Asset Package** | `src/package/store.ts` | mockup config + target platforms/device classes | `store-assets.zip` shaped for manual Play Console / App Store Connect upload |
+| **4 — Animation Video** | `src/render/scene.ts` | one `SceneConfig` per raw screenshot (template, text, device, rotation/zoom/move, duration) + BGM | `video/promo.mp4`, HTML/CSS/JS-animated, never a generative video model |
+
+Step 1 reuses Stage 1 (Discovery) and Stage 2 (Capture) below completely
+unchanged — same auth strategy chain, same noise suppression, same
+HTTP≥400 rejection. Steps 2–4 replace Stages 4–6 (Project Assembly, Still
+Composition, Video Generation) with a reviewable, session-backed
+equivalent described next.
+
+**The single-HTML-generator invariant.** Both `mockupHtml()` (Step 2/3) and
+`sceneHtml()` (Step 4) are called from exactly two places each: the
+in-browser preview (`<iframe>`) and the final Playwright render. There is
+no second implementation for "what it looks like when rendered" — the
+preview *is* the render, played live instead of screenshotted. This is
+what makes the review step meaningful: what you see before clicking
+Render/Build is what ships.
+
+**Deterministic video from live CSS animation.** Step 4's scenes are
+ordinary CSS `@keyframes`/`animation` — the preview plays them natively.
+For rendering, every scene page exposes
+`window.seek = ms => document.getAnimations().forEach(a => { a.pause(); a.currentTime = ms })`.
+The renderer steps through each scene at 30fps, calls `seek(frame/30*1000)`,
+and screenshots — so the MP4 is a frame-accurate capture of the exact
+animation that was previewed, with no separate timeline-interpretation
+step to drift out of sync.
+
+**Disabled, not deleted (per PRD §12/Requirement 6).** `AssetPipeline.run()`
+and `PlaywrightFFmpegVideoEngine` are commented out with a header pointing
+to the replacement and how to re-enable; their CLI/MCP callers (`generate`,
+`run_pipeline`, `render_video`) print a "superseded — use the four-step
+workflow" message instead of running. `src/android/capture.ts` (live/
+physical-device screenshots) and `src/templates/package.ts` (`.sagtpl`
+import/export) are explicitly **kept**, not disabled — the former stays
+available as an alternate Step 1 source, the latter for a future template
+sharing feature.
+
+### 6.2 Original Design — Seven-Stage Linear Pipeline (historical)
+
 Seven stages behind one orchestrator, each with typed input/output contracts so any stage can be run, tested, cached, or replaced independently.
 
 ### Stage 1 — Discovery (`src/discovery/`)
@@ -460,44 +529,78 @@ Images: dimensions, aspect ratio, format, byte size, blank/near-blank detection,
 
 ## 7. Proposed Structure
 
+Current (Phase 9, four-step workflow) — reflects what actually exists after
+this pass:
+
 ```
 D:\AI_Tools\store-assets-generator\
 ├── PRD.md
 ├── docs/
-│   ├── ARCHITECTURE.md · architecture.mmd · IMPLEMENTATION_PLAN.md · PRD-v1-discovery.md
+│   ├── ARCHITECTURE.md · DIAGRAMS.md · diagrams/ · IMPLEMENTATION_PLAN.md
+│   ├── DEVICE-FRAMES.md           # device catalogue contract (config/devices.json)
+│   └── PRD-v1-discovery.md · AUTHENTICATION.md · AI-PROVIDERS.md · ANDROID-CAPTURE.md
+├── config/
+│   ├── providers.json · models.json   # AI provider/model registry (existing)
+│   └── devices.json               # device frame catalogue — data, no code
 ├── cli/index.ts                   # CLI entry (bin: store-assets)
 ├── install/                       # multi-agent skill + MCP installer
-│   ├── index.ts                   # agent detection, target tables, drift/version
-│   └── skills/                    # skill content as string constants (portable)
-├── mcp/
-│   ├── server.ts                  # MCP stdio server (package main)
-│   └── tools/                     # one module per MCP tool
+├── mcp/server.ts                  # MCP stdio server (package main)
 ├── src/
-│   ├── orchestrator.ts            # runs stages 1-7, caching, concurrency
-│   ├── discovery/                 # sitemap.ts · crawl.ts · rank.ts
+│   ├── orchestrator.ts            # DISABLED — superseded, see §6.1
+│   ├── discovery/crawl.ts         # reused unchanged by Step 1
+│   ├── android/capture.ts         # KEPT — alternate Step 1 source, not disabled
+│   ├── capture/
+│   │   ├── browser.ts · auth.ts   # reused unchanged (auth chain, noise suppression)
+│   │   └── step1.ts               # NEW — Step 1 orchestration over a Session
+│   ├── session/store.ts           # NEW — Session/RawScreenshot/MockupConfig/SceneConfig,
+│   │                              #        create/load/save/list, path-containment guard
+│   ├── platform/
+│   │   ├── index.ts · schema.ts
+│   │   └── specs/{google-play,apple-app-store}.yaml   # unchanged
+│   ├── devices/
+│   │   ├── registry.ts            # rewritten: loads config/devices.json, exports DEVICE_REGISTRY
+│   │   └── frame.ts               # NEW — buildFrameSvg(device, colorway): parametric bezel/
+│   │                              #        cutout/fold-seam generator, no per-device art
+│   ├── project/schema.ts          # ProjectDocument/PlatformSpec/Template schemas (unchanged)
+│   ├── templates/package.ts       # KEPT — .sagtpl import/export, not disabled
+│   ├── render/
+│   │   ├── still.ts               # unchanged, still used by the legacy pipeline
+│   │   ├── video.ts                # DISABLED — superseded, see §6.1
+│   │   ├── shared.ts              # NEW — dataUri/escapeHtml/deviceMarkup/DEVICE_CSS/BACKGROUNDS
+│   │   ├── mockup.ts              # NEW — MOCKUP_TEMPLATES + mockupHtml() + renderMockups()
+│   │   └── scene.ts               # NEW — scene templates + sceneHtml() + renderVideo()
+│   ├── package/store.ts           # NEW — buildStorePackage(): per-platform/device-class ZIP
+│   ├── ai/
+│   │   ├── registry.ts · adapters.ts · keystore.ts   # unchanged
+│   │   └── chat.ts                # NEW — chat() completion call used by AI-Assist buttons
+│   └── validate/report.ts         # unchanged
+├── web/
+│   ├── index.html                 # rewritten: 4 step tabs + settings/credentials/sessions popups
+│   └── server.ts                  # extended: /api/sessions/* routes over the modules above
+├── apps/<app-slug>/auth.json      # per-app demo-access config (existing)
+└── output/<session-id>/
+    ├── session.json · raw/ · store/<platform>/<deviceClass>/ · store-assets.zip · video/
+```
+
+Historical (pre-Phase-9) proposed structure — retained for reference; most
+of it (`discovery/`, `capture/browser.ts`, `platform/`, `validate/`) is
+exactly what got built, the rest (Remotion backend, `.sagtpl` builtin
+templates, `templates/registry.ts`) was deliberately not built per §-1 of
+IMPLEMENTATION_PLAN.md:
+
+```
+├── src/
 │   ├── android/                   # device.ts · emulator.ts · launch.ts
 │   │                              # navigate.ts · screencap.ts · hygiene.ts
 │   ├── capture/
-│   │   ├── browser.ts             # Playwright lifecycle, context pooling
-│   │   ├── auth.ts                # credential injection, encrypted at rest
 │   │   ├── noise.ts               # consent/ad/prompt suppression
 │   │   ├── readiness.ts           # content-based settle detection
 │   │   └── screenshot.ts
-│   ├── platform/
-│   │   ├── schema.ts
-│   │   └── specs/{google-play,apple-app-store}.yaml
-│   ├── devices/
-│   │   ├── registry.ts            # catalogue, modernized from legacy
-│   │   ├── frames/                # SVG frames, per style + colourway
-│   │   └── geometry/              # screen inset + cutout JSON per frame
 │   ├── project/
-│   │   ├── schema.ts              # Project Document (§5)
 │   │   ├── assemble.ts
 │   │   └── branding.ts            # logo + palette derivation
 │   ├── templates/
-│   │   ├── schema.ts              # Zod schema for template.json
 │   │   ├── registry.ts            # builtin + user + imported resolution
-│   │   ├── package.ts             # .sagtpl import / export / validate
 │   │   ├── migrate.ts             # engineVersion migrations
 │   │   ├── presets/               # layouts, gradients, easings
 │   │   └── builtin/
@@ -509,14 +612,11 @@ D:\AI_Tools\store-assets-generator\
 │   │   ├── backends/
 │   │   │   ├── playwright-ffmpeg/ # default: frame stepping + encode
 │   │   │   └── remotion/          # optional, licence-gated
-│   │   ├── still.ts · video.ts
 │   │   └── interpreter/
 │   │       ├── scene.ts · layer.ts · animate.ts
 │   │       └── layers/{DeviceMockup,Text,Image,Shape,Background,Panoramic,Camera}
-│   ├── validate/{image,video,report}.ts
 │   └── package/bundle.ts
 ├── templates/                     # user + imported templates
-├── apps/<app-slug>/config.yaml    # optional per-app overrides
 ├── assets/music/
 ├── output/<app>/<platform>/<version>/
 │   ├── raw/ · store/ · video/ · project.json · report.json

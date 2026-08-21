@@ -1,0 +1,51 @@
+%% Diagram 0b — Distribution & Multi-Agent Installation
+%% Companion to ../ARCHITECTURE.md · ../AGENT-MCP-DISTRIBUTION.md
+flowchart TB
+    GH["GitHub Repository<br/>store-assets-generator"]
+    NPM["NPM Package<br/>CLI + MCP server + installer"]
+
+    subgraph INST["New Computer"]
+        I1["npm install -g store-assets-generator"]
+        I2["store-assets setup"]
+        I3["store-assets install &lt;agent&gt;"]
+    end
+
+    subgraph SETUP["setup &mdash; capabilities degrade individually"]
+        D1["Verify Node &ge; 20"]
+        D2["playwright install chromium"]
+        D3["Detect FFmpeg / FFprobe<br/><i>guide if missing</i>"]
+        D4["Detect adb / ANDROID_HOME<br/><i>optional capability</i>"]
+        D5["Scaffold config + templates/"]
+        D6["Capability report"]
+    end
+
+    subgraph AGENTS["install &mdash; per-agent native targets"]
+        A1[".claude/skills + .mcp.json"]
+        A2[".cursor/ + .cursor/mcp.json"]
+        A3[".codex/skills + TOML"]
+        A4[".gemini/skills + ~/.gemini/config"]
+        A5[".agents/skills<br/><i>cross-framework</i>"]
+        A6["skills-only agents<br/><i>no MCP config</i>"]
+    end
+
+    subgraph DRIFT["Lifecycle"]
+        V1[".store-assets-version stamp"]
+        V2["content-hash drift check"]
+        V3["deprecated skill cleanup"]
+        DOC["store-assets doctor<br/>--check-only"]
+        UPD["store-assets update"]
+    end
+
+    READY["Agent Ready<br/><i>skills installed, MCP configured</i>"]
+
+    GH --> NPM --> I1 --> I2 --> I3
+    I2 --> D1 --> D2 --> D3 --> D4 --> D5 --> D6
+    I3 --> A1 & A2 & A3 & A4 & A5 & A6
+    A1 --> V1
+    V1 --> V2 --> V3
+    V3 --> DOC
+    V3 --> UPD
+    A1 --> READY
+
+    NOTE["Skills stored as string constants<br/>&rarr; written at install time<br/>&rarr; NO hardcoded paths, portable across machines"]
+    I3 -.-> NOTE
