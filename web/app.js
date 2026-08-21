@@ -965,36 +965,6 @@ $("browser-bottom-reload").onclick = async () => {
   await api("/api/browser/action", { method: "POST", body: { type: "reload" } });
 };
 
-// Auto-fill Demo credentials helper
-$("browser-autofill-btn").onclick = async () => {
-  if (!browserConnected) {
-    await alert("Start session and connect first.");
-    return;
-  }
-  try {
-    const status = await api("/api/auth/status");
-    if (!status.email) {
-      await alert("Demo email/password not set. Please configure in the Demo Access modal (key icon).");
-      return;
-    }
-    
-    // Type credentials sequentially using Playwright action keyboard dispatching
-    // We send tab and typing actions
-    await alert("Attempting to auto-fill. Click in the email field first, then click OK.");
-    await api("/api/browser/action", { method: "POST", body: { type: "type", text: status.email } });
-    await api("/api/browser/action", { method: "POST", body: { type: "press", key: "Tab" } });
-    if (status.passwordSet) {
-      // Prompt user or type placeholder/real password
-      const pw = await prompt("Please enter password to type:", "");
-      if (pw) {
-        await api("/api/browser/action", { method: "POST", body: { type: "type", text: pw } });
-      }
-    }
-  } catch (e) {
-    await alert("Autofill failed: " + e.message);
-  }
-};
-
 // Capture Button Trigger
 async function triggerScreenshotCapture() {
   if (!browserConnected || !activeProjectId) {
