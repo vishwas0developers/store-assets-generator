@@ -5,12 +5,13 @@ import { WebCaptureBackend } from "./browser.js";
 import { defaultSessionStatePath } from "./auth.js";
 import { loadAuthConfig, slugify } from "../auth/appConfig.js";
 import { loadPlatformSpec } from "../platform/index.js";
-import { saveSession, sessionDir, type RawScreenshot, type Session } from "../session/store.js";
+import { saveCaptureSession, captureDir, type RawScreenshot, type CaptureSession } from "./store.js";
 
 /**
- * Step 1 — capture the raw, unframed application screens using the
- * configured demo access. These originals are the single source for BOTH
- * step 3 (store package) and step 4 (video); nothing downstream re-captures.
+ * Website Capture — Screen Capture tab. Captures raw, unframed application
+ * screens using the configured demo access. Independent of Studio Mockup
+ * and Video (see src/capture/store.ts) — nothing here writes into their
+ * project stores.
  */
 
 export interface CaptureRequest {
@@ -20,14 +21,9 @@ export interface CaptureRequest {
 }
 
 /**
- * The capture viewport. Raw screenshots are content, not deliverables — the
- * per-device-class store sizes are produced in step 3 by rendering the
- * mockup canvas at each target size, so one high-res phone capture serves
- * every class.
- *
- * ponytail: single capture viewport, the largest phone class of the selected
- * platforms. Capture per device class if a tablet listing ever needs a
- * genuinely different responsive layout rather than a rescale.
+ * ponytail: single capture viewport, the largest 9:x phone class of the
+ * selected platforms. Capture per device class if a tablet listing ever
+ * needs a genuinely different responsive layout rather than a rescale.
  */
 function captureViewport(platforms: string[]): { width: number; height: number } {
   let best = { width: 1080, height: 2400 };
@@ -42,7 +38,8 @@ function captureViewport(platforms: string[]): { width: number; height: number }
   return best;
 }
 
-export async function captureRawScreens(session: Session, request: CaptureRequest = {}): Promise<Session> {
+export async function captureWebsiteScreens(session: CaptureSession, request: CaptureRequest = {}): Promise<CaptureSession> {
+  if (!session.url) throw new Error("Website capture requires a url on the capture session.");
   const slug = session.slug || slugify(session.url);
   const authConfig = loadAuthConfig(slug);
   if (authConfig && !authConfig.sessionStatePath) {
@@ -53,7 +50,7 @@ export async function captureRawScreens(session: Session, request: CaptureReques
   }
 
   const viewport = captureViewport(session.platforms);
-  const rawDir = path.join(sessionDir(session.id), "raw");
+  const rawDir = path.join(captureDir(session.id), "raw");
   fs.mkdirSync(rawDir, { recursive: true });
 
   const discover = new DiscoveryEngine();
@@ -73,7 +70,7 @@ export async function captureRawScreens(session: Session, request: CaptureReques
 
   try {
     for (let i = 0; i < pages.length; i++) {
-      const filename = `screen_${i + 1}.png`;
+      const filename = `screen_${session.raw.length + i + 1}.png`;
       try {
         await backend.captureScreen(pages[i].url, filename, {
           width: viewport.width,
@@ -83,16 +80,15 @@ export async function captureRawScreens(session: Session, request: CaptureReques
           auth: authConfig ?? undefined,
         });
         raw.push({
-          id: `screen_${i + 1}`,
+          id: `screen_${session.raw.length + i + 1}`,
           url: pages[i].url,
           title: pages[i].title || `Screen ${i + 1}`,
           file: path.posix.join("raw", filename),
           width: viewport.width,
           height: viewport.height,
+          source: "website",
         });
       } catch (err) {
-        // A screen we could not authenticate into is skipped with its reason
-        // rather than silently captured as a login page.
         skipped.push(`${pages[i].url}: ${(err as Error).message}`);
       }
     }
@@ -104,7 +100,7 @@ export async function captureRawScreens(session: Session, request: CaptureReques
     throw new Error(`No screens captured. Reasons:\n${skipped.join("\n") || "unknown"}`);
   }
 
-  session.raw = raw;
-  saveSession(session);
+  session.raw = [...session.raw, ...raw];
+  saveCaptureSession(session);
   return session;
 }

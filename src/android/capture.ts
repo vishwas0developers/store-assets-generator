@@ -26,8 +26,8 @@ export class AndroidCaptureBackend {
       return output
         .split("\n")
         .slice(1)
-        .map(line => line.split("\t")[0])
-        .filter(Boolean);
+        .map(line => line.trim().split("\t")[0]?.trim())
+        .filter((id): id is string => Boolean(id) && id !== "*" && !id.startsWith("*"));
     } catch {
       return [];
     }
