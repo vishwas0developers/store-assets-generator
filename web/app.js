@@ -1085,114 +1085,179 @@ async function ensureMockupReferenceData() {
   }
 }
 
-function getTemplateBackgroundStyle(bg) {
-  if (!bg) return "background: #1e3c72;";
-  if (bg.type === "solid") {
-    const solids = {
-      "solid-navy": "#0f1115",
-      "solid-charcoal": "#1c1c1c",
-      "solid-white": "#f8fafc",
-      "solid-cream": "#f5f0e6",
-      "solid-indigo": "#2a2a72",
-      "solid-forest": "#0b3d2e",
-    };
-    return `background: ${solids[bg.value] || bg.value};`;
+const CATEGORY_LABELS = {
+  "travel-and-local": "Travel & Local",
+  music: "Music",
+  business: "Business",
+  books: "Books",
+  productivity: "Productivity",
+  "social-networking": "Social Networking",
+  entertainment: "Entertainment",
+  "food-and-drink": "Food & Drink",
+  "photo-and-video": "Photo & Video",
+  utilities: "Utilities",
+};
+
+function categoryLabel(id) { return CATEGORY_LABELS[id] || id; }
+
+let mockupTemplates = [];
+let mockupTemplateCategory = "all";
+let mockupTemplateDetailId = null;
+
+async function ensureMockupTemplates() {
+  if (mockupTemplates.length === 0) {
+    const { templates } = await api("/api/mockups/templates");
+    mockupTemplates = templates;
   }
-  if (bg.type === "pattern") {
-    const patterns = {
-      dots: "radial-gradient(circle, rgba(255,255,255,.18) 3px, transparent 3px) 0 0/28px 28px, linear-gradient(135deg,#1e3c72 0%,#2a5298 100%)",
-      grid: "linear-gradient(rgba(255,255,255,.12) 1px, transparent 1px) 0 0/40px 40px, linear-gradient(90deg, rgba(255,255,255,.12) 1px, transparent 1px) 0 0/40px 40px, linear-gradient(135deg,#232526 0%,#414345 100%)",
-      diagonal: "repeating-linear-gradient(45deg, rgba(255,255,255,.08) 0 12px, transparent 12px 24px), linear-gradient(135deg,#0f2027 0%,#2c5364 100%)",
-      mesh: "radial-gradient(at 20% 20%, rgba(255,100,150,.35) 0, transparent 50%), radial-gradient(at 80% 0%, rgba(100,150,255,.35) 0, transparent 50%), radial-gradient(at 50% 100%, rgba(150,255,200,.3) 0, transparent 50%), #14161c",
-      waves: "repeating-radial-gradient(circle at 50% 120%, rgba(255,255,255,.10) 0 6px, transparent 6px 40px), linear-gradient(135deg,#134e5e 0%,#71b280 100%)",
-    };
-    return `background: ${patterns[bg.value] || "linear-gradient(135deg,#1e3c72 0%,#2a5298 100%)"};`;
-  }
-  const gradients = {
-    ocean: "linear-gradient(135deg,#0f2027 0%,#203a43 50%,#2c5364 100%)",
-    royal: "linear-gradient(135deg,#1e3c72 0%,#2a5298 100%)",
-    sunset: "linear-gradient(135deg,#ff512f 0%,#dd2476 100%)",
-    mint: "linear-gradient(135deg,#134e5e 0%,#71b280 100%)",
-    graphite: "linear-gradient(135deg,#232526 0%,#414345 100%)",
-    light: "linear-gradient(135deg,#f8fafc 0%,#e2e8f0 100%)",
-    candy: "linear-gradient(135deg,#ee9ca7 0%,#ffdde1 100%)",
-    aurora: "linear-gradient(135deg,#00c6ff 0%,#0072ff 100%)",
-    citrus: "linear-gradient(135deg,#f7971e 0%,#ffd200 100%)",
-    violet: "linear-gradient(135deg,#654ea3 0%,#eaafc8 100%)",
-  };
-  return `background: ${gradients[bg.value] || "linear-gradient(135deg,#1e3c72 0%,#2a5298 100%)"};`;
+  return mockupTemplates;
 }
 
-/* ---- Templates section ---- */
-async function renderMockupTemplateGrid() {
-  const { templates } = await api("/api/mockups/templates");
+function templateCategoryCounts(templates) {
+  const counts = {};
+  for (const t of templates) counts[t.category] = (counts[t.category] || 0) + 1;
+  return Object.keys(counts)
+    .sort((a, b) => categoryLabel(a).localeCompare(categoryLabel(b)))
+    .map((id) => ({ id, label: categoryLabel(id), count: counts[id] }));
+}
+
+function renderMockupTemplateFilters(templates) {
+  const rail = $("mockup-template-filters");
+  const cats = templateCategoryCounts(templates);
+  rail.innerHTML = [`<div class="filter-item ${mockupTemplateCategory === "all" ? "active" : ""}" data-cat="all">All <span class="count">${templates.length}</span></div>`]
+    .concat(cats.map((c) => `<div class="filter-item ${mockupTemplateCategory === c.id ? "active" : ""}" data-cat="${c.id}">${c.label} <span class="count">${c.count}</span></div>`))
+    .join("");
+  rail.querySelectorAll(".filter-item").forEach((el) => {
+    el.onclick = () => {
+      mockupTemplateCategory = el.dataset.cat;
+      renderMockupTemplateFilters(templates);
+      renderMockupTemplateCards(templates);
+    };
+  });
+}
+
+function renderMockupTemplateCards(templates) {
   const grid = $("mockup-template-grid");
-  grid.innerHTML = "";
-  
-  // Style the grid for Visual Cards
-  grid.style.cssText = "display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; padding: 0.5rem 0;";
+  const filtered = mockupTemplateCategory === "all" ? templates : templates.filter((t) => t.category === mockupTemplateCategory);
 
-  for (const t of templates) {
-    const card = document.createElement("div");
-    card.className = "template-card";
-    card.style.cssText = "display:flex; flex-direction:column; overflow:hidden; border-radius:12px; background:#141721; border:1px solid #232733; cursor:pointer; transition:all 0.2s ease-in-out; box-shadow:0 4px 12px rgba(0,0,0,0.15);";
-    
-    // Add hover scale effect via JS listeners
-    card.onmouseenter = () => {
-      card.style.transform = "translateY(-4px)";
-      card.style.borderColor = "#3b82f6";
-      card.style.boxShadow = "0 8px 24px rgba(59,130,246,0.15)";
-    };
-    card.onmouseleave = () => {
-      card.style.transform = "translateY(0)";
-      card.style.borderColor = "#232733";
-      card.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
-    };
-
-    const cleanLayoutName = t.layout.replace("snapshot-", "Snapshot ").replace(/-/g, " ");
-
-    card.innerHTML = `
-      <div style="height:120px; ${getTemplateBackgroundStyle(t.background)} display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; border-bottom:1px solid #232733;">
-        <div style="display:flex; gap:8px; transform:scale(0.85);">
-          ${Array.from({ length: Math.min(3, t.columnCount || 3) }).map((_, idx) => `
-            <div style="width:34px; height:62px; background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.25); border-radius:4px; box-shadow:0 3px 6px rgba(0,0,0,0.3); display:flex; flex-direction:column; align-items:center; justify-content:space-between; padding:3px 2px;">
-              <div style="width:10px; height:1px; background:rgba(255,255,255,0.3); border-radius:0.5px;"></div>
-              <div style="font-size:6px; color:rgba(255,255,255,0.4); text-align:center; transform:scale(0.8);">App</div>
-              <div style="width:3px; height:3px; border-radius:50%; background:rgba(255,255,255,0.3);"></div>
-            </div>
-          `).join('')}
-        </div>
-        <div style="position:absolute; bottom:6px; right:8px; font-size:9px; background:rgba(0,0,0,0.7); padding:2px 6px; border-radius:10px; color:#fff; font-weight:600;">
-          ${t.columnCount} Screens
-        </div>
-      </div>
-      <div style="padding:1rem; flex:1; display:flex; flex-direction:column; justify-content:space-between;">
-        <div>
-          <div class="cat" style="font-size:0.75rem; text-transform:uppercase; color:#3b82f6; font-weight:700; margin-bottom:0.25rem;">${t.category}</div>
-          <h4 style="margin:0; font-size:0.95rem; font-weight:600; color:#e5e7eb;">${t.name}</h4>
-          <div style="font-size:0.8rem; color:#8892b0; margin-top:0.35rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-            Layout: <span style="color:#d1d5db;">${cleanLayoutName}</span>
-          </div>
-        </div>
-        <div style="margin-top:0.75rem; font-size:0.75rem; color:#4e5873; display:flex; gap:6px; flex-wrap:wrap;">
-          ${t.devices.map(d => `<span style="background:#1d212c; padding:2px 6px; border-radius:4px; border:1px solid #2c3344; color:#9ca3af;">${d.label}</span>`).join('')}
-        </div>
-      </div>
-    `;
-
-    card.onclick = async () => {
-      if (!mockupId) {
-        await alert("Start a mockup project first.");
-        return;
-      }
-      mockupProject = await api(`/api/mockups/${mockupId}/apply-template`, { method: "POST", body: { templateId: t.id } });
-      renderMockupMatrix();
-      renderMockupDevicesSection();
-      await alert(`Applied "${t.name}" — ${mockupProject.devices.length} device row(s), ${mockupProject.columns.length} screen(s). Switch to Editor to customize.`);
-    };
-    grid.appendChild(card);
+  if (filtered.length === 0) {
+    grid.innerHTML = `<div class="template-empty">No templates in this category.</div>`;
+    return;
   }
+
+  grid.innerHTML = filtered
+    .map(
+      (t) => `
+    <div class="template-card" data-id="${t.id}">
+      <div class="template-thumb">
+        <img src="/api/mockups/template-thumb/${encodeURIComponent(t.id)}.png" alt="${t.name}" loading="lazy" onload="this.classList.add('loaded')" />
+      </div>
+      <div class="template-card-body">
+        <div class="template-card-row">
+          <div>
+            <div class="template-cat">${categoryLabel(t.category)}</div>
+            <h4>${t.name}</h4>
+          </div>
+          <span class="pill">${t.columnCount} screens</span>
+        </div>
+        <div class="template-card-actions">
+          <button type="button" class="secondary small" data-action="preview">Preview</button>
+          <button type="button" class="small" data-action="load">Load</button>
+        </div>
+      </div>
+    </div>`
+    )
+    .join("");
+
+  grid.querySelectorAll(".template-card").forEach((card) => {
+    const id = card.dataset.id;
+    card.querySelector('[data-action="preview"]').onclick = (e) => { e.stopPropagation(); openMockupTemplateDetail(id); };
+    card.querySelector('[data-action="load"]').onclick = (e) => { e.stopPropagation(); loadMockupTemplateNow(id); };
+    card.onclick = () => openMockupTemplateDetail(id);
+  });
 }
+
+function renderTemplateSkeletons(gridId, count = 8) {
+  const grid = $(gridId);
+  if (!grid) return;
+  grid.innerHTML = Array.from({ length: count })
+    .map(
+      () => `<div class="template-card skeleton">
+        <div class="template-thumb skeleton-block"></div>
+        <div class="template-card-body">
+          <div class="skeleton-line" style="width:40%"></div>
+          <div class="skeleton-line" style="width:70%; height:1.1rem;"></div>
+          <div class="skeleton-line" style="width:100%; height:2rem; margin-top:auto;"></div>
+        </div>
+      </div>`
+    )
+    .join("");
+}
+
+async function renderMockupTemplateGrid() {
+  renderTemplateSkeletons("mockup-template-grid");
+  const templates = await ensureMockupTemplates();
+  closeMockupTemplateDetail();
+  renderMockupTemplateFilters(templates);
+  renderMockupTemplateCards(templates);
+}
+
+function openMockupTemplateDetail(id) {
+  const t = mockupTemplates.find((x) => x.id === id);
+  if (!t) return;
+  mockupTemplateDetailId = id;
+  $("mockup-template-browse").style.display = "none";
+  const detail = $("mockup-template-detail");
+  detail.style.display = "block";
+  detail.innerHTML = `
+    <div class="detail-topbar">
+      <button type="button" class="secondary small" id="mockup-detail-back">&larr; Back to templates</button>
+      <button type="button" id="mockup-detail-load-btn">Load Template</button>
+    </div>
+    <div class="template-detail template-detail-mockup">
+      <div class="template-detail-thumb">
+        <img src="/api/mockups/template-detail-thumb/${encodeURIComponent(t.id)}.png" alt="${t.name}" />
+      </div>
+      <div class="template-detail-side">
+        <div class="template-cat">${categoryLabel(t.category)}</div>
+        <h2 style="margin:.2rem 0;">${t.name}</h2>
+        <p class="hint" style="margin:.3rem 0 1rem;">${t.description || ""}</p>
+        <div class="detail-facts">
+          <div><span>Screens</span><strong>${t.columnCount}</strong></div>
+          <div><span>Layout</span><strong>${t.layout.replace("snapshot-", "Snapshot ").replace(/-/g, " ")}</strong></div>
+          <div><span>Devices</span><strong>${t.devices.map((d) => d.label).join(", ")}</strong></div>
+        </div>
+        ${t.titles && t.titles.length ? `<div class="detail-screens"><span>Screen titles</span><ul>${t.titles.map((x) => `<li>${x}</li>`).join("")}</ul></div>` : ""}
+      </div>
+    </div>
+  `;
+  $("mockup-detail-back").onclick = closeMockupTemplateDetail;
+  $("mockup-detail-load-btn").onclick = () => loadMockupTemplateNow(id);
+}
+
+function closeMockupTemplateDetail() {
+  mockupTemplateDetailId = null;
+  $("mockup-template-browse").style.display = "";
+  $("mockup-template-detail").style.display = "none";
+  $("mockup-template-detail").innerHTML = "";
+}
+
+async function loadMockupTemplateNow(id) {
+  if (!mockupId) {
+    await alert("Start a mockup project first.");
+    return;
+  }
+  const t = mockupTemplates.find((x) => x.id === id);
+  if (mockupProject && (mockupProject.devices.length > 0 || mockupProject.columns.length > 0)) {
+    const ok = await confirm("You have unsaved screenshots. Are you sure you want a new project?");
+    if (!ok) return;
+  }
+  mockupProject = await api(`/api/mockups/${mockupId}/apply-template`, { method: "POST", body: { templateId: id } });
+  renderMockupMatrix();
+  renderMockupDevicesSection();
+  closeMockupTemplateDetail();
+  showToast(`Applied "${t ? t.name : id}" — ${mockupProject.devices.length} device row(s), ${mockupProject.columns.length} screen(s).`, "success");
+}
+
 
 /* ---- Editor section: devices x columns matrix ---- */
 function renderMockupMatrix() {
@@ -1626,56 +1691,227 @@ async function loadVideoProjectInto(id) {
   }
 }
 
+let videoTemplates = [];
+let videoTemplateDetailId = null;
+let videoDetailSceneIndex = 0;
+let videoDetailMode = "scene"; // "scene" | "full"
+let videoDetailPollTimer = null;
+
+async function ensureVideoTemplates() {
+  if (videoTemplates.length === 0) {
+    const { templates } = await api("/api/videos/templates");
+    videoTemplates = templates;
+  }
+  return videoTemplates;
+}
+
+function totalDuration(t) {
+  return t.scenes.reduce((sum, s) => sum + s.durationSeconds, 0);
+}
+
+/** Persistent secondary nav (mirrors Studio Mockup's rail pattern): a
+ *  vertical list of template cards down the left side of the section,
+ *  always visible, with the selected one's preview shown in the stage next
+ *  to it -- no separate browse/detail screens to navigate between. */
+function renderVideoTemplateList(templates, activeId) {
+  const list = $("video-template-list");
+  list.innerHTML = templates
+    .map(
+      (t) => `
+    <div class="video-list-card ${t.id === activeId ? "active" : ""}" data-id="${t.id}">
+      <div class="video-list-thumb">
+        <img src="/api/videos/template-thumb/${encodeURIComponent(t.id)}.png" alt="${t.name}" loading="lazy" onload="this.classList.add('loaded')" />
+      </div>
+      <div class="video-list-info">
+        <h4>${t.name}</h4>
+        <div class="hint" style="margin:.15rem 0 0;">${t.scenes.length} scenes &middot; ${Math.round(totalDuration(t))}s</div>
+      </div>
+    </div>`
+    )
+    .join("");
+  list.querySelectorAll(".video-list-card").forEach((card) => {
+    card.onclick = () => openVideoTemplateDetail(card.dataset.id);
+  });
+}
+
 async function renderVideoTemplateGrid() {
-  const { templates } = await api("/api/videos/templates");
-  const grid = $("video-template-grid");
-  grid.innerHTML = "";
+  $("video-template-list").innerHTML = "";
+  $("video-template-stage").innerHTML = "";
+  const templates = await ensureVideoTemplates();
+  const keepId = videoTemplateDetailId && templates.some((t) => t.id === videoTemplateDetailId) ? videoTemplateDetailId : templates[0]?.id;
+  if (keepId) openVideoTemplateDetail(keepId);
+}
 
-  // Set grid template for premium layout
-  grid.style.cssText = "display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; padding: 0.5rem 0;";
+function videoDetailPreviewQuery() {
+  const q = new URLSearchParams({ t: Date.now() });
+  if (videoId) q.set("projectId", videoId);
+  return q;
+}
 
-  for (const t of templates) {
-    const card = document.createElement("div");
-    card.className = "template-card";
-    card.style.cssText = "display:flex; flex-direction:column; overflow:hidden; border-radius:12px; background:#141721; border:1px solid #232733; cursor:pointer; transition:all 0.2s ease-in-out; box-shadow:0 4px 12px rgba(0,0,0,0.15); padding:1.25rem; justify-content:space-between; min-height: 160px;";
-    
-    // Add hover scale effect via JS listeners
-    card.onmouseenter = () => {
-      card.style.transform = "translateY(-4px)";
-      card.style.borderColor = "#3b82f6";
-      card.style.boxShadow = "0 8px 24px rgba(59,130,246,0.15)";
-    };
-    card.onmouseleave = () => {
-      card.style.transform = "translateY(0)";
-      card.style.borderColor = "#232733";
-      card.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
-    };
-
-    card.innerHTML = `
-      <div>
-        <h4 style="margin:0 0 0.5rem 0; font-size:1.05rem; font-weight:600; color:#e5e7eb;">${t.name}</h4>
-        <div style="font-size:0.8rem; color:#8892b0; line-height:1.45; margin-bottom:1rem;">${t.description}</div>
-      </div>
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-        <span style="font-size:0.75rem; background:#1e293b; color:#3b82f6; padding:3px 10px; border-radius:12px; font-weight:600;">${t.sceneCount} Scenes</span>
-        <span style="font-size:0.8rem; color:#3b82f6; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">Preview & Apply &rarr;</span>
-      </div>
-    `;
-
-    card.onclick = async () => {
-      if (!videoId) {
-        await alert("Start a video project first.");
-        return;
-      }
-      videoProject = await api(`/api/videos/${videoId}/apply-template`, { method: "POST", body: { templateId: t.id, device: "phone" } });
-      renderVideoScenes();
-      $("video-template-preview-card").style.display = "block";
-      $("video-template-preview").src = `/api/videos/${videoId}/template-preview?t=${Date.now()}`;
-      await alert(`Applied "${t.name}" successfully! Scene navigation and values are ready below. Check the preview to watch it play live.`);
-    };
-    grid.appendChild(card);
+/** The preview iframe's in-page player API (see templatePreviewHtml). */
+function videoPlayerApi() {
+  const frame = $("video-detail-preview");
+  try {
+    return frame && frame.contentWindow ? frame.contentWindow.__videoPreview : null;
+  } catch (e) {
+    return null;
   }
 }
+
+function videoDetailRefreshUi(t) {
+  const label = $("video-detail-scene-label");
+  if (!label) return;
+  const scene = t.scenes[videoDetailSceneIndex];
+  label.textContent = videoDetailMode === "full"
+    ? `Playing — scene ${videoDetailSceneIndex + 1} of ${t.scenes.length}`
+    : `Scene ${videoDetailSceneIndex + 1} of ${t.scenes.length} — ${scene ? scene.label : ""}`;
+
+  $("video-detail-play").innerHTML = videoDetailMode === "full" ? "&#10074;&#10074; Pause" : "&#9654; Play";
+  $("video-detail-prev").disabled = videoDetailSceneIndex <= 0;
+  $("video-detail-next").disabled = videoDetailSceneIndex >= t.scenes.length - 1;
+
+  const dots = $("video-detail-dots");
+  if (dots) {
+    dots.querySelectorAll(".video-scene-dot").forEach((d, i) => {
+      d.classList.toggle("active", i === videoDetailSceneIndex);
+    });
+  }
+  const stage = $("video-template-stage");
+  stage.querySelectorAll("[data-scene-jump]").forEach((el) => {
+    el.classList.toggle("active", Number(el.dataset.sceneJump) === videoDetailSceneIndex);
+  });
+}
+
+function videoDetailShowScene(id, index) {
+  const t = videoTemplates.find((x) => x.id === id);
+  if (!t) return;
+  const api = videoPlayerApi();
+  videoDetailMode = "scene";
+  videoDetailSceneIndex = Math.max(0, Math.min(index, t.scenes.length - 1));
+  if (api) api.goto(videoDetailSceneIndex);
+  videoDetailRefreshUi(t);
+}
+
+function videoDetailTogglePlay(id) {
+  const t = videoTemplates.find((x) => x.id === id);
+  const api = videoPlayerApi();
+  if (!t || !api) return;
+  if (videoDetailMode === "full") {
+    api.pause();
+    videoDetailMode = "scene";
+  } else {
+    api.play();
+    videoDetailMode = "full";
+    videoDetailPollScene(id);
+  }
+  videoDetailRefreshUi(t);
+}
+
+/** While the full sequence plays, mirror the iframe's current scene into
+ *  the stepper/dots so the details panel tracks playback. */
+function videoDetailPollScene(id) {
+  if (videoDetailPollTimer) clearInterval(videoDetailPollTimer);
+  videoDetailPollTimer = setInterval(() => {
+    const t = videoTemplates.find((x) => x.id === id);
+    const api = videoPlayerApi();
+    if (!t || !api || videoDetailMode !== "full") {
+      clearInterval(videoDetailPollTimer);
+      videoDetailPollTimer = null;
+      return;
+    }
+    const current = api.currentScene();
+    if (current !== videoDetailSceneIndex) {
+      videoDetailSceneIndex = current;
+      videoDetailRefreshUi(t);
+    }
+  }, 400);
+}
+
+/** Renders the selected template's preview into the persistent stage next
+ *  to the template list -- no browse/detail screens to navigate between,
+ *  same structural pattern as Studio Mockup's rail + content area. */
+function openVideoTemplateDetail(id) {
+  const t = videoTemplates.find((x) => x.id === id);
+  if (!t) return;
+  if (videoDetailPollTimer) { clearInterval(videoDetailPollTimer); videoDetailPollTimer = null; }
+  videoTemplateDetailId = id;
+  videoDetailSceneIndex = 0;
+  videoDetailMode = "scene";
+
+  renderVideoTemplateList(videoTemplates, id);
+
+  const stage = $("video-template-stage");
+  stage.innerHTML = `
+    <div class="detail-topbar">
+      <div>
+        <h3 style="margin:0;">${t.name}</h3>
+        <p class="hint" style="margin:.2rem 0 0;">${t.description}</p>
+      </div>
+      <button type="button" id="video-detail-load-btn">Load Template</button>
+    </div>
+    <div class="template-detail template-detail-video">
+      <div class="video-detail-main">
+        <div class="video-player">
+          <div class="video-preview-scale"><iframe id="video-detail-preview"></iframe></div>
+        </div>
+        <div class="video-scene-controls">
+          <button type="button" class="secondary small" id="video-detail-prev">&laquo; Prev</button>
+          <button type="button" id="video-detail-play">&#9654; Play</button>
+          <button type="button" class="secondary small" id="video-detail-next">Next &raquo;</button>
+          <span class="scene-indicator" id="video-detail-scene-label"></span>
+          <div class="video-scene-dots" id="video-detail-dots">
+            ${t.scenes.map((s, i) => `<div class="video-scene-dot" title="${s.label}" data-scene-jump="${i}"></div>`).join("")}
+          </div>
+        </div>
+      </div>
+      <div class="template-detail-side">
+        <div class="detail-facts">
+          <div><span>Device</span><strong>${t.device.replace(/-/g, " ")}</strong></div>
+          <div><span>Aspect ratio</span><strong>${t.aspectRatio}</strong></div>
+          <div><span>Duration</span><strong>~${Math.round(totalDuration(t))}s</strong></div>
+          <div><span>Use case</span><strong>${t.useCase}</strong></div>
+          <div><span>Design style</span><strong>${t.designStyle}</strong></div>
+        </div>
+        <div class="detail-screens">
+          <span>Key features</span>
+          <ul>${t.features.map((f) => `<li>${f}</li>`).join("")}</ul>
+        </div>
+        <div class="detail-screens">
+          <span>Scenes</span>
+          <ul>${t.scenes.map((s, i) => `<li data-scene-jump="${i}">${s.label} &mdash; ${s.durationSeconds}s, ${s.sceneTemplate.replace(/-/g, " ")}</li>`).join("")}</ul>
+        </div>
+      </div>
+    </div>
+  `;
+  $("video-detail-load-btn").onclick = () => loadVideoTemplateNow(id);
+  $("video-detail-prev").onclick = () => videoDetailShowScene(id, videoDetailSceneIndex - 1);
+  $("video-detail-next").onclick = () => videoDetailShowScene(id, videoDetailSceneIndex + 1);
+  $("video-detail-play").onclick = () => videoDetailTogglePlay(id);
+  stage.querySelectorAll("[data-scene-jump]").forEach((el) => {
+    el.onclick = () => videoDetailShowScene(id, Number(el.dataset.sceneJump));
+  });
+
+  const frame = $("video-detail-preview");
+  frame.onload = () => videoDetailShowScene(id, 0);
+  frame.src = `/api/videos/templates/${encodeURIComponent(id)}/preview?${videoDetailPreviewQuery().toString()}`;
+}
+
+async function loadVideoTemplateNow(id) {
+  if (!videoId) {
+    await alert("Start a video project first.");
+    return;
+  }
+  const t = videoTemplates.find((x) => x.id === id);
+  if (videoProject && videoProject.scenes.length > 0) {
+    const ok = await confirm("You have an existing scene sequence. Are you sure you want to load a new template?");
+    if (!ok) return;
+  }
+  videoProject = await api(`/api/videos/${videoId}/apply-template`, { method: "POST", body: { templateId: id } });
+  renderVideoScenes();
+  showToast(`Applied "${t ? t.name : id}" — ${videoProject.scenes.length} scene(s) ready. Switch to Scenes to customize.`, "success");
+}
+
+
 
 function renderVideoScenes() {
   $("sc-template").innerHTML = videoSceneOptions.animations.map((a) => `<option value="${a.id}">${a.name}</option>`).join("");

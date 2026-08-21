@@ -100,3 +100,13 @@ export function resolveGeometry(device: DeviceModel, variantId?: string): Device
   const variant = device.variants?.find((v) => v.id === variantId);
   return variant?.geometry ?? device.geometry;
 }
+
+/** Frame SVG for a device at a specific variant's geometry -- `device.svgFrame`
+ *  is built once from the *base* geometry, so a foldable's folded/unfolded
+ *  variant needs its own frame or the bezel stretches to fit the wrong shape. */
+export function frameSvgFor(device: DeviceModel, variantId?: string): string {
+  if (!variantId) return device.svgFrame;
+  const geometry = resolveGeometry(device, variantId);
+  if (geometry === device.geometry) return device.svgFrame;
+  return buildFrameSvg(device, "dark", geometry);
+}

@@ -61,7 +61,7 @@ import {
   type MockupDeviceRow,
 } from "../src/mockup/project.js";
 import { groupedLayoutPresets, listLayoutPresets } from "../src/mockup/layouts.js";
-import { cellPreviewHtml } from "../src/mockup/render.js";
+import { cellPreviewHtml, renderTemplateDetailThumbs, renderTemplateThumbs } from "../src/mockup/render.js";
 import { exportMockupProject } from "../src/mockup/export.js";
 import { MOCKUP_TEMPLATES, applyMockupTemplate } from "../src/mockup/templates.js";
 
@@ -72,8 +72,8 @@ import {
   videoDir,
   videoFile,
 } from "../src/video/project.js";
-import { listSceneAnimations, listVideoBackgrounds, renderVideo, scenePreviewHtml, templatePreviewHtml } from "../src/video/render.js";
-import { VIDEO_TEMPLATES, applyVideoTemplate } from "../src/video/templates.js";
+import { listSceneAnimations, listVideoBackgrounds, renderVideo, renderVideoTemplateThumbs, sceneHtml, scenePreviewHtml, sourceUrisFor, templatePreviewHtml } from "../src/video/render.js";
+import { VIDEO_TEMPLATES, applyVideoTemplate, scratchVideoProject } from "../src/video/templates.js";
 
 /**
  * Local-only manual workflow surface -- a thin HTTP adapter over three
@@ -626,13 +626,43 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
           id: t.id,
           name: t.name,
           category: t.category,
+          description: t.description,
           columnCount: t.columnCount,
           layout: t.layout,
           background: t.background,
-          devices: t.devices
+          devices: t.devices,
+          titles: t.titles
         }))
       });
       return;
+    }
+    {
+      const m = p.match(/^\/api\/mockups\/template-thumb\/([^/]+)\.png$/);
+      if (m && method === "GET") {
+        const slug = decodeURIComponent(m[1]);
+        const template = MOCKUP_TEMPLATES.find((t) => t.id === slug);
+        if (!template) return sendError(res, 404, `Unknown template '${slug}'.`);
+        const outDir = path.join(process.cwd(), "output", ".template-thumbs");
+        const thumbPath = path.join(outDir, `${slug}.png`);
+        if (!fs.existsSync(thumbPath)) await renderTemplateThumbs(outDir, MOCKUP_TEMPLATES);
+        res.writeHead(200, { "Content-Type": "image/png", "Cache-Control": "public, max-age=31536000, immutable" });
+        fs.createReadStream(thumbPath).pipe(res);
+        return;
+      }
+    }
+    {
+      const m = p.match(/^\/api\/mockups\/template-detail-thumb\/([^/]+)\.png$/);
+      if (m && method === "GET") {
+        const slug = decodeURIComponent(m[1]);
+        const template = MOCKUP_TEMPLATES.find((t) => t.id === slug);
+        if (!template) return sendError(res, 404, `Unknown template '${slug}'.`);
+        const outDir = path.join(process.cwd(), "output", ".template-thumbs");
+        const thumbPath = path.join(outDir, `${slug}-detail.png`);
+        if (!fs.existsSync(thumbPath)) await renderTemplateDetailThumbs(outDir, MOCKUP_TEMPLATES);
+        res.writeHead(200, { "Content-Type": "image/png", "Cache-Control": "public, max-age=31536000, immutable" });
+        fs.createReadStream(thumbPath).pipe(res);
+        return;
+      }
     }
     {
       const m = p.match(/^\/api\/mockups\/([^/]+)\/apply-template$/);
@@ -882,15 +912,61 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
     }
 
     if (method === "GET" && p === "/api/videos/templates") {
-      sendJson(res, 200, { templates: VIDEO_TEMPLATES.map((t) => ({ id: t.id, name: t.name, description: t.description, sceneCount: t.scenes.length })) });
+      sendJson(res, 200, { templates: VIDEO_TEMPLATES });
       return;
+    }
+    {
+      const m = p.match(/^\/api\/videos\/templates\/([^/]+)\/preview$/);
+      if (m && method === "GET") {
+        const templateId = decodeURIComponent(m[1]);
+        const template = VIDEO_TEMPLATES.find((t) => t.id === templateId);
+        if (!template) return sendError(res, 404, `Unknown video template '${templateId}'.`);
+        const sourceProjectId = url.searchParams.get("projectId");
+        const sources = sourceProjectId ? loadVideoProject(decodeURIComponent(sourceProjectId)).sources : [];
+        const scratch = scratchVideoProject(templateId, sources);
+        res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
+        res.end(templatePreviewHtml(scratch));
+        return;
+      }
+    }
+    {
+      const m = p.match(/^\/api\/videos\/templates\/([^/]+)\/scene\/(\d+)\/preview$/);
+      if (m && method === "GET") {
+        const templateId = decodeURIComponent(m[1]);
+        const sceneIndex = Number(m[2]);
+        const template = VIDEO_TEMPLATES.find((t) => t.id === templateId);
+        if (!template) return sendError(res, 404, `Unknown video template '${templateId}'.`);
+        const sourceProjectId = url.searchParams.get("projectId");
+        const sources = sourceProjectId ? loadVideoProject(decodeURIComponent(sourceProjectId)).sources : [];
+        const scratch = scratchVideoProject(templateId, sources);
+        const scene = scratch.scenes[sceneIndex];
+        if (!scene) return sendError(res, 404, `Scene index ${sceneIndex} out of range for '${templateId}'.`);
+        const resolveUri = (rel: string) => `/api/videos/${scratch.id}/file?p=${encodeURIComponent(rel)}`;
+        res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
+        res.end(sceneHtml(scene, sourceUrisFor(scratch, scene, resolveUri), false));
+        return;
+      }
+    }
+    {
+      const m = p.match(/^\/api\/videos\/template-thumb\/([^/]+)\.png$/);
+      if (m && method === "GET") {
+        const slug = decodeURIComponent(m[1]);
+        const template = VIDEO_TEMPLATES.find((t) => t.id === slug);
+        if (!template) return sendError(res, 404, `Unknown video template '${slug}'.`);
+        const outDir = path.join(process.cwd(), "output", ".template-thumbs");
+        const thumbPath = path.join(outDir, `video-${slug}.png`);
+        if (!fs.existsSync(thumbPath)) await renderVideoTemplateThumbs(outDir, VIDEO_TEMPLATES);
+        res.writeHead(200, { "Content-Type": "image/png", "Cache-Control": "public, max-age=31536000, immutable" });
+        fs.createReadStream(thumbPath).pipe(res);
+        return;
+      }
     }
     {
       const m = p.match(/^\/api\/videos\/([^/]+)\/apply-template$/);
       if (m && method === "POST") {
         const body = await readJsonBody(req);
         const project = loadVideoProject(decodeURIComponent(m[1]));
-        applyVideoTemplate(project, body.templateId, body.device ?? "phone");
+        applyVideoTemplate(project, body.templateId);
         saveVideoProject(project);
         sendJson(res, 200, project);
         return;

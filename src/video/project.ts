@@ -26,8 +26,17 @@ export interface VideoScene {
   /** Which scene-template animation this scene uses (see video/templates.ts). */
   sceneTemplate: string;
   sourceId?: string;
+  /** Optional multi-screen sequence -- when set (2+ ids), the device
+   *  cross-fades between these screens inside this one scene instead of
+   *  showing a single static screenshot for its whole duration. Falls back
+   *  to `sourceId` when absent. */
+  screenIds?: string[];
   device: string;
   variant?: string;
+  /** Fraction of canvas height the device fills (see deviceScaleFor) --
+   *  template-specific so a tablet and a phone aren't forced to the same
+   *  on-screen size. Falls back to 0.58 when unset. */
+  deviceFraction?: number;
   background: string;
   text: string;
   subtext: string;
