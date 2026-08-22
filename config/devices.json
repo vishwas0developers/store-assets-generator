@@ -67,6 +67,54 @@
       }
     },
     {
+      "id": "samsung-galaxy-s25",
+      "name": "Samsung Galaxy S25",
+      "vendor": "Samsung",
+      "releaseYear": 2025,
+      "platforms": ["google-play"],
+      "formFactor": "phone",
+      "geometry": {
+        "width": 1080,
+        "height": 2340,
+        "screenInset": { "top": 18, "left": 18, "width": 1044, "height": 2304 },
+        "cornerRadius": 56
+      },
+      "frame": {
+        "bezelWidth": 10,
+        "outerRadius": 92,
+        "body": "#121316",
+        "accent": "#3a3d45",
+        "cutout": "punch-hole",
+        "cutoutSize": { "width": 26, "height": 26 },
+        "buttons": true,
+        "thickness": 20
+      }
+    },
+    {
+      "id": "google-pixel-9-pro",
+      "name": "Google Pixel 9 Pro",
+      "vendor": "Google",
+      "releaseYear": 2024,
+      "platforms": ["google-play"],
+      "formFactor": "phone",
+      "geometry": {
+        "width": 1280,
+        "height": 2856,
+        "screenInset": { "top": 28, "left": 28, "width": 1224, "height": 2800 },
+        "cornerRadius": 60
+      },
+      "frame": {
+        "bezelWidth": 14,
+        "outerRadius": 96,
+        "body": "#18191c",
+        "accent": "#3e424c",
+        "cutout": "punch-hole",
+        "cutoutSize": { "width": 32, "height": 32 },
+        "buttons": true,
+        "thickness": 22
+      }
+    },
+    {
       "id": "samsung-galaxy-z-fold",
       "name": "Samsung Galaxy Z Fold",
       "vendor": "Samsung",
@@ -289,6 +337,121 @@
         "cutout": "punch-hole",
         "cutoutSize": { "width": 22, "height": 22 },
         "buttons": true
+      }
+    },
+    {
+      "id": "android-modern-flagship",
+      "name": "Modern Android Flagship",
+      "vendor": "Generic",
+      "platforms": ["google-play"],
+      "formFactor": "phone",
+      "geometry": {
+        "width": 1080,
+        "height": 2412,
+        "screenInset": { "top": 18, "left": 18, "width": 1044, "height": 2376 },
+        "cornerRadius": 56
+      },
+      "frame": {
+        "bezelWidth": 10,
+        "outerRadius": 92,
+        "body": "#151821",
+        "accent": "#3d4459",
+        "cutout": "punch-hole",
+        "cutoutSize": { "width": 26, "height": 26 },
+        "buttons": true,
+        "thickness": 22
+      }
+    },
+    {
+      "id": "premium-edge-to-edge",
+      "name": "Premium Edge-to-Edge",
+      "vendor": "Generic",
+      "platforms": ["google-play", "apple-app-store"],
+      "formFactor": "phone",
+      "geometry": {
+        "width": 1080,
+        "height": 2400,
+        "screenInset": { "top": 6, "left": 6, "width": 1068, "height": 2388 },
+        "cornerRadius": 64
+      },
+      "frame": {
+        "bezelWidth": 5,
+        "outerRadius": 96,
+        "body": "#0a0a0c",
+        "accent": "#2a2a30",
+        "cutout": "punch-hole",
+        "cutoutSize": { "width": 22, "height": 22 },
+        "buttons": true,
+        "thickness": 18
+      }
+    },
+    {
+      "id": "flat-edge-slim",
+      "name": "Flat-Edge Slim",
+      "vendor": "Generic",
+      "platforms": ["google-play", "apple-app-store"],
+      "formFactor": "phone",
+      "geometry": {
+        "width": 1080,
+        "height": 2340,
+        "screenInset": { "top": 24, "left": 24, "width": 1032, "height": 2292 },
+        "cornerRadius": 14
+      },
+      "frame": {
+        "bezelWidth": 16,
+        "outerRadius": 24,
+        "body": "#1a1a1a",
+        "accent": "#4a4a4a",
+        "cutout": "notch",
+        "cutoutSize": { "width": 220, "height": 34 },
+        "buttons": true,
+        "thickness": 24
+      }
+    },
+    {
+      "id": "curved-edge-display",
+      "name": "Curved-Edge Display",
+      "vendor": "Generic",
+      "platforms": ["google-play"],
+      "formFactor": "phone",
+      "geometry": {
+        "width": 1080,
+        "height": 2376,
+        "screenInset": { "top": 16, "left": 16, "width": 1048, "height": 2344 },
+        "cornerRadius": 110
+      },
+      "frame": {
+        "bezelWidth": 8,
+        "outerRadius": 140,
+        "body": "#101014",
+        "accent": "#31313a",
+        "cutout": "pill",
+        "cutoutSize": { "width": 140, "height": 32 },
+        "buttons": true,
+        "thickness": 20
+      }
+    },
+    {
+      "id": "budget-wide-bezel",
+      "name": "Budget Wide-Bezel",
+      "vendor": "Generic",
+      "platforms": ["google-play"],
+      "formFactor": "phone",
+      "geometry": {
+        "width": 1080,
+        "height": 2280,
+        "screenInset": { "top": 44, "left": 44, "width": 992, "height": 2192 },
+        "cornerRadius": 16
+      },
+      "frame": {
+        "bezelWidth": 30,
+        "outerRadius": 32,
+        "body": "#2a2a2a",
+        "accent": "#565656",
+        "cutout": "notch",
+        "cutoutSize": { "width": 200, "height": 40 },
+        "buttons": true,
+        "thickness": 28
       }
     }
   ]

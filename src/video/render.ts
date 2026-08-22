@@ -1,10 +1,23 @@
 import fs from "fs";
 import path from "path";
 import { execSync } from "child_process";
-import { BACKGROUNDS, DEVICE_CSS, backgroundCss, dataUri, deviceMarkup, deviceMarkupMultiScreen, deviceScaleFor, escapeHtml } from "../render/shared.js";
+import {
+  BACKGROUNDS,
+  DEVICE_CSS,
+  backgroundCss,
+  dataUri,
+  decorationsMarkup,
+  deviceMarkup,
+  deviceMarkupMultiScreen,
+  device3dMarkup,
+  deviceScaleFor,
+  escapeHtml,
+  type DecorationLike,
+} from "../render/shared.js";
 import { DEVICE_REGISTRY, resolveGeometry, type DeviceModel } from "../devices/registry.js";
 import { videoDir, videoFile, type VideoProject, type VideoScene } from "./project.js";
 import { VIDEO_TEMPLATES, type VideoTemplate } from "./templates.js";
+import { BGM_PRESETS, renderBgmWav } from "./bgm.js";
 
 /**
  * Video tab renderer -- one scene per animation beat, independent of
@@ -15,13 +28,17 @@ import { VIDEO_TEMPLATES, type VideoTemplate } from "./templates.js";
  * The single-generator invariant: `sceneHtml()` backs both the live
  * preview (played natively by the browser) and the final render (stepped
  * deterministically via window.seek + document.getAnimations()).
+ * `templatePreviewHtml()` reuses the exact same layout/animation CSS via
+ * `sceneLayoutCss()` so a layout or depth change never needs two edits.
  *
  * Every scene renders THREE independently-animated layers -- device,
  * text, backdrop -- each with its own easing/delay, so a scene reads as
  * a small choreographed sequence rather than one element tweening.
  * `renderVideo` renders one scene per Playwright page (see below), so all
  * motion here is intra-scene: every scene owns its own entrance and exit
- * inside its own duration, never overlapping the next scene.
+ * inside its own duration, never overlapping the next scene -- cross-scene
+ * continuity is a `transition` overlay (see `transitionKeyframeBody`), not a
+ * true cross-dissolve between two live pages.
  */
 
 export interface SceneAnimation {
@@ -34,24 +51,24 @@ export interface SceneAnimation {
   /** Optional override for the backdrop drift; falls back to a gentle default. */
   backdropKeyframes?: (s: VideoScene) => string;
   /** Optional override for how the device layer's inner markup is built --
-   *  lets one animation (e.g. a foldable hinge sweep) render more than the
-   *  plain single-frame deviceMarkup. Falls back to deviceMarkup. */
-  renderDevice?: (device: DeviceModel, screenshotUri: string, scene: VideoScene) => string;
+   *  lets one animation (e.g. a foldable hinge sweep, or the 3D showcase
+   *  entrance) render more than the plain depth-mode default. `uris`/`kinds`
+   *  are the scene's full screen list (front-face cross-fade candidates),
+   *  not just the first. Falls back to `deviceRigMarkup` (depth-aware). */
+  renderDevice?: (device: DeviceModel, uris: string[], kinds: ("image" | "video")[], scene: VideoScene, durationMs: number) => string;
 }
-
-const DEFAULT_EASING = "cubic-bezier(.22,.9,.32,1)";
 
 /** Every entrance/exit distance is expressed in terms of `move`/`zoom`/`rotate`
  *  but capped so the device settles back in frame instead of flying past the
  *  canvas edge -- an entrance may start from just outside, an exit only ever
  *  fades/settles in place, it never travels off-canvas. */
-const MOVE_CAP = 90;
+const MOVE_CAP = 70;
 const cappedMove = (move: number) => Math.min(move, MOVE_CAP);
 
 function defaultBackdrop(s: VideoScene): string {
   return `
     0%   { transform: scale(1) translate3d(0,0,0); }
-    100% { transform: scale(${1 + Math.min(s.zoom, 40) / 250}) translate3d(${s.move / 40}%, -${s.move / 60}%, 0); }
+    100% { transform: scale(${1 + Math.min(s.zoom, 30) / 250}) translate3d(${s.move / 60}%, -${s.move / 80}%, 0); }
   `;
 }
 
@@ -59,29 +76,32 @@ export const SCENE_ANIMATIONS: Record<string, SceneAnimation> = {
   "hero-rise": {
     id: "hero-rise",
     name: "Hero rise",
-    easing: "cubic-bezier(.16,1.1,.3,1)",
+    easing: "cubic-bezier(.16,1,.3,1)",
     deviceKeyframes: (s) => `
-      0%   { transform: translateY(${100 + cappedMove(s.move)}px) scale(${1 - s.zoom / 180}); opacity: 0; }
-      12%  { opacity: 1; }
-      55%  { transform: translateY(0) scale(${1 + s.zoom / 100}); opacity: 1; }
-      88%  { transform: translateY(0) scale(${1 + s.zoom / 100}); opacity: 1; }
-      100% { transform: translateY(0) scale(${1 + s.zoom / 110}); opacity: 1; }
+      0%   { transform: translateY(${60 + cappedMove(s.move)}px) scale(${0.92 - s.zoom / 300}); opacity: 0; }
+      14%  { opacity: 1; }
+      55%  { transform: translateY(0) scale(${1 + s.zoom / 120}); opacity: 1; }
+      88%  { transform: translateY(0) scale(${1 + s.zoom / 120}); opacity: 1; }
+      100% { transform: translateY(0) scale(${1 + s.zoom / 130}); opacity: 1; }
     `,
   },
   "tilt-3d": {
     id: "tilt-3d",
     name: "3D tilt",
     easing: "cubic-bezier(.2,.85,.3,1)",
-    deviceKeyframes: (s) => `
-      0%   { transform: rotateY(${-40 - s.rotate}deg) translateY(${cappedMove(s.move) * 0.4}px) scale(${1 - s.zoom / 200}); opacity: 0; }
+    deviceKeyframes: (s) => {
+      const rot = Math.min(Math.max(s.rotate, 6), 18);
+      return `
+      0%   { transform: perspective(1800px) rotateY(${-18 - rot}deg) translateY(${cappedMove(s.move) * 0.25}px) scale(${0.92 - s.zoom / 300}); opacity: 0; }
       15%  { opacity: 1; }
-      55%  { transform: rotateY(${s.rotate}deg) translateY(0) scale(${1 + s.zoom / 100}); opacity: 1; }
-      88%  { transform: rotateY(${-s.rotate / 4}deg) translateY(0) scale(${1 + s.zoom / 100}); opacity: 1; }
-      100% { transform: rotateY(0deg) translateY(0) scale(${1 + s.zoom / 120}); opacity: 1; }
-    `,
+      55%  { transform: perspective(1800px) rotateY(${rot * 0.4}deg) translateY(0) scale(${1 + s.zoom / 120}); opacity: 1; }
+      88%  { transform: perspective(1800px) rotateY(0deg) translateY(0) scale(${1 + s.zoom / 120}); opacity: 1; }
+      100% { transform: perspective(1800px) rotateY(0deg) translateY(0) scale(${1 + s.zoom / 130}); opacity: 1; }
+    `;
+    },
     backdropKeyframes: (s) => `
-      0%   { transform: scale(1.04) translate3d(2%,0,0); }
-      100% { transform: scale(${1 + s.zoom / 220}) translate3d(-2%,0,0); }
+      0%   { transform: scale(1.03) translate3d(1.5%,0,0); }
+      100% { transform: scale(${1 + s.zoom / 260}) translate3d(-1.5%,0,0); }
     `,
   },
   "zoom-focus": {
@@ -89,10 +109,10 @@ export const SCENE_ANIMATIONS: Record<string, SceneAnimation> = {
     name: "Zoom focus",
     easing: "cubic-bezier(.25,.9,.3,1)",
     deviceKeyframes: (s) => `
-      0%   { transform: scale(${0.82 - s.zoom / 320}); opacity: 0; }
-      18%  { opacity: 1; }
-      60%  { transform: scale(${1 + s.zoom / 100}); opacity: 1; }
-      100% { transform: scale(${1 + s.zoom / 90}); opacity: 1; }
+      0%   { transform: scale(${0.88 - s.zoom / 350}); opacity: 0; }
+      16%  { opacity: 1; }
+      60%  { transform: scale(${1 + s.zoom / 120}); opacity: 1; }
+      100% { transform: scale(${1 + s.zoom / 110}); opacity: 1; }
     `,
   },
   "slide-pan": {
@@ -100,14 +120,14 @@ export const SCENE_ANIMATIONS: Record<string, SceneAnimation> = {
     name: "Slide / pan",
     easing: "cubic-bezier(.22,.9,.28,1)",
     deviceKeyframes: (s) => `
-      0%   { transform: translateX(${-1 * (120 + cappedMove(s.move))}px) rotateZ(${-s.rotate / 2}deg); opacity: 0; }
+      0%   { transform: translateX(${-1 * (70 + cappedMove(s.move))}px) rotateY(-8deg); opacity: 0; }
       15%  { opacity: 1; }
-      58%  { transform: translateX(0) rotateZ(0deg) scale(${1 + s.zoom / 100}); opacity: 1; }
-      100% { transform: translateX(0) rotateZ(0deg) scale(${1 + s.zoom / 100}); opacity: 1; }
+      58%  { transform: translateX(0) rotateY(0deg) scale(${1 + s.zoom / 120}); opacity: 1; }
+      100% { transform: translateX(0) rotateY(0deg) scale(${1 + s.zoom / 120}); opacity: 1; }
     `,
     backdropKeyframes: (s) => `
-      0%   { transform: scale(1.1) translate3d(-4%,0,0); }
-      100% { transform: scale(1.1) translate3d(4%,0,0); }
+      0%   { transform: scale(1.06) translate3d(-2%,0,0); }
+      100% { transform: scale(1.06) translate3d(2%,0,0); }
     `,
   },
   "mask-reveal": {
@@ -115,10 +135,10 @@ export const SCENE_ANIMATIONS: Record<string, SceneAnimation> = {
     name: "Mask reveal",
     easing: "cubic-bezier(.3,.9,.25,1)",
     deviceKeyframes: (s) => `
-      0%   { clip-path: inset(100% 0 0 0); transform: translateY(${20 + cappedMove(s.move) / 3}px) scale(${1 + s.zoom / 130}); opacity: 0; }
-      10%  { opacity: 1; }
-      45%  { clip-path: inset(0 0 0 0); transform: translateY(0) scale(${1 + s.zoom / 100}); opacity: 1; }
-      100% { clip-path: inset(0 0 0 0); transform: translateY(0) scale(${1 + s.zoom / 100}); opacity: 1; }
+      0%   { clip-path: inset(100% 0 0 0); transform: translateY(${15 + cappedMove(s.move) / 4}px) scale(${0.96 + s.zoom / 200}); opacity: 0; }
+      12%  { opacity: 1; }
+      48%  { clip-path: inset(0 0 0 0); transform: translateY(0) scale(${1 + s.zoom / 120}); opacity: 1; }
+      100% { clip-path: inset(0 0 0 0); transform: translateY(0) scale(${1 + s.zoom / 120}); opacity: 1; }
     `,
   },
   "parallax-stack": {
@@ -126,14 +146,14 @@ export const SCENE_ANIMATIONS: Record<string, SceneAnimation> = {
     name: "Parallax stack",
     easing: "cubic-bezier(.18,.9,.3,1)",
     deviceKeyframes: (s) => `
-      0%   { transform: translateY(${60 + cappedMove(s.move) / 2}px) scale(${0.92 - s.zoom / 260}) rotateX(${10 + s.rotate / 3}deg); opacity: 0; }
+      0%   { transform: translateY(${35 + cappedMove(s.move) / 3}px) scale(${0.94 - s.zoom / 300}); opacity: 0; }
       14%  { opacity: 1; }
-      50%  { transform: translateY(0) scale(${1 + s.zoom / 100}) rotateX(0deg); opacity: 1; }
-      100% { transform: translateY(0) scale(${1 + s.zoom / 100}) rotateX(0deg); opacity: 1; }
+      50%  { transform: translateY(0) scale(${1 + s.zoom / 120}); opacity: 1; }
+      100% { transform: translateY(0) scale(${1 + s.zoom / 120}); opacity: 1; }
     `,
     backdropKeyframes: (s) => `
-      0%   { transform: scale(1.15) translate3d(0,4%,0); }
-      100% { transform: scale(1.02) translate3d(0,-4%,0); }
+      0%   { transform: scale(1.08) translate3d(0,2%,0); }
+      100% { transform: scale(1.02) translate3d(0,-2%,0); }
     `,
   },
   "kinetic-type": {
@@ -141,39 +161,81 @@ export const SCENE_ANIMATIONS: Record<string, SceneAnimation> = {
     name: "Kinetic type",
     easing: "cubic-bezier(.22,1,.36,1)",
     deviceKeyframes: (s) => `
-      0%   { transform: scale(${0.9 - s.zoom / 260}) translateY(${16 + cappedMove(s.move) / 4}px); opacity: 0; }
-      22%  { opacity: 1; }
-      55%  { transform: scale(${1 + s.zoom / 100}) translateY(0); opacity: 1; }
-      100% { transform: scale(${1 + s.zoom / 90}) translateY(0); opacity: 1; }
+      0%   { transform: scale(${0.92 - s.zoom / 300}) translateY(${14 + cappedMove(s.move) / 5}px); opacity: 0; }
+      18%  { opacity: 1; }
+      55%  { transform: scale(${1 + s.zoom / 120}) translateY(0); opacity: 1; }
+      100% { transform: scale(${1 + s.zoom / 110}) translateY(0); opacity: 1; }
     `,
   },
   "card-flip": {
     id: "card-flip",
     name: "Card flip",
-    easing: "cubic-bezier(.34,.9,.3,1)",
+    easing: "cubic-bezier(.3,.9,.3,1)",
     deviceKeyframes: (s) => `
-      0%   { transform: perspective(1600px) rotateY(${90 + s.rotate}deg) scale(${1 - s.zoom / 220}); opacity: 0; }
-      20%  { opacity: 1; }
-      52%  { transform: perspective(1600px) rotateY(0deg) scale(${1 + s.zoom / 100}); opacity: 1; }
-      100% { transform: perspective(1600px) rotateY(0deg) scale(${1 + s.zoom / 110}); opacity: 1; }
+      0%   { transform: perspective(1600px) rotateY(65deg) scale(${0.92 - s.zoom / 300}); opacity: 0; }
+      18%  { opacity: 1; }
+      52%  { transform: perspective(1600px) rotateY(0deg) scale(${1 + s.zoom / 120}); opacity: 1; }
+      100% { transform: perspective(1600px) rotateY(0deg) scale(${1 + s.zoom / 120}); opacity: 1; }
     `,
   },
   "outro-cta": {
     id: "outro-cta",
     name: "Outro CTA",
-    easing: "cubic-bezier(.2,.9,.25,1.15)",
+    easing: "cubic-bezier(.2,.9,.25,1.05)",
     deviceKeyframes: (s) => `
-      0%   { transform: scale(${0.88 - s.zoom / 260}) translateY(${20 + cappedMove(s.move) / 5}px); opacity: 0; }
-      20%  { opacity: 1; }
-      50%  { transform: scale(${1.03 + s.zoom / 140}) translateY(0); opacity: 1; }
-      62%  { transform: scale(${1 + s.zoom / 100}) translateY(0); opacity: 1; }
-      100% { transform: scale(${1 + s.zoom / 100}) translateY(0); opacity: 1; }
+      0%   { transform: scale(${0.9 - s.zoom / 300}) translateY(${15 + cappedMove(s.move) / 6}px); opacity: 0; }
+      18%  { opacity: 1; }
+      50%  { transform: scale(${1.02 + s.zoom / 150}) translateY(0); opacity: 1; }
+      65%  { transform: scale(${1 + s.zoom / 120}) translateY(0); opacity: 1; }
+      100% { transform: scale(${1 + s.zoom / 120}) translateY(0); opacity: 1; }
     `,
     backdropKeyframes: () => `
       0%   { transform: scale(1); filter: brightness(1); }
-      50%  { transform: scale(1.06); filter: brightness(1.12); }
-      100% { transform: scale(1.02); filter: brightness(1.05); }
+      50%  { transform: scale(1.04); filter: brightness(1.08); }
+      100% { transform: scale(1.02); filter: brightness(1.04); }
     `,
+  },
+  "portrait-flow": {
+    id: "portrait-flow",
+    name: "Portrait flow (zoom-into-screen)",
+    easing: "cubic-bezier(.2,.85,.25,1)",
+    // 3D physical phone enters with a full 360-degree rotation (back-to-front),
+    // settles at center, then gradually scales up so the screen fits the canvas exactly without overshooting
+    deviceKeyframes: (s) => `
+      0%   { transform: perspective(2000px) rotateY(-360deg) scale(0.85); opacity: 0; }
+      10%  { opacity: 1; }
+      36%  { transform: perspective(2000px) rotateY(0deg) scale(1); opacity: 1; }
+      46%  { transform: perspective(2000px) rotateY(0deg) scale(1); opacity: 1; }
+      72%  { transform: perspective(2000px) rotateY(0deg) scale(1.68); opacity: 1; }
+      100% { transform: perspective(2000px) rotateY(0deg) scale(1.68); opacity: 1; }
+    `,
+    backdropKeyframes: () => `
+      0%   { transform: scale(1.05); filter: brightness(1); }
+      50%  { transform: scale(1.15); filter: brightness(0.85); }
+      100% { transform: scale(1.2); filter: brightness(0.7); }
+    `,
+    renderDevice: (device, uris, kinds, scene, durationMs) => device3dMarkup(device, uris, scene.variant, durationMs, kinds),
+  },
+  "landscape-flow": {
+    id: "landscape-flow",
+    name: "Landscape flow (screen recording showcase)",
+    easing: "cubic-bezier(.2,.85,.25,1)",
+    // Phone enters centrally with a 360-degree 3D spin, then scales up to match vertical frame height.
+    // Alternating subtitle labels display on left & right.
+    deviceKeyframes: (s) => `
+      0%   { transform: perspective(2000px) rotateY(-360deg) scale(0.85); opacity: 0; }
+      10%  { opacity: 1; }
+      32%  { transform: perspective(2000px) rotateY(0deg) scale(1); opacity: 1; }
+      40%  { transform: perspective(2000px) rotateY(0deg) scale(1); opacity: 1; }
+      60%  { transform: perspective(2000px) rotateY(0deg) scale(1.56); opacity: 1; }
+      100% { transform: perspective(2000px) rotateY(0deg) scale(1.56); opacity: 1; }
+    `,
+    backdropKeyframes: () => `
+      0%   { transform: scale(1.04); filter: brightness(0.95); }
+      50%  { transform: scale(1.08); filter: brightness(1.02); }
+      100% { transform: scale(1.12); filter: brightness(1); }
+    `,
+    renderDevice: (device, uris, kinds, scene, durationMs) => device3dMarkup(device, uris, scene.variant, durationMs, kinds),
   },
   "fold-open": {
     id: "fold-open",
@@ -189,14 +251,15 @@ export const SCENE_ANIMATIONS: Record<string, SceneAnimation> = {
       0%   { transform: scale(1.08) translate3d(0,2%,0); }
       100% { transform: scale(${1 + s.zoom / 240}) translate3d(0,-2%,0); }
     `,
-    /** Cross-fades the folded (cover-screen) frame into the unfolded (main-
-     *  screen) frame with a hinge-style scaleX pinch at the midpoint, so the
-     *  foldable visibly opens instead of just displaying one static state. */
-    renderDevice: (device, uri, scene) => {
-      const foldedMarkup = deviceMarkup(device, uri, "folded");
-      const unfoldedMarkup = deviceMarkup(device, uri, "unfolded");
+    renderDevice: (device, uris, kinds, scene) => {
+      const foldedMarkup = deviceMarkup(device, uris[0] ?? "", "folded", kinds[0] ?? "image");
+      const unfoldedMarkup = deviceMarkup(device, uris[0] ?? "", "unfolded", kinds[0] ?? "image");
+      const foldedG = resolveGeometry(device, "folded");
+      const unfoldedG = resolveGeometry(device, "unfolded");
+      const areaRatio = (unfoldedG.width * unfoldedG.height) / (foldedG.width * foldedG.height);
+      const foldedScale = Math.min(2.6, Math.max(1, Math.sqrt(areaRatio) * 0.62));
       return `<div class="fold-rig">
-        <div class="fold-layer fold-folded">${foldedMarkup}</div>
+        <div class="fold-layer fold-folded" style="transform:scale(${foldedScale.toFixed(2)})">${foldedMarkup}</div>
         <div class="fold-layer fold-unfolded">${unfoldedMarkup}</div>
       </div>`;
     },
@@ -206,15 +269,58 @@ export const SCENE_ANIMATIONS: Record<string, SceneAnimation> = {
     name: "Tablet pan",
     easing: "cubic-bezier(.24,.85,.3,1)",
     deviceKeyframes: (s) => `
-      0%   { transform: translateX(${-1 * (60 + cappedMove(s.move) / 2)}px) rotateY(${-8 - s.rotate / 4}deg) scale(${0.95 - s.zoom / 300}); opacity: 0; }
+      0%   { transform: translateX(${-1 * (40 + cappedMove(s.move) / 2)}px) rotateY(${-6 - s.rotate / 4}deg) scale(${0.95 - s.zoom / 300}); opacity: 0; }
       18%  { opacity: 1; }
-      62%  { transform: translateX(0) rotateY(${s.rotate / 8}deg) scale(${1 + s.zoom / 110}); opacity: 1; }
+      62%  { transform: translateX(0) rotateY(${s.rotate / 8}deg) scale(${1 + s.zoom / 120}); opacity: 1; }
       100% { transform: translateX(0) rotateY(0deg) scale(${1 + s.zoom / 120}); opacity: 1; }
     `,
     backdropKeyframes: (s) => `
-      0%   { transform: scale(1.06) translate3d(-2%,0,0); }
-      100% { transform: scale(${1 + s.zoom / 260}) translate3d(2%,0,0); }
+      0%   { transform: scale(1.04) translate3d(-1.5%,0,0); }
+      100% { transform: scale(${1 + s.zoom / 260}) translate3d(1.5%,0,0); }
     `,
+  },
+  "showcase-3d": {
+    id: "showcase-3d",
+    name: "3D showcase",
+    easing: "cubic-bezier(.19,.85,.24,1.02)",
+    deviceKeyframes: (s) => `
+      0%   { transform: perspective(2000px) rotateY(-95deg) rotateX(4deg) translateZ(-40px) scale(${0.85 - s.zoom / 320}); opacity: 0; }
+      12%  { opacity: 1; }
+      45%  { transform: perspective(2000px) rotateY(-12deg) rotateX(2deg) translateZ(0) scale(${1 + s.zoom / 130}); opacity: 1; }
+      70%  { transform: perspective(2000px) rotateY(4deg) rotateX(0deg) translateZ(0) scale(${1 + s.zoom / 110}); opacity: 1; }
+      100% { transform: perspective(2000px) rotateY(0deg) rotateX(0deg) translateZ(0) scale(${1 + s.zoom / 110}); opacity: 1; }
+    `,
+    backdropKeyframes: () => `
+      0%   { transform: scale(1.1); filter: brightness(.88); }
+      45%  { transform: scale(1.04); filter: brightness(1.04); }
+      100% { transform: scale(1); filter: brightness(1.08); }
+    `,
+    renderDevice: (device, uris, kinds, scene, durationMs) => device3dMarkup(device, uris, scene.variant, durationMs, kinds),
+  },
+  "trio-lineup": {
+    id: "trio-lineup",
+    name: "Trio lineup",
+    easing: "cubic-bezier(.22,.9,.3,1)",
+    deviceKeyframes: (s) => `
+      0%   { transform: translateY(${30 + cappedMove(s.move) / 2}px) scale(${0.92 - s.zoom / 300}); opacity: 0; }
+      16%  { opacity: 1; }
+      55%  { transform: translateY(0) scale(${1 + s.zoom / 110}); opacity: 1; }
+      100% { transform: translateY(0) scale(${1 + s.zoom / 100}); opacity: 1; }
+    `,
+    renderDevice: (device, uris, kinds, scene) => {
+      const centerUri = uris[0] ?? "";
+      const leftUri = uris[1] ?? uris[0] ?? "";
+      const rightUri = uris[2] ?? uris[0] ?? "";
+      const flank = (uri: string, kind: "image" | "video", tx: string, rot: string) => `
+        <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; transform:translateX(${tx}) translateZ(-140px) rotateY(${rot}) scale(.8); opacity:.7; filter:brightness(.72);">
+          ${deviceMarkup(device, uri, scene.variant, kind)}
+        </div>`;
+      return `<div style="position:relative; width:100%; height:100%;">
+        ${flank(leftUri, kinds[1] ?? "image", "-56%", "26deg")}
+        ${flank(rightUri, kinds[2] ?? "image", "56%", "-26deg")}
+        <div style="position:relative; z-index:2;">${deviceMarkup(device, centerUri, scene.variant, kinds[0] ?? "image")}</div>
+      </div>`;
+    },
   },
 };
 
@@ -225,12 +331,65 @@ export function listVideoBackgrounds() {
   return Object.keys(BACKGROUNDS);
 }
 
+/**
+ * Composition registry -- which side the device sits on, how the copy block
+ * is sized/aligned, and any extra canvas treatment (split panel, edge
+ * offset, full-bleed overlay).
+ */
+export interface SceneLayout {
+  id: string;
+  name: string;
+  orientation: "9:16" | "16:9" | "both";
+  direction: "row" | "row-reverse" | "column" | "column-reverse";
+  copyAlign: "left" | "center" | "right";
+  copyFlex: string;
+  copyMaxWidth?: string;
+  overlay?: "lower-third";
+  canvasClass?: "edge-left" | "edge-right" | "panel-split";
+}
+
+export const LAYOUTS: Record<string, SceneLayout> = {
+  "copy-left": { id: "copy-left", name: "Copy left, device right", orientation: "16:9", direction: "row", copyAlign: "left", copyFlex: "1 1 44%", copyMaxWidth: "640px" },
+  "copy-right": { id: "copy-right", name: "Copy right, device left", orientation: "16:9", direction: "row-reverse", copyAlign: "left", copyFlex: "1 1 44%", copyMaxWidth: "640px" },
+  "hero-device": { id: "hero-device", name: "Hero device, minimal copy", orientation: "16:9", direction: "row", copyAlign: "left", copyFlex: "0 0 26%", copyMaxWidth: "420px" },
+  "centre-flank": { id: "centre-flank", name: "Centred device", orientation: "16:9", direction: "column", copyAlign: "center", copyFlex: "0 0 auto", copyMaxWidth: "900px" },
+  "split-panel": { id: "split-panel", name: "Split panel", orientation: "16:9", direction: "row-reverse", copyAlign: "left", copyFlex: "1 1 40%", copyMaxWidth: "600px", canvasClass: "panel-split" },
+
+  "stacked-top": { id: "stacked-top", name: "Copy above device (centered)", orientation: "9:16", direction: "column", copyAlign: "center", copyFlex: "0 0 auto" },
+  "stacked-bottom": { id: "stacked-bottom", name: "Copy below device (centered)", orientation: "9:16", direction: "column-reverse", copyAlign: "center", copyFlex: "0 0 auto" },
+  "edge-offset-left": { id: "edge-offset-left", name: "Device slight left", orientation: "9:16", direction: "column", copyAlign: "left", copyFlex: "0 0 auto", canvasClass: "edge-left" },
+  "edge-offset-right": { id: "edge-offset-right", name: "Device slight right", orientation: "9:16", direction: "column", copyAlign: "right", copyFlex: "0 0 auto", canvasClass: "edge-right" },
+
+  "full-bleed": { id: "full-bleed", name: "Full-bleed device, overlay caption", orientation: "both", direction: "column", copyAlign: "center", copyFlex: "0 0 auto", overlay: "lower-third" },
+};
+
+export function listSceneLayouts(orientation?: "9:16" | "16:9") {
+  return Object.values(LAYOUTS)
+    .filter((l) => !orientation || l.orientation === "both" || l.orientation === orientation)
+    .map((l) => ({ id: l.id, name: l.name, orientation: l.orientation }));
+}
+
+function orientationOf(scene: VideoScene): "9:16" | "16:9" {
+  return scene.aspectRatio === "16:9" ? "16:9" : "9:16";
+}
+
+function layoutFor(scene: VideoScene): SceneLayout {
+  const orientation = orientationOf(scene);
+  const requested = scene.layout ? LAYOUTS[scene.layout] : undefined;
+  if (requested && (requested.orientation === "both" || requested.orientation === orientation)) return requested;
+  return LAYOUTS[orientation === "16:9" ? "copy-left" : "stacked-top"];
+}
+
+/** Safe-margin inset (percent) applied to every canvas -- titles, badges,
+ *  callouts and the device itself never reach the frame edge. */
+const SAFE_INSET = { x: 6, y: 5 };
+
 const CANVAS = { width: 1080, height: 1920 };
 const CANVAS_LANDSCAPE = { width: 1920, height: 1080 };
 
 /** A scene's canvas is landscape only when its template opted in; every
- *  existing template (and any scene without an explicit aspectRatio)
- *  keeps the original 9:16 portrait canvas app stores require. */
+ *  scene without an explicit aspectRatio keeps the app-store-standard 9:16
+ *  portrait canvas. */
 function canvasFor(scene: VideoScene): { width: number; height: number } {
   return scene.aspectRatio === "16:9" ? CANVAS_LANDSCAPE : CANVAS;
 }
@@ -254,6 +413,18 @@ export function sourceUrisFor(project: VideoProject, scene: VideoScene, resolveU
   }
   const uri = sourceUriFor(project, scene, resolveUri);
   return uri ? [uri] : [];
+}
+
+/** Parallel to `sourceUrisFor` -- which of those URIs is a real screen
+ *  recording ("video") vs a still screenshot ("image"), so the render path
+ *  can pick `<video>`/`<img>` per slot and window.seek can frame-step it. */
+export function sourceKindsFor(project: VideoProject, scene: VideoScene): ("image" | "video")[] {
+  if (scene.screenIds && scene.screenIds.length > 1) {
+    return scene.screenIds.map((id) => (project.sources.find((s) => s.id === id)?.kind === "video" ? "video" : "image"));
+  }
+  const source = project.sources.find((s) => s.id === scene.sourceId) ?? project.sources[0];
+  if (!source) return [];
+  return [source.kind === "video" ? "video" : "image"];
 }
 
 /** Synthetic placeholder screens for a scene with no uploaded source yet
@@ -296,7 +467,7 @@ function placeholderScreenUri(index = 0): string {
       <rect x="330" y="756" width="360" height="22" rx="11" fill="#dbe1ea"/>
       ${[0, 1, 2].map((i) => `<rect x="60" y="${880 + i * 220}" width="900" height="180" rx="24" fill="#ffffff"/>`).join("")}`;
   }
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1020" height="2340">
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1020 2340" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
     <rect width="1020" height="2340" fill="#eef1f6"/>
     ${header}
     ${body}
@@ -304,15 +475,33 @@ function placeholderScreenUri(index = 0): string {
   return `data:image/svg+xml;base64,${Buffer.from(svg).toString("base64")}`;
 }
 
+/** Depth-aware device rendering for scenes with no custom `renderDevice`
+ *  hook: "flat" is today's plain frame (default), "perspective" tilts that
+ *  same flat plane with a matched shadow, "float"/"showcase" use the
+ *  genuine six-face 3D rig (device3dMarkup) -- real thickness, not a
+ *  border around a flat image. */
+function deviceRigMarkup(device: DeviceModel, uris: string[], kinds: ("image" | "video")[], scene: VideoScene, durationMs: number): string {
+  const depth = scene.depth ?? "flat";
+  if (depth === "flat") {
+    return uris.length > 1 ? deviceMarkupMultiScreen(device, uris, scene.variant, durationMs, kinds) : deviceMarkup(device, uris[0] ?? "", scene.variant, kinds[0] ?? "image");
+  }
+  if (depth === "perspective") {
+    const inner = uris.length > 1 ? deviceMarkupMultiScreen(device, uris, scene.variant, durationMs, kinds) : deviceMarkup(device, uris[0] ?? "", scene.variant, kinds[0] ?? "image");
+    return `<div class="device-tilt">${inner}</div>`;
+  }
+  const rig = device3dMarkup(device, uris, scene.variant, durationMs, kinds);
+  return depth === "float" ? `<div class="device-float">${rig}</div>` : rig;
+}
+
 /** Resolves what to actually draw inside the device box for a scene: a
- *  custom `renderDevice` hook (e.g. fold-open's hinge cross-fade) takes
- *  precedence, then a multi-screen swap when 2+ screens are set, otherwise
- *  a single static screenshot (or a placeholder when none exists yet). */
-function deviceInnerMarkup(animation: SceneAnimation, device: DeviceModel, scene: VideoScene, uris: string[], durationMs: number): string {
+ *  custom `renderDevice` hook (fold-open, showcase-3d, trio-lineup) takes
+ *  precedence; otherwise the scene's `depth` mode picks flat/perspective/
+ *  float/showcase rendering. */
+function deviceInnerMarkup(animation: SceneAnimation, device: DeviceModel, scene: VideoScene, uris: string[], kinds: ("image" | "video")[], durationMs: number): string {
   const filled = uris.length > 0 ? uris : [placeholderScreenUri(0)];
-  if (animation.renderDevice) return animation.renderDevice(device, filled[0], scene);
-  if (filled.length > 1) return deviceMarkupMultiScreen(device, filled, scene.variant, durationMs);
-  return deviceMarkup(device, filled[0], scene.variant);
+  const filledKinds = uris.length > 0 ? kinds : (["image"] as ("image" | "video")[]);
+  if (animation.renderDevice) return animation.renderDevice(device, filled, filledKinds, scene, durationMs);
+  return deviceRigMarkup(device, filled, filledKinds, scene, durationMs);
 }
 
 /** Splits text into word `<span>`s with a per-word entrance delay, so the
@@ -325,24 +514,18 @@ function wordSpans(text: string, className: string, baseDelayMs: number, stepMs:
     .join(" ");
 }
 
-/** Shared text-block CSS: word-by-word entrance for title/subtitle plus a
- *  single late exit fade on the wrapping `.copy` element. Used by every
- *  scene animation so text motion is consistent regardless of which device
- *  animation is picked. */
-function textBlockStyle(durationMs: number): string {
-  const exitDelay = Math.max(0, durationMs - 480);
-  return `
-    .copy { opacity: 1; animation: copyExit 420ms ${exitDelay}ms cubic-bezier(.4,0,1,1) forwards; }
-    @keyframes copyExit { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-14px); } }
-    .word { display: inline-block; opacity: 0; transform: translateY(22px); animation: wordIn 560ms cubic-bezier(.16,1,.3,1) forwards; }
-    @keyframes wordIn { 0% { opacity: 0; transform: translateY(22px); } 100% { opacity: 1; transform: translateY(0); } }
-  `;
-}
+/** Shared text-block CSS: word-by-word entrance for title/subtitle. The
+ *  exit fade itself is emitted per-scene by `sceneLayoutCss` (its timing
+ *  depends on that scene's duration). */
+const WORD_SPAN_CSS = `
+  .word { display: inline-block; opacity: 0; transform: translateY(22px); animation: wordIn 560ms cubic-bezier(.16,1,.3,1) forwards; }
+  @keyframes wordIn { 0% { opacity: 0; transform: translateY(22px); } 100% { opacity: 1; transform: translateY(0); } }
+`;
 
 /** Backgrounds pale/bright enough that white text loses contrast against
  *  them -- text color and its shadow flip to dark on these, keeping every
  *  scene readable regardless of which background a template picks. */
-const LIGHT_BACKGROUNDS = new Set(["light", "candy", "citrus"]);
+const LIGHT_BACKGROUNDS = new Set(["light", "candy", "citrus", "solid-white", "solid-cream"]);
 function textColorFor(background: string): string {
   return LIGHT_BACKGROUNDS.has(background) ? "#141821" : "#ffffff";
 }
@@ -364,7 +547,17 @@ function textBlockHtml(scene: VideoScene): string {
 function foldRigCss(durationMs: number): string {
   return `
     .fold-rig { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
-    .fold-layer { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+    /* Deliberately plain block flow, NOT flex-centered: .stage-scale (an
+       ancestor) scales everything down from its TOP-LEFT corner
+       (transform-origin: top left). Centering an oversized device inside a
+       small flex container assumes the eventual scale-down also happens
+       from the CENTER -- it doesn't, so centering-then-scale-from-top-left
+       shifts the whole device hundreds of pixels up and left of where it
+       visually belongs. Every non-fold scene's device sits in plain block
+       flow for exactly this reason (it overflows toward bottom-right,
+       anchored at the same top-left corner the scale is anchored to);
+       fold-layer now matches that same anchor instead of fighting it. */
+    .fold-layer { position: absolute; inset: 0; }
     .fold-folded { animation: foldFadeOut ${durationMs}ms ease-in-out forwards; }
     .fold-unfolded { animation: foldFadeIn ${durationMs}ms ease-in-out forwards; opacity: 0; }
     @keyframes foldFadeOut { 0% { opacity: 1; } 45% { opacity: 1; } 65% { opacity: 0; } 100% { opacity: 0; } }
@@ -372,54 +565,236 @@ function foldRigCss(durationMs: number): string {
   `;
 }
 
-/** The single generator used by both preview and render. `seekable` embeds
- *  the frame-stepping hook the renderer calls; the browser preview ignores
- *  it and just plays the CSS animations live. */
-export function sceneHtml(scene: VideoScene, screenshotUris: string[], seekable = false): string {
+/** Entrance-only transition applied to a scene's first ~400ms via a
+ *  full-canvas overlay layer -- a CSS animation like everything else here,
+ *  so it stays deterministic under window.seek and needs no ffmpeg xfade /
+ *  extra encode pass. Deliberately entrance-only: every scene here is its
+ *  own isolated document (one Playwright page per scene, see renderVideo),
+ *  so there is no "next scene" underneath to reveal on exit -- an exit
+ *  fade-to-opaque would just leave the frame painted over with nothing
+ *  behind it once the scene (and the whole sequence) ends. The overlay
+ *  therefore always resolves back to fully transparent well before 100%,
+ *  so the final frame is never obscured. "cut" (the default) renders an
+ *  always-invisible overlay. */
+function transitionKeyframeBody(scene: VideoScene, durationMs: number): string {
+  const t = scene.transition ?? "cut";
+  const inEnd = Math.min(14, (400 / durationMs) * 100).toFixed(2);
+  switch (t) {
+    case "fade":
+      return `0% { opacity: 1; } ${inEnd}% { opacity: 0; } 100% { opacity: 0; }`;
+    case "slide":
+      return `0% { opacity: 1; transform: translateX(-6%); } ${inEnd}% { opacity: 0; transform: translateX(0); } 100% { opacity: 0; transform: translateX(0); }`;
+    case "wipe":
+      return `0% { opacity: 1; clip-path: inset(0 100% 0 0); } ${inEnd}% { opacity: 0; clip-path: inset(0 0 0 0); } 100% { opacity: 0; clip-path: inset(0 0 0 0); }`;
+    case "zoom":
+      return `0% { opacity: 1; transform: scale(1.3); } ${inEnd}% { opacity: 0; transform: scale(1); } 100% { opacity: 0; transform: scale(1); }`;
+    case "cut":
+    default:
+      return `0% { opacity: 0; } 100% { opacity: 0; }`;
+  }
+}
+
+const CANVAS_BASE_CSS = `
+  * { box-sizing: border-box; }
+  .canvas, .scene {
+    position: relative; display: flex; align-items: center; justify-content: center; gap: 5%;
+    font-family: "Segoe UI", Roboto, -apple-system, sans-serif; color: #fff; overflow: hidden;
+  }
+  .backdrop { position: absolute; inset: -8%; z-index: 0; }
+  .vignette { position: absolute; inset: 0; background: radial-gradient(circle at 50% 42%, rgba(0,0,0,0) 45%, rgba(0,0,0,.35) 100%); z-index: 1; }
+  .transition-overlay { position: absolute; inset: 0; z-index: 5; background: #05060a; pointer-events: none; opacity: 0; }
+  .copy { position: relative; z-index: 3; padding: 0 2%; }
+  .label { font-weight: 800; line-height: 1.15; }
+  .subtext { opacity: .82; margin-top: .5em; font-weight: 500; }
+  /* flex: 0 0 auto always -- .stage's size is deliberately pre-computed in
+     px (stageWidth/stageHeight, from deviceScaleFor) to match the device's
+     scale exactly; letting it flex-grow (an earlier version keyed this off
+     the layout) stretches the box far past that while the child transform:
+     scale() inside it still assumes the original size, producing a
+     misaligned, double-scaled mess. Only .copy is allowed to flex --
+     layouts that want a bigger device use a bigger deviceFraction instead. */
+  .stage { position: relative; perspective: 1800px; z-index: 2; flex: 0 0 auto; }
+  .stage-scale { position: absolute; inset: 0; transform-origin: top left; }
+  .stage-inner { width: 100%; height: 100%; }
+`;
+
+/** Per-scene overrides: composition (layout), font sizing, background,
+ *  per-scene keyframes, and the animation-triggering rules (gated behind
+ *  `gateSelector` so a sequence view only animates its currently-visible
+ *  scene, while a standalone scene document animates immediately). Shared
+ *  verbatim by `sceneHtml` (single scene) and `templatePreviewHtml` (N
+ *  scenes) -- the one generator this file promises in its header comment. */
+const FLOW_LABEL_CSS = `
+  .flow-label {
+    position: absolute;
+    z-index: 10;
+    padding: 16px 28px;
+    background: rgba(10, 14, 22, 0.84);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 48px;
+    color: #ffffff;
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.52);
+    opacity: 0;
+    pointer-events: none;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .flow-label-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #38bdf8;
+    box-shadow: 0 0 14px #38bdf8;
+  }
+  .flow-label-left {
+    left: 4.5%;
+  }
+  .flow-label-right {
+    right: 4.5%;
+  }
+`;
+
+function flowLabelsHtml(scene: VideoScene, durationMs: number): string {
+  if (!scene.flowSteps || scene.flowSteps.length === 0) return "";
+  return scene.flowSteps
+    .map((step, idx) => {
+      const startMs = step.startSec * 1000;
+      const stepDurMs = Math.max(800, step.durationSec * 1000);
+      const isLeft = step.side === "left";
+      const animName = `flowStepAnim_${idx}`;
+      const sideClass = isLeft ? "flow-label-left" : "flow-label-right";
+      const inTranslate = isLeft ? "-32px" : "32px";
+      return `
+        <div class="flow-label ${sideClass}" style="animation: ${animName} ${stepDurMs}ms ${startMs}ms cubic-bezier(.2,.85,.25,1) forwards;">
+          <div class="flow-label-dot"></div>
+          <span>${escapeHtml(step.label)}</span>
+        </div>
+        <style>
+          @keyframes ${animName} {
+            0% { opacity: 0; transform: translateY(-50%) translateX(${inTranslate}) scale(0.92); }
+            18% { opacity: 1; transform: translateY(-50%) translateX(0) scale(1); }
+            82% { opacity: 1; transform: translateY(-50%) translateX(0) scale(1); }
+            100% { opacity: 0; transform: translateY(-50%) translateX(${inTranslate}) scale(0.95); }
+          }
+        </style>
+      `;
+    })
+    .join("\n");
+}
+
+function sceneLayoutCss(scene: VideoScene, animation: SceneAnimation, durationMs: number, selector: string, keyframeSuffix: string, gateSelector: string = selector): string {
+  const layout = layoutFor(scene);
+  const isLandscape = orientationOf(scene) === "16:9";
+  const backdropKf = (animation.backdropKeyframes ?? defaultBackdrop)(scene);
+  const exitDelay = Math.max(0, durationMs - 480);
+  const isStackedTop = layout.id === "stacked-top";
+  const isStackedBottom = layout.id === "stacked-bottom";
+
+  return `
+    ${selector} { flex-direction: ${layout.direction}; padding: ${SAFE_INSET.y}% ${SAFE_INSET.x}%; justify-content: center; align-items: center; }
+    ${selector} .copy { text-align: ${layout.copyAlign}; flex: ${layout.copyFlex}; ${layout.copyMaxWidth ? `max-width:${layout.copyMaxWidth};` : ""} z-index: 4; ${isStackedTop ? "margin-bottom: clamp(32px, 4.5vh, 60px);" : ""} ${isStackedBottom ? "margin-top: clamp(32px, 4.5vh, 60px);" : ""} }
+    ${selector} .label { font-size: ${isLandscape ? 64 : 54}px; }
+    ${selector} .subtext { font-size: ${isLandscape ? 32 : 28}px; }
+    ${selector} .backdrop { background: ${backgroundCss(scene.background)}; }
+    ${!isLandscape ? `${selector} .stage { margin: 0 auto; align-self: center !important; }` : ""}
+    ${
+      scene.depth === "float" || scene.depth === "showcase"
+        ? `${selector} .stage, ${selector} .stage-scale, ${selector} .stage-inner { transform-style: preserve-3d; }`
+        : ""
+    }
+    ${layout.canvasClass === "edge-left" && isLandscape ? `${selector} .stage { align-self: flex-start; }` : ""}
+    ${layout.canvasClass === "edge-right" && isLandscape ? `${selector} .stage { align-self: flex-end; }` : ""}
+    ${layout.canvasClass === "panel-split" ? `${selector}::before { content:""; position:absolute; inset:0; width:46%; background:linear-gradient(160deg, rgba(0,0,0,.4), rgba(0,0,0,0) 65%); z-index:0; }` : ""}
+    ${
+      layout.overlay
+        ? `${selector} .copy { position:absolute; left:0; right:0; bottom:6%; z-index:4; text-align:center; padding:0 8%; }
+    ${selector} .copy::before { content:""; position:absolute; inset:-14% -8% -22% -8%; background:linear-gradient(to top, rgba(0,0,0,.62), rgba(0,0,0,0)); z-index:-1; }
+    ${selector} .stage { position: relative; margin: 0 auto; align-self: center !important; }`
+        : ""
+    }
+    ${gateSelector} .stage-inner { animation: play${keyframeSuffix} ${durationMs}ms ${animation.easing} forwards; }
+    ${gateSelector} .backdrop { animation: bg${keyframeSuffix} ${durationMs}ms ease-out forwards; }
+    ${gateSelector} .copy { animation: copyExit${keyframeSuffix} 420ms ${exitDelay}ms cubic-bezier(.4,0,1,1) forwards; }
+    ${gateSelector} .transition-overlay { animation: trans${keyframeSuffix} ${durationMs}ms linear forwards; }
+    ${gateSelector} .fold-folded { animation-duration: ${durationMs}ms; }
+    ${gateSelector} .fold-unfolded { animation-duration: ${durationMs}ms; }
+    @keyframes play${keyframeSuffix} { ${animation.deviceKeyframes(scene)} }
+    @keyframes bg${keyframeSuffix} { ${backdropKf} }
+    @keyframes copyExit${keyframeSuffix} { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-14px); } }
+    @keyframes trans${keyframeSuffix} { ${transitionKeyframeBody(scene, durationMs)} }
+  `;
+}
+
+/** The DOM for one scene's content -- shared by the standalone document and
+ *  the sequence player's per-scene layer. */
+function sceneContentHtml(scene: VideoScene, device: DeviceModel, uris: string[], kinds: ("image" | "video")[], durationMs: number): string {
   const animation = SCENE_ANIMATIONS[scene.sceneTemplate] ?? SCENE_ANIMATIONS["hero-rise"];
-  const device = DEVICE_REGISTRY[scene.device] ?? DEVICE_REGISTRY["phone"];
-  if (!device) throw new Error(`Device '${scene.device}' not found in registry`);
   const canvas = canvasFor(scene);
-  const isLandscape = scene.aspectRatio === "16:9";
   const deviceScale = deviceScaleFor(device, canvas.height, scene.variant, scene.deviceFraction ?? 0.58);
   const geometry = resolveGeometry(device, scene.variant);
   const stageWidth = Math.round(geometry.width * deviceScale);
   const stageHeight = Math.round(geometry.height * deviceScale);
-  const durationMs = Math.max(1, scene.durationSeconds) * 1000;
-  const backdropKf = (animation.backdropKeyframes ?? defaultBackdrop)(scene);
-
-  return `<!doctype html>
-<html><head><meta charset="utf-8" /><style>
-  * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; width: ${canvas.width}px; height: ${canvas.height}px; overflow: hidden; }
-  .canvas {
-    position: relative; width: ${canvas.width}px; height: ${canvas.height}px;
-    display: flex; flex-direction: ${isLandscape ? "row" : "column"}; align-items: center; justify-content: center;
-    ${isLandscape ? "gap: 4%; padding: 0 6%;" : ""}
-    font-family: "Segoe UI", Roboto, -apple-system, sans-serif; color: #fff; overflow: hidden;
-  }
-  .backdrop { position: absolute; inset: -8%; background: ${backgroundCss(scene.background)}; animation: bgPlay ${durationMs}ms ease-out forwards; }
-  .vignette { position: absolute; inset: 0; background: radial-gradient(circle at 50% 42%, rgba(0,0,0,0) 45%, rgba(0,0,0,.35) 100%); }
-  .copy { position: relative; text-align: ${isLandscape ? "left" : "center"}; padding: 0 8%; margin-bottom: ${isLandscape ? "0" : "4%"}; z-index: 3; ${isLandscape ? "flex: 1; padding-left: 0;" : ""} }
-  .label { font-size: ${isLandscape ? 64 : 58}px; font-weight: 800; line-height: 1.15; }
-  .subtext { font-size: ${isLandscape ? 32 : 30}px; opacity: .82; margin-top: .5em; font-weight: 500; }
-  .stage { position: relative; width: ${stageWidth}px; height: ${stageHeight}px; perspective: 1600px; z-index: 2; flex-shrink: 0; }
-  .stage-scale { position: absolute; inset: 0; transform: scale(${deviceScale}); transform-origin: top left; }
-  .stage-inner { width: 100%; height: 100%; animation: play ${durationMs}ms ${animation.easing} forwards; }
-  ${DEVICE_CSS}
-  ${textBlockStyle(durationMs)}
-  ${foldRigCss(durationMs)}
-  @keyframes play { ${animation.deviceKeyframes(scene)} }
-  @keyframes bgPlay { ${backdropKf} }
-</style></head>
-<body>
-  <div class="canvas">
+  return `
     <div class="backdrop"></div>
     <div class="vignette"></div>
     ${textBlockHtml(scene)}
-    <div class="stage"><div class="stage-scale"><div class="stage-inner">${deviceInnerMarkup(animation, device, scene, screenshotUris, durationMs)}</div></div></div>
-  </div>
-  ${seekable ? `<script>window.seek = (ms) => document.getAnimations().forEach((a) => { a.pause(); a.currentTime = ms; });</script>` : ""}
+    <div class="stage" style="width:${stageWidth}px;height:${stageHeight}px;">
+      <div class="stage-scale" style="transform:scale(${deviceScale})">
+        <div class="stage-inner">${deviceInnerMarkup(animation, device, scene, uris, kinds, durationMs)}</div>
+      </div>
+    </div>
+    ${decorationsMarkup(scene.decorations ?? [], canvas)}
+    ${flowLabelsHtml(scene, durationMs)}
+    <div class="transition-overlay"></div>
+  `;
+}
+
+/** The single generator used by both preview and render. */
+export function sceneHtml(scene: VideoScene, screenshotUris: string[], seekable = false, screenshotKinds: ("image" | "video")[] = []): string {
+  const device = DEVICE_REGISTRY[scene.device] ?? DEVICE_REGISTRY["phone"];
+  if (!device) throw new Error(`Device '${scene.device}' not found in registry`);
+  const animation = SCENE_ANIMATIONS[scene.sceneTemplate] ?? SCENE_ANIMATIONS["hero-rise"];
+  const canvas = canvasFor(scene);
+  const durationMs = Math.max(1, scene.durationSeconds) * 1000;
+
+  return `<!doctype html>
+<html><head><meta charset="utf-8" /><style>
+  html, body { margin: 0; padding: 0; width: ${canvas.width}px; height: ${canvas.height}px; overflow: hidden; }
+  ${CANVAS_BASE_CSS}
+  .canvas { width: ${canvas.width}px; height: ${canvas.height}px; }
+  ${DEVICE_CSS}
+  ${WORD_SPAN_CSS}
+  ${FLOW_LABEL_CSS}
+  ${foldRigCss(durationMs)}
+  ${sceneLayoutCss(scene, animation, durationMs, ".canvas", "")}
+</style></head>
+<body>
+  <div class="canvas">${sceneContentHtml(scene, device, screenshotUris, screenshotKinds, durationMs)}</div>
+  ${
+    seekable
+      ? `<script>
+  window.seek = (ms) => {
+    document.getAnimations().forEach((a) => { a.pause(); a.currentTime = ms; });
+    const vids = Array.from(document.querySelectorAll("video"));
+    if (vids.length === 0) return;
+    return Promise.all(vids.map((v) => new Promise((resolve) => {
+      const onSeeked = () => { v.removeEventListener("seeked", onSeeked); resolve(undefined); };
+      v.addEventListener("seeked", onSeeked);
+      v.pause();
+      v.currentTime = ms / 1000;
+    })));
+  };
+</script>`
+      : ""
+  }
 </body></html>`;
 }
 
@@ -430,17 +805,18 @@ function previewResolveUri(projectId: string) {
 export function scenePreviewHtml(project: VideoProject, sceneId: string): string {
   const scene = project.scenes.find((s) => s.id === sceneId);
   if (!scene) throw new Error(`Scene '${sceneId}' not found in project ${project.id}`);
-  return sceneHtml(scene, sourceUrisFor(project, scene, previewResolveUri(project.id)), false);
+  const resolveUri = previewResolveUri(project.id);
+  return sceneHtml(scene, sourceUrisFor(project, scene, resolveUri), false, sourceKindsFor(project, scene));
 }
 
-/** Concatenated full-template preview: every scene of the project plays
- *  back to back automatically, so opening this page is one continuous
- *  playthrough with no interaction needed. Each scene is its own
- *  absolutely-positioned layer with its own named @keyframes (no name
- *  collisions across scenes); a small script shows exactly one scene at a
- *  time and (re)starts its CSS animations by toggling a class, timed via
- *  setTimeout against each scene's own duration -- plain JS scheduling,
- *  not an AI video engine. */
+/** Concatenated full-template preview: every scene of the project is laid
+ *  out ahead of time, but nothing plays until the page's `window.seek`-free
+ *  companion API (`window.__videoPreview`) is told to -- see the player
+ *  script below. Each scene is its own absolutely-positioned layer with its
+ *  own named @keyframes (no name collisions across scenes); a small script
+ *  shows exactly one scene at a time and (re)starts its CSS animations by
+ *  toggling a class, timed via setTimeout against each scene's own duration
+ *  -- plain JS scheduling, not an AI video engine. */
 export function templatePreviewHtml(project: VideoProject): string {
   const resolveUri = previewResolveUri(project.id);
   const scenes = [...project.scenes].sort((a, b) => a.order - b.order);
@@ -451,134 +827,205 @@ export function templatePreviewHtml(project: VideoProject): string {
     .map((scene, i) => {
       const animation = SCENE_ANIMATIONS[scene.sceneTemplate] ?? SCENE_ANIMATIONS["hero-rise"];
       const durationMs = Math.max(1, scene.durationSeconds) * 1000;
-      const backdropKf = (animation.backdropKeyframes ?? defaultBackdrop)(scene);
-      const exitDelay = Math.max(0, durationMs - 480);
-      const isLandscape = scene.aspectRatio === "16:9";
-      return `
-        .scene-${i} { flex-direction: ${isLandscape ? "row" : "column"}; ${isLandscape ? "gap: 4%; padding: 0 6%;" : ""} }
-        .scene-${i} .copy { text-align: ${isLandscape ? "left" : "center"}; ${isLandscape ? "flex: 1; margin-bottom: 0;" : ""} }
-        .scene-${i} .label { font-size: ${isLandscape ? 64 : 58}px; }
-        .scene-${i} .subtext { font-size: ${isLandscape ? 32 : 30}px; }
-        .scene-${i} .backdrop { background:${backgroundCss(scene.background)}; }
-        .scene-${i}.playing .stage-inner { animation: play-${i} ${durationMs}ms ${animation.easing} forwards; }
-        .scene-${i}.playing .backdrop { animation: bg-${i} ${durationMs}ms ease-out forwards; }
-        .scene-${i}.playing .copy { animation: copyExit-${i} 420ms ${exitDelay}ms cubic-bezier(.4,0,1,1) forwards; }
-        .scene-${i} .fold-folded { animation-duration: ${durationMs}ms; }
-        .scene-${i} .fold-unfolded { animation-duration: ${durationMs}ms; }
-        @keyframes play-${i} { ${animation.deviceKeyframes(scene)} }
-        @keyframes bg-${i} { ${backdropKf} }
-        @keyframes copyExit-${i} { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-14px); } }
-      `;
+      return sceneLayoutCss(scene, animation, durationMs, `.scene-${i}`, `-${i}`, `.scene-${i}.playing`);
     })
     .join("\n");
 
   const scenesHtml = scenes
     .map((scene, i) => {
-      const animation = SCENE_ANIMATIONS[scene.sceneTemplate] ?? SCENE_ANIMATIONS["hero-rise"];
       const device = DEVICE_REGISTRY[scene.device] ?? DEVICE_REGISTRY["phone"];
-      const sceneCanvas = canvasFor(scene);
-      const deviceScale = deviceScaleFor(device, sceneCanvas.height, scene.variant, scene.deviceFraction ?? 0.58);
-      const geometry = resolveGeometry(device, scene.variant);
-      const stageWidth = Math.round(geometry.width * deviceScale);
-      const stageHeight = Math.round(geometry.height * deviceScale);
       const durationMs = Math.max(1, scene.durationSeconds) * 1000;
       const uris = sourceUrisFor(project, scene, resolveUri);
-      return `<div class="scene scene-${i}" id="scene-${i}">
-        <div class="backdrop"></div>
-        <div class="vignette"></div>
-        ${textBlockHtml(scene)}
-        <div class="stage" style="width:${stageWidth}px;height:${stageHeight}px;flex-shrink:0;"><div class="stage-scale" style="transform:scale(${deviceScale})"><div class="stage-inner">${deviceInnerMarkup(animation, device, scene, uris, durationMs)}</div></div></div>
-      </div>`;
+      const kinds = sourceKindsFor(project, scene);
+      return `<div class="scene scene-${i}" id="scene-${i}">${sceneContentHtml(scene, device, uris, kinds, durationMs)}</div>`;
     })
     .join("\n");
 
   const durationsMs = JSON.stringify(scenes.map((s) => Math.max(1, s.durationSeconds) * 1000));
 
   return `<!doctype html><html><head><meta charset="utf-8" /><style>
-    * { box-sizing: border-box; }
-    html, body { margin:0; width:${canvas.width}px; height:${canvas.height}px; overflow:hidden; font-family:"Segoe UI",Roboto,-apple-system,sans-serif; color:#fff; }
-    .scene { position:absolute; inset:0; width:${canvas.width}px; height:${canvas.height}px; display:none; align-items:center; justify-content:center; }
+    html, body { margin:0; width:${canvas.width}px; height:${canvas.height}px; overflow:hidden; }
+    ${CANVAS_BASE_CSS}
+    .scene { position:absolute; inset:0; width:${canvas.width}px; height:${canvas.height}px; display:none; }
     .scene.playing { display:flex; }
-    .backdrop { position:absolute; inset:-8%; }
-    .vignette { position:absolute; inset:0; background: radial-gradient(circle at 50% 42%, rgba(0,0,0,0) 45%, rgba(0,0,0,.35) 100%); }
-    .copy { position:relative; text-align:center; padding:0 8%; margin-bottom:4%; z-index:3; }
-    .label { font-size:58px; font-weight:800; line-height:1.15; }
-    .subtext { font-size:30px; opacity:.82; margin-top:.5em; font-weight:500; }
-    .stage { position:relative; perspective:1600px; z-index:2; }
-    .stage-scale { position:absolute; inset:0; transform-origin: top left; }
-    .stage-inner { width: 100%; height: 100%; }
     ${DEVICE_CSS}
-    ${textBlockStyle(0)}
+    ${WORD_SPAN_CSS}
     ${foldRigCss(0)}
     ${scenesCss}
   </style></head><body>${scenesHtml}
   <script>
     // Player API consumed by the Video tab's preview controls
-    // (window.__videoPreview): play/pause the whole sequence, or jump to a
-    // single scene and hold it. The scheduler timer and the CSS animations
-    // are paused together so a pause freezes the frame exactly.
+    // (window.__videoPreview). Loads paused on scene 0 -- nothing plays
+    // until play()/playScene() is called explicitly (no autoplay). play()
+    // advances the full sequence and STOPS after the last scene (no loop);
+    // playScene(n) plays exactly one scene and never advances into the
+    // next. onState is pushed on every transition so the host page never
+    // has to poll.
     const durations = ${durationsMs};
     let i = 0;
     let timer = null;
-    let paused = false;
-    let holding = false;
+    let playState = "idle"; // idle | playing | paused | ended
+    let mode = "sequence"; // sequence | scene
 
     function showScene(index) {
       document.querySelectorAll(".scene.playing").forEach((el) => el.classList.remove("playing"));
-      void document.body.offsetWidth;
+      void document.body.offsetWidth; // force reflow so animations restart
       const el = document.getElementById("scene-" + index);
       if (el) el.classList.add("playing");
     }
     function clearTimer() { if (timer) { clearTimeout(timer); timer = null; } }
-    function scheduleNext() {
-      clearTimer();
-      timer = setTimeout(() => { i = (i + 1) % durations.length; playNext(); }, durations[i] || 1000);
-    }
-    function playNext() {
-      if (durations.length === 0) return;
-      holding = false;
-      showScene(i);
-      scheduleNext();
+    function notify() {
+      if (window.__videoPreview && window.__videoPreview.onState) {
+        try { window.__videoPreview.onState({ scene: i, state: playState, mode }); } catch (e) {}
+      }
     }
     function setAnimationsPaused(p) {
       document.getAnimations().forEach((a) => { try { p ? a.pause() : a.play(); } catch (e) {} });
+      document.querySelectorAll("video").forEach((v) => { try { p ? v.pause() : v.play(); } catch (e) {} });
+    }
+    // Every animation here starts at 0% = its entrance (e.g. opacity:0,
+    // off-canvas) -- pausing right after a class toggle starts it freezes
+    // that INVISIBLE first instant, not the settled, fully-composed frame
+    // (device+text+backdrop all in place). "Selecting a scene must show it,
+    // paused" therefore needs the timeline jumped to its resolved end state
+    // before pausing, not just paused wherever it happens to be. Used for
+    // the initial load and goto() (holding a scene, unplayed); an actual
+    // mid-playback pause() correctly freezes in place instead, via
+    // setAnimationsPaused above.
+    function settleAnimations() {
+      // One shared instant, not each animation's own end: the device
+      // entrance, the backdrop drift, and each staggered word span all
+      // finish at different real times, but the copy block's own late
+      // copyExit fade starts near the scene's end (durationMs-480) --
+      // jumping every animation to ITS OWN finish (an earlier version of
+      // this did) makes copyExit land on its end too, i.e. fully faded
+      // out, hiding the text
+      // that the word spans had just finished fading IN. Picking one target
+      // time comfortably after every entrance but well before the exit
+      // keeps the whole scene visually settled: device in place, full text
+      // visible, nothing exited yet.
+      const dur = durations[i] || 1000;
+      // 72% clears every device animation's own settle point (most land by
+      // 55-65%, e.g. fold-open's cross-fade doesn't finish until 65%) with
+      // margin, while staying well before the copy's exit fade, which only
+      // starts at dur-480ms (typically ~85-90% of a scene's duration).
+      const target = Math.max(0, Math.min(dur - 600, Math.max(1600, dur * 0.72)));
+      document.getAnimations().forEach((a) => {
+        try {
+          a.pause();
+          a.currentTime = target;
+        } catch (e) {}
+      });
+      document.querySelectorAll("video").forEach((v) => { try { v.pause(); } catch (e) {} });
+    }
+    function advance() {
+      clearTimer();
+      if (mode === "scene" || i + 1 >= durations.length) { playState = "ended"; notify(); return; }
+      i += 1;
+      showScene(i);
+      playState = "playing";
+      notify();
+      timer = setTimeout(advance, durations[i] || 1000);
     }
 
     window.__videoPreview = {
       sceneCount: durations.length,
+      onState: null,
+      /** Full sequence, from the current scene onward (or from 0 if the
+       *  sequence had already ended). Stops after the final scene. */
       play() {
-        paused = false;
-        if (holding) { playNext(); } else { setAnimationsPaused(false); scheduleNext(); }
-      },
-      pause() { paused = true; clearTimer(); setAnimationsPaused(true); },
-      isPaused() { return paused; },
-      currentScene() { return i; },
-      /** Jump to one scene and hold it (its own animation plays once). */
-      goto(index) {
+        mode = "sequence";
+        if (playState === "ended") { i = 0; showScene(i); }
+        else if (playState !== "paused") { showScene(i); } // fresh/idle scene -> start it from frame 0
+        // else: resuming from pause -- the scene is already showing its
+        // paused frame, so resume in place instead of restarting it.
+        setAnimationsPaused(false);
+        playState = "playing";
+        notify();
         clearTimer();
-        holding = true;
-        paused = false;
+        timer = setTimeout(advance, durations[i] || 1000);
+      },
+      /** Exactly one scene, once. Never advances into the next scene. */
+      playScene(index) {
+        mode = "scene";
         i = Math.max(0, Math.min(index, durations.length - 1));
         showScene(i);
+        setAnimationsPaused(false);
+        playState = "playing";
+        notify();
+        clearTimer();
+        timer = setTimeout(() => { playState = "ended"; notify(); }, durations[i] || 1000);
+      },
+      pause() { clearTimer(); setAnimationsPaused(true); playState = "paused"; notify(); },
+      /** Restart the full sequence from scene 0. */
+      replay() { clearTimer(); i = 0; this.play(); },
+      isPaused() { return playState === "paused"; },
+      currentScene() { return i; },
+      currentState() { return playState; },
+      /** Select a scene and hold it, unplayed (paused on its first frame). */
+      goto(index) {
+        clearTimer();
+        mode = "scene";
+        i = Math.max(0, Math.min(index, durations.length - 1));
+        showScene(i);
+        settleAnimations();
+        playState = "idle";
+        notify();
         return i;
       },
       next() { return this.goto(i + 1); },
       prev() { return this.goto(i - 1); },
     };
 
-    playNext();
+    // Load paused on scene 0: showScene() toggling the "playing" class is
+    // what makes the browser start scene 0's CSS animations running (that
+    // is how CSS animations work the instant their selector matches -- there
+    // is no implicit "wait for play()"), so an explicit pause right after is
+    // required or the very first scene autoplays before the user ever
+    // touches Play. This is the fix for "selecting a template must never
+    // start playback."
+    showScene(0);
+    settleAnimations();
+    playState = "idle";
+    notify();
   </script>
   </body></html>`;
 }
 
 const FPS = 30;
 
+function ensureFfmpegAvailable(): void {
+  try {
+    execSync("ffmpeg -version", { stdio: "ignore" });
+  } catch {
+    throw new Error("ffmpeg is not installed or not on PATH. Install ffmpeg and ensure the 'ffmpeg' command is available, then retry.");
+  }
+}
+
+const BGM_CACHE_DIR = path.join(process.cwd(), "output", ".bgm");
+
+/** The generated (or cached) BGM file for a template id -- lazily rendered
+ *  once, same pattern as the template-thumbnail cache below. */
+function ensureGeneratedBgm(templateId: string, seconds: number): string {
+  const preset = BGM_PRESETS[templateId];
+  if (!preset) throw new Error(`No BGM preset for template '${templateId}'.`);
+  fs.mkdirSync(BGM_CACHE_DIR, { recursive: true });
+  const wavPath = path.join(BGM_CACHE_DIR, `${templateId}.wav`);
+  if (!fs.existsSync(wavPath)) fs.writeFileSync(wavPath, renderBgmWav(preset, Math.max(seconds, 20)));
+  return wavPath;
+}
+
 /** Renders every scene deterministically via frame-stepped seek(), then
- *  encodes with FFmpeg in one call and muxes BGM if present. */
+ *  encodes with FFmpeg in one call and muxes BGM (uploaded, or generated
+ *  from the project's template preset) with volume + fade in/out. */
 export async function renderVideo(project: VideoProject): Promise<string> {
   if (project.scenes.length === 0) throw new Error("No scenes configured -- pick a template first.");
+  ensureFfmpegAvailable();
 
-  const outDir = path.join(videoDir(project.id), "video");
+  const orientations = new Set(project.scenes.map((s) => orientationOf(s)));
+  if (orientations.size > 1) throw new Error("Mixed-orientation project: every scene must share the same aspect ratio (9:16 or 16:9) before rendering.");
+
+  const outDir = videoDir(project.id);
   const framesDir = path.join(outDir, "frames");
   fs.rmSync(framesDir, { recursive: true, force: true });
   fs.mkdirSync(framesDir, { recursive: true });
@@ -593,7 +1040,7 @@ export async function renderVideo(project: VideoProject): Promise<string> {
     const page = await browser.newPage({ viewport: canvasFor(scenes[0] ?? ({} as VideoScene)) });
     for (const scene of scenes) {
       await page.setViewportSize(canvasFor(scene));
-      const html = sceneHtml(scene, sourceUrisFor(project, scene, resolveUri), true);
+      const html = sceneHtml(scene, sourceUrisFor(project, scene, resolveUri), true, sourceKindsFor(project, scene));
       await page.setContent(html, { waitUntil: "load" });
 
       const totalFrames = Math.round(Math.max(1, scene.durationSeconds) * FPS);
@@ -609,13 +1056,23 @@ export async function renderVideo(project: VideoProject): Promise<string> {
     await browser.close();
   }
 
+  const totalSeconds = project.scenes.reduce((sum, s) => sum + Math.max(1, s.durationSeconds), 0);
   const rawVideoPath = path.join(outDir, "promo_raw.mp4");
   execSync(`ffmpeg -y -framerate ${FPS} -i "${framesDir}/frame_%06d.png" -c:v libx264 -pix_fmt yuv420p "${rawVideoPath}"`, { stdio: "ignore" });
 
   const finalVideoPath = path.join(outDir, "promo.mp4");
-  if (project.bgm) {
-    const bgmPath = videoFile(project.id, project.bgm);
-    execSync(`ffmpeg -y -i "${rawVideoPath}" -i "${bgmPath}" -c:v copy -c:a aac -shortest "${finalVideoPath}"`, { stdio: "ignore" });
+  const bgmPath = project.bgm ? videoFile(project.id, project.bgm) : project.template ? ensureGeneratedBgm(project.template, totalSeconds) : null;
+
+  if (bgmPath) {
+    const volume = project.bgmVolume ?? 0.35;
+    const fadeInMs = project.bgmFadeInMs ?? 1500;
+    const fadeOutMs = project.bgmFadeOutMs ?? 2000;
+    const fadeOutStart = Math.max(0, totalSeconds - fadeOutMs / 1000);
+    const filter = `[1:a]volume=${volume},afade=t=in:st=0:d=${(fadeInMs / 1000).toFixed(2)},afade=t=out:st=${fadeOutStart.toFixed(2)}:d=${(fadeOutMs / 1000).toFixed(2)}[a]`;
+    execSync(
+      `ffmpeg -y -i "${rawVideoPath}" -stream_loop -1 -i "${bgmPath}" -filter_complex "${filter}" -map 0:v -map "[a]" -c:v copy -c:a aac -shortest "${finalVideoPath}"`,
+      { stdio: "ignore" },
+    );
     fs.rmSync(rawVideoPath, { force: true });
   } else {
     fs.renameSync(rawVideoPath, finalVideoPath);
