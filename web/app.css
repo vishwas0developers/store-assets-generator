@@ -237,8 +237,13 @@ pre { background: #0a0c10; border: 1px solid #21252f; border-radius: 6px; paddin
 .video-screen-card { padding: .6rem .75rem; border-radius: 8px; border: 1px solid #232733; cursor: pointer; transition: border-color .15s ease, background .15s ease; }
 .video-screen-card:hover { border-color: #3b82f6; }
 .video-screen-card.active { border-color: #3b82f6; background: #16223a; }
-.video-screen-num { font-size: .68rem; text-transform: uppercase; letter-spacing: .03em; color: #3b82f6; font-weight: 700; }
+.video-screen-num { font-size: .68rem; text-transform: uppercase; letter-spacing: .03em; color: #3b82f6; font-weight: 700; display: inline-block; }
 .video-screen-name { font-size: .88rem; font-weight: 600; color: #e5e7eb; margin-top: .1rem; }
+/* Per-scene "play just this scene" button -- distinct from clicking the
+   card body (which selects and holds the scene without playing it). */
+.video-screen-play { float: right; background: transparent; border: 1px solid #2b3040; color: #93c5fd; border-radius: 6px; width: 26px; height: 22px; font-size: .68rem; cursor: pointer; line-height: 1; padding: 0; }
+.video-screen-play:hover { border-color: #3b82f6; background: #16223a; }
+.video-screen-play:focus-visible, .video-scene-controls button:focus-visible, .video-detail-dots .video-scene-dot:focus-visible { outline: 2px solid #3b82f6; outline-offset: 2px; }
 
 /* Controls always pinned to the panel's bottom edge, even when the panel is
    stretched taller than its own content (see .template-detail-video above). */

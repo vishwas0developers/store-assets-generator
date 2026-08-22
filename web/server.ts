@@ -72,8 +72,9 @@ import {
   videoDir,
   videoFile,
 } from "../src/video/project.js";
-import { listSceneAnimations, listVideoBackgrounds, renderVideo, renderVideoTemplateThumbs, sceneHtml, scenePreviewHtml, sourceUrisFor, templatePreviewHtml } from "../src/video/render.js";
-import { VIDEO_TEMPLATES, applyVideoTemplate, scratchVideoProject } from "../src/video/templates.js";
+import { listSceneAnimations, listSceneLayouts, listVideoBackgrounds, renderVideo, renderVideoTemplateThumbs, sceneHtml, scenePreviewHtml, sourceKindsFor, sourceUrisFor, templatePreviewHtml } from "../src/video/render.js";
+import { VIDEO_TEMPLATES, applyVideoTemplate, resolveTemplateId, scratchVideoProject } from "../src/video/templates.js";
+import { BGM_PRESETS, renderBgmWav } from "../src/video/bgm.js";
 
 /**
  * Local-only manual workflow surface -- a thin HTTP adapter over three
@@ -918,9 +919,9 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
     {
       const m = p.match(/^\/api\/videos\/templates\/([^/]+)\/preview$/);
       if (m && method === "GET") {
-        const templateId = decodeURIComponent(m[1]);
+        const templateId = resolveTemplateId(decodeURIComponent(m[1]));
         const template = VIDEO_TEMPLATES.find((t) => t.id === templateId);
-        if (!template) return sendError(res, 404, `Unknown video template '${templateId}'.`);
+        if (!template) return sendError(res, 404, `Unknown video template '${m[1]}'.`);
         const sourceProjectId = url.searchParams.get("projectId");
         const sources = sourceProjectId ? loadVideoProject(decodeURIComponent(sourceProjectId)).sources : [];
         const scratch = scratchVideoProject(templateId, sources);
@@ -932,10 +933,10 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
     {
       const m = p.match(/^\/api\/videos\/templates\/([^/]+)\/scene\/(\d+)\/preview$/);
       if (m && method === "GET") {
-        const templateId = decodeURIComponent(m[1]);
+        const templateId = resolveTemplateId(decodeURIComponent(m[1]));
         const sceneIndex = Number(m[2]);
         const template = VIDEO_TEMPLATES.find((t) => t.id === templateId);
-        if (!template) return sendError(res, 404, `Unknown video template '${templateId}'.`);
+        if (!template) return sendError(res, 404, `Unknown video template '${m[1]}'.`);
         const sourceProjectId = url.searchParams.get("projectId");
         const sources = sourceProjectId ? loadVideoProject(decodeURIComponent(sourceProjectId)).sources : [];
         const scratch = scratchVideoProject(templateId, sources);
@@ -943,21 +944,36 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
         if (!scene) return sendError(res, 404, `Scene index ${sceneIndex} out of range for '${templateId}'.`);
         const resolveUri = (rel: string) => `/api/videos/${scratch.id}/file?p=${encodeURIComponent(rel)}`;
         res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
-        res.end(sceneHtml(scene, sourceUrisFor(scratch, scene, resolveUri), false));
+        res.end(sceneHtml(scene, sourceUrisFor(scratch, scene, resolveUri), false, sourceKindsFor(scratch, scene)));
         return;
       }
     }
     {
       const m = p.match(/^\/api\/videos\/template-thumb\/([^/]+)\.png$/);
       if (m && method === "GET") {
-        const slug = decodeURIComponent(m[1]);
+        const slug = resolveTemplateId(decodeURIComponent(m[1]));
         const template = VIDEO_TEMPLATES.find((t) => t.id === slug);
-        if (!template) return sendError(res, 404, `Unknown video template '${slug}'.`);
+        if (!template) return sendError(res, 404, `Unknown video template '${m[1]}'.`);
         const outDir = path.join(process.cwd(), "output", ".template-thumbs");
         const thumbPath = path.join(outDir, `video-${slug}.png`);
         if (!fs.existsSync(thumbPath)) await renderVideoTemplateThumbs(outDir, VIDEO_TEMPLATES);
         res.writeHead(200, { "Content-Type": "image/png", "Cache-Control": "no-cache" });
         fs.createReadStream(thumbPath).pipe(res);
+        return;
+      }
+    }
+    {
+      const m = p.match(/^\/api\/videos\/templates\/([^/]+)\/bgm\.wav$/);
+      if (m && method === "GET") {
+        const templateId = resolveTemplateId(decodeURIComponent(m[1]));
+        const preset = BGM_PRESETS[templateId];
+        if (!preset) return sendError(res, 404, `No BGM preset for template '${m[1]}'.`);
+        const outDir = path.join(process.cwd(), "output", ".bgm");
+        fs.mkdirSync(outDir, { recursive: true });
+        const wavPath = path.join(outDir, `${templateId}.wav`);
+        if (!fs.existsSync(wavPath)) fs.writeFileSync(wavPath, renderBgmWav(preset, 30));
+        res.writeHead(200, { "Content-Type": "audio/wav", "Cache-Control": "no-cache" });
+        fs.createReadStream(wavPath).pipe(res);
         return;
       }
     }
@@ -983,7 +999,7 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
     }
 
     if (method === "GET" && p === "/api/videos/scene-options") {
-      sendJson(res, 200, { animations: listSceneAnimations(), backgrounds: listVideoBackgrounds() });
+      sendJson(res, 200, { animations: listSceneAnimations(), backgrounds: listVideoBackgrounds(), layouts: { "9:16": listSceneLayouts("9:16"), "16:9": listSceneLayouts("16:9") } });
       return;
     }
     {
@@ -992,15 +1008,58 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
         const id = decodeURIComponent(m[1]);
         const project = loadVideoProject(id);
         const name = url.searchParams.get("name") ?? `image_${project.sources.length + 1}`;
+        const contentType = req.headers["content-type"] ?? "";
+        const isVideo = contentType.includes("video/");
+        if (isVideo) {
+          const ext = contentType.includes("webm") ? "webm" : "mp4";
+          const relPath = `sources/rec_${Date.now()}.${ext}`;
+          fs.writeFileSync(videoFile(id, relPath), await readRawBody(req));
+          const source = { id: `src_${Date.now()}`, name, file: relPath, width: 0, height: 0, kind: "video" as const };
+          project.sources.push(source);
+          saveVideoProject(project);
+          sendJson(res, 200, source);
+          return;
+        }
         const ext = imageExtFromContentType(req.headers["content-type"]);
         const relPath = `sources/img_${Date.now()}.${ext}`;
         const abs = videoFile(id, relPath);
         fs.writeFileSync(abs, await readRawBody(req));
         const { width, height } = pngSize(abs);
-        const source = { id: `src_${Date.now()}`, name, file: relPath, width, height };
+        const source = { id: `src_${Date.now()}`, name, file: relPath, width, height, kind: "image" as const };
         project.sources.push(source);
         saveVideoProject(project);
         sendJson(res, 200, source);
+        return;
+      }
+    }
+    {
+      const m = p.match(/^\/api\/videos\/([^/]+)\/scenes$/);
+      if (m && method === "POST") {
+        const project = loadVideoProject(decodeURIComponent(m[1]));
+        if (project.scenes.length === 0) return sendError(res, 400, "Apply a template before adding scenes.");
+        if (project.scenes.length >= 10) return sendError(res, 400, "10 scenes is the app-store maximum for this project.");
+        const last = [...project.scenes].sort((a, b) => a.order - b.order).at(-1)!;
+        const order = project.scenes.length;
+        const newScene = { ...last, id: `scene_${Date.now()}`, order, screenIds: undefined, text: "", subtext: "" };
+        project.scenes.push(newScene);
+        saveVideoProject(project);
+        sendJson(res, 200, project);
+        return;
+      }
+    }
+    {
+      const m = p.match(/^\/api\/videos\/([^/]+)\/scenes\/order$/);
+      if (m && method === "PATCH") {
+        const body = await readJsonBody(req);
+        const project = loadVideoProject(decodeURIComponent(m[1]));
+        const order: string[] = body.order ?? [];
+        for (const scene of project.scenes) {
+          const idx = order.indexOf(scene.id);
+          if (idx !== -1) scene.order = idx;
+        }
+        project.scenes.sort((a, b) => a.order - b.order);
+        saveVideoProject(project);
+        sendJson(res, 200, project);
         return;
       }
     }
@@ -1011,9 +1070,24 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
         const project = loadVideoProject(decodeURIComponent(m[1]));
         const idx = project.scenes.findIndex((s) => s.id === decodeURIComponent(m[2]));
         if (idx === -1) return sendError(res, 404, "Scene not found");
+        const nextAspect = body.aspectRatio ?? project.scenes[idx].aspectRatio;
+        if (project.scenes.some((s, i) => i !== idx && (s.aspectRatio ?? "9:16") !== (nextAspect ?? "9:16"))) {
+          return sendError(res, 400, "Every scene in a project must share the same aspect ratio.");
+        }
         project.scenes[idx] = { ...project.scenes[idx], ...body };
         saveVideoProject(project);
         sendJson(res, 200, project.scenes[idx]);
+        return;
+      }
+      if (m && method === "DELETE") {
+        const project = loadVideoProject(decodeURIComponent(m[1]));
+        const idx = project.scenes.findIndex((s) => s.id === decodeURIComponent(m[2]));
+        if (idx === -1) return sendError(res, 404, "Scene not found");
+        if (project.scenes.length <= 1) return sendError(res, 400, "A project needs at least one scene.");
+        project.scenes.splice(idx, 1);
+        project.scenes.sort((a, b) => a.order - b.order).forEach((s, i) => (s.order = i));
+        saveVideoProject(project);
+        sendJson(res, 200, project);
         return;
       }
     }
@@ -1070,7 +1144,7 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
     {
       const m = p.match(/^\/api\/videos\/([^/]+)\/download$/);
       if (m && method === "GET") {
-        sendFile(res, path.join(videoDir(decodeURIComponent(m[1])), "video", "promo.mp4"), "video/mp4");
+        sendFile(res, path.join(videoDir(decodeURIComponent(m[1])), "promo.mp4"), "video/mp4");
         return;
       }
     }

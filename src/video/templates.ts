@@ -1,15 +1,4 @@
-import { type VideoProject, type VideoScene } from "./project.js";
-
-/**
- * Video tab starter templates -- each a complete multi-scene animation
- * sequence, built from the scene animations in video/render.ts. Every
- * template owns its own device + variant + framing (deviceFraction) so the
- * five read as five genuinely different mockup videos, not the same phone
- * with different colors. Selecting one prepares Scene 1..N with sensible
- * defaults; each scene is then independently editable in the Scenes
- * section. Nothing here is an AI video engine -- every frame is plain
- * HTML/CSS/JS, rendered by video/render.ts.
- */
+import { type FlowStep, type VideoProject, type VideoScene } from "./project.js";
 
 export interface VideoTemplateScene {
   label: string;
@@ -22,6 +11,19 @@ export interface VideoTemplateScene {
   /** When >1, this scene cross-fades through that many screens inside the
    *  device instead of showing one static screenshot for its whole run. */
   screenCount?: number;
+  /** Which side the device/copy sit on -- see LAYOUTS in render.ts. Falls
+   *  back to a per-orientation default when unset. */
+  layout?: string;
+  /** Device depth treatment -- "flat" (default), "perspective", "float", or
+   *  "showcase" (full 3D rig). See render.ts's deviceRigMarkup. */
+  depth?: "flat" | "perspective" | "float" | "showcase";
+  /** In/out transition for this scene. Falls back to "cut". */
+  transition?: "cut" | "fade" | "slide" | "wipe" | "zoom";
+  /** Dynamic flow labels for landscape walkthrough scene. */
+  flowSteps?: FlowStep[];
+  /** On-screen title and supporting line for this scene. */
+  text: string;
+  subtext: string;
 }
 
 export interface VideoTemplate {
@@ -43,235 +45,329 @@ export interface VideoTemplate {
 }
 
 export const VIDEO_TEMPLATES: VideoTemplate[] = [
+  // =========================================================================
+  // PORTRAIT TEMPLATES (9:16) — 5 Distinct Devices
+  // =========================================================================
   {
-    id: "foldable-unfold",
-    device: "samsung-galaxy-z-fold",
-    variant: "unfolded",
-    deviceFraction: 0.5,
-    name: "Foldable Unfold",
-    description: "Opens on the fold itself -- the cover screen gives way to the wide unfolded display before the feature tour begins.",
-    useCase: "Best for foldable-specific launches and 'more screen, more app' positioning.",
-    designStyle: "Wide near-square canvas, hinge seam, a deliberate unfold as the hero beat.",
-    aspectRatio: "9:16",
-    features: ["Real hinge-open animation", "Wide unfolded canvas", "Multi-screen swap mid-scene"],
-    scenes: [
-      { label: "Unfold", sceneTemplate: "fold-open", durationSeconds: 4.5, background: "graphite", rotate: 10, zoom: 8, move: 30 },
-      { label: "Continuity", sceneTemplate: "zoom-focus", durationSeconds: 5, background: "royal", rotate: 0, zoom: 14, move: 0, screenCount: 2 },
-      { label: "Multitasking", sceneTemplate: "parallax-stack", durationSeconds: 5, background: "mint", rotate: 6, zoom: 10, move: 40, screenCount: 2 },
-      { label: "Outro / CTA", sceneTemplate: "outro-cta", durationSeconds: 5, background: "violet", rotate: 0, zoom: 12, move: 0 },
-    ],
-  },
-  {
-    id: "feature-showcase",
-    device: "apple-iphone-17-pro-max",
+    id: "iphone-15-pro-portrait",
+    device: "apple-iphone-15-pro",
     deviceFraction: 0.6,
-    name: "Feature Showcase",
-    description: "A confident walkthrough of your app's core features, closing on a clear call to action.",
-    useCase: "Best for App Store / Play Store preview videos and feature-launch announcements.",
-    designStyle: "Tall dynamic-island silhouette, deep gradients, staged 3D device motion.",
+    name: "iPhone 15 Pro — Modern Premium",
+    description: "Flagship titanium aesthetic with deep gradients, subtle 3D entrance choreography, and an immersive zoom-to-app flow close.",
+    useCase: "Best for premium App Store previews, brand-forward mobile utilities, and fintech launches.",
+    designStyle: "Refined Dynamic Island silhouette, deep oceanic tones, horizontally centered presentation, 3D product perspective.",
     aspectRatio: "9:16",
-    features: ["Word-staggered titles", "Six-scene arc with a dedicated outro", "Depth-drifting backdrops"],
+    features: ["Cohesive 6-scene portrait arc", "Subtle 3D perspective tilts", "Full zoom-into-screen final app flow"],
     scenes: [
-      { label: "Cold open", sceneTemplate: "hero-rise", durationSeconds: 4.5, background: "ocean", rotate: 15, zoom: 8, move: 60 },
-      { label: "Feature one", sceneTemplate: "tilt-3d", durationSeconds: 5, background: "royal", rotate: 22, zoom: 10, move: 40 },
-      { label: "Feature two", sceneTemplate: "mask-reveal", durationSeconds: 5, background: "graphite", rotate: 8, zoom: 14, move: 50, screenCount: 3 },
-      { label: "Feature three", sceneTemplate: "slide-pan", durationSeconds: 5, background: "sunset", rotate: 12, zoom: 8, move: 80 },
-      { label: "Feature four", sceneTemplate: "kinetic-type", durationSeconds: 5, background: "mint", rotate: 6, zoom: 12, move: 30 },
-      { label: "Outro / CTA", sceneTemplate: "outro-cta", durationSeconds: 5, background: "violet", rotate: 0, zoom: 16, move: 0 },
+      { label: "Cold Open", sceneTemplate: "hero-rise", durationSeconds: 4.5, background: "ocean", rotate: 10, zoom: 8, move: 40, layout: "stacked-top", depth: "perspective", transition: "cut", text: "Welcome to AppName", subtext: "The ultimate companion" },
+      { label: "Core Feature", sceneTemplate: "tilt-3d", durationSeconds: 5, background: "royal", rotate: 12, zoom: 10, move: 30, layout: "stacked-bottom", depth: "perspective", transition: "fade", text: "Realtime Statistics", subtext: "Track every metric instantly" },
+      { label: "Detail View", sceneTemplate: "mask-reveal", durationSeconds: 5, background: "graphite", rotate: 0, zoom: 12, move: 20, layout: "stacked-top", depth: "flat", transition: "fade", screenCount: 2, text: "Seamless Sync", subtext: "Live updates across all devices" },
+      { label: "Highlight", sceneTemplate: "zoom-focus", durationSeconds: 5, background: "royal", rotate: 0, zoom: 14, move: 0, layout: "full-bleed", depth: "perspective", transition: "wipe", text: "Bank-Grade Security", subtext: "Protected with end-to-end encryption" },
+      { label: "Benefit", sceneTemplate: "parallax-stack", durationSeconds: 5, background: "ocean", rotate: 6, zoom: 10, move: 25, layout: "stacked-bottom", depth: "float", transition: "fade", text: "Collaborate Together", subtext: "Invite your team in one click" },
+      { label: "App Flow", sceneTemplate: "portrait-flow", durationSeconds: 7, background: "graphite", rotate: 0, zoom: 18, move: 0, layout: "full-bleed", depth: "showcase", transition: "zoom", text: "Experience the Full App", subtext: "Download today on the App Store" },
     ],
   },
   {
-    id: "social-promo",
-    device: "google-pixel-9",
-    deviceFraction: 0.56,
-    name: "Social Promo",
-    description: "Five fast-paced scenes tuned for feed autoplay -- clear in the first second, no sound required.",
-    useCase: "Best for Instagram/TikTok/X promo clips and paid social creative.",
-    designStyle: "Thin-bezel punch-hole silhouette, saturated gradients, energetic entrances.",
-    aspectRatio: "9:16",
-    features: ["Autoplay-safe pacing", "Five distinct entrance styles", "Built-in CTA close"],
-    scenes: [
-      { label: "Hook", sceneTemplate: "slide-pan", durationSeconds: 4, background: "candy", rotate: -10, zoom: 6, move: 90 },
-      { label: "Feature one", sceneTemplate: "hero-rise", durationSeconds: 4, background: "violet", rotate: 12, zoom: 12, move: 50 },
-      { label: "Feature two", sceneTemplate: "kinetic-type", durationSeconds: 4, background: "citrus", rotate: 0, zoom: 15, move: 0, screenCount: 2 },
-      { label: "Feature three", sceneTemplate: "card-flip", durationSeconds: 4, background: "aurora", rotate: 20, zoom: 8, move: 45 },
-      { label: "CTA", sceneTemplate: "outro-cta", durationSeconds: 4.5, background: "sunset", rotate: -15, zoom: 10, move: 70 },
-    ],
-  },
-  {
-    id: "quick-teaser",
-    device: "samsung-galaxy-s24",
-    deviceFraction: 0.62,
-    name: "Quick Teaser",
-    description: "A fast-paced intro reel that hits four beats and gets out -- built for short attention spans.",
-    useCase: "Best for social ads, Stories/Reels-style teasers, and 15-30s pre-roll.",
-    designStyle: "Tightest bezel and radius of the set, high-contrast, snappy overshoot easing.",
-    aspectRatio: "9:16",
-    features: ["Sub-4s scene pacing", "Card-flip reveal", "Kinetic type throughout"],
-    scenes: [
-      { label: "Hook", sceneTemplate: "kinetic-type", durationSeconds: 3.5, background: "graphite", rotate: 0, zoom: 18, move: 0 },
-      { label: "Payoff", sceneTemplate: "slide-pan", durationSeconds: 3.5, background: "aurora", rotate: 10, zoom: 8, move: 90 },
-      { label: "Detail", sceneTemplate: "card-flip", durationSeconds: 3.5, background: "citrus", rotate: 25, zoom: 10, move: 30 },
-      { label: "CTA", sceneTemplate: "outro-cta", durationSeconds: 4, background: "ocean", rotate: 15, zoom: 10, move: 60 },
-    ],
-  },
-  {
-    id: "studio-tablet",
-    device: "ipad-pro-12-9",
-    deviceFraction: 0.6,
-    name: "Studio Tablet",
-    description: "A widescreen landscape tour built around a tablet canvas -- room to show a full workspace, not just a phone screen.",
-    useCase: "Best for productivity/creative apps and landing-page hero videos where the tablet layout is the selling point.",
-    designStyle: "Full 16:9 landscape canvas -- device and copy sit side by side instead of stacked, chunky bezel, slow horizontal pans.",
-    aspectRatio: "16:9",
-    features: ["Full-width 16:9 landscape canvas", "Tablet-tuned pan motion", "Multi-screen workspace swap"],
-    scenes: [
-      { label: "Cold open", sceneTemplate: "tablet-pan", durationSeconds: 6, background: "light", rotate: 8, zoom: 8, move: 40 },
-      { label: "Workspace", sceneTemplate: "zoom-focus", durationSeconds: 6, background: "mint", rotate: 0, zoom: 12, move: 0, screenCount: 3 },
-      { label: "Collaboration", sceneTemplate: "tablet-pan", durationSeconds: 6, background: "aurora", rotate: 6, zoom: 10, move: 30 },
-      { label: "Outro / CTA", sceneTemplate: "outro-cta", durationSeconds: 5, background: "light", rotate: 0, zoom: 10, move: 0 },
-    ],
-  },
-  {
-    id: "landscape-hero",
-    device: "apple-iphone-18-pro-max",
-    deviceFraction: 0.62,
-    name: "Widescreen Hero",
-    description: "A premium 16:9 hero reel -- the flagship device tilts and settles beside bold kinetic copy, built for a landing-page opener.",
-    useCase: "Best as a website hero video, keynote opener, or paid display ad in a landscape placement.",
-    designStyle: "Full 16:9 canvas, deep cinematic gradients, staged 3D device motion beside large kinetic type.",
-    aspectRatio: "16:9",
-    features: ["Cinematic 3D tilt entrance", "Kinetic type pairing", "Dedicated outro CTA beat"],
-    scenes: [
-      { label: "Cold open", sceneTemplate: "tilt-3d", durationSeconds: 5, background: "ocean", rotate: 20, zoom: 10, move: 40 },
-      { label: "Feature one", sceneTemplate: "kinetic-type", durationSeconds: 5, background: "royal", rotate: 0, zoom: 14, move: 0, screenCount: 2 },
-      { label: "Feature two", sceneTemplate: "mask-reveal", durationSeconds: 5, background: "violet", rotate: 6, zoom: 12, move: 30 },
-      { label: "Outro / CTA", sceneTemplate: "outro-cta", durationSeconds: 5, background: "sunset", rotate: 0, zoom: 16, move: 0 },
-    ],
-  },
-  {
-    id: "landscape-cinematic",
-    device: "samsung-galaxy-z-fold",
-    variant: "unfolded",
-    deviceFraction: 0.52,
-    name: "Cinematic Unfold",
-    description: "A slower widescreen story built around the foldable's open hinge moment -- generous pacing, soft depth, premium reveal.",
-    useCase: "Best for foldable-specific landing pages and investor/press reveal videos where the unfold itself is the story.",
-    designStyle: "Full 16:9 canvas, the widest device of the set, restrained palette, deliberate hinge-open cold open.",
-    aspectRatio: "16:9",
-    features: ["Full-width hinge-open cold open", "Widest device silhouette in landscape", "Slow, deliberate pacing"],
-    scenes: [
-      { label: "Unfold", sceneTemplate: "fold-open", durationSeconds: 6, background: "graphite", rotate: 8, zoom: 8, move: 20 },
-      { label: "Continuity", sceneTemplate: "parallax-stack", durationSeconds: 6, background: "royal", rotate: 4, zoom: 10, move: 30, screenCount: 2 },
-      { label: "Detail", sceneTemplate: "zoom-focus", durationSeconds: 6, background: "candy", rotate: 0, zoom: 12, move: 0 },
-      { label: "Outro / CTA", sceneTemplate: "outro-cta", durationSeconds: 6, background: "graphite", rotate: 0, zoom: 12, move: 0 },
-    ],
-  },
-  {
-    id: "landscape-social-ad",
-    device: "google-pixel-9",
-    deviceFraction: 0.6,
-    name: "Widescreen Social Ad",
-    description: "A punchy 16:9 ad cut -- fast beats, high-contrast gradients, built to hold attention on a landscape feed placement.",
-    useCase: "Best for YouTube pre-roll, landscape display ads, and paid social placements that aren't Stories/Reels-shaped.",
-    designStyle: "Full 16:9 canvas, saturated gradients, snappy card-flip and slide beats, tight pacing throughout.",
-    aspectRatio: "16:9",
-    features: ["Sub-5s scene pacing", "Card-flip reveal beside copy", "Built-in CTA close"],
-    scenes: [
-      { label: "Hook", sceneTemplate: "slide-pan", durationSeconds: 4, background: "citrus", rotate: -10, zoom: 8, move: 70 },
-      { label: "Feature one", sceneTemplate: "card-flip", durationSeconds: 4.5, background: "aurora", rotate: 18, zoom: 8, move: 30 },
-      { label: "Feature two", sceneTemplate: "hero-rise", durationSeconds: 4.5, background: "candy", rotate: 10, zoom: 12, move: 40 },
-      { label: "CTA", sceneTemplate: "outro-cta", durationSeconds: 4, background: "sunset", rotate: 0, zoom: 12, move: 0 },
-    ],
-  },
-  {
-    id: "landscape-minimal",
-    device: "android-tablet-10",
+    id: "pixel-9-pro-portrait",
+    device: "google-pixel-9-pro",
     deviceFraction: 0.58,
-    name: "Widescreen Minimal",
-    description: "A calm, light-mode 16:9 tour for apps that sell on clarity over spectacle -- soft mask reveals, even pacing.",
-    useCase: "Best for finance, productivity, and utility apps where a restrained landscape tone builds trust.",
-    designStyle: "Full 16:9 canvas, airy light backgrounds, mask-reveal led, understated device motion.",
-    aspectRatio: "16:9",
-    features: ["Light-toned widescreen palette", "Mask-reveal led entrance", "Even, unhurried pacing"],
+    name: "Google Pixel 9 Pro — Studio Motion",
+    description: "Modern Android flagship tour with punch-hole precision, fresh vibrant styling, and smooth cinematic easing.",
+    useCase: "Best for Google Play flagship previews, productivity companions, and AI tool showcases.",
+    designStyle: "Polished camera-bar silhouette, fresh organic aurora tones, centered safe alignment.",
+    aspectRatio: "9:16",
+    features: ["Balanced 6-scene sequence", "Controlled 3D perspective", "Direct zoom-into-app flow conclusion"],
     scenes: [
-      { label: "Cold open", sceneTemplate: "mask-reveal", durationSeconds: 5, background: "light", rotate: 4, zoom: 8, move: 20 },
-      { label: "Feature one", sceneTemplate: "zoom-focus", durationSeconds: 5, background: "mint", rotate: 0, zoom: 10, move: 0, screenCount: 2 },
-      { label: "Feature two", sceneTemplate: "parallax-stack", durationSeconds: 5, background: "aurora", rotate: 4, zoom: 8, move: 30 },
-      { label: "Outro / CTA", sceneTemplate: "outro-cta", durationSeconds: 5, background: "light", rotate: 0, zoom: 10, move: 0 },
+      { label: "Cold Open", sceneTemplate: "hero-rise", durationSeconds: 4.5, background: "aurora", rotate: 8, zoom: 8, move: 35, layout: "stacked-top", depth: "perspective", transition: "cut", text: "Meet Your New Hub", subtext: "Everything in one unified place" },
+      { label: "Key Benefit", sceneTemplate: "slide-pan", durationSeconds: 5, background: "graphite", rotate: 8, zoom: 10, move: 30, layout: "stacked-bottom", depth: "perspective", transition: "slide", text: "Plan in Seconds", subtext: "Intelligent scheduling built in" },
+      { label: "Live Glance", sceneTemplate: "parallax-stack", durationSeconds: 5, background: "royal", rotate: 6, zoom: 10, move: 25, layout: "stacked-top", depth: "flat", transition: "fade", screenCount: 2, text: "Live Data Glance", subtext: "Real-time updates as you work" },
+      { label: "Deep Focus", sceneTemplate: "zoom-focus", durationSeconds: 5, background: "aurora", rotate: 0, zoom: 12, move: 0, layout: "full-bleed", depth: "perspective", transition: "wipe", text: "Automate Everyday Tasks", subtext: "Smart rules that run themselves" },
+      { label: "Collaboration", sceneTemplate: "kinetic-type", durationSeconds: 5, background: "mint", rotate: 4, zoom: 10, move: 20, layout: "stacked-bottom", depth: "float", transition: "fade", text: "Built for Teams", subtext: "Keep everyone in sync effortlessly" },
+      { label: "App Flow", sceneTemplate: "portrait-flow", durationSeconds: 7, background: "graphite", rotate: 0, zoom: 18, move: 0, layout: "full-bleed", depth: "showcase", transition: "zoom", text: "Start Your Journey", subtext: "Available on Google Play" },
+    ],
+  },
+  {
+    id: "galaxy-s25-portrait",
+    device: "samsung-galaxy-s25",
+    deviceFraction: 0.6,
+    name: "Samsung Galaxy S25 — Black Premium",
+    description: "Weighty dark-mode elegance with ultra-slim bezels, sophisticated typography, and restrained high-end motion.",
+    useCase: "Best for enterprise tools, developer platforms, analytics suites, and dark-theme apps.",
+    designStyle: "Ultra-thin bezel silhouette, deep charcoal/navy swatches, centered safe composition.",
+    aspectRatio: "9:16",
+    features: ["Sophisticated dark aesthetic", "Natural 3D product tilt", "Seamless zoom-into-app flow"],
+    scenes: [
+      { label: "Cold Open", sceneTemplate: "hero-rise", durationSeconds: 4.5, background: "solid-navy", rotate: 6, zoom: 8, move: 30, layout: "stacked-top", depth: "perspective", transition: "cut", text: "Engineered for Focus", subtext: "Maximum clarity, zero distraction" },
+      { label: "Precision", sceneTemplate: "tilt-3d", durationSeconds: 5, background: "solid-charcoal", rotate: 10, zoom: 10, move: 25, layout: "stacked-bottom", depth: "perspective", transition: "fade", text: "Pixel-Perfect Insights", subtext: "Deep analytical intelligence" },
+      { label: "Dashboard", sceneTemplate: "mask-reveal", durationSeconds: 5, background: "solid-navy", rotate: 0, zoom: 12, move: 20, layout: "stacked-top", depth: "flat", transition: "fade", screenCount: 2, text: "Unified Command", subtext: "All workflows under control" },
+      { label: "Security", sceneTemplate: "zoom-focus", durationSeconds: 5, background: "graphite", rotate: 0, zoom: 14, move: 0, layout: "full-bleed", depth: "perspective", transition: "wipe", text: "Enterprise Grade", subtext: "Built for mission-critical reliability" },
+      { label: "Performance", sceneTemplate: "kinetic-type", durationSeconds: 5, background: "solid-navy", rotate: 4, zoom: 10, move: 20, layout: "stacked-bottom", depth: "float", transition: "fade", text: "Blazing Fast Execution", subtext: "Instant responses every time" },
+      { label: "App Flow", sceneTemplate: "portrait-flow", durationSeconds: 7, background: "solid-charcoal", rotate: 0, zoom: 18, move: 0, layout: "full-bleed", depth: "showcase", transition: "zoom", text: "Unleash Maximum Power", subtext: "Deploy in your organisation today" },
+    ],
+  },
+  {
+    id: "iphone-16-pro-portrait",
+    device: "apple-iphone-16-pro-max",
+    deviceFraction: 0.62,
+    name: "iPhone 16 Pro Max — Clean Minimal",
+    description: "Light, airy, and distraction-free presentation designed to communicate trust, calm usability, and clarity.",
+    useCase: "Best for health, finance, mindfulness, education, and lifestyle apps.",
+    designStyle: "Expansive display with soft cream/light gradients, unhurried pacing, and crisp typography.",
+    aspectRatio: "9:16",
+    features: ["Calm light aesthetic", "Smooth non-aggressive transitions", "Clean zoom-into-app flow close"],
+    scenes: [
+      { label: "Cold Open", sceneTemplate: "mask-reveal", durationSeconds: 4.5, background: "light", rotate: 4, zoom: 8, move: 20, layout: "stacked-top", depth: "perspective", transition: "cut", text: "Clarity, First", subtext: "Everything thoughtfully in its place" },
+      { label: "Key Feature", sceneTemplate: "zoom-focus", durationSeconds: 5, background: "solid-cream", rotate: 0, zoom: 10, move: 0, layout: "stacked-bottom", depth: "flat", transition: "fade", screenCount: 2, text: "Focus on What Matters", subtext: "Distraction-free at every step" },
+      { label: "Detail View", sceneTemplate: "parallax-stack", durationSeconds: 5, background: "light", rotate: 4, zoom: 8, move: 20, layout: "stacked-top", depth: "perspective", transition: "fade", text: "Every Detail Considered", subtext: "Designed with purpose and craft" },
+      { label: "Core Benefit", sceneTemplate: "hero-rise", durationSeconds: 5, background: "solid-cream", rotate: 4, zoom: 10, move: 25, layout: "stacked-bottom", depth: "perspective", transition: "fade", text: "Built to Last", subtext: "Seamless performance every day" },
+      { label: "Simplicity", sceneTemplate: "kinetic-type", durationSeconds: 5, background: "light", rotate: 0, zoom: 10, move: 0, layout: "stacked-top", depth: "flat", transition: "fade", text: "No Clutter, No Noise", subtext: "Just the tools you need" },
+      { label: "App Flow", sceneTemplate: "portrait-flow", durationSeconds: 7, background: "light", rotate: 0, zoom: 18, move: 0, layout: "full-bleed", depth: "showcase", transition: "zoom", text: "Experience Pure Simplicity", subtext: "Free trial available now" },
+    ],
+  },
+  {
+    id: "pixel-9-portrait",
+    device: "google-pixel-9",
+    deviceFraction: 0.58,
+    name: "Google Pixel 9 — Dynamic Showcase",
+    description: "High-contrast dynamic promo with punchy color gradients, bold typography, and controlled 3D choreography.",
+    useCase: "Best for social promo reels, consumer app launches, and high-energy feature updates.",
+    designStyle: "Vibrant saturated gradients, distinct punch-hole silhouette, snappy rhythmic beats.",
+    aspectRatio: "9:16",
+    features: ["High-impact color palette", "Snappy natural easing", "Full zoom-into-app flow climax"],
+    scenes: [
+      { label: "Hook", sceneTemplate: "slide-pan", durationSeconds: 4.5, background: "sunset", rotate: 6, zoom: 8, move: 35, layout: "stacked-top", depth: "perspective", transition: "cut", text: "The App You Were Waiting For", subtext: "Experience the difference today" },
+      { label: "Hero Feature", sceneTemplate: "hero-rise", durationSeconds: 5, background: "violet", rotate: 8, zoom: 10, move: 30, layout: "stacked-bottom", depth: "float", transition: "slide", text: "Tailored Experience", subtext: "Customizes to your habits instantly" },
+      { label: "Power Tool", sceneTemplate: "kinetic-type", durationSeconds: 5, background: "citrus", rotate: 0, zoom: 12, move: 0, layout: "stacked-top", depth: "flat", transition: "fade", screenCount: 2, text: "Boost Productivity", subtext: "Save hours every single week" },
+      { label: "Interactive", sceneTemplate: "card-flip", durationSeconds: 5, background: "aurora", rotate: 12, zoom: 8, move: 25, layout: "full-bleed", depth: "perspective", transition: "wipe", text: "Interactive Panels", subtext: "Real-time actionable summaries" },
+      { label: "Speed", sceneTemplate: "mask-reveal", durationSeconds: 5, background: "sunset", rotate: 4, zoom: 10, move: 20, layout: "stacked-bottom", depth: "float", transition: "fade", text: "Instant Results", subtext: "Zero lag, zero waiting" },
+      { label: "App Flow", sceneTemplate: "portrait-flow", durationSeconds: 7, background: "violet", rotate: 0, zoom: 18, move: 0, layout: "full-bleed", depth: "showcase", transition: "zoom", text: "Get Started Now", subtext: "Join over 100k happy creators" },
+    ],
+  },
+
+  // =========================================================================
+  // LANDSCAPE TEMPLATES (16:9) — 5 Matching Device Counterparts
+  // =========================================================================
+  {
+    id: "iphone-15-pro-landscape",
+    device: "apple-iphone-15-pro",
+    deviceFraction: 0.6,
+    name: "iPhone 15 Pro — Modern Premium",
+    description: "Widescreen showcase featuring alternating left/right layout balance, cinematic 3D product motion, and animated flow subtitles.",
+    useCase: "Best for website hero headers, YouTube video ads, and product launch keynotes.",
+    designStyle: "Full 16:9 widescreen canvas, deep ocean/royal palette, alternating copy rhythm, dynamic flow labels.",
+    aspectRatio: "16:9",
+    features: ["Widescreen 6-scene master layout", "Alternating left/right balance", "Dynamic flow subtitles in scene 6"],
+    scenes: [
+      { label: "Cold Open", sceneTemplate: "tilt-3d", durationSeconds: 5, background: "ocean", rotate: 14, zoom: 10, move: 30, layout: "copy-left", depth: "perspective", transition: "cut", text: "Introducing AppName", subtext: "Reimagined for the widescreen canvas" },
+      { label: "Core Feature", sceneTemplate: "kinetic-type", durationSeconds: 5, background: "royal", rotate: 0, zoom: 12, move: 0, layout: "copy-right", depth: "flat", transition: "fade", screenCount: 2, text: "Power, Refined", subtext: "Every interaction crafted with precision" },
+      { label: "Detail View", sceneTemplate: "mask-reveal", durationSeconds: 5, background: "violet", rotate: 4, zoom: 10, move: 20, layout: "hero-device", depth: "perspective", transition: "fade", text: "Built to Impress", subtext: "See the bigger picture in high detail" },
+      { label: "Deep Focus", sceneTemplate: "zoom-focus", durationSeconds: 5, background: "graphite", rotate: 0, zoom: 12, move: 0, layout: "copy-left", depth: "flat", transition: "wipe", screenCount: 2, text: "Total Control", subtext: "Complete workflow oversight in one spot" },
+      { label: "Benefit", sceneTemplate: "parallax-stack", durationSeconds: 5, background: "royal", rotate: 4, zoom: 10, move: 20, layout: "copy-right", depth: "float", transition: "fade", text: "Fast, Fluid, Familiar", subtext: "Instant collaboration across your team" },
+      {
+        label: "App Flow",
+        sceneTemplate: "landscape-flow",
+        durationSeconds: 10,
+        background: "ocean",
+        rotate: 0,
+        zoom: 14,
+        move: 0,
+        layout: "centre-flank",
+        depth: "showcase",
+        transition: "fade",
+        text: "Interactive Workflow Tour",
+        subtext: "Explore key screens in real time",
+        flowSteps: [
+          { label: "Home Dashboard", startSec: 3.5, durationSec: 2.0, side: "left" },
+          { label: "Live Analytics", startSec: 5.6, durationSec: 2.0, side: "right" },
+          { label: "Team Settings", startSec: 7.7, durationSec: 2.0, side: "left" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "pixel-9-pro-landscape",
+    device: "google-pixel-9-pro",
+    deviceFraction: 0.58,
+    name: "Google Pixel 9 Pro — Studio Motion",
+    description: "Sleek widescreen Android presentation with balanced side-by-side composition and dynamic animated flow subtitles.",
+    useCase: "Best for SaaS web landing pages, product reveal videos, and digital marketing campaigns.",
+    designStyle: "Polished punch-hole silhouette, aurora/mint themes, rhythmic left-to-right visual balance.",
+    aspectRatio: "16:9",
+    features: ["Balanced widescreen framing", "Controlled 3D product motion", "Multi-step flow subtitle progression"],
+    scenes: [
+      { label: "Cold Open", sceneTemplate: "tilt-3d", durationSeconds: 5, background: "aurora", rotate: 12, zoom: 10, move: 25, layout: "copy-left", depth: "perspective", transition: "cut", text: "Smart Workspaces", subtext: "Unleash next-generation productivity" },
+      { label: "Key Feature", sceneTemplate: "slide-pan", durationSeconds: 5, background: "graphite", rotate: -6, zoom: 8, move: 35, layout: "copy-right", depth: "perspective", transition: "slide", text: "Instant Scheduling", subtext: "Smart calendar intelligence built in" },
+      { label: "Overview", sceneTemplate: "parallax-stack", durationSeconds: 5, background: "royal", rotate: 4, zoom: 10, move: 20, layout: "hero-device", depth: "flat", transition: "fade", screenCount: 2, text: "Unified Views", subtext: "Live updates as events unfold" },
+      { label: "Automation", sceneTemplate: "zoom-focus", durationSeconds: 5, background: "aurora", rotate: 0, zoom: 12, move: 0, layout: "copy-left", depth: "perspective", transition: "wipe", text: "Automate Repetitive Work", subtext: "Save valuable hours every single week" },
+      { label: "Collaboration", sceneTemplate: "kinetic-type", durationSeconds: 5, background: "mint", rotate: 0, zoom: 10, move: 0, layout: "copy-right", depth: "float", transition: "fade", text: "Empower Your Team", subtext: "Real-time multi-user synchronization" },
+      {
+        label: "App Flow",
+        sceneTemplate: "landscape-flow",
+        durationSeconds: 10,
+        background: "aurora",
+        rotate: 0,
+        zoom: 14,
+        move: 0,
+        layout: "centre-flank",
+        depth: "showcase",
+        transition: "fade",
+        text: "Guided Product Tour",
+        subtext: "Navigate through seamless workflows",
+        flowSteps: [
+          { label: "Projects Feed", startSec: 3.5, durationSec: 2.0, side: "left" },
+          { label: "Live Performance", startSec: 5.6, durationSec: 2.0, side: "right" },
+          { label: "Profile & Export", startSec: 7.7, durationSec: 2.0, side: "left" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "galaxy-s25-landscape",
+    device: "samsung-galaxy-s25",
+    deviceFraction: 0.6,
+    name: "Samsung Galaxy S25 — Black Premium",
+    description: "Authoritative dark-mode widescreen showcase designed for enterprise software, cybersecurity, and financial tech.",
+    useCase: "Best for investor presentations, enterprise landing pages, and B2B SaaS video campaigns.",
+    designStyle: "Ultra-thin bezel flagship, solid dark palettes, deliberate centered 3D device staging.",
+    aspectRatio: "16:9",
+    features: ["Enterprise-grade dark styling", "Realistic 3D depth and shadows", "Interactive flow subtitles in scene 6"],
+    scenes: [
+      { label: "Cold Open", sceneTemplate: "tilt-3d", durationSeconds: 5, background: "solid-navy", rotate: 10, zoom: 8, move: 25, layout: "copy-left", depth: "perspective", transition: "cut", text: "Enterprise Intelligence", subtext: "Security and speed without compromise" },
+      { label: "Analytics", sceneTemplate: "mask-reveal", durationSeconds: 5, background: "solid-charcoal", rotate: 4, zoom: 10, move: 20, layout: "copy-right", depth: "perspective", transition: "fade", text: "Full Observability", subtext: "Real-time metrics with zero latency" },
+      { label: "Workspace", sceneTemplate: "parallax-stack", durationSeconds: 5, background: "solid-navy", rotate: 4, zoom: 10, move: 20, layout: "hero-device", depth: "flat", transition: "fade", screenCount: 2, text: "Focus-Driven Design", subtext: "Engineered for mission-critical tasks" },
+      { label: "Security", sceneTemplate: "zoom-focus", durationSeconds: 5, background: "solid-charcoal", rotate: 0, zoom: 12, move: 0, layout: "copy-left", depth: "perspective", transition: "wipe", text: "Zero-Trust Architecture", subtext: "Complete end-to-end data safety" },
+      { label: "Speed", sceneTemplate: "kinetic-type", durationSeconds: 5, background: "solid-navy", rotate: 0, zoom: 10, move: 0, layout: "copy-right", depth: "float", transition: "fade", text: "High-Throughput Power", subtext: "Scale seamlessly as your business grows" },
+      {
+        label: "App Flow",
+        sceneTemplate: "landscape-flow",
+        durationSeconds: 10,
+        background: "solid-charcoal",
+        rotate: 0,
+        zoom: 14,
+        move: 0,
+        layout: "centre-flank",
+        depth: "showcase",
+        transition: "fade",
+        text: "Enterprise Operations View",
+        subtext: "Live monitoring and policy control",
+        flowSteps: [
+          { label: "Security Portal", startSec: 3.5, durationSec: 2.0, side: "left" },
+          { label: "Audit Reports", startSec: 5.6, durationSec: 2.0, side: "right" },
+          { label: "Admin Console", startSec: 7.7, durationSec: 2.0, side: "left" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "iphone-16-pro-landscape",
+    device: "apple-iphone-16-pro-max",
+    deviceFraction: 0.62,
+    name: "iPhone 16 Pro Max — Clean Minimal",
+    description: "Airy light-mode widescreen layout highlighting interface simplicity, clean typography, and uncluttered presentation.",
+    useCase: "Best for consumer health, financial planning, productivity suites, and modern lifestyle tools.",
+    designStyle: "Light/cream minimalist backgrounds, generous whitespace, smooth and unhurried pacing.",
+    aspectRatio: "16:9",
+    features: ["Warm light aesthetic", "Refined 3D depth and lighting", "Clear progression flow subtitles"],
+    scenes: [
+      { label: "Cold Open", sceneTemplate: "mask-reveal", durationSeconds: 5, background: "light", rotate: 4, zoom: 8, move: 20, layout: "copy-left", depth: "flat", transition: "cut", text: "Clarity at Scale", subtext: "Thoughtfully organized for maximum focus" },
+      { label: "Simplicity", sceneTemplate: "zoom-focus", durationSeconds: 5, background: "solid-cream", rotate: 0, zoom: 10, move: 0, layout: "copy-right", depth: "flat", transition: "fade", screenCount: 2, text: "Pure & Uncluttered", subtext: "Every tool right where you expect it" },
+      { label: "Detail", sceneTemplate: "parallax-stack", durationSeconds: 5, background: "light", rotate: 4, zoom: 8, move: 20, layout: "hero-device", depth: "perspective", transition: "fade", text: "Precision Craft", subtext: "Designed with elegance and care" },
+      { label: "Performance", sceneTemplate: "hero-rise", durationSeconds: 5, background: "solid-cream", rotate: 4, zoom: 10, move: 20, layout: "copy-left", depth: "perspective", transition: "fade", text: "Rock-Solid Reliability", subtext: "Performant on every screen size" },
+      { label: "Focus", sceneTemplate: "kinetic-type", durationSeconds: 5, background: "light", rotate: 0, zoom: 10, move: 0, layout: "copy-right", depth: "flat", transition: "fade", text: "Zero Distractions", subtext: "Just the essentials, beautifully rendered" },
+      {
+        label: "App Flow",
+        sceneTemplate: "landscape-flow",
+        durationSeconds: 10,
+        background: "light",
+        rotate: 0,
+        zoom: 14,
+        move: 0,
+        layout: "centre-flank",
+        depth: "showcase",
+        transition: "fade",
+        text: "Serene User Experience",
+        subtext: "Effortless flow across daily routines",
+        flowSteps: [
+          { label: "Daily Summary", startSec: 3.5, durationSec: 2.0, side: "left" },
+          { label: "Trends & Insights", startSec: 5.6, durationSec: 2.0, side: "right" },
+          { label: "Personal Profile", startSec: 7.7, durationSec: 2.0, side: "left" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "pixel-9-landscape",
+    device: "google-pixel-9",
+    deviceFraction: 0.58,
+    name: "Google Pixel 9 — Dynamic Showcase",
+    description: "Vibrant high-contrast widescreen showcase with energetic gradients, bold visual rhythm, and engaging flow subtitles.",
+    useCase: "Best for paid social ad campaigns, promotional videos, and high-impact product introductions.",
+    designStyle: "Saturated sunset/violet palettes, distinct punch-hole frame, animated flow subtitles.",
+    aspectRatio: "16:9",
+    features: ["Dynamic high-energy palette", "Refined 3D depth and lighting", "Dynamic side-alternating flow labels"],
+    scenes: [
+      { label: "Hook", sceneTemplate: "slide-pan", durationSeconds: 5, background: "candy", rotate: -8, zoom: 8, move: 35, layout: "copy-left", depth: "perspective", transition: "cut", text: "Upgrade Your Flow", subtext: "The new standard in mobile software" },
+      { label: "Feature One", sceneTemplate: "hero-rise", durationSeconds: 5, background: "violet", rotate: 8, zoom: 10, move: 25, layout: "copy-right", depth: "float", transition: "slide", text: "Designed for You", subtext: "Adapts automatically to how you work" },
+      { label: "Productivity", sceneTemplate: "kinetic-type", durationSeconds: 5, background: "citrus", rotate: 0, zoom: 12, move: 0, layout: "hero-device", depth: "flat", transition: "fade", screenCount: 2, text: "Save Serious Time", subtext: "Speed through repetitive everyday tasks" },
+      { label: "Interactive", sceneTemplate: "card-flip", durationSeconds: 5, background: "aurora", rotate: 12, zoom: 8, move: 25, layout: "copy-left", depth: "perspective", transition: "wipe", text: "Instant Actions", subtext: "Execute complex workflows in one tap" },
+      { label: "Speed", sceneTemplate: "mask-reveal", durationSeconds: 5, background: "sunset", rotate: 4, zoom: 10, move: 20, layout: "copy-right", depth: "float", transition: "fade", text: "Always Responsive", subtext: "Zero lag and instantaneous sync" },
+      {
+        label: "App Flow",
+        sceneTemplate: "landscape-flow",
+        durationSeconds: 10,
+        background: "sunset",
+        rotate: 0,
+        zoom: 14,
+        move: 0,
+        layout: "centre-flank",
+        depth: "showcase",
+        transition: "fade",
+        text: "Interactive Flow Highlights",
+        subtext: "Complete end-to-end user actions",
+        flowSteps: [
+          { label: "Main Discover", startSec: 3.5, durationSec: 2.0, side: "left" },
+          { label: "Fast Checkout", startSec: 5.6, durationSec: 2.0, side: "right" },
+          { label: "Order Confirm", startSec: 7.7, durationSec: 2.0, side: "left" },
+        ],
+      },
     ],
   },
 ];
 
+/** Old ids mapped to their new equivalents for backwards compatibility. */
+const TEMPLATE_ID_ALIASES: Record<string, string> = {
+  "minimal-premium": "iphone-15-pro-portrait",
+  "modern-saas": "pixel-9-pro-portrait",
+  "bold-marketing": "galaxy-s25-portrait",
+  "light-minimal": "iphone-16-pro-portrait",
+  "cinematic-showcase": "iphone-15-pro-landscape",
+  "futuristic-tech": "pixel-9-pro-landscape",
+  "editorial-studio": "iphone-16-pro-landscape",
+  "dark-premium": "galaxy-s25-landscape",
+  "foldable-story": "pixel-9-portrait",
+  "foldable-unfold": "pixel-9-portrait",
+  "feature-showcase": "iphone-15-pro-portrait",
+  "social-promo": "pixel-9-portrait",
+  "quick-teaser": "pixel-9-pro-portrait",
+  "studio-tablet": "iphone-16-pro-landscape",
+  "landscape-hero": "iphone-15-pro-landscape",
+  "landscape-cinematic": "pixel-9-pro-landscape",
+  "landscape-social-ad": "galaxy-s25-landscape",
+  "landscape-minimal": "iphone-16-pro-landscape",
+};
+
+export function resolveTemplateId(templateId: string): string {
+  if (VIDEO_TEMPLATES.some((t) => t.id === templateId)) return templateId;
+  return TEMPLATE_ID_ALIASES[templateId] ?? templateId;
+}
+
 export function applyVideoTemplate(project: VideoProject, templateId: string): void {
-  const template = VIDEO_TEMPLATES.find((t) => t.id === templateId);
+  const resolvedId = resolveTemplateId(templateId);
+  const template = VIDEO_TEMPLATES.find((t) => t.id === resolvedId);
   if (!template) throw new Error(`Unknown video template '${templateId}'.`);
 
-  // Pre-configured titles and subtitles per template for premium default appearance
-  const defaultTexts: Record<string, Array<{ text: string; subtext: string }>> = {
-    "foldable-unfold": [
-      { text: "One Phone, Two Screens", subtext: "Unfold into more app" },
-      { text: "Pick Up Where You Left Off", subtext: "Seamless across both screens" },
-      { text: "Multitask in Style", subtext: "Two apps, side by side" },
-      { text: "Fold Into It", subtext: "Available on all major platforms" },
-    ],
-    "feature-showcase": [
-      { text: "Welcome to AppName", subtext: "The ultimate companion" },
-      { text: "Realtime Statistics", subtext: "Track everything instantly" },
-      { text: "Global Connections", subtext: "Work seamlessly everywhere" },
-      { text: "Premium Safety", subtext: "Bank-grade file protection" },
-      { text: "Collaborate Together", subtext: "Invite your team in one click" },
-      { text: "Get Started Now", subtext: "Available on all major platforms" }
-    ],
-    "social-promo": [
-      { text: "Discover Something New", subtext: "Swipe to explore" },
-      { text: "Designed for You", subtext: "Tailored experience" },
-      { text: "Boost Productivity", subtext: "Save 10+ hours weekly" },
-      { text: "Interactive Panels", subtext: "Engaging dashboard views" },
-      { text: "Try it Free Today", subtext: "No credit card required" }
-    ],
-    "quick-teaser": [
-      { text: "Fast & Powerful", subtext: "Experience the new speed" },
-      { text: "Intelligent AI", subtext: "Automate your daily workflows" },
-      { text: "Stunning Graphics", subtext: "Visuals that amaze" },
-      { text: "Join Millions", subtext: "Start your journey today" }
-    ],
-    "studio-tablet": [
-      { text: "Built for the Big Screen", subtext: "Every detail, full canvas" },
-      { text: "Your Whole Workspace", subtext: "Everything within reach" },
-      { text: "Work Better Together", subtext: "Real-time collaboration" },
-      { text: "Start Creating Today", subtext: "Available on tablet and desktop" }
-    ],
-    "landscape-hero": [
-      { text: "Introducing AppName", subtext: "Reimagined for widescreen" },
-      { text: "Power, Refined", subtext: "Every detail considered" },
-      { text: "Built to Impress", subtext: "Crafted for the big picture" },
-      { text: "See It for Yourself", subtext: "Available now on every store" }
-    ],
-    "landscape-cinematic": [
-      { text: "One Device, Wide Open", subtext: "More screen, more story" },
-      { text: "Seamless in Every Fold", subtext: "Continuity across states" },
-      { text: "Detail That Matters", subtext: "Precision in every pixel" },
-      { text: "Unfold the Possibilities", subtext: "Reserve yours today" }
-    ],
-    "landscape-social-ad": [
-      { text: "Stop Scrolling", subtext: "This one's worth it" },
-      { text: "Flip the Script", subtext: "A new way to get things done" },
-      { text: "Rise Above the Rest", subtext: "Built for the way you work" },
-      { text: "Get It Now", subtext: "Free to start, no card required" }
-    ],
-    "landscape-minimal": [
-      { text: "Clarity, Widescreen", subtext: "Everything in its place" },
-      { text: "Focus on What Matters", subtext: "Distraction-free, at scale" },
-      { text: "Built to Last", subtext: "Reliable across every device" },
-      { text: "Start Free Today", subtext: "No clutter, no compromise" }
-    ],
-  };
-
-  const texts = defaultTexts[templateId] || [];
-
   let sourceCursor = 0;
-  project.template = templateId;
+  project.template = resolvedId;
   project.scenes = template.scenes.map((s, i): VideoScene => {
     const count = s.screenCount && s.screenCount > 1 ? s.screenCount : 1;
     const slice = project.sources.slice(sourceCursor, sourceCursor + count);
@@ -289,9 +385,12 @@ export function applyVideoTemplate(project: VideoProject, templateId: string): v
       variant: template.variant,
       deviceFraction: template.deviceFraction,
       aspectRatio: template.aspectRatio === "16:9" ? "16:9" : "9:16",
+      layout: s.layout,
+      depth: s.depth,
+      transition: s.transition,
       background: s.background,
-      text: texts[i]?.text || "",
-      subtext: texts[i]?.subtext || "",
+      text: s.text,
+      subtext: s.subtext,
       durationSeconds: s.durationSeconds,
       rotate: s.rotate,
       zoom: s.zoom,

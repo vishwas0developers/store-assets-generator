@@ -15,13 +15,60 @@ export function escapeHtml(value: string): string {
 
 /** The device-in-frame block, shared by the mockup step and the video step
  *  so a screenshot looks identical in the store package and in the promo.
- *  `variantId` selects a foldable's folded/unfolded geometry. */
-export function deviceMarkup(device: DeviceModel, screenshotUri: string, variantId?: string): string {
+ *  `variantId` selects a foldable's folded/unfolded geometry. `kind` picks
+ *  an `<img>` (default) or an autoplaying, muted `<video>` for a real screen
+ *  recording -- see window.seek's <video> handling in video/render.ts for
+ *  how the render pipeline keeps that deterministic under frame-stepping. */
+export function deviceMarkup(device: DeviceModel, screenshotUri: string, variantId?: string, kind: "image" | "video" = "image"): string {
   const g = resolveGeometry(device, variantId);
+  const r = g.cornerRadius ?? 0;
+  const screenStyle = `top:${g.screenInset.top - 1}px;left:${g.screenInset.left - 1}px;width:${g.screenInset.width + 2}px;height:${g.screenInset.height + 2}px;border-radius:${r}px;clip-path:inset(0 round ${r}px);object-fit:cover;object-position:top center;`;
+  const screenEl =
+    kind === "video"
+      ? `<video class="device-screen" src="${screenshotUri}" style="${screenStyle}" autoplay muted loop playsinline></video>`
+      : `<img class="device-screen" src="${screenshotUri}" style="${screenStyle}" />`;
   return `<div class="device" style="width:${g.width}px;height:${g.height}px">
-      <img class="device-screen" src="${screenshotUri}"
-           style="top:${g.screenInset.top}px;left:${g.screenInset.left}px;width:${g.screenInset.width}px;height:${g.screenInset.height}px;border-radius:${g.cornerRadius ?? 0}px" />
+      ${screenEl}
       <div class="device-frame">${frameSvgFor(device, variantId)}</div>
+    </div>`;
+}
+
+/** Physical thickness for the 3D rig -- a data-driven trait
+ *  (`frame.thickness`) with a bezel-proportional fallback so every existing
+ *  catalogue entry (no `thickness` field) still renders a plausible body. */
+function deviceThickness(device: DeviceModel): number {
+  return device.frame.thickness ?? Math.round((device.frame.bezelWidth || 24) * 1.6);
+}
+
+/** Genuine six-face 3D device -- front, back, left, right, top and bottom
+ *  as separate `preserve-3d` planes positioned with `translateZ`/`rotateX`/
+ *  `rotateY` at half the device's thickness. Rotating the *ancestor* that
+ *  wraps this markup (see video/render.ts's showcase-3d / "float" depth
+ *  modes) genuinely reveals the side rails and back panel, because they are
+ *  real planes in 3D space -- not a border drawn around a flat image.
+ *  `screenshotUris` (1+) drives the front face: a single URI renders once,
+ *  2+ cross-fades via `deviceMarkupMultiScreen`. */
+export function device3dMarkup(device: DeviceModel, screenshotUris: string[], variantId: string | undefined, durationMs: number, kinds: ("image" | "video")[] = []): string {
+  const g = resolveGeometry(device, variantId);
+  const t = deviceThickness(device);
+  const half = t / 2;
+  const uris = screenshotUris.filter(Boolean);
+  const front = uris.length > 1 ? deviceMarkupMultiScreen(device, uris, variantId, durationMs, kinds) : deviceMarkup(device, uris[0] ?? "", variantId, kinds[0] ?? "image");
+  const r = device.frame.outerRadius;
+
+  return `<div class="device-rig" style="width:${g.width}px;height:${g.height}px">
+      <div class="device-face device-front" style="transform:translateZ(${half}px)">${front}</div>
+      <div class="device-face device-back" style="width:${g.width}px;height:${g.height}px;border-radius:${r}px;background:${device.frame.body};transform:translateZ(-${half}px) rotateY(180deg)">
+        <div class="device-cam-bar">
+          <div class="device-lens"></div>
+          <div class="device-lens"></div>
+          <div class="device-lens"></div>
+        </div>
+      </div>
+      <div class="device-face device-side" style="width:${t}px;height:${g.height}px;transform:rotateY(-90deg) translateZ(${half}px);background:linear-gradient(90deg, rgba(255,255,255,.16), rgba(0,0,0,.35))"></div>
+      <div class="device-face device-side" style="width:${t}px;height:${g.height}px;left:${g.width - t}px;transform:rotateY(90deg) translateZ(${half}px);background:linear-gradient(270deg, rgba(0,0,0,.5), rgba(255,255,255,.06))"></div>
+      <div class="device-face device-side" style="width:${g.width}px;height:${t}px;transform:rotateX(90deg) translateZ(${half}px);background:linear-gradient(180deg, rgba(255,255,255,.22), rgba(0,0,0,.25))"></div>
+      <div class="device-face device-side" style="width:${g.width}px;height:${t}px;top:${g.height - t}px;transform:rotateX(-90deg) translateZ(${half}px);background:linear-gradient(0deg, rgba(255,255,255,.12), rgba(0,0,0,.35))"></div>
     </div>`;
 }
 
@@ -32,11 +79,12 @@ export function deviceMarkup(device: DeviceModel, screenshotUri: string, variant
  *  (named per-layer keyframes), so it stays deterministic under
  *  `window.seek` -> `document.getAnimations()` just like every other
  *  animation in the render pipeline. */
-export function deviceMarkupMultiScreen(device: DeviceModel, screenshotUris: string[], variantId: string | undefined, durationMs: number): string {
+export function deviceMarkupMultiScreen(device: DeviceModel, screenshotUris: string[], variantId: string | undefined, durationMs: number, kinds: ("image" | "video")[] = []): string {
   const uris = screenshotUris.filter(Boolean);
-  if (uris.length <= 1) return deviceMarkup(device, uris[0] ?? "", variantId);
+  if (uris.length <= 1) return deviceMarkup(device, uris[0] ?? "", variantId, kinds[0] ?? "image");
 
   const g = resolveGeometry(device, variantId);
+  const r = g.cornerRadius ?? 0;
   const holdPct = 100 / uris.length;
   const fadeMs = 260;
   const fadePct = Math.min(holdPct * 0.35, (fadeMs / durationMs) * 100);
@@ -49,8 +97,9 @@ export function deviceMarkupMultiScreen(device: DeviceModel, screenshotUris: str
         i === 0
           ? `0% { opacity: 1 } ${Math.max(0, outPct - fadePct).toFixed(2)}% { opacity: 1 } ${outPct.toFixed(2)}% { opacity: 0 } 100% { opacity: 0 }`
           : `0% { opacity: 0 } ${inPct.toFixed(2)}% { opacity: 0 } ${(inPct + fadePct).toFixed(2)}% { opacity: 1 } ${Math.max(inPct + fadePct, outPct - fadePct).toFixed(2)}% { opacity: 1 } ${outPct.toFixed(2)}% { opacity: ${i === uris.length - 1 ? 1 : 0} } 100% { opacity: ${i === uris.length - 1 ? 1 : 0} }`;
-      return `<img class="device-screen device-screen-${i}" src="${uri}"
-           style="top:${g.screenInset.top}px;left:${g.screenInset.left}px;width:${g.screenInset.width}px;height:${g.screenInset.height}px;border-radius:${g.cornerRadius ?? 0}px;animation:screenSwap${i} ${durationMs}ms ease-in-out forwards;" />
+      const screenStyle = `top:${g.screenInset.top - 1}px;left:${g.screenInset.left - 1}px;width:${g.screenInset.width + 2}px;height:${g.screenInset.height + 2}px;border-radius:${r}px;clip-path:inset(0 round ${r}px);object-fit:cover;object-position:top center;animation:screenSwap${i} ${durationMs}ms ease-in-out forwards;`;
+      const media = kinds[i] === "video" ? `<video class="device-screen device-screen-${i}" src="${uri}" style="${screenStyle}" autoplay muted loop playsinline></video>` : `<img class="device-screen device-screen-${i}" src="${uri}" style="${screenStyle}" />`;
+      return `${media}
         <style>@keyframes screenSwap${i} { ${kf} }</style>`;
     })
     .join("\n");
@@ -62,10 +111,27 @@ export function deviceMarkupMultiScreen(device: DeviceModel, screenshotUris: str
 }
 
 export const DEVICE_CSS = `
-  .device { position: relative; }
-  .device-screen { position: absolute; object-fit: cover; object-position: top; z-index: 1; }
-  .device-frame { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
-  .device-frame svg { width: 100%; height: 100%; display: block; }
+  .device { position: relative; filter: drop-shadow(0 20px 35px rgba(0,0,0,.45)); }
+  .device-screen { position: absolute; object-fit: cover; object-position: top center; z-index: 1; overflow: hidden; }
+  .device-frame { position: absolute; inset: 0; z-index: 2; pointer-events: none; overflow: hidden; }
+  .device-frame svg { width: 100%; height: 100%; display: block; overflow: hidden; }
+  .device-glow { position: absolute; inset: -6%; z-index: 0; background: radial-gradient(circle, rgba(255,255,255,.16) 0%, transparent 70%); filter: blur(18px); }
+  .device-sheen { position: absolute; inset: 0; z-index: 3; pointer-events: none; background: linear-gradient(115deg, rgba(255,255,255,.22) 0%, rgba(255,255,255,0) 26%, rgba(255,255,255,0) 74%, rgba(255,255,255,.10) 100%); mix-blend-mode: overlay; }
+
+  /* -- 2D tilt / float depth modes (real rotateY on the flat plane) -- */
+  .device-tilt { position: relative; transform-style: preserve-3d; }
+  .device-float { position: relative; animation: deviceFloat 5200ms ease-in-out infinite; }
+  @keyframes deviceFloat { 0% { transform: translateY(0) rotateY(-4deg); } 50% { transform: translateY(-14px) rotateY(4deg); } 100% { transform: translateY(0) rotateY(-4deg); } }
+
+  /* -- Genuine six-face 3D rig -- front/back/left/right/top/bottom as real
+     planes, not a flat image with a border. See device3dMarkup. -- */
+  .device-rig { position: relative; transform-style: preserve-3d; filter: drop-shadow(0 24px 42px rgba(0,0,0,.48)); }
+  .device-face { position: absolute; top: 0; left: 0; backface-visibility: hidden; }
+  .device-face.device-front { transform-style: preserve-3d; }
+  .device-back { border: 1px solid rgba(255,255,255,.08); display: flex; align-items: flex-start; justify-content: center; }
+  .device-cam-bar { display: flex; gap: 8px; align-items: center; justify-content: center; padding: 6px 14px; background: rgba(0,0,0,.4); border-radius: 20px; margin-top: 5%; border: 1px solid rgba(255,255,255,.1); }
+  .device-lens { width: 14px; height: 14px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #555, #080808 70%); border: 1px solid rgba(255,255,255,.15); }
+  .device-side { opacity: .96; }
 `;
 
 /** Solid colours — a flat swatch, distinct from a gradient preset. */
@@ -106,8 +172,11 @@ export const PATTERNS: Record<string, string> = {
     "repeating-radial-gradient(circle at 50% 120%, rgba(255,255,255,.10) 0 6px, transparent 6px 40px), linear-gradient(135deg,#134e5e 0%,#71b280 100%)",
 };
 
+/** Resolves a background name against every registry a scene may reference
+ *  -- gradients (the historical set), solid swatches, and CSS patterns --
+ *  so video scenes are no longer limited to the 10 gradients alone. */
 export function backgroundCss(name: string): string {
-  return BACKGROUNDS[name] ?? BACKGROUNDS["ocean"];
+  return BACKGROUNDS[name] ?? SOLID_COLORS[name] ?? PATTERNS[name] ?? BACKGROUNDS["ocean"];
 }
 
 export interface ResolvableBackground {

@@ -1652,7 +1652,7 @@ $("mockup-export-run").onclick = async () => {
 
 let videoId = null;
 let videoProject = null;
-let videoSceneOptions = { animations: [], backgrounds: [] };
+let videoSceneOptions = { animations: [], backgrounds: [], layouts: { "9:16": [], "16:9": [] } };
 let videoDevices = [];
 let selectedSceneId = null;
 
@@ -1695,8 +1695,10 @@ async function loadVideoProjectInto(id) {
 let videoTemplates = [];
 let videoTemplateDetailId = null;
 let videoDetailSceneIndex = 0;
-let videoDetailMode = "scene"; // "scene" | "full"
-let videoDetailPollTimer = null;
+let videoDetailState = "idle"; // idle | playing | paused | ended
+let videoDetailMode = "sequence"; // sequence | scene
+let videoDetailAudio = null;
+let videoDetailResizeObserver = null;
 
 async function ensureVideoTemplates() {
   if (videoTemplates.length === 0) {
@@ -1768,15 +1770,36 @@ function videoPlayerApi() {
   }
 }
 
+/** Background music for the currently-open template's preview -- a single
+ *  <audio> element kept in lockstep with the iframe player's pushed state
+ *  (see onState below), so the preview is never silent for a template that
+ *  will ship with music in the rendered MP4, and always stops hard when the
+ *  sequence ends (never auto-restarts). */
+function ensureVideoDetailAudio() {
+  if (!videoDetailAudio) {
+    videoDetailAudio = new Audio();
+    videoDetailAudio.loop = false;
+    videoDetailAudio.volume = 0.35;
+  }
+  return videoDetailAudio;
+}
+
 function videoDetailRefreshUi(t) {
   const label = $("video-detail-scene-label");
   if (!label) return;
   const scene = t.scenes[videoDetailSceneIndex];
-  label.textContent = videoDetailMode === "full"
-    ? `Playing — scene ${videoDetailSceneIndex + 1} of ${t.scenes.length}`
-    : `Scene ${videoDetailSceneIndex + 1} of ${t.scenes.length} — ${scene ? scene.label : ""}`;
+  const playing = videoDetailState === "playing";
+  const ended = videoDetailState === "ended";
 
-  $("video-detail-play").innerHTML = videoDetailMode === "full" ? "&#10074;&#10074; Pause" : "&#9654; Play";
+  label.textContent =
+    videoDetailMode === "sequence" && playing
+      ? `Playing — scene ${videoDetailSceneIndex + 1} of ${t.scenes.length}`
+      : ended
+        ? `Finished — scene ${videoDetailSceneIndex + 1} of ${t.scenes.length}`
+        : `Scene ${videoDetailSceneIndex + 1} of ${t.scenes.length} — ${scene ? scene.label : ""}`;
+
+  const playBtn = $("video-detail-play");
+  playBtn.innerHTML = ended ? "&#8635; Replay" : playing ? "&#10074;&#10074; Pause" : "&#9654; Play";
   $("video-detail-prev").disabled = videoDetailSceneIndex <= 0;
   $("video-detail-next").disabled = videoDetailSceneIndex >= t.scenes.length - 1;
 
@@ -1787,54 +1810,67 @@ function videoDetailRefreshUi(t) {
     });
   }
   const stage = $("video-template-stage");
+  const activeCard = stage.querySelector(`[data-scene-jump="${videoDetailSceneIndex}"]`);
   stage.querySelectorAll("[data-scene-jump]").forEach((el) => {
     el.classList.toggle("active", Number(el.dataset.sceneJump) === videoDetailSceneIndex);
   });
+  // Auto-scroll the (independently-scrolling) scene list to keep the active
+  // card visible during playback, without moving the video box or the page.
+  if (activeCard) activeCard.scrollIntoView({ block: "nearest", behavior: "smooth" });
 }
 
+/** Selects one scene and holds it, unplayed -- clicking a scene card must
+ *  show only that scene, never start playback of it or of anything after. */
 function videoDetailShowScene(id, index) {
   const t = videoTemplates.find((x) => x.id === id);
   if (!t) return;
   const api = videoPlayerApi();
-  videoDetailMode = "scene";
   videoDetailSceneIndex = Math.max(0, Math.min(index, t.scenes.length - 1));
   if (api) api.goto(videoDetailSceneIndex);
-  videoDetailRefreshUi(t);
+  else { videoDetailMode = "scene"; videoDetailState = "idle"; videoDetailRefreshUi(t); }
+}
+
+/** Plays exactly one scene, once -- distinct from the main Play control,
+ *  which plays the full sequence. Never advances into the next scene. */
+function videoDetailPlayScene(id, index) {
+  const api = videoPlayerApi();
+  if (!api) return;
+  videoDetailSceneIndex = Math.max(0, index);
+  api.playScene(index);
 }
 
 function videoDetailTogglePlay(id) {
-  const t = videoTemplates.find((x) => x.id === id);
   const api = videoPlayerApi();
-  if (!t || !api) return;
-  if (videoDetailMode === "full") {
+  if (!api) return;
+  if (videoDetailState === "playing") {
     api.pause();
-    videoDetailMode = "scene";
   } else {
-    api.play();
-    videoDetailMode = "full";
-    videoDetailPollScene(id);
+    if (videoDetailState === "ended") api.replay();
+    else api.play();
   }
-  videoDetailRefreshUi(t);
 }
 
-/** While the full sequence plays, mirror the iframe's current scene into
- *  the stepper/dots so the details panel tracks playback. */
-function videoDetailPollScene(id) {
-  if (videoDetailPollTimer) clearInterval(videoDetailPollTimer);
-  videoDetailPollTimer = setInterval(() => {
-    const t = videoTemplates.find((x) => x.id === id);
-    const api = videoPlayerApi();
-    if (!t || !api || videoDetailMode !== "full") {
-      clearInterval(videoDetailPollTimer);
-      videoDetailPollTimer = null;
-      return;
-    }
-    const current = api.currentScene();
-    if (current !== videoDetailSceneIndex) {
-      videoDetailSceneIndex = current;
-      videoDetailRefreshUi(t);
-    }
-  }, 400);
+/** Registered once per iframe load: the preview document pushes every
+ *  playback transition here instead of the host polling it, so there is no
+ *  race and no missed "ended" transition. Drives the BGM <audio> element in
+ *  lockstep -- starts/stops/pauses with the CSS player, hard-stops on
+ *  "ended" so it never lingers or auto-restarts. */
+function videoDetailOnPlayerState(id, evt) {
+  const t = videoTemplates.find((x) => x.id === id);
+  if (!t) return;
+  videoDetailSceneIndex = evt.scene;
+  videoDetailMode = evt.mode;
+  videoDetailState = evt.state;
+
+  const audio = ensureVideoDetailAudio();
+  if (evt.state === "playing") {
+    audio.play().catch(() => {});
+  } else {
+    audio.pause();
+    if (evt.state === "ended" || evt.state === "idle") audio.currentTime = 0;
+  }
+
+  videoDetailRefreshUi(t);
 }
 
 /** Renders the selected template's preview into the persistent stage next
@@ -1843,10 +1879,11 @@ function videoDetailPollScene(id) {
 function openVideoTemplateDetail(id) {
   const t = videoTemplates.find((x) => x.id === id);
   if (!t) return;
-  if (videoDetailPollTimer) { clearInterval(videoDetailPollTimer); videoDetailPollTimer = null; }
+  if (videoDetailResizeObserver) { videoDetailResizeObserver.disconnect(); videoDetailResizeObserver = null; }
   videoTemplateDetailId = id;
   videoDetailSceneIndex = 0;
-  videoDetailMode = "scene";
+  videoDetailMode = "sequence";
+  videoDetailState = "idle";
 
   renderVideoTemplateList(videoTemplates, id);
 
@@ -1872,6 +1909,7 @@ function openVideoTemplateDetail(id) {
               (s, i) => `
             <div class="video-screen-card" data-scene-jump="${i}">
               <div class="video-screen-num">Screen ${i + 1}</div>
+              <button type="button" class="video-screen-play" data-scene-play="${i}" title="Play only this scene">&#9654;</button>
               <div class="video-screen-name">${s.label}</div>
               <div class="hint">${s.durationSeconds}s &middot; ${s.sceneTemplate.replace(/-/g, " ")} &middot; ${s.background}</div>
             </div>`
@@ -1879,9 +1917,9 @@ function openVideoTemplateDetail(id) {
             .join("")}
         </div>
         <div class="video-scene-controls">
-          <button type="button" class="secondary small" id="video-detail-prev">&laquo; Prev</button>
-          <button type="button" id="video-detail-play">&#9654; Play</button>
-          <button type="button" class="secondary small" id="video-detail-next">Next &raquo;</button>
+          <button type="button" class="secondary small" id="video-detail-prev" aria-label="Previous scene">&laquo; Prev</button>
+          <button type="button" id="video-detail-play" aria-label="Play or pause the full sequence">&#9654; Play</button>
+          <button type="button" class="secondary small" id="video-detail-next" aria-label="Next scene">Next &raquo;</button>
           <span class="scene-indicator" id="video-detail-scene-label"></span>
           <div class="video-scene-dots" id="video-detail-dots">
             ${t.scenes.map((s, i) => `<div class="video-scene-dot" title="${s.label}" data-scene-jump="${i}"></div>`).join("")}
@@ -1897,6 +1935,17 @@ function openVideoTemplateDetail(id) {
   stage.querySelectorAll("[data-scene-jump]").forEach((el) => {
     el.onclick = () => videoDetailShowScene(id, Number(el.dataset.sceneJump));
   });
+  stage.querySelectorAll("[data-scene-play]").forEach((el) => {
+    el.onclick = (ev) => { ev.stopPropagation(); videoDetailPlayScene(id, Number(el.dataset.scenePlay)); };
+  });
+  document.addEventListener("keydown", videoDetailKeyHandler);
+
+  // Every template ships its own generated background music -- the preview
+  // audio element is pointed at it up front and driven by onState below.
+  const audio = ensureVideoDetailAudio();
+  audio.pause();
+  audio.src = `/api/videos/templates/${encodeURIComponent(id)}/bgm.wav`;
+  audio.currentTime = 0;
 
   // The rendered document is always native pixel size (1080x1920 portrait or
   // 1920x1080 landscape) and CSS-scaled down to fit whichever shaped box
@@ -1922,16 +1971,39 @@ function openVideoTemplateDetail(id) {
   frame.style.height = `${nativeHeight}px`;
   const scale = boxWidth / nativeWidth;
   frame.style.transform = `scale(${scale})`;
-  frame.onload = () => videoDetailShowScene(id, 0);
+  // The preview document loads paused on scene 0 and does NOT autoplay (see
+  // templatePreviewHtml's player script) -- onState registration below is
+  // what starts tracking playback; nothing here triggers it.
+  frame.onload = () => {
+    const api = videoPlayerApi();
+    if (api) api.onState = (evt) => videoDetailOnPlayerState(id, evt);
+    videoDetailSceneIndex = 0;
+    videoDetailMode = "sequence";
+    videoDetailState = "idle";
+    videoDetailRefreshUi(t);
+  };
   frame.src = `/api/videos/templates/${encodeURIComponent(id)}/preview?${videoDetailPreviewQuery().toString()}`;
 
-  // Pin the side panel's height to exactly the rendered .video-player box
-  // (the card around the stage, including its padding) -- never to the
-  // taller of the two columns, never to the section's own height. The
-  // screen list scrolls internally if it doesn't fit.
+  // The side panel's height tracks exactly the rendered .video-player box
+  // (the card around the stage, including its padding) -- never the taller
+  // of the two columns, never the section's own height. The screen list
+  // scrolls internally if it doesn't fit. A ResizeObserver (not a one-shot
+  // measurement) keeps this correct across window resizes.
   const player = stage.querySelector(".video-player");
   const side = stage.querySelector(".template-detail-side");
-  side.style.height = `${player.getBoundingClientRect().height}px`;
+  videoDetailResizeObserver = new ResizeObserver(() => {
+    side.style.height = `${player.getBoundingClientRect().height}px`;
+  });
+  videoDetailResizeObserver.observe(player);
+}
+
+function videoDetailKeyHandler(ev) {
+  if (!videoTemplateDetailId) return;
+  if (!$("video-section-templates").classList.contains("active")) return;
+  if (ev.target && ["INPUT", "TEXTAREA", "SELECT"].includes(ev.target.tagName)) return;
+  if (ev.code === "Space") { ev.preventDefault(); videoDetailTogglePlay(videoTemplateDetailId); }
+  if (ev.code === "ArrowRight") videoDetailShowScene(videoTemplateDetailId, videoDetailSceneIndex + 1);
+  if (ev.code === "ArrowLeft") videoDetailShowScene(videoTemplateDetailId, videoDetailSceneIndex - 1);
 }
 
 async function loadVideoTemplateNow(id) {
@@ -1955,6 +2027,9 @@ function renderVideoScenes() {
   $("sc-template").innerHTML = videoSceneOptions.animations.map((a) => `<option value="${a.id}">${a.name}</option>`).join("");
   $("sc-background").innerHTML = videoSceneOptions.backgrounds.map((b) => `<option value="${b}">${b}</option>`).join("");
   $("sc-device").innerHTML = videoDevices.map((d) => `<option value="${d.id}">${d.vendor} — ${d.name}</option>`).join("");
+  const orientation = (videoProject.scenes[0] && videoProject.scenes[0].aspectRatio) === "16:9" ? "16:9" : "9:16";
+  const layouts = (videoSceneOptions.layouts && videoSceneOptions.layouts[orientation]) || [];
+  $("sc-layout").innerHTML = layouts.map((l) => `<option value="${l.id}">${l.name}</option>`).join("");
   const videoGroups = {};
   for (const s of videoProject.sources || []) {
     const res = s.resolution || "Uploads / General";
@@ -1984,11 +2059,71 @@ function renderVideoScenes() {
   if (videoProject.scenes.length) selectScene(videoProject.scenes[0].id);
 }
 
+let currentSceneFlowSteps = [];
+
+function renderFlowStepsEditor(steps) {
+  currentSceneFlowSteps = Array.isArray(steps) ? JSON.parse(JSON.stringify(steps)) : [];
+  const list = $("sc-flow-steps-list");
+  if (!list) return;
+  list.innerHTML = "";
+  if (currentSceneFlowSteps.length === 0) {
+    list.innerHTML = '<div class="hint" style="font-size:0.85rem;">No flow steps configured. Click "+ Add Step" to add one.</div>';
+    return;
+  }
+  currentSceneFlowSteps.forEach((step, idx) => {
+    const row = document.createElement("div");
+    row.style.cssText = "display:flex; gap:0.4rem; align-items:center;";
+    row.innerHTML = `
+      <input type="text" value="${step.label || ""}" placeholder="Label e.g. Dashboard" style="flex:2; margin:0;" data-field="label" />
+      <input type="number" step="0.1" min="0" max="60" value="${step.startSec ?? 0}" title="Start Sec" style="width:65px; margin:0;" data-field="startSec" />
+      <input type="number" step="0.1" min="0.5" max="30" value="${step.durationSec ?? 2}" title="Duration Sec" style="width:65px; margin:0;" data-field="durationSec" />
+      <select style="width:75px; margin:0;" data-field="side">
+        <option value="left" ${step.side === "left" ? "selected" : ""}>Left</option>
+        <option value="right" ${step.side === "right" ? "selected" : ""}>Right</option>
+      </select>
+      <button class="secondary small danger" style="padding:0.2rem 0.5rem; margin:0;" type="button">&times;</button>
+    `;
+    row.querySelectorAll("input, select").forEach((el) => {
+      el.onchange = () => {
+        const field = el.dataset.field;
+        if (field === "startSec" || field === "durationSec") currentSceneFlowSteps[idx][field] = Number(el.value);
+        else currentSceneFlowSteps[idx][field] = el.value;
+      };
+    });
+    row.querySelector("button").onclick = () => {
+      currentSceneFlowSteps.splice(idx, 1);
+      renderFlowStepsEditor(currentSceneFlowSteps);
+    };
+    list.appendChild(row);
+  });
+}
+
+$("sc-flow-add-btn").onclick = () => {
+  const lastStart = currentSceneFlowSteps.length > 0 ? (currentSceneFlowSteps.at(-1).startSec + currentSceneFlowSteps.at(-1).durationSec + 0.5) : 0.5;
+  const lastSide = currentSceneFlowSteps.length > 0 ? (currentSceneFlowSteps.at(-1).side === "left" ? "right" : "left") : "left";
+  currentSceneFlowSteps.push({ label: "Next Feature", startSec: Math.round(lastStart * 10) / 10, durationSec: 2.2, side: lastSide });
+  renderFlowStepsEditor(currentSceneFlowSteps);
+};
+
+function updateSceneSpecialPanels(templateVal) {
+  const isLandscapeFlow = templateVal === "landscape-flow";
+  const isPortraitFlow = templateVal === "portrait-flow";
+  $("sc-flow-panel").style.display = isLandscapeFlow ? "block" : "none";
+  $("sc-portrait-flow-note").style.display = isPortraitFlow ? "block" : "none";
+}
+
+$("sc-template").onchange = () => {
+  updateSceneSpecialPanels($("sc-template").value);
+};
+
 function selectScene(sceneId) {
   selectedSceneId = sceneId;
   for (const chip of document.querySelectorAll(".scene-chip")) chip.classList.toggle("active", chip.dataset.sceneId === sceneId);
   const scene = videoProject.scenes.find((s) => s.id === sceneId);
   $("sc-template").value = scene.sceneTemplate;
+  $("sc-layout").value = scene.layout || "";
+  $("sc-depth").value = scene.depth || "flat";
+  $("sc-transition").value = scene.transition || "cut";
   $("sc-device").value = scene.device;
   $("sc-background").value = scene.background;
   $("sc-text").value = scene.text;
@@ -1999,6 +2134,8 @@ function selectScene(sceneId) {
   $("sc-move").value = scene.move; $("sc-move-val").textContent = scene.move;
   if (scene.sourceId) $("sc-source").value = scene.sourceId;
   updateVariantSelect("sc-device", "sc-variant", scene.variant, videoDevices);
+  updateSceneSpecialPanels(scene.sceneTemplate);
+  renderFlowStepsEditor(scene.flowSteps);
   showScenePreview();
 }
 function updateVariantSelect(deviceSelectId, variantSelectId, current, catalog) {
@@ -2022,7 +2159,6 @@ $("sc-source-upload").onclick = async () => {
   openUniversalUploadModal((selectedPath) => {
     setTimeout(async () => {
       videoProject = await api(`/api/videos/${activeProjectId}`);
-      // Re-populate the source dropdown and select the newly selected screenshot
       $("sc-source").innerHTML = (videoProject.sources || []).map((s) => `<option value="${s.id}">${s.name}</option>`).join("");
       const src = videoProject.sources.find(s => s.file === selectedPath);
       if (src) {
@@ -2034,15 +2170,49 @@ $("sc-source-upload").onclick = async () => {
 
 $("sc-save").onclick = async () => {
   const body = {
-    sceneTemplate: $("sc-template").value, device: $("sc-device").value, variant: $("sc-variant").value || undefined,
+    sceneTemplate: $("sc-template").value, layout: $("sc-layout").value || undefined,
+    depth: $("sc-depth").value || "flat", transition: $("sc-transition").value || "cut",
+    device: $("sc-device").value, variant: $("sc-variant").value || undefined,
     background: $("sc-background").value, text: $("sc-text").value, subtext: $("sc-subtext").value,
     durationSeconds: Number($("sc-duration").value) || 3, rotate: Number($("sc-rotate").value),
     zoom: Number($("sc-zoom").value), move: Number($("sc-move").value), sourceId: $("sc-source").value || undefined,
+    flowSteps: currentSceneFlowSteps.length > 0 ? currentSceneFlowSteps : undefined,
   };
-  const updated = await api(`/api/videos/${videoId}/scenes/${selectedSceneId}`, { method: "PUT", body });
-  const idx = videoProject.scenes.findIndex((s) => s.id === selectedSceneId);
-  videoProject.scenes[idx] = updated;
-  showScenePreview();
+  try {
+    const updated = await api(`/api/videos/${videoId}/scenes/${selectedSceneId}`, { method: "PUT", body });
+    const idx = videoProject.scenes.findIndex((s) => s.id === selectedSceneId);
+    videoProject.scenes[idx] = updated;
+    showScenePreview();
+  } catch (e) {
+    await alert("Save failed: " + e.message);
+  }
+};
+
+$("sc-add").onclick = async () => {
+  if (!videoId || !videoProject || videoProject.scenes.length === 0) {
+    await alert("Load a template first.");
+    return;
+  }
+  try {
+    videoProject = await api(`/api/videos/${videoId}/scenes`, { method: "POST" });
+    renderVideoScenes();
+    selectScene(videoProject.scenes.at(-1).id);
+    showToast(`Scene ${videoProject.scenes.length} added.`, "success");
+  } catch (e) {
+    await alert("Could not add scene: " + e.message);
+  }
+};
+
+$("sc-remove").onclick = async () => {
+  if (!selectedSceneId || !videoProject) return;
+  const ok = await confirm("Remove this scene? This cannot be undone.");
+  if (!ok) return;
+  try {
+    videoProject = await api(`/api/videos/${videoId}/scenes/${selectedSceneId}`, { method: "DELETE" });
+    renderVideoScenes();
+  } catch (e) {
+    await alert("Could not remove scene: " + e.message);
+  }
 };
 
 $("sc-ai-text").onclick = async () => {
