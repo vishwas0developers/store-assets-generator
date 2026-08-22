@@ -405,7 +405,7 @@ export function sceneHtml(scene: VideoScene, screenshotUris: string[], seekable 
   .subtext { font-size: ${isLandscape ? 32 : 30}px; opacity: .82; margin-top: .5em; font-weight: 500; }
   .stage { position: relative; width: ${stageWidth}px; height: ${stageHeight}px; perspective: 1600px; z-index: 2; flex-shrink: 0; }
   .stage-scale { position: absolute; inset: 0; transform: scale(${deviceScale}); transform-origin: top left; }
-  .stage-inner { animation: play ${durationMs}ms ${animation.easing} forwards; }
+  .stage-inner { width: 100%; height: 100%; animation: play ${durationMs}ms ${animation.easing} forwards; }
   ${DEVICE_CSS}
   ${textBlockStyle(durationMs)}
   ${foldRigCss(durationMs)}
@@ -506,6 +506,7 @@ export function templatePreviewHtml(project: VideoProject): string {
     .subtext { font-size:30px; opacity:.82; margin-top:.5em; font-weight:500; }
     .stage { position:relative; perspective:1600px; z-index:2; }
     .stage-scale { position:absolute; inset:0; transform-origin: top left; }
+    .stage-inner { width: 100%; height: 100%; }
     ${DEVICE_CSS}
     ${textBlockStyle(0)}
     ${foldRigCss(0)}
