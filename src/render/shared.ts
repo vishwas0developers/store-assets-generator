@@ -155,6 +155,8 @@ export const BACKGROUNDS: Record<string, string> = {
   aurora: "linear-gradient(135deg,#00c6ff 0%,#0072ff 100%)",
   citrus: "linear-gradient(135deg,#f7971e 0%,#ffd200 100%)",
   violet: "linear-gradient(135deg,#654ea3 0%,#eaafc8 100%)",
+  "studio-spotlight": "radial-gradient(circle at center, #18181b 0%, #09090b 100%)",
+  "purple-yellow-studio": "radial-gradient(circle at center, #2e1a47 0%, #0c0a0f 100%)",
 };
 
 /** Repeating-gradient / radial-gradient CSS patterns — the "mesh/pattern"
@@ -170,6 +172,10 @@ export const PATTERNS: Record<string, string> = {
     "radial-gradient(at 20% 20%, rgba(255,100,150,.35) 0, transparent 50%), radial-gradient(at 80% 0%, rgba(100,150,255,.35) 0, transparent 50%), radial-gradient(at 50% 100%, rgba(150,255,200,.3) 0, transparent 50%), #14161c",
   waves:
     "repeating-radial-gradient(circle at 50% 120%, rgba(255,255,255,.10) 0 6px, transparent 6px 40px), linear-gradient(135deg,#134e5e 0%,#71b280 100%)",
+  "blueprint-hud": "linear-gradient(rgba(0,198,184,.07) 1px, transparent 1px) 0 0/50px 50px, linear-gradient(90deg, rgba(0,198,184,.07) 1px, transparent 1px) 0 0/50px 50px, #0a1118",
+  "neon-rings": "radial-gradient(circle at 75% 50%, rgba(232,23,93,.09) 0%, transparent 40%), radial-gradient(circle at 25% 50%, rgba(232,23,93,.06) 0%, transparent 50%), #0d0d11",
+  "matte-spheres": "radial-gradient(circle at center, #111115 0%, #050507 100%)",
+  "split-curve": "linear-gradient(90deg, #ffffff 60%, #0088ff 60%)",
 };
 
 /** Resolves a background name against every registry a scene may reference

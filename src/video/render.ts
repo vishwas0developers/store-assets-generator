@@ -14,7 +14,7 @@ import {
   escapeHtml,
   type DecorationLike,
 } from "../render/shared.js";
-import { DEVICE_REGISTRY, resolveGeometry, type DeviceModel } from "../devices/registry.js";
+import { DEVICE_REGISTRY, resolveGeometry, frameSvgFor, type DeviceModel } from "../devices/registry.js";
 import { videoDir, videoFile, type VideoProject, type VideoScene } from "./project.js";
 import { VIDEO_TEMPLATES, type VideoTemplate } from "./templates.js";
 import { BGM_PRESETS, renderBgmWav } from "./bgm.js";
@@ -319,6 +319,170 @@ export const SCENE_ANIMATIONS: Record<string, SceneAnimation> = {
         ${flank(leftUri, kinds[1] ?? "image", "-56%", "26deg")}
         ${flank(rightUri, kinds[2] ?? "image", "56%", "-26deg")}
         <div style="position:relative; z-index:2;">${deviceMarkup(device, centerUri, scene.variant, kinds[0] ?? "image")}</div>
+      </div>`;
+    },
+  },
+  "hud-blueprint-rise": {
+    id: "hud-blueprint-rise",
+    name: "HUD blueprint rise",
+    easing: "cubic-bezier(.16,1,.3,1)",
+    deviceKeyframes: (s) => `
+      0%   { transform: perspective(1500px) rotateY(15deg) translateY(${120 + cappedMove(s.move)}px) scale(${0.88 - s.zoom / 300}); opacity: 0; }
+      15%  { opacity: 1; }
+      55%  { transform: perspective(1500px) rotateY(0deg) translateY(0) scale(${1 + s.zoom / 120}); opacity: 1; }
+      100% { transform: perspective(1500px) rotateY(0deg) translateY(0) scale(${1 + s.zoom / 135}); opacity: 1; }
+    `,
+    backdropKeyframes: (s) => `
+      0%   { transform: scale(1.05); filter: opacity(0.8); }
+      100% { transform: scale(${1.05 + s.zoom / 280}) translate3d(${s.move / 80}%, 0, 0); filter: opacity(1); }
+    `,
+    renderDevice: (device, uris, kinds, scene, durationMs) => {
+      // Add custom SVG blueprint overlay inside the device wrapper
+      const dev = deviceMarkup(device, uris[0] ?? "", scene.variant, kinds[0] ?? "image");
+      return `<div style="position:relative; width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
+        <div style="position:absolute; inset:-10%; z-index:1; pointer-events:none; border: 1px solid rgba(0,198,184,.15); clip-path: polygon(0 0, 100% 0, 90% 100%, 10% 100%);"></div>
+        ${dev}
+      </div>`;
+    }
+  },
+  "neon-rings-orbit": {
+    id: "neon-rings-orbit",
+    name: "Neon rings orbit",
+    easing: "cubic-bezier(.2,.85,.3,1)",
+    deviceKeyframes: (s) => `
+      0%   { transform: perspective(1800px) rotateY(${-25 - s.rotate}deg) rotateX(15deg) scale(0.85); opacity: 0; }
+      18%  { opacity: 1; }
+      60%  { transform: perspective(1800px) rotateY(${s.rotate * 0.3}deg) rotateX(0deg) scale(${1 + s.zoom / 120}); opacity: 1; }
+      100% { transform: perspective(1800px) rotateY(0deg) rotateX(0deg) scale(${1 + s.zoom / 130}); opacity: 1; }
+    `,
+    backdropKeyframes: () => `
+      0%   { transform: rotate(0deg) scale(1); }
+      100% { transform: rotate(15deg) scale(1.1); }
+    `,
+    renderDevice: (device, uris, kinds, scene, durationMs) => {
+      const dev = deviceMarkup(device, uris[0] ?? "", scene.variant, kinds[0] ?? "image");
+      return `<div style="position:relative; width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
+        <!-- Concentric neon crimson rings background -->
+        <div style="position:absolute; width:480px; height:480px; border-radius:50%; border:2px dashed rgba(232,23,93,.35); animation: spinRing 25s linear infinite;"></div>
+        <div style="position:absolute; width:640px; height:640px; border-radius:50%; border:1px solid rgba(232,23,93,.15); animation: spinRingRev 40s linear infinite;"></div>
+        ${dev}
+        <style>
+          @keyframes spinRing { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+          @keyframes spinRingRev { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
+        </style>
+      </div>`;
+    }
+  },
+  "studio-orbit-scroll": {
+    id: "studio-orbit-scroll",
+    name: "Studio orbit scroll",
+    easing: "cubic-bezier(.25,1,.2,1)",
+    deviceKeyframes: (s) => `
+      0%   { transform: perspective(1600px) rotateY(${s.rotate}deg) rotateX(2deg) scale(0.92); opacity: 0; }
+      12%  { opacity: 1; }
+      50%  { transform: perspective(1600px) rotateY(${s.rotate * 0.2}deg) rotateX(0deg) scale(1.02); opacity: 1; }
+      100% { transform: perspective(1600px) rotateY(0deg) rotateX(0deg) scale(1); opacity: 1; }
+    `,
+    backdropKeyframes: () => `
+      0%   { filter: brightness(0.8) contrast(1.1); }
+      100% { filter: brightness(1) contrast(1); }
+    `,
+    renderDevice: (device, uris, kinds, scene, durationMs) => {
+      // Auto-scrolling screen overlay in screen styles
+      const g = resolveGeometry(device, scene.variant);
+      const r = g.cornerRadius ?? 0;
+      const screenStyle = `top:${g.screenInset.top - 1}px;left:${g.screenInset.left - 1}px;width:${g.screenInset.width + 2}px;height:${g.screenInset.height + 2}px;border-radius:${r}px;clip-path:inset(0 round ${r}px);object-fit:cover;object-position:top center;animation: screenScroll ${durationMs}ms cubic-bezier(.1,.9,.2,1) forwards;`;
+      
+      const media = kinds[0] === "video" 
+        ? `<video class="device-screen" src="${uris[0]}" style="${screenStyle}" autoplay muted loop playsinline></video>`
+        : `<img class="device-screen" src="${uris[0]}" style="${screenStyle}" />`;
+
+      return `<div class="device" style="width:${g.width}px;height:${g.height}px">
+        ${media}
+        <div class="device-frame">${frameSvgFor(device, scene.variant)}</div>
+        <style>
+          @keyframes screenScroll {
+            0% { object-position: top center; }
+            100% { object-position: bottom center; }
+          }
+        </style>
+      </div>`;
+    }
+  },
+  "matte-spheres-drift": {
+    id: "matte-spheres-drift",
+    name: "Matte spheres drift",
+    easing: "cubic-bezier(.22,1,.36,1)",
+    deviceKeyframes: (s) => `
+      0%   { transform: perspective(1800px) rotateY(${-15 - s.rotate}deg) rotateZ(5deg) scale(0.9); opacity: 0; }
+      15%  { opacity: 1; }
+      60%  { transform: perspective(1800px) rotateY(0deg) rotateZ(0deg) scale(${1 + s.zoom / 110}); opacity: 1; }
+      100% { transform: perspective(1800px) rotateY(0deg) rotateZ(0deg) scale(${1 + s.zoom / 115}); opacity: 1; }
+    `,
+    renderDevice: (device, uris, kinds, scene, durationMs) => {
+      const dev = deviceMarkup(device, uris[0] ?? "", scene.variant, kinds[0] ?? "image");
+      return `<div style="position:relative; width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
+        <!-- Matte Spheres Background elements -->
+        <div style="position:absolute; left:12%; top:25%; width:100px; height:100px; border-radius:50%; background:radial-gradient(circle at 35% 35%, #333, #0a0a0c 75%); filter: blur(1px); animation: driftOne 8s ease-in-out infinite alternate;"></div>
+        <div style="position:absolute; right:15%; bottom:20%; width:140px; height:140px; border-radius:50%; background:radial-gradient(circle at 35% 35%, #222, #050507 75%); filter: blur(2px); animation: driftTwo 10s ease-in-out infinite alternate;"></div>
+        <!-- Cyber Neon Cyan borders overlay -->
+        <div style="position:absolute; width:460px; height:820px; border:2px solid rgba(0,240,255,.12); border-radius:32px; pointer-events:none;">
+          <div style="position:absolute; top:-2px; left:-2px; width:40px; height:40px; border-top:3px solid #00f0ff; border-left:3px solid #00f0ff; border-radius:6px 0 0 0;"></div>
+          <div style="position:absolute; bottom:-2px; right:-2px; width:40px; height:40px; border-bottom:3px solid #00f0ff; border-right:3px solid #00f0ff; border-radius:0 0 6px 0;"></div>
+        </div>
+        ${dev}
+        <style>
+          @keyframes driftOne { 0% { transform: translateY(0px) scale(1); } 100% { transform: translateY(-20px) scale(1.05); } }
+          @keyframes driftTwo { 0% { transform: translateY(0px) scale(1); } 100% { transform: translateY(25px) scale(0.98); } }
+        </style>
+      </div>`;
+    }
+  },
+  "split-panorama-track": {
+    id: "split-panorama-track",
+    name: "Split panorama track",
+    easing: "cubic-bezier(.25,1,.2,1)",
+    deviceKeyframes: (s) => `
+      0%   { transform: translateX(${-80 - cappedMove(s.move)}px) scale(0.92); opacity: 0; }
+      16%  { opacity: 1; }
+      60%  { transform: translateX(0) scale(1); opacity: 1; }
+      100% { transform: translateX(0) scale(1); opacity: 1; }
+    `,
+    renderDevice: (device, uris, kinds, scene, durationMs) => {
+      const dev = deviceMarkup(device, uris[0] ?? "", scene.variant, kinds[0] ?? "image");
+      return `<div style="position:relative; width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
+        <!-- Dashed Curved connection path -->
+        <svg style="position:absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index:0;" viewBox="0 0 1920 1080">
+          <path d="M 200,540 C 600,340 1320,740 1720,540" fill="none" stroke="#0088ff" stroke-width="3" stroke-dasharray="10 10" />
+        </svg>
+        <div style="position:relative; z-index:1;">${dev}</div>
+      </div>`;
+    }
+  },
+  "trio-fan-gloss": {
+    id: "trio-fan-gloss",
+    name: "Trio fan gloss",
+    easing: "cubic-bezier(.16,1,.3,1)",
+    deviceKeyframes: (s) => `
+      0%   { transform: translateY(${40 + cappedMove(s.move) / 2}px) scale(0.9); opacity: 0; }
+      15%  { opacity: 1; }
+      55%  { transform: translateY(0) scale(1); opacity: 1; }
+      100% { transform: translateY(0) scale(1); opacity: 1; }
+    `,
+    renderDevice: (device, uris, kinds, scene) => {
+      const centerUri = uris[0] ?? "";
+      const leftUri = uris[1] ?? uris[0] ?? "";
+      const rightUri = uris[2] ?? uris[0] ?? "";
+      const flank = (uri: string, kind: "image" | "video", tx: string, rot: string, isLeft: boolean) => `
+        <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; transform:translateX(${tx}) translateZ(-160px) rotateY(${rot}) scale(.82); opacity:.8; filter:brightness(.75);">
+          ${deviceMarkup(device, uri, scene.variant, kind)}
+        </div>`;
+      return `<div style="position:relative; width:100%; height:100%;">
+        ${flank(leftUri, kinds[1] ?? "image", "-45%", "22deg", true)}
+        ${flank(rightUri, kinds[2] ?? "image", "45%", "-22deg", false)}
+        <div style="position:relative; z-index:2; filter: drop-shadow(0 25px 50px rgba(0,0,0,0.55));">${deviceMarkup(device, centerUri, scene.variant, kinds[0] ?? "image")}</div>
+        <!-- Bottom Floor Gloss reflection shadow -->
+        <div style="position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:80%; height:80px; background:radial-gradient(ellipse at center, rgba(140,122,230,0.2) 0%, transparent 70%); filter:blur(15px); pointer-events:none; z-index:1;"></div>
       </div>`;
     },
   },
@@ -757,8 +921,125 @@ function sceneContentHtml(scene: VideoScene, device: DeviceModel, uris: string[]
   `;
 }
 
+export function composeStandaloneHtml(project: VideoProject, activeSceneIndex?: number, screenshotUris: string[] = []): string {
+  const templateId = project.template || "iphone-15-pro-portrait";
+  const htmlPath = path.join(process.cwd(), "templates", "video", templateId, "template.html");
+  if (!fs.existsSync(htmlPath)) {
+    throw new Error(`Standalone template HTML not found at ${htmlPath}`);
+  }
+  let html = fs.readFileSync(htmlPath, "utf-8");
+
+  // Read config from script tag
+  const match = html.match(/<script type="application\/json" id="template-config">([\s\S]*?)<\/script>/);
+  if (!match) return html;
+
+  const config = JSON.parse(match[1]);
+  const scenes = config.scenes || [];
+
+  // Calculate scene offset if activeSceneIndex is set
+  let sceneStartMs = 0;
+  if (activeSceneIndex !== undefined) {
+    for (let idx = 0; idx < activeSceneIndex; idx++) {
+      sceneStartMs += scenes[idx]?.durationMs || ((scenes[idx]?.durationSeconds || 5) * 1000);
+    }
+  }
+
+  // Construct values payload to inject
+  const screenshots: { slotId: string; url: string }[] = [];
+  const texts: { slotId: string; val: string }[] = [];
+
+  // Mappings
+  project.scenes.forEach((pScene, idx) => {
+    const tScene = scenes[idx];
+    if (!tScene || !tScene.slots) return;
+    const slots = tScene.slots;
+
+    // Map title/subtext
+    if (slots.text) {
+      texts.push({ slotId: slots.text, val: pScene.text || "" });
+    }
+    if (slots.subtext) {
+      texts.push({ slotId: slots.subtext, val: pScene.subtext || "" });
+    }
+
+    // Map screenshots
+    if (activeSceneIndex !== undefined && idx === activeSceneIndex) {
+      if (slots.screenshot && screenshotUris[0]) {
+        screenshots.push({ slotId: slots.screenshot, url: screenshotUris[0] });
+      }
+      if (slots.screenshots && Array.isArray(slots.screenshots)) {
+        slots.screenshots.forEach((slotId: string, sIdx: number) => {
+          if (screenshotUris[sIdx]) {
+            screenshots.push({ slotId, url: screenshotUris[sIdx] });
+          }
+        });
+      }
+    } else {
+      const screenIds = pScene.screenIds || (pScene.sourceId ? [pScene.sourceId] : []);
+      if (slots.screenshot) {
+        const src = project.sources.find(s => s.id === screenIds[0]);
+        if (src) {
+          const url = `/api/videos/${project.id}/file?p=${encodeURIComponent(src.file)}`;
+          screenshots.push({ slotId: slots.screenshot, url });
+        }
+      }
+      if (slots.screenshots && Array.isArray(slots.screenshots)) {
+        slots.screenshots.forEach((slotId: string, sIdx: number) => {
+          const src = project.sources.find(s => s.id === screenIds[sIdx]);
+          if (src) {
+            const url = `/api/videos/${project.id}/file?p=${encodeURIComponent(src.file)}`;
+            screenshots.push({ slotId, url });
+          }
+        });
+      }
+    }
+  });
+
+  const injectionScript = `
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const screenshots = ${JSON.stringify(screenshots)};
+      const texts = ${JSON.stringify(texts)};
+      
+      // Apply screenshots to image slots
+      screenshots.forEach(s => {
+        const img = document.getElementById(s.slotId);
+        if (img) img.src = s.url;
+      });
+
+      // Apply texts to copy elements
+      texts.forEach(t => {
+        const el = document.getElementById(t.slotId);
+        if (el) el.textContent = t.val;
+      });
+
+      // Apply seek offset adapter if activeSceneIndex is set
+      if (${activeSceneIndex !== undefined}) {
+        const originalSeek = window.seek;
+        const startMs = ${sceneStartMs};
+        window.seek = (ms) => {
+          if (typeof originalSeek === 'function') {
+            return originalSeek(startMs + ms);
+          }
+        };
+      }
+    });
+  </script>
+  `;
+
+  html = html.replace("</body>", `${injectionScript}</body>`);
+  return html;
+}
+
 /** The single generator used by both preview and render. */
-export function sceneHtml(scene: VideoScene, screenshotUris: string[], seekable = false, screenshotKinds: ("image" | "video")[] = []): string {
+export function sceneHtml(scene: VideoScene, screenshotUris: string[], seekable = false, screenshotKinds: ("image" | "video")[] = [], project?: VideoProject): string {
+  if (project && project.template) {
+    const htmlPath = path.join(process.cwd(), "templates", "video", project.template, "template.html");
+    if (fs.existsSync(htmlPath)) {
+      return composeStandaloneHtml(project, scene.order, screenshotUris);
+    }
+  }
+
   const device = DEVICE_REGISTRY[scene.device] ?? DEVICE_REGISTRY["phone"];
   if (!device) throw new Error(`Device '${scene.device}' not found in registry`);
   const animation = SCENE_ANIMATIONS[scene.sceneTemplate] ?? SCENE_ANIMATIONS["hero-rise"];
@@ -806,7 +1087,7 @@ export function scenePreviewHtml(project: VideoProject, sceneId: string): string
   const scene = project.scenes.find((s) => s.id === sceneId);
   if (!scene) throw new Error(`Scene '${sceneId}' not found in project ${project.id}`);
   const resolveUri = previewResolveUri(project.id);
-  return sceneHtml(scene, sourceUrisFor(project, scene, resolveUri), false, sourceKindsFor(project, scene));
+  return sceneHtml(scene, sourceUrisFor(project, scene, resolveUri), false, sourceKindsFor(project, scene), project);
 }
 
 /** Concatenated full-template preview: every scene of the project is laid
@@ -818,6 +1099,13 @@ export function scenePreviewHtml(project: VideoProject, sceneId: string): string
  *  toggling a class, timed via setTimeout against each scene's own duration
  *  -- plain JS scheduling, not an AI video engine. */
 export function templatePreviewHtml(project: VideoProject): string {
+  if (project.template) {
+    const htmlPath = path.join(process.cwd(), "templates", "video", project.template, "template.html");
+    if (fs.existsSync(htmlPath)) {
+      return composeStandaloneHtml(project);
+    }
+  }
+
   const resolveUri = previewResolveUri(project.id);
   const scenes = [...project.scenes].sort((a, b) => a.order - b.order);
 
@@ -1040,7 +1328,7 @@ export async function renderVideo(project: VideoProject): Promise<string> {
     const page = await browser.newPage({ viewport: canvasFor(scenes[0] ?? ({} as VideoScene)) });
     for (const scene of scenes) {
       await page.setViewportSize(canvasFor(scene));
-      const html = sceneHtml(scene, sourceUrisFor(project, scene, resolveUri), true, sourceKindsFor(project, scene));
+      const html = sceneHtml(scene, sourceUrisFor(project, scene, resolveUri), true, sourceKindsFor(project, scene), project);
       await page.setContent(html, { waitUntil: "load" });
 
       const totalFrames = Math.round(Math.max(1, scene.durationSeconds) * FPS);

@@ -6,3 +6,6 @@ output/
 *.log
 .DS_Store
 graphify-out/
+Template videos/
+tools/
+*.rar
