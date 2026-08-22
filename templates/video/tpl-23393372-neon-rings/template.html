@@ -43,7 +43,7 @@
     .scene.active, .scene.playing { display:flex; }
     .scene-content { display:flex; width:100%; height:100%; align-items:center; justify-content:space-between; position:relative; }
     .copy-col { flex:1.1; max-width:820px; display:flex; flex-direction:column; justify-content:center; z-index:10; transition:all 0.4s ease; }
-    .copy-col.right-side { text-align:right; align-items:flex-end; }
+    .copy-col.right-side { text-align:right; align-items:flex-end; max-width: 680px; }
     .copy-col.center-col { text-align:center; align-items:center; max-width:100%; }
     .title { font-size:68px; font-weight:900; text-transform:uppercase; line-height:1.12; letter-spacing:-1px; margin:0 0 20px 0; color:#ffffff; text-shadow:0 4px 20px rgba(0,0,0,0.8); }
     .dot-divider { display:flex; gap:8px; margin-bottom:20px; }
@@ -63,12 +63,17 @@
     .phone-speaker-grille { width:58px; height:4px; border-radius:2px; background:#475569; }
     .phone-camera-dot { position:absolute; right:110px; top:50%; transform:translateY(-50%); width:8px; height:8px; border-radius:50%; background:#0f172a; box-shadow:inset 0 0 2px #ff2a6d; }
     
-    .phone-screen-frame { flex:1; position:relative; overflow:hidden; background:#0f0f14;
+    /* Screen frame rounded directly at the bottom to solve CSS 3D parent overflow clip bugs */
+    .phone-screen-frame { flex:1; position:relative; overflow:hidden; background:#0f0f14; border-radius:0 0 44px 44px;
       background-image:linear-gradient(90deg, rgba(255,255,255,0.18) 0%, transparent 8%, transparent 92%, rgba(255,255,255,0.18) 100%);
     }
-    .phone-screen { width:100%; height:100%; object-fit:cover; display:block; }
+    .phone-screen { width:100%; height:100%; object-fit:cover; display:block; border-radius:inherit; }
     .gloss-sheen { position:absolute; inset:0; background:linear-gradient(105deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.02) 40%, rgba(255,255,255,0.12) 100%); z-index:11; pointer-events:none; }
     
+    /* Dual image slot support for Scene 7 - slightly enlarged landscape slot to guarantee 100% coverage */
+    .phone-screen.portrait-src { position:absolute; inset:0; z-index:3; opacity:1; }
+    .phone-screen.landscape-src { position:absolute; width:740px; height:380px; left:50%; top:50%; transform:translate(-50%, -50%) rotate(90deg); object-fit:cover; z-index:2; opacity:0; }
+
     /* Rear Chassis */
     .phone-face.back { background:linear-gradient(135deg, #121218 0%, #050507 100%); transform:rotateY(180deg) translateZ(10px); border:2px solid #ff2a6d; box-shadow:0 30px 60px rgba(0,0,0,0.65); display:flex; align-items:center; justify-content:center; }
     .back-camera-module { position:absolute; top:40px; left:50%; transform:translateX(-50%); width:70px; height:120px; border-radius:20px; background:#0a0a0f; border:2px solid #2a2a30; display:flex; flex-direction:column; align-items:center; justify-content:space-evenly; }
@@ -90,7 +95,7 @@
     .phone-ambient-shadow { position:absolute; width:360px; height:740px; border-radius:60px; background:rgba(0,0,0,0.5); filter:blur(30px); transform:translateZ(-60px) scale(0.94); pointer-events:none; }
 
     /* In-App Mockups style */
-    .mockup-ui { position:absolute; inset:0; background:linear-gradient(135deg, #150910 0%, #030305 100%); display:flex; flex-direction:column; padding:24px; box-sizing:border-box; }
+    .mockup-ui { position:absolute; inset:0; background:linear-gradient(135deg, #150910 0%, #030305 100%); display:flex; flex-direction:column; padding:24px; box-sizing:border-box; border-radius:inherit; }
     .red-wallpaper { background:linear-gradient(135deg, #880e4f 0%, #2d001d 50%, #050507 100%);
       background-image:radial-gradient(circle at 30% 20%, #ad1457 0%, transparent 40%), radial-gradient(circle at 80% 70%, #880e4f 0%, transparent 50%);
     }
@@ -100,13 +105,14 @@
     .mock-center-circle { width:100px; height:100px; border-radius:50%; border:6px solid #e8175d; box-shadow:0 0 15px #e8175d; margin:60px auto 20px; }
     .mock-sub { text-align:center; font-size:16px; font-weight:800; color:#fff; letter-spacing:2px; }
 
-    /* Panoramic fan-out screens (Scene 3) */
-    .fan-layer { position:absolute; width:370px; height:760px; border-radius:46px; background:#0f0f14; border:2px solid #2a2a30; box-shadow:0 25px 60px rgba(0,0,0,0.55); overflow:hidden; top:0; left:0; transform-style:preserve-3d; pointer-events:none; }
+    /* Panoramic fan-out screens (Scene 3) - Simple clean frameless screen layers matching display dimensions */
+    .fan-layer { position:absolute; width:368px; height:720px; border-radius:36px; overflow:hidden; top:40px; left:0; transform-style:preserve-3d; pointer-events:none; border:1px solid rgba(255,255,255,0.12); box-shadow:0 25px 60px rgba(0,0,0,0.65); }
+    .fan-layer .phone-screen-frame { width:100%; height:100%; position:relative; overflow:hidden; display:flex; flex-direction:column; border-radius:36px; }
 
-    /* Duo phone (Scene 8) */
-    .duo-wrap { position:relative; width:800px; height:920px; perspective:1600px; transform-style:preserve-3d; }
-    .duo-wrap .phone-3d-rig.duo-front { position:absolute; left:70px; top:70px; transform-style:preserve-3d; }
-    .duo-wrap .phone-3d-rig.duo-back { position:absolute; left:280px; top:0; transform-style:preserve-3d; }
+    /* Duo phone (Scene 8) - Adjusted height to fit within 1080px height without bottom cut-off */
+    .duo-wrap { position:relative; width:800px; height:680px; perspective:1600px; transform-style:preserve-3d; }
+    .duo-wrap .phone-3d-rig.duo-front { position:absolute; left:70px; top:0; transform-style:preserve-3d; }
+    .duo-wrap .phone-3d-rig.duo-back { position:absolute; left:280px; top:-50px; transform-style:preserve-3d; }
 
     /* App store badges */
     .store-badges { display:flex; gap:16px; margin-top:24px; }
@@ -383,12 +389,12 @@
     <!-- Scene 3 (0:12-0:17): Beautiful Modern Design -->
     <div class="scene" id="scene-2">
       <div class="scene-content" style="flex-direction:row-reverse;" id="content-2">
-        <div class="copy-col right-side">
+        <div class="copy-col right-side" style="flex: 0.9;">
           <h2 class="title" id="s2-text">BEAUTIFUL MODERN DESIGN</h2>
           <div class="dot-divider"><span></span><span></span><span></span></div>
           <p class="subtitle" id="s2-subtext">Panoramic fan-out screens showcase every detail</p>
         </div>
-        <div style="position:relative; width:700px; height:920px; perspective:1600px; display:flex; align-items:center; justify-content:center;">
+        <div style="position:relative; width:720px; height:920px; perspective:1600px; display:flex; align-items:center; justify-content:center;">
           <div style="position:relative; transform-style:preserve-3d; width:370px; height:760px;" id="fan-group-2">
             
     <div class="phone-3d-container ">
@@ -431,16 +437,11 @@
       </div>
     </div>
   
+            <!-- Frameless Screen 2 -->
             <div class="fan-layer" id="fan-layer-1">
-              
-    <div class="phone-face front">
-      <div class="phone-top-bezel">
-        <div class="phone-speaker-grille"></div>
-        <div class="phone-camera-dot"></div>
-      </div>
-      <div class="phone-screen-frame" style="background: #150910;">
-        <img class="phone-screen" id="slot-2b" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="Screen" />
-        
+              <div class="phone-screen-frame" style="background: #150910;">
+                <img class="phone-screen" id="slot-2b" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="Screen" />
+                
     <div class="mockup-ui screen-medium-dark">
       <div class="mock-header">Overview</div>
       <div class="mock-list">
@@ -450,30 +451,21 @@
       </div>
     </div>
   
-        <div class="gloss-sheen"></div>
-      </div>
-    </div>
-  
+                <div class="gloss-sheen"></div>
+              </div>
             </div>
+            <!-- Frameless Screen 3 -->
             <div class="fan-layer" id="fan-layer-2">
-              
-    <div class="phone-face front">
-      <div class="phone-top-bezel">
-        <div class="phone-speaker-grille"></div>
-        <div class="phone-camera-dot"></div>
-      </div>
-      <div class="phone-screen-frame" style="background: #030305;">
-        <img class="phone-screen" id="slot-2c" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="Screen" />
-        
+              <div class="phone-screen-frame" style="background: #030305;">
+                <img class="phone-screen" id="slot-2c" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="Screen" />
+                
     <div class="mockup-ui screen-very-dark">
       <div class="mock-center-circle"></div>
       <div class="mock-sub">LOREM IPSUM</div>
     </div>
   
-        <div class="gloss-sheen"></div>
-      </div>
-    </div>
-  
+                <div class="gloss-sheen"></div>
+              </div>
             </div>
           </div>
         </div>
@@ -636,7 +628,7 @@
       </div>
     </div>
 
-    <!-- Scene 7 (0:34-0:39): Media Player (landscape) -->
+    <!-- Scene 7 (0:34-0:39): Media Player (portrait-to-landscape transition) -->
     <div class="scene" id="scene-6">
       <div class="scene-content" style="flex-direction:column; justify-content:center; gap:20px;" id="content-6">
         <div class="copy-col center-col">
@@ -655,7 +647,8 @@
         <div class="phone-camera-dot"></div>
       </div>
       <div class="phone-screen-frame" style="background: #880e4f;">
-        <img class="phone-screen" id="slot-6" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="Screen" />
+        <img class="phone-screen portrait-src" id="slot-6" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="Screen Portrait" />
+        <img class="phone-screen landscape-src" id="slot-6-land" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="Screen Landscape" />
         
     <div class="mockup-ui red-wallpaper"></div>
   
@@ -900,7 +893,8 @@
       "slots": {
         "text": "s6-text",
         "subtext": "s6-subtext",
-        "screenshot": "slot-6"
+        "screenshot": "slot-6",
+        "screenshotLandscape": "slot-6-land"
       }
     },
     {
@@ -983,7 +977,7 @@
         let tX = 0;
         if (progress > 0.8) {
           const t = (progress - 0.8) / 0.2;
-          tX = -easeOutCubic(t) * 180;
+          tX = -easeOutCubic(t) * 220;
         }
         rig.style.transform = "translateX(" + tX + "px) rotateY(" + rY + "deg) rotateX(" + rX + "deg)";
       }
@@ -992,7 +986,7 @@
       const l1 = document.getElementById("fan-layer-1");
       const l2 = document.getElementById("fan-layer-2");
       
-      let baseTX = -180;
+      let baseTX = -260;
       let progressMid = 0;
       let progressRight = 0;
       
@@ -1004,19 +998,30 @@
         const exitProgress = (progress - 0.8) / 0.2;
         progressMid = 1 - easeOutCubic(exitProgress);
         progressRight = 1 - easeOutCubic(exitProgress);
-        baseTX = -180 + easeOutCubic(exitProgress) * 180;
+        baseTX = -260 + easeOutCubic(exitProgress) * 260;
       }
       
       if (rig) rig.style.transform = "translateX(" + baseTX + "px) rotateY(-8deg)";
-      if (l1) l1.style.transform = "translate3d(" + (baseTX + progressMid * 260) + "px, 0, -20px) rotateY(-10deg) scale(0.95)";
-      if (l2) l2.style.transform = "translate3d(" + (baseTX + progressRight * 500) + "px, 0, -40px) rotateY(-14deg) scale(0.9)";
+      
+      // Fanout middle screen (l1) and right screen (l2) start 100% hidden (baseTX) with opacity 0
+      // Spacing set to match frame 484 with a clean consistent gap: Card 1 at 378px, Card 2 at 756px
+      if (l1) {
+        l1.style.transform = "translate3d(" + (baseTX + progressMid * 378) + "px, 0, -20px) rotateY(-10deg) scale(0.98)";
+        l1.style.opacity = progressMid;
+      }
+      if (l2) {
+        l2.style.transform = "translate3d(" + (baseTX + progressRight * 756) + "px, 0, -40px) rotateY(-14deg) scale(0.96)";
+        l2.style.opacity = progressRight;
+      }
     } else if (sceneIdx === 3) { // Scene 4: Easy to Customize
       const rig = document.getElementById("phone-rig-3");
       if (rig) {
-        const rZ = 35 - progress * 8;
-        const rX = 46;
-        const rY = -22 + progress * 6;
-        rig.style.transform = "rotateZ(" + rZ + "deg) rotateX(" + rX + "deg) rotateY(" + rY + "deg) translateZ(40px)";
+        const ease = easeInOutCubic(progress);
+        const rZ = 35 - ease * 35; // smooth straighten on flat plane
+        const rX = 48 - ease * 40; // tilts straight to 8deg
+        const rY = -22 + ease * 22; // straightens to 0deg
+        const tZ = (1 - ease) * 40;
+        rig.style.transform = "rotateZ(" + rZ + "deg) rotateX(" + rX + "deg) rotateY(" + rY + "deg) translate3d(0, 0, " + tZ + "px)";
       }
     } else if (sceneIdx === 4) { // Scene 5: Color Control
       const rig = document.getElementById("phone-rig-4");
@@ -1033,24 +1038,57 @@
         const rX = 3 + Math.sin(progress * Math.PI) * 2;
         rig.style.transform = "scale(1.38) translateX(240px) rotateY(" + rY + "deg) rotateX(" + rX + "deg)";
       }
-    } else if (sceneIdx === 6) { // Scene 7: Media Player
+    } else if (sceneIdx === 6) { // Scene 7: Media Player (Portrait-to-Landscape Transition)
       const rig = document.getElementById("phone-rig-6");
+      const imgPortrait = document.getElementById("slot-6");
+      const imgLandscape = document.getElementById("slot-6-land");
+      
       if (rig) {
+        let rZ = 0;
+        let opacityLand = 0;
+        let opacityPort = 1;
+        
+        if (progress > 0.15 && progress < 0.55) {
+          const t = (progress - 0.15) / 0.40;
+          const ease = easeInOutCubic(t);
+          rZ = ease * -90; // smoothly rotate by -90deg
+          opacityLand = ease;
+          opacityPort = 1 - ease;
+        } else if (progress >= 0.55) {
+          rZ = -90;
+          opacityLand = 1;
+          opacityPort = 0;
+        }
+        
         const bobY = Math.sin(progress * Math.PI * 2) * 12;
         const rY = Math.sin(progress * Math.PI) * 12;
-        rig.style.transform = "translateY(" + bobY + "px) rotateZ(-90deg) rotateY(" + rY + "deg) rotateX(8deg)";
+        rig.style.transform = "translateY(" + bobY + "px) rotateZ(" + rZ + "deg) rotateY(" + rY + "deg) rotateX(8deg)";
+        
+        if (imgPortrait) imgPortrait.style.opacity = opacityPort;
+        if (imgLandscape) imgLandscape.style.opacity = opacityLand;
       }
-    } else if (sceneIdx === 7) { // Scene 8: Available on VideoHive
+    } else if (sceneIdx === 7) { // Scene 8: Available on VideoHive (Duo Phones Collision & Bottom Cut-off Fix)
       const rigA = document.getElementById("phone-rig-7a");
       const rigB = document.getElementById("phone-rig-7b");
       
       let entry = 1;
-      if (progress < 0.2) {
-        entry = easeOutCubic(progress / 0.2);
+      if (progress < 0.25) {
+        entry = easeOutCubic(progress / 0.25);
       }
       
-      if (rigA) rigA.style.transform = "translate3d(" + (80 * entry) + "px, " + (40 * entry) + "px, 0px) scale(0.85) rotateY(" + (-12 + (1 - entry) * 45) + "deg)";
-      if (rigB) rigB.style.transform = "translate3d(" + (-180 * entry) + "px, 0px, -50px) scale(0.85) rotateY(" + (195 + (1 - entry) * 90) + "deg)";
+      // Phone A (Front): Enters from top-right, translateZ(30px) foreground, scaled to 0.78 to prevent bottom cut-off
+      if (rigA) {
+        const tY = -70 + (1 - entry) * -80; // Shifted UP by 70px to make the bottom rounded corners fully visible within canvas
+        const tX = 80 + (1 - entry) * 60;
+        rigA.style.transform = "translate3d(" + tX + "px, " + tY + "px, 30px) scale(0.78) rotateY(" + (-12 + (1 - entry) * 15) + "deg)";
+      }
+      
+      // Phone B (Back): Enters from bottom-left, translateZ(-50px) background, scaled to 0.78
+      if (rigB) {
+        const tY = -120 + (1 - entry) * 90; // Shifted UP by 70px as well to maintain correct relative positions
+        const tX = -180 + (1 - entry) * -60;
+        rigB.style.transform = "translate3d(" + tX + "px, " + tY + "px, -50px) scale(0.78) rotateY(" + (195 + (1 - entry) * -15) + "deg)";
+      }
     }
   };
   </script>
