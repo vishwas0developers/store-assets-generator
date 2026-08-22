@@ -374,7 +374,6 @@ export function getUniversalPlayerScriptAndStyle(config) {
       let targetMs = 0;
       for (let i = 0; i < index; i++) targetMs += durations[i];
       window.pause();
-      currentSceneIdx = index;
       renderFrameAt(targetMs + 100);
       playState = "idle";
       notify();
