@@ -1,0 +1,1039 @@
+<!doctype html><html><head><meta charset="utf-8" /><style>
+    html, body { margin:0; width:1920px; height:1080px; overflow:hidden; }
+    
+  * { box-sizing: border-box; }
+  .canvas, .scene {
+    position: relative; display: flex; align-items: center; justify-content: center; gap: 5%;
+    font-family: "Segoe UI", Roboto, -apple-system, sans-serif; color: #fff; overflow: hidden;
+  }
+  .backdrop { position: absolute; inset: -8%; z-index: 0; }
+  .vignette { position: absolute; inset: 0; background: radial-gradient(circle at 50% 42%, rgba(0,0,0,0) 45%, rgba(0,0,0,.35) 100%); z-index: 1; }
+  .transition-overlay { position: absolute; inset: 0; z-index: 5; background: #05060a; pointer-events: none; opacity: 0; }
+  .copy { position: relative; z-index: 3; padding: 0 2%; }
+  .label { font-weight: 800; line-height: 1.15; }
+  .subtext { opacity: .82; margin-top: .5em; font-weight: 500; }
+  /* flex: 0 0 auto always -- .stage's size is deliberately pre-computed in
+     px (stageWidth/stageHeight, from deviceScaleFor) to match the device's
+     scale exactly; letting it flex-grow (an earlier version keyed this off
+     the layout) stretches the box far past that while the child transform:
+     scale() inside it still assumes the original size, producing a
+     misaligned, double-scaled mess. Only .copy is allowed to flex --
+     layouts that want a bigger device use a bigger deviceFraction instead. */
+  .stage { position: relative; perspective: 1800px; z-index: 2; flex: 0 0 auto; }
+  .stage-scale { position: absolute; inset: 0; transform-origin: top left; }
+  .stage-inner { width: 100%; height: 100%; }
+
+    .scene { position:absolute; inset:0; width:1920px; height:1080px; display:none; }
+    .scene.playing { display:flex; }
+    
+  .device { position: relative; filter: drop-shadow(0 20px 35px rgba(0,0,0,.45)); }
+  .device-screen { position: absolute; object-fit: cover; object-position: top center; z-index: 1; overflow: hidden; }
+  .device-frame { position: absolute; inset: 0; z-index: 2; pointer-events: none; overflow: hidden; }
+  .device-frame svg { width: 100%; height: 100%; display: block; overflow: hidden; }
+  .device-glow { position: absolute; inset: -6%; z-index: 0; background: radial-gradient(circle, rgba(255,255,255,.16) 0%, transparent 70%); filter: blur(18px); }
+  .device-sheen { position: absolute; inset: 0; z-index: 3; pointer-events: none; background: linear-gradient(115deg, rgba(255,255,255,.22) 0%, rgba(255,255,255,0) 26%, rgba(255,255,255,0) 74%, rgba(255,255,255,.10) 100%); mix-blend-mode: overlay; }
+
+  /* -- 2D tilt / float depth modes (real rotateY on the flat plane) -- */
+  .device-tilt { position: relative; transform-style: preserve-3d; }
+  .device-float { position: relative; animation: deviceFloat 5200ms ease-in-out infinite; }
+  @keyframes deviceFloat { 0% { transform: translateY(0) rotateY(-4deg); } 50% { transform: translateY(-14px) rotateY(4deg); } 100% { transform: translateY(0) rotateY(-4deg); } }
+
+  /* -- Genuine six-face 3D rig -- front/back/left/right/top/bottom as real
+     planes, not a flat image with a border. See device3dMarkup. -- */
+  .device-rig { position: relative; transform-style: preserve-3d; filter: drop-shadow(0 24px 42px rgba(0,0,0,.48)); }
+  .device-face { position: absolute; top: 0; left: 0; backface-visibility: hidden; }
+  .device-face.device-front { transform-style: preserve-3d; }
+  .device-back { border: 1px solid rgba(255,255,255,.08); display: flex; align-items: flex-start; justify-content: center; }
+  .device-cam-bar { display: flex; gap: 8px; align-items: center; justify-content: center; padding: 6px 14px; background: rgba(0,0,0,.4); border-radius: 20px; margin-top: 5%; border: 1px solid rgba(255,255,255,.1); }
+  .device-lens { width: 14px; height: 14px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #555, #080808 70%); border: 1px solid rgba(255,255,255,.15); }
+  .device-side { opacity: .96; }
+
+    
+  .word { display: inline-block; opacity: 0; transform: translateY(22px); animation: wordIn 560ms cubic-bezier(.16,1,.3,1) forwards; }
+  @keyframes wordIn { 0% { opacity: 0; transform: translateY(22px); } 100% { opacity: 1; transform: translateY(0); } }
+
+    
+    .fold-rig { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+    /* Deliberately plain block flow, NOT flex-centered: .stage-scale (an
+       ancestor) scales everything down from its TOP-LEFT corner
+       (transform-origin: top left). Centering an oversized device inside a
+       small flex container assumes the eventual scale-down also happens
+       from the CENTER -- it doesn't, so centering-then-scale-from-top-left
+       shifts the whole device hundreds of pixels up and left of where it
+       visually belongs. Every non-fold scene's device sits in plain block
+       flow for exactly this reason (it overflows toward bottom-right,
+       anchored at the same top-left corner the scale is anchored to);
+       fold-layer now matches that same anchor instead of fighting it. */
+    .fold-layer { position: absolute; inset: 0; }
+    .fold-folded { animation: foldFadeOut 0ms ease-in-out forwards; }
+    .fold-unfolded { animation: foldFadeIn 0ms ease-in-out forwards; opacity: 0; }
+    @keyframes foldFadeOut { 0% { opacity: 1; } 45% { opacity: 1; } 65% { opacity: 0; } 100% { opacity: 0; } }
+    @keyframes foldFadeIn { 0% { opacity: 0; } 45% { opacity: 0; } 65% { opacity: 1; } 100% { opacity: 1; } }
+  
+    
+    .scene-0 { flex-direction: row; padding: 5% 6%; justify-content: center; align-items: center; }
+    .scene-0 .copy { text-align: left; flex: 1 1 44%; max-width:640px; z-index: 4;   }
+    .scene-0 .label { font-size: 64px; }
+    .scene-0 .subtext { font-size: 32px; }
+    .scene-0 .backdrop { background: #0f1115; }
+    
+    
+    
+    
+    
+    
+    .scene-0.playing .stage-inner { animation: play-0 5000ms cubic-bezier(.2,.85,.3,1) forwards; }
+    .scene-0.playing .backdrop { animation: bg-0 5000ms ease-out forwards; }
+    .scene-0.playing .copy { animation: copyExit-0 420ms 4520ms cubic-bezier(.4,0,1,1) forwards; }
+    .scene-0.playing .transition-overlay { animation: trans-0 5000ms linear forwards; }
+    .scene-0.playing .fold-folded { animation-duration: 5000ms; }
+    .scene-0.playing .fold-unfolded { animation-duration: 5000ms; }
+    @keyframes play-0 { 
+      0%   { transform: perspective(1800px) rotateY(-28deg) translateY(6.25px) scale(0.8933333333333334); opacity: 0; }
+      15%  { opacity: 1; }
+      55%  { transform: perspective(1800px) rotateY(4deg) translateY(0) scale(1.0666666666666667); opacity: 1; }
+      88%  { transform: perspective(1800px) rotateY(0deg) translateY(0) scale(1.0666666666666667); opacity: 1; }
+      100% { transform: perspective(1800px) rotateY(0deg) translateY(0) scale(1.0615384615384615); opacity: 1; }
+     }
+    @keyframes bg-0 { 
+      0%   { transform: scale(1.03) translate3d(1.5%,0,0); }
+      100% { transform: scale(1.0307692307692307) translate3d(-1.5%,0,0); }
+     }
+    @keyframes copyExit-0 { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-14px); } }
+    @keyframes trans-0 { 0% { opacity: 0; } 100% { opacity: 0; } }
+  
+
+    .scene-1 { flex-direction: row-reverse; padding: 5% 6%; justify-content: center; align-items: center; }
+    .scene-1 .copy { text-align: left; flex: 1 1 44%; max-width:640px; z-index: 4;   }
+    .scene-1 .label { font-size: 64px; }
+    .scene-1 .subtext { font-size: 32px; }
+    .scene-1 .backdrop { background: #1c1c1c; }
+    
+    
+    
+    
+    
+    
+    .scene-1.playing .stage-inner { animation: play-1 5000ms cubic-bezier(.3,.9,.25,1) forwards; }
+    .scene-1.playing .backdrop { animation: bg-1 5000ms ease-out forwards; }
+    .scene-1.playing .copy { animation: copyExit-1 420ms 4520ms cubic-bezier(.4,0,1,1) forwards; }
+    .scene-1.playing .transition-overlay { animation: trans-1 5000ms linear forwards; }
+    .scene-1.playing .fold-folded { animation-duration: 5000ms; }
+    .scene-1.playing .fold-unfolded { animation-duration: 5000ms; }
+    @keyframes play-1 { 
+      0%   { clip-path: inset(100% 0 0 0); transform: translateY(20px) scale(1.01); opacity: 0; }
+      12%  { opacity: 1; }
+      48%  { clip-path: inset(0 0 0 0); transform: translateY(0) scale(1.0833333333333333); opacity: 1; }
+      100% { clip-path: inset(0 0 0 0); transform: translateY(0) scale(1.0833333333333333); opacity: 1; }
+     }
+    @keyframes bg-1 { 
+    0%   { transform: scale(1) translate3d(0,0,0); }
+    100% { transform: scale(1.04) translate3d(0.3333333333333333%, -0.25%, 0); }
+   }
+    @keyframes copyExit-1 { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-14px); } }
+    @keyframes trans-1 { 0% { opacity: 1; } 8.00% { opacity: 0; } 100% { opacity: 0; } }
+  
+
+    .scene-2 { flex-direction: row; padding: 5% 6%; justify-content: center; align-items: center; }
+    .scene-2 .copy { text-align: left; flex: 0 0 26%; max-width:420px; z-index: 4;   }
+    .scene-2 .label { font-size: 64px; }
+    .scene-2 .subtext { font-size: 32px; }
+    .scene-2 .backdrop { background: #0f1115; }
+    
+    
+    
+    
+    
+    
+    .scene-2.playing .stage-inner { animation: play-2 5000ms cubic-bezier(.18,.9,.3,1) forwards; }
+    .scene-2.playing .backdrop { animation: bg-2 5000ms ease-out forwards; }
+    .scene-2.playing .copy { animation: copyExit-2 420ms 4520ms cubic-bezier(.4,0,1,1) forwards; }
+    .scene-2.playing .transition-overlay { animation: trans-2 5000ms linear forwards; }
+    .scene-2.playing .fold-folded { animation-duration: 5000ms; }
+    .scene-2.playing .fold-unfolded { animation-duration: 5000ms; }
+    @keyframes play-2 { 
+      0%   { transform: translateY(41.666666666666664px) scale(0.9066666666666666); opacity: 0; }
+      14%  { opacity: 1; }
+      50%  { transform: translateY(0) scale(1.0833333333333333); opacity: 1; }
+      100% { transform: translateY(0) scale(1.0833333333333333); opacity: 1; }
+     }
+    @keyframes bg-2 { 
+      0%   { transform: scale(1.08) translate3d(0,2%,0); }
+      100% { transform: scale(1.02) translate3d(0,-2%,0); }
+     }
+    @keyframes copyExit-2 { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-14px); } }
+    @keyframes trans-2 { 0% { opacity: 1; } 8.00% { opacity: 0; } 100% { opacity: 0; } }
+  
+
+    .scene-3 { flex-direction: row; padding: 5% 6%; justify-content: center; align-items: center; }
+    .scene-3 .copy { text-align: left; flex: 1 1 44%; max-width:640px; z-index: 4;   }
+    .scene-3 .label { font-size: 64px; }
+    .scene-3 .subtext { font-size: 32px; }
+    .scene-3 .backdrop { background: #1c1c1c; }
+    
+    
+    
+    
+    
+    
+    .scene-3.playing .stage-inner { animation: play-3 5000ms cubic-bezier(.25,.9,.3,1) forwards; }
+    .scene-3.playing .backdrop { animation: bg-3 5000ms ease-out forwards; }
+    .scene-3.playing .copy { animation: copyExit-3 420ms 4520ms cubic-bezier(.4,0,1,1) forwards; }
+    .scene-3.playing .transition-overlay { animation: trans-3 5000ms linear forwards; }
+    .scene-3.playing .fold-folded { animation-duration: 5000ms; }
+    .scene-3.playing .fold-unfolded { animation-duration: 5000ms; }
+    @keyframes play-3 { 
+      0%   { transform: scale(0.8457142857142858); opacity: 0; }
+      16%  { opacity: 1; }
+      60%  { transform: scale(1.1); opacity: 1; }
+      100% { transform: scale(1.1090909090909091); opacity: 1; }
+     }
+    @keyframes bg-3 { 
+    0%   { transform: scale(1) translate3d(0,0,0); }
+    100% { transform: scale(1.048) translate3d(0%, -0%, 0); }
+   }
+    @keyframes copyExit-3 { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-14px); } }
+    @keyframes trans-3 { 0% { opacity: 1; clip-path: inset(0 100% 0 0); } 8.00% { opacity: 0; clip-path: inset(0 0 0 0); } 100% { opacity: 0; clip-path: inset(0 0 0 0); } }
+  
+
+    .scene-4 { flex-direction: row-reverse; padding: 5% 6%; justify-content: center; align-items: center; }
+    .scene-4 .copy { text-align: left; flex: 1 1 44%; max-width:640px; z-index: 4;   }
+    .scene-4 .label { font-size: 64px; }
+    .scene-4 .subtext { font-size: 32px; }
+    .scene-4 .backdrop { background: #0f1115; }
+    
+    .scene-4 .stage, .scene-4 .stage-scale, .scene-4 .stage-inner { transform-style: preserve-3d; }
+    
+    
+    
+    
+    .scene-4.playing .stage-inner { animation: play-4 5000ms cubic-bezier(.22,1,.36,1) forwards; }
+    .scene-4.playing .backdrop { animation: bg-4 5000ms ease-out forwards; }
+    .scene-4.playing .copy { animation: copyExit-4 420ms 4520ms cubic-bezier(.4,0,1,1) forwards; }
+    .scene-4.playing .transition-overlay { animation: trans-4 5000ms linear forwards; }
+    .scene-4.playing .fold-folded { animation-duration: 5000ms; }
+    .scene-4.playing .fold-unfolded { animation-duration: 5000ms; }
+    @keyframes play-4 { 
+      0%   { transform: scale(0.8866666666666667) translateY(14px); opacity: 0; }
+      18%  { opacity: 1; }
+      55%  { transform: scale(1.0833333333333333) translateY(0); opacity: 1; }
+      100% { transform: scale(1.0909090909090908) translateY(0); opacity: 1; }
+     }
+    @keyframes bg-4 { 
+    0%   { transform: scale(1) translate3d(0,0,0); }
+    100% { transform: scale(1.04) translate3d(0%, -0%, 0); }
+   }
+    @keyframes copyExit-4 { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-14px); } }
+    @keyframes trans-4 { 0% { opacity: 1; } 8.00% { opacity: 0; } 100% { opacity: 0; } }
+  
+
+    .scene-5 { flex-direction: column; padding: 5% 6%; justify-content: center; align-items: center; }
+    .scene-5 .copy { text-align: center; flex: 0 0 auto; max-width:900px; z-index: 4;   }
+    .scene-5 .label { font-size: 64px; }
+    .scene-5 .subtext { font-size: 32px; }
+    .scene-5 .backdrop { background: #1c1c1c; }
+    
+    .scene-5 .stage, .scene-5 .stage-scale, .scene-5 .stage-inner { transform-style: preserve-3d; }
+    
+    
+    
+    
+    .scene-5.playing .stage-inner { animation: play-5 10000ms cubic-bezier(.2,.85,.25,1) forwards; }
+    .scene-5.playing .backdrop { animation: bg-5 10000ms ease-out forwards; }
+    .scene-5.playing .copy { animation: copyExit-5 420ms 9520ms cubic-bezier(.4,0,1,1) forwards; }
+    .scene-5.playing .transition-overlay { animation: trans-5 10000ms linear forwards; }
+    .scene-5.playing .fold-folded { animation-duration: 10000ms; }
+    .scene-5.playing .fold-unfolded { animation-duration: 10000ms; }
+    @keyframes play-5 { 
+      0%   { transform: perspective(2000px) rotateY(-360deg) scale(0.85); opacity: 0; }
+      10%  { opacity: 1; }
+      32%  { transform: perspective(2000px) rotateY(0deg) scale(1); opacity: 1; }
+      40%  { transform: perspective(2000px) rotateY(0deg) scale(1); opacity: 1; }
+      60%  { transform: perspective(2000px) rotateY(0deg) scale(1.56); opacity: 1; }
+      100% { transform: perspective(2000px) rotateY(0deg) scale(1.56); opacity: 1; }
+     }
+    @keyframes bg-5 { 
+      0%   { transform: scale(1.04); filter: brightness(0.95); }
+      50%  { transform: scale(1.08); filter: brightness(1.02); }
+      100% { transform: scale(1.12); filter: brightness(1); }
+     }
+    @keyframes copyExit-5 { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-14px); } }
+    @keyframes trans-5 { 0% { opacity: 1; } 4.00% { opacity: 0; } 100% { opacity: 0; } }
+  
+  
+  /* === Universal Interactive Player Overlay === */
+  .v-player-bar {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: rgba(15, 17, 26, 0.88);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 40px;
+    padding: 10px 22px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    z-index: 999999;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    color: #ffffff;
+    user-select: none;
+    transition: opacity 0.35s ease, transform 0.35s ease;
+  }
+  .v-player-bar.autohide {
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, 15px);
+  }
+  .v-btn {
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    cursor: pointer;
+    transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
+    outline: none;
+  }
+  .v-btn:hover {
+    transform: scale(1.08);
+    background: #2563eb;
+    box-shadow: 0 6px 18px rgba(59, 130, 246, 0.6);
+  }
+  .v-btn-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: #cbd5e1;
+    box-shadow: none;
+    width: 34px;
+    height: 34px;
+    font-size: 14px;
+  }
+  .v-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    box-shadow: none;
+  }
+  .v-timeline-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 260px;
+  }
+  .v-scrubber {
+    flex: 1;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+    position: relative;
+    cursor: pointer;
+  }
+  .v-scrubber:hover {
+    height: 8px;
+  }
+  .v-scrubber-fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 0%;
+    background: #3b82f6;
+    border-radius: 3px;
+    pointer-events: none;
+  }
+  .v-scrubber-thumb {
+    position: absolute;
+    top: 50%;
+    left: 0%;
+    transform: translate(-50%, -50%);
+    width: 14px;
+    height: 14px;
+    background: #ffffff;
+    border-radius: 50%;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+    pointer-events: none;
+    transition: transform 0.1s ease;
+  }
+  .v-scrubber:hover .v-scrubber-thumb {
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+  .v-time-text {
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+    color: #94a3b8;
+    min-width: 80px;
+    text-align: right;
+  }
+  .v-pills {
+    display: flex;
+    gap: 6px;
+    border-left: 1px solid rgba(255, 255, 255, 0.14);
+    padding-left: 12px;
+  }
+  .v-pill {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 5px 11px;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    outline: none;
+  }
+  .v-pill:hover {
+    background: rgba(255, 255, 255, 0.18);
+    color: #ffffff;
+  }
+  .v-pill.active {
+    background: rgba(59, 130, 246, 0.35);
+    border-color: #3b82f6;
+    color: #ffffff;
+    font-weight: 600;
+  }
+  @media print {
+    .v-player-bar { display: none !important; }
+  }
+  body.rendering .v-player-bar, .v-player-bar.render-hidden {
+    display: none !important;
+  }
+  
+  </style></head><body><div class="scene scene-0" id="scene-0">
+    <div class="backdrop"></div>
+    <div class="vignette"></div>
+    <div class="copy" style="color:#ffffff;text-shadow:0 2px 12px rgba(0,0,0,.4)"><div class="label"><span class="word" style="animation-delay:60ms">Enterprise</span> <span class="word" style="animation-delay:115ms">Intelligence</span></div><div class="subtext"><span class="word" style="animation-delay:370ms">Security</span> <span class="word" style="animation-delay:415ms">and</span> <span class="word" style="animation-delay:460ms">speed</span> <span class="word" style="animation-delay:505ms">without</span> <span class="word" style="animation-delay:550ms">compromise</span></div></div>
+    <div class="stage" style="width:299px;height:648px;">
+      <div class="stage-scale" style="transform:scale(0.27692307692307694)">
+        <div class="stage-inner"><div class="device-tilt"><div class="device" style="width:1080px;height:2340px">
+      <img class="device-screen" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDIwIDIzNDAiIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIHByZXNlcnZlQXNwZWN0UmF0aW89InhNaWRZTWlkIHNsaWNlIj4KICAgIDxyZWN0IHdpZHRoPSIxMDIwIiBoZWlnaHQ9IjIzNDAiIGZpbGw9IiNlZWYxZjYiLz4KICAgIDxyZWN0IHdpZHRoPSIxMDIwIiBoZWlnaHQ9IjIyMCIgZmlsbD0iI2ZmZmZmZiIvPgogICAgPGNpcmNsZSBjeD0iOTAiIGN5PSIxMTAiIHI9IjQwIiBmaWxsPSIjYzdkMGRjIi8+CiAgICA8cmVjdCB4PSIxNjAiIHk9Ijg2IiB3aWR0aD0iMzYwIiBoZWlnaHQ9IjI2IiByeD0iMTMiIGZpbGw9IiNjN2QwZGMiLz4KICAgIDxyZWN0IHg9IjE2MCIgeT0iMTI4IiB3aWR0aD0iMjMwIiBoZWlnaHQ9IjIwIiByeD0iMTAiIGZpbGw9IiNkYmUxZWEiLz4KICAgIDxyZWN0IHg9IjYwIiB5PSIyODAiIHdpZHRoPSI5MDAiIGhlaWdodD0iMjkwIiByeD0iMjgiIGZpbGw9IiNmZmZmZmYiLz4KICAgICAgPHJlY3QgeD0iMTAwIiB5PSIzMzAiIHdpZHRoPSI0NDAiIGhlaWdodD0iMzAiIHJ4PSIxNSIgZmlsbD0iI2M3ZDBkYyIvPgogICAgICA8cmVjdCB4PSIxMDAiIHk9IjM3OCIgd2lkdGg9IjYwMCIgaGVpZ2h0PSIyMiIgcng9IjExIiBmaWxsPSIjZGJlMWVhIi8+CiAgICAgIDxyZWN0IHg9IjEwMCIgeT0iNDE4IiB3aWR0aD0iMzgwIiBoZWlnaHQ9IjIyIiByeD0iMTEiIGZpbGw9IiNkYmUxZWEiLz48cmVjdCB4PSI2MCIgeT0iNjIwIiB3aWR0aD0iOTAwIiBoZWlnaHQ9IjI5MCIgcng9IjI4IiBmaWxsPSIjZmZmZmZmIi8+CiAgICAgIDxyZWN0IHg9IjEwMCIgeT0iNjcwIiB3aWR0aD0iNDQwIiBoZWlnaHQ9IjMwIiByeD0iMTUiIGZpbGw9IiNjN2QwZGMiLz4KICAgICAgPHJlY3QgeD0iMTAwIiB5PSI3MTgiIHdpZHRoPSI2MDAiIGhlaWdodD0iMjIiIHJ4PSIxMSIgZmlsbD0iI2RiZTFlYSIvPgogICAgICA8cmVjdCB4PSIxMDAiIHk9Ijc1OCIgd2lkdGg9IjM4MCIgaGVpZ2h0PSIyMiIgcng9IjExIiBmaWxsPSIjZGJlMWVhIi8+PHJlY3QgeD0iNjAiIHk9Ijk2MCIgd2lkdGg9IjkwMCIgaGVpZ2h0PSIyOTAiIHJ4PSIyOCIgZmlsbD0iI2ZmZmZmZiIvPgogICAgICA8cmVjdCB4PSIxMDAiIHk9IjEwMTAiIHdpZHRoPSI0NDAiIGhlaWdodD0iMzAiIHJ4PSIxNSIgZmlsbD0iI2M3ZDBkYyIvPgogICAgICA8cmVjdCB4PSIxMDAiIHk9IjEwNTgiIHdpZHRoPSI2MDAiIGhlaWdodD0iMjIiIHJ4PSIxMSIgZmlsbD0iI2RiZTFlYSIvPgogICAgICA8cmVjdCB4PSIxMDAiIHk9IjEwOTgiIHdpZHRoPSIzODAiIGhlaWdodD0iMjIiIHJ4PSIxMSIgZmlsbD0iI2RiZTFlYSIvPjxyZWN0IHg9IjYwIiB5PSIxMzAwIiB3aWR0aD0iOTAwIiBoZWlnaHQ9IjI5MCIgcng9IjI4IiBmaWxsPSIjZmZmZmZmIi8+CiAgICAgIDxyZWN0IHg9IjEwMCIgeT0iMTM1MCIgd2lkdGg9IjQ0MCIgaGVpZ2h0PSIzMCIgcng9IjE1IiBmaWxsPSIjYzdkMGRjIi8+CiAgICAgIDxyZWN0IHg9IjEwMCIgeT0iMTM5OCIgd2lkdGg9IjYwMCIgaGVpZ2h0PSIyMiIgcng9IjExIiBmaWxsPSIjZGJlMWVhIi8+CiAgICAgIDxyZWN0IHg9IjEwMCIgeT0iMTQzOCIgd2lkdGg9IjM4MCIgaGVpZ2h0PSIyMiIgcng9IjExIiBmaWxsPSIjZGJlMWVhIi8+CiAgPC9zdmc+" style="top:17px;left:17px;width:1046px;height:2306px;border-radius:56px;clip-path:inset(0 round 56px);object-fit:cover;object-position:top center;" />
+      <div class="device-frame"><svg viewBox="0 0 1080 2340" xmlns="http://www.w3.org/2000/svg">
+    <rect x="5" y="5" width="1070" height="2330"
+          rx="92" fill="none" stroke="#121316" stroke-width="10" />
+    <circle cx="540" cy="39" r="13" fill="#000" stroke="#3a3d45" stroke-width="2" />
+    
+    <rect x="1075" y="421.2" width="10" height="187.20000000000002" rx="4" fill="#3a3d45" />
+    <rect x="-5" y="514.8" width="10" height="140.4" rx="4" fill="#3a3d45" />
+    <rect x="-5" y="702" width="10" height="140.4" rx="4" fill="#3a3d45" />
+  
+    
+  </svg></div>
+    </div></div></div>
+      </div>
+    </div>
+    
+    
+    <div class="transition-overlay"></div>
+  </div>
+<div class="scene scene-1" id="scene-1">
+    <div class="backdrop"></div>
+    <div class="vignette"></div>
+    <div class="copy" style="color:#ffffff;text-shadow:0 2px 12px rgba(0,0,0,.4)"><div class="label"><span class="word" style="animation-delay:60ms">Full</span> <span class="word" style="animation-delay:115ms">Observability</span></div><div class="subtext"><span class="word" style="animation-delay:370ms">Real-time</span> <span class="word" style="animation-delay:415ms">metrics</span> <span class="word" style="animation-delay:460ms">with</span> <span class="word" style="animation-delay:505ms">zero</span> <span class="word" style="animation-delay:550ms">latency</span></div></div>
+    <div class="stage" style="width:299px;height:648px;">
+      <div class="stage-scale" style="transform:scale(0.27692307692307694)">
+        <div class="stage-inner"><div class="device-tilt"><div class="device" style="width:1080px;height:2340px">
+      <img class="device-screen" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDIwIDIzNDAiIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIHByZXNlcnZlQXNwZWN0UmF0aW89InhNaWRZTWlkIHNsaWNlIj4KICAgIDxyZWN0IHdpZHRoPSIxMDIwIiBoZWlnaHQ9IjIzNDAiIGZpbGw9IiNlZWYxZjYiLz4KICAgIDxyZWN0IHdpZHRoPSIxMDIwIiBoZWlnaHQ9IjIyMCIgZmlsbD0iI2ZmZmZmZiIvPgogICAgPGNpcmNsZSBjeD0iOTAiIGN5PSIxMTAiIHI9IjQwIiBmaWxsPSIjYzdkMGRjIi8+CiAgICA8cmVjdCB4PSIxNjAiIHk9Ijg2IiB3aWR0aD0iMzYwIiBoZWlnaHQ9IjI2IiByeD0iMTMiIGZpbGw9IiNjN2QwZGMiLz4KICAgIDxyZWN0IHg9IjE2MCIgeT0iMTI4IiB3aWR0aD0iMjMwIiBoZWlnaHQ9IjIwIiByeD0iMTAiIGZpbGw9IiNkYmUxZWEiLz4KICAgIDxyZWN0IHg9IjYwIiB5PSIyODAiIHdpZHRoPSI5MDAiIGhlaWdodD0iMjkwIiByeD0iMjgiIGZpbGw9IiNmZmZmZmYiLz4KICAgICAgPHJlY3QgeD0iMTAwIiB5PSIzMzAiIHdpZHRoPSI0NDAiIGhlaWdodD0iMzAiIHJ4PSIxNSIgZmlsbD0iI2M3ZDBkYyIvPgogICAgICA8cmVjdCB4PSIxMDAiIHk9IjM3OCIgd2lkdGg9IjYwMCIgaGVpZ2h0PSIyMiIgcng9IjExIiBmaWxsPSIjZGJlMWVhIi8+CiAgICAgIDxyZWN0IHg9IjEwMCIgeT0iNDE4IiB3aWR0aD0iMzgwIiBoZWlnaHQ9IjIyIiByeD0iMTEiIGZpbGw9IiNkYmUxZWEiLz48cmVjdCB4PSI2MCIgeT0iNjIwIiB3aWR0aD0iOTAwIiBoZWlnaHQ9IjI5MCIgcng9IjI4IiBmaWxsPSIjZmZmZmZmIi8+CiAgICAgIDxyZWN0IHg9IjEwMCIgeT0iNjcwIiB3aWR0aD0iNDQwIiBoZWlnaHQ9IjMwIiByeD0iMTUiIGZpbGw9IiNjN2QwZGMiLz4KICAgICAgPHJlY3QgeD0iMTAwIiB5PSI3MTgiIHdpZHRoPSI2MDAiIGhlaWdodD0iMjIiIHJ4PSIxMSIgZmlsbD0iI2RiZTFlYSIvPgogICAgICA8cmVjdCB4PSIxMDAiIHk9Ijc1OCIgd2lkdGg9IjM4MCIgaGVpZ2h0PSIyMiIgcng9IjExIiBmaWxsPSIjZGJlMWVhIi8+PHJlY3QgeD0iNjAiIHk9Ijk2MCIgd2lkdGg9IjkwMCIgaGVpZ2h0PSIyOTAiIHJ4PSIyOCIgZmlsbD0iI2ZmZmZmZiIvPgogICAgICA8cmVjdCB4PSIxMDAiIHk9IjEwMTAiIHdpZHRoPSI0NDAiIGhlaWdodD0iMzAiIHJ4PSIxNSIgZmlsbD0iI2M3ZDBkYyIvPgogICAgICA8cmVjdCB4PSIxMDAiIHk9IjEwNTgiIHdpZHRoPSI2MDAiIGhlaWdodD0iMjIiIHJ4PSIxMSIgZmlsbD0iI2RiZTFlYSIvPgogICAgICA8cmVjdCB4PSIxMDAiIHk9IjEwOTgiIHdpZHRoPSIzODAiIGhlaWdodD0iMjIiIHJ4PSIxMSIgZmlsbD0iI2RiZTFlYSIvPjxyZWN0IHg9IjYwIiB5PSIxMzAwIiB3aWR0aD0iOTAwIiBoZWlnaHQ9IjI5MCIgcng9IjI4IiBmaWxsPSIjZmZmZmZmIi8+CiAgICAgIDxyZWN0IHg9IjEwMCIgeT0iMTM1MCIgd2lkdGg9IjQ0MCIgaGVpZ2h0PSIzMCIgcng9IjE1IiBmaWxsPSIjYzdkMGRjIi8+CiAgICAgIDxyZWN0IHg9IjEwMCIgeT0iMTM5OCIgd2lkdGg9IjYwMCIgaGVpZ2h0PSIyMiIgcng9IjExIiBmaWxsPSIjZGJlMWVhIi8+CiAgICAgIDxyZWN0IHg9IjEwMCIgeT0iMTQzOCIgd2lkdGg9IjM4MCIgaGVpZ2h0PSIyMiIgcng9IjExIiBmaWxsPSIjZGJlMWVhIi8+CiAgPC9zdmc+" style="top:17px;left:17px;width:1046px;height:2306px;border-radius:56px;clip-path:inset(0 round 56px);object-fit:cover;object-position:top center;" />
+      <div class="device-frame"><svg viewBox="0 0 1080 2340" xmlns="http://www.w3.org/2000/svg">
+    <rect x="5" y="5" width="1070" height="2330"
+          rx="92" fill="none" stroke="#121316" stroke-width="10" />
+    <circle cx="540" cy="39" r="13" fill="#000" stroke="#3a3d45" stroke-width="2" />
+    
+    <rect x="1075" y="421.2" width="10" height="187.20000000000002" rx="4" fill="#3a3d45" />
+    <rect x="-5" y="514.8" width="10" height="140.4" rx="4" fill="#3a3d45" />
+    <rect x="-5" y="702" width="10" height="140.4" rx="4" fill="#3a3d45" />
+  
+    
+  </svg></div>
+    </div></div></div>
+      </div>
+    </div>
+    
+    
+    <div class="transition-overlay"></div>
+  </div>
+<div class="scene scene-2" id="scene-2">
+    <div class="backdrop"></div>
+    <div class="vignette"></div>
+    <div class="copy" style="color:#ffffff;text-shadow:0 2px 12px rgba(0,0,0,.4)"><div class="label"><span class="word" style="animation-delay:60ms">Focus-Driven</span> <span class="word" style="animation-delay:115ms">Design</span></div><div class="subtext"><span class="word" style="animation-delay:370ms">Engineered</span> <span class="word" style="animation-delay:415ms">for</span> <span class="word" style="animation-delay:460ms">mission-critical</span> <span class="word" style="animation-delay:505ms">tasks</span></div></div>
+    <div class="stage" style="width:299px;height:648px;">
+      <div class="stage-scale" style="transform:scale(0.27692307692307694)">
+        <div class="stage-inner"><div class="device" style="width:1080px;height:2340px">
+      <img class="device-screen device-screen-0" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDIwIDIzNDAiIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIHByZXNlcnZlQXNwZWN0UmF0aW89InhNaWRZTWlkIHNsaWNlIj4KICAgIDxyZWN0IHdpZHRoPSIxMDIwIiBoZWlnaHQ9IjIzNDAiIGZpbGw9IiNlZWYxZjYiLz4KICAgIDxyZWN0IHdpZHRoPSIxMDIwIiBoZWlnaHQ9IjIyMCIgZmlsbD0iI2ZmZmZmZiIvPgogICAgPGNpcmNsZSBjeD0iOTAiIGN5PSIxMTAiIHI9IjQwIiBmaWxsPSIjYzdkMGRjIi8+CiAgICA8cmVjdCB4PSIxNjAiIHk9Ijg2IiB3aWR0aD0iMzYwIiBoZWlnaHQ9IjI2IiByeD0iMTMiIGZpbGw9IiNjN2QwZGMiLz4KICAgIDxyZWN0IHg9IjE2MCIgeT0iMTI4IiB3aWR0aD0iMjMwIiBoZWlnaHQ9IjIwIiByeD0iMTAiIGZpbGw9IiNkYmUxZWEiLz4KICAgIDxyZWN0IHg9IjYwIiB5PSIyODAiIHdpZHRoPSI5MDAiIGhlaWdodD0iMjkwIiByeD0iMjgiIGZpbGw9IiNmZmZmZmYiLz4KICAgICAgPHJlY3QgeD0iMTAwIiB5PSIzMzAiIHdpZHRoPSI0NDAiIGhlaWdodD0iMzAiIHJ4PSIxNSIgZmlsbD0iI2M3ZDBkYyIvPgogICAgICA8cmVjdCB4PSIxMDAiIHk9IjM3OCIgd2lkdGg9IjYwMCIgaGVpZ2h0PSIyMiIgcng9IjExIiBmaWxsPSIjZGJlMWVhIi8+CiAgICAgIDxyZWN0IHg9IjEwMCIgeT0iNDE4IiB3aWR0aD0iMzgwIiBoZWlnaHQ9IjIyIiByeD0iMTEiIGZpbGw9IiNkYmUxZWEiLz48cmVjdCB4PSI2MCIgeT0iNjIwIiB3aWR0aD0iOTAwIiBoZWlnaHQ9IjI5MCIgcng9IjI4IiBmaWxsPSIjZmZmZmZmIi8+CiAgICAgIDxyZWN0IHg9IjEwMCIgeT0iNjcwIiB3aWR0aD0iNDQwIiBoZWlnaHQ9IjMwIiByeD0iMTUiIGZpbGw9IiNjN2QwZGMiLz4KICAgICAgPHJlY3QgeD0iMTAwIiB5PSI3MTgiIHdpZHRoPSI2MDAiIGhlaWdodD0iMjIiIHJ4PSIxMSIgZmlsbD0iI2RiZTFlYSIvPgogICAgICA8cmVjdCB4PSIxMDAiIHk9Ijc1OCIgd2lkdGg9IjM4MCIgaGVpZ2h0PSIyMiIgcng9IjExIiBmaWxsPSIjZGJlMWVhIi8+PHJlY3QgeD0iNjAiIHk9Ijk2MCIgd2lkdGg9IjkwMCIgaGVpZ2h0PSIyOTAiIHJ4PSIyOCIgZmlsbD0iI2ZmZmZmZiIvPgogICAgICA8cmVjdCB4PSIxMDAiIHk9IjEwMTAiIHdpZHRoPSI0NDAiIGhlaWdodD0iMzAiIHJ4PSIxNSIgZmlsbD0iI2M3ZDBkYyIvPgogICAgICA8cmVjdCB4PSIxMDAiIHk9IjEwNTgiIHdpZHRoPSI2MDAiIGhlaWdodD0iMjIiIHJ4PSIxMSIgZmlsbD0iI2RiZTFlYSIvPgogICAgICA8cmVjdCB4PSIxMDAiIHk9IjEwOTgiIHdpZHRoPSIzODAiIGhlaWdodD0iMjIiIHJ4PSIxMSIgZmlsbD0iI2RiZTFlYSIvPjxyZWN0IHg9IjYwIiB5PSIxMzAwIiB3aWR0aD0iOTAwIiBoZWlnaHQ9IjI5MCIgcng9IjI4IiBmaWxsPSIjZmZmZmZmIi8+CiAgICAgIDxyZWN0IHg9IjEwMCIgeT0iMTM1MCIgd2lkdGg9IjQ0MCIgaGVpZ2h0PSIzMCIgcng9IjE1IiBmaWxsPSIjYzdkMGRjIi8+CiAgICAgIDxyZWN0IHg9IjEwMCIgeT0iMTM5OCIgd2lkdGg9IjYwMCIgaGVpZ2h0PSIyMiIgcng9IjExIiBmaWxsPSIjZGJlMWVhIi8+CiAgICAgIDxyZWN0IHg9IjEwMCIgeT0iMTQzOCIgd2lkdGg9IjM4MCIgaGVpZ2h0PSIyMiIgcng9IjExIiBmaWxsPSIjZGJlMWVhIi8+CiAgPC9zdmc+" style="top:17px;left:17px;width:1046px;height:2306px;border-radius:56px;clip-path:inset(0 round 56px);object-fit:cover;object-position:top center;animation:screenSwap0 5000ms ease-in-out forwards;" />
+        <style>@keyframes screenSwap0 { 0% { opacity: 1 } 44.80% { opacity: 1 } 50.00% { opacity: 0 } 100% { opacity: 0 } }</style>
+<img class="device-screen device-screen-1" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDIwIDIzNDAiIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIHByZXNlcnZlQXNwZWN0UmF0aW89InhNaWRZTWlkIHNsaWNlIj4KICAgIDxyZWN0IHdpZHRoPSIxMDIwIiBoZWlnaHQ9IjIzNDAiIGZpbGw9IiNlZWYxZjYiLz4KICAgIDxyZWN0IHdpZHRoPSIxMDIwIiBoZWlnaHQ9IjIyMCIgZmlsbD0iI2ZmZmZmZiIvPgogICAgPGNpcmNsZSBjeD0iOTAiIGN5PSIxMTAiIHI9IjQwIiBmaWxsPSIjYzdkMGRjIi8+CiAgICA8cmVjdCB4PSIxNjAiIHk9Ijg2IiB3aWR0aD0iMzYwIiBoZWlnaHQ9IjI2IiByeD0iMTMiIGZpbGw9IiNjN2QwZGMiLz4KICAgIDxyZWN0IHg9IjE2MCIgeT0iMTI4IiB3aWR0aD0iMjMwIiBoZWlnaHQ9IjIwIiByeD0iMTAiIGZpbGw9IiNkYmUxZWEiLz4KICAgIDxyZWN0IHg9IjYwIiB5PSIyODAiIHdpZHRoPSI0MzAiIGhlaWdodD0iMzYwIiByeD0iMjQiIGZpbGw9IiNmZmZmZmYiLz4KICAgICAgPHJlY3QgeD0iMTAwIiB5PSI2MTAiIHdpZHRoPSIzMzAiIGhlaWdodD0iMjQiIHJ4PSIxMiIgZmlsbD0iI2M3ZDBkYyIvPjxyZWN0IHg9IjUzMCIgeT0iMjgwIiB3aWR0aD0iNDMwIiBoZWlnaHQ9IjM2MCIgcng9IjI0IiBmaWxsPSIjZmZmZmZmIi8+CiAgICAgIDxyZWN0IHg9IjU3MCIgeT0iNjEwIiB3aWR0aD0iMzMwIiBoZWlnaHQ9IjI0IiByeD0iMTIiIGZpbGw9IiNjN2QwZGMiLz48cmVjdCB4PSI2MCIgeT0iNjgwIiB3aWR0aD0iNDMwIiBoZWlnaHQ9IjM2MCIgcng9IjI0IiBmaWxsPSIjZmZmZmZmIi8+CiAgICAgIDxyZWN0IHg9IjEwMCIgeT0iMTAxMCIgd2lkdGg9IjMzMCIgaGVpZ2h0PSIyNCIgcng9IjEyIiBmaWxsPSIjYzdkMGRjIi8+PHJlY3QgeD0iNTMwIiB5PSI2ODAiIHdpZHRoPSI0MzAiIGhlaWdodD0iMzYwIiByeD0iMjQiIGZpbGw9IiNmZmZmZmYiLz4KICAgICAgPHJlY3QgeD0iNTcwIiB5PSIxMDEwIiB3aWR0aD0iMzMwIiBoZWlnaHQ9IjI0IiByeD0iMTIiIGZpbGw9IiNjN2QwZGMiLz48cmVjdCB4PSI2MCIgeT0iMTA4MCIgd2lkdGg9IjQzMCIgaGVpZ2h0PSIzNjAiIHJ4PSIyNCIgZmlsbD0iI2ZmZmZmZiIvPgogICAgICA8cmVjdCB4PSIxMDAiIHk9IjE0MTAiIHdpZHRoPSIzMzAiIGhlaWdodD0iMjQiIHJ4PSIxMiIgZmlsbD0iI2M3ZDBkYyIvPjxyZWN0IHg9IjUzMCIgeT0iMTA4MCIgd2lkdGg9IjQzMCIgaGVpZ2h0PSIzNjAiIHJ4PSIyNCIgZmlsbD0iI2ZmZmZmZiIvPgogICAgICA8cmVjdCB4PSI1NzAiIHk9IjE0MTAiIHdpZHRoPSIzMzAiIGhlaWdodD0iMjQiIHJ4PSIxMiIgZmlsbD0iI2M3ZDBkYyIvPgogIDwvc3ZnPg==" style="top:17px;left:17px;width:1046px;height:2306px;border-radius:56px;clip-path:inset(0 round 56px);object-fit:cover;object-position:top center;animation:screenSwap1 5000ms ease-in-out forwards;" />
+        <style>@keyframes screenSwap1 { 0% { opacity: 0 } 50.00% { opacity: 0 } 55.20% { opacity: 1 } 94.80% { opacity: 1 } 100.00% { opacity: 1 } 100% { opacity: 1 } }</style>
+      <div class="device-frame"><svg viewBox="0 0 1080 2340" xmlns="http://www.w3.org/2000/svg">
+    <rect x="5" y="5" width="1070" height="2330"
+          rx="92" fill="none" stroke="#121316" stroke-width="10" />
+    <circle cx="540" cy="39" r="13" fill="#000" stroke="#3a3d45" stroke-width="2" />
+    
+    <rect x="1075" y="421.2" width="10" height="187.20000000000002" rx="4" fill="#3a3d45" />
+    <rect x="-5" y="514.8" width="10" height="140.4" rx="4" fill="#3a3d45" />
+    <rect x="-5" y="702" width="10" height="140.4" rx="4" fill="#3a3d45" />
+  
+    
+  </svg></div>
+    </div></div>
+      </div>
+    </div>
+    
+    
+    <div class="transition-overlay"></div>
+  </div>
+<div class="scene scene-3" id="scene-3">
+    <div class="backdrop"></div>
+    <div class="vignette"></div>
+    <div class="copy" style="color:#ffffff;text-shadow:0 2px 12px rgba(0,0,0,.4)"><div class="label"><span class="word" style="animation-delay:60ms">Zero-Trust</span> <span class="word" style="animation-delay:115ms">Architecture</span></div><div class="subtext"><span class="word" style="animation-delay:370ms">Complete</span> <span class="word" style="animation-delay:415ms">end-to-end</span> <span class="word" style="animation-delay:460ms">data</span> <span class="word" style="animation-delay:505ms">safety</span></div></div>
+    <div class="stage" style="width:299px;height:648px;">
+      <div class="stage-scale" style="transform:scale(0.27692307692307694)">
+        <div class="stage-inner"><div class="device-tilt"><div class="device" style="width:1080px;height:2340px">
+      <img class="device-screen" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDIwIDIzNDAiIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIHByZXNlcnZlQXNwZWN0UmF0aW89InhNaWRZTWlkIHNsaWNlIj4KICAgIDxyZWN0IHdpZHRoPSIxMDIwIiBoZWlnaHQ9IjIzNDAiIGZpbGw9IiNlZWYxZjYiLz4KICAgIDxyZWN0IHdpZHRoPSIxMDIwIiBoZWlnaHQ9IjIyMCIgZmlsbD0iI2ZmZmZmZiIvPgogICAgPGNpcmNsZSBjeD0iOTAiIGN5PSIxMTAiIHI9IjQwIiBmaWxsPSIjYzdkMGRjIi8+CiAgICA8cmVjdCB4PSIxNjAiIHk9Ijg2IiB3aWR0aD0iMzYwIiBoZWlnaHQ9IjI2IiByeD0iMTMiIGZpbGw9IiNjN2QwZGMiLz4KICAgIDxyZWN0IHg9IjE2MCIgeT0iMTI4IiB3aWR0aD0iMjMwIiBoZWlnaHQ9IjIwIiByeD0iMTAiIGZpbGw9IiNkYmUxZWEiLz4KICAgIDxyZWN0IHg9IjYwIiB5PSIyODAiIHdpZHRoPSI5MDAiIGhlaWdodD0iMjkwIiByeD0iMjgiIGZpbGw9IiNmZmZmZmYiLz4KICAgICAgPHJlY3QgeD0iMTAwIiB5PSIzMzAiIHdpZHRoPSI0NDAiIGhlaWdodD0iMzAiIHJ4PSIxNSIgZmlsbD0iI2M3ZDBkYyIvPgogICAgICA8cmVjdCB4PSIxMDAiIHk9IjM3OCIgd2lkdGg9IjYwMCIgaGVpZ2h0PSIyMiIgcng9IjExIiBmaWxsPSIjZGJlMWVhIi8+CiAgICAgIDxyZWN0IHg9IjEwMCIgeT0iNDE4IiB3aWR0aD0iMzgwIiBoZWlnaHQ9IjIyIiByeD0iMTEiIGZpbGw9IiNkYmUxZWEiLz48cmVjdCB4PSI2MCIgeT0iNjIwIiB3aWR0aD0iOTAwIiBoZWlnaHQ9IjI5MCIgcng9IjI4IiBmaWxsPSIjZmZmZmZmIi8+CiAgICAgIDxyZWN0IHg9IjEwMCIgeT0iNjcwIiB3aWR0aD0iNDQwIiBoZWlnaHQ9IjMwIiByeD0iMTUiIGZpbGw9IiNjN2QwZGMiLz4KICAgICAgPHJlY3QgeD0iMTAwIiB5PSI3MTgiIHdpZHRoPSI2MDAiIGhlaWdodD0iMjIiIHJ4PSIxMSIgZmlsbD0iI2RiZTFlYSIvPgogICAgICA8cmVjdCB4PSIxMDAiIHk9Ijc1OCIgd2lkdGg9IjM4MCIgaGVpZ2h0PSIyMiIgcng9IjExIiBmaWxsPSIjZGJlMWVhIi8+PHJlY3QgeD0iNjAiIHk9Ijk2MCIgd2lkdGg9IjkwMCIgaGVpZ2h0PSIyOTAiIHJ4PSIyOCIgZmlsbD0iI2ZmZmZmZiIvPgogICAgICA8cmVjdCB4PSIxMDAiIHk9IjEwMTAiIHdpZHRoPSI0NDAiIGhlaWdodD0iMzAiIHJ4PSIxNSIgZmlsbD0iI2M3ZDBkYyIvPgogICAgICA8cmVjdCB4PSIxMDAiIHk9IjEwNTgiIHdpZHRoPSI2MDAiIGhlaWdodD0iMjIiIHJ4PSIxMSIgZmlsbD0iI2RiZTFlYSIvPgogICAgICA8cmVjdCB4PSIxMDAiIHk9IjEwOTgiIHdpZHRoPSIzODAiIGhlaWdodD0iMjIiIHJ4PSIxMSIgZmlsbD0iI2RiZTFlYSIvPjxyZWN0IHg9IjYwIiB5PSIxMzAwIiB3aWR0aD0iOTAwIiBoZWlnaHQ9IjI5MCIgcng9IjI4IiBmaWxsPSIjZmZmZmZmIi8+CiAgICAgIDxyZWN0IHg9IjEwMCIgeT0iMTM1MCIgd2lkdGg9IjQ0MCIgaGVpZ2h0PSIzMCIgcng9IjE1IiBmaWxsPSIjYzdkMGRjIi8+CiAgICAgIDxyZWN0IHg9IjEwMCIgeT0iMTM5OCIgd2lkdGg9IjYwMCIgaGVpZ2h0PSIyMiIgcng9IjExIiBmaWxsPSIjZGJlMWVhIi8+CiAgICAgIDxyZWN0IHg9IjEwMCIgeT0iMTQzOCIgd2lkdGg9IjM4MCIgaGVpZ2h0PSIyMiIgcng9IjExIiBmaWxsPSIjZGJlMWVhIi8+CiAgPC9zdmc+" style="top:17px;left:17px;width:1046px;height:2306px;border-radius:56px;clip-path:inset(0 round 56px);object-fit:cover;object-position:top center;" />
+      <div class="device-frame"><svg viewBox="0 0 1080 2340" xmlns="http://www.w3.org/2000/svg">
+    <rect x="5" y="5" width="1070" height="2330"
+          rx="92" fill="none" stroke="#121316" stroke-width="10" />
+    <circle cx="540" cy="39" r="13" fill="#000" stroke="#3a3d45" stroke-width="2" />
+    
+    <rect x="1075" y="421.2" width="10" height="187.20000000000002" rx="4" fill="#3a3d45" />
+    <rect x="-5" y="514.8" width="10" height="140.4" rx="4" fill="#3a3d45" />
+    <rect x="-5" y="702" width="10" height="140.4" rx="4" fill="#3a3d45" />
+  
+    
+  </svg></div>
+    </div></div></div>
+      </div>
+    </div>
+    
+    
+    <div class="transition-overlay"></div>
+  </div>
+<div class="scene scene-4" id="scene-4">
+    <div class="backdrop"></div>
+    <div class="vignette"></div>
+    <div class="copy" style="color:#ffffff;text-shadow:0 2px 12px rgba(0,0,0,.4)"><div class="label"><span class="word" style="animation-delay:60ms">High-Throughput</span> <span class="word" style="animation-delay:115ms">Power</span></div><div class="subtext"><span class="word" style="animation-delay:370ms">Scale</span> <span class="word" style="animation-delay:415ms">seamlessly</span> <span class="word" style="animation-delay:460ms">as</span> <span class="word" style="animation-delay:505ms">your</span> <span class="word" style="animation-delay:550ms">business</span> <span class="word" style="animation-delay:595ms">grows</span></div></div>
+    <div class="stage" style="width:299px;height:648px;">
+      <div class="stage-scale" style="transform:scale(0.27692307692307694)">
+        <div class="stage-inner"><div class="device-float"><div class="device-rig" style="width:1080px;height:2340px">
+      <div class="device-face device-front" style="transform:translateZ(10px)"><div class="device" style="width:1080px;height:2340px">
+      <img class="device-screen" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDIwIDIzNDAiIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIHByZXNlcnZlQXNwZWN0UmF0aW89InhNaWRZTWlkIHNsaWNlIj4KICAgIDxyZWN0IHdpZHRoPSIxMDIwIiBoZWlnaHQ9IjIzNDAiIGZpbGw9IiNlZWYxZjYiLz4KICAgIDxyZWN0IHdpZHRoPSIxMDIwIiBoZWlnaHQ9IjIyMCIgZmlsbD0iI2ZmZmZmZiIvPgogICAgPGNpcmNsZSBjeD0iOTAiIGN5PSIxMTAiIHI9IjQwIiBmaWxsPSIjYzdkMGRjIi8+CiAgICA8cmVjdCB4PSIxNjAiIHk9Ijg2IiB3aWR0aD0iMzYwIiBoZWlnaHQ9IjI2IiByeD0iMTMiIGZpbGw9IiNjN2QwZGMiLz4KICAgIDxyZWN0IHg9IjE2MCIgeT0iMTI4IiB3aWR0aD0iMjMwIiBoZWlnaHQ9IjIwIiByeD0iMTAiIGZpbGw9IiNkYmUxZWEiLz4KICAgIDxyZWN0IHg9IjYwIiB5PSIyODAiIHdpZHRoPSI5MDAiIGhlaWdodD0iMjkwIiByeD0iMjgiIGZpbGw9IiNmZmZmZmYiLz4KICAgICAgPHJlY3QgeD0iMTAwIiB5PSIzMzAiIHdpZHRoPSI0NDAiIGhlaWdodD0iMzAiIHJ4PSIxNSIgZmlsbD0iI2M3ZDBkYyIvPgogICAgICA8cmVjdCB4PSIxMDAiIHk9IjM3OCIgd2lkdGg9IjYwMCIgaGVpZ2h0PSIyMiIgcng9IjExIiBmaWxsPSIjZGJlMWVhIi8+CiAgICAgIDxyZWN0IHg9IjEwMCIgeT0iNDE4IiB3aWR0aD0iMzgwIiBoZWlnaHQ9IjIyIiByeD0iMTEiIGZpbGw9IiNkYmUxZWEiLz48cmVjdCB4PSI2MCIgeT0iNjIwIiB3aWR0aD0iOTAwIiBoZWlnaHQ9IjI5MCIgcng9IjI4IiBmaWxsPSIjZmZmZmZmIi8+CiAgICAgIDxyZWN0IHg9IjEwMCIgeT0iNjcwIiB3aWR0aD0iNDQwIiBoZWlnaHQ9IjMwIiByeD0iMTUiIGZpbGw9IiNjN2QwZGMiLz4KICAgICAgPHJlY3QgeD0iMTAwIiB5PSI3MTgiIHdpZHRoPSI2MDAiIGhlaWdodD0iMjIiIHJ4PSIxMSIgZmlsbD0iI2RiZTFlYSIvPgogICAgICA8cmVjdCB4PSIxMDAiIHk9Ijc1OCIgd2lkdGg9IjM4MCIgaGVpZ2h0PSIyMiIgcng9IjExIiBmaWxsPSIjZGJlMWVhIi8+PHJlY3QgeD0iNjAiIHk9Ijk2MCIgd2lkdGg9IjkwMCIgaGVpZ2h0PSIyOTAiIHJ4PSIyOCIgZmlsbD0iI2ZmZmZmZiIvPgogICAgICA8cmVjdCB4PSIxMDAiIHk9IjEwMTAiIHdpZHRoPSI0NDAiIGhlaWdodD0iMzAiIHJ4PSIxNSIgZmlsbD0iI2M3ZDBkYyIvPgogICAgICA8cmVjdCB4PSIxMDAiIHk9IjEwNTgiIHdpZHRoPSI2MDAiIGhlaWdodD0iMjIiIHJ4PSIxMSIgZmlsbD0iI2RiZTFlYSIvPgogICAgICA8cmVjdCB4PSIxMDAiIHk9IjEwOTgiIHdpZHRoPSIzODAiIGhlaWdodD0iMjIiIHJ4PSIxMSIgZmlsbD0iI2RiZTFlYSIvPjxyZWN0IHg9IjYwIiB5PSIxMzAwIiB3aWR0aD0iOTAwIiBoZWlnaHQ9IjI5MCIgcng9IjI4IiBmaWxsPSIjZmZmZmZmIi8+CiAgICAgIDxyZWN0IHg9IjEwMCIgeT0iMTM1MCIgd2lkdGg9IjQ0MCIgaGVpZ2h0PSIzMCIgcng9IjE1IiBmaWxsPSIjYzdkMGRjIi8+CiAgICAgIDxyZWN0IHg9IjEwMCIgeT0iMTM5OCIgd2lkdGg9IjYwMCIgaGVpZ2h0PSIyMiIgcng9IjExIiBmaWxsPSIjZGJlMWVhIi8+CiAgICAgIDxyZWN0IHg9IjEwMCIgeT0iMTQzOCIgd2lkdGg9IjM4MCIgaGVpZ2h0PSIyMiIgcng9IjExIiBmaWxsPSIjZGJlMWVhIi8+CiAgPC9zdmc+" style="top:17px;left:17px;width:1046px;height:2306px;border-radius:56px;clip-path:inset(0 round 56px);object-fit:cover;object-position:top center;" />
+      <div class="device-frame"><svg viewBox="0 0 1080 2340" xmlns="http://www.w3.org/2000/svg">
+    <rect x="5" y="5" width="1070" height="2330"
+          rx="92" fill="none" stroke="#121316" stroke-width="10" />
+    <circle cx="540" cy="39" r="13" fill="#000" stroke="#3a3d45" stroke-width="2" />
+    
+    <rect x="1075" y="421.2" width="10" height="187.20000000000002" rx="4" fill="#3a3d45" />
+    <rect x="-5" y="514.8" width="10" height="140.4" rx="4" fill="#3a3d45" />
+    <rect x="-5" y="702" width="10" height="140.4" rx="4" fill="#3a3d45" />
+  
+    
+  </svg></div>
+    </div></div>
+      <div class="device-face device-back" style="width:1080px;height:2340px;border-radius:92px;background:#121316;transform:translateZ(-10px) rotateY(180deg)">
+        <div class="device-cam-bar">
+          <div class="device-lens"></div>
+          <div class="device-lens"></div>
+          <div class="device-lens"></div>
+        </div>
+      </div>
+      <div class="device-face device-side" style="width:20px;height:2340px;transform:rotateY(-90deg) translateZ(10px);background:linear-gradient(90deg, rgba(255,255,255,.16), rgba(0,0,0,.35))"></div>
+      <div class="device-face device-side" style="width:20px;height:2340px;left:1060px;transform:rotateY(90deg) translateZ(10px);background:linear-gradient(270deg, rgba(0,0,0,.5), rgba(255,255,255,.06))"></div>
+      <div class="device-face device-side" style="width:1080px;height:20px;transform:rotateX(90deg) translateZ(10px);background:linear-gradient(180deg, rgba(255,255,255,.22), rgba(0,0,0,.25))"></div>
+      <div class="device-face device-side" style="width:1080px;height:20px;top:2320px;transform:rotateX(-90deg) translateZ(10px);background:linear-gradient(0deg, rgba(255,255,255,.12), rgba(0,0,0,.35))"></div>
+    </div></div></div>
+      </div>
+    </div>
+    
+    
+    <div class="transition-overlay"></div>
+  </div>
+<div class="scene scene-5" id="scene-5">
+    <div class="backdrop"></div>
+    <div class="vignette"></div>
+    <div class="copy" style="color:#ffffff;text-shadow:0 2px 12px rgba(0,0,0,.4)"><div class="label"><span class="word" style="animation-delay:60ms">Enterprise</span> <span class="word" style="animation-delay:115ms">Operations</span> <span class="word" style="animation-delay:170ms">View</span></div><div class="subtext"><span class="word" style="animation-delay:425ms">Live</span> <span class="word" style="animation-delay:470ms">monitoring</span> <span class="word" style="animation-delay:515ms">and</span> <span class="word" style="animation-delay:560ms">policy</span> <span class="word" style="animation-delay:605ms">control</span></div></div>
+    <div class="stage" style="width:299px;height:648px;">
+      <div class="stage-scale" style="transform:scale(0.27692307692307694)">
+        <div class="stage-inner"><div class="device-rig" style="width:1080px;height:2340px">
+      <div class="device-face device-front" style="transform:translateZ(10px)"><div class="device" style="width:1080px;height:2340px">
+      <img class="device-screen" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDIwIDIzNDAiIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIHByZXNlcnZlQXNwZWN0UmF0aW89InhNaWRZTWlkIHNsaWNlIj4KICAgIDxyZWN0IHdpZHRoPSIxMDIwIiBoZWlnaHQ9IjIzNDAiIGZpbGw9IiNlZWYxZjYiLz4KICAgIDxyZWN0IHdpZHRoPSIxMDIwIiBoZWlnaHQ9IjIyMCIgZmlsbD0iI2ZmZmZmZiIvPgogICAgPGNpcmNsZSBjeD0iOTAiIGN5PSIxMTAiIHI9IjQwIiBmaWxsPSIjYzdkMGRjIi8+CiAgICA8cmVjdCB4PSIxNjAiIHk9Ijg2IiB3aWR0aD0iMzYwIiBoZWlnaHQ9IjI2IiByeD0iMTMiIGZpbGw9IiNjN2QwZGMiLz4KICAgIDxyZWN0IHg9IjE2MCIgeT0iMTI4IiB3aWR0aD0iMjMwIiBoZWlnaHQ9IjIwIiByeD0iMTAiIGZpbGw9IiNkYmUxZWEiLz4KICAgIDxyZWN0IHg9IjYwIiB5PSIyODAiIHdpZHRoPSI5MDAiIGhlaWdodD0iMjkwIiByeD0iMjgiIGZpbGw9IiNmZmZmZmYiLz4KICAgICAgPHJlY3QgeD0iMTAwIiB5PSIzMzAiIHdpZHRoPSI0NDAiIGhlaWdodD0iMzAiIHJ4PSIxNSIgZmlsbD0iI2M3ZDBkYyIvPgogICAgICA8cmVjdCB4PSIxMDAiIHk9IjM3OCIgd2lkdGg9IjYwMCIgaGVpZ2h0PSIyMiIgcng9IjExIiBmaWxsPSIjZGJlMWVhIi8+CiAgICAgIDxyZWN0IHg9IjEwMCIgeT0iNDE4IiB3aWR0aD0iMzgwIiBoZWlnaHQ9IjIyIiByeD0iMTEiIGZpbGw9IiNkYmUxZWEiLz48cmVjdCB4PSI2MCIgeT0iNjIwIiB3aWR0aD0iOTAwIiBoZWlnaHQ9IjI5MCIgcng9IjI4IiBmaWxsPSIjZmZmZmZmIi8+CiAgICAgIDxyZWN0IHg9IjEwMCIgeT0iNjcwIiB3aWR0aD0iNDQwIiBoZWlnaHQ9IjMwIiByeD0iMTUiIGZpbGw9IiNjN2QwZGMiLz4KICAgICAgPHJlY3QgeD0iMTAwIiB5PSI3MTgiIHdpZHRoPSI2MDAiIGhlaWdodD0iMjIiIHJ4PSIxMSIgZmlsbD0iI2RiZTFlYSIvPgogICAgICA8cmVjdCB4PSIxMDAiIHk9Ijc1OCIgd2lkdGg9IjM4MCIgaGVpZ2h0PSIyMiIgcng9IjExIiBmaWxsPSIjZGJlMWVhIi8+PHJlY3QgeD0iNjAiIHk9Ijk2MCIgd2lkdGg9IjkwMCIgaGVpZ2h0PSIyOTAiIHJ4PSIyOCIgZmlsbD0iI2ZmZmZmZiIvPgogICAgICA8cmVjdCB4PSIxMDAiIHk9IjEwMTAiIHdpZHRoPSI0NDAiIGhlaWdodD0iMzAiIHJ4PSIxNSIgZmlsbD0iI2M3ZDBkYyIvPgogICAgICA8cmVjdCB4PSIxMDAiIHk9IjEwNTgiIHdpZHRoPSI2MDAiIGhlaWdodD0iMjIiIHJ4PSIxMSIgZmlsbD0iI2RiZTFlYSIvPgogICAgICA8cmVjdCB4PSIxMDAiIHk9IjEwOTgiIHdpZHRoPSIzODAiIGhlaWdodD0iMjIiIHJ4PSIxMSIgZmlsbD0iI2RiZTFlYSIvPjxyZWN0IHg9IjYwIiB5PSIxMzAwIiB3aWR0aD0iOTAwIiBoZWlnaHQ9IjI5MCIgcng9IjI4IiBmaWxsPSIjZmZmZmZmIi8+CiAgICAgIDxyZWN0IHg9IjEwMCIgeT0iMTM1MCIgd2lkdGg9IjQ0MCIgaGVpZ2h0PSIzMCIgcng9IjE1IiBmaWxsPSIjYzdkMGRjIi8+CiAgICAgIDxyZWN0IHg9IjEwMCIgeT0iMTM5OCIgd2lkdGg9IjYwMCIgaGVpZ2h0PSIyMiIgcng9IjExIiBmaWxsPSIjZGJlMWVhIi8+CiAgICAgIDxyZWN0IHg9IjEwMCIgeT0iMTQzOCIgd2lkdGg9IjM4MCIgaGVpZ2h0PSIyMiIgcng9IjExIiBmaWxsPSIjZGJlMWVhIi8+CiAgPC9zdmc+" style="top:17px;left:17px;width:1046px;height:2306px;border-radius:56px;clip-path:inset(0 round 56px);object-fit:cover;object-position:top center;" />
+      <div class="device-frame"><svg viewBox="0 0 1080 2340" xmlns="http://www.w3.org/2000/svg">
+    <rect x="5" y="5" width="1070" height="2330"
+          rx="92" fill="none" stroke="#121316" stroke-width="10" />
+    <circle cx="540" cy="39" r="13" fill="#000" stroke="#3a3d45" stroke-width="2" />
+    
+    <rect x="1075" y="421.2" width="10" height="187.20000000000002" rx="4" fill="#3a3d45" />
+    <rect x="-5" y="514.8" width="10" height="140.4" rx="4" fill="#3a3d45" />
+    <rect x="-5" y="702" width="10" height="140.4" rx="4" fill="#3a3d45" />
+  
+    
+  </svg></div>
+    </div></div>
+      <div class="device-face device-back" style="width:1080px;height:2340px;border-radius:92px;background:#121316;transform:translateZ(-10px) rotateY(180deg)">
+        <div class="device-cam-bar">
+          <div class="device-lens"></div>
+          <div class="device-lens"></div>
+          <div class="device-lens"></div>
+        </div>
+      </div>
+      <div class="device-face device-side" style="width:20px;height:2340px;transform:rotateY(-90deg) translateZ(10px);background:linear-gradient(90deg, rgba(255,255,255,.16), rgba(0,0,0,.35))"></div>
+      <div class="device-face device-side" style="width:20px;height:2340px;left:1060px;transform:rotateY(90deg) translateZ(10px);background:linear-gradient(270deg, rgba(0,0,0,.5), rgba(255,255,255,.06))"></div>
+      <div class="device-face device-side" style="width:1080px;height:20px;transform:rotateX(90deg) translateZ(10px);background:linear-gradient(180deg, rgba(255,255,255,.22), rgba(0,0,0,.25))"></div>
+      <div class="device-face device-side" style="width:1080px;height:20px;top:2320px;transform:rotateX(-90deg) translateZ(10px);background:linear-gradient(0deg, rgba(255,255,255,.12), rgba(0,0,0,.35))"></div>
+    </div></div>
+      </div>
+    </div>
+    
+    
+    <div class="transition-overlay"></div>
+  </div>
+  
+  
+  
+  <!-- Standalone Floating Video Player Bar -->
+  <div class="v-player-bar" id="v-player-bar">
+    <button class="v-btn" id="v-play-btn" title="Play / Pause (Space)">&#9654;</button>
+    <button class="v-btn v-btn-secondary" id="v-replay-btn" title="Replay">&#8635;</button>
+    <div class="v-timeline-box">
+      <div class="v-scrubber" id="v-scrubber">
+        <div class="v-scrubber-fill" id="v-scrubber-fill"></div>
+        <div class="v-scrubber-thumb" id="v-scrubber-thumb"></div>
+      </div>
+      <div class="v-time-text" id="v-time-text">0:00 / 0:35</div>
+    </div>
+    <div class="v-pills" id="v-pills">
+      <button class="v-pill active" data-scene="0">1</button><button class="v-pill " data-scene="1">2</button><button class="v-pill " data-scene="2">3</button><button class="v-pill " data-scene="3">4</button><button class="v-pill " data-scene="4">5</button><button class="v-pill " data-scene="5">6</button>
+    </div>
+  </div>
+  
+
+  <script type="application/json" id="template-config">
+{
+  "id": "galaxy-s25-landscape",
+  "device": "samsung-galaxy-s25",
+  "deviceFraction": 0.6,
+  "name": "Samsung Galaxy S25 — Black Premium",
+  "description": "Authoritative dark-mode widescreen showcase designed for enterprise software, cybersecurity, and financial tech.",
+  "useCase": "Best for investor presentations, enterprise landing pages, and B2B SaaS video campaigns.",
+  "designStyle": "Ultra-thin bezel flagship, solid dark palettes, deliberate centered 3D device staging.",
+  "aspectRatio": "16:9",
+  "features": [
+    "Enterprise-grade dark styling",
+    "Realistic 3D depth and shadows",
+    "Interactive flow subtitles in scene 6"
+  ],
+  "scenes": [
+    {
+      "label": "Cold Open",
+      "sceneTemplate": "tilt-3d",
+      "durationSeconds": 5,
+      "background": "solid-navy",
+      "rotate": 10,
+      "zoom": 8,
+      "move": 25,
+      "layout": "copy-left",
+      "depth": "perspective",
+      "transition": "cut",
+      "text": "Enterprise Intelligence",
+      "subtext": "Security and speed without compromise"
+    },
+    {
+      "label": "Analytics",
+      "sceneTemplate": "mask-reveal",
+      "durationSeconds": 5,
+      "background": "solid-charcoal",
+      "rotate": 4,
+      "zoom": 10,
+      "move": 20,
+      "layout": "copy-right",
+      "depth": "perspective",
+      "transition": "fade",
+      "text": "Full Observability",
+      "subtext": "Real-time metrics with zero latency"
+    },
+    {
+      "label": "Workspace",
+      "sceneTemplate": "parallax-stack",
+      "durationSeconds": 5,
+      "background": "solid-navy",
+      "rotate": 4,
+      "zoom": 10,
+      "move": 20,
+      "layout": "hero-device",
+      "depth": "flat",
+      "transition": "fade",
+      "screenCount": 2,
+      "text": "Focus-Driven Design",
+      "subtext": "Engineered for mission-critical tasks"
+    },
+    {
+      "label": "Security",
+      "sceneTemplate": "zoom-focus",
+      "durationSeconds": 5,
+      "background": "solid-charcoal",
+      "rotate": 0,
+      "zoom": 12,
+      "move": 0,
+      "layout": "copy-left",
+      "depth": "perspective",
+      "transition": "wipe",
+      "text": "Zero-Trust Architecture",
+      "subtext": "Complete end-to-end data safety"
+    },
+    {
+      "label": "Speed",
+      "sceneTemplate": "kinetic-type",
+      "durationSeconds": 5,
+      "background": "solid-navy",
+      "rotate": 0,
+      "zoom": 10,
+      "move": 0,
+      "layout": "copy-right",
+      "depth": "float",
+      "transition": "fade",
+      "text": "High-Throughput Power",
+      "subtext": "Scale seamlessly as your business grows"
+    },
+    {
+      "label": "App Flow",
+      "sceneTemplate": "landscape-flow",
+      "durationSeconds": 10,
+      "background": "solid-charcoal",
+      "rotate": 0,
+      "zoom": 14,
+      "move": 0,
+      "layout": "centre-flank",
+      "depth": "showcase",
+      "transition": "fade",
+      "text": "Enterprise Operations View",
+      "subtext": "Live monitoring and policy control",
+      "flowSteps": [
+        {
+          "label": "Security Portal",
+          "startSec": 3.5,
+          "durationSec": 2,
+          "side": "left"
+        },
+        {
+          "label": "Audit Reports",
+          "startSec": 5.6,
+          "durationSec": 2,
+          "side": "right"
+        },
+        {
+          "label": "Admin Console",
+          "startSec": 7.7,
+          "durationSec": 2,
+          "side": "left"
+        }
+      ]
+    }
+  ]
+}
+  </script>
+
+  
+  <!-- Video Player Logic & API Controller -->
+  <script>
+  (function() {
+    const config = JSON.parse(document.getElementById("template-config").textContent);
+    const scenes = config.scenes;
+    let durations = scenes.map(s => (s.durationSeconds || s.durationMs / 1000 || 5) * 1000);
+    let totalDuration = durations.reduce((a, b) => a + b, 0);
+    
+    let currentSceneIdx = 0;
+    let globalTimeMs = 0;
+    let playState = "idle"; // idle | playing | paused | ended
+    let mode = "sequence"; // sequence | scene
+    let playbackInterval = null;
+    let lastTickTime = Date.now();
+    let hideTimeout = null;
+
+    const playBtn = document.getElementById("v-play-btn");
+    const replayBtn = document.getElementById("v-replay-btn");
+    const scrubber = document.getElementById("v-scrubber");
+    const scrubberFill = document.getElementById("v-scrubber-fill");
+    const scrubberThumb = document.getElementById("v-scrubber-thumb");
+    const timeText = document.getElementById("v-time-text");
+    const playerBar = document.getElementById("v-player-bar");
+    const pills = document.querySelectorAll(".v-pill");
+
+    function formatTime(ms) {
+      const totalSec = Math.floor(ms / 1000);
+      const min = Math.floor(totalSec / 60);
+      const sec = totalSec % 60;
+      return min + ":" + (sec < 10 ? "0" : "") + sec;
+    }
+
+    function updateUiTime() {
+      const progress = Math.max(0, Math.min(1, globalTimeMs / totalDuration));
+      if (scrubberFill) scrubberFill.style.width = (progress * 100) + "%";
+      if (scrubberThumb) scrubberThumb.style.left = (progress * 100) + "%";
+      if (timeText) timeText.textContent = formatTime(globalTimeMs) + " / " + formatTime(totalDuration);
+      
+      pills.forEach((p, idx) => {
+        p.classList.toggle("active", idx === currentSceneIdx);
+      });
+
+      if (playBtn) {
+        playBtn.innerHTML = playState === "playing" ? "&#10074;&#10074;" : playState === "ended" ? "&#8635;" : "&#9654;";
+      }
+    }
+
+    function notify() {
+      if (window.__videoPreview && typeof window.__videoPreview.onState === 'function') {
+        try {
+          window.__videoPreview.onState({ scene: currentSceneIdx, state: playState, mode });
+        } catch(e) {}
+      }
+    }
+
+    function applyCssAnimationSeek(sceneIdx, sceneRelMs) {
+      document.getAnimations().forEach(a => {
+        try {
+          if (playState === "playing") {
+            a.play();
+          } else {
+            a.pause();
+            a.currentTime = sceneRelMs;
+          }
+        } catch(e) {}
+      });
+      document.querySelectorAll("video").forEach(v => {
+        try {
+          if (playState === "playing") v.play();
+          else { v.pause(); v.currentTime = sceneRelMs / 1000; }
+        } catch(e) {}
+      });
+    }
+
+    function apply3DRigCustomTransforms(sceneIdx, sceneRelMs, sceneDurationMs) {
+      const progress = Math.max(0, Math.min(1, sceneRelMs / sceneDurationMs));
+      
+      // Dynamic hook for template-specific 3D rigs if defined
+      if (typeof window.__customSceneTransform === 'function') {
+        window.__customSceneTransform(sceneIdx, progress, globalTimeMs);
+      } else {
+        const rig = document.getElementById("phone-rig-" + sceneIdx);
+        if (rig) {
+          const yRot = -20 + (progress * 18);
+          const xRot = 8 * Math.sin(progress * Math.PI);
+          rig.style.transform = "rotateY(" + yRot + "deg) rotateX(" + xRot + "deg)";
+        }
+      }
+    }
+
+    function renderFrameAt(timeMs) {
+      globalTimeMs = Math.max(0, Math.min(totalDuration, timeMs));
+      
+      let accum = 0;
+      let targetIdx = 0;
+      let sceneRelMs = 0;
+      for (let i = 0; i < durations.length; i++) {
+        if (globalTimeMs < accum + durations[i] || i === durations.length - 1) {
+          targetIdx = i;
+          sceneRelMs = globalTimeMs - accum;
+          break;
+        }
+        accum += durations[i];
+      }
+
+      if (targetIdx !== currentSceneIdx || !document.querySelector(".scene.playing, .scene.active")) {
+        currentSceneIdx = targetIdx;
+        document.querySelectorAll(".scene").forEach((el, idx) => {
+          if (idx === currentSceneIdx) {
+            el.classList.add("playing");
+            el.classList.add("active");
+          } else {
+            el.classList.remove("playing");
+            el.classList.remove("active");
+          }
+        });
+        void document.body.offsetWidth; // Force CSS animation restart
+      }
+
+      const curSceneDur = durations[currentSceneIdx] || 5000;
+      applyCssAnimationSeek(currentSceneIdx, sceneRelMs);
+      apply3DRigCustomTransforms(currentSceneIdx, sceneRelMs, curSceneDur);
+      updateUiTime();
+    }
+
+    function startLoop() {
+      if (playbackInterval) clearInterval(playbackInterval);
+      lastTickTime = Date.now();
+      playbackInterval = setInterval(() => {
+        const now = Date.now();
+        const delta = now - lastTickTime;
+        lastTickTime = now;
+
+        globalTimeMs += delta;
+        if (globalTimeMs >= totalDuration) {
+          globalTimeMs = totalDuration;
+          renderFrameAt(globalTimeMs);
+          window.pause();
+          playState = "ended";
+          notify();
+          return;
+        }
+
+        renderFrameAt(globalTimeMs);
+      }, 1000 / 60);
+    }
+
+    function resetAutoHide() {
+      if (!playerBar) return;
+      playerBar.classList.remove("autohide");
+      if (hideTimeout) clearTimeout(hideTimeout);
+      if (playState === "playing") {
+        hideTimeout = setTimeout(() => {
+          playerBar.classList.add("autohide");
+        }, 3000);
+      }
+    }
+
+    window.seek = function(timeMs) {
+      renderFrameAt(timeMs);
+    };
+
+    window.play = function() {
+      if (playState === "ended" || globalTimeMs >= totalDuration) {
+        globalTimeMs = 0;
+      }
+      playState = "playing";
+      mode = "sequence";
+      startLoop();
+      renderFrameAt(globalTimeMs);
+      notify();
+      resetAutoHide();
+    };
+
+    window.pause = function() {
+      playState = "paused";
+      if (playbackInterval) {
+        clearInterval(playbackInterval);
+        playbackInterval = null;
+      }
+      renderFrameAt(globalTimeMs);
+      notify();
+      resetAutoHide();
+    };
+
+    window.replay = function() {
+      globalTimeMs = 0;
+      window.play();
+    };
+
+    window.goto = function(index) {
+      index = Math.max(0, Math.min(index, durations.length - 1));
+      let targetMs = 0;
+      for (let i = 0; i < index; i++) targetMs += durations[i];
+      window.pause();
+      currentSceneIdx = index;
+      renderFrameAt(targetMs + 100);
+      playState = "idle";
+      notify();
+    };
+
+    window.playScene = function(index) {
+      index = Math.max(0, Math.min(index, durations.length - 1));
+      let targetMs = 0;
+      for (let i = 0; i < index; i++) targetMs += durations[i];
+      globalTimeMs = targetMs;
+      mode = "scene";
+      playState = "playing";
+      startLoop();
+      renderFrameAt(globalTimeMs);
+      notify();
+      resetAutoHide();
+    };
+
+    window.__videoPreview = {
+      sceneCount: durations.length,
+      onState: null,
+      play: window.play,
+      pause: window.pause,
+      replay: window.replay,
+      goto: window.goto,
+      playScene: window.playScene,
+      next: () => window.goto(currentSceneIdx + 1),
+      prev: () => window.goto(currentSceneIdx - 1),
+      isPaused: () => playState === "paused" || playState === "idle",
+      currentScene: () => currentSceneIdx,
+      currentState: () => playState,
+    };
+
+    // DOM Event Listeners
+    if (playBtn) {
+      playBtn.onclick = (e) => {
+        e.stopPropagation();
+        if (playState === "playing") window.pause();
+        else window.play();
+      };
+    }
+    if (replayBtn) {
+      replayBtn.onclick = (e) => {
+        e.stopPropagation();
+        window.replay();
+      };
+    }
+    if (scrubber) {
+      const handleScrub = (e) => {
+        const rect = scrubber.getBoundingClientRect();
+        const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+        renderFrameAt(pct * totalDuration);
+      };
+      scrubber.onmousedown = (e) => {
+        e.stopPropagation();
+        handleScrub(e);
+        const onMove = (ev) => handleScrub(ev);
+        const onUp = () => {
+          window.removeEventListener("mousemove", onMove);
+          window.removeEventListener("mouseup", onUp);
+        };
+        window.addEventListener("mousemove", onMove);
+        window.addEventListener("mouseup", onUp);
+      };
+    }
+
+    pills.forEach((p, idx) => {
+      p.onclick = (e) => {
+        e.stopPropagation();
+        window.goto(idx);
+      };
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.code === "Space" && e.target.tagName !== "INPUT" && e.target.tagName !== "TEXTAREA") {
+        e.preventDefault();
+        if (playState === "playing") window.pause();
+        else window.play();
+      }
+    });
+
+    document.body.onclick = (e) => {
+      if (e.target.closest(".v-player-bar")) return;
+      if (playState === "playing") window.pause();
+      else window.play();
+    };
+
+    document.addEventListener("mousemove", resetAutoHide);
+
+    // Initial load: render frame 0 settled
+    renderFrameAt(0);
+
+    // Autoplay when opened directly as a standalone web page
+    if (window.self === window.top && !window.location.search.includes("paused")) {
+      setTimeout(() => {
+        window.play();
+      }, 250);
+    }
+  })();
+  </script>
+  
+
+</body></html>
