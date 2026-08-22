@@ -9,3 +9,5 @@ graphify-out/
 Template videos/
 tools/
 *.rar
+*.py
+scripts/
