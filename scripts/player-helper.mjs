@@ -283,6 +283,7 @@ export function getUniversalPlayerScriptAndStyle(config) {
       }
 
       if (targetIdx !== currentSceneIdx || !document.querySelector(".scene.playing, .scene.active")) {
+        const changed = targetIdx !== currentSceneIdx;
         currentSceneIdx = targetIdx;
         document.querySelectorAll(".scene").forEach((el, idx) => {
           if (idx === currentSceneIdx) {
@@ -294,6 +295,7 @@ export function getUniversalPlayerScriptAndStyle(config) {
           }
         });
         void document.body.offsetWidth; // Force CSS animation restart
+        if (changed) notify();
       }
 
       const curSceneDur = durations[currentSceneIdx] || 5000;
