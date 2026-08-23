@@ -33,6 +33,8 @@ export interface VideoTemplate {
   scenes: VideoTemplateScene[];
 }
 
+export const VIDEO_TEMPLATES: VideoTemplate[] = [];
+
 export function loadAllTemplates(): VideoTemplate[] {
   const templatesDir = path.join(process.cwd(), "templates", "video");
   if (!fs.existsSync(templatesDir)) return [];
@@ -53,10 +55,13 @@ export function loadAllTemplates(): VideoTemplate[] {
       }
     }
   }
-  return list;
+  VIDEO_TEMPLATES.length = 0;
+  VIDEO_TEMPLATES.push(...list);
+  return VIDEO_TEMPLATES;
 }
 
-export const VIDEO_TEMPLATES: VideoTemplate[] = loadAllTemplates();
+// Initial load
+loadAllTemplates();
 
 export const TEMPLATE_ID_ALIASES: Record<string, string> = {
   "minimal-premium": "iphone-15-pro-portrait",

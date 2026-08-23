@@ -1903,6 +1903,7 @@ function openVideoTemplateDetail(id) {
         </div>
       </div>
       <div class="template-detail-side">
+        <div class="video-list-column-label" style="margin-bottom: 0.5rem;">Video Screens</div>
         <div class="video-screen-list">
           ${t.scenes
             .map(
