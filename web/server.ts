@@ -73,7 +73,7 @@ import {
   videoFile,
 } from "../src/video/project.js";
 import { listSceneAnimations, listSceneLayouts, listVideoBackgrounds, renderVideo, renderVideoTemplateThumbs, sceneHtml, scenePreviewHtml, sourceKindsFor, sourceUrisFor, templatePreviewHtml } from "../src/video/render.js";
-import { VIDEO_TEMPLATES, applyVideoTemplate, resolveTemplateId, scratchVideoProject } from "../src/video/templates.js";
+import { VIDEO_TEMPLATES, applyVideoTemplate, resolveTemplateId, scratchVideoProject, loadAllTemplates } from "../src/video/templates.js";
 import { BGM_PRESETS, renderBgmWav } from "../src/video/bgm.js";
 
 /**
@@ -913,6 +913,7 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
     }
 
     if (method === "GET" && p === "/api/videos/templates") {
+      loadAllTemplates();
       sendJson(res, 200, { templates: VIDEO_TEMPLATES });
       return;
     }

@@ -12,3 +12,4 @@ tools/
 *.py
 scripts/*
 !scripts/generate/
+scratch/

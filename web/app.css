@@ -191,7 +191,9 @@ pre { background: #0a0c10; border: 1px solid #21252f; border-radius: 6px; paddin
 /* Single source of truth for the left (template list) and right (screen
    list + controls) column width -- both must always match exactly. */
 .video-template-shell { --video-side-col: 500px; display: flex; gap: 1.25rem; align-items: flex-start; }
-.video-template-list { flex: 0 0 var(--video-side-col); display: flex; flex-direction: column; gap: .6rem; max-height: calc(100vh - 220px); overflow-y: auto; }
+.video-list-column-wrapper { flex: 0 0 var(--video-side-col); display: flex; flex-direction: column; max-height: calc(100vh - 220px); gap: 0.5rem; }
+.video-list-column-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; color: #a1a1aa; letter-spacing: 0.05em; padding-left: 2px; opacity: 0.8; }
+.video-template-list { display: flex; flex-direction: column; gap: .6rem; overflow-y: auto; flex: 1; min-height: 0; }
 .video-list-subtitle { margin: .2rem 0 0; }
 .video-list-tags { display: flex; gap: .35rem; margin-top: .4rem; flex-wrap: wrap; }
 .video-list-tags .pill { font-size: .68rem; background: #1e293b; color: #93c5fd; padding: 2px 8px; border-radius: 999px; font-weight: 600; }

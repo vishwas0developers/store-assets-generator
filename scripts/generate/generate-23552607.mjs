@@ -5,7 +5,7 @@ import { getUniversalPlayerScriptAndStyle } from './player-helper.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const rootDir = path.resolve(__dirname, '..');
+const rootDir = path.resolve(__dirname, '../..');
 
 export function create23552607Template() {
   const config = {
