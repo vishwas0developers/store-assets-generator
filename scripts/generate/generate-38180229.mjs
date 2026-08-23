@@ -1,30 +1,15 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import qrcode from 'qrcode-generator';
 import { getUniversalPlayerScriptAndStyle } from './player-helper.mjs';
+// Shared with the studio renderer (src/video/slots.ts) so re-generating this
+// QR at edit time and at build time produces the same SVG. Requires `npm run
+// build` (or `npx tsc`) to have populated dist/ first.
+import { generateQRCodeSVG } from '../../dist/src/video/slots.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, '../..');
-
-// Build-time QR code generation — no client-side QR engine needed, no image assets uploaded.
-function generateQRCodeSVG(text, size = 110) {
-  const qr = qrcode(0, 'M');
-  qr.addData(text);
-  qr.make();
-  const count = qr.getModuleCount();
-  const cell = size / count;
-  let rects = '';
-  for (let r = 0; r < count; r++) {
-    for (let c = 0; c < count; c++) {
-      if (qr.isDark(r, c)) {
-        rects += `<rect x="${(c * cell).toFixed(2)}" y="${(r * cell).toFixed(2)}" width="${cell.toFixed(2)}" height="${cell.toFixed(2)}"/>`;
-      }
-    }
-  }
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" shape-rendering="crispEdges"><rect width="${size}" height="${size}" fill="#fff"/><g fill="#0f172a">${rects}</g></svg>`;
-}
 
 // Recognizable monochrome platform glyphs (vector, no external asset uploads)
 const PLATFORM_ICONS = {

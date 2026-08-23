@@ -272,10 +272,60 @@ pre { background: #0a0c10; border: 1px solid #21252f; border-radius: 6px; paddin
 }
 
 .scene-nav { display: flex; gap: .35rem; flex-wrap: wrap; margin-bottom: 1rem; }
-.scene-chip { padding: .4rem .8rem; border-radius: 999px; background: #262a33; cursor: pointer; font-size: .8rem; }
+.scene-chip { padding: .4rem .8rem; border-radius: 999px; background: #262a33; cursor: pointer; font-size: .8rem; display: inline-flex; align-items: center; gap: .4rem; }
 .scene-chip.active { background: #3b82f6; color: #fff; }
-.preview-frame { background: #0a0c10; border: 1px solid #21252f; border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
-.preview-frame iframe { border: none; width: 100%; height: 700px; }
+.scene-chip-dot { width: 7px; height: 7px; border-radius: 50%; background: transparent; flex: 0 0 auto; }
+.scene-chip-dot.ok { background: #22c55e; }
+.scene-chip-dot.warning { background: #eab308; }
+.scene-chip-dot.error { background: #ef4444; }
+/* Compact scene preview. The iframe's DOCUMENT is authored at a fixed native
+   pixel canvas (1080x1920 portrait / 1920x1080 landscape) -- simply setting
+   the <iframe> CSS box to 100%/100% does NOT scale that content down, it
+   just gives the iframe a small viewport into the same full-size page, so
+   only the top-left corner shows. The fix (same technique already used by
+   the Templates-tab stage's .video-preview-scale) is to size the iframe at
+   its TRUE native pixel dimensions and apply a CSS transform:scale() to
+   shrink the whole rendered page uniformly, inside a box that clips the
+   overflow -- see updateScenePreviewScale() in app.js, which computes the
+   scale factor and sets it here via inline style on #sc-preview. */
+.preview-frame {
+  background: #0a0c10; border: 1px solid #21252f; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  padding: .75rem; width: 100%;
+}
+/* Width/height are set explicitly in px by updateScenePreviewScale() (app.js),
+   not by CSS aspect-ratio -- aspect-ratio alone does not reliably resolve a
+   size for a flex child with no definite width or height (it can collapse
+   to near-zero), which is what produced the "thin strip" preview. Explicit
+   px, computed from the container's available box each time the scene (and
+   therefore its aspect ratio) changes, is the same technique already used
+   and proven by the Templates-tab stage's .video-preview-scale. */
+.studio-preview-box {
+  position: relative; overflow: hidden; background: #000; border-radius: 6px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.5);
+}
+.studio-preview-box iframe { position: absolute; top: 0; left: 0; border: 0; transform-origin: top left; }
+
+/* ---------- Scene editor: 3-column studio layout ---------- */
+.editor-three-col { grid-template-columns: 280px minmax(0, 1fr) 300px; align-items: start; gap: 1.5rem; }
+.editor-col-left, .editor-col-right { display: flex; flex-direction: column; }
+.editor-col-center { display: flex; flex-direction: column; align-items: stretch; min-width: 0; }
+
+.player-transport {
+  display: flex; align-items: center; gap: .4rem; justify-content: center;
+  margin: .75rem auto 0; padding: .5rem .75rem; background: #14161c; border: 1px solid #21252f;
+  border-radius: 8px; width: fit-content;
+}
+.player-transport button { padding: .4rem .7rem; }
+
+.scene-segments { margin-top: 1.25rem; }
+.segment-row {
+  display: grid; grid-template-columns: 56px 1fr 90px 28px; gap: .5rem; align-items: center;
+  padding: .4rem; background: #0b0d12; border: 1px solid #21252f; border-radius: 6px; margin-bottom: .4rem;
+}
+.segment-thumb { width: 44px; height: 44px; border-radius: 4px; background: #14161c; overflow: hidden; }
+.segment-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.segment-row input[type="number"] { padding: .3rem .4rem; }
 
 /* ---------- Modal ---------- */
 .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.65); display: none;
@@ -475,3 +525,34 @@ pre { background: #0a0c10; border: 1px solid #21252f; border-radius: 6px; paddin
   pointer-events: none;
 }
 
+
+/* ---------- Dynamic content panel (Video Studio scene editor) ---------- */
+.content-slot { margin-bottom: 1rem; }
+.content-slot > label { display: block; font-size: .8rem; font-weight: 600; margin-bottom: .35rem; color: #c7cad1; }
+.content-slot-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: .6rem; }
+.content-slot-image { display: flex; align-items: center; gap: .75rem; }
+.content-slot-thumb {
+  width: 64px; height: 64px; border-radius: 8px; background: #0a0c10; border: 1px solid #21252f;
+  display: flex; align-items: center; justify-content: center; overflow: hidden; flex: 0 0 64px;
+  font-size: .65rem; color: #6b7280; text-align: center;
+}
+.content-slot-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.content-slot-image-controls { display: flex; flex-direction: column; gap: .35rem; flex: 1; min-width: 0; }
+.content-slot-image-controls input[type="file"] { font-size: .78rem; }
+.content-slot-platforms { display: flex; flex-direction: column; gap: .5rem; }
+.platform-row { display: grid; grid-template-columns: 1fr 90px 1.4fr 28px; gap: .4rem; align-items: center; }
+.slot-issue { margin: .3rem 0 0; }
+.slot-issue.error { color: #f87171; }
+
+/* ---------- Field-level AI affordance (UI only, no functionality yet) ---------- */
+.ai-field { position: relative; }
+.ai-field input { padding-right: 2.1rem; }
+.ai-field-btn {
+  position: absolute; top: 50%; right: 4px; transform: translateY(-50%);
+  width: 1.7rem; height: 1.7rem; padding: 0; border-radius: 5px;
+  background: #262a33; color: #e6e6e6; font-size: .85rem;
+  display: flex; align-items: center; justify-content: center;
+}
+.ai-field-btn:disabled { opacity: .55; cursor: not-allowed; }
+
+select:disabled { opacity: .55; cursor: not-allowed; }

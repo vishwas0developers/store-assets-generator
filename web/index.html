@@ -374,13 +374,77 @@
               <button id="sc-add" class="secondary small" type="button" title="Add a scene">+ Add scene</button>
               <button id="sc-remove" class="secondary small" type="button" title="Remove this scene">&times; Remove scene</button>
             </div>
-            <div class="two-col">
-              <div>
-                <label>Screenshot source</label>
+          </div>
+
+          <div class="card">
+            <div class="two-col editor-three-col">
+              <!-- Left nav column: everything that is CONTENT (what this scene
+                   says/shows), detected from the template -- title, subtitle,
+                   screenshots, BGM. Settings/configuration live on the right. -->
+              <div class="editor-col editor-col-left">
+                <div class="row" style="justify-content:space-between; align-items:baseline;">
+                  <h3 style="margin:0; font-size:.85rem;">Content</h3>
+                  <span id="sc-content-save-state" class="hint"></span>
+                </div>
+                <div id="sc-content-panel"></div>
+
+                <h3 style="margin:1.5rem 0 .5rem; font-size:.85rem;">Screenshot source</h3>
                 <select id="sc-source"></select>
                 <input id="sc-source-file" type="file" accept="image/*,video/mp4,video/webm" style="margin-top:.4rem;" />
                 <p class="hint" style="margin:.2rem 0 0;">Upload a screen recording (mp4/webm) to play it inside the device instead of a static screenshot.</p>
                 <button id="sc-source-upload" class="secondary small" type="button" style="margin-top:.4rem;">Upload New Source</button>
+
+                <h3 style="margin:1.5rem 0 .5rem; font-size:.85rem;">BGM</h3>
+                <p class="hint" style="margin:0 0 .5rem;">Every template ships its own generated background music automatically. Upload a file only to override it.</p>
+                <input id="bgm-file" type="file" accept="audio/*" />
+                <button id="bgm-upload" class="secondary small" type="button" style="margin-top:.5rem;">Upload BGM</button>
+              </div>
+
+              <!-- Center: preview player + transport + within-scene timeline. -->
+              <div class="editor-col editor-col-center">
+                <div class="preview-frame"><div class="studio-preview-box"><iframe id="sc-preview"></iframe></div></div>
+
+                <div class="player-transport" id="sc-transport">
+                  <button type="button" class="secondary small" id="sc-tr-prev-frame" title="Previous frame">&#9198;</button>
+                  <button type="button" class="secondary small" id="sc-tr-back" title="Back 1s">&#9664;&#9664;</button>
+                  <button type="button" id="sc-tr-play" title="Play / Pause">&#9654;</button>
+                  <button type="button" class="secondary small" id="sc-tr-fwd" title="Forward 1s">&#9654;&#9654;</button>
+                  <button type="button" class="secondary small" id="sc-tr-next-frame" title="Next frame">&#9197;</button>
+                  <span class="hint" id="sc-tr-time" style="margin-left:.5rem;">0.0s / 0.0s</span>
+                </div>
+
+                <div class="scene-segments" id="sc-segments-panel" style="display:none;">
+                  <div class="row" style="justify-content:space-between; align-items:baseline;">
+                    <h3 style="margin:0; font-size:.85rem;">Screenshot timeline</h3>
+                    <button type="button" class="secondary small" id="sc-segment-add">+ Add screenshot</button>
+                  </div>
+                  <p class="hint" style="margin:.2rem 0 .6rem;">Show multiple screenshots in sequence within this one scene -- each with its own duration.</p>
+                  <div id="sc-segments-list"></div>
+                </div>
+
+                <!-- Dynamic Flow Labels Container (Landscape Flow) -->
+                <div id="sc-flow-panel" style="display:none; margin-top:1.2rem; padding:0.8rem; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:8px;">
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+                    <label style="margin:0; font-weight:600;">Flow Step Subtitles (16:9)</label>
+                    <button id="sc-flow-add-btn" class="secondary small" type="button">+ Add Step</button>
+                  </div>
+                  <p class="hint" style="margin:0 0 0.5rem;">Animated labels that appear on the left/right side during screen recording playback.</p>
+                  <div id="sc-flow-steps-list" style="display:flex; flex-direction:column; gap:0.4rem;"></div>
+                </div>
+
+                <!-- Portrait Flow Note -->
+                <div id="sc-portrait-flow-note" style="display:none; margin-top:1.2rem; padding:0.8rem; background:rgba(56,189,248,0.06); border:1px solid rgba(56,189,248,0.2); border-radius:8px;">
+                  <strong style="color:#38bdf8; display:block; margin-bottom:0.2rem;">📱 Cinematic App Flow Scene</strong>
+                  <p class="hint" style="margin:0;">The 3D phone smoothly zooms forward until the screen fills the viewport, seamlessly transitioning into your full screen recording.</p>
+                </div>
+              </div>
+
+              <!-- Right nav column: everything that is SETTINGS/CONFIGURATION
+                   (how the scene behaves/looks) -- frame, timing, timeline,
+                   display/layout. No content (title/subtitle/screenshots)
+                   lives here; that's all on the left. -->
+              <div class="editor-col editor-col-right">
+                <h3 style="margin:0 0 .5rem; font-size:.85rem;">Frame</h3>
                 <label>Animation</label>
                 <select id="sc-template"></select>
                 <label>Layout <span class="hint">(which side the device sits on)</span></label>
@@ -400,19 +464,23 @@
                   <option value="wipe">Wipe</option>
                   <option value="zoom">Zoom</option>
                 </select>
-                <label>Device</label>
-                <select id="sc-device"></select>
+                <!-- Device selection is disabled for now: each template already
+                     ships with one of six fixed, hand-tuned devices, and there
+                     is no dynamic device-swap system implemented yet. Left in
+                     place (not removed) so it can be re-enabled once that
+                     system exists -- see the plan's Phase note on this. -->
+                <label>Device <span class="hint">(fixed per template for now)</span></label>
+                <select id="sc-device" disabled></select>
                 <label>Variant <span class="hint">(foldables)</span></label>
-                <select id="sc-variant"><option value="">default</option></select>
+                <select id="sc-variant" disabled><option value="">default</option></select>
                 <label>Background</label>
                 <select id="sc-background"></select>
-                <label>Text</label>
-                <input id="sc-text" type="text" />
-                <label>Sub-text</label>
-                <input id="sc-subtext" type="text" />
-                <button id="sc-ai-text" class="secondary small" type="button" style="margin-top:.5rem;">&#10024; AI Assist</button>
+
+                <h3 style="margin:1.25rem 0 .5rem; font-size:.85rem;">Timing</h3>
                 <label>Duration (seconds)</label>
                 <input id="sc-duration" type="number" min="1" max="20" value="10" />
+
+                <h3 style="margin:1.25rem 0 .5rem; font-size:.85rem;">Motion</h3>
                 <div class="range-label"><span>Rotation</span><span id="sc-rotate-val">20</span></div>
                 <input id="sc-rotate" type="range" min="0" max="60" value="20" />
                 <div class="range-label"><span>Zoom</span><span id="sc-zoom-val">8</span></div>
@@ -420,38 +488,16 @@
                 <div class="range-label"><span>Movement</span><span id="sc-move-val">40</span></div>
                 <input id="sc-move" type="range" min="0" max="200" value="40" />
 
-                <!-- Dynamic Flow Labels Container (Landscape Flow) -->
-                <div id="sc-flow-panel" style="display:none; margin-top:1.2rem; padding:0.8rem; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:8px;">
-                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
-                    <label style="margin:0; font-weight:600;">Flow Step Subtitles (16:9)</label>
-                    <button id="sc-flow-add-btn" class="secondary small" type="button">+ Add Step</button>
-                  </div>
-                  <p class="hint" style="margin:0 0 0.5rem;">Animated labels that appear on the left/right side during screen recording playback.</p>
-                  <div id="sc-flow-steps-list" style="display:flex; flex-direction:column; gap:0.4rem;"></div>
-                </div>
+                <button id="sc-save" style="margin-top:1.25rem;">Save Scene</button>
 
-                <!-- Portrait Flow Note -->
-                <div id="sc-portrait-flow-note" style="display:none; margin-top:1.2rem; padding:0.8rem; background:rgba(56,189,248,0.06); border:1px solid rgba(56,189,248,0.2); border-radius:8px;">
-                  <strong style="color:#38bdf8; display:block; margin-bottom:0.2rem;">📱 Cinematic App Flow Scene</strong>
-                  <p class="hint" style="margin:0;">The 3D phone smoothly zooms forward until the screen fills the viewport, seamlessly transitioning into your full screen recording.</p>
+                <h3 style="margin:1.5rem 0 .5rem; font-size:.85rem;">Render</h3>
+                <div class="row">
+                  <button id="video-render">Render Final Video</button>
+                  <a id="video-download" href="#" style="display:none;"><button type="button" class="secondary small">Download video</button></a>
                 </div>
-
-                <button id="sc-save" style="margin-top:1rem;">Save Scene</button>
+                <div id="video-result" style="margin-top:1rem;"></div>
               </div>
-              <div class="preview-frame"><iframe id="sc-preview"></iframe></div>
             </div>
-          </div>
-          <div class="card">
-            <h3>BGM &amp; Render</h3>
-            <p class="hint">Every template ships its own generated background music automatically. Upload a file only to override it.</p>
-            <label>Background music override <span class="hint">(mp3/wav/ogg, optional)</span></label>
-            <input id="bgm-file" type="file" accept="audio/*" />
-            <button id="bgm-upload" class="secondary small" type="button" style="margin-top:.5rem;">Upload BGM</button>
-            <div class="row" style="margin-top:1rem;">
-              <button id="video-render">Render Final Video</button>
-              <a id="video-download" href="#" style="display:none;"><button type="button" class="secondary small">Download video</button></a>
-            </div>
-            <div id="video-result" style="margin-top:1rem;"></div>
           </div>
         </div>
       </div>
