@@ -1035,22 +1035,35 @@
       </div>
     </div>
     
-    <!-- Scene 13 (Extreme Macro Closeup) -->
+    <!-- Scene 13 (Extreme Performance Showcase) -->
     <div class="scene" id="scene-12">
-      <div class="scene-content" style="justify-content: center;">
-        <div class="phone-3d-viewport" style="transform: translate(160px, -50px);">
-          <div class="phone-3d-scaler" style="transform: scale(1.55);">
-            <div class="phone-3d-rig" id="phone-rig-12">
-              <div class="phone-face front">
-                <div class="camera-punch"></div>
-                <div class="gloss-sheen"></div>
-                <div class="screen-edge-glare left-edge"></div>
-                <div class="screen-edge-glare right-edge"></div>
-                <div class="curved-edge-shadow left"></div>
-                <div class="curved-edge-shadow right"></div>
-                <div class="screen-scroll-wrap">
-                  <img class="phone-screen" id="slot-12" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="Screen 13" />
+      <div class="scene-content" style="display: flex; width: 100%; align-items: center; justify-content: space-between; position: relative;">
+        <!-- Left side label -->
+        <div class="copy-col" id="scene-12-label" style="opacity: 1; transition: opacity 0.15s ease;">
+          <div><div class="badge-block"><h2 class="title-white" id="s12-text">Extreme Power</h2></div></div>
+          <div><div class="badge-block"><h2 class="title-white" id="s12-subtext">Cyber Specs</h2></div></div>
+        </div>
+        
+        <!-- Right side phone viewport wrapper -->
+        <div class="device-col">
+          <div class="phone-3d-viewport" id="viewport-12" style="position: absolute; transform: translate(160px, 0px);">
+            <div class="phone-3d-scaler" id="scaler-12" style="transform: scale(0.68);">
+              <div class="phone-3d-rig" id="phone-rig-12">
+                <div class="phone-face front">
+                  <div class="camera-punch"></div>
+                  <div class="gloss-sheen"></div>
+                  <div class="screen-edge-glare left-edge"></div>
+                  <div class="screen-edge-glare right-edge"></div>
+                  <div class="curved-edge-shadow left"></div>
+                  <div class="curved-edge-shadow right"></div>
+                  <div class="screen-scroll-wrap">
+                    <img class="phone-screen" id="slot-12" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="Screen 13" />
+                  </div>
                 </div>
+                <div class="phone-side side-left"></div>
+                <div class="phone-side side-right"></div>
+                <div class="phone-side side-top"></div>
+                <div class="phone-side side-bottom"></div>
               </div>
             </div>
           </div>
@@ -1505,9 +1518,11 @@
       "move": 0,
       "depth": "macro",
       "layout": "extreme-closeup",
-      "text": "",
-      "subtext": "",
+      "text": "Extreme Power",
+      "subtext": "Cyber Specs",
       "slots": {
+        "text": "s12-text",
+        "subtext": "s12-subtext",
         "screenshot": "slot-12"
       }
     },
@@ -1744,12 +1759,26 @@
           rig.style.transform = "scale(" + entryScale + ") rotateY(" + floatYaw + "deg)";
         }
       }
-      else if (sceneIdx === 12) { // Scene 13: Extreme Macro Closeup
+      else if (sceneIdx === 12) { // Scene 13: Extreme Performance Showcase
+        const label = document.getElementById("scene-12-label");
+        if (label) {
+          label.style.opacity = Math.max(0, 1 - (progress / 0.45));
+        }
+        const viewport = document.getElementById("viewport-12");
+        if (viewport) {
+          const entryX = 160 * (1 - easeEntry); // Smooth slide-in to center: 160px -> 0px
+          viewport.style.transform = "translate(" + entryX + "px, 0px)";
+        }
+        const scaler = document.getElementById("scaler-12");
+        if (scaler) {
+          const currentScale = 0.68 + (0.22 * easeEntry); // Start relatively small and scale up to 0.90 (fully fitting the screen)
+          scaler.style.transform = "scale(" + currentScale + ")";
+        }
         const rig = document.getElementById("phone-rig-12");
         if (rig) {
-          const currentScale = 1.35 + (0.10 * easeEntry); // 1.35 -> 1.45
-          const currentYaw = 20 - (8 * easeEntry) - (6 * tDrift); // 20deg -> 12deg -> 6deg
-          rig.style.transform = "scale(" + currentScale + ") rotateY(" + currentYaw + "deg)";
+          const currentYaw = 16 - (12 * easeEntry) - (4 * tDrift); // 16deg -> 4deg -> 0deg
+          const floatPitch = Math.sin(globalTimeMs * 0.001) * 2;
+          rig.style.transform = "rotateY(" + currentYaw + "deg) rotateX(" + floatPitch + "deg)";
         }
       }
       else if (sceneIdx === 13) { // Scene 14: Dynamic Angle Front Phone (Fully Usable Screen)
