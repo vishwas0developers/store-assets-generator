@@ -10,4 +10,5 @@ Template videos/
 tools/
 *.rar
 *.py
-scripts/
+scripts/*
+!scripts/generate/
