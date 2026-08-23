@@ -1911,7 +1911,7 @@ function openVideoTemplateDetail(id) {
               <div class="video-screen-num">Screen ${i + 1}</div>
               <button type="button" class="video-screen-play" data-scene-play="${i}" title="Play only this scene">&#9654;</button>
               <div class="video-screen-name">${s.label}</div>
-              <div class="hint">${s.durationSeconds}s &middot; ${s.sceneTemplate.replace(/-/g, " ")} &middot; ${s.background}</div>
+              <div class="hint">${s.durationSeconds}s &middot; ${(s.sceneTemplate || s.layout || "scene").replace(/-/g, " ")} &middot; ${s.background || "dark-studio"}</div>
             </div>`
             )
             .join("")}
