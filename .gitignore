@@ -13,3 +13,5 @@ tools/
 scripts/*
 !scripts/generate/
 scratch/
+.claude/
+.agents/

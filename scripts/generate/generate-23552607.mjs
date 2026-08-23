@@ -410,7 +410,6 @@ export function create23552607Template() {
       background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.65) 0%, transparent 70%);
       filter: blur(4px);
       z-index: 1;
-      transition: transform 0.1s ease-out;
     }
     
     .phone-3d-scaler {
@@ -424,7 +423,6 @@ export function create23552607Template() {
       width: 360px;
       height: 740px;
       transform-style: preserve-3d;
-      transition: transform 0.1s ease-out;
     }
     
     /* 3D phone faces */
@@ -456,6 +454,7 @@ export function create23552607Template() {
     
     .phone-screen {
       width: 100%;
+      height: 100%;
       position: absolute;
       top: 0;
       left: 0;
@@ -1134,15 +1133,8 @@ export function create23552607Template() {
   </script>
 
   <script>
-    /* Continuous web scroll and 3D camera transitions */
+    /* 3D camera transitions */
     window.__customSceneTransform = function(sceneIdx, progress, globalTimeMs) {
-      // Scroll the website mockup downward in every portrait scene
-      const screen = document.getElementById("slot-" + sceneIdx);
-      if (screen && sceneIdx !== 2 && sceneIdx !== 5 && sceneIdx !== 10 && sceneIdx !== 14) {
-        // Continuous translation of screen image up to 32%
-        screen.style.transform = "translateY(-" + (progress * 32) + "%)";
-      }
-
       // Smooth custom 3D rotation and shadows for each layout
       const rig = document.getElementById("phone-rig-" + sceneIdx);
       const shadow = document.getElementById("shadow-" + sceneIdx);
@@ -1244,7 +1236,7 @@ export function create23552607Template() {
 
   const targetFile = path.join(targetDir, 'template.html');
   fs.writeFileSync(targetFile, templateHtml, 'utf8');
-  console.log(`Successfully generated frame-accurate template at: \${targetFile}`);
+  console.log(`Successfully generated frame-accurate template at: ${targetFile}`);
 }
 
 // Auto-run if executed directly
