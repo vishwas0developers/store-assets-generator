@@ -182,7 +182,7 @@
       background: #000000;
       transform: translateZ(9px);
       z-index: 10;
-      border: 4px solid #1a1a20;
+      border: none;
       overflow: hidden;
       box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.9);
     }
@@ -190,7 +190,7 @@
     .screen-scroll-wrap {
       width: 100%;
       height: 100%;
-      border-radius: 38px;
+      border-radius: 44px;
       overflow: hidden;
       position: relative;
       background: #000000;
@@ -212,7 +212,7 @@
       background: linear-gradient(130deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.02) 40%, rgba(255, 255, 255, 0.08) 100%);
       z-index: 11;
       pointer-events: none;
-      border-radius: 38px;
+      border-radius: 44px;
     }
     
     .screen-edge-glare {
@@ -225,8 +225,8 @@
       pointer-events: none;
     }
     
-    .screen-edge-glare.left-edge { left: 4px; }
-    .screen-edge-glare.right-edge { right: 4px; transform: scaleX(-1); }
+    .screen-edge-glare.left-edge { left: 0; }
+    .screen-edge-glare.right-edge { right: 0; transform: scaleX(-1); }
     
     /* Curved AMOLED glass side shading */
     .curved-edge-shadow {
@@ -251,6 +251,11 @@
     /* Extruded side metal rails */
     .phone-side {
       position: absolute;
+      background: none;
+      border: none;
+    }
+    
+    .landscape-layout .phone-side {
       background: linear-gradient(to bottom, #2d2d37, #191921 50%, #2d2d37);
       border: 1px solid #141419;
     }
