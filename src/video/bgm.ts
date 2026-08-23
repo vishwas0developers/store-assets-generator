@@ -138,13 +138,13 @@ export const BGM_PRESETS: Record<string, BgmPreset> = {
     filterHz: 2100,
     mood: "cyber obsidian theme",
   },
-  "tpl-38180229-clean-split-panorama": {
+  "tpl-38180229-minimal-skyblue": {
     bpm: 109,
     key: "F3",
     chords: [[0, 4, 7], [-3, 0, 4], [2, 5, 9], [0, 4, 7]],
     voices: ["pad", "pluck", "noise-hat"],
     filterHz: 3000,
-    mood: "clean Split messaging theme",
+    mood: "clean minimalist skyblue theme",
   },
   "tpl-62155880-delivery-trio-showcase": {
     bpm: 101,
