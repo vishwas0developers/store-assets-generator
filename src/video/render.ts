@@ -17,6 +17,9 @@ import {
 import { DEVICE_REGISTRY, resolveGeometry, frameSvgFor, type DeviceModel } from "../devices/registry.js";
 import { videoDir, videoFile, type VideoProject, type VideoScene } from "./project.js";
 import { VIDEO_TEMPLATES, type VideoTemplate } from "./templates.js";
+import { templateHtmlPath, templateConfig } from "./templateConfig.js";
+import { placeholderScreenUri } from "./placeholder.js";
+import { resolveSlots, resolveImageSequences } from "./slots.js";
 import { BGM_PRESETS, renderBgmWav } from "./bgm.js";
 
 /**
@@ -591,53 +594,6 @@ export function sourceKindsFor(project: VideoProject, scene: VideoScene): ("imag
   return [source.kind === "video" ? "video" : "image"];
 }
 
-/** Synthetic placeholder screens for a scene with no uploaded source yet
- *  (e.g. previewing a template before applying it) -- a handful of visually
- *  distinct generic app-screen layouts so the device reads as populated, and
- *  a multi-screen swap is visible even before real screenshots exist. */
-const PLACEHOLDER_LAYOUTS = ["list", "grid", "detail", "profile"] as const;
-function placeholderScreenUri(index = 0): string {
-  const layout = PLACEHOLDER_LAYOUTS[index % PLACEHOLDER_LAYOUTS.length];
-  const header = `<rect width="1020" height="220" fill="#ffffff"/>
-    <circle cx="90" cy="110" r="40" fill="#c7d0dc"/>
-    <rect x="160" y="86" width="360" height="26" rx="13" fill="#c7d0dc"/>
-    <rect x="160" y="128" width="230" height="20" rx="10" fill="#dbe1ea"/>`;
-  let body = "";
-  if (layout === "list") {
-    body = [0, 1, 2, 3]
-      .map((i) => `<rect x="60" y="${280 + i * 340}" width="900" height="290" rx="28" fill="#ffffff"/>
-      <rect x="100" y="${330 + i * 340}" width="440" height="30" rx="15" fill="#c7d0dc"/>
-      <rect x="100" y="${378 + i * 340}" width="600" height="22" rx="11" fill="#dbe1ea"/>
-      <rect x="100" y="${418 + i * 340}" width="380" height="22" rx="11" fill="#dbe1ea"/>`)
-      .join("");
-  } else if (layout === "grid") {
-    body = [0, 1, 2, 3, 4, 5]
-      .map((i) => {
-        const col = i % 2;
-        const row = Math.floor(i / 2);
-        return `<rect x="${60 + col * 470}" y="${280 + row * 400}" width="430" height="360" rx="24" fill="#ffffff"/>
-      <rect x="${100 + col * 470}" y="${610 + row * 400}" width="330" height="24" rx="12" fill="#c7d0dc"/>`;
-      })
-      .join("");
-  } else if (layout === "detail") {
-    body = `<rect x="60" y="280" width="900" height="620" rx="32" fill="#ffffff"/>
-      <rect x="100" y="960" width="500" height="40" rx="18" fill="#c7d0dc"/>
-      <rect x="100" y="1024" width="820" height="24" rx="11" fill="#dbe1ea"/>
-      <rect x="100" y="1064" width="700" height="24" rx="11" fill="#dbe1ea"/>
-      <rect x="100" y="1140" width="820" height="120" rx="20" fill="#e1e6ee"/>`;
-  } else {
-    body = `<circle cx="510" cy="480" r="160" fill="#c7d0dc"/>
-      <rect x="260" y="700" width="500" height="34" rx="16" fill="#c7d0dc"/>
-      <rect x="330" y="756" width="360" height="22" rx="11" fill="#dbe1ea"/>
-      ${[0, 1, 2].map((i) => `<rect x="60" y="${880 + i * 220}" width="900" height="180" rx="24" fill="#ffffff"/>`).join("")}`;
-  }
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1020 2340" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
-    <rect width="1020" height="2340" fill="#eef1f6"/>
-    ${header}
-    ${body}
-  </svg>`;
-  return `data:image/svg+xml;base64,${Buffer.from(svg).toString("base64")}`;
-}
 
 /** Depth-aware device rendering for scenes with no custom `renderDevice`
  *  hook: "flat" is today's plain frame (default), "perspective" tilts that
@@ -921,20 +877,28 @@ function sceneContentHtml(scene: VideoScene, device: DeviceModel, uris: string[]
   `;
 }
 
-export function composeStandaloneHtml(project: VideoProject, activeSceneIndex?: number, screenshotUris: string[] = []): string {
+/** Injects a project's dynamic content into a slot-driven template's own
+ *  HTML (config parsed once, verbatim markup/CSS/keyframes untouched). Both
+ *  the live preview (`resolveUri` -> `/api/videos/:id/file?p=...`) and the
+ *  final render (`resolveUri` -> a `data:` URI read off disk) share this one
+ *  path -- see slots.ts's resolveSlots for the actual value resolution.
+ *
+ *  IMPORTANT: always pass the full multi-scene document, never a single
+ *  scene's markup in isolation -- some templates reference `<defs>` (e.g.
+ *  an SVG gradient) declared in an earlier scene (tpl-62155880 scene 4
+ *  reuses `url(#pinGrad)` from scene 1). */
+export function composeStandaloneHtml(project: VideoProject, activeSceneIndex?: number, resolveUri?: (rel: string) => string): string {
   const templateId = project.template || "iphone-15-pro-portrait";
-  const htmlPath = path.join(process.cwd(), "templates", "video", templateId, "template.html");
+  const htmlPath = templateHtmlPath(templateId);
   if (!fs.existsSync(htmlPath)) {
     throw new Error(`Standalone template HTML not found at ${htmlPath}`);
   }
   let html = fs.readFileSync(htmlPath, "utf-8");
 
-  // Read config from script tag
-  const match = html.match(/<script type="application\/json" id="template-config">([\s\S]*?)<\/script>/);
-  if (!match) return html;
-
-  const config = JSON.parse(match[1]);
+  const config = templateConfig(templateId);
+  if (!config) return html;
   const scenes = config.scenes || [];
+  const uriFor = resolveUri ?? previewResolveUri(project.id);
 
   // Calculate scene offset if activeSceneIndex is set
   let sceneStartMs = 0;
@@ -944,74 +908,55 @@ export function composeStandaloneHtml(project: VideoProject, activeSceneIndex?: 
     }
   }
 
-  // Construct values payload to inject
-  const screenshots: { slotId: string; url: string }[] = [];
-  const texts: { slotId: string; val: string }[] = [];
-
-  // Mappings
-  project.scenes.forEach((pScene, idx) => {
-    const tScene = scenes[idx];
-    if (!tScene || !tScene.slots) return;
-    const slots = tScene.slots;
-
-    // Map title/subtext
-    if (slots.text) {
-      texts.push({ slotId: slots.text, val: pScene.text || "" });
-    }
-    if (slots.subtext) {
-      texts.push({ slotId: slots.subtext, val: pScene.subtext || "" });
-    }
-
-    // Map screenshots
-    if (activeSceneIndex !== undefined && idx === activeSceneIndex) {
-      if (slots.screenshot && screenshotUris[0]) {
-        screenshots.push({ slotId: slots.screenshot, url: screenshotUris[0] });
-      }
-      if (slots.screenshots && Array.isArray(slots.screenshots)) {
-        slots.screenshots.forEach((slotId: string, sIdx: number) => {
-          if (screenshotUris[sIdx]) {
-            screenshots.push({ slotId, url: screenshotUris[sIdx] });
-          }
-        });
-      }
-    } else {
-      const screenIds = pScene.screenIds || (pScene.sourceId ? [pScene.sourceId] : []);
-      if (slots.screenshot) {
-        const src = project.sources.find(s => s.id === screenIds[0]);
-        if (src) {
-          const url = `/api/videos/${project.id}/file?p=${encodeURIComponent(src.file)}`;
-          screenshots.push({ slotId: slots.screenshot, url });
-        }
-      }
-      if (slots.screenshots && Array.isArray(slots.screenshots)) {
-        slots.screenshots.forEach((slotId: string, sIdx: number) => {
-          const src = project.sources.find(s => s.id === screenIds[sIdx]);
-          if (src) {
-            const url = `/api/videos/${project.id}/file?p=${encodeURIComponent(src.file)}`;
-            screenshots.push({ slotId, url });
-          }
-        });
-      }
-    }
-  });
+  // Build one flat payload for every scene the template declares slots for
+  // -- resolveSlots is the single normalizer both the studio editor and this
+  // renderer use, so there is no second description of what a scene needs.
+  const payload = project.scenes.flatMap((_pScene, idx) => resolveSlots(project, idx, uriFor));
+  // Within-scene multi-screenshot timelines (project-wide -- see
+  // resolveImageSequences's doc comment for why this can't be per-scene).
+  const sequences = resolveImageSequences(project, uriFor);
 
   const injectionScript = `
   <script>
     window.addEventListener('DOMContentLoaded', () => {
-      const screenshots = ${JSON.stringify(screenshots)};
-      const texts = ${JSON.stringify(texts)};
-      
-      // Apply screenshots to image slots
-      screenshots.forEach(s => {
-        const img = document.getElementById(s.slotId);
-        if (img) img.src = s.url;
-      });
+      const payload = ${JSON.stringify(payload)};
+      payload.forEach(({ targets, op, value }) => targets.forEach((sel) => {
+        document.querySelectorAll(sel).forEach((el) => {
+          if (op === 'text') el.textContent = value;
+          else if (op === 'src') el.src = value;
+          else el.innerHTML = value;
+        });
+      }));
 
-      // Apply texts to copy elements
-      texts.forEach(t => {
-        const el = document.getElementById(t.slotId);
-        if (el) el.textContent = t.val;
-      });
+      // Multi-screenshot timeline: swap each target's src to whichever
+      // segment covers the current ABSOLUTE document time. Driven by
+      // wrapping window.seek (below) rather than a wall-clock timer so it
+      // renders identically in the interactive preview AND in the headless
+      // frame-by-frame video render, which drives every frame exclusively
+      // through repeated window.seek(ms) calls -- see renderVideo's frame
+      // loop. A per-target last-applied cache avoids redundant DOM writes
+      // on every one of the ~30 seek calls per second.
+      const sequences = ${JSON.stringify(sequences)};
+      const seqLastSrc = new Map();
+      function applySequencesAt(ms) {
+        for (const { targets, segments } of sequences) {
+          const seg = segments.find((s) => ms >= s.startMs && ms < s.endMs) || segments[segments.length - 1];
+          if (!seg) continue;
+          for (const sel of targets) {
+            if (seqLastSrc.get(sel) === seg.src) continue;
+            const el = document.querySelector(sel);
+            if (el) { el.src = seg.src; seqLastSrc.set(sel, seg.src); }
+          }
+        }
+      }
+      if (sequences.length > 0) {
+        const beforeSequenceSeek = window.seek;
+        window.seek = (ms) => {
+          applySequencesAt(ms);
+          if (typeof beforeSequenceSeek === 'function') return beforeSequenceSeek(ms);
+        };
+        applySequencesAt(0);
+      }
 
       // Apply seek offset adapter if activeSceneIndex is set
       if (${activeSceneIndex !== undefined}) {
@@ -1022,6 +967,16 @@ export function composeStandaloneHtml(project: VideoProject, activeSceneIndex?: 
             return originalSeek(startMs + ms);
           }
         };
+        // Jump the interactive player to this scene on load -- without this
+        // the player's own bootstrap (renderFrameAt(0), see player-helper.mjs)
+        // always shows scene 0 first, so every single-scene preview request
+        // rendered the same opening frame regardless of which scene was
+        // actually requested. Harmless (and unused) during the headless
+        // frame-capture render path, which drives frames exclusively through
+        // the wrapped window.seek above.
+        if (typeof window.goto === 'function') {
+          window.goto(${activeSceneIndex});
+        }
       }
     });
   </script>
@@ -1032,11 +987,23 @@ export function composeStandaloneHtml(project: VideoProject, activeSceneIndex?: 
 }
 
 /** The single generator used by both preview and render. */
-export function sceneHtml(scene: VideoScene, screenshotUris: string[], seekable = false, screenshotKinds: ("image" | "video")[] = [], project?: VideoProject): string {
+export function sceneHtml(
+  scene: VideoScene,
+  screenshotUris: string[],
+  seekable = false,
+  screenshotKinds: ("image" | "video")[] = [],
+  project?: VideoProject,
+  resolveUri?: (rel: string) => string,
+): string {
   if (project && project.template) {
-    const htmlPath = path.join(process.cwd(), "templates", "video", project.template, "template.html");
-    if (fs.existsSync(htmlPath)) {
-      return composeStandaloneHtml(project, scene.order, screenshotUris);
+    // Only templates that declare `slots` (the replicated tpl-* promos) go
+    // through the standalone-HTML injector. The 10 device presets carry a
+    // template.html (for the Templates-tab preview player) but no slots, so
+    // they fall through to the code-generated path below, which is what
+    // actually understands their screenshots/screenCount/word-split text.
+    const cfg = templateConfig(project.template);
+    if (cfg?.scenes?.some((s: any) => s.slots)) {
+      return composeStandaloneHtml(project, scene.order, resolveUri ?? previewResolveUri(project.id));
     }
   }
 
@@ -1087,7 +1054,7 @@ export function scenePreviewHtml(project: VideoProject, sceneId: string): string
   const scene = project.scenes.find((s) => s.id === sceneId);
   if (!scene) throw new Error(`Scene '${sceneId}' not found in project ${project.id}`);
   const resolveUri = previewResolveUri(project.id);
-  return sceneHtml(scene, sourceUrisFor(project, scene, resolveUri), false, sourceKindsFor(project, scene), project);
+  return sceneHtml(scene, sourceUrisFor(project, scene, resolveUri), false, sourceKindsFor(project, scene), project, resolveUri);
 }
 
 /** Concatenated full-template preview: every scene of the project is laid
@@ -1328,7 +1295,7 @@ export async function renderVideo(project: VideoProject): Promise<string> {
     const page = await browser.newPage({ viewport: canvasFor(scenes[0] ?? ({} as VideoScene)) });
     for (const scene of scenes) {
       await page.setViewportSize(canvasFor(scene));
-      const html = sceneHtml(scene, sourceUrisFor(project, scene, resolveUri), true, sourceKindsFor(project, scene), project);
+      const html = sceneHtml(scene, sourceUrisFor(project, scene, resolveUri), true, sourceKindsFor(project, scene), project, resolveUri);
       await page.setContent(html, { waitUntil: "load" });
 
       const totalFrames = Math.round(Math.max(1, scene.durationSeconds) * FPS);

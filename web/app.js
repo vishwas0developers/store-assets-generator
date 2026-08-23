@@ -2052,12 +2052,43 @@ function renderVideoScenes() {
   videoProject.scenes.forEach((s, i) => {
     const chip = document.createElement("div");
     chip.className = "scene-chip" + (i === 0 ? " active" : "");
-    chip.textContent = `Scene ${i + 1}`;
     chip.dataset.sceneId = s.id;
     chip.onclick = () => selectScene(s.id);
+    const dot = document.createElement("span");
+    dot.className = "scene-chip-dot";
+    dot.id = `scene-dot-${s.id}`;
+    chip.appendChild(dot);
+    chip.appendChild(document.createTextNode(`Scene ${i + 1}`));
     nav.appendChild(chip);
   });
   if (videoProject.scenes.length) selectScene(videoProject.scenes[0].id);
+  refreshSceneCompleteness();
+}
+
+/** Pulls GET .../validate once and paints each scene chip's status dot --
+ *  green (complete), amber (needs content), or no dot (scene genuinely has
+ *  no dynamic content to fill). Also gates the Render button so a missing
+ *  required asset is caught before a multi-minute render, not after. */
+async function refreshSceneCompleteness() {
+  if (!videoId) return;
+  try {
+    const result = await api(`/api/videos/${videoId}/validate`);
+    let incomplete = 0;
+    for (const s of result.scenes) {
+      const dot = $(`scene-dot-${s.sceneId}`);
+      if (!dot) continue;
+      const hasError = s.issues.some((i) => i.severity === "error");
+      dot.className = "scene-chip-dot" + (s.issues.length === 0 ? " ok" : hasError ? " error" : " warning");
+      if (hasError) incomplete++;
+    }
+    const renderBtn = $("video-render");
+    if (renderBtn) {
+      renderBtn.disabled = incomplete > 0;
+      renderBtn.textContent = incomplete > 0 ? `Render Final Video — ${incomplete} scene${incomplete === 1 ? "" : "s"} incomplete` : "Render Final Video";
+    }
+  } catch {
+    // Validation is a convenience overlay -- never block the editor on it.
+  }
 }
 
 let currentSceneFlowSteps = [];
@@ -2127,8 +2158,9 @@ function selectScene(sceneId) {
   $("sc-transition").value = scene.transition || "cut";
   $("sc-device").value = scene.device;
   $("sc-background").value = scene.background;
-  $("sc-text").value = scene.text;
-  $("sc-subtext").value = scene.subtext;
+  // Headline/subtext are edited in the Content panel (left column) now --
+  // via the dynamic slot editor for slot-driven templates, or legacyTextField
+  // for device presets -- not here.
   $("sc-duration").value = scene.durationSeconds;
   $("sc-rotate").value = scene.rotate; $("sc-rotate-val").textContent = scene.rotate;
   $("sc-zoom").value = scene.zoom; $("sc-zoom-val").textContent = scene.zoom;
@@ -2138,6 +2170,8 @@ function selectScene(sceneId) {
   updateSceneSpecialPanels(scene.sceneTemplate);
   renderFlowStepsEditor(scene.flowSteps);
   showScenePreview();
+  updateScenePreviewScale();
+  loadSceneContentPanel(sceneId);
 }
 function updateVariantSelect(deviceSelectId, variantSelectId, current, catalog) {
   const device = catalog.find((d) => d.id === $(deviceSelectId).value);
@@ -2150,7 +2184,676 @@ $("sc-device").onchange = () => updateVariantSelect("sc-device", "sc-variant", "
 for (const [id, out] of [["sc-rotate", "sc-rotate-val"], ["sc-zoom", "sc-zoom-val"], ["sc-move", "sc-move-val"]]) {
   $(id).oninput = () => { $(out).textContent = $(id).value; };
 }
-function showScenePreview() { $("sc-preview").src = `/api/videos/${videoId}/scene-preview/${selectedSceneId}?t=${Date.now()}`; }
+function showScenePreview() {
+  const frame = $("sc-preview");
+  frame.src = `/api/videos/${videoId}/scene-preview/${selectedSceneId}?t=${Date.now()}`;
+  frame.onload = () => { scTransportReset(); updateScenePreviewScale(); };
+}
+
+/** Sizes #sc-preview to fill its box without cropping. The iframe's own
+ *  DOCUMENT is a fixed native pixel canvas (1080x1920 or 1920x1080); setting
+ *  the <iframe> element's CSS size alone only changes its VIEWPORT, not the
+ *  page's scale, so the document still renders at 1:1 and only the top-left
+ *  corner is visible through a smaller viewport. Instead: size the iframe at
+ *  its true native pixels and apply transform:scale() to shrink the whole
+ *  rendered page uniformly inside a clipping box -- same technique as the
+ *  Templates-tab stage's .video-preview-scale (see videoDetailRefreshUi). */
+function updateScenePreviewScale() {
+  const scene = videoProject?.scenes.find((s) => s.id === selectedSceneId);
+  if (!scene) return;
+  // Native canvas for THIS scene's own device/aspect ratio -- portrait
+  // (9:16) and landscape (16:9) templates are genuinely different shapes,
+  // never forced into one box.
+  const isLandscape = scene.aspectRatio === "16:9";
+  const nativeWidth = isLandscape ? 1920 : 1080;
+  const nativeHeight = isLandscape ? 1080 : 1920;
+  const box = document.querySelector(".studio-preview-box");
+  const frameEl = document.querySelector(".preview-frame");
+  if (!box || !frameEl) return;
+
+  // Fit-within-box math done in JS with explicit px, not CSS aspect-ratio --
+  // aspect-ratio does not reliably resolve a size for a flex child with no
+  // definite width or height (it can collapse toward zero), which is what
+  // produced the earlier "thin strip" preview.
+  const availWidth = Math.max(160, frameEl.clientWidth - 24); // minus .preview-frame's own padding
+  const availHeight = Math.min(window.innerHeight * 0.5, 420);
+  let boxWidth = availHeight * (nativeWidth / nativeHeight);
+  let boxHeight = availHeight;
+  if (boxWidth > availWidth) {
+    boxWidth = availWidth;
+    boxHeight = availWidth * (nativeHeight / nativeWidth);
+  }
+  box.style.width = `${Math.round(boxWidth)}px`;
+  box.style.height = `${Math.round(boxHeight)}px`;
+
+  const frame = $("sc-preview");
+  frame.style.width = `${nativeWidth}px`;
+  frame.style.height = `${nativeHeight}px`;
+  frame.style.transform = `scale(${boxWidth / nativeWidth})`;
+}
+window.addEventListener("resize", () => updateScenePreviewScale());
+
+// ---------------------------------------------------------------------------
+// Playback transport -- Play/Pause/frame-step/±1s, placed BELOW the player
+// (not inside it) per the studio's professional-editor requirement. Driven
+// entirely through window.seek(ms), where ms is SCENE-RELATIVE (the scene-
+// preview document's seek is already scene-offset -- see composeStandaloneHtml's
+// sceneStartMs adapter -- and the code-generated single-scene documents used
+// by the device-preset templates are scene-relative natively). Driving
+// exclusively through window.seek, rather than the page's own internal Play
+// button / window.goto (which animate via a separate renderFrameAt call the
+// page never exposes), is also what makes the within-scene screenshot
+// timeline (scTransport ticks -> wrapped window.seek -> segment swap) work
+// correctly during THIS preview, matching how the final video render also
+// drives every frame exclusively through repeated window.seek calls.
+// ---------------------------------------------------------------------------
+
+let scTransport = { playing: false, elapsedMs: 0, durationMs: 5000, timer: null };
+
+function scTransportReset() {
+  scTransportStop();
+  const scene = videoProject?.scenes.find((s) => s.id === selectedSceneId);
+  scTransport.durationMs = Math.max(1, scene?.durationSeconds || 5) * 1000;
+  scTransport.elapsedMs = 0;
+  scTransportSeek(0);
+}
+
+function scTransportSeek(ms) {
+  scTransport.elapsedMs = Math.max(0, Math.min(ms, scTransport.durationMs));
+  const frame = $("sc-preview");
+  try {
+    if (frame.contentWindow && typeof frame.contentWindow.seek === "function") {
+      frame.contentWindow.seek(scTransport.elapsedMs);
+    }
+  } catch {
+    // Cross-origin or not-yet-loaded -- next tick will retry via user input.
+  }
+  const timeEl = $("sc-tr-time");
+  if (timeEl) timeEl.textContent = `${(scTransport.elapsedMs / 1000).toFixed(1)}s / ${(scTransport.durationMs / 1000).toFixed(1)}s`;
+}
+
+function scTransportStop() {
+  scTransport.playing = false;
+  if (scTransport.timer) clearInterval(scTransport.timer);
+  scTransport.timer = null;
+  const btn = $("sc-tr-play");
+  if (btn) btn.innerHTML = "&#9654;";
+}
+
+function scTransportPlay() {
+  if (scTransport.playing) return;
+  scTransport.playing = true;
+  const btn = $("sc-tr-play");
+  if (btn) btn.innerHTML = "&#9208;";
+  const stepMs = 1000 / 30;
+  const start = performance.now() - scTransport.elapsedMs;
+  scTransport.timer = setInterval(() => {
+    const elapsed = performance.now() - start;
+    if (elapsed >= scTransport.durationMs) {
+      scTransportSeek(scTransport.durationMs);
+      scTransportStop();
+      return;
+    }
+    scTransportSeek(elapsed);
+  }, stepMs);
+}
+
+(function initSceneTransport() {
+  const playBtn = $("sc-tr-play");
+  if (!playBtn) return; // scenes section not present yet at parse time is fine -- these are static ids
+  playBtn.onclick = () => (scTransport.playing ? scTransportStop() : scTransportPlay());
+  $("sc-tr-back").onclick = () => { scTransportStop(); scTransportSeek(scTransport.elapsedMs - 1000); };
+  $("sc-tr-fwd").onclick = () => { scTransportStop(); scTransportSeek(scTransport.elapsedMs + 1000); };
+  $("sc-tr-prev-frame").onclick = () => { scTransportStop(); scTransportSeek(scTransport.elapsedMs - 1000 / 30); };
+  $("sc-tr-next-frame").onclick = () => { scTransportStop(); scTransportSeek(scTransport.elapsedMs + 1000 / 30); };
+})();
+
+// ---------------------------------------------------------------------------
+// Dynamic content panel -- driven by GET /scene-spec, the SAME SlotSpec[]
+// the renderer resolves against (src/video/slots.ts), so this form can never
+// describe a scene's needs differently than the video actually gets built.
+// ---------------------------------------------------------------------------
+
+let contentPanelSceneId = null;
+let contentSaveTimer = null;
+
+async function loadSceneContentPanel(sceneId) {
+  contentPanelSceneId = sceneId;
+  const panel = $("sc-content-panel");
+  if (!videoId) { panel.innerHTML = ""; return; }
+  panel.innerHTML = '<p class="hint">Loading...</p>';
+  let spec;
+  try {
+    spec = await api(`/api/videos/${videoId}/scene-spec/${sceneId}`);
+  } catch (e) {
+    panel.innerHTML = `<p class="hint">Could not load content requirements: ${e.message}</p>`;
+    return;
+  }
+  if (contentPanelSceneId !== sceneId) return; // scene changed again while this was in flight
+  renderSlotEditor(spec.specs, spec.values, spec.issues, sceneId);
+  renderSegmentsPanel(sceneId, spec.specs, spec.values);
+}
+
+/** Specs with `targets.length === 0` are the 10 device-preset templates,
+ *  which have no `slots` config at all -- slotSpecsForScene synthesizes
+ *  text/subtext/screenshots specs for them so the SHAPE of this form is
+ *  uniform across all 16 templates, but there's no DOM selector to inject
+ *  into (their code-generated renderer reads scene.text/sourceId/screenIds
+ *  directly instead). Those are edited here via the legacy PUT
+ *  /scenes/:sceneId route rather than the slotValues route. */
+function renderSlotEditor(specs, values, issues, sceneId) {
+  const panel = $("sc-content-panel");
+  panel.innerHTML = "";
+  if (specs.length === 0) {
+    panel.innerHTML = '<p class="hint">This scene needs no content.</p>';
+    return;
+  }
+  const legacyScene = videoProject.scenes.find((s) => s.id === sceneId) || {};
+  const issuesByKey = {};
+  for (const issue of issues || []) (issuesByKey[issue.slotKey] ??= []).push(issue);
+
+  const screenshotSpec = specs.find((s) => s.key === "screenshot" || s.key === "screenshots");
+  if (screenshotSpec) {
+    const count = screenshotSpec.kind === "imageList" ? screenshotSpec.count || 1 : 1;
+    const summary = document.createElement("p");
+    summary.className = "hint";
+    summary.textContent = `This scene uses ${count} screenshot${count === 1 ? "" : "s"}.`;
+    panel.appendChild(summary);
+  }
+
+  for (const spec of specs) {
+    const row = document.createElement("div");
+    row.className = "content-slot";
+    const label = document.createElement("label");
+    label.textContent = spec.label + (spec.required ? " *" : "");
+    row.appendChild(label);
+
+    const isLegacy = spec.targets.length === 0;
+    const value = values[spec.key];
+    if (isLegacy && spec.kind === "text") {
+      row.appendChild(legacyTextField(spec, legacyScene, sceneId));
+    } else if (isLegacy && spec.kind === "imageList") {
+      row.appendChild(legacyImageListField(spec, legacyScene, sceneId));
+    } else if (spec.kind === "text") {
+      row.appendChild(textField(spec, value?.kind === "text" ? value.value : "", sceneId));
+    } else if (spec.kind === "textList") {
+      row.appendChild(textListField(spec, value?.kind === "textList" ? value.values : [], sceneId));
+    } else if (spec.kind === "image" && spec.key === "screenshot" && value?.kind === "imageSequence") {
+      const note = document.createElement("p");
+      note.className = "hint";
+      note.textContent = "Using the screenshot timeline below.";
+      row.appendChild(note);
+    } else if (spec.kind === "image") {
+      row.appendChild(imageField(spec, value?.kind === "image" ? value.sourceId : null, sceneId, 0));
+    } else if (spec.kind === "imageList") {
+      row.appendChild(imageListField(spec, value?.kind === "imageList" ? value.sourceIds : [], sceneId));
+    } else if (spec.kind === "platformList") {
+      row.appendChild(platformListField(spec, value?.kind === "platformList" ? value.items : [], sceneId));
+    }
+
+    for (const issue of issuesByKey[spec.key] || []) {
+      const msg = document.createElement("p");
+      msg.className = "hint slot-issue" + (issue.severity === "error" ? " error" : "");
+      msg.textContent = issue.message;
+      row.appendChild(msg);
+    }
+    panel.appendChild(row);
+  }
+}
+
+let legacyFieldSaveTimer = null;
+async function saveLegacySceneField(sceneId, patch) {
+  clearTimeout(legacyFieldSaveTimer);
+  return new Promise((resolve) => {
+    legacyFieldSaveTimer = setTimeout(async () => {
+      $("sc-content-save-state").textContent = "Saving...";
+      try {
+        const updated = await api(`/api/videos/${videoId}/scenes/${sceneId}`, { method: "PUT", body: patch });
+        const idx = videoProject.scenes.findIndex((s) => s.id === sceneId);
+        if (idx !== -1) videoProject.scenes[idx] = updated;
+        $("sc-content-save-state").textContent = `Saved · ${new Date().toLocaleTimeString()}`;
+        refreshSceneCompleteness();
+        if (sceneId === selectedSceneId) showScenePreview();
+      } catch (e) {
+        $("sc-content-save-state").textContent = "Save failed";
+      }
+      resolve();
+    }, 400);
+  });
+}
+
+function legacyTextField(spec, legacyScene, sceneId) {
+  const wrap = aiFieldWrap();
+  const input = document.createElement("input");
+  input.type = "text";
+  input.value = (spec.key === "text" ? legacyScene.text : legacyScene.subtext) || "";
+  input.maxLength = spec.maxLength || 500;
+  // No live-patch here -- the device-preset renderer bakes the headline as
+  // per-word animated spans server-side (see sceneContentHtml/textBlockHtml
+  // in render.ts), so there's no simple selector to write text into
+  // client-side; the debounced save + full preview reload is the only path.
+  input.oninput = () => saveLegacySceneField(sceneId, { [spec.key]: input.value });
+  wrap.appendChild(input);
+  wrap.appendChild(aiButton());
+  return wrap;
+}
+
+function legacyImageListField(spec, legacyScene, sceneId) {
+  const wrap = document.createElement("div");
+  wrap.className = "content-slot-list";
+  const count = spec.count || 1;
+  const ids = legacyScene.screenIds || (legacyScene.sourceId ? [legacyScene.sourceId] : []);
+  for (let i = 0; i < count; i++) {
+    const single = document.createElement("div");
+    const cap = document.createElement("div");
+    cap.className = "hint";
+    cap.textContent = `Screenshot ${i + 1}`;
+    single.appendChild(cap);
+    single.appendChild(legacyImageField(ids[i] || null, sceneId, i, count));
+    wrap.appendChild(single);
+  }
+  return wrap;
+}
+
+function legacyImageField(sourceId, sceneId, index, count) {
+  const wrap = document.createElement("div");
+  wrap.className = "content-slot-image";
+  const source = sourceId ? (videoProject.sources || []).find((s) => s.id === sourceId) : null;
+  const thumb = document.createElement("div");
+  thumb.className = "content-slot-thumb";
+  if (source) {
+    const img = document.createElement("img");
+    img.src = `/api/videos/${videoId}/file?p=${encodeURIComponent(source.file)}`;
+    thumb.appendChild(img);
+  } else {
+    thumb.textContent = "No image";
+  }
+  wrap.appendChild(thumb);
+
+  const controls = document.createElement("div");
+  controls.className = "content-slot-image-controls";
+  const fileInput = document.createElement("input");
+  fileInput.type = "file";
+  fileInput.accept = "image/png,image/jpeg,image/webp,image/gif";
+  fileInput.onchange = async () => {
+    const file = fileInput.files[0];
+    if (!file) return;
+    try {
+      const uploaded = await uploadFile(`/api/videos/${videoId}/sources?name=${encodeURIComponent(file.name)}`, file);
+      videoProject.sources.push(uploaded);
+      const legacyScene = videoProject.scenes.find((s) => s.id === sceneId);
+      const ids = legacyScene.screenIds || (legacyScene.sourceId ? [legacyScene.sourceId] : []);
+      ids[index] = uploaded.id;
+      const patch = count > 1 ? { screenIds: ids } : { sourceId: ids[0] };
+      await saveLegacySceneField(sceneId, patch);
+      loadSceneContentPanel(sceneId);
+    } catch (e) {
+      await alert("Upload failed: " + e.message);
+    }
+  };
+  controls.appendChild(fileInput);
+  wrap.appendChild(controls);
+  return wrap;
+}
+
+// ---------------------------------------------------------------------------
+// Live preview patching -- reaches directly into #sc-preview's document and
+// applies a value to the SAME selectors (spec.targets, from GET /scene-spec)
+// the server-side injector uses, so edits show up instantly instead of
+// waiting for the debounced save round-trip + full iframe reload. This is a
+// visual-only fast path: the debounced saveSlotValue(Debounced) call is
+// still what persists the value and is the source of truth on reload/
+// navigate-away-and-back; this just avoids a flicker/lag on every keystroke.
+// ---------------------------------------------------------------------------
+
+function livePreviewEscapeHtml(s) {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+function livePreviewRichText(raw) {
+  return livePreviewEscapeHtml(raw).replace(/\*([^*]+)\*/g, "<span>$1</span>");
+}
+
+function livePatchSlot(spec, value, targetIndex) {
+  const frame = $("sc-preview");
+  let doc;
+  try {
+    doc = frame.contentDocument || frame.contentWindow?.document;
+  } catch {
+    return; // not loaded yet, or cross-origin -- the debounced save+reload will still land it
+  }
+  if (!doc) return;
+  const targets = targetIndex === undefined ? spec.targets : [spec.targets[targetIndex]].filter(Boolean);
+  for (const sel of targets) {
+    doc.querySelectorAll(sel).forEach((el) => {
+      if (spec.op === "text") el.textContent = value;
+      else if (spec.op === "src") el.src = value;
+      else el.innerHTML = value;
+    });
+  }
+}
+
+function textField(spec, value, sceneId) {
+  const wrap = aiFieldWrap();
+  const input = document.createElement("input");
+  input.type = "text";
+  input.value = value || "";
+  input.maxLength = spec.maxLength || 500;
+  input.placeholder = `Leave blank to keep the template's default ${spec.label.toLowerCase()}`;
+  input.oninput = () => {
+    if (input.value) livePatchSlot(spec, livePreviewRichText(input.value));
+    saveSlotValueDebounced(sceneId, spec.key, { kind: "text", value: input.value });
+  };
+  wrap.appendChild(input);
+  wrap.appendChild(aiButton());
+  return wrap;
+}
+
+function textListField(spec, values, sceneId) {
+  const wrap = document.createElement("div");
+  wrap.className = "content-slot-list";
+  const count = spec.count || 1;
+  const current = Array.from({ length: count }, (_, i) => values[i] || "");
+  for (let i = 0; i < count; i++) {
+    const fieldWrap = aiFieldWrap();
+    const input = document.createElement("input");
+    input.type = "text";
+    input.value = current[i];
+    input.placeholder = `${spec.label} ${i + 1}`;
+    input.maxLength = spec.maxLength || 200;
+    input.oninput = () => {
+      current[i] = input.value;
+      if (input.value) livePatchSlot(spec, livePreviewRichText(input.value), i);
+      saveSlotValueDebounced(sceneId, spec.key, { kind: "textList", values: [...current] });
+    };
+    fieldWrap.appendChild(input);
+    fieldWrap.appendChild(aiButton());
+    wrap.appendChild(fieldWrap);
+  }
+  return wrap;
+}
+
+/** Positioning wrapper for a text input + its corner AI button (item 3:
+ *  UI-only for now -- see aiButton). */
+function aiFieldWrap() {
+  const wrap = document.createElement("div");
+  wrap.className = "ai-field";
+  return wrap;
+}
+
+/** Field-level "AI assist" affordance -- UI only, per this pass's explicit
+ *  scope ("implement only the UI/design ... do not implement any AI
+ *  functionality or generation logic"). Replaces the old single global
+ *  "AI Assist" button that used to sit above the Duration field. */
+function aiButton() {
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "ai-field-btn";
+  btn.title = "AI assist (coming soon)";
+  btn.textContent = "✨";
+  btn.disabled = true;
+  return btn;
+}
+
+function imageField(spec, sourceId, sceneId, index) {
+  const wrap = document.createElement("div");
+  wrap.className = "content-slot-image";
+  const source = sourceId ? (videoProject.sources || []).find((s) => s.id === sourceId) : null;
+  const thumb = document.createElement("div");
+  thumb.className = "content-slot-thumb";
+  if (source) {
+    const img = document.createElement("img");
+    img.src = `/api/videos/${videoId}/file?p=${encodeURIComponent(source.file)}`;
+    thumb.appendChild(img);
+  } else {
+    thumb.textContent = "No image";
+  }
+  wrap.appendChild(thumb);
+
+  const controls = document.createElement("div");
+  controls.className = "content-slot-image-controls";
+
+  const fileInput = document.createElement("input");
+  fileInput.type = "file";
+  fileInput.accept = "image/png,image/jpeg,image/webp,image/gif";
+  fileInput.onchange = async () => {
+    const file = fileInput.files[0];
+    if (!file) return;
+    const localUrl = URL.createObjectURL(file);
+    // Only op:"src" (plain <img src>) slots -- op:"html" (e.g. logo) needs the
+    // full wrapper markup the server builds; skip the instant patch there and
+    // let the upload-then-reload path (below) handle it, still fast enough.
+    if (spec.op === "src") livePatchSlot(spec, localUrl, spec.kind === "imageList" ? index : undefined);
+    try {
+      const slotParam = spec.kind === "imageList" ? `${sceneId}:${spec.key}:${index}` : `${sceneId}:${spec.key}`;
+      const uploaded = await uploadFile(`/api/videos/${videoId}/sources?name=${encodeURIComponent(file.name)}&slot=${encodeURIComponent(slotParam)}`, file);
+      videoProject.sources.push(uploaded);
+      loadSceneContentPanel(sceneId);
+      refreshSceneCompleteness();
+      showScenePreview();
+    } catch (e) {
+      await alert("Upload failed: " + e.message);
+    } finally {
+      URL.revokeObjectURL(localUrl);
+    }
+  };
+  controls.appendChild(fileInput);
+
+  if (source) {
+    const removeBtn = document.createElement("button");
+    removeBtn.type = "button";
+    removeBtn.className = "secondary small";
+    removeBtn.textContent = "Remove";
+    removeBtn.onclick = async () => {
+      if (spec.kind === "imageList") {
+        const scene = videoProject.scenes.find((s) => s.id === sceneId);
+        const existing = scene?.slotValues?.[spec.key];
+        const ids = existing?.kind === "imageList" ? [...existing.sourceIds] : [];
+        ids[index] = null;
+        await saveSlotValue(sceneId, spec.key, { kind: "imageList", sourceIds: ids });
+      } else {
+        await saveSlotValue(sceneId, spec.key, { kind: "image", sourceId: null });
+      }
+      loadSceneContentPanel(sceneId);
+      refreshSceneCompleteness();
+      showScenePreview();
+    };
+    controls.appendChild(removeBtn);
+  }
+  wrap.appendChild(controls);
+  return wrap;
+}
+
+function imageListField(spec, sourceIds, sceneId) {
+  const wrap = document.createElement("div");
+  wrap.className = "content-slot-list";
+  const count = spec.count || 1;
+  for (let i = 0; i < count; i++) {
+    const single = document.createElement("div");
+    const cap = document.createElement("div");
+    cap.className = "hint";
+    cap.textContent = `${spec.label} ${i + 1}`;
+    single.appendChild(cap);
+    single.appendChild(imageField(spec, sourceIds[i] || null, sceneId, i));
+    wrap.appendChild(single);
+  }
+  return wrap;
+}
+
+function platformListField(spec, items, sceneId) {
+  const wrap = document.createElement("div");
+  wrap.className = "content-slot-platforms";
+  const current = items.map((i) => ({ ...i }));
+  const icons = ["android", "apple", "windows", "globe"];
+
+  function redraw() {
+    wrap.innerHTML = "";
+    current.forEach((item, i) => {
+      const row = document.createElement("div");
+      row.className = "platform-row";
+      const nameInput = document.createElement("input");
+      nameInput.type = "text";
+      nameInput.placeholder = "Name";
+      nameInput.value = item.name || "";
+      nameInput.oninput = () => { item.name = nameInput.value; saveSlotValueDebounced(sceneId, spec.key, { kind: "platformList", items: current }); };
+      const iconSelect = document.createElement("select");
+      iconSelect.innerHTML = icons.map((ic) => `<option value="${ic}">${ic}</option>`).join("");
+      iconSelect.value = item.icon || icons[0];
+      iconSelect.onchange = () => { item.icon = iconSelect.value; saveSlotValueDebounced(sceneId, spec.key, { kind: "platformList", items: current }); };
+      const urlInput = document.createElement("input");
+      urlInput.type = "text";
+      urlInput.placeholder = "https://...";
+      urlInput.value = item.url || "";
+      urlInput.oninput = () => { item.url = urlInput.value; saveSlotValueDebounced(sceneId, spec.key, { kind: "platformList", items: current }); };
+      const removeBtn = document.createElement("button");
+      removeBtn.type = "button";
+      removeBtn.className = "secondary small";
+      removeBtn.textContent = "×";
+      removeBtn.onclick = () => { current.splice(i, 1); redraw(); saveSlotValue(sceneId, spec.key, { kind: "platformList", items: current }); };
+      row.append(nameInput, iconSelect, urlInput, removeBtn);
+      wrap.appendChild(row);
+    });
+    const addBtn = document.createElement("button");
+    addBtn.type = "button";
+    addBtn.className = "secondary small";
+    addBtn.textContent = "+ Add platform";
+    addBtn.onclick = () => { current.push({ name: "", icon: "android", url: "" }); redraw(); };
+    wrap.appendChild(addBtn);
+  }
+  redraw();
+  return wrap;
+}
+
+function saveSlotValueDebounced(sceneId, key, value) {
+  $("sc-content-save-state").textContent = "Saving...";
+  clearTimeout(contentSaveTimer);
+  contentSaveTimer = setTimeout(() => saveSlotValue(sceneId, key, value), 400);
+}
+
+async function saveSlotValue(sceneId, key, value) {
+  try {
+    await api(`/api/videos/${videoId}/scenes/${sceneId}/slots`, { method: "PUT", body: { slotValues: { [key]: value } } });
+    const scene = videoProject.scenes.find((s) => s.id === sceneId);
+    if (scene) scene.slotValues = { ...(scene.slotValues || {}), [key]: value };
+    $("sc-content-save-state").textContent = `Saved · ${new Date().toLocaleTimeString()}`;
+    refreshSceneCompleteness();
+    if (sceneId === selectedSceneId) showScenePreview();
+  } catch (e) {
+    $("sc-content-save-state").textContent = "Save failed";
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Within-scene multi-screenshot timeline. Only offered for scenes with a
+// single `screenshot` role (the common case across nearly every template) --
+// `screenshots` (imageList, simultaneous multi-image layouts like the trio
+// fan lineup) is a different feature and unaffected by this. Persisted as
+// an `imageSequence` SlotValue under the same "screenshot" key -- see
+// src/video/slots.ts's resolveImageSequences for how it renders.
+// ---------------------------------------------------------------------------
+
+let segmentsSaveTimer = null;
+
+function renderSegmentsPanel(sceneId, specs, values) {
+  const panel = $("sc-segments-panel");
+  const spec = specs.find((s) => s.key === "screenshot");
+  if (!spec) { panel.style.display = "none"; return; }
+  panel.style.display = "";
+
+  const value = values.screenshot;
+  const isSequence = value?.kind === "imageSequence";
+  const list = $("sc-segments-list");
+  list.innerHTML = "";
+
+  const toggleRow = document.createElement("label");
+  toggleRow.className = "checkbox-row";
+  const toggle = document.createElement("input");
+  toggle.type = "checkbox";
+  toggle.checked = isSequence;
+  toggle.onchange = () => {
+    if (toggle.checked) {
+      const existingSourceId = value?.kind === "image" ? value.sourceId : null;
+      const seeded = { kind: "imageSequence", segments: [{ sourceId: existingSourceId, durationSec: 3 }] };
+      saveSlotValue(sceneId, "screenshot", seeded).then(() => loadSceneContentPanel(sceneId));
+    } else {
+      const firstSourceId = value?.kind === "imageSequence" ? value.segments[0]?.sourceId ?? null : null;
+      saveSlotValue(sceneId, "screenshot", { kind: "image", sourceId: firstSourceId }).then(() => loadSceneContentPanel(sceneId));
+    }
+  };
+  toggleRow.appendChild(toggle);
+  toggleRow.appendChild(document.createTextNode(" Use multiple screenshots in this scene"));
+  list.appendChild(toggleRow);
+
+  $("sc-segment-add").style.display = isSequence ? "" : "none";
+  if (!isSequence) return;
+
+  const segments = value.segments.map((s) => ({ ...s }));
+
+  function persist() {
+    clearTimeout(segmentsSaveTimer);
+    segmentsSaveTimer = setTimeout(() => saveSlotValue(sceneId, "screenshot", { kind: "imageSequence", segments }), 400);
+  }
+
+  function draw() {
+    Array.from(list.querySelectorAll(".segment-row")).forEach((el) => el.remove());
+    segments.forEach((seg, i) => {
+      const row = document.createElement("div");
+      row.className = "segment-row";
+
+      const thumb = document.createElement("div");
+      thumb.className = "segment-thumb";
+      const source = seg.sourceId ? (videoProject.sources || []).find((s) => s.id === seg.sourceId) : null;
+      if (source) {
+        const img = document.createElement("img");
+        img.src = `/api/videos/${videoId}/file?p=${encodeURIComponent(source.file)}`;
+        thumb.appendChild(img);
+      }
+      row.appendChild(thumb);
+
+      const fileInput = document.createElement("input");
+      fileInput.type = "file";
+      fileInput.accept = "image/png,image/jpeg,image/webp,image/gif";
+      fileInput.onchange = async () => {
+        const file = fileInput.files[0];
+        if (!file) return;
+        try {
+          const uploaded = await uploadFile(`/api/videos/${videoId}/sources?name=${encodeURIComponent(file.name)}`, file);
+          videoProject.sources.push(uploaded);
+          seg.sourceId = uploaded.id;
+          persist();
+          draw();
+        } catch (e) {
+          await alert("Upload failed: " + e.message);
+        }
+      };
+      row.appendChild(fileInput);
+
+      const durationInput = document.createElement("input");
+      durationInput.type = "number";
+      durationInput.min = "0.2";
+      durationInput.step = "0.1";
+      durationInput.value = seg.durationSec;
+      durationInput.title = "Duration (seconds)";
+      durationInput.oninput = () => { seg.durationSec = Math.max(0.2, Number(durationInput.value) || 0.2); persist(); };
+      row.appendChild(durationInput);
+
+      const removeBtn = document.createElement("button");
+      removeBtn.type = "button";
+      removeBtn.className = "secondary small";
+      removeBtn.textContent = "×";
+      removeBtn.onclick = () => { segments.splice(i, 1); persist(); draw(); };
+      row.appendChild(removeBtn);
+
+      list.appendChild(row);
+    });
+  }
+  draw();
+
+  $("sc-segment-add").onclick = () => {
+    segments.push({ sourceId: null, durationSec: 3 });
+    persist();
+    draw();
+  };
+}
 
 $("sc-source-upload").onclick = async () => {
   if (!activeProjectId) {
@@ -2174,7 +2877,10 @@ $("sc-save").onclick = async () => {
     sceneTemplate: $("sc-template").value, layout: $("sc-layout").value || undefined,
     depth: $("sc-depth").value || "flat", transition: $("sc-transition").value || "cut",
     device: $("sc-device").value, variant: $("sc-variant").value || undefined,
-    background: $("sc-background").value, text: $("sc-text").value, subtext: $("sc-subtext").value,
+    background: $("sc-background").value,
+    // text/subtext are intentionally omitted -- they're saved independently
+    // by the Content panel (left column), and the PUT route merges rather
+    // than replaces, so leaving them out here can't clobber that.
     durationSeconds: Number($("sc-duration").value) || 3, rotate: Number($("sc-rotate").value),
     zoom: Number($("sc-zoom").value), move: Number($("sc-move").value), sourceId: $("sc-source").value || undefined,
     flowSteps: currentSceneFlowSteps.length > 0 ? currentSceneFlowSteps : undefined,
@@ -2216,15 +2922,10 @@ $("sc-remove").onclick = async () => {
   }
 };
 
-$("sc-ai-text").onclick = async () => {
-  const hint = await prompt("Briefly describe this scene (used only to generate the text/subtext):", $("sc-text").value);
-  if (hint === null) return;
-  try {
-    const { text, subtext } = await api(`/api/videos/${videoId}/scenes/${selectedSceneId}/ai-text`, { method: "POST", body: { hint } });
-    if (text) $("sc-text").value = text;
-    if (subtext) $("sc-subtext").value = subtext;
-  } catch (e) { await alert("AI assist failed: " + e.message); }
-};
+// The old global "AI Assist" button (above Duration) is gone -- AI is now a
+// per-field affordance (see aiButton() in the content-panel section above).
+// It's UI-only for this pass; the /ai-text endpoint it used to call is still
+// there and unused, ready for the field-level buttons to wire up later.
 
 $("bgm-upload").onclick = async () => {
   const file = $("bgm-file").files[0];

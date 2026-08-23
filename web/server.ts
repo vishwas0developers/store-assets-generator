@@ -75,6 +75,8 @@ import {
 import { listSceneAnimations, listSceneLayouts, listVideoBackgrounds, renderVideo, renderVideoTemplateThumbs, sceneHtml, scenePreviewHtml, sourceKindsFor, sourceUrisFor, templatePreviewHtml } from "../src/video/render.js";
 import { VIDEO_TEMPLATES, applyVideoTemplate, resolveTemplateId, scratchVideoProject, loadAllTemplates } from "../src/video/templates.js";
 import { BGM_PRESETS, renderBgmWav } from "../src/video/bgm.js";
+import { slotSpecsForScene, validateScene, type SlotIssue } from "../src/video/slots.js";
+import { type SlotValue } from "../src/video/project.js";
 
 /**
  * Local-only manual workflow surface -- a thin HTTP adapter over three
@@ -98,9 +100,18 @@ async function readJsonBody(req: http.IncomingMessage): Promise<any> {
   return JSON.parse(raw);
 }
 
-async function readRawBody(req: http.IncomingMessage): Promise<Buffer> {
+const MAX_UPLOAD_BYTES = (Number(process.env.SAG_MAX_UPLOAD_MB) || 25) * 1024 * 1024;
+
+async function readRawBody(req: http.IncomingMessage, maxBytes = MAX_UPLOAD_BYTES): Promise<Buffer> {
   const chunks: Buffer[] = [];
-  for await (const chunk of req) chunks.push(chunk as Buffer);
+  let total = 0;
+  for await (const chunk of req) {
+    total += (chunk as Buffer).length;
+    if (total > maxBytes) {
+      throw new Error(`Upload exceeds the ${Math.round(maxBytes / (1024 * 1024))}MB limit.`);
+    }
+    chunks.push(chunk as Buffer);
+  }
   return Buffer.concat(chunks);
 }
 
@@ -113,6 +124,24 @@ function sendError(res: http.ServerResponse, status: number, message: string): v
   sendJson(res, status, { error: message });
 }
 
+/** Project-wide completeness summary -- shared by GET /validate (drives the
+ *  Render button / issue panel) and the render route's preflight, so a scene
+ *  missing a required asset fails in milliseconds instead of after a full
+ *  frame-by-frame + ffmpeg encode. Templates with no declared `slots` (the
+ *  10 device presets) have nothing to validate here -- their content is the
+ *  legacy text/sourceId fields, already required by the scene form. */
+function validateProject(project: { template: string | null; scenes: { id: string; order: number; slotValues?: Record<string, SlotValue> }[] }) {
+  const scenes = project.template
+    ? project.scenes.map((scene) => {
+        const specs = slotSpecsForScene(project.template as string, scene.order);
+        const issues: SlotIssue[] = validateScene(specs, scene.slotValues);
+        return { sceneId: scene.id, issues };
+      })
+    : [];
+  const ready = scenes.every((s) => s.issues.every((i) => i.severity !== "error"));
+  return { ready, scenes };
+}
+
 function sendFile(res: http.ServerResponse, filePath: string, contentType: string): void {
   if (!fs.existsSync(filePath)) {
     sendError(res, 404, `File not found: ${filePath}`);
@@ -122,15 +151,65 @@ function sendFile(res: http.ServerResponse, filePath: string, contentType: strin
   fs.createReadStream(filePath).pipe(res);
 }
 
-function imageExtFromContentType(contentType: string | undefined): string {
-  if (contentType?.includes("jpeg") || contentType?.includes("jpg")) return "jpg";
-  if (contentType?.includes("webp")) return "webp";
-  return "png";
+/** Real format from magic bytes -- the browser-supplied Content-Type is
+ *  trusted for nothing else, since a mislabeled upload previously produced
+ *  garbage dimensions (pngSize read PNG IHDR offsets against any format). */
+function sniffImageFormat(buf: Buffer): "png" | "jpeg" | "webp" | "gif" | null {
+  if (buf.length >= 8 && buf[0] === 0x89 && buf[1] === 0x50 && buf[2] === 0x4e && buf[3] === 0x47) return "png";
+  if (buf.length >= 3 && buf[0] === 0xff && buf[1] === 0xd8 && buf[2] === 0xff) return "jpeg";
+  if (buf.length >= 12 && buf.toString("ascii", 0, 4) === "RIFF" && buf.toString("ascii", 8, 12) === "WEBP") return "webp";
+  if (buf.length >= 6 && buf.toString("ascii", 0, 3) === "GIF") return "gif";
+  return null;
 }
 
-function pngSize(absPath: string): { width: number; height: number } {
-  const buf = fs.readFileSync(absPath);
-  return { width: buf.readUInt32BE(16), height: buf.readUInt32BE(20) };
+function imageExtFor(format: ReturnType<typeof sniffImageFormat>): string {
+  return format === "jpeg" ? "jpg" : format ?? "png";
+}
+
+/** Best-effort width/height by real format; null (never a guess) when the
+ *  format can't be determined or the header doesn't parse -- callers must
+ *  skip aspect-ratio validation rather than act on a lie. */
+function imageDimensions(buf: Buffer, format: ReturnType<typeof sniffImageFormat>): { width: number; height: number } | null {
+  try {
+    if (format === "png" && buf.length >= 24) {
+      return { width: buf.readUInt32BE(16), height: buf.readUInt32BE(20) };
+    }
+    if (format === "gif" && buf.length >= 10) {
+      return { width: buf.readUInt16LE(6), height: buf.readUInt16LE(8) };
+    }
+    if (format === "jpeg") {
+      let offset = 2;
+      while (offset + 9 < buf.length) {
+        if (buf[offset] !== 0xff) break;
+        const marker = buf[offset + 1];
+        // SOFn (Start Of Frame) markers carry the real dimensions; skip
+        // everything else (APPn/EXIF/COM/etc) by its declared segment length.
+        if (marker >= 0xc0 && marker <= 0xcf && marker !== 0xc4 && marker !== 0xc8 && marker !== 0xcc) {
+          return { height: buf.readUInt16BE(offset + 5), width: buf.readUInt16BE(offset + 7) };
+        }
+        const segLen = buf.readUInt16BE(offset + 2);
+        offset += 2 + segLen;
+      }
+      return null;
+    }
+    if (format === "webp" && buf.length >= 30) {
+      const chunk = buf.toString("ascii", 12, 16);
+      if (chunk === "VP8X") {
+        return { width: 1 + (buf.readUIntLE(24, 3)), height: 1 + buf.readUIntLE(27, 3) };
+      }
+      if (chunk === "VP8 ") {
+        return { width: buf.readUInt16LE(26) & 0x3fff, height: buf.readUInt16LE(28) & 0x3fff };
+      }
+      if (chunk === "VP8L") {
+        const bits = buf.readUInt32LE(21);
+        return { width: (bits & 0x3fff) + 1, height: ((bits >> 14) & 0x3fff) + 1 };
+      }
+      return null;
+    }
+  } catch {
+    return null;
+  }
+  return null;
 }
 
 async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse): Promise<void> {
@@ -430,16 +509,17 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
         const id = decodeURIComponent(m[1]);
         const project = loadProject(id);
         const name = url.searchParams.get("name") ?? `upload_${Date.now()}`;
-        const ext = imageExtFromContentType(req.headers["content-type"]);
-        const relPath = `uploads/img_${Date.now()}.${ext}`;
+        const bodyBuf = await readRawBody(req);
+        const format = sniffImageFormat(bodyBuf);
+        const relPath = `uploads/img_${Date.now()}.${imageExtFor(format)}`;
         const abs = projectFile(id, relPath);
-        
+
         fs.mkdirSync(path.dirname(abs), { recursive: true });
-        fs.writeFileSync(abs, await readRawBody(req));
-        
-        const { width, height } = pngSize(abs);
+        fs.writeFileSync(abs, bodyBuf);
+
+        const dims = imageDimensions(bodyBuf, format);
         const sourceId = `src_${Date.now()}`;
-        const source = { id: sourceId, name, file: relPath, width, height };
+        const source = { id: sourceId, name, file: relPath, width: dims?.width ?? 0, height: dims?.height ?? 0 };
         
         // Add to both mockup and video sources
         project.mockup.sources.push(source);
@@ -698,12 +778,13 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
         const id = decodeURIComponent(m[1]);
         const project = loadMockupProject(id);
         const name = url.searchParams.get("name") ?? `image_${project.sources.length + 1}`;
-        const ext = imageExtFromContentType(req.headers["content-type"]);
-        const relPath = `sources/img_${Date.now()}.${ext}`;
+        const bodyBuf = await readRawBody(req);
+        const format = sniffImageFormat(bodyBuf);
+        const relPath = `sources/img_${Date.now()}.${imageExtFor(format)}`;
         const abs = mockupFile(id, relPath);
-        fs.writeFileSync(abs, await readRawBody(req));
-        const { width, height } = pngSize(abs);
-        const source = { id: `src_${Date.now()}`, name, file: relPath, width, height };
+        fs.writeFileSync(abs, bodyBuf);
+        const dims = imageDimensions(bodyBuf, format);
+        const source = { id: `src_${Date.now()}`, name, file: relPath, width: dims?.width ?? 0, height: dims?.height ?? 0 };
         project.sources.push(source);
         saveMockupProject(project);
         sendJson(res, 200, source);
@@ -830,9 +911,9 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
       if (m && method === "POST") {
         const id = decodeURIComponent(m[1]);
         const project = loadMockupProject(id);
-        const ext = imageExtFromContentType(req.headers["content-type"]);
-        const relPath = `sources/panorama.${ext}`;
-        fs.writeFileSync(mockupFile(id, relPath), await readRawBody(req));
+        const bodyBuf = await readRawBody(req);
+        const relPath = `sources/panorama.${imageExtFor(sniffImageFormat(bodyBuf))}`;
+        fs.writeFileSync(mockupFile(id, relPath), bodyBuf);
         project.globalPanoramic = { file: relPath, flip: project.globalPanoramic.flip };
         saveMockupProject(project);
         sendJson(res, 200, project.globalPanoramic);
@@ -1021,15 +1102,70 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
           sendJson(res, 200, source);
           return;
         }
-        const ext = imageExtFromContentType(req.headers["content-type"]);
-        const relPath = `sources/img_${Date.now()}.${ext}`;
+        const bodyBuf = await readRawBody(req);
+        const format = sniffImageFormat(bodyBuf);
+        if (!format) return sendError(res, 400, "Unrecognized image format (expected PNG, JPEG, WebP, or GIF).");
+        const relPath = `sources/img_${Date.now()}.${imageExtFor(format)}`;
         const abs = videoFile(id, relPath);
-        fs.writeFileSync(abs, await readRawBody(req));
-        const { width, height } = pngSize(abs);
-        const source = { id: `src_${Date.now()}`, name, file: relPath, width, height, kind: "image" as const };
+        fs.writeFileSync(abs, bodyBuf);
+        const dims = imageDimensions(bodyBuf, format);
+        const source = { id: `src_${Date.now()}`, name, file: relPath, width: dims?.width ?? 0, height: dims?.height ?? 0, kind: "image" as const };
         project.sources.push(source);
+
+        // UPLOAD/REPLACE CONTRACT: an upload ALWAYS creates a new source and
+        // rebinds the slot to it -- it never overwrites or deletes the
+        // previously-bound source, even when this is functionally a
+        // "replace" from the user's perspective. This is deliberate: the old
+        // source may still be referenced by another scene/slot (e.g. the
+        // same screenshot reused in two scenes), and silently mutating a
+        // shared source out from under other slots would be a much worse
+        // surprise than leaving an unused file behind. Freeing storage is a
+        // separate, explicit action -- DELETE .../sources/:sourceId below --
+        // and is never triggered implicitly by an upload.
+        //
+        // ?slot=<sceneId>:<slotKey>[:<index>] binds this upload straight to
+        // the slot that requested it, instead of the user re-picking it from
+        // a dropdown afterward.
+        const slotParam = url.searchParams.get("slot");
+        if (slotParam) {
+          const [sceneId, slotKey, indexStr] = slotParam.split(":");
+          const scene = project.scenes.find((s) => s.id === sceneId);
+          if (scene) {
+            scene.slotValues = scene.slotValues ?? {};
+            const spec = slotSpecsForScene(project.template ?? "", scene.order).find((sp) => sp.key === slotKey);
+            if (spec?.kind === "imageList") {
+              const index = indexStr ? Number(indexStr) : 0;
+              const existing = scene.slotValues[slotKey];
+              const sourceIds = existing?.kind === "imageList" ? [...existing.sourceIds] : new Array(spec.count ?? 1).fill(null);
+              sourceIds[index] = source.id;
+              scene.slotValues[slotKey] = { kind: "imageList", sourceIds };
+            } else if (spec) {
+              scene.slotValues[slotKey] = { kind: "image", sourceId: source.id };
+            }
+          }
+        }
+
         saveVideoProject(project);
         sendJson(res, 200, source);
+        return;
+      }
+    }
+    {
+      // Explicit, separate from upload: removes a source outright. Per the
+      // "leave dangling ids, let validation report them" edge-case decision
+      // (rather than cascading through every scene's slotValues), any slot
+      // still pointing at this id is NOT cleared here -- GET .../validate
+      // will flag it as a missing required asset, same as never having been
+      // filled, so the user sees exactly which slots broke.
+      const m = p.match(/^\/api\/videos\/([^/]+)\/sources\/([^/]+)$/);
+      if (m && method === "DELETE") {
+        const project = loadVideoProject(decodeURIComponent(m[1]));
+        const sourceId = decodeURIComponent(m[2]);
+        const idx = project.sources.findIndex((s) => s.id === sourceId);
+        if (idx === -1) return sendError(res, 404, "Source not found");
+        project.sources.splice(idx, 1);
+        saveVideoProject(project);
+        sendJson(res, 200, { ok: true });
         return;
       }
     }
@@ -1038,7 +1174,7 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
       if (m && method === "POST") {
         const project = loadVideoProject(decodeURIComponent(m[1]));
         if (project.scenes.length === 0) return sendError(res, 400, "Apply a template before adding scenes.");
-        if (project.scenes.length >= 10) return sendError(res, 400, "10 scenes is the app-store maximum for this project.");
+        if (project.scenes.length >= 24) return sendError(res, 400, "24 scenes is the maximum for this project.");
         const last = [...project.scenes].sort((a, b) => a.order - b.order).at(-1)!;
         const order = project.scenes.length;
         const newScene = { ...last, id: `scene_${Date.now()}`, order, screenIds: undefined, text: "", subtext: "" };
@@ -1116,6 +1252,41 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
       }
     }
     {
+      const m = p.match(/^\/api\/videos\/([^/]+)\/scene-spec\/([^/]+)$/);
+      if (m && method === "GET") {
+        const project = loadVideoProject(decodeURIComponent(m[1]));
+        const scene = project.scenes.find((s) => s.id === decodeURIComponent(m[2]));
+        if (!scene || !project.template) return sendError(res, 404, "Scene not found");
+        const specs = slotSpecsForScene(project.template, scene.order);
+        const issues = validateScene(specs, scene.slotValues);
+        sendJson(res, 200, { specs, values: scene.slotValues ?? {}, issues });
+        return;
+      }
+    }
+    {
+      const m = p.match(/^\/api\/videos\/([^/]+)\/scenes\/([^/]+)\/slots$/);
+      if (m && method === "PUT") {
+        const body = await readJsonBody(req);
+        const project = loadVideoProject(decodeURIComponent(m[1]));
+        const scene = project.scenes.find((s) => s.id === decodeURIComponent(m[2]));
+        if (!scene) return sendError(res, 404, "Scene not found");
+        scene.slotValues = { ...(scene.slotValues ?? {}), ...(body.slotValues ?? {}) };
+        saveVideoProject(project);
+        const specs = project.template ? slotSpecsForScene(project.template, scene.order) : [];
+        sendJson(res, 200, { values: scene.slotValues, issues: validateScene(specs, scene.slotValues) });
+        return;
+      }
+    }
+    {
+      const m = p.match(/^\/api\/videos\/([^/]+)\/validate$/);
+      if (m && method === "GET") {
+        const project = loadVideoProject(decodeURIComponent(m[1]));
+        const result = validateProject(project);
+        sendJson(res, 200, result);
+        return;
+      }
+    }
+    {
       const m = p.match(/^\/api\/videos\/([^/]+)\/bgm$/);
       if (m && method === "POST") {
         const id = decodeURIComponent(m[1]);
@@ -1135,6 +1306,12 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
       if (m && method === "POST") {
         const id = decodeURIComponent(m[1]);
         const project = loadVideoProject(id);
+        const preflight = validateProject(project);
+        if (!preflight.ready) {
+          res.writeHead(400, { "Content-Type": "application/json; charset=utf-8" });
+          res.end(JSON.stringify({ error: "Some scenes are missing required content.", ...preflight }));
+          return;
+        }
         const videoPath = await renderVideo(project);
         project.outputs.video = path.relative(videoDir(id), videoPath).split(path.sep).join("/");
         saveVideoProject(project);

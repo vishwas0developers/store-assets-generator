@@ -1,4 +1,5 @@
-import { type FlowStep, type VideoProject, type VideoScene } from "./project.js";
+import { type FlowStep, type VideoProject, type VideoScene, type SlotValue } from "./project.js";
+import { templateConfig, htmlSpanToAsterisk } from "./templateConfig.js";
 import fs from "fs";
 import path from "path";
 
@@ -89,23 +90,51 @@ export function resolveTemplateId(templateId: string): string {
   return TEMPLATE_ID_ALIASES[templateId] ?? templateId;
 }
 
+/** Seed slotValues.text/subtext from the template's own default copy, for
+ *  whichever roles this scene actually declares -- a convenience starting
+ *  point, not a full derivation (that's slots.ts's job; templates.ts can't
+ *  import it without a circular dependency back through render.ts). Image/
+ *  list slots start unset and are filled by the user via the studio UI. */
+function seedTextSlotValues(cfgScene: any, s: VideoTemplateScene): Record<string, SlotValue> {
+  const values: Record<string, SlotValue> = {};
+  const slots: Record<string, unknown> | undefined = cfgScene?.slots ?? undefined;
+  if (slots?.text && s.text) values.text = { kind: "text", value: htmlSpanToAsterisk(s.text) };
+  if (slots?.subtext && s.subtext) values.subtext = { kind: "text", value: htmlSpanToAsterisk(s.subtext) };
+  return values;
+}
+
 export function applyVideoTemplate(project: VideoProject, templateId: string): void {
   const resolvedId = resolveTemplateId(templateId);
   const template = VIDEO_TEMPLATES.find((t) => t.id === resolvedId);
   if (!template) throw new Error(`Unknown video template '${templateId}'.`);
 
+  // Device presets (no `slots` config) still drive their screenshots
+  // positionally through the legacy sourceId/screenIds fields -- that's what
+  // their code-generated render path (sceneHtml) reads. Slot-driven (tpl-*)
+  // templates read screenshots through slotValues instead (see slots.ts),
+  // so they must NOT also claim sources positionally here -- a multi-shot
+  // scene's images are assigned by the user per-slot in the studio UI, not
+  // by first-come-first-served source order.
+  const cfg = templateConfig(resolvedId);
+  const isDevicePreset = !cfg?.scenes?.some((s: any) => s.slots);
+
   let sourceCursor = 0;
   project.template = resolvedId;
   project.scenes = template.scenes.map((s, i): VideoScene => {
-    const count = s.screenCount && s.screenCount > 1 ? s.screenCount : 1;
-    const slice = project.sources.slice(sourceCursor, sourceCursor + count);
-    sourceCursor += count;
-    const screenIds = count > 1 ? Array.from({ length: count }, (_, j) => slice[j]?.id ?? `__placeholder_${i}_${j}__`) : undefined;
+    const count = isDevicePreset && s.screenCount && s.screenCount > 1 ? s.screenCount : 1;
+    let sourceId: string | undefined;
+    let screenIds: string[] | undefined;
+    if (isDevicePreset) {
+      const slice = project.sources.slice(sourceCursor, sourceCursor + count);
+      sourceCursor += count;
+      sourceId = slice[0]?.id;
+      screenIds = count > 1 ? Array.from({ length: count }, (_, j) => slice[j]?.id ?? `__placeholder_${i}_${j}__`) : undefined;
+    }
     return {
       id: `scene_${i + 1}`,
       order: i,
       sceneTemplate: s.sceneTemplate,
-      sourceId: slice[0]?.id,
+      sourceId,
       screenIds,
       device: template.device,
       variant: template.variant,
@@ -121,6 +150,7 @@ export function applyVideoTemplate(project: VideoProject, templateId: string): v
       rotate: s.rotate,
       zoom: s.zoom,
       move: s.move,
+      slotValues: isDevicePreset ? undefined : seedTextSlotValues(cfg?.scenes?.[i], s),
     };
   });
 }

@@ -76,7 +76,27 @@ export interface VideoScene {
   rotate: number;
   zoom: number;
   move: number;
+  /** Template-declared dynamic content for this scene, keyed by SlotSpec.key
+   *  (see video/slots.ts) -- superset of the legacy text/subtext/sourceId/
+   *  screenIds fields above, which stay populated in parallel because the
+   *  device-preset templates' code-generated render path still reads them. */
+  slotValues?: Record<string, SlotValue>;
 }
+
+export type SlotValue =
+  | { kind: "text"; value: string }
+  | { kind: "textList"; values: string[] }
+  | { kind: "image"; sourceId: string | null }
+  | { kind: "imageList"; sourceIds: (string | null)[] }
+  | { kind: "platformList"; items: { name: string; icon: string; url: string }[] }
+  /** An alternate mode for a single `image`-kind slot (currently only the
+   *  `screenshot` role): instead of one static screenshot for the whole
+   *  scene, cycle through several, each shown for its own durationSec, like
+   *  a mini timeline within the scene. See slots.ts's resolveImageSequences
+   *  -- this is driven by absolute document time (via a window.seek wrap),
+   *  not wall-clock, so it renders identically in the interactive preview
+   *  and in the frame-captured final video. */
+  | { kind: "imageSequence"; segments: { sourceId: string | null; durationSec: number }[] };
 
 export interface VideoProject {
   id: string;
@@ -94,9 +114,19 @@ export interface VideoProject {
   bgmFadeInMs?: number;
   bgmFadeOutMs?: number;
   outputs: { video?: string };
+  /** Project-wide defaults a slot falls back to when the scene has no value
+   *  of its own -- e.g. set the app icon once, it appears in every scene
+   *  that has a `logo` slot. */
+  brand?: {
+    appName?: string;
+    appIcon?: string; // VideoSourceImage id
+    accent?: string;
+    platforms?: { name: string; icon: string; url: string }[];
+  };
 }
 
 import { loadProject, saveProject, listProjects } from "../project/projectStore.js";
+import { templateConfig, htmlSpanToAsterisk } from "./templateConfig.js";
 
 const ROOT = path.join(process.cwd(), "output", "projects");
 
@@ -125,9 +155,35 @@ export function saveVideoProject(project: VideoProject): void {
   saveProject(unified);
 }
 
+/** Seeds `slotValues` for a scene saved before the slot system existed, from
+ *  its legacy text/subtext/sourceId/screenIds fields -- old projects open
+ *  with nothing lost. Reads `templateConfig` only (not slots.ts's full
+ *  `slotSpecsForScene`) to avoid a circular import back through render.ts;
+ *  it only needs to know each declared role's DOM key, not its resolved
+ *  targets, to build the seed. */
+function migrateScene(scene: VideoScene, cfgScene: any): void {
+  if (scene.slotValues) return;
+  const values: Record<string, SlotValue> = {};
+  const slots: Record<string, string | string[]> | undefined = cfgScene?.slots ?? undefined;
+  if (slots?.text && scene.text) values.text = { kind: "text", value: htmlSpanToAsterisk(scene.text) };
+  if (slots?.subtext && scene.subtext) values.subtext = { kind: "text", value: htmlSpanToAsterisk(scene.subtext) };
+  if (slots?.screenshots) {
+    const ids = scene.screenIds ?? (scene.sourceId ? [scene.sourceId] : []);
+    values.screenshots = { kind: "imageList", sourceIds: ids };
+  } else if (slots?.screenshot && scene.sourceId) {
+    values.screenshot = { kind: "image", sourceId: scene.sourceId };
+  }
+  scene.slotValues = values;
+}
+
 export function loadVideoProject(id: string): VideoProject {
   const unified = loadProject(id);
-  return unified.video;
+  const project: VideoProject = unified.video;
+  if (project?.template && project.scenes?.length) {
+    const cfg = templateConfig(project.template);
+    project.scenes.forEach((scene: VideoScene, i: number) => migrateScene(scene, cfg?.scenes?.[i]));
+  }
+  return project;
 }
 
 export function listVideoProjects(): Array<{ id: string; createdAt: string; name: string; scenes: number }> {
