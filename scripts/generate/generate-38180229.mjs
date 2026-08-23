@@ -1,11 +1,38 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import qrcode from 'qrcode-generator';
 import { getUniversalPlayerScriptAndStyle } from './player-helper.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, '../..');
+
+// Build-time QR code generation — no client-side QR engine needed, no image assets uploaded.
+function generateQRCodeSVG(text, size = 110) {
+  const qr = qrcode(0, 'M');
+  qr.addData(text);
+  qr.make();
+  const count = qr.getModuleCount();
+  const cell = size / count;
+  let rects = '';
+  for (let r = 0; r < count; r++) {
+    for (let c = 0; c < count; c++) {
+      if (qr.isDark(r, c)) {
+        rects += `<rect x="${(c * cell).toFixed(2)}" y="${(r * cell).toFixed(2)}" width="${cell.toFixed(2)}" height="${cell.toFixed(2)}"/>`;
+      }
+    }
+  }
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" shape-rendering="crispEdges"><rect width="${size}" height="${size}" fill="#fff"/><g fill="#0f172a">${rects}</g></svg>`;
+}
+
+// Recognizable monochrome platform glyphs (vector, no external asset uploads)
+const PLATFORM_ICONS = {
+  android: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="#1d9bf0"><path d="M17.6 9.48l1.84-3.18a.6.6 0 10-1.04-.6l-1.87 3.23a10.6 10.6 0 00-8.06 0L6.6 5.7a.6.6 0 10-1.04.6l1.84 3.18C4.7 11.2 2.7 14.14 2.4 17.6h19.2c-.3-3.46-2.3-6.4-5.98-8.12zM8 15a1.2 1.2 0 110-2.4A1.2 1.2 0 018 15zm8 0a1.2 1.2 0 110-2.4A1.2 1.2 0 0116 15z"/></svg>`,
+  apple: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="#0f172a"><path d="M16.7 12.7c0-2.2 1.8-3.3 1.9-3.4-1-1.5-2.6-1.7-3.2-1.7-1.4-.1-2.7.8-3.4.8-.7 0-1.8-.8-3-.8-1.5 0-3 .9-3.8 2.3-1.6 2.8-.4 7 1.2 9.3.8 1.1 1.7 2.4 3 2.3 1.2 0 1.6-.8 3-.8s1.8.8 3 .8c1.3 0 2.1-1.1 2.9-2.3.9-1.3 1.3-2.6 1.3-2.7-.1 0-2.5-1-2.5-3.8zM14.2 5.9c.6-.8 1.1-1.9.9-3-1 .1-2.1.6-2.8 1.4-.6.7-1.2 1.9-1 2.9 1.1.1 2.2-.5 2.9-1.3z"/></svg>`,
+  windows: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="#1d9bf0"><path d="M3 5.6L10.4 4.5V11.4H3V5.6zM11.3 4.4L21 3V11.3H11.3V4.4zM3 12.4H10.4V19.4L3 18.3V12.4zM11.3 12.4H21V20.9L11.3 19.5V12.4z"/></svg>`,
+  globe: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 010 18 14 14 0 010-18z"/></svg>`
+};
 
 export function create38180229Template() {
   const config = {
@@ -102,7 +129,13 @@ export function create38180229Template() {
         depth: "outro", layout: "outro-badges",
         text: "Appsy: Free and secure video calls",
         subtext: "",
-        slots: { text: "s6-text", logo: "slot-logo-outro" }
+        slots: { text: "s6-text", logo: "slot-logo-outro" },
+        platforms: [
+          { name: "Android", icon: "android", url: "https://play.google.com/store/apps/details?id=com.appsy.calls" },
+          { name: "iOS", icon: "apple", url: "https://apps.apple.com/app/appsy/id123456789" },
+          { name: "Windows", icon: "windows", url: "https://appsy.com/download/windows" },
+          { name: "Website", icon: "globe", url: "https://appsy.com" }
+        ]
       }
     ]
   };
@@ -263,29 +296,57 @@ export function create38180229Template() {
       width: 370px;
       height: 760px;
       transform-style: preserve-3d;
+      border-radius: 48px;
+      /* Thin metal side rail (thickness) + fine metallic highlight line along the chassis boundary */
+      box-shadow:
+        0 0 0 2px #22252c,
+        0 0 0 3px rgba(255, 255, 255, 0.14),
+        0 30px 70px rgba(0, 0, 0, 0.28);
     }
-    
+
+    /* Dedicated 38180229 chassis: matte ink finish, side hardware accents (rung: CSS pseudo-elements, no markup change) */
+    .phone-3d-rig::before, .phone-3d-rig::after {
+      content: '';
+      position: absolute;
+      background: #1a1d24;
+      z-index: 9;
+      border-radius: 3px;
+    }
+    .phone-3d-rig::before { /* volume rocker - left */
+      left: -3px;
+      top: 140px;
+      width: 4px;
+      height: 70px;
+    }
+    .phone-3d-rig::after { /* power button - right */
+      right: -3px;
+      top: 160px;
+      width: 4px;
+      height: 50px;
+    }
+
     .phone-face {
       position: absolute;
       inset: 0;
-      border-radius: 44px;
+      border-radius: 48px;
       box-sizing: border-box;
     }
-    
+
     .phone-face.front {
-      background: #000000;
+      background: #0d0f14;
       transform: translateZ(9px);
       z-index: 10;
       overflow: hidden;
+      padding: 8px; /* ultra-thin symmetrical bezel around the active display */
     }
-    
+
     .screen-scroll-wrap {
       width: 100%;
       height: 100%;
-      border-radius: 44px;
+      border-radius: 40px; /* outer 48px minus 8px bezel */
       overflow: hidden;
       position: relative;
-      background: #000000;
+      background: #0d0f14;
     }
     
     .phone-screen {
@@ -305,9 +366,9 @@ export function create38180229Template() {
       background: linear-gradient(135deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.02) 40%, rgba(255,255,255,0.06) 100%);
       z-index: 11;
       pointer-events: none;
-      border-radius: 44px;
+      border-radius: 40px;
     }
-    
+
     .screen-edge-glare {
       position: absolute;
       top: 0;
@@ -337,11 +398,37 @@ export function create38180229Template() {
       background: linear-gradient(to left, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 50%, transparent 100%);
     }
 
-    /* Portrait rails disabled by default to prevent ghost halos */
+    /* True 3D side rail panels — thin brushed-metal edges revealed by the existing rotateY yaw */
     .phone-side {
       position: absolute;
-      background: none;
-      border: none;
+      top: 48px; /* inset by the corner radius so the flat rail never pokes past the rounded corners */
+      height: calc(100% - 96px);
+      width: 18px;
+      background: linear-gradient(180deg, #3a3f4a 0%, #14161b 50%, #3a3f4a 100%);
+    }
+    .phone-side.left {
+      left: 0;
+      transform-origin: left center;
+      transform: rotateY(-90deg);
+    }
+    .phone-side.right {
+      right: 0;
+      transform-origin: right center;
+      transform: rotateY(90deg);
+    }
+
+    /* Grounding floor shadow beneath each device */
+    .phone-3d-viewport::after {
+      content: '';
+      position: absolute;
+      bottom: 60px;
+      left: 50%;
+      width: 260px;
+      height: 36px;
+      background: radial-gradient(ellipse at center, rgba(15, 23, 42, 0.28) 0%, rgba(15, 23, 42, 0) 72%);
+      transform: translateX(-50%);
+      z-index: 1;
+      pointer-events: none;
     }
 
     .camera-punch {
@@ -425,6 +512,43 @@ export function create38180229Template() {
       box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     }
 
+    /* Multi-platform download grid with live QR codes (Scene 7) */
+    .platform-grid {
+      display: flex;
+      gap: 20px;
+      margin-top: 36px;
+    }
+    .platform-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 16px 20px;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.08);
+      border: 1px solid rgba(0,0,0,0.03);
+    }
+    .platform-card .qr-wrap {
+      width: 96px;
+      height: 96px;
+      margin-bottom: 10px;
+    }
+    .platform-card .qr-wrap svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .platform-name-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .platform-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #0f172a;
+    }
+
     ${getUniversalPlayerScriptAndStyle(config).style}
   </style>
 </head>
@@ -459,6 +583,8 @@ export function create38180229Template() {
           <div class="phone-3d-viewport">
             <div class="phone-3d-scaler" style="transform: scale(0.92);">
               <div class="phone-3d-rig" id="phone-rig-1">
+                <div class="phone-side left"></div>
+                <div class="phone-side right"></div>
                 <div class="phone-face front">
                   <div class="camera-punch"></div>
                   <div class="gloss-sheen"></div>
@@ -498,6 +624,8 @@ export function create38180229Template() {
           <div class="phone-3d-viewport" style="z-index: 2;">
             <div class="phone-3d-scaler" style="transform: scale(0.92);">
               <div class="phone-3d-rig" id="phone-rig-2">
+                <div class="phone-side left"></div>
+                <div class="phone-side right"></div>
                 <div class="phone-face front">
                   <div class="camera-punch"></div>
                   <div class="gloss-sheen"></div>
@@ -537,6 +665,8 @@ export function create38180229Template() {
           <div class="phone-3d-viewport">
             <div class="phone-3d-scaler" style="transform: scale(0.90);">
               <div class="phone-3d-rig" id="phone-rig-3">
+                <div class="phone-side left"></div>
+                <div class="phone-side right"></div>
                 <div class="phone-face front">
                   <div class="camera-punch"></div>
                   <div class="gloss-sheen"></div>
@@ -574,6 +704,8 @@ export function create38180229Template() {
           <div class="phone-3d-viewport">
             <div class="phone-3d-scaler" style="transform: scale(0.92);">
               <div class="phone-3d-rig" id="phone-rig-4">
+                <div class="phone-side left"></div>
+                <div class="phone-side right"></div>
                 <div class="phone-face front">
                   <div class="camera-punch"></div>
                   <div class="gloss-sheen"></div>
@@ -608,6 +740,8 @@ export function create38180229Template() {
           <div class="phone-3d-viewport">
             <div class="phone-3d-scaler" style="transform: scale(0.90);">
               <div class="phone-3d-rig" id="phone-rig-5">
+                <div class="phone-side left"></div>
+                <div class="phone-side right"></div>
                 <div class="phone-face front">
                   <div class="camera-punch"></div>
                   <div class="gloss-sheen"></div>
@@ -634,12 +768,13 @@ export function create38180229Template() {
         </div>
         <div class="copy-col centered">
           <h1 class="title-black" id="s6-text">Appsy: Free and secure video calls</h1>
-          
-          <div class="store-badges" id="s6-badges">
-            <!-- App Store Badge mock -->
-            <img class="store-badge" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='135' height='40' viewBox='0 0 135 40'><rect width='135' height='40' rx='6' fill='black'/><text x='15' y='24' fill='white' font-family='sans-serif' font-size='14' font-weight='bold'>App Store</text></svg>" alt="Download on the App Store" />
-            <!-- Google Play Badge mock -->
-            <img class="store-badge" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='135' height='40' viewBox='0 0 135 40'><rect width='135' height='40' rx='6' fill='black'/><text x='15' y='24' fill='white' font-family='sans-serif' font-size='14' font-weight='bold'>Google Play</text></svg>" alt="Get it on Google Play" />
+
+          <div class="platform-grid" id="s6-platforms">
+            ${config.scenes[6].platforms.map(p => `
+            <div class="platform-card">
+              <div class="qr-wrap">${generateQRCodeSVG(p.url, 96)}</div>
+              <div class="platform-name-row">${PLATFORM_ICONS[p.icon] || ''}<div class="platform-name">${p.name}</div></div>
+            </div>`).join('')}
           </div>
         </div>
       </div>
@@ -665,91 +800,94 @@ export function create38180229Template() {
       if (r1) r1.style.transform = "translate(" + (Math.sin(globalTimeMs * 0.0008) * 8) + "px, " + (Math.cos(globalTimeMs * 0.0008) * 8) + "px)";
       if (r2) r2.style.transform = "translateY(" + (Math.sin(globalTimeMs * 0.0014) * 10) + "px)";
 
-      // Easing helpers
-      const tEntry = Math.min(1, progress / 0.35);
-      const easeEntry = 1 - Math.pow(1 - tEntry, 3); // Cubic ease-out
-      const tDrift = progress;
+      // Easing helper (cubic ease-out) over a 0..0.45 entry window
+      function easeWindow(p, window) {
+        const t = Math.min(1, Math.max(0, p / window));
+        return 1 - Math.pow(1 - t, 3);
+      }
 
-      if (sceneIdx === 0) { // Scene 1 Logo Opener
+      // Post-entry ambient drift: blends a slow sinusoidal float into the settled rig
+      // (e is the entry-ease amount, so drift ramps in only as the entrance completes)
+      function applyRigDrift(rig, offsetX, offsetY, baseYawDeg, e) {
+        if (!rig) return;
+        const driftYaw = Math.sin(globalTimeMs * 0.001) * 2.5 * e;
+        const driftPitch = Math.cos(globalTimeMs * 0.0012) * 1.5 * e;
+        const driftX = Math.sin(globalTimeMs * 0.0009) * 8 * e;
+        const driftY = Math.cos(globalTimeMs * 0.0011) * 8 * e;
+        rig.style.transform = "translate(" + (offsetX + driftX) + "px, " + (offsetY + driftY) + "px) rotateY(" + (baseYawDeg + driftYaw) + "deg) rotateX(" + driftPitch + "deg)";
+      }
+
+      if (sceneIdx === 0) { // Scene 1: staged zoom (0-0.4) then text reveal (0.4-0.8)
         const logo = document.getElementById("s0-logo");
+        const text = document.getElementById("s0-text");
         if (logo) {
-          const logoScale = 0.8 + (0.2 * easeEntry);
-          logo.style.transform = "scale(" + logoScale + ") translateY(" + (-30 * (1 - easeEntry)) + "px)";
+          const eLogo = easeWindow(progress, 0.4);
+          logo.style.transform = "scale(" + (0.35 + 0.65 * eLogo) + ")";
+        }
+        if (text) {
+          const eText = Math.min(1, Math.max(0, (progress - 0.4) / 0.4));
+          const eased = 1 - Math.pow(1 - eText, 3);
+          text.style.opacity = eased;
+          text.style.transform = "translateY(" + (30 * (1 - eased)) + "px)";
         }
       }
-      else if (sceneIdx === 1) { // Scene 2: Video Calling Made With Love (Phone Left)
+      else if (sceneIdx === 1) { // Scene 2: vertical upward entrance (phone + copy)
         const rig = document.getElementById("phone-rig-1");
-        if (rig) {
-          const entryX = -150 * (1 - easeEntry); // Slide in left: -150px -> 0px
-          const currentYaw = -24 + (14 * easeEntry) + (6 * tDrift); // -24deg -> -10deg -> -4deg
-          const floatPitch = Math.sin(globalTimeMs * 0.001) * 2;
-          rig.style.transform = "translateX(" + entryX + "px) rotateY(" + currentYaw + "deg) rotateX(" + floatPitch + "deg)";
-        }
+        const text = document.getElementById("s1-text");
+        const e = easeWindow(progress, 0.45);
+        const offset = 480 * (1 - e);
+        applyRigDrift(rig, 0, offset, -10, e);
+        if (text) { text.style.transform = "translateY(" + offset + "px)"; text.style.opacity = e; }
       }
-      else if (sceneIdx === 2) { // Scene 3: Make group calls in a few clicks! (Phone Right in panel)
+      else if (sceneIdx === 2) { // Scene 3: right-to-left entrance (panel + phone)
         const rig = document.getElementById("phone-rig-2");
         const panel = document.getElementById("s2-accent-panel");
-        if (rig) {
-          const entryX = 150 * (1 - easeEntry); // Slide in right: 150px -> 0px
-          const currentYaw = 22 - (12 * easeEntry) - (6 * tDrift); // 22deg -> 10deg -> 4deg
-          const floatPitch = Math.cos(globalTimeMs * 0.0012) * 2;
-          rig.style.transform = "translateX(" + entryX + "px) rotateY(" + currentYaw + "deg) rotateX(" + floatPitch + "deg)";
-        }
-        if (panel) {
-          const panelX = 240 * (1 - easeEntry);
-          panel.style.transform = "translateX(" + panelX + "px)";
-        }
+        const text = document.getElementById("s2-text");
+        const e = easeWindow(progress, 0.45);
+        const offset = 480 * (1 - e);
+        applyRigDrift(rig, offset, 0, 10, e);
+        if (panel) panel.style.transform = "translateX(" + offset + "px)";
+        if (text) text.style.opacity = e;
       }
-      else if (sceneIdx === 3) { // Scene 4: Built-in Encryption (Phone Center)
+      else if (sceneIdx === 3) { // Scene 4: center phone enters from right, concurrent with copy fade
         const rig = document.getElementById("phone-rig-3");
         const badge = document.getElementById("s3-security-badge");
-        if (rig) {
-          const entryZ = -200 * (1 - easeEntry); // Zoom from depth
-          const currentScale = 0.88 + (0.08 * easeEntry); // 0.88 -> 0.96
-          const floatYaw = Math.sin(globalTimeMs * 0.001) * 3;
-          const floatPitch = Math.cos(globalTimeMs * 0.001) * 2;
-          rig.style.transform = "translateZ(" + entryZ + "px) scale(" + currentScale + ") rotateY(" + floatYaw + "deg) rotateX(" + floatPitch + "deg)";
-        }
-        if (badge) {
-          const badgeScale = easeEntry;
-          badge.style.transform = "translate(-50%, -50%) scale(" + badgeScale + ")";
-          badge.style.opacity = easeEntry;
-        }
+        const e = easeWindow(progress, 0.45);
+        const offset = 380 * (1 - e);
+        applyRigDrift(rig, offset, 0, 0, e);
+        if (badge) { badge.style.opacity = e; badge.style.transform = "translate(-50%, -50%) scale(" + e + ")"; }
       }
-      else if (sceneIdx === 4) { // Scene 5: Easy Snapshots (Phone Right)
+      else if (sceneIdx === 4) { // Scene 5: vertical upward entrance
         const rig = document.getElementById("phone-rig-4");
-        if (rig) {
-          const entryX = 140 * (1 - easeEntry); // Slide in right
-          const currentYaw = 24 - (14 * easeEntry) - (6 * tDrift); // 24deg -> 10deg -> 4deg
-          rig.style.transform = "translateX(" + entryX + "px) rotateY(" + currentYaw + "deg)";
-        }
+        const text = document.getElementById("s4-text");
+        const e = easeWindow(progress, 0.45);
+        const offset = 480 * (1 - e);
+        applyRigDrift(rig, 0, offset, 10, e);
+        if (text) { text.style.transform = "translateY(" + offset + "px)"; text.style.opacity = e; }
       }
-      else if (sceneIdx === 5) { // Scene 6: Download. Sign Up. Call. (Phone Center + Badges)
+      else if (sceneIdx === 5) { // Scene 6: vertical downward entrance (from top) + badges
         const rig = document.getElementById("phone-rig-5");
+        const title = document.getElementById("s5-text");
         const b1 = document.getElementById("s5-badge-1");
         const b2 = document.getElementById("s5-badge-2");
         const b3 = document.getElementById("s5-badge-3");
-
-        if (rig) {
-          const entryY = 160 * (1 - easeEntry); // Rise from bottom
-          const currentScale = 0.88 + (0.08 * easeEntry);
-          const floatPitch = Math.sin(globalTimeMs * 0.001) * 3;
-          rig.style.transform = "translateY(" + entryY + "px) scale(" + currentScale + ") rotateX(" + floatPitch + "deg)";
-        }
-        if (b1) { b1.style.opacity = Math.min(1, Math.max(0, (progress - 0.25) / 0.15)); b1.style.transform = "translateY(" + (8 * (1 - easeEntry)) + "px)"; }
-        if (b2) { b2.style.opacity = Math.min(1, Math.max(0, (progress - 0.35) / 0.15)); b2.style.transform = "translateY(" + (8 * (1 - easeEntry)) + "px)"; }
-        if (b3) { b3.style.opacity = Math.min(1, Math.max(0, (progress - 0.45) / 0.15)); b3.style.transform = "translateY(" + (8 * (1 - easeEntry)) + "px)"; }
+        const e = easeWindow(progress, 0.45);
+        const offset = -480 * (1 - e);
+        applyRigDrift(rig, 0, offset, 0, e);
+        if (title) { title.style.transform = "translateY(" + offset + "px)"; title.style.opacity = e; }
+        if (b1) { b1.style.opacity = Math.min(1, Math.max(0, (progress - 0.25) / 0.15)); b1.style.transform = "translateY(" + (8 * (1 - e)) + "px)"; }
+        if (b2) { b2.style.opacity = Math.min(1, Math.max(0, (progress - 0.35) / 0.15)); b2.style.transform = "translateY(" + (8 * (1 - e)) + "px)"; }
+        if (b3) { b3.style.opacity = Math.min(1, Math.max(0, (progress - 0.45) / 0.15)); b3.style.transform = "translateY(" + (8 * (1 - e)) + "px)"; }
       }
-      else if (sceneIdx === 6) { // Scene 7: Outro CTA
+      else if (sceneIdx === 6) { // Scene 7: vertical downward entrance + platform grid reveal
         const logo = document.getElementById("s6-logo");
-        const badges = document.getElementById("s6-badges");
-        if (logo) {
-          const logoScale = 0.8 + (0.2 * easeEntry);
-          logo.style.transform = "scale(" + logoScale + ") translateY(" + (-20 * (1 - easeEntry)) + "px)";
-        }
-        if (badges) {
-          badges.style.opacity = easeEntry;
-        }
+        const text = document.getElementById("s6-text");
+        const grid = document.getElementById("s6-platforms");
+        const e = easeWindow(progress, 0.45);
+        const offset = -380 * (1 - e);
+        if (logo) logo.style.transform = "translateY(" + offset + "px) scale(" + (0.8 + 0.2 * e) + ")";
+        if (text) { text.style.opacity = e; text.style.transform = "translateY(" + offset + "px)"; }
+        if (grid) grid.style.opacity = Math.min(1, Math.max(0, (progress - 0.4) / 0.3));
       }
     };
   </script>
