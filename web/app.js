@@ -1903,13 +1903,13 @@ function openVideoTemplateDetail(id) {
         </div>
       </div>
       <div class="template-detail-side">
-        <div class="video-list-column-label" style="margin-bottom: 0.5rem;">Video Screens</div>
+        <div class="video-list-column-label" style="margin-bottom: 0.5rem;">Video Scenes</div>
         <div class="video-screen-list">
           ${t.scenes
             .map(
               (s, i) => `
             <div class="video-screen-card" data-scene-jump="${i}">
-              <div class="video-screen-num">Screen ${i + 1}</div>
+              <div class="video-screen-num">Scene ${i + 1}</div>
               <button type="button" class="video-screen-play" data-scene-play="${i}" title="Play only this scene">&#9654;</button>
               <div class="video-screen-name">${s.label}</div>
               <div class="hint">${s.durationSeconds}s &middot; ${(s.sceneTemplate || s.layout || "scene").replace(/-/g, " ")} &middot; ${s.background || "dark-studio"}</div>
