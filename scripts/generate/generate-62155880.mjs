@@ -312,7 +312,7 @@ export function create62155880Template() {
     .magnifier-card .mc-value { font-size: 52px; font-weight: 800; color: #ffffff; }
 
     /* Feature card row with progress bars (Scene 7) */
-    .feature-card-row { display:flex; gap:20px; margin-top: 28px; }
+    .feature-card-row { display:flex; gap:20px; margin-top: 28px; margin-bottom: 42px; }
     .feature-card {
       width: 380px;
       height: 126px;
@@ -328,21 +328,21 @@ export function create62155880Template() {
     .feature-card .fc-bar { height: 6px; border-radius: 3px; background: rgba(255,255,255,0.12); overflow: hidden; box-shadow: 0 0 10px rgba(139,133,248,0.35); }
     .feature-card .fc-bar-fill { height: 100%; background: #8b85f8; border-radius: 3px; box-shadow: 0 0 8px #8b85f8; }
 
-    /* Scene 8: platform download grid with live QR codes -- wide pill cards (300x106) */
+    /* Scene 8: platform download grid with live QR codes -- wide pill cards (380x124) */
     .platform-grid { display:flex; flex-direction: column; gap:18px; margin-top:32px; }
     .platform-card {
-      display:flex; flex-direction:row; align-items:center; gap:18px;
-      width: 300px; height: 106px; box-sizing: border-box;
+      display:flex; flex-direction:row; align-items:center; gap:24px;
+      width: 380px; height: 124px; box-sizing: border-box;
       background: rgba(255,255,255,0.06);
       border: 1px solid rgba(255,255,255,0.14);
-      border-radius: 22px;
-      padding: 0 20px;
+      border-radius: 24px;
+      padding: 0 24px;
       backdrop-filter: blur(10px);
     }
-    .platform-card .qr-wrap { width:86px; height:86px; flex-shrink:0; border-radius: 8px; overflow: hidden; }
+    .platform-card .qr-wrap { width:100px; height:100px; flex-shrink:0; border-radius: 8px; overflow: hidden; }
     .platform-card .qr-wrap svg { width:100%; height:100%; display:block; }
-    .platform-name-row { display:flex; align-items:center; gap:10px; }
-    .platform-name { font-size:18px; font-weight:600; color:#ffffff; }
+    .platform-name-row { display:flex; align-items:center; gap:14px; }
+    .platform-name { font-size:24px; font-weight:700; color:#ffffff; }
 
     /* Opener center wrapper to keep logo & text grouped & centered */
     .opener-center-wrap {
@@ -352,6 +352,29 @@ export function create62155880Template() {
       justify-content: center;
       text-align: center;
       position: relative;
+      z-index: 5;
+    }
+
+    /* Scene 5 absolute columns */
+    .s4-left-col {
+      position: absolute;
+      left: 120px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 540px;
+      display: flex;
+      flex-direction: column;
+      z-index: 5;
+    }
+    .s4-right-col {
+      position: absolute;
+      right: 120px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 440px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
       z-index: 5;
     }
 
@@ -401,14 +424,14 @@ export function create62155880Template() {
       <div class="scene-content" style="justify-content:center;">
         <div class="device-col center-only" style="position:relative;">
           ${phoneRig('phone-rig-2', 'slot-1')}
-          <div class="glass-badge lg" id="s2-badge-1" style="top: 14%; left: -220px;"><span class="dot"></span>Instant</div>
-          <div class="glass-badge lg" id="s2-badge-2" style="top: 45%; left: -260px;"><span class="dot"></span>Anywhere</div>
-          <div class="glass-badge lg" id="s2-badge-3" style="top: 76%; left: -220px;"><span class="dot"></span>Affordable</div>
-          <div class="glass-badge lg" id="s2-badge-4" style="top: 14%; right: -220px;"><span class="dot"></span>Secure</div>
-          <div class="glass-badge lg" id="s2-badge-5" style="top: 45%; right: -260px;"><span class="dot"></span>Anytime</div>
-          <div class="glass-badge lg" id="s2-badge-6" style="top: 76%; right: -220px;"><span class="dot"></span>No Excuse</div>
         </div>
       </div>
+      <div class="glass-badge lg" id="s2-badge-1" style="top: 260px; left: calc(50% - 410px);"><span class="dot"></span>Instant</div>
+      <div class="glass-badge lg" id="s2-badge-2" style="top: 490px; left: calc(50% - 450px);"><span class="dot"></span>Anywhere</div>
+      <div class="glass-badge lg" id="s2-badge-3" style="top: 720px; left: calc(50% - 410px);"><span class="dot"></span>Affordable</div>
+      <div class="glass-badge lg" id="s2-badge-4" style="top: 260px; left: calc(50% + 230px);"><span class="dot"></span>Secure</div>
+      <div class="glass-badge lg" id="s2-badge-5" style="top: 490px; left: calc(50% + 270px);"><span class="dot"></span>Anytime</div>
+      <div class="glass-badge lg" id="s2-badge-6" style="top: 720px; left: calc(50% + 230px);"><span class="dot"></span>No Excuse</div>
     </div>
 
     <!-- Scene 4: Two-Phone Feature Presentation -->
@@ -427,16 +450,18 @@ export function create62155880Template() {
 
     <!-- Scene 5: Dual-Sided Feature Capsules -->
     <div class="scene" id="scene-4">
-      <div class="scene-content">
-        <div class="copy-col">
-          <h2 class="title-highlight" id="s4-text" style="font-size: 46px;">Minimum Risk <span>Secure Your Package</span></h2>
-          <div class="glass-badge xl" id="s4-badge-1" style="position:relative; top:0; left:0; margin-top: 20px;">${CAPSULE_ICONS.check}Payment Processed (Transaction ID : #4466737)</div>
-          <div class="glass-badge xl" id="s4-badge-2" style="position:relative; top:0; left:0; margin-top: 12px;">${CAPSULE_ICONS.info}Package Return (Version 17.5 ready to install)</div>
+      <div class="scene-content" style="justify-content:center; align-items:center; position:relative;">
+        <div class="s4-left-col">
+          <h2 class="title-highlight" id="s4-text" style="font-size: 48px; margin-bottom: 24px;">Minimum Risk <span>Secure Your Package</span></h2>
+          <div class="glass-badge xl" id="s4-badge-1">${CAPSULE_ICONS.check}Payment Processed (Transaction ID : #4466737)</div>
+          <div class="glass-badge xl" id="s4-badge-2" style="margin-top: 16px;">${CAPSULE_ICONS.info}Package Return (Version 17.5 ready to install)</div>
         </div>
-        <div class="device-col" style="position:relative;">
+        <div class="device-col center-only">
           ${phoneRig('phone-rig-4', 'slot-4')}
-          <div class="glass-badge xl" id="s4-badge-3" style="top: 28%; left: 420px;">${CAPSULE_ICONS.download}Package Received (Download completed)</div>
-          <div class="glass-badge xl" id="s4-badge-4" style="top: 52%; left: 420px;">${CAPSULE_ICONS.upload}Package On Process (Upload completed)</div>
+        </div>
+        <div class="s4-right-col">
+          <div class="glass-badge xl" id="s4-badge-3">${CAPSULE_ICONS.download}Package Received (Download completed)</div>
+          <div class="glass-badge xl" id="s4-badge-4">${CAPSULE_ICONS.upload}Package On Process (Upload completed)</div>
         </div>
       </div>
     </div>
@@ -479,12 +504,12 @@ export function create62155880Template() {
     <!-- Scene 8: Outro CTA -->
     <div class="scene" id="scene-7">
       <div class="scene-content">
-        <div class="copy-col">
-          <h2 class="title-highlight" id="s7-text" style="font-size: 48px;">Best Way To <span>Send &amp; Receive</span> Packages</h2>
+        <div class="copy-col" style="margin-left: 100px;">
+          <h2 class="title-highlight" id="s7-text" style="font-size: 56px;">Best Way To <span>Send &amp; Receive</span> Packages</h2>
           <div class="platform-grid" id="s7-platforms">
             ${config.scenes[7].platforms.map(p => `
             <div class="platform-card">
-              <div class="qr-wrap">${generateQRCodeSVG(p.url, 86)}</div>
+              <div class="qr-wrap">${generateQRCodeSVG(p.url, 100)}</div>
               <div class="platform-name-row">${PLATFORM_ICONS[p.icon] || ''}<div class="platform-name">${p.name}</div></div>
             </div>`).join('')}
           </div>
@@ -577,13 +602,13 @@ export function create62155880Template() {
         if (text) { text.style.opacity = eA; text.style.transform = "translateX(" + (-30 * (1 - eA)) + "px)"; }
         if (sub) sub.style.opacity = Math.min(1, Math.max(0, (progress - 0.3) / 0.3));
       }
-      else if (sceneIdx === 4) { // Scene 5: phone enters from bottom, settles center-right; dual-sided capsules
+      else if (sceneIdx === 4) { // Scene 5: phone enters from bottom, settles center; dual-sided capsules
         const rig = document.getElementById("phone-rig-4");
         const text = document.getElementById("s4-text");
         const e = easeWindow(progress, 0.4);
         const entryY = 320 * (1 - e);
         const drift = ambientDrift(e);
-        if (rig) rig.style.transform = "translateX(80px) translateY(" + entryY + "px) scale(0.95) rotateY(" + drift.yaw + "deg) rotateX(" + drift.pitch + "deg)";
+        if (rig) rig.style.transform = "translateY(" + entryY + "px) scale(0.95) rotateY(" + drift.yaw + "deg) rotateX(" + drift.pitch + "deg)";
         if (text) { text.style.opacity = e; }
         const b1 = document.getElementById("s4-badge-1");
         const b2 = document.getElementById("s4-badge-2");
