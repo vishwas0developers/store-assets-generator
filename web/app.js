@@ -1699,6 +1699,7 @@ let videoDetailState = "idle"; // idle | playing | paused | ended
 let videoDetailMode = "sequence"; // sequence | scene
 let videoDetailAudio = null;
 let videoDetailResizeObserver = null;
+let hostPlaybackTick = null;
 
 async function ensureVideoTemplates() {
   if (videoTemplates.length === 0) {
@@ -1803,13 +1804,22 @@ function videoDetailRefreshUi(t) {
   $("video-detail-prev").disabled = videoDetailSceneIndex <= 0;
   $("video-detail-next").disabled = videoDetailSceneIndex >= t.scenes.length - 1;
 
+  const hostPlayBtn = $("host-play-btn");
+  if (hostPlayBtn) {
+    hostPlayBtn.innerHTML = ended ? "&#8635;" : playing ? "&#10074;&#10074;" : "&#9654;";
+  }
+
+  const stage = $("video-template-stage");
+  stage.querySelectorAll("[data-host-scene]").forEach((el, i) => {
+    el.classList.toggle("active", i === videoDetailSceneIndex);
+  });
+
   const dots = $("video-detail-dots");
   if (dots) {
     dots.querySelectorAll(".video-scene-dot").forEach((d, i) => {
       d.classList.toggle("active", i === videoDetailSceneIndex);
     });
   }
-  const stage = $("video-template-stage");
   const activeCard = stage.querySelector(`[data-scene-jump="${videoDetailSceneIndex}"]`);
   stage.querySelectorAll("[data-scene-jump]").forEach((el) => {
     el.classList.toggle("active", Number(el.dataset.sceneJump) === videoDetailSceneIndex);
@@ -1850,6 +1860,40 @@ function videoDetailTogglePlay(id) {
   }
 }
 
+function startHostPlaybackTick(id) {
+  if (hostPlaybackTick) clearInterval(hostPlaybackTick);
+  hostPlaybackTick = setInterval(() => {
+    const api = videoPlayerApi();
+    if (!api) return;
+    
+    const currentMs = api.globalTimeMs || 0;
+    const totalMs = api.totalDuration || 1;
+    
+    const progress = Math.max(0, Math.min(1, currentMs / totalMs));
+    const fill = $("host-scrubber-fill");
+    const thumb = $("host-scrubber-thumb");
+    const txt = $("host-time-text");
+    
+    if (fill) fill.style.width = (progress * 100) + "%";
+    if (thumb) thumb.style.left = (progress * 100) + "%";
+    
+    if (txt) {
+      const format = (ms) => {
+        const sec = Math.floor(ms / 1000);
+        const m = Math.floor(sec / 60);
+        const s = sec % 60;
+        return m + ":" + (s < 10 ? "0" : "") + s;
+      };
+      txt.textContent = format(currentMs) + " / " + format(totalMs);
+    }
+    
+    if (videoDetailState !== "playing") {
+      clearInterval(hostPlaybackTick);
+      hostPlaybackTick = null;
+    }
+  }, 1000 / 30);
+}
+
 /** Registered once per iframe load: the preview document pushes every
  *  playback transition here instead of the host polling it, so there is no
  *  race and no missed "ended" transition. Drives the BGM <audio> element in
@@ -1865,6 +1909,7 @@ function videoDetailOnPlayerState(id, evt) {
   const audio = ensureVideoDetailAudio();
   if (evt.state === "playing") {
     audio.play().catch(() => {});
+    startHostPlaybackTick(id);
   } else {
     audio.pause();
     if (evt.state === "ended" || evt.state === "idle") audio.currentTime = 0;
@@ -1901,6 +1946,21 @@ function openVideoTemplateDetail(id) {
         <div class="video-player">
           <div class="video-preview-scale ${t.aspectRatio === "16:9" ? "landscape" : "portrait"}"><iframe id="video-detail-preview"></iframe></div>
         </div>
+        <!-- Externalized Player Bar -->
+        <div class="v-player-bar" id="host-player-bar">
+          <button class="v-btn" id="host-play-btn" title="Play / Pause (Space)">&#9654;</button>
+          <button class="v-btn v-btn-secondary" id="host-replay-btn" title="Replay">&#8635;</button>
+          <div class="v-timeline-box">
+            <div class="v-scrubber" id="host-scrubber">
+              <div class="v-scrubber-fill" id="host-scrubber-fill"></div>
+              <div class="v-scrubber-thumb" id="host-scrubber-thumb"></div>
+            </div>
+            <div class="v-time-text" id="host-time-text">0:00 / 0:00</div>
+          </div>
+          <div class="v-pills" id="host-pills">
+            ${t.scenes.map((s, idx) => `<button class="v-pill ${idx === 0 ? 'active' : ''}" data-host-scene="${idx}">${idx + 1}</button>`).join('')}
+          </div>
+        </div>
       </div>
       <div class="template-detail-side">
         <div class="video-list-column-label" style="margin-bottom: 0.5rem;">Video Scenes</div>
@@ -1933,6 +1993,30 @@ function openVideoTemplateDetail(id) {
   $("video-detail-prev").onclick = () => videoDetailShowScene(id, videoDetailSceneIndex - 1);
   $("video-detail-next").onclick = () => videoDetailShowScene(id, videoDetailSceneIndex + 1);
   $("video-detail-play").onclick = () => videoDetailTogglePlay(id);
+
+  stage.querySelectorAll("[data-host-scene]").forEach((el) => {
+    el.onclick = () => videoDetailShowScene(id, Number(el.dataset.hostScene));
+  });
+  const hostPlayBtn = $("host-play-btn");
+  if (hostPlayBtn) hostPlayBtn.onclick = () => videoDetailTogglePlay(id);
+  const hostReplayBtn = $("host-replay-btn");
+  if (hostReplayBtn) {
+    hostReplayBtn.onclick = () => {
+      const api = videoPlayerApi();
+      if (api) api.replay();
+    };
+  }
+  const hostScrubber = $("host-scrubber");
+  if (hostScrubber) {
+    hostScrubber.onclick = (e) => {
+      const api = videoPlayerApi();
+      if (!api) return;
+      const rect = hostScrubber.getBoundingClientRect();
+      const pos = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+      const totalDur = api.totalDuration || (t.scenes.reduce((sum, s) => sum + (s.durationSeconds || 5), 0) * 1000);
+      api.seek(pos * totalDur);
+    };
+  }
   stage.querySelectorAll("[data-scene-jump]").forEach((el) => {
     el.onclick = () => videoDetailShowScene(id, Number(el.dataset.sceneJump));
   });
@@ -1985,17 +2069,16 @@ function openVideoTemplateDetail(id) {
   };
   frame.src = `/api/videos/templates/${encodeURIComponent(id)}/preview?${videoDetailPreviewQuery().toString()}`;
 
-  // The side panel's height tracks exactly the rendered .video-player box
-  // (the card around the stage, including its padding) -- never the taller
+  // The side panel's height tracks exactly the rendered .video-detail-main box
+  // (the column including the player and the externalized player bar) -- never the taller
   // of the two columns, never the section's own height. The screen list
   // scrolls internally if it doesn't fit. A ResizeObserver (not a one-shot
   // measurement) keeps this correct across window resizes.
-  const player = stage.querySelector(".video-player");
   const side = stage.querySelector(".template-detail-side");
   videoDetailResizeObserver = new ResizeObserver(() => {
-    side.style.height = `${player.getBoundingClientRect().height}px`;
+    side.style.height = `${mainCol.getBoundingClientRect().height}px`;
   });
-  videoDetailResizeObserver.observe(player);
+  videoDetailResizeObserver.observe(mainCol);
 }
 
 function videoDetailKeyHandler(ev) {

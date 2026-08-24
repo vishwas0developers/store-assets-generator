@@ -202,6 +202,10 @@ export function getUniversalPlayerScriptAndStyle(config) {
     const playerBar = document.getElementById("v-player-bar");
     const pills = document.querySelectorAll(".v-pill");
 
+    if (window.self !== window.top && playerBar) {
+      playerBar.style.display = "none";
+    }
+
     function formatTime(ms) {
       const totalSec = Math.floor(ms / 1000);
       const min = Math.floor(totalSec / 60);

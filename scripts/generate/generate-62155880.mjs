@@ -47,8 +47,14 @@ function phoneRig(id, slotId, extraStyle = '') {
               <div class="dynamic-island"></div>
               <img class="phone-screen" id="${slotId}" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="${slotId}" />
             </div>
-            <div class="phone-side side-left"></div>
-            <div class="phone-side side-right"></div>
+            <div class="phone-face back"></div>
+            <div class="phone-side side-left">
+              <div class="side-btn volume-up"></div>
+              <div class="side-btn volume-down"></div>
+            </div>
+            <div class="phone-side side-right">
+              <div class="side-btn power-btn"></div>
+            </div>
             <div class="phone-side side-top"></div>
             <div class="phone-side side-bottom"></div>
           </div>`;
@@ -158,9 +164,9 @@ export function create62155880Template() {
         background: "royal",
         rotate: 0, zoom: 1, move: 0,
         depth: "outro", layout: "outro-platforms",
-        text: "Best Way To <span>Send &amp; Receive</span> Packages",
+        text: "Best Way To <span>Send & Receive</span> Packages",
         subtext: "",
-        slots: { text: "s7-text", screenshot: "slot-9" },
+        slots: { text: "s7-text", screenshots: ["slot-9", "slot-10"] },
         platforms: [
           { name: "Android", icon: "android", url: "https://play.google.com/store/apps/details?id=com.personaldelivery.app" },
           { name: "iOS", icon: "apple", url: "https://apps.apple.com/app/personal-delivery/id987654321" },
@@ -236,16 +242,25 @@ export function create62155880Template() {
 
     .phone-3d-rig { position:absolute; top:50%; left:50%; margin-top:-350px; margin-left:-170px; width:340px; height:700px; transform-style:preserve-3d; border: none; outline: none; }
     .phone-face { position:absolute; inset:0; border-radius:46px; box-sizing:border-box; }
-    .phone-face.front { background:#000000; transform:translateZ(8px); z-index:10; overflow:hidden; padding:8px; border: none; outline: none; }
-    .dynamic-island { position:absolute; top:15px; left:50%; transform:translateX(-50%); width:90px; height:26px; background:#000000; border-radius:13px; z-index:12; border:1px solid #222; }
-    .phone-screen { width:100%; height:100%; object-fit:cover; border-radius:38px; }
+    .phone-face.front { background:#000000; transform:translateZ(8px); z-index:10; overflow:hidden; padding:4px; border: 1.5px solid rgba(255,255,255,0.3); outline: none; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05), 0 20px 45px rgba(0,0,0,0.5); }
+    .phone-face.back { background:linear-gradient(135deg, #cbd5e1 0%, #94a3b8 50%, #475569 100%); transform:translateZ(-8px) rotateY(180deg); border: 1px solid rgba(255,255,255,0.2); box-shadow: inset 0 0 20px rgba(0,0,0,0.4); }
+    .dynamic-island { position:absolute; top:15px; left:50%; transform:translateX(-50%); width:90px; height:26px; background:#0c0d10; border-radius:13px; z-index:12; border:1px solid #1a1b20; box-shadow: inset 0 1px 2px rgba(255,255,255,0.1), 0 1px 2px rgba(0,0,0,0.5); }
+    .phone-screen { width:100%; height:100%; object-fit:cover; border-radius:42px; }
     .reflection-screen { position:absolute; top:50%; left:50%; margin-top:-350px; margin-left:-170px; width:340px; height:700px; border-radius:46px; transform-origin:center bottom; transform:scaleY(-1) translateY(6px); opacity:0.16; filter:blur(4px); pointer-events:none; z-index:1; }
-    /* Clean 3D geometry -- no gradient/border outline around the chassis edges */
-    .phone-side { position:absolute; background:transparent; border:none; outline:none; }
-    .side-left { width:16px; height:700px; left:-8px; top:0; transform-origin: left center; transform:rotateY(90deg); }
-    .side-right { width:16px; height:700px; right:-8px; top:0; transform-origin: right center; transform:rotateY(-90deg); }
-    .side-top { width:340px; height:16px; left:0; top:-8px; transform-origin: center top; transform:rotateX(90deg); }
-    .side-bottom { width:340px; height:16px; left:0; bottom:-8px; transform-origin: center bottom; transform:rotateX(-90deg); }
+    /* Premium 3D Polished Chrome Chassis Side Rails */
+    .phone-side {
+      position:absolute;
+      box-sizing: border-box;
+      outline: none;
+    }
+    .side-left { width:16px; height:700px; left:-8px; top:0; transform-origin: left center; transform: translateZ(-8px) rotateY(90deg); border-radius: 4px; }
+    .side-right { width:16px; height:700px; right:-8px; top:0; transform-origin: right center; transform: translateZ(-8px) rotateY(-90deg); border-radius: 4px; }
+    .side-top { width:340px; height:16px; left:0; top:-8px; transform-origin: center top; transform: translateZ(-8px) rotateX(90deg); border-radius: 4px; }
+    .side-bottom { width:340px; height:16px; left:0; bottom:-8px; transform-origin: center bottom; transform: translateZ(-8px) rotateX(-90deg); border-radius: 4px; }
+    .side-btn { position:absolute; background: linear-gradient(to bottom, #f8fafc, #cbd5e1); border: 1px solid #64748b; border-radius:3px; }
+    .volume-up { width:4px; height:45px; left:-4px; top:120px; }
+    .volume-down { width:4px; height:45px; left:-4px; top:180px; }
+    .power-btn { width:4px; height:50px; right:-4px; top:140px; }
 
     /* Scene 1: squircle location-pin logo + tap ripple */
     .logo-squircle-pin {
@@ -328,21 +343,21 @@ export function create62155880Template() {
     .feature-card .fc-bar { height: 6px; border-radius: 3px; background: rgba(255,255,255,0.12); overflow: hidden; box-shadow: 0 0 10px rgba(139,133,248,0.35); }
     .feature-card .fc-bar-fill { height: 100%; background: #8b85f8; border-radius: 3px; box-shadow: 0 0 8px #8b85f8; }
 
-    /* Scene 8: platform download grid with live QR codes -- wide pill cards (380x124) */
+    /* Scene 8: platform download grid with live QR codes -- wide pill cards (480x128) */
     .platform-grid { display:flex; flex-direction: column; gap:18px; margin-top:32px; }
     .platform-card {
-      display:flex; flex-direction:row; align-items:center; gap:24px;
-      width: 380px; height: 124px; box-sizing: border-box;
+      display:flex; flex-direction:row; align-items:center; gap:28px;
+      width: 480px; height: 128px; box-sizing: border-box;
       background: rgba(255,255,255,0.06);
       border: 1px solid rgba(255,255,255,0.14);
       border-radius: 24px;
-      padding: 0 24px;
+      padding: 0 28px;
       backdrop-filter: blur(10px);
     }
-    .platform-card .qr-wrap { width:100px; height:100px; flex-shrink:0; border-radius: 8px; overflow: hidden; }
+    .platform-card .qr-wrap { width:104px; height:104px; flex-shrink:0; border-radius: 8px; overflow: hidden; }
     .platform-card .qr-wrap svg { width:100%; height:100%; display:block; }
     .platform-name-row { display:flex; align-items:center; gap:14px; }
-    .platform-name { font-size:24px; font-weight:700; color:#ffffff; }
+    .platform-name { font-size:26px; font-weight:700; color:#ffffff; }
 
     /* Opener center wrapper to keep logo & text grouped & centered */
     .opener-center-wrap {
@@ -450,18 +465,18 @@ export function create62155880Template() {
 
     <!-- Scene 5: Dual-Sided Feature Capsules -->
     <div class="scene" id="scene-4">
-      <div class="scene-content" style="justify-content:center; align-items:center; position:relative;">
-        <div class="s4-left-col">
+      <div class="scene-content">
+        <div class="copy-col" style="margin-left: 140px; max-width: 620px;">
           <h2 class="title-highlight" id="s4-text" style="font-size: 48px; margin-bottom: 24px;">Minimum Risk <span>Secure Your Package</span></h2>
-          <div class="glass-badge xl" id="s4-badge-1">${CAPSULE_ICONS.check}Payment Processed (Transaction ID : #4466737)</div>
-          <div class="glass-badge xl" id="s4-badge-2" style="margin-top: 16px;">${CAPSULE_ICONS.info}Package Return (Version 17.5 ready to install)</div>
+          <div style="display: flex; flex-direction: column; gap: 16px;">
+            <div class="glass-badge xl" id="s4-badge-1" style="position: relative; top: 0; left: 0; opacity: 0;">${CAPSULE_ICONS.check}Payment Processed (Transaction ID : #4466737)</div>
+            <div class="glass-badge xl" id="s4-badge-2" style="position: relative; top: 0; left: 0; opacity: 0;">${CAPSULE_ICONS.info}Package Return (Version 17.5 ready to install)</div>
+            <div class="glass-badge xl" id="s4-badge-3" style="position: relative; top: 0; left: 0; opacity: 0;">${CAPSULE_ICONS.download}Package Received (Download completed)</div>
+            <div class="glass-badge xl" id="s4-badge-4" style="position: relative; top: 0; left: 0; opacity: 0;">${CAPSULE_ICONS.upload}Package On Process (Upload completed)</div>
+          </div>
         </div>
-        <div class="device-col center-only">
+        <div class="device-col">
           ${phoneRig('phone-rig-4', 'slot-4')}
-        </div>
-        <div class="s4-right-col">
-          <div class="glass-badge xl" id="s4-badge-3">${CAPSULE_ICONS.download}Package Received (Download completed)</div>
-          <div class="glass-badge xl" id="s4-badge-4">${CAPSULE_ICONS.upload}Package On Process (Upload completed)</div>
         </div>
       </div>
     </div>
@@ -504,18 +519,19 @@ export function create62155880Template() {
     <!-- Scene 8: Outro CTA -->
     <div class="scene" id="scene-7">
       <div class="scene-content">
-        <div class="copy-col" style="margin-left: 100px;">
-          <h2 class="title-highlight" id="s7-text" style="font-size: 56px;">Best Way To <span>Send &amp; Receive</span> Packages</h2>
+        <div class="copy-col" style="margin-left: 140px; max-width: 680px;">
+          <h2 class="title-highlight" id="s7-text" style="font-size: 56px;">Best Way To <span>Send & Receive</span> Packages</h2>
           <div class="platform-grid" id="s7-platforms">
             ${config.scenes[7].platforms.map(p => `
             <div class="platform-card">
-              <div class="qr-wrap">${generateQRCodeSVG(p.url, 100)}</div>
+              <div class="qr-wrap">${generateQRCodeSVG(p.url, 104)}</div>
               <div class="platform-name-row">${PLATFORM_ICONS[p.icon] || ''}<div class="platform-name">${p.name}</div></div>
             </div>`).join('')}
           </div>
         </div>
-        <div class="device-col">
-          ${phoneRig('phone-rig-7', 'slot-9')}
+        <div class="device-col trio" style="position:relative;">
+          ${phoneRig('phone-rig-7a', 'slot-9', 'transform: translateX(-120px);')}
+          ${phoneRig('phone-rig-7b', 'slot-10', 'transform: translateX(220px) rotateY(-14deg);')}
         </div>
       </div>
     </div>
@@ -602,22 +618,23 @@ export function create62155880Template() {
         if (text) { text.style.opacity = eA; text.style.transform = "translateX(" + (-30 * (1 - eA)) + "px)"; }
         if (sub) sub.style.opacity = Math.min(1, Math.max(0, (progress - 0.3) / 0.3));
       }
-      else if (sceneIdx === 4) { // Scene 5: phone enters from bottom, settles center; dual-sided capsules
+      else if (sceneIdx === 4) { // Scene 5: phone enters from bottom, settles right; left copy
         const rig = document.getElementById("phone-rig-4");
         const text = document.getElementById("s4-text");
         const e = easeWindow(progress, 0.4);
         const entryY = 320 * (1 - e);
         const drift = ambientDrift(e);
-        if (rig) rig.style.transform = "translateY(" + entryY + "px) scale(0.95) rotateY(" + drift.yaw + "deg) rotateX(" + drift.pitch + "deg)";
+        const baseX = 260 + 300 * (1 - e);
+        if (rig) rig.style.transform = "translateX(" + baseX + "px) translateY(" + entryY + "px) scale(0.95) rotateY(" + (14 + drift.yaw) + "deg) rotateX(" + drift.pitch + "deg)";
         if (text) { text.style.opacity = e; }
         const b1 = document.getElementById("s4-badge-1");
         const b2 = document.getElementById("s4-badge-2");
         const b3 = document.getElementById("s4-badge-3");
         const b4 = document.getElementById("s4-badge-4");
-        if (b1) b1.style.opacity = Math.min(1, Math.max(0, (progress - 0.4) / 0.3));
-        if (b2) b2.style.opacity = Math.min(1, Math.max(0, (progress - 0.5) / 0.3));
-        if (b3) { b3.style.opacity = Math.min(1, Math.max(0, (progress - 0.45) / 0.3)); b3.style.transform = "translateY(" + (Math.sin(globalTimeMs * 0.0012) * 8) + "px)"; }
-        if (b4) { b4.style.opacity = Math.min(1, Math.max(0, (progress - 0.55) / 0.3)); b4.style.transform = "translateY(" + (Math.cos(globalTimeMs * 0.0011) * 8) + "px)"; }
+        if (b1) { b1.style.opacity = Math.min(1, Math.max(0, (progress - 0.4) / 0.3)); b1.style.transform = "translateY(" + (Math.sin(globalTimeMs * 0.001) * 6) + "px)"; }
+        if (b2) { b2.style.opacity = Math.min(1, Math.max(0, (progress - 0.45) / 0.3)); b2.style.transform = "translateY(" + (Math.cos(globalTimeMs * 0.0012) * 6) + "px)"; }
+        if (b3) { b3.style.opacity = Math.min(1, Math.max(0, (progress - 0.5) / 0.3)); b3.style.transform = "translateY(" + (Math.sin(globalTimeMs * 0.0011) * 6) + "px)"; }
+        if (b4) { b4.style.opacity = Math.min(1, Math.max(0, (progress - 0.55) / 0.3)); b4.style.transform = "translateY(" + (Math.cos(globalTimeMs * 0.0009) * 6) + "px)"; }
       }
       else if (sceneIdx === 5) { // Scene 6: incoming phone enters from the right + floating magnifier card + right copy
         const rig = document.getElementById("phone-rig-5");
@@ -651,16 +668,20 @@ export function create62155880Template() {
         if (c) c.style.transform = "translateX(" + (340 * spread) + "px) translateY(" + entryY + "px) translateZ(-70px) scale(0.82) rotateY(" + (-15 - drift) + "deg)";
         if (cards) cards.style.opacity = Math.min(1, Math.max(0, (progress - 0.5) / 0.35));
       }
-      else if (sceneIdx === 7) { // Scene 8: phone rises from bottom to center-right; QR platform grid reveal
-        const rig = document.getElementById("phone-rig-7");
+      else if (sceneIdx === 7) { // Scene 8: two-phone outro reveal like Scene 4
+        const a = document.getElementById("phone-rig-7a");
+        const b = document.getElementById("phone-rig-7b");
         const text = document.getElementById("s7-text");
         const grid = document.getElementById("s7-platforms");
-        const e = easeWindow(progress, 0.4);
-        const entryY = 280 * (1 - e);
-        const drift = ambientDrift(e);
-        if (rig) rig.style.transform = "translateX(260px) translateY(" + entryY + "px) rotateY(" + (-10 + drift.yaw) + "deg) rotateX(" + drift.pitch + "deg)";
-        if (text) text.style.opacity = e;
-        if (grid) grid.style.opacity = Math.min(1, Math.max(0, (progress - 0.35) / 0.3));
+        const eA = easeWindow(progress, 0.38);
+        const eB = easeWindow(Math.max(0, progress - 0.12), 0.42);
+        const entryA = 320 * (1 - eA);
+        const entryB = 800 * (1 - eB);
+        const drift = ambientDrift(eA);
+        if (a) a.style.transform = "translateX(" + (-120 - 60 * (1 - eA)) + "px) translateY(" + entryA + "px) scale(0.92) rotateY(" + (8 + drift.yaw) + "deg) rotateX(" + drift.pitch + "deg)";
+        if (b) b.style.transform = "translateX(" + (220 + entryB) + "px) translateY(" + (180 * (1 - eB)) + "px) scale(0.88) rotateY(" + (-14 - drift.yaw) + "deg) rotateX(" + drift.pitch + "deg)";
+        if (text) text.style.opacity = eA;
+        if (grid) grid.style.opacity = Math.min(1, Math.max(0, (progress - 0.3) / 0.3));
       }
     };
   </script>
