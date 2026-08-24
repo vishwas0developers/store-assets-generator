@@ -261,151 +261,8 @@
     @keyframes trans-5 { 0% { opacity: 1; } 4.00% { opacity: 0; } 100% { opacity: 0; } }
   
   
-  /* === Universal Interactive Player Overlay === */
-  .v-player-bar {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    background: rgba(15, 17, 26, 0.88);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    border: 1px solid rgba(255, 255, 255, 0.16);
-    border-radius: 40px;
-    padding: 10px 22px;
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.05);
-    z-index: 999999;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    color: #ffffff;
-    user-select: none;
-    transition: opacity 0.35s ease, transform 0.35s ease;
-  }
-  .v-player-bar.autohide {
-    opacity: 0;
-    pointer-events: none;
-    transform: translate(-50%, 15px);
-  }
-  .v-btn {
-    background: #3b82f6;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    cursor: pointer;
-    transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
-    box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
-    outline: none;
-  }
-  .v-btn:hover {
-    transform: scale(1.08);
-    background: #2563eb;
-    box-shadow: 0 6px 18px rgba(59, 130, 246, 0.6);
-  }
-  .v-btn-secondary {
-    background: rgba(255, 255, 255, 0.1);
-    color: #cbd5e1;
-    box-shadow: none;
-    width: 34px;
-    height: 34px;
-    font-size: 14px;
-  }
-  .v-btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.2);
-    color: #fff;
-    box-shadow: none;
-  }
-  .v-timeline-box {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    width: 260px;
-  }
-  .v-scrubber {
-    flex: 1;
-    height: 6px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 3px;
-    position: relative;
-    cursor: pointer;
-  }
-  .v-scrubber:hover {
-    height: 8px;
-  }
-  .v-scrubber-fill {
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 0%;
-    background: #3b82f6;
-    border-radius: 3px;
-    pointer-events: none;
-  }
-  .v-scrubber-thumb {
-    position: absolute;
-    top: 50%;
-    left: 0%;
-    transform: translate(-50%, -50%);
-    width: 14px;
-    height: 14px;
-    background: #ffffff;
-    border-radius: 50%;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.5);
-    pointer-events: none;
-    transition: transform 0.1s ease;
-  }
-  .v-scrubber:hover .v-scrubber-thumb {
-    transform: translate(-50%, -50%) scale(1.2);
-  }
-  .v-time-text {
-    font-size: 13px;
-    font-variant-numeric: tabular-nums;
-    color: #94a3b8;
-    min-width: 80px;
-    text-align: right;
-  }
-  .v-pills {
-    display: flex;
-    gap: 6px;
-    border-left: 1px solid rgba(255, 255, 255, 0.14);
-    padding-left: 12px;
-  }
-  .v-pill {
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    color: #94a3b8;
-    font-size: 12px;
-    font-weight: 500;
-    padding: 5px 11px;
-    border-radius: 16px;
-    cursor: pointer;
-    transition: all 0.15s ease;
-    outline: none;
-  }
-  .v-pill:hover {
-    background: rgba(255, 255, 255, 0.18);
-    color: #ffffff;
-  }
-  .v-pill.active {
-    background: rgba(59, 130, 246, 0.35);
-    border-color: #3b82f6;
-    color: #ffffff;
-    font-weight: 600;
-  }
-  @media print {
-    .v-player-bar { display: none !important; }
-  }
-  body.rendering .v-player-bar, .v-player-bar.render-hidden {
-    display: none !important;
-  }
+  /* Global shared template reset styles */
+  html, body { margin:0; padding:0; overflow:hidden; }
   
   </style></head><body><div class="scene scene-0" id="scene-0">
     <div class="backdrop"></div>
@@ -582,22 +439,6 @@
   
   
   
-  <!-- Standalone Floating Video Player Bar -->
-  <div class="v-player-bar" id="v-player-bar">
-    <button class="v-btn" id="v-play-btn" title="Play / Pause (Space)">&#9654;</button>
-    <button class="v-btn v-btn-secondary" id="v-replay-btn" title="Replay">&#8635;</button>
-    <div class="v-timeline-box">
-      <div class="v-scrubber" id="v-scrubber">
-        <div class="v-scrubber-fill" id="v-scrubber-fill"></div>
-        <div class="v-scrubber-thumb" id="v-scrubber-thumb"></div>
-      </div>
-      <div class="v-time-text" id="v-time-text">0:00 / 0:35</div>
-    </div>
-    <div class="v-pills" id="v-pills">
-      <button class="v-pill active" data-scene="0">1</button><button class="v-pill " data-scene="1">2</button><button class="v-pill " data-scene="2">3</button><button class="v-pill " data-scene="3">4</button><button class="v-pill " data-scene="4">5</button><button class="v-pill " data-scene="5">6</button>
-    </div>
-  </div>
-  
 
   <script type="application/json" id="template-config">
 {
@@ -728,6 +569,17 @@
   <!-- Video Player Logic & API Controller -->
   <script>
   (function() {
+    // Dynamically inject player bar when loaded standalone (window.self === window.top)
+    if (window.self === window.top) {
+      const styleEl = document.createElement("style");
+      styleEl.textContent = "\n  /* === Universal Interactive Player Overlay === */\n  .v-player-bar {\n    position: fixed;\n    bottom: 24px;\n    left: 50%;\n    transform: translateX(-50%);\n    display: flex;\n    align-items: center;\n    gap: 16px;\n    background: rgba(15, 17, 26, 0.88);\n    backdrop-filter: blur(18px);\n    -webkit-backdrop-filter: blur(18px);\n    border: 1px solid rgba(255, 255, 255, 0.16);\n    border-radius: 40px;\n    padding: 10px 22px;\n    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.05);\n    z-index: 999999;\n    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;\n    color: #ffffff;\n    user-select: none;\n    transition: opacity 0.35s ease, transform 0.35s ease;\n  }\n  .v-player-bar.autohide {\n    opacity: 0;\n    pointer-events: none;\n    transform: translate(-50%, 15px);\n  }\n  .v-btn {\n    background: #3b82f6;\n    color: white;\n    border: none;\n    border-radius: 50%;\n    width: 40px;\n    height: 40px;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    font-size: 16px;\n    cursor: pointer;\n    transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;\n    box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);\n    outline: none;\n  }\n  .v-btn:hover {\n    transform: scale(1.08);\n    background: #2563eb;\n    box-shadow: 0 6px 18px rgba(59, 130, 246, 0.6);\n  }\n  .v-btn-secondary {\n    background: rgba(255, 255, 255, 0.1);\n    color: #cbd5e1;\n    box-shadow: none;\n    width: 34px;\n    height: 34px;\n    font-size: 14px;\n  }\n  .v-btn-secondary:hover {\n    background: rgba(255, 255, 255, 0.2);\n    color: #fff;\n    box-shadow: none;\n  }\n  .v-timeline-box {\n    display: flex;\n    align-items: center;\n    gap: 12px;\n    width: 260px;\n  }\n  .v-scrubber {\n    flex: 1;\n    height: 6px;\n    background: rgba(255, 255, 255, 0.2);\n    border-radius: 3px;\n    position: relative;\n    cursor: pointer;\n  }\n  .v-scrubber:hover {\n    height: 8px;\n  }\n  .v-scrubber-fill {\n    position: absolute;\n    left: 0;\n    top: 0;\n    bottom: 0;\n    width: 0%;\n    background: #3b82f6;\n    border-radius: 3px;\n    pointer-events: none;\n  }\n  .v-scrubber-thumb {\n    position: absolute;\n    top: 50%;\n    left: 0%;\n    transform: translate(-50%, -50%);\n    width: 14px;\n    height: 14px;\n    background: #ffffff;\n    border-radius: 50%;\n    box-shadow: 0 2px 6px rgba(0,0,0,0.5);\n    pointer-events: none;\n    transition: transform 0.1s ease;\n  }\n  .v-scrubber:hover .v-scrubber-thumb {\n    transform: translate(-50%, -50%) scale(1.2);\n  }\n  .v-time-text {\n    font-size: 13px;\n    font-variant-numeric: tabular-nums;\n    color: #94a3b8;\n    min-width: 80px;\n    text-align: right;\n  }\n  .v-pills {\n    display: flex;\n    gap: 6px;\n    border-left: 1px solid rgba(255, 255, 255, 0.14);\n    padding-left: 12px;\n  }\n  .v-pill {\n    background: rgba(255, 255, 255, 0.08);\n    border: 1px solid rgba(255, 255, 255, 0.12);\n    color: #94a3b8;\n    font-size: 12px;\n    font-weight: 500;\n    padding: 5px 11px;\n    border-radius: 16px;\n    cursor: pointer;\n    transition: all 0.15s ease;\n    outline: none;\n  }\n  .v-pill:hover {\n    background: rgba(255, 255, 255, 0.18);\n    color: #ffffff;\n  }\n  .v-pill.active {\n    background: rgba(59, 130, 246, 0.35);\n    border-color: #3b82f6;\n    color: #ffffff;\n    font-weight: 600;\n  }\n  @media print {\n    .v-player-bar { display: none !important; }\n  }\n  body.rendering .v-player-bar, .v-player-bar.render-hidden {\n    display: none !important;\n  }\n  ";
+      document.head.appendChild(styleEl);
+
+      const barContainer = document.createElement("div");
+      barContainer.innerHTML = "\n  <!-- Standalone Floating Video Player Bar -->\n  <div class=\"v-player-bar\" id=\"v-player-bar\">\n    <button class=\"v-btn\" id=\"v-play-btn\" title=\"Play / Pause (Space)\">&#9654;</button>\n    <button class=\"v-btn v-btn-secondary\" id=\"v-replay-btn\" title=\"Replay\">&#8635;</button>\n    <div class=\"v-timeline-box\">\n      <div class=\"v-scrubber\" id=\"v-scrubber\">\n        <div class=\"v-scrubber-fill\" id=\"v-scrubber-fill\"></div>\n        <div class=\"v-scrubber-thumb\" id=\"v-scrubber-thumb\"></div>\n      </div>\n      <div class=\"v-time-text\" id=\"v-time-text\">0:00 / 0:35</div>\n    </div>\n    <div class=\"v-pills\" id=\"v-pills\">\n      <button class=\"v-pill active\" data-scene=\"0\">1</button><button class=\"v-pill \" data-scene=\"1\">2</button><button class=\"v-pill \" data-scene=\"2\">3</button><button class=\"v-pill \" data-scene=\"3\">4</button><button class=\"v-pill \" data-scene=\"4\">5</button><button class=\"v-pill \" data-scene=\"5\">6</button>\n    </div>\n  </div>\n  ".trim();
+      document.body.appendChild(barContainer.firstElementChild);
+    }
+
     const config = JSON.parse(document.getElementById("template-config").textContent);
     const scenes = config.scenes;
     let durations = scenes.map(s => (s.durationSeconds || s.durationMs / 1000 || 5) * 1000);
@@ -749,6 +601,10 @@
     const timeText = document.getElementById("v-time-text");
     const playerBar = document.getElementById("v-player-bar");
     const pills = document.querySelectorAll(".v-pill");
+
+    if (window.self !== window.top && playerBar) {
+      playerBar.style.display = "none";
+    }
 
     function formatTime(ms) {
       const totalSec = Math.floor(ms / 1000);
@@ -831,6 +687,7 @@
       }
 
       if (targetIdx !== currentSceneIdx || !document.querySelector(".scene.playing, .scene.active")) {
+        const changed = targetIdx !== currentSceneIdx;
         currentSceneIdx = targetIdx;
         document.querySelectorAll(".scene").forEach((el, idx) => {
           if (idx === currentSceneIdx) {
@@ -842,6 +699,7 @@
           }
         });
         void document.body.offsetWidth; // Force CSS animation restart
+        if (changed) notify();
       }
 
       const curSceneDur = durations[currentSceneIdx] || 5000;
