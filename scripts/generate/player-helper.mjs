@@ -10,7 +10,7 @@ const rootDir = path.resolve(__dirname, '../..');
 export function getUniversalPlayerScriptAndStyle(config) {
   const totalDurationSeconds = config.scenes.reduce((sum, s) => sum + (s.durationSeconds || 5), 0);
   
-  const style = `
+  const playerStyle = `
   /* === Universal Interactive Player Overlay === */
   .v-player-bar {
     position: fixed;
@@ -158,7 +158,7 @@ export function getUniversalPlayerScriptAndStyle(config) {
   }
   `;
 
-  const html = `
+  const playerHtml = `
   <!-- Standalone Floating Video Player Bar -->
   <div class="v-player-bar" id="v-player-bar">
     <button class="v-btn" id="v-play-btn" title="Play / Pause (Space)">&#9654;</button>
@@ -176,10 +176,27 @@ export function getUniversalPlayerScriptAndStyle(config) {
   </div>
   `;
 
+  const style = `
+  /* Global shared template reset styles */
+  html, body { margin:0; padding:0; overflow:hidden; }
+  `;
+  const html = "";
+
   const script = `
   <!-- Video Player Logic & API Controller -->
   <script>
   (function() {
+    // Dynamically inject player bar when loaded standalone (window.self === window.top)
+    if (window.self === window.top) {
+      const styleEl = document.createElement("style");
+      styleEl.textContent = ${JSON.stringify(playerStyle)};
+      document.head.appendChild(styleEl);
+
+      const barContainer = document.createElement("div");
+      barContainer.innerHTML = ${JSON.stringify(playerHtml)}.trim();
+      document.body.appendChild(barContainer.firstElementChild);
+    }
+
     const config = JSON.parse(document.getElementById("template-config").textContent);
     const scenes = config.scenes;
     let durations = scenes.map(s => (s.durationSeconds || s.durationMs / 1000 || 5) * 1000);
