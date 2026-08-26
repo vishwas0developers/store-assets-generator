@@ -56,40 +56,56 @@ export function device3dMarkup(device: DeviceModel, screenshotUris: string[], va
   const front = uris.length > 1 ? deviceMarkupMultiScreen(device, uris, variantId, durationMs, kinds) : deviceMarkup(device, uris[0] ?? "", variantId, kinds[0] ?? "image");
   const r = device.frame.outerRadius;
   const body = device.frame.body || "#1e2025";
+  const accent = device.frame.accent || "#3a3f4b";
 
   const sideLeftRight = `linear-gradient(to bottom, rgba(255,255,255,0.2) 0%, ${body} 20%, ${body} 80%, rgba(0,0,0,0.3) 100%)`;
   const sideTop = `linear-gradient(to right, rgba(255,255,255,0.15) 0%, ${body} 25%, ${body} 75%, rgba(0,0,0,0.25) 100%)`;
   const sideBottom = `linear-gradient(to right, rgba(0,0,0,0.25) 0%, ${body} 25%, ${body} 75%, rgba(255,255,255,0.15) 100%)`;
 
-  let sideLeftContent = "";
-  let sideRightContent = "";
-  if (device.frame.buttons !== false) {
-    sideLeftContent = `
-      <div class="side-btn volume-up" style="position:absolute;width:4px;height:45px;left:-4px;top:120px;background:linear-gradient(to bottom, #cbd5e1, #94a3b8);border:1px solid #475569;border-radius:3px;"></div>
-      <div class="side-btn volume-down" style="position:absolute;width:4px;height:45px;left:-4px;top:180px;background:linear-gradient(to bottom, #cbd5e1, #94a3b8);border:1px solid #475569;border-radius:3px;"></div>
-    `;
-    sideRightContent = `
-      <div class="side-btn power-btn" style="position:absolute;width:4px;height:50px;right:-4px;top:140px;background:linear-gradient(to bottom, #cbd5e1, #94a3b8);border:1px solid #475569;border-radius:3px;"></div>
-    `;
-  }
-
   return `<div class="device-rig-wrap">
-      <div class="device-rig" style="width:${g.width}px;height:${g.height}px">
-        <div class="device-face device-front" style="transform:translateZ(${half}px);border-radius:${r}px;padding:4px;box-sizing:border-box;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08),0 20px 45px rgba(0,0,0,.5)">
+      <div class="device-rig" style="width:${g.width}px;height:${g.height}px;transform-style:preserve-3d;position:relative;">
+        <!-- Front Face -->
+        <div class="device-face device-front" style="width:${g.width}px;height:${g.height}px;transform:translateZ(${half}px);border-radius:${r}px;padding:4px;box-sizing:border-box;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08),0 20px 45px rgba(0,0,0,.5);position:absolute;left:0;top:0;">
           ${front}
           <div class="device-sheen"></div>
         </div>
-        <div class="device-face device-back" style="width:${g.width}px;height:${g.height}px;border-radius:${r}px;background:${device.frame.body};transform:translateZ(-${half}px) rotateY(180deg)">
-          <div class="device-cam-bar">
-            <div class="device-lens"></div>
-            <div class="device-lens"></div>
-            <div class="device-lens"></div>
+        <!-- Back Face -->
+        <div class="device-face device-back" style="width:${g.width}px;height:${g.height}px;border-radius:${r}px;background:${body};transform:translateZ(-${half}px) rotateY(180deg);position:absolute;left:0;top:0;border:1px solid ${accent};">
+          <!-- Realistic Camera Bump -->
+          <div style="position:absolute; top:25px; left:25px; width:${Math.round(g.width * 0.32)}px; height:${Math.round(g.width * 0.32)}px; background:${accent}; border-radius:24px; box-shadow:0 4px 12px rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.15); display:flex; flex-wrap:wrap; gap:12px; padding:16px; box-sizing:border-box; align-items:center; justify-content:center;">
+            <div class="device-lens" style="width:34px; height:34px; border-radius:50%; background:radial-gradient(circle at 30% 30%, #555 0%, #080808 70%); border:2px solid #222; box-shadow:inset 0 2px 4px rgba(255,255,255,0.25);"></div>
+            <div class="device-lens" style="width:34px; height:34px; border-radius:50%; background:radial-gradient(circle at 30% 30%, #555 0%, #080808 70%); border:2px solid #222; box-shadow:inset 0 2px 4px rgba(255,255,255,0.25);"></div>
+            <div class="device-lens" style="width:34px; height:34px; border-radius:50%; background:radial-gradient(circle at 30% 30%, #555 0%, #080808 70%); border:2px solid #222; box-shadow:inset 0 2px 4px rgba(255,255,255,0.25);"></div>
           </div>
         </div>
-        <div class="device-face device-side" style="width:${t}px;height:${g.height}px;transform:rotateY(-90deg) translateZ(${half}px);background:${sideLeftRight}">${sideLeftContent}</div>
-        <div class="device-face device-side" style="width:${t}px;height:${g.height}px;left:${g.width - t}px;transform:rotateY(90deg) translateZ(${half}px);background:${sideLeftRight}">${sideRightContent}</div>
-        <div class="device-face device-side" style="width:${g.width}px;height:${t}px;transform:rotateX(90deg) translateZ(${half}px);background:${sideTop}"></div>
-        <div class="device-face device-side" style="width:${g.width}px;height:${t}px;top:${g.height - t}px;transform:rotateX(-90deg) translateZ(${half}px);background:${sideBottom}"></div>
+        <!-- Top Face -->
+        <div class="device-face device-side" style="width:${g.width}px;height:${t}px;position:absolute;left:0;top:-${t}px;background:${sideTop};transform-origin: bottom center;transform:rotateX(90deg);border-bottom:1px solid rgba(255,255,255,0.15);">
+          <!-- Top microphone hole -->
+          <div style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:6px; height:6px; border-radius:50%; background:#111;"></div>
+        </div>
+        <!-- Bottom Face -->
+        <div class="device-face device-side" style="width:${g.width}px;height:${t}px;position:absolute;left:0;top:${g.height}px;background:${sideBottom};transform-origin: top center;transform:rotateX(-90deg);border-top:1px solid rgba(255,255,255,0.15);">
+          <!-- USB-C Port -->
+          <div style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:60px; height:12px; background:#111; border-radius:6px; border:1px solid #444; box-shadow:inset 0 2px 4px rgba(0,0,0,0.8);"></div>
+          <!-- Speaker holes -->
+          <div style="position:absolute; left:30%; top:50%; transform:translateY(-50%); display:flex; gap:4px;">
+            <span style="width:5px; height:5px; border-radius:50%; background:#111;"></span>
+            <span style="width:5px; height:5px; border-radius:50%; background:#111;"></span>
+            <span style="width:5px; height:5px; border-radius:50%; background:#111;"></span>
+            <span style="width:5px; height:5px; border-radius:50%; background:#111;"></span>
+          </div>
+        </div>
+        <!-- Left Face -->
+        <div class="device-face device-side" style="width:${t}px;height:${g.height}px;position:absolute;left:-${t}px;top:0;background:${sideLeftRight};transform-origin: right center;transform:rotateY(-90deg);border-right:1px solid rgba(255,255,255,0.15);">
+          <!-- Volume buttons -->
+          <div class="side-btn volume-up" style="position:absolute;width:${t}px;height:55px;top:170px;left:0;background:linear-gradient(to bottom, #777, #333);border:1px solid #222;border-radius:2px;box-shadow:0 1px 3px rgba(0,0,0,0.4);"></div>
+          <div class="side-btn volume-down" style="position:absolute;width:${t}px;height:55px;top:235px;left:0;background:linear-gradient(to bottom, #777, #333);border:1px solid #222;border-radius:2px;box-shadow:0 1px 3px rgba(0,0,0,0.4);"></div>
+        </div>
+        <!-- Right Face -->
+        <div class="device-face device-side" style="width:${t}px;height:${g.height}px;position:absolute;left:${g.width}px;top:0;background:${sideLeftRight};transform-origin: left center;transform:rotateY(90deg);border-left:1px solid rgba(255,255,255,0.15);">
+          <!-- Power button -->
+          <div class="side-btn power-btn" style="position:absolute;width:${t}px;height:75px;top:210px;left:0;background:linear-gradient(to bottom, #777, #333);border:1px solid #222;border-radius:2px;box-shadow:0 1px 3px rgba(0,0,0,0.4);"></div>
+        </div>
       </div>
       <div class="device-reflection" style="width:${g.width}px;height:${g.height}px">
         <div class="device-face device-front" style="transform:translateZ(${half}px);border-radius:${r}px;padding:4px;box-sizing:border-box">${front}</div>

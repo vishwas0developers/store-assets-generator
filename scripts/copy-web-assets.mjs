@@ -15,3 +15,10 @@ for (const name of files) {
   fs.copyFileSync(src, dest);
   console.log(`Copied ${src} -> ${dest}`);
 }
+
+// Automatically create demo PNG assets on build
+try {
+  await import("./generate/create-demo-assets.mjs");
+} catch (e) {
+  console.warn("Failed to generate demo assets:", e);
+}

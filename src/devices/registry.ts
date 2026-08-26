@@ -23,11 +23,10 @@ export interface DeviceFrameTraits {
   cutoutSize?: { width: number; height: number };
   fold?: { axis: "vertical" | "horizontal"; seamOffset: number };
   buttons?: boolean;
-  /** Physical thickness in the same units as `geometry` -- used only by the
-   *  six-face 3D rig (src/render/shared.ts's `device3dMarkup`) to size the
-   *  side/top/bottom faces. Falls back to `bezelWidth * 1.6` when unset, so
-   *  no existing catalogue entry needs editing. */
   thickness?: number;
+  cameraStyle?: "island" | "bar" | "rings" | "pill";
+  cameraLenses?: number;
+  railMaterial?: "titanium" | "aluminum" | "polished-steel" | "matte";
 }
 
 export interface DeviceVariant {

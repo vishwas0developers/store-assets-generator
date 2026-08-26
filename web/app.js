@@ -3655,20 +3655,18 @@ function renderDevicesCatalogueList() {
  *  geometry/frame traits so different devices still read as visually
  *  distinct (aspect ratio, bezel, cutout, body color). */
 function device3dViewerHtml(d) {
-  // Aspect-fit into a standard bounding box so a 2868px iPhone 16 Pro Max
-  // and a 2388px iPad both land at the same on-card footprint instead of
-  // a fixed 0.14 scale blowing up the tallest devices' card height.
   const maxW = 110, maxH = 150;
   const scale = Math.min(maxW / d.geometry.width, maxH / d.geometry.height);
   const w = Math.round(d.geometry.width * scale);
   const h = Math.round(d.geometry.height * scale);
-  const thickness = Math.max(12, Math.round((d.frame.thickness ?? 22) * scale * 2.2));
+  const thickness = Math.max(12, Math.round((d.frame.thickness ?? 22) * scale * 2.5));
   const body = d.frame.body || "#1a1d24";
   const accent = d.frame.accent || "#3a3f4b";
   const insetTop = Math.round(d.geometry.screenInset.top * scale);
   const insetLeft = Math.round(d.geometry.screenInset.left * scale);
   const insetW = Math.round(d.geometry.screenInset.width * scale);
   const insetH = Math.round(d.geometry.screenInset.height * scale);
+  
   const cutout = d.frame.cutout === "notch"
     ? `<div style="position:absolute; top:0; left:50%; transform:translateX(-50%); width:${Math.round(w * 0.32)}px; height:6px; background:#000; border-radius:0 0 8px 8px;"></div>`
     : d.frame.cutout === "punch-hole" || d.frame.cutout === "dynamic-island"
@@ -3676,32 +3674,47 @@ function device3dViewerHtml(d) {
     : "";
 
   return `
-    <div class="device-3d-viewport" data-w="${w}" data-h="${h}" data-t="${thickness}">
-      <div class="device-3d-rig" style="width:${w}px; height:${h}px;">
-        <div class="d3-face d3-front" style="width:${w}px; height:${h}px; background:${body}; transform: translateZ(${thickness / 2}px);">
-          <div style="position:absolute; inset:0; background:linear-gradient(135deg, rgba(255,255,255,.10), transparent 40%);"></div>
-          <div style="position:absolute; top:${insetTop}px; left:${insetLeft}px; width:${insetW}px; height:${insetH}px; background:linear-gradient(160deg,#0b1622,#1c2b3d); border-radius:4px; box-shadow: inset 0 0 8px rgba(0,0,0,.6);"></div>
+    <div class="device-3d-viewport" style="width:100%; height:190px;" data-w="${w}" data-h="${h}" data-t="${thickness}">
+      <div class="device-3d-rig" style="width:${w}px; height:${h}px; transform-style:preserve-3d; position:relative;">
+        <!-- Front -->
+        <div class="d3-face d3-front" style="width:${w}px; height:${h}px; background:${body}; transform: translateZ(${thickness / 2}px); position: absolute; left: 0; top: 0;">
+          <div style="position:absolute; top:${insetTop}px; left:${insetLeft}px; width:${insetW}px; height:${insetH}px; background:linear-gradient(160deg,#0b1622,#1c2b3d); border-radius:4px; border:1px solid rgba(255,255,255,0.08);"></div>
           ${cutout}
         </div>
-        <div class="d3-face d3-back" style="width:${w}px; height:${h}px; background:linear-gradient(135deg, ${accent}, ${body}); transform: rotateY(180deg) translateZ(${thickness / 2}px);">
-          <div style="position:absolute; top:10%; left:12%; width:26%; height:16%; border-radius:8px; background:rgba(0,0,0,.4); display:flex; align-items:center; justify-content:center; gap:3px;">
-            <span style="width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,.2); border:1px solid rgba(255,255,255,.2);"></span>
-            <span style="width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,.2); border:1px solid rgba(255,255,255,.2);"></span>
-            <span style="width:5px; height:5px; border-radius:50%; background:rgba(255,255,255,.35);"></span>
+        <!-- Back -->
+        <div class="d3-face d3-back" style="width:${w}px; height:${h}px; background:${body}; transform: rotateY(180deg) translateZ(${thickness / 2}px); position: absolute; left: 0; top: 0; border:1px solid ${accent};">
+          <!-- Camera housing -->
+          <div style="position:absolute; top:8px; left:8px; width:${Math.round(w*0.35)}px; height:${Math.round(w*0.35)}px; background:${accent}; border-radius:6px; box-shadow:0 1px 3px rgba(0,0,0,0.4);">
+            <div style="position:absolute; top:20%; left:20%; width:6px; height:6px; border-radius:50%; background:#111;"></div>
+            <div style="position:absolute; top:20%; right:20%; width:6px; height:6px; border-radius:50%; background:#111;"></div>
+            <div style="position:absolute; bottom:20%; left:20%; width:6px; height:6px; border-radius:50%; background:#111;"></div>
           </div>
         </div>
-        <div class="d3-face d3-top" style="width:${w}px; height:${thickness}px; background:${accent}; transform: rotateX(90deg) translateZ(${h / 2}px);">
-          <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:${Math.round(w * 0.18)}px; height:2px; background:rgba(0,0,0,.4); border-radius:2px;"></div>
+        <!-- Top -->
+        <div class="d3-face d3-top" style="position:absolute; width:${w}px; height:${thickness}px; left:0; top:-${thickness}px; background:${accent}; transform-origin: bottom center; transform: rotateX(90deg); border-bottom:1px solid rgba(255,255,255,0.15);">
+          <div style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:3px; height:3px; border-radius:50%; background:#111;"></div>
         </div>
-        <div class="d3-face d3-bottom" style="width:${w}px; height:${thickness}px; background:${accent}; transform: rotateX(-90deg) translateZ(${h / 2}px);">
-          <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:${Math.round(w * 0.22)}px; height:3px; background:rgba(0,0,0,.5); border-radius:1px;"></div>
+        <!-- Bottom -->
+        <div class="d3-face d3-bottom" style="position:absolute; width:${w}px; height:${thickness}px; left:0; top:${h}px; background:${accent}; transform-origin: top center; transform: rotateX(-90deg); border-top:1px solid rgba(255,255,255,0.15);">
+          <!-- USB-C -->
+          <div style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:18px; height:4px; background:#111; border-radius:2px; border:1px solid #444; box-shadow:inset 0 1px 2px rgba(0,0,0,0.8);"></div>
+          <!-- Speakers -->
+          <div style="position:absolute; left:25%; top:50%; transform:translateY(-50%); display:flex; gap:2px;">
+            <span style="width:2px; height:2px; border-radius:50%; background:#111;"></span>
+            <span style="width:2px; height:2px; border-radius:50%; background:#111;"></span>
+            <span style="width:2px; height:2px; border-radius:50%; background:#111;"></span>
+          </div>
         </div>
-        <div class="d3-face d3-left" style="width:${thickness}px; height:${h}px; background:${accent}; transform: rotateY(-90deg) translateZ(${w / 2}px);">
-          <div style="position:absolute; top:22%; left:50%; transform:translateX(-50%); width:2px; height:14%; background:rgba(0,0,0,.4);"></div>
-          <div style="position:absolute; top:40%; left:50%; transform:translateX(-50%); width:2px; height:14%; background:rgba(0,0,0,.4);"></div>
+        <!-- Left -->
+        <div class="d3-face d3-left" style="position:absolute; width:${thickness}px; height:${h}px; left:-${thickness}px; top:0; background:${accent}; transform-origin: right center; transform: rotateY(-90deg); border-right:1px solid rgba(255,255,255,0.15);">
+          <!-- Volume keys -->
+          <div style="position:absolute; width:${thickness}px; height:18px; top:35px; left:0; background:linear-gradient(to bottom, #777, #333); border:1px solid #111; border-radius:1px;"></div>
+          <div style="position:absolute; width:${thickness}px; height:18px; top:58px; left:0; background:linear-gradient(to bottom, #777, #333); border:1px solid #111; border-radius:1px;"></div>
         </div>
-        <div class="d3-face d3-right" style="width:${thickness}px; height:${h}px; background:${accent}; transform: rotateY(90deg) translateZ(${w / 2}px);">
-          <div style="position:absolute; top:24%; left:50%; transform:translateX(-50%); width:2px; height:10%; background:rgba(0,0,0,.4);"></div>
+        <!-- Right -->
+        <div class="d3-face d3-right" style="position:absolute; width:${thickness}px; height:${h}px; left:${w}px; top:0; background:${accent}; transform-origin: left center; transform: rotateY(90deg); border-left:1px solid rgba(255,255,255,0.15);">
+          <!-- Power key -->
+          <div style="position:absolute; width:${thickness}px; height:24px; top:45px; left:0; background:linear-gradient(to bottom, #777, #333); border:1px solid #111; border-radius:1px;"></div>
         </div>
       </div>
       <div class="device-3d-controls">
