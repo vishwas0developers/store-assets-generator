@@ -398,6 +398,25 @@ for (const railBtn of document.querySelectorAll(".rail-btn")) {
     const prefix = tabPage.id === "tab-capture" ? "capture" : tabPage.id === "tab-mockup" ? "mockup" : "video";
     $(prefix + "-section-" + railBtn.dataset.section).classList.add("active");
     if (prefix === "mockup") $("mockup-inspector").style.display = railBtn.dataset.section === "editor" ? "block" : "none";
+    if (prefix === "video" && railBtn.dataset.section === "scenes") {
+      if (videoProject) {
+        renderVideoScenes();
+      } else if (activeProjectId) {
+        loadVideoProjectInto(activeProjectId).then(() => {
+          if (videoProject) renderVideoScenes();
+        });
+      }
+      setTimeout(() => {
+        updateScenePreviewScale();
+        showScenePreview();
+      }, 50);
+    }
+    if (prefix === "video" && railBtn.dataset.section === "devices") {
+      loadDevicesCatalogue();
+    }
+    if (prefix === "video" && railBtn.dataset.section === "saved-configs") {
+      loadSavedConfigs();
+    }
   };
 }
 
@@ -1065,7 +1084,8 @@ async function loadMockupProjectInto(id) {
 
 async function ensureMockupReferenceData() {
   if (mockupDevicesCatalog.length === 0) {
-    const { devices } = await api("/api/devices");
+    const res = await api("/api/devices");
+    const devices = Array.isArray(res) ? res : (Array.isArray(res?.devices) ? res.devices : []);
     mockupDevicesCatalog = devices;
     $("mockup-add-device-select").innerHTML = devices.map((d) => `<option value="${d.id}">${d.vendor} — ${d.name}</option>`).join("");
     $("mockup-preview-device").innerHTML = "";
@@ -1675,9 +1695,9 @@ async function loadVideoProjectInto(id) {
   }
 
   try {
-    if (videoDevices.length === 0) {
-      const { devices } = await api("/api/devices");
-      videoDevices = devices;
+    if (!Array.isArray(videoDevices) || videoDevices.length === 0) {
+      const res = await api("/api/devices");
+      videoDevices = Array.isArray(res) ? res : (Array.isArray(res?.devices) ? res.devices : []);
     }
     if (videoSceneOptions.animations.length === 0) videoSceneOptions = await api("/api/videos/scene-options");
   } catch (e) {
@@ -1685,10 +1705,22 @@ async function loadVideoProjectInto(id) {
   }
 
   renderVideoTemplateGrid();
-  if (videoProject) {
+  if (videoProject && videoProject.template && videoProject.scenes?.length) {
     renderVideoScenes();
+    const scenesRailBtn = document.querySelector('#tab-video .rail-btn[data-section="scenes"]');
+    if (scenesRailBtn) scenesRailBtn.classList.add("active");
+    const templatesRailBtn = document.querySelector('#tab-video .rail-btn[data-section="templates"]');
+    if (templatesRailBtn) templatesRailBtn.classList.remove("active");
+    $("video-section-scenes").classList.add("active");
+    $("video-section-templates").classList.remove("active");
   } else {
     $("video-scene-nav").innerHTML = "";
+    const scenesRailBtn = document.querySelector('#tab-video .rail-btn[data-section="scenes"]');
+    if (scenesRailBtn) scenesRailBtn.classList.remove("active");
+    const templatesRailBtn = document.querySelector('#tab-video .rail-btn[data-section="templates"]');
+    if (templatesRailBtn) templatesRailBtn.classList.add("active");
+    $("video-section-scenes").classList.remove("active");
+    $("video-section-templates").classList.add("active");
   }
 }
 
@@ -2278,6 +2310,11 @@ function selectScene(sceneId) {
   $("sc-rotate").value = scene.rotate; $("sc-rotate-val").textContent = scene.rotate;
   $("sc-zoom").value = scene.zoom; $("sc-zoom-val").textContent = scene.zoom;
   $("sc-move").value = scene.move; $("sc-move-val").textContent = scene.move;
+  const textAnim = scene.textAnimation || {};
+  $("sc-text-preset").value = textAnim.preset || "fade-up";
+  $("sc-text-speed").value = String(textAnim.speed ?? 1);
+  $("sc-text-delay").value = textAnim.delayMs ?? 0; $("sc-text-delay-val").textContent = textAnim.delayMs ?? 0;
+  $("sc-text-scale").value = textAnim.scale ?? 1; $("sc-text-scale-val").textContent = (textAnim.scale ?? 1).toFixed(2);
   if (scene.sourceId) $("sc-source").value = scene.sourceId;
   updateVariantSelect("sc-device", "sc-variant", scene.variant, videoDevices);
   updateSceneSpecialPanels(scene.sceneTemplate);
@@ -2297,6 +2334,8 @@ $("sc-device").onchange = () => updateVariantSelect("sc-device", "sc-variant", "
 for (const [id, out] of [["sc-rotate", "sc-rotate-val"], ["sc-zoom", "sc-zoom-val"], ["sc-move", "sc-move-val"]]) {
   $(id).oninput = () => { $(out).textContent = $(id).value; };
 }
+$("sc-text-delay").oninput = () => { $("sc-text-delay-val").textContent = $("sc-text-delay").value; };
+$("sc-text-scale").oninput = () => { $("sc-text-scale-val").textContent = Number($("sc-text-scale").value).toFixed(2); };
 function showScenePreview() {
   const frame = $("sc-preview");
   frame.src = `/api/videos/${videoId}/scene-preview/${selectedSceneId}?t=${Date.now()}`;
@@ -2361,7 +2400,7 @@ window.addEventListener("resize", () => updateScenePreviewScale());
 // drives every frame exclusively through repeated window.seek calls.
 // ---------------------------------------------------------------------------
 
-let scTransport = { playing: false, elapsedMs: 0, durationMs: 5000, timer: null };
+let scTransport = { playing: false, elapsedMs: 0, durationMs: 5000, timer: null, loop: false, muted: false, speed: 1.0 };
 
 function scTransportReset() {
   scTransportStop();
@@ -2390,22 +2429,41 @@ function scTransportStop() {
   if (scTransport.timer) clearInterval(scTransport.timer);
   scTransport.timer = null;
   const btn = $("sc-tr-play");
-  if (btn) btn.innerHTML = "&#9654;";
+  if (btn) {
+    if (scTransport.elapsedMs >= scTransport.durationMs) {
+      btn.innerHTML = "&#8635;"; // Replay icon
+      btn.title = "Replay Scene";
+    } else {
+      btn.innerHTML = "&#9654;"; // Play icon
+      btn.title = "Play";
+    }
+  }
 }
 
 function scTransportPlay() {
   if (scTransport.playing) return;
   scTransport.playing = true;
   const btn = $("sc-tr-play");
-  if (btn) btn.innerHTML = "&#9208;";
+  if (btn) {
+    btn.innerHTML = "&#9208;"; // Pause icon
+    btn.title = "Pause";
+  }
   const stepMs = 1000 / 30;
-  const start = performance.now() - scTransport.elapsedMs;
+  let lastTime = performance.now();
   scTransport.timer = setInterval(() => {
-    const elapsed = performance.now() - start;
+    const now = performance.now();
+    const delta = (now - lastTime) * scTransport.speed;
+    lastTime = now;
+
+    let elapsed = scTransport.elapsedMs + delta;
     if (elapsed >= scTransport.durationMs) {
-      scTransportSeek(scTransport.durationMs);
-      scTransportStop();
-      return;
+      if (scTransport.loop) {
+        elapsed = 0;
+      } else {
+        scTransportSeek(scTransport.durationMs);
+        scTransportStop();
+        return;
+      }
     }
     scTransportSeek(elapsed);
   }, stepMs);
@@ -2414,11 +2472,51 @@ function scTransportPlay() {
 (function initSceneTransport() {
   const playBtn = $("sc-tr-play");
   if (!playBtn) return; // scenes section not present yet at parse time is fine -- these are static ids
-  playBtn.onclick = () => (scTransport.playing ? scTransportStop() : scTransportPlay());
+  playBtn.onclick = () => {
+    if (scTransport.elapsedMs >= scTransport.durationMs) {
+      scTransportSeek(0);
+    }
+    scTransport.playing ? scTransportStop() : scTransportPlay();
+  };
   $("sc-tr-back").onclick = () => { scTransportStop(); scTransportSeek(scTransport.elapsedMs - 1000); };
   $("sc-tr-fwd").onclick = () => { scTransportStop(); scTransportSeek(scTransport.elapsedMs + 1000); };
   $("sc-tr-prev-frame").onclick = () => { scTransportStop(); scTransportSeek(scTransport.elapsedMs - 1000 / 30); };
   $("sc-tr-next-frame").onclick = () => { scTransportStop(); scTransportSeek(scTransport.elapsedMs + 1000 / 30); };
+
+  const loopBtn = $("sc-tr-loop");
+  if (loopBtn) {
+    loopBtn.onclick = () => {
+      scTransport.loop = !scTransport.loop;
+      loopBtn.style.background = scTransport.loop ? "#3b82f6" : "";
+      loopBtn.style.color = scTransport.loop ? "#ffffff" : "";
+    };
+  }
+
+  const muteBtn = $("sc-tr-mute");
+  if (muteBtn) {
+    muteBtn.onclick = () => {
+      scTransport.muted = !scTransport.muted;
+      muteBtn.innerHTML = scTransport.muted ? "🔇" : "🔊";
+      const audio = ensureVideoDetailAudio();
+      if (audio) audio.muted = scTransport.muted;
+      const frame = $("sc-preview");
+      try {
+        if (frame && frame.contentWindow) {
+          frame.contentWindow.postMessage({ type: "video-mute-toggle", muted: scTransport.muted }, "*");
+          frame.contentWindow.document.querySelectorAll("audio, video").forEach(el => {
+            el.muted = scTransport.muted;
+          });
+        }
+      } catch(e) {}
+    };
+  }
+
+  const speedSelect = $("sc-tr-speed");
+  if (speedSelect) {
+    speedSelect.onchange = () => {
+      scTransport.speed = parseFloat(speedSelect.value) || 1.0;
+    };
+  }
 })();
 
 // ---------------------------------------------------------------------------
@@ -2985,7 +3083,7 @@ $("sc-source-upload").onclick = async () => {
   });
 };
 
-$("sc-save").onclick = async () => {
+async function saveCurrentScene() {
   const body = {
     sceneTemplate: $("sc-template").value, layout: $("sc-layout").value || undefined,
     depth: $("sc-depth").value || "flat", transition: $("sc-transition").value || "cut",
@@ -2997,12 +3095,22 @@ $("sc-save").onclick = async () => {
     durationSeconds: Number($("sc-duration").value) || 3, rotate: Number($("sc-rotate").value),
     zoom: Number($("sc-zoom").value), move: Number($("sc-move").value), sourceId: $("sc-source").value || undefined,
     flowSteps: currentSceneFlowSteps.length > 0 ? currentSceneFlowSteps : undefined,
+    textAnimation: {
+      preset: $("sc-text-preset").value,
+      speed: Number($("sc-text-speed").value) || 1,
+      delayMs: Number($("sc-text-delay").value) || 0,
+      scale: Number($("sc-text-scale").value) || 1,
+    },
   };
+  const updated = await api(`/api/videos/${videoId}/scenes/${selectedSceneId}`, { method: "PUT", body });
+  const idx = videoProject.scenes.findIndex((s) => s.id === selectedSceneId);
+  videoProject.scenes[idx] = updated;
+  showScenePreview();
+}
+
+$("sc-save").onclick = async () => {
   try {
-    const updated = await api(`/api/videos/${videoId}/scenes/${selectedSceneId}`, { method: "PUT", body });
-    const idx = videoProject.scenes.findIndex((s) => s.id === selectedSceneId);
-    videoProject.scenes[idx] = updated;
-    showScenePreview();
+    await saveCurrentScene();
   } catch (e) {
     await alert("Save failed: " + e.message);
   }
@@ -3034,6 +3142,113 @@ $("sc-remove").onclick = async () => {
     await alert("Could not remove scene: " + e.message);
   }
 };
+
+// "Save Template Configuration" opens a named-snapshot modal (project.savedConfigs);
+// individual scene edits already persist live via saveCurrentScene()/the Content
+// panel, so this doesn't need to re-flush the whole project first.
+let savedConfigsCache = [];
+
+$("video-save-config-btn").onclick = () => {
+  if (!videoId || !videoProject || !videoProject.template) {
+    alert("Load a template first.");
+    return;
+  }
+  $("save-config-name").value = "";
+  $("save-config-warning").style.display = "none";
+  $("save-config-backdrop").classList.add("open");
+  $("save-config-name").focus();
+};
+
+$("save-config-close").onclick = () => $("save-config-backdrop").classList.remove("open");
+$("save-config-cancel").onclick = () => $("save-config-backdrop").classList.remove("open");
+
+async function submitSaveConfig(overwrite) {
+  const name = $("save-config-name").value.trim();
+  if (!name) {
+    $("save-config-warning").textContent = "A configuration name is required.";
+    $("save-config-warning").style.display = "block";
+    return;
+  }
+  try {
+    savedConfigsCache = await api(`/api/videos/${videoId}/configs`, { method: "POST", body: { name, overwrite } });
+    $("save-config-backdrop").classList.remove("open");
+    showToast(`Configuration "${name}" saved.`, "success");
+    renderSavedConfigsGrid();
+  } catch (e) {
+    if (!overwrite && /already exists/i.test(e.message)) {
+      const ok = await confirm(`A configuration named "${name}" already exists. Overwrite it?`);
+      if (ok) return submitSaveConfig(true);
+      return;
+    }
+    $("save-config-warning").textContent = e.message;
+    $("save-config-warning").style.display = "block";
+  }
+}
+$("save-config-confirm").onclick = () => submitSaveConfig(false);
+
+async function loadSavedConfigs() {
+  const grid = $("saved-configs-grid");
+  if (!videoId) {
+    grid.innerHTML = '<div class="hint">No project loaded.</div>';
+    return;
+  }
+  grid.innerHTML = '<div class="hint">Loading...</div>';
+  try {
+    savedConfigsCache = await api(`/api/videos/${videoId}/configs`);
+    renderSavedConfigsGrid();
+  } catch (e) {
+    grid.innerHTML = `<div class="hint slot-issue error">Failed to load saved configurations: ${e.message}</div>`;
+  }
+}
+
+function renderSavedConfigsGrid() {
+  const grid = $("saved-configs-grid");
+  if (!grid) return;
+  if (savedConfigsCache.length === 0) {
+    grid.innerHTML = '<div class="hint">No saved configurations yet. Use "Save Template Configuration" in the Scenes tab.</div>';
+    return;
+  }
+  grid.innerHTML = savedConfigsCache.map((c) => {
+    const aspect = c.scenes[0]?.aspectRatio === "16:9" ? "16:9" : "9:16";
+    return `
+      <div class="card" style="padding:1rem;" data-config-id="${c.id}">
+        <div style="font-weight:600; margin-bottom:.3rem;">${c.name}</div>
+        <div class="hint" style="margin-bottom:.2rem;">Template: ${c.template}</div>
+        <div class="hint" style="margin-bottom:.2rem;">${c.scenes.length} scene(s) · ${aspect}</div>
+        <div class="hint" style="margin-bottom:.8rem;">Saved ${new Date(c.savedAt).toLocaleString()}</div>
+        <div class="row" style="gap:8px;">
+          <button class="secondary small config-apply-btn" type="button" style="flex:1;">Apply to Video</button>
+          <button class="secondary small danger config-delete-btn" type="button">Delete</button>
+        </div>
+      </div>
+    `;
+  }).join("");
+  grid.querySelectorAll(".config-apply-btn").forEach((btn) => {
+    btn.onclick = async () => {
+      const id = btn.closest("[data-config-id]").dataset.configId;
+      try {
+        videoProject = await api(`/api/videos/${videoId}/configs/${id}/apply`, { method: "POST" });
+        showToast("Configuration applied.", "success");
+        renderVideoScenes();
+      } catch (e) {
+        await alert("Could not apply configuration: " + e.message);
+      }
+    };
+  });
+  grid.querySelectorAll(".config-delete-btn").forEach((btn) => {
+    btn.onclick = async () => {
+      const id = btn.closest("[data-config-id]").dataset.configId;
+      const ok = await confirm("Delete this saved configuration? This cannot be undone.");
+      if (!ok) return;
+      try {
+        savedConfigsCache = await api(`/api/videos/${videoId}/configs/${id}`, { method: "DELETE" });
+        renderSavedConfigsGrid();
+      } catch (e) {
+        await alert("Could not delete configuration: " + e.message);
+      }
+    };
+  });
+}
 
 // The old global "AI Assist" button (above Duration) is gone -- AI is now a
 // per-field affordance (see aiButton() in the content-panel section above).
@@ -3346,5 +3561,229 @@ window.addEventListener("message", (e) => {
     }
   }
 });
+
+/* ============================================================
+   Device Management System
+   ============================================================ */
+
+async function loadDevicesCatalogue() {
+  const grid = $("dev-grid");
+  if (!grid) return;
+  grid.innerHTML = '<div class="hint">Loading devices...</div>';
+  
+  try {
+    if (!Array.isArray(videoDevices) || videoDevices.length === 0) {
+      const res = await api("/api/devices");
+      videoDevices = Array.isArray(res) ? res : (Array.isArray(res?.devices) ? res.devices : []);
+    }
+    renderDevicesCatalogueList();
+  } catch (err) {
+    grid.innerHTML = `<div class="hint slot-issue error">Failed to load device catalogue: ${err.message}</div>`;
+  }
+}
+
+function renderDevicesCatalogueList() {
+  const grid = $("dev-grid");
+  if (!grid) return;
+  
+  if (!Array.isArray(videoDevices)) videoDevices = [];
+
+  const searchVal = $("dev-search").value.toLowerCase();
+  const platformVal = $("dev-filter-platform").value;
+  const formFactorVal = $("dev-filter-formfactor").value;
+
+  const filtered = videoDevices.filter(d => {
+    const matchesSearch = d.name.toLowerCase().includes(searchVal) || d.vendor.toLowerCase().includes(searchVal);
+    const matchesPlatform = !platformVal || d.platforms.includes(platformVal);
+    const matchesForm = !formFactorVal || d.formFactor === formFactorVal;
+    return matchesSearch && matchesPlatform && matchesForm;
+  });
+  
+  if (filtered.length === 0) {
+    grid.innerHTML = '<div class="hint">No matching devices found.</div>';
+    return;
+  }
+  
+  grid.innerHTML = filtered.map(d => {
+    const platformBadges = d.platforms.map(p => {
+      const cls = p === "apple-app-store" ? "platform-ios" : "platform-android";
+      const lbl = p === "apple-app-store" ? "iOS" : "Android";
+      return `<span class="device-tag ${cls}">${lbl}</span>`;
+    }).join(" ");
+
+    return `
+      <div class="device-card" data-device-id="${d.id}">
+        ${device3dViewerHtml(d)}
+        <div class="device-card-header">
+          <div>
+            <div class="device-vendor">${d.vendor}</div>
+            <h3 class="device-name">${d.name}</h3>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:4px; align-items:flex-end;">
+            ${platformBadges}
+          </div>
+        </div>
+        <div class="device-specs-list">
+          <div class="device-spec-item">
+            <span class="device-spec-label">Form Factor:</span>
+            <span>${d.formFactor}</span>
+          </div>
+          <div class="device-spec-item">
+            <span class="device-spec-label">Screen Inset:</span>
+            <span>T:${d.geometry.screenInset.top} L:${d.geometry.screenInset.left} W:${d.geometry.screenInset.width} H:${d.geometry.screenInset.height}</span>
+          </div>
+          <div class="device-spec-item">
+            <span class="device-spec-label">Bezel Width:</span>
+            <span>${d.frame.bezelWidth}px</span>
+          </div>
+          <div class="device-spec-item">
+            <span class="device-spec-label">Cutout Type:</span>
+            <span>${d.frame.cutout}</span>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  bind3dDeviceViewers(grid);
+}
+
+/** A generic (non-pixel-exact) six-face CSS-3D box for the device catalogue's
+ *  360° preview -- not the render engine's frame-accurate device3dMarkup
+ *  (src/render/shared.ts), which needs a real screenshot/scene context this
+ *  catalogue card doesn't have. Faces are proportioned from the device's own
+ *  geometry/frame traits so different devices still read as visually
+ *  distinct (aspect ratio, bezel, cutout, body color). */
+function device3dViewerHtml(d) {
+  // Aspect-fit into a standard bounding box so a 2868px iPhone 16 Pro Max
+  // and a 2388px iPad both land at the same on-card footprint instead of
+  // a fixed 0.14 scale blowing up the tallest devices' card height.
+  const maxW = 110, maxH = 150;
+  const scale = Math.min(maxW / d.geometry.width, maxH / d.geometry.height);
+  const w = Math.round(d.geometry.width * scale);
+  const h = Math.round(d.geometry.height * scale);
+  const thickness = Math.max(12, Math.round((d.frame.thickness ?? 22) * scale * 2.2));
+  const body = d.frame.body || "#1a1d24";
+  const accent = d.frame.accent || "#3a3f4b";
+  const insetTop = Math.round(d.geometry.screenInset.top * scale);
+  const insetLeft = Math.round(d.geometry.screenInset.left * scale);
+  const insetW = Math.round(d.geometry.screenInset.width * scale);
+  const insetH = Math.round(d.geometry.screenInset.height * scale);
+  const cutout = d.frame.cutout === "notch"
+    ? `<div style="position:absolute; top:0; left:50%; transform:translateX(-50%); width:${Math.round(w * 0.32)}px; height:6px; background:#000; border-radius:0 0 8px 8px;"></div>`
+    : d.frame.cutout === "punch-hole" || d.frame.cutout === "dynamic-island"
+    ? `<div style="position:absolute; top:6px; left:50%; transform:translateX(-50%); width:10px; height:10px; background:#000; border-radius:50%;"></div>`
+    : "";
+
+  return `
+    <div class="device-3d-viewport" data-w="${w}" data-h="${h}" data-t="${thickness}">
+      <div class="device-3d-rig" style="width:${w}px; height:${h}px;">
+        <div class="d3-face d3-front" style="width:${w}px; height:${h}px; background:${body}; transform: translateZ(${thickness / 2}px);">
+          <div style="position:absolute; inset:0; background:linear-gradient(135deg, rgba(255,255,255,.10), transparent 40%);"></div>
+          <div style="position:absolute; top:${insetTop}px; left:${insetLeft}px; width:${insetW}px; height:${insetH}px; background:linear-gradient(160deg,#0b1622,#1c2b3d); border-radius:4px; box-shadow: inset 0 0 8px rgba(0,0,0,.6);"></div>
+          ${cutout}
+        </div>
+        <div class="d3-face d3-back" style="width:${w}px; height:${h}px; background:linear-gradient(135deg, ${accent}, ${body}); transform: rotateY(180deg) translateZ(${thickness / 2}px);">
+          <div style="position:absolute; top:10%; left:12%; width:26%; height:16%; border-radius:8px; background:rgba(0,0,0,.4); display:flex; align-items:center; justify-content:center; gap:3px;">
+            <span style="width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,.2); border:1px solid rgba(255,255,255,.2);"></span>
+            <span style="width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,.2); border:1px solid rgba(255,255,255,.2);"></span>
+            <span style="width:5px; height:5px; border-radius:50%; background:rgba(255,255,255,.35);"></span>
+          </div>
+        </div>
+        <div class="d3-face d3-top" style="width:${w}px; height:${thickness}px; background:${accent}; transform: rotateX(90deg) translateZ(${h / 2}px);">
+          <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:${Math.round(w * 0.18)}px; height:2px; background:rgba(0,0,0,.4); border-radius:2px;"></div>
+        </div>
+        <div class="d3-face d3-bottom" style="width:${w}px; height:${thickness}px; background:${accent}; transform: rotateX(-90deg) translateZ(${h / 2}px);">
+          <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:${Math.round(w * 0.22)}px; height:3px; background:rgba(0,0,0,.5); border-radius:1px;"></div>
+        </div>
+        <div class="d3-face d3-left" style="width:${thickness}px; height:${h}px; background:${accent}; transform: rotateY(-90deg) translateZ(${w / 2}px);">
+          <div style="position:absolute; top:22%; left:50%; transform:translateX(-50%); width:2px; height:14%; background:rgba(0,0,0,.4);"></div>
+          <div style="position:absolute; top:40%; left:50%; transform:translateX(-50%); width:2px; height:14%; background:rgba(0,0,0,.4);"></div>
+        </div>
+        <div class="d3-face d3-right" style="width:${thickness}px; height:${h}px; background:${accent}; transform: rotateY(90deg) translateZ(${w / 2}px);">
+          <div style="position:absolute; top:24%; left:50%; transform:translateX(-50%); width:2px; height:10%; background:rgba(0,0,0,.4);"></div>
+        </div>
+      </div>
+      <div class="device-3d-controls">
+        <button type="button" class="secondary small d3-orbit-btn" title="Toggle auto-orbit">&#8635; Orbit</button>
+        <button type="button" class="secondary small d3-reset-btn" title="Reset view">&#8634; Reset</button>
+      </div>
+    </div>
+  `;
+}
+
+function bind3dDeviceViewers(grid) {
+  grid.querySelectorAll(".device-3d-viewport").forEach((vp) => {
+    const rig = vp.querySelector(".device-3d-rig");
+    let rx = -18, ry = 25;
+    let dragging = false, lastX = 0, lastY = 0;
+    let orbitTimer = null;
+
+    const apply = () => { rig.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`; };
+    apply();
+
+    const stopOrbit = () => { if (orbitTimer) { clearInterval(orbitTimer); orbitTimer = null; } vp.querySelector(".d3-orbit-btn").textContent = "↻ Orbit"; };
+    const startOrbit = () => {
+      orbitTimer = setInterval(() => { ry = (ry + 0.6) % 360; apply(); }, 30);
+      vp.querySelector(".d3-orbit-btn").textContent = "⏸ Stop";
+    };
+
+    vp.addEventListener("pointerdown", (e) => {
+      if (e.target.closest("button")) return;
+      dragging = true; lastX = e.clientX; lastY = e.clientY;
+      stopOrbit();
+      vp.setPointerCapture(e.pointerId);
+    });
+    vp.addEventListener("pointermove", (e) => {
+      if (!dragging) return;
+      ry += (e.clientX - lastX) * 0.5;
+      rx = Math.max(-80, Math.min(80, rx - (e.clientY - lastY) * 0.5));
+      lastX = e.clientX; lastY = e.clientY;
+      apply();
+    });
+    vp.addEventListener("pointerup", () => { dragging = false; });
+    vp.addEventListener("pointerleave", () => { dragging = false; });
+
+    vp.querySelector(".d3-orbit-btn").onclick = () => { if (orbitTimer) stopOrbit(); else startOrbit(); };
+    vp.querySelector(".d3-reset-btn").onclick = () => { stopOrbit(); rx = -18; ry = 25; apply(); };
+  });
+}
+
+// Bind search and filter events
+const devSearch = $("dev-search");
+if (devSearch) devSearch.oninput = renderDevicesCatalogueList;
+const devFilterPlatform = $("dev-filter-platform");
+if (devFilterPlatform) devFilterPlatform.onchange = renderDevicesCatalogueList;
+const devFilterFormfactor = $("dev-filter-formfactor");
+if (devFilterFormfactor) devFilterFormfactor.onchange = renderDevicesCatalogueList;
+
+// Export button handler
+const devExportBtn = $("dev-export-btn");
+if (devExportBtn) {
+  devExportBtn.onclick = () => {
+    window.location.href = "/api/devices/export";
+  };
+}
+
+// Import button handler
+const devImportBtn = $("dev-import-btn");
+const devImportFile = $("dev-import-file");
+if (devImportBtn && devImportFile) {
+  devImportBtn.onclick = () => devImportFile.click();
+  devImportFile.onchange = async () => {
+    const file = devImportFile.files[0];
+    if (!file) return;
+    try {
+      const text = await file.text();
+      const parsed = JSON.parse(text);
+      await api("/api/devices/import", { method: "POST", body: parsed });
+      videoDevices = []; // Clear local cache to force reload
+      await loadDevicesCatalogue();
+      showToast("Device catalogue successfully imported!", "success");
+    } catch(err) {
+      await alert("Failed to import device catalogue: " + err.message);
+    }
+  };
+}
 
 refreshAuthStatus();

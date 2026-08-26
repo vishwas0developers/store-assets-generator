@@ -22,7 +22,7 @@ import {
 import { setProviderKey, clearProviderKey } from "../src/ai/keystore.js";
 import { fetchModelsForProvider, testProvider, isDiscoveryError } from "../src/ai/adapters.js";
 import { chat, extractJsonArray } from "../src/ai/chat.js";
-import { listDevices } from "../src/devices/registry.js";
+import { listDevices, reloadRegistry } from "../src/devices/registry.js";
 import { loadPlatformSpec } from "../src/platform/index.js";
 
 import {
@@ -349,7 +349,7 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
     if (method === "GET" && p === "/api/devices") {
       const platform = (url.searchParams.get("platform") as any) || undefined;
       const formFactor = (url.searchParams.get("formFactor") as any) || undefined;
-      sendJson(res, 200, { devices: listDevices({ platform, formFactor }) });
+      sendJson(res, 200, listDevices({ platform, formFactor }));
       return;
     }
     if (method === "GET" && p === "/api/platforms") {
@@ -980,6 +980,18 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
     {
       const m = p.match(/^\/api\/videos\/(?!templates$|scene-options$)([^/]+)$/);
       if (m && method === "GET") return sendJson(res, 200, loadVideoProject(decodeURIComponent(m[1])));
+      if (m && method === "PUT") {
+        const body = await readJsonBody(req);
+        const project = loadVideoProject(decodeURIComponent(m[1]));
+        if (body.template !== undefined) project.template = body.template;
+        if (body.scenes !== undefined) project.scenes = body.scenes;
+        if (body.bgm !== undefined) project.bgm = body.bgm;
+        if (body.bgmVolume !== undefined) project.bgmVolume = body.bgmVolume;
+        if (body.brand !== undefined) project.brand = body.brand;
+        saveVideoProject(project);
+        sendJson(res, 200, project);
+        return;
+      }
     }
     {
       const m = p.match(/^\/api\/videos\/([^/]+)\/file$/);
@@ -989,6 +1001,75 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
         const abs = videoFile(decodeURIComponent(m[1]), rel);
         const ext = path.extname(abs).toLowerCase();
         sendFile(res, abs, ext === ".mp4" ? "video/mp4" : "image/png");
+        return;
+      }
+    }
+
+    {
+      const m = p.match(/^\/api\/videos\/([^/]+)\/configs$/);
+      if (m && method === "GET") {
+        const project = loadVideoProject(decodeURIComponent(m[1]));
+        sendJson(res, 200, project.savedConfigs ?? []);
+        return;
+      }
+      if (m && method === "POST") {
+        const body = await readJsonBody(req);
+        const project = loadVideoProject(decodeURIComponent(m[1]));
+        const configId = body.id || `config_${Date.now()}`;
+        const configName = body.name || `Config ${new Date().toLocaleString()}`;
+        
+        project.savedConfigs = project.savedConfigs ?? [];
+        const existingIdx = project.savedConfigs.findIndex((c) => c.id === configId || c.name.toLowerCase() === configName.toLowerCase());
+        
+        if (existingIdx !== -1 && !body.overwrite) {
+          sendError(res, 400, `A configuration named "${configName}" already exists. Overwrite?`);
+          return;
+        }
+
+        const newConfig = {
+          id: existingIdx !== -1 ? project.savedConfigs[existingIdx].id : configId,
+          name: configName,
+          template: project.template || "",
+          scenes: project.scenes,
+          savedAt: new Date().toISOString(),
+        };
+
+        if (existingIdx !== -1) {
+          project.savedConfigs[existingIdx] = newConfig;
+        } else {
+          project.savedConfigs.push(newConfig);
+        }
+
+        saveVideoProject(project);
+        sendJson(res, 200, project.savedConfigs);
+        return;
+      }
+    }
+    {
+      const m = p.match(/^\/api\/videos\/([^/]+)\/configs\/([^/]+)\/apply$/);
+      if (m && method === "POST") {
+        const project = loadVideoProject(decodeURIComponent(m[1]));
+        const configId = decodeURIComponent(m[2]);
+        const config = project.savedConfigs?.find((c) => c.id === configId);
+        if (!config) return sendError(res, 404, "Configuration not found");
+        
+        project.template = config.template;
+        project.scenes = config.scenes;
+        saveVideoProject(project);
+        sendJson(res, 200, project);
+        return;
+      }
+    }
+    {
+      const m = p.match(/^\/api\/videos\/([^/]+)\/configs\/([^/]+)$/);
+      if (m && method === "DELETE") {
+        const project = loadVideoProject(decodeURIComponent(m[1]));
+        const configId = decodeURIComponent(m[2]);
+        if (project.savedConfigs) {
+          project.savedConfigs = project.savedConfigs.filter((c) => c.id !== configId);
+        }
+        saveVideoProject(project);
+        sendJson(res, 200, project.savedConfigs ?? []);
         return;
       }
     }
@@ -1082,6 +1163,32 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
 
     if (method === "GET" && p === "/api/videos/scene-options") {
       sendJson(res, 200, { animations: listSceneAnimations(), backgrounds: listVideoBackgrounds(), layouts: { "9:16": listSceneLayouts("9:16"), "16:9": listSceneLayouts("16:9") } });
+      return;
+    }
+
+    if (method === "GET" && p === "/api/devices/export") {
+      const configPath = path.join(process.cwd(), "config", "devices.json");
+      res.writeHead(200, { 
+        "Content-Type": "application/json", 
+        "Content-Disposition": "attachment; filename=devices-registry.json" 
+      });
+      res.end(fs.readFileSync(configPath, "utf8"));
+      return;
+    }
+    if (method === "POST" && p === "/api/devices/import") {
+      try {
+        const body = await readJsonBody(req);
+        if (!body || !Array.isArray(body.devices)) {
+          sendError(res, 400, "Invalid JSON structure. Must have a 'devices' array.");
+          return;
+        }
+        const configPath = path.join(process.cwd(), "config", "devices.json");
+        fs.writeFileSync(configPath, JSON.stringify(body, null, 2), "utf8");
+        reloadRegistry();
+        sendJson(res, 200, { success: true });
+      } catch (err) {
+        sendError(res, 500, (err as Error).message);
+      }
       return;
     }
     {
@@ -1197,6 +1304,64 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
         project.scenes.sort((a, b) => a.order - b.order);
         saveVideoProject(project);
         sendJson(res, 200, project);
+        return;
+      }
+    }
+    {
+      const m = p.match(/^\/api\/videos\/([^/]+)\/configs$/);
+      if (m && method === "GET") {
+        const project = loadVideoProject(decodeURIComponent(m[1]));
+        sendJson(res, 200, project.savedConfigs ?? []);
+        return;
+      }
+      if (m && method === "POST") {
+        const body = await readJsonBody(req);
+        const name = String(body.name ?? "").trim();
+        if (!name) return sendError(res, 400, "A configuration name is required.");
+        const project = loadVideoProject(decodeURIComponent(m[1]));
+        if (!project.template || project.scenes.length === 0) return sendError(res, 400, "Apply a template before saving a configuration.");
+        project.savedConfigs = project.savedConfigs ?? [];
+        const existing = project.savedConfigs.find((c) => c.name === name);
+        const snapshot = {
+          id: existing?.id ?? `cfg_${Date.now()}`,
+          name,
+          template: project.template,
+          scenes: JSON.parse(JSON.stringify(project.scenes)),
+          savedAt: new Date().toISOString(),
+        };
+        if (existing) {
+          if (!body.overwrite) return sendError(res, 409, `A configuration named '${name}' already exists.`);
+          Object.assign(existing, snapshot);
+        } else {
+          project.savedConfigs.push(snapshot);
+        }
+        saveVideoProject(project);
+        sendJson(res, 200, project.savedConfigs);
+        return;
+      }
+    }
+    {
+      const m = p.match(/^\/api\/videos\/([^/]+)\/configs\/([^/]+)\/apply$/);
+      if (m && method === "POST") {
+        const project = loadVideoProject(decodeURIComponent(m[1]));
+        const cfg = (project.savedConfigs ?? []).find((c) => c.id === decodeURIComponent(m[2]));
+        if (!cfg) return sendError(res, 404, "Saved configuration not found");
+        project.template = cfg.template;
+        project.scenes = JSON.parse(JSON.stringify(cfg.scenes));
+        saveVideoProject(project);
+        sendJson(res, 200, project);
+        return;
+      }
+    }
+    {
+      const m = p.match(/^\/api\/videos\/([^/]+)\/configs\/([^/]+)$/);
+      if (m && method === "DELETE") {
+        const project = loadVideoProject(decodeURIComponent(m[1]));
+        const before = project.savedConfigs?.length ?? 0;
+        project.savedConfigs = (project.savedConfigs ?? []).filter((c) => c.id !== decodeURIComponent(m[2]));
+        if (project.savedConfigs.length === before) return sendError(res, 404, "Saved configuration not found");
+        saveVideoProject(project);
+        sendJson(res, 200, project.savedConfigs);
         return;
       }
     }

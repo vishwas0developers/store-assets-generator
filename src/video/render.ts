@@ -681,15 +681,35 @@ function deviceInnerMarkup(animation: SceneAnimation, device: DeviceModel, scene
   return deviceRigMarkup(device, filled, filledKinds, scene, durationMs);
 }
 
-/** Shared text-block CSS: a single-pass fade+rise entrance for the whole
+/** Per-scene text-block CSS: a single-pass entrance for the whole
  *  title/subtitle block -- once displayed the text is 100% stable (no
  *  per-word staggering/flicker). The exit fade itself is emitted per-scene
- *  by `sceneLayoutCss` (its timing depends on that scene's duration). */
-const WORD_SPAN_CSS = `
-  .word { display: inline-block; }
-  .label, .subtext { opacity: 0; transform: translateY(20px); animation: textIn 480ms cubic-bezier(.16,1,.3,1) forwards; }
-  @keyframes textIn { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
-`;
+ *  by `sceneLayoutCss` (its timing depends on that scene's duration).
+ *  `scope`/`suffix` let the multi-scene concatenated preview give every
+ *  scene its own keyframe name and selector so scenes with different
+ *  presets don't collide on the same global `@keyframes textIn`. */
+function textAnimCss(scene: VideoScene, scope = "", suffix = ""): string {
+  const ta = scene.textAnimation ?? {};
+  const speed = ta.speed && ta.speed > 0 ? ta.speed : 1;
+  const duration = Math.round(480 / speed);
+  const scale = ta.scale ?? 1;
+  const keyframeName = `textIn${suffix}`;
+  const preset = ta.preset ?? "fade-up";
+  const bodies: Record<string, string> = {
+    "fade-up": `0% { opacity: 0; transform: translateY(20px) scale(${scale}); } 100% { opacity: 1; transform: translateY(0) scale(1); }`,
+    "slide-in": `0% { opacity: 0; transform: translateX(-40px) scale(${scale}); } 100% { opacity: 1; transform: translateX(0) scale(1); }`,
+    "zoom-in": `0% { opacity: 0; transform: scale(${(0.5 * scale).toFixed(3)}); } 100% { opacity: 1; transform: scale(1); }`,
+    "tracking-in": `0% { opacity: 0; letter-spacing: .5em; transform: scale(${scale}); } 100% { opacity: 1; letter-spacing: normal; transform: scale(1); }`,
+    kinetic: `0% { opacity: 0; transform: translateY(30px) scale(${scale}); } 60% { opacity: 1; transform: translateY(-6px) scale(1.03); } 100% { opacity: 1; transform: translateY(0) scale(1); }`,
+    typewriter: `0% { opacity: 1; clip-path: inset(0 100% 0 0); } 100% { opacity: 1; clip-path: inset(0 0 0 0); }`,
+  };
+  const body = bodies[preset] ?? bodies["fade-up"];
+  return `
+    ${scope} .word { display: inline-block; }
+    ${scope} .label, ${scope} .subtext { opacity: 0; animation: ${keyframeName} ${duration}ms cubic-bezier(.16,1,.3,1) forwards; }
+    @keyframes ${keyframeName} { ${body} }
+  `;
+}
 
 /** Backgrounds pale/bright enough that white text loses contrast against
  *  them -- text color and its shadow flip to dark on these, keeping every
@@ -704,9 +724,10 @@ function textShadowFor(background: string): string {
 
 function textBlockHtml(scene: VideoScene): string {
   if (!scene.text) return "";
-  const title = `<div class="label" style="animation-delay:60ms"><span class="word">${escapeHtml(scene.text)}</span></div>`;
+  const extraDelay = scene.textAnimation?.delayMs ?? 0;
+  const title = `<div class="label" style="animation-delay:${60 + extraDelay}ms"><span class="word">${escapeHtml(scene.text)}</span></div>`;
   const sub = scene.subtext
-    ? `<div class="subtext" style="animation-delay:220ms"><span class="word">${escapeHtml(scene.subtext)}</span></div>`
+    ? `<div class="subtext" style="animation-delay:${220 + extraDelay}ms"><span class="word">${escapeHtml(scene.subtext)}</span></div>`
     : "";
   return `<div class="copy" style="color:${textColorFor(scene.background)};text-shadow:${textShadowFor(scene.background)}">${title}${sub}</div>`;
 }
@@ -1078,7 +1099,7 @@ export function sceneHtml(
   ${CANVAS_BASE_CSS}
   .canvas { width: ${canvas.width}px; height: ${canvas.height}px; }
   ${DEVICE_CSS}
-  ${WORD_SPAN_CSS}
+  ${textAnimCss(scene)}
   ${FLOW_LABEL_CSS}
   ${foldRigCss(durationMs)}
   ${sceneLayoutCss(scene, animation, durationMs, ".canvas", "")}
@@ -1141,7 +1162,7 @@ export function templatePreviewHtml(project: VideoProject): string {
     .map((scene, i) => {
       const animation = SCENE_ANIMATIONS[scene.sceneTemplate] ?? SCENE_ANIMATIONS["hero-rise"];
       const durationMs = Math.max(1, scene.durationSeconds) * 1000;
-      return sceneLayoutCss(scene, animation, durationMs, `.scene-${i}`, `-${i}`, `.scene-${i}.playing`);
+      return sceneLayoutCss(scene, animation, durationMs, `.scene-${i}`, `-${i}`, `.scene-${i}.playing`) + textAnimCss(scene, `.scene-${i}`, `-${i}`);
     })
     .join("\n");
 
@@ -1163,7 +1184,6 @@ export function templatePreviewHtml(project: VideoProject): string {
     .scene { position:absolute; inset:0; width:${canvas.width}px; height:${canvas.height}px; display:none; }
     .scene.playing { display:flex; }
     ${DEVICE_CSS}
-    ${WORD_SPAN_CSS}
     ${foldRigCss(0)}
     ${scenesCss}
   </style></head><body>${scenesHtml}
