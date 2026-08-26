@@ -1949,7 +1949,7 @@ function openVideoTemplateDetail(id) {
         <!-- Externalized Player Bar -->
         <div class="v-player-bar" id="host-player-bar">
           <button class="v-btn" id="host-play-btn" title="Play / Pause (Space)">&#9654;</button>
-          <button class="v-btn v-btn-secondary" id="host-replay-btn" title="Replay">&#8635;</button>
+          <button class="v-btn v-btn-secondary" id="host-mute-btn" title="Mute / Unmute Audio">&#128266;</button>
           <div class="v-timeline-box">
             <div class="v-scrubber" id="host-scrubber">
               <div class="v-scrubber-fill" id="host-scrubber-fill"></div>
@@ -1999,22 +1999,52 @@ function openVideoTemplateDetail(id) {
   });
   const hostPlayBtn = $("host-play-btn");
   if (hostPlayBtn) hostPlayBtn.onclick = () => videoDetailTogglePlay(id);
-  const hostReplayBtn = $("host-replay-btn");
-  if (hostReplayBtn) {
-    hostReplayBtn.onclick = () => {
-      const api = videoPlayerApi();
-      if (api) api.replay();
+  const hostMuteBtn = $("host-mute-btn");
+  if (hostMuteBtn) {
+    const audio = ensureVideoDetailAudio();
+    hostMuteBtn.innerHTML = audio.muted ? "&#128263;" : "&#128266;";
+    hostMuteBtn.onclick = () => {
+      audio.muted = !audio.muted;
+      hostMuteBtn.innerHTML = audio.muted ? "&#128263;" : "&#128266;";
+      hostMuteBtn.title = audio.muted ? "Unmute Audio" : "Mute Audio";
     };
   }
   const hostScrubber = $("host-scrubber");
   if (hostScrubber) {
-    hostScrubber.onclick = (e) => {
+    let isDragging = false;
+    let resumeAfterDrag = false;
+    const handleHostScrub = (e) => {
       const api = videoPlayerApi();
       if (!api) return;
       const rect = hostScrubber.getBoundingClientRect();
       const pos = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
       const totalDur = api.totalDuration || (t.scenes.reduce((sum, s) => sum + (s.durationSeconds || 5), 0) * 1000);
       api.seek(pos * totalDur);
+    };
+    hostScrubber.onmousedown = (e) => {
+      e.stopPropagation();
+      const api = videoPlayerApi();
+      isDragging = true;
+      resumeAfterDrag = (videoDetailState === "playing");
+      if (resumeAfterDrag && api) {
+        api.pause();
+      }
+      handleHostScrub(e);
+      const onMove = (ev) => {
+        if (isDragging) handleHostScrub(ev);
+      };
+      const onUp = () => {
+        if (isDragging) {
+          isDragging = false;
+          window.removeEventListener("mousemove", onMove);
+          window.removeEventListener("mouseup", onUp);
+          if (resumeAfterDrag && api) {
+            api.play();
+          }
+        }
+      };
+      window.addEventListener("mousemove", onMove);
+      window.addEventListener("mouseup", onUp);
     };
   }
   stage.querySelectorAll("[data-scene-jump]").forEach((el) => {
@@ -3305,8 +3335,16 @@ async function handleDirectComputerUpload(file) {
   }
 }
 
-/* ============================================================
-   Init
-   ============================================================ */
+window.addEventListener("message", (e) => {
+  if (e.data && e.data.type === "video-mute-toggle") {
+    const audio = ensureVideoDetailAudio();
+    audio.muted = !!e.data.muted;
+    const hostMuteBtn = $("host-mute-btn");
+    if (hostMuteBtn) {
+      hostMuteBtn.innerHTML = audio.muted ? "&#128263;" : "&#128266;";
+      hostMuteBtn.title = audio.muted ? "Unmute Audio" : "Mute Audio";
+    }
+  }
+});
 
 refreshAuthStatus();

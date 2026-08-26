@@ -162,7 +162,7 @@ export function getUniversalPlayerScriptAndStyle(config) {
   <!-- Standalone Floating Video Player Bar -->
   <div class="v-player-bar" id="v-player-bar">
     <button class="v-btn" id="v-play-btn" title="Play / Pause (Space)">&#9654;</button>
-    <button class="v-btn v-btn-secondary" id="v-replay-btn" title="Replay">&#8635;</button>
+    <button class="v-btn v-btn-secondary" id="v-mute-btn" title="Mute / Unmute Audio">&#128266;</button>
     <div class="v-timeline-box">
       <div class="v-scrubber" id="v-scrubber">
         <div class="v-scrubber-fill" id="v-scrubber-fill"></div>
@@ -211,7 +211,6 @@ export function getUniversalPlayerScriptAndStyle(config) {
     let hideTimeout = null;
 
     const playBtn = document.getElementById("v-play-btn");
-    const replayBtn = document.getElementById("v-replay-btn");
     const scrubber = document.getElementById("v-scrubber");
     const scrubberFill = document.getElementById("v-scrubber-fill");
     const scrubberThumb = document.getElementById("v-scrubber-thumb");
@@ -450,6 +449,8 @@ export function getUniversalPlayerScriptAndStyle(config) {
       isPaused: () => playState === "paused" || playState === "idle",
       currentScene: () => currentSceneIdx,
       currentState: () => playState,
+      get globalTimeMs() { return globalTimeMs; },
+      totalDuration: totalDuration,
     };
 
     // DOM Event Listeners
@@ -460,13 +461,30 @@ export function getUniversalPlayerScriptAndStyle(config) {
         else window.play();
       };
     }
-    if (replayBtn) {
-      replayBtn.onclick = (e) => {
+    const muteBtn = document.getElementById("v-mute-btn");
+    let isAudioMuted = false;
+    if (muteBtn) {
+      muteBtn.onclick = (e) => {
         e.stopPropagation();
-        window.replay();
+        isAudioMuted = !isAudioMuted;
+        muteBtn.innerHTML = isAudioMuted ? "&#128263;" : "&#128266;";
+        muteBtn.title = isAudioMuted ? "Unmute Audio" : "Mute Audio";
+
+        try {
+          if (window.parent && window.parent !== window) {
+            window.parent.postMessage({ type: "video-mute-toggle", muted: isAudioMuted }, "*");
+          }
+        } catch(err) {}
+
+        document.querySelectorAll("audio, video").forEach(el => {
+          el.muted = isAudioMuted;
+        });
       };
     }
+
     if (scrubber) {
+      let isDragging = false;
+      let resumeAfterDrag = false;
       const handleScrub = (e) => {
         const rect = scrubber.getBoundingClientRect();
         const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
@@ -474,11 +492,26 @@ export function getUniversalPlayerScriptAndStyle(config) {
       };
       scrubber.onmousedown = (e) => {
         e.stopPropagation();
+        isDragging = true;
+        resumeAfterDrag = (playState === "playing");
+        if (resumeAfterDrag) {
+          window.pause();
+        }
         handleScrub(e);
-        const onMove = (ev) => handleScrub(ev);
+        const onMove = (ev) => {
+          if (isDragging) {
+            handleScrub(ev);
+          }
+        };
         const onUp = () => {
-          window.removeEventListener("mousemove", onMove);
-          window.removeEventListener("mouseup", onUp);
+          if (isDragging) {
+            isDragging = false;
+            window.removeEventListener("mousemove", onMove);
+            window.removeEventListener("mouseup", onUp);
+            if (resumeAfterDrag) {
+              window.play();
+            }
+          }
         };
         window.addEventListener("mousemove", onMove);
         window.addEventListener("mouseup", onUp);

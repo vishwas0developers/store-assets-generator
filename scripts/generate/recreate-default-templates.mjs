@@ -74,6 +74,7 @@ async function main() {
       let copyColStyle = "flex: 1.1; max-width: 800px; display: flex; flex-direction: column; justify-content: center; z-index: 5;";
       let deviceColStyle = "flex: 0.9; display: flex; align-items: center; justify-content: center; height: 100%; z-index: 4;";
 
+      let viewportExtraStyle = "transform-origin: center center;";
       if (isLandscape) {
         if (isCopyRight) {
           contentStyle += " flex-direction: row-reverse;";
@@ -84,16 +85,18 @@ async function main() {
           deviceColStyle = "display: flex; align-items: center; justify-content: center; z-index: 4;";
         }
       } else {
-        // Portrait - Enlarged phone margins to center and fill space properly
-        contentStyle = "display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; width: 100%; height: 100%;";
-        copyColStyle = "max-width: 960px; z-index: 5; text-align: center; align-items: center; margin-top: -30px; margin-bottom: 50px; padding: 0 20px;";
-        deviceColStyle = "display: flex; align-items: center; justify-content: center; z-index: 4;";
-        
-        if (isStackedBottom) {
-          contentStyle += " flex-direction: column-reverse;";
-          copyColStyle = "max-width: 960px; z-index: 5; text-align: center; align-items: center; margin-top: 50px; margin-bottom: -30px; padding: 0 20px;";
-        } else if (isFullBleed) {
-          copyColStyle = "max-width: 960px; z-index: 10; text-align: center; align-items: center; position: absolute; bottom: 8%; left: 0; right: 0; padding: 0 6%; margin: 0;";
+        if (idx === 9) {
+          // Revert Scene 10 portrait to original full-bleed center zoom
+          contentStyle = "display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; width: 100%; height: 100%;";
+          copyColStyle = "display: none !important;";
+          deviceColStyle = "display: flex; align-items: center; justify-content: center; z-index: 4;";
+          viewportExtraStyle = "transform-origin: center center;";
+        } else {
+          // Portrait scenes 1-9: absolute positioning to prevent overlap
+          contentStyle = "position: relative; width: 100%; height: 100%;";
+          copyColStyle = "position: absolute; top: 120px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 960px; z-index: 5; text-align: center; display: flex; flex-direction: column; align-items: center;";
+          deviceColStyle = "position: absolute; top: 620px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; justify-content: center; z-index: 4;";
+          viewportExtraStyle = "transform-origin: top center;";
         }
       }
 
@@ -167,7 +170,7 @@ async function main() {
 
         <!-- Device viewport -->
         <div class="device-col" style="${deviceColStyle}">
-          <div class="phone-3d-viewport" id="viewport-${idx}">
+          <div class="phone-3d-viewport" id="viewport-${idx}" style="${viewportExtraStyle}">
             <div class="phone-3d-scaler" id="scaler-${idx}">
               <div class="phone-3d-rig" id="phone-rig-${idx}" style="background: ${deviceColor};">
                 <div class="phone-side left" style="background: ${railGrad};"></div>
@@ -243,6 +246,7 @@ async function main() {
       justify-content: center;
       position: relative;
       z-index: 2;
+      transform-origin: ${isLandscape ? 'center center' : 'top center'};
     }
 
     .phone-3d-viewport::after {
@@ -384,7 +388,7 @@ async function main() {
 
     /* Typography styles - Enlarged for 9:16 and layered with GPU will-change */
     .title-black {
-      font-size: ${isLandscape ? '56px' : '66px'};
+      font-size: ${isLandscape ? '56px' : '80px'};
       font-weight: 800;
       line-height: ${isLandscape ? '1.18' : '1.15'};
       margin: 0;
@@ -395,7 +399,7 @@ async function main() {
     }
 
     .subtitle-grey {
-      font-size: ${isLandscape ? '24px' : '30px'};
+      font-size: ${isLandscape ? '24px' : '36px'};
       font-weight: 500;
       line-height: ${isLandscape ? '1.4' : '1.35'};
       margin: 0;
@@ -514,7 +518,7 @@ ${JSON.stringify(t, null, 2)}
         startPitch: 4, endPitch: 0,
         startX: 0, endX: 0,
         startY: 280, endY: 0,
-        startScale: 0.84, endScale: ${isLandscape ? '1.0' : '1.30'}
+        startScale: ${isLandscape ? '0.84' : '1.26'}, endScale: ${isLandscape ? '1.0' : '1.58'}
       };
 
       if (sceneIdx === 0) { // Scene 1: Hero Rise
@@ -523,7 +527,7 @@ ${JSON.stringify(t, null, 2)}
           startPitch: 5, endPitch: 0,
           startX: 0, endX: 0,
           startY: 400, endY: 0,
-          startScale: 0.85, endScale: ${isLandscape ? '1.02' : '1.32'}
+          startScale: ${isLandscape ? '0.85' : '1.26'}, endScale: ${isLandscape ? '1.02' : '1.58'}
         };
       }
       else if (sceneIdx === 1) { // Scene 2: 3D Tilt
@@ -532,7 +536,7 @@ ${JSON.stringify(t, null, 2)}
           startPitch: 8, endPitch: 0,
           startX: ${isLandscape ? '300' : '0'}, endX: 0,
           startY: ${isLandscape ? '0' : '200'}, endY: 0,
-          startScale: 0.88, endScale: ${isLandscape ? '1.05' : '1.35'}
+          startScale: ${isLandscape ? '0.88' : '1.26'}, endScale: ${isLandscape ? '1.05' : '1.58'}
         };
       }
       else if (sceneIdx === 2) { // Scene 3: Feature Breakdown (2 screenshots crossfade)
@@ -541,7 +545,7 @@ ${JSON.stringify(t, null, 2)}
           startPitch: 0, endPitch: 0,
           startX: 0, endX: 0,
           startY: 200, endY: 0,
-          startScale: 0.86, endScale: ${isLandscape ? '1.0' : '1.30'}
+          startScale: ${isLandscape ? '0.86' : '1.26'}, endScale: ${isLandscape ? '1.0' : '1.58'}
         };
         // Crossfade screenshots inside the screen wrap
         const imgA = document.getElementById("slot-2-0") || document.getElementById("slot-1-0");
@@ -560,7 +564,7 @@ ${JSON.stringify(t, null, 2)}
           startPitch: 4, endPitch: 0,
           startX: 0, endX: 0,
           startY: 0, endY: 0,
-          startScale: 0.78, endScale: ${isLandscape ? '1.06' : '1.36'}
+          startScale: ${isLandscape ? '0.78' : '1.26'}, endScale: ${isLandscape ? '1.06' : '1.58'}
         };
         // For landscape multiple screen crossfade if scene index 3
         const imgA = document.getElementById("slot-3-0");
@@ -579,7 +583,7 @@ ${JSON.stringify(t, null, 2)}
           startPitch: 0, endPitch: 0,
           startX: -150, endX: 0,
           startY: 0, endY: 0,
-          startScale: 0.88, endScale: ${isLandscape ? '1.02' : '1.32'}
+          startScale: ${isLandscape ? '0.88' : '1.26'}, endScale: ${isLandscape ? '1.02' : '1.58'}
         };
       }
       else if (sceneIdx === 5) { // Scene 6: Kinetic Type
@@ -588,7 +592,7 @@ ${JSON.stringify(t, null, 2)}
           startPitch: 0, endPitch: 0,
           startX: 0, endX: 0,
           startY: 180, endY: 0,
-          startScale: 0.9, endScale: ${isLandscape ? '1.03' : '1.33'}
+          startScale: ${isLandscape ? '0.9' : '1.26'}, endScale: ${isLandscape ? '1.03' : '1.58'}
         };
       }
       else if (sceneIdx === 6) { // Scene 7: Zoom Focus (Security scene)
@@ -597,7 +601,7 @@ ${JSON.stringify(t, null, 2)}
           startPitch: 4, endPitch: 0,
           startX: 0, endX: 0,
           startY: 0, endY: 0,
-          startScale: 0.82, endScale: ${isLandscape ? '1.08' : '1.38'}
+          startScale: ${isLandscape ? '0.82' : '1.26'}, endScale: ${isLandscape ? '1.08' : '1.58'}
         };
       }
       else if (sceneIdx === 7) { // Scene 8: Seamless Collaboration
@@ -606,7 +610,7 @@ ${JSON.stringify(t, null, 2)}
           startPitch: 0, endPitch: 0,
           startX: 120, endX: 0,
           startY: 0, endY: 0,
-          startScale: 0.88, endScale: ${isLandscape ? '1.02' : '1.32'}
+          startScale: ${isLandscape ? '0.88' : '1.26'}, endScale: ${isLandscape ? '1.02' : '1.58'}
         };
       }
       else if (sceneIdx === 8) { // Scene 9: Ecosystem & Benefits
@@ -614,8 +618,8 @@ ${JSON.stringify(t, null, 2)}
           startYaw: 0, endYaw: 0,
           startPitch: 0, endPitch: 0,
           startX: 0, endX: 0,
-          startY: -200, endY: 0,
-          startScale: 0.88, endScale: ${isLandscape ? '1.02' : '1.32'}
+          startY: ${isLandscape ? '-200' : '-80'}, endY: 0,
+          startScale: ${isLandscape ? '0.88' : '1.26'}, endScale: ${isLandscape ? '1.02' : '1.58'}
         };
       }
       else if (sceneIdx === 9) { // Scene 10: App Flow outro spin + merge / pill-flank
