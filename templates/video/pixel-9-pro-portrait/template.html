@@ -54,6 +54,7 @@
       justify-content: center;
       position: relative;
       z-index: 2;
+      transform-origin: top center;
     }
 
     .phone-3d-viewport::after {
@@ -195,7 +196,7 @@
 
     /* Typography styles - Enlarged for 9:16 and layered with GPU will-change */
     .title-black {
-      font-size: 66px;
+      font-size: 80px;
       font-weight: 800;
       line-height: 1.15;
       margin: 0;
@@ -206,7 +207,7 @@
     }
 
     .subtitle-grey {
-      font-size: 30px;
+      font-size: 36px;
       font-weight: 500;
       line-height: 1.35;
       margin: 0;
@@ -257,18 +258,18 @@
       <div class="backdrop" style="background: linear-gradient(135deg,#00c6ff 0%,#0072ff 100%);"></div>
       <div class="vignette"></div>
       
-      <div class="scene-content" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; width: 100%; height: 100%;">
+      <div class="scene-content" style="position: relative; width: 100%; height: 100%;">
         <!-- Copy block (Permanently hidden in Scene 10) -->
         
-        <div class="copy-col" style="max-width: 960px; z-index: 5; text-align: center; align-items: center; margin-top: -30px; margin-bottom: 50px; padding: 0 20px; ">
+        <div class="copy-col" style="position: absolute; top: 120px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 960px; z-index: 5; text-align: center; display: flex; flex-direction: column; align-items: center; ">
           <h2 class="title-black" id="s0-text" style="color: #ffffff; text-shadow: 0 4px 12px rgba(0,0,0,0.3); opacity: 0;">Meet Your New Hub</h2>
           <p class="subtitle-grey" id="s0-subtext" style="color: rgba(255,255,255,0.8); opacity: 0; margin-top: 16px;">Everything in one unified place</p>
         </div>
         
 
         <!-- Device viewport -->
-        <div class="device-col" style="display: flex; align-items: center; justify-content: center; z-index: 4;">
-          <div class="phone-3d-viewport" id="viewport-0">
+        <div class="device-col" style="position: absolute; top: 620px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; justify-content: center; z-index: 4;">
+          <div class="phone-3d-viewport" id="viewport-0" style="transform-origin: top center;">
             <div class="phone-3d-scaler" id="scaler-0">
               <div class="phone-3d-rig" id="phone-rig-0" style="background: #18191c;">
                 <div class="phone-side left" style="background: linear-gradient(180deg, #3e4045 0%, #151618 50%, #3e4045 100%);"></div>
@@ -301,18 +302,18 @@
       <div class="backdrop" style="background: linear-gradient(135deg,#232526 0%,#414345 100%);"></div>
       <div class="vignette"></div>
       
-      <div class="scene-content" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; width: 100%; height: 100%; flex-direction: column-reverse;">
+      <div class="scene-content" style="position: relative; width: 100%; height: 100%;">
         <!-- Copy block (Permanently hidden in Scene 10) -->
         
-        <div class="copy-col" style="max-width: 960px; z-index: 5; text-align: center; align-items: center; margin-top: 50px; margin-bottom: -30px; padding: 0 20px; ">
+        <div class="copy-col" style="position: absolute; top: 120px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 960px; z-index: 5; text-align: center; display: flex; flex-direction: column; align-items: center; ">
           <h2 class="title-black" id="s1-text" style="color: #ffffff; text-shadow: 0 4px 12px rgba(0,0,0,0.3); opacity: 0;">Plan in Seconds</h2>
           <p class="subtitle-grey" id="s1-subtext" style="color: rgba(255,255,255,0.8); opacity: 0; margin-top: 16px;">Intelligent scheduling built in</p>
         </div>
         
 
         <!-- Device viewport -->
-        <div class="device-col" style="display: flex; align-items: center; justify-content: center; z-index: 4;">
-          <div class="phone-3d-viewport" id="viewport-1">
+        <div class="device-col" style="position: absolute; top: 620px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; justify-content: center; z-index: 4;">
+          <div class="phone-3d-viewport" id="viewport-1" style="transform-origin: top center;">
             <div class="phone-3d-scaler" id="scaler-1">
               <div class="phone-3d-rig" id="phone-rig-1" style="background: #18191c;">
                 <div class="phone-side left" style="background: linear-gradient(180deg, #3e4045 0%, #151618 50%, #3e4045 100%);"></div>
@@ -345,18 +346,18 @@
       <div class="backdrop" style="background: linear-gradient(135deg,#1e3c72 0%,#2a5298 100%);"></div>
       <div class="vignette"></div>
       
-      <div class="scene-content" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; width: 100%; height: 100%;">
+      <div class="scene-content" style="position: relative; width: 100%; height: 100%;">
         <!-- Copy block (Permanently hidden in Scene 10) -->
         
-        <div class="copy-col" style="max-width: 960px; z-index: 5; text-align: center; align-items: center; margin-top: -30px; margin-bottom: 50px; padding: 0 20px; ">
+        <div class="copy-col" style="position: absolute; top: 120px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 960px; z-index: 5; text-align: center; display: flex; flex-direction: column; align-items: center; ">
           <h2 class="title-black" id="s2-text" style="color: #ffffff; text-shadow: 0 4px 12px rgba(0,0,0,0.3); opacity: 0;">Live Data Glance</h2>
           <p class="subtitle-grey" id="s2-subtext" style="color: rgba(255,255,255,0.8); opacity: 0; margin-top: 16px;">Real-time updates as you work</p>
         </div>
         
 
         <!-- Device viewport -->
-        <div class="device-col" style="display: flex; align-items: center; justify-content: center; z-index: 4;">
-          <div class="phone-3d-viewport" id="viewport-2">
+        <div class="device-col" style="position: absolute; top: 620px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; justify-content: center; z-index: 4;">
+          <div class="phone-3d-viewport" id="viewport-2" style="transform-origin: top center;">
             <div class="phone-3d-scaler" id="scaler-2">
               <div class="phone-3d-rig" id="phone-rig-2" style="background: #18191c;">
                 <div class="phone-side left" style="background: linear-gradient(180deg, #3e4045 0%, #151618 50%, #3e4045 100%);"></div>
@@ -390,18 +391,18 @@
       <div class="backdrop" style="background: linear-gradient(135deg,#134e5e 0%,#71b280 100%);"></div>
       <div class="vignette"></div>
       
-      <div class="scene-content" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; width: 100%; height: 100%; flex-direction: column-reverse;">
+      <div class="scene-content" style="position: relative; width: 100%; height: 100%;">
         <!-- Copy block (Permanently hidden in Scene 10) -->
         
-        <div class="copy-col" style="max-width: 960px; z-index: 5; text-align: center; align-items: center; margin-top: 50px; margin-bottom: -30px; padding: 0 20px; ">
+        <div class="copy-col" style="position: absolute; top: 120px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 960px; z-index: 5; text-align: center; display: flex; flex-direction: column; align-items: center; ">
           <h2 class="title-black" id="s3-text" style="color: #ffffff; text-shadow: 0 4px 12px rgba(0,0,0,0.3); opacity: 0;">Tap Into Every Detail</h2>
           <p class="subtitle-grey" id="s3-subtext" style="color: rgba(255,255,255,0.8); opacity: 0; margin-top: 16px;">Precise controls, zero friction</p>
         </div>
         
 
         <!-- Device viewport -->
-        <div class="device-col" style="display: flex; align-items: center; justify-content: center; z-index: 4;">
-          <div class="phone-3d-viewport" id="viewport-3">
+        <div class="device-col" style="position: absolute; top: 620px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; justify-content: center; z-index: 4;">
+          <div class="phone-3d-viewport" id="viewport-3" style="transform-origin: top center;">
             <div class="phone-3d-scaler" id="scaler-3">
               <div class="phone-3d-rig" id="phone-rig-3" style="background: #18191c;">
                 <div class="phone-side left" style="background: linear-gradient(180deg, #3e4045 0%, #151618 50%, #3e4045 100%);"></div>
@@ -434,18 +435,18 @@
       <div class="backdrop" style="background: linear-gradient(135deg,#00c6ff 0%,#0072ff 100%);"></div>
       <div class="vignette"></div>
       
-      <div class="scene-content" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; width: 100%; height: 100%;">
+      <div class="scene-content" style="position: relative; width: 100%; height: 100%;">
         <!-- Copy block (Permanently hidden in Scene 10) -->
         
-        <div class="copy-col" style="max-width: 960px; z-index: 5; text-align: center; align-items: center; margin-top: -30px; margin-bottom: 50px; padding: 0 20px; ">
+        <div class="copy-col" style="position: absolute; top: 120px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 960px; z-index: 5; text-align: center; display: flex; flex-direction: column; align-items: center; ">
           <h2 class="title-black" id="s4-text" style="color: #ffffff; text-shadow: 0 4px 12px rgba(0,0,0,0.3); opacity: 0;">Studio-Grade Speed</h2>
           <p class="subtitle-grey" id="s4-subtext" style="color: rgba(255,255,255,0.8); opacity: 0; margin-top: 16px;">Fluid at every frame</p>
         </div>
         
 
         <!-- Device viewport -->
-        <div class="device-col" style="display: flex; align-items: center; justify-content: center; z-index: 4;">
-          <div class="phone-3d-viewport" id="viewport-4">
+        <div class="device-col" style="position: absolute; top: 620px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; justify-content: center; z-index: 4;">
+          <div class="phone-3d-viewport" id="viewport-4" style="transform-origin: top center;">
             <div class="phone-3d-scaler" id="scaler-4">
               <div class="phone-3d-rig" id="phone-rig-4" style="background: #18191c;">
                 <div class="phone-side left" style="background: linear-gradient(180deg, #3e4045 0%, #151618 50%, #3e4045 100%);"></div>
@@ -478,18 +479,18 @@
       <div class="backdrop" style="background: linear-gradient(135deg,#00c6ff 0%,#0072ff 100%);"></div>
       <div class="vignette"></div>
       
-      <div class="scene-content" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; width: 100%; height: 100%; flex-direction: column-reverse;">
+      <div class="scene-content" style="position: relative; width: 100%; height: 100%;">
         <!-- Copy block (Permanently hidden in Scene 10) -->
         
-        <div class="copy-col" style="max-width: 960px; z-index: 5; text-align: center; align-items: center; margin-top: 50px; margin-bottom: -30px; padding: 0 20px; ">
+        <div class="copy-col" style="position: absolute; top: 120px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 960px; z-index: 5; text-align: center; display: flex; flex-direction: column; align-items: center; ">
           <h2 class="title-black" id="s5-text" style="color: #ffffff; text-shadow: 0 4px 12px rgba(0,0,0,0.3); opacity: 0;">Automate Everyday Tasks</h2>
           <p class="subtitle-grey" id="s5-subtext" style="color: rgba(255,255,255,0.8); opacity: 0; margin-top: 16px;">Smart rules that run themselves</p>
         </div>
         
 
         <!-- Device viewport -->
-        <div class="device-col" style="display: flex; align-items: center; justify-content: center; z-index: 4;">
-          <div class="phone-3d-viewport" id="viewport-5">
+        <div class="device-col" style="position: absolute; top: 620px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; justify-content: center; z-index: 4;">
+          <div class="phone-3d-viewport" id="viewport-5" style="transform-origin: top center;">
             <div class="phone-3d-scaler" id="scaler-5">
               <div class="phone-3d-rig" id="phone-rig-5" style="background: #18191c;">
                 <div class="phone-side left" style="background: linear-gradient(180deg, #3e4045 0%, #151618 50%, #3e4045 100%);"></div>
@@ -522,18 +523,18 @@
       <div class="backdrop" style="background: linear-gradient(135deg,#232526 0%,#414345 100%);"></div>
       <div class="vignette"></div>
       
-      <div class="scene-content" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; width: 100%; height: 100%;">
+      <div class="scene-content" style="position: relative; width: 100%; height: 100%;">
         <!-- Copy block (Permanently hidden in Scene 10) -->
         
-        <div class="copy-col" style="max-width: 960px; z-index: 10; text-align: center; align-items: center; position: absolute; bottom: 8%; left: 0; right: 0; padding: 0 6%; margin: 0; ">
+        <div class="copy-col" style="position: absolute; top: 120px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 960px; z-index: 5; text-align: center; display: flex; flex-direction: column; align-items: center; ">
           <h2 class="title-black" id="s6-text" style="color: #ffffff; text-shadow: 0 4px 12px rgba(0,0,0,0.3); opacity: 0;">Private by Design</h2>
           <p class="subtitle-grey" id="s6-subtext" style="color: rgba(255,255,255,0.8); opacity: 0; margin-top: 16px;">Your data stays yours, always</p>
         </div>
         
 
         <!-- Device viewport -->
-        <div class="device-col" style="display: flex; align-items: center; justify-content: center; z-index: 4;">
-          <div class="phone-3d-viewport" id="viewport-6">
+        <div class="device-col" style="position: absolute; top: 620px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; justify-content: center; z-index: 4;">
+          <div class="phone-3d-viewport" id="viewport-6" style="transform-origin: top center;">
             <div class="phone-3d-scaler" id="scaler-6">
               <div class="phone-3d-rig" id="phone-rig-6" style="background: #18191c;">
                 <div class="phone-side left" style="background: linear-gradient(180deg, #3e4045 0%, #151618 50%, #3e4045 100%);"></div>
@@ -566,18 +567,18 @@
       <div class="backdrop" style="background: linear-gradient(135deg,#134e5e 0%,#71b280 100%);"></div>
       <div class="vignette"></div>
       
-      <div class="scene-content" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; width: 100%; height: 100%; flex-direction: column-reverse;">
+      <div class="scene-content" style="position: relative; width: 100%; height: 100%;">
         <!-- Copy block (Permanently hidden in Scene 10) -->
         
-        <div class="copy-col" style="max-width: 960px; z-index: 5; text-align: center; align-items: center; margin-top: 50px; margin-bottom: -30px; padding: 0 20px; ">
+        <div class="copy-col" style="position: absolute; top: 120px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 960px; z-index: 5; text-align: center; display: flex; flex-direction: column; align-items: center; ">
           <h2 class="title-black" id="s7-text" style="color: #ffffff; text-shadow: 0 4px 12px rgba(0,0,0,0.3); opacity: 0;">Built for Teams</h2>
           <p class="subtitle-grey" id="s7-subtext" style="color: rgba(255,255,255,0.8); opacity: 0; margin-top: 16px;">Keep everyone in sync effortlessly</p>
         </div>
         
 
         <!-- Device viewport -->
-        <div class="device-col" style="display: flex; align-items: center; justify-content: center; z-index: 4;">
-          <div class="phone-3d-viewport" id="viewport-7">
+        <div class="device-col" style="position: absolute; top: 620px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; justify-content: center; z-index: 4;">
+          <div class="phone-3d-viewport" id="viewport-7" style="transform-origin: top center;">
             <div class="phone-3d-scaler" id="scaler-7">
               <div class="phone-3d-rig" id="phone-rig-7" style="background: #18191c;">
                 <div class="phone-side left" style="background: linear-gradient(180deg, #3e4045 0%, #151618 50%, #3e4045 100%);"></div>
@@ -610,18 +611,18 @@
       <div class="backdrop" style="background: linear-gradient(135deg,#1e3c72 0%,#2a5298 100%);"></div>
       <div class="vignette"></div>
       
-      <div class="scene-content" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; width: 100%; height: 100%;">
+      <div class="scene-content" style="position: relative; width: 100%; height: 100%;">
         <!-- Copy block (Permanently hidden in Scene 10) -->
         
-        <div class="copy-col" style="max-width: 960px; z-index: 5; text-align: center; align-items: center; margin-top: -30px; margin-bottom: 50px; padding: 0 20px; ">
+        <div class="copy-col" style="position: absolute; top: 120px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 960px; z-index: 5; text-align: center; display: flex; flex-direction: column; align-items: center; ">
           <h2 class="title-black" id="s8-text" style="color: #ffffff; text-shadow: 0 4px 12px rgba(0,0,0,0.3); opacity: 0;">One Hub, Every Screen</h2>
           <p class="subtitle-grey" id="s8-subtext" style="color: rgba(255,255,255,0.8); opacity: 0; margin-top: 16px;">Pixel, tablet, and web -- unified</p>
         </div>
         
 
         <!-- Device viewport -->
-        <div class="device-col" style="display: flex; align-items: center; justify-content: center; z-index: 4;">
-          <div class="phone-3d-viewport" id="viewport-8">
+        <div class="device-col" style="position: absolute; top: 620px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; justify-content: center; z-index: 4;">
+          <div class="phone-3d-viewport" id="viewport-8" style="transform-origin: top center;">
             <div class="phone-3d-scaler" id="scaler-8">
               <div class="phone-3d-rig" id="phone-rig-8" style="background: #18191c;">
                 <div class="phone-side left" style="background: linear-gradient(180deg, #3e4045 0%, #151618 50%, #3e4045 100%);"></div>
@@ -657,7 +658,7 @@
       <div class="scene-content" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; width: 100%; height: 100%;">
         <!-- Copy block (Permanently hidden in Scene 10) -->
         
-        <div class="copy-col" style="max-width: 960px; z-index: 10; text-align: center; align-items: center; position: absolute; bottom: 8%; left: 0; right: 0; padding: 0 6%; margin: 0; display: none !important;">
+        <div class="copy-col" style="display: none !important; display: none !important;">
           <h2 class="title-black" id="s9-text" style="color: #ffffff; text-shadow: 0 4px 12px rgba(0,0,0,0.3); opacity: 0;">Start Your Journey</h2>
           <p class="subtitle-grey" id="s9-subtext" style="color: rgba(255,255,255,0.8); opacity: 0; margin-top: 16px;">Available on Google Play</p>
         </div>
@@ -665,7 +666,7 @@
 
         <!-- Device viewport -->
         <div class="device-col" style="display: flex; align-items: center; justify-content: center; z-index: 4;">
-          <div class="phone-3d-viewport" id="viewport-9">
+          <div class="phone-3d-viewport" id="viewport-9" style="transform-origin: center center;">
             <div class="phone-3d-scaler" id="scaler-9">
               <div class="phone-3d-rig" id="phone-rig-9" style="background: #18191c;">
                 <div class="phone-side left" style="background: linear-gradient(180deg, #3e4045 0%, #151618 50%, #3e4045 100%);"></div>
@@ -979,7 +980,7 @@
         startPitch: 4, endPitch: 0,
         startX: 0, endX: 0,
         startY: 280, endY: 0,
-        startScale: 0.84, endScale: 1.30
+        startScale: 1.26, endScale: 1.58
       };
 
       if (sceneIdx === 0) { // Scene 1: Hero Rise
@@ -988,7 +989,7 @@
           startPitch: 5, endPitch: 0,
           startX: 0, endX: 0,
           startY: 400, endY: 0,
-          startScale: 0.85, endScale: 1.32
+          startScale: 1.26, endScale: 1.58
         };
       }
       else if (sceneIdx === 1) { // Scene 2: 3D Tilt
@@ -997,7 +998,7 @@
           startPitch: 8, endPitch: 0,
           startX: 0, endX: 0,
           startY: 200, endY: 0,
-          startScale: 0.88, endScale: 1.35
+          startScale: 1.26, endScale: 1.58
         };
       }
       else if (sceneIdx === 2) { // Scene 3: Feature Breakdown (2 screenshots crossfade)
@@ -1006,7 +1007,7 @@
           startPitch: 0, endPitch: 0,
           startX: 0, endX: 0,
           startY: 200, endY: 0,
-          startScale: 0.86, endScale: 1.30
+          startScale: 1.26, endScale: 1.58
         };
         // Crossfade screenshots inside the screen wrap
         const imgA = document.getElementById("slot-2-0") || document.getElementById("slot-1-0");
@@ -1025,7 +1026,7 @@
           startPitch: 4, endPitch: 0,
           startX: 0, endX: 0,
           startY: 0, endY: 0,
-          startScale: 0.78, endScale: 1.36
+          startScale: 1.26, endScale: 1.58
         };
         // For landscape multiple screen crossfade if scene index 3
         const imgA = document.getElementById("slot-3-0");
@@ -1044,7 +1045,7 @@
           startPitch: 0, endPitch: 0,
           startX: -150, endX: 0,
           startY: 0, endY: 0,
-          startScale: 0.88, endScale: 1.32
+          startScale: 1.26, endScale: 1.58
         };
       }
       else if (sceneIdx === 5) { // Scene 6: Kinetic Type
@@ -1053,7 +1054,7 @@
           startPitch: 0, endPitch: 0,
           startX: 0, endX: 0,
           startY: 180, endY: 0,
-          startScale: 0.9, endScale: 1.33
+          startScale: 1.26, endScale: 1.58
         };
       }
       else if (sceneIdx === 6) { // Scene 7: Zoom Focus (Security scene)
@@ -1062,7 +1063,7 @@
           startPitch: 4, endPitch: 0,
           startX: 0, endX: 0,
           startY: 0, endY: 0,
-          startScale: 0.82, endScale: 1.38
+          startScale: 1.26, endScale: 1.58
         };
       }
       else if (sceneIdx === 7) { // Scene 8: Seamless Collaboration
@@ -1071,7 +1072,7 @@
           startPitch: 0, endPitch: 0,
           startX: 120, endX: 0,
           startY: 0, endY: 0,
-          startScale: 0.88, endScale: 1.32
+          startScale: 1.26, endScale: 1.58
         };
       }
       else if (sceneIdx === 8) { // Scene 9: Ecosystem & Benefits
@@ -1079,8 +1080,8 @@
           startYaw: 0, endYaw: 0,
           startPitch: 0, endPitch: 0,
           startX: 0, endX: 0,
-          startY: -200, endY: 0,
-          startScale: 0.88, endScale: 1.32
+          startY: -80, endY: 0,
+          startScale: 1.26, endScale: 1.58
         };
       }
       else if (sceneIdx === 9) { // Scene 10: App Flow outro spin + merge / pill-flank
@@ -1127,7 +1128,7 @@
       document.head.appendChild(styleEl);
 
       const barContainer = document.createElement("div");
-      barContainer.innerHTML = "\n  <!-- Standalone Floating Video Player Bar -->\n  <div class=\"v-player-bar\" id=\"v-player-bar\">\n    <button class=\"v-btn\" id=\"v-play-btn\" title=\"Play / Pause (Space)\">&#9654;</button>\n    <button class=\"v-btn v-btn-secondary\" id=\"v-replay-btn\" title=\"Replay\">&#8635;</button>\n    <div class=\"v-timeline-box\">\n      <div class=\"v-scrubber\" id=\"v-scrubber\">\n        <div class=\"v-scrubber-fill\" id=\"v-scrubber-fill\"></div>\n        <div class=\"v-scrubber-thumb\" id=\"v-scrubber-thumb\"></div>\n      </div>\n      <div class=\"v-time-text\" id=\"v-time-text\">0:00 / 0:50</div>\n    </div>\n    <div class=\"v-pills\" id=\"v-pills\">\n      <button class=\"v-pill active\" data-scene=\"0\">1</button><button class=\"v-pill \" data-scene=\"1\">2</button><button class=\"v-pill \" data-scene=\"2\">3</button><button class=\"v-pill \" data-scene=\"3\">4</button><button class=\"v-pill \" data-scene=\"4\">5</button><button class=\"v-pill \" data-scene=\"5\">6</button><button class=\"v-pill \" data-scene=\"6\">7</button><button class=\"v-pill \" data-scene=\"7\">8</button><button class=\"v-pill \" data-scene=\"8\">9</button><button class=\"v-pill \" data-scene=\"9\">10</button>\n    </div>\n  </div>\n  ".trim();
+      barContainer.innerHTML = "\n  <!-- Standalone Floating Video Player Bar -->\n  <div class=\"v-player-bar\" id=\"v-player-bar\">\n    <button class=\"v-btn\" id=\"v-play-btn\" title=\"Play / Pause (Space)\">&#9654;</button>\n    <button class=\"v-btn v-btn-secondary\" id=\"v-mute-btn\" title=\"Mute / Unmute Audio\">&#128266;</button>\n    <div class=\"v-timeline-box\">\n      <div class=\"v-scrubber\" id=\"v-scrubber\">\n        <div class=\"v-scrubber-fill\" id=\"v-scrubber-fill\"></div>\n        <div class=\"v-scrubber-thumb\" id=\"v-scrubber-thumb\"></div>\n      </div>\n      <div class=\"v-time-text\" id=\"v-time-text\">0:00 / 0:50</div>\n    </div>\n    <div class=\"v-pills\" id=\"v-pills\">\n      <button class=\"v-pill active\" data-scene=\"0\">1</button><button class=\"v-pill \" data-scene=\"1\">2</button><button class=\"v-pill \" data-scene=\"2\">3</button><button class=\"v-pill \" data-scene=\"3\">4</button><button class=\"v-pill \" data-scene=\"4\">5</button><button class=\"v-pill \" data-scene=\"5\">6</button><button class=\"v-pill \" data-scene=\"6\">7</button><button class=\"v-pill \" data-scene=\"7\">8</button><button class=\"v-pill \" data-scene=\"8\">9</button><button class=\"v-pill \" data-scene=\"9\">10</button>\n    </div>\n  </div>\n  ".trim();
       document.body.appendChild(barContainer.firstElementChild);
     }
 
@@ -1145,7 +1146,6 @@
     let hideTimeout = null;
 
     const playBtn = document.getElementById("v-play-btn");
-    const replayBtn = document.getElementById("v-replay-btn");
     const scrubber = document.getElementById("v-scrubber");
     const scrubberFill = document.getElementById("v-scrubber-fill");
     const scrubberThumb = document.getElementById("v-scrubber-thumb");
@@ -1384,6 +1384,8 @@
       isPaused: () => playState === "paused" || playState === "idle",
       currentScene: () => currentSceneIdx,
       currentState: () => playState,
+      get globalTimeMs() { return globalTimeMs; },
+      totalDuration: totalDuration,
     };
 
     // DOM Event Listeners
@@ -1394,13 +1396,30 @@
         else window.play();
       };
     }
-    if (replayBtn) {
-      replayBtn.onclick = (e) => {
+    const muteBtn = document.getElementById("v-mute-btn");
+    let isAudioMuted = false;
+    if (muteBtn) {
+      muteBtn.onclick = (e) => {
         e.stopPropagation();
-        window.replay();
+        isAudioMuted = !isAudioMuted;
+        muteBtn.innerHTML = isAudioMuted ? "&#128263;" : "&#128266;";
+        muteBtn.title = isAudioMuted ? "Unmute Audio" : "Mute Audio";
+
+        try {
+          if (window.parent && window.parent !== window) {
+            window.parent.postMessage({ type: "video-mute-toggle", muted: isAudioMuted }, "*");
+          }
+        } catch(err) {}
+
+        document.querySelectorAll("audio, video").forEach(el => {
+          el.muted = isAudioMuted;
+        });
       };
     }
+
     if (scrubber) {
+      let isDragging = false;
+      let resumeAfterDrag = false;
       const handleScrub = (e) => {
         const rect = scrubber.getBoundingClientRect();
         const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
@@ -1408,11 +1427,26 @@
       };
       scrubber.onmousedown = (e) => {
         e.stopPropagation();
+        isDragging = true;
+        resumeAfterDrag = (playState === "playing");
+        if (resumeAfterDrag) {
+          window.pause();
+        }
         handleScrub(e);
-        const onMove = (ev) => handleScrub(ev);
+        const onMove = (ev) => {
+          if (isDragging) {
+            handleScrub(ev);
+          }
+        };
         const onUp = () => {
-          window.removeEventListener("mousemove", onMove);
-          window.removeEventListener("mouseup", onUp);
+          if (isDragging) {
+            isDragging = false;
+            window.removeEventListener("mousemove", onMove);
+            window.removeEventListener("mouseup", onUp);
+            if (resumeAfterDrag) {
+              window.play();
+            }
+          }
         };
         window.addEventListener("mousemove", onMove);
         window.addEventListener("mouseup", onUp);
