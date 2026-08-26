@@ -81,6 +81,15 @@ export interface VideoScene {
    *  screenIds fields above, which stay populated in parallel because the
    *  device-preset templates' code-generated render path still reads them. */
   slotValues?: Record<string, SlotValue>;
+  /** Text/UI entrance animation, independent of the device's own motion
+   *  (rotate/zoom/move/depth above). Falls back to a plain fade-up with no
+   *  extra delay/scale when unset -- today's existing look. */
+  textAnimation?: {
+    preset?: "fade-up" | "slide-in" | "zoom-in" | "tracking-in" | "kinetic" | "typewriter";
+    speed?: number; // duration multiplier, e.g. 0.5-2.0
+    delayMs?: number;
+    scale?: number; // initial transform scale before the entrance settles
+  };
 }
 
 export type SlotValue =
@@ -123,6 +132,19 @@ export interface VideoProject {
     accent?: string;
     platforms?: { name: string; icon: string; url: string }[];
   };
+  /** Named snapshots of `template` + `scenes`, saved by the user from the
+   *  Scenes tab and restored later via the "Saved Configs" section -- lets
+   *  someone keep several fully-configured variants of a project side by
+   *  side without losing whichever one is currently loaded. */
+  savedConfigs?: SavedTemplateConfig[];
+}
+
+export interface SavedTemplateConfig {
+  id: string;
+  name: string;
+  template: string;
+  scenes: VideoScene[];
+  savedAt: string;
 }
 
 import { loadProject, saveProject, listProjects } from "../project/projectStore.js";

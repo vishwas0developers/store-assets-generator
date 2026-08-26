@@ -79,9 +79,15 @@ function resolveModel(entry: DeviceCatalogueEntry): DeviceModel {
 /** Catalogue-backed registry, id -> resolved DeviceModel (frame drawn from
  *  config/devices.json geometry/traits — see src/devices/frame.ts and
  *  docs/DEVICE-FRAMES.md). Adding a device is a JSON entry, no code. */
-export const DEVICE_REGISTRY: Record<string, DeviceModel> = Object.fromEntries(
+export let DEVICE_REGISTRY: Record<string, DeviceModel> = Object.fromEntries(
   loadCatalogue().map((entry) => [entry.id, resolveModel(entry)]),
 );
+
+export function reloadRegistry(): void {
+  DEVICE_REGISTRY = Object.fromEntries(
+    loadCatalogue().map((entry) => [entry.id, resolveModel(entry)]),
+  );
+}
 
 export interface ListDevicesFilter {
   platform?: "google-play" | "apple-app-store";

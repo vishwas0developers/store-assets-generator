@@ -1,7 +1,36 @@
-import { type FlowStep, type VideoProject, type VideoScene, type SlotValue } from "./project.js";
+import { type FlowStep, type VideoProject, type VideoScene, type SlotValue, videoDir } from "./project.js";
 import { templateConfig, htmlSpanToAsterisk } from "./templateConfig.js";
+import { slotSpecsForScene } from "./slots.js";
 import fs from "fs";
 import path from "path";
+
+/** Real demo screenshot/logo files (see scripts/generate/create-demo-assets.mjs)
+ *  copied once into every project's own sources/ dir and registered as
+ *  ordinary VideoSourceImage entries -- so a freshly-applied template
+ *  validates against actual files on disk, not synthetic ids that only
+ *  happen to satisfy validateScene(). Idempotent: re-applying a template
+ *  (or applying a second one) doesn't re-copy or duplicate entries. */
+const DEMO_ASSETS_DIR = path.join(process.cwd(), "assets", "demo");
+const DEMO_ASSET_SPECS: { id: string; file: string; width: number; height: number }[] = [
+  ...Array.from({ length: 6 }, (_, i) => ({ id: `demo_${i + 1}`, file: `demo_screen_${i + 1}.png`, width: 1080, height: 2400 })),
+  { id: "demo_landscape", file: "demo_landscape.png", width: 1920, height: 1080 },
+  { id: "demo_logo", file: "demo_logo.png", width: 512, height: 512 },
+];
+
+function ensureDemoSources(project: VideoProject): void {
+  const existingIds = new Set(project.sources.map((s) => s.id));
+  const missing = DEMO_ASSET_SPECS.filter((spec) => !existingIds.has(spec.id));
+  if (missing.length === 0) return;
+  const destDir = path.join(videoDir(project.id), "sources");
+  fs.mkdirSync(destDir, { recursive: true });
+  for (const spec of missing) {
+    const srcPath = path.join(DEMO_ASSETS_DIR, spec.file);
+    if (!fs.existsSync(srcPath)) continue; // demo assets not generated yet -- scenes fall back to the in-app SVG placeholder
+    const relFile = `sources/${spec.file}`;
+    fs.copyFileSync(srcPath, path.join(destDir, spec.file));
+    project.sources.push({ id: spec.id, name: spec.file, file: relFile, width: spec.width, height: spec.height, kind: "image" });
+  }
+}
 
 export interface VideoTemplateScene {
   label: string;
@@ -95,11 +124,55 @@ export function resolveTemplateId(templateId: string): string {
  *  point, not a full derivation (that's slots.ts's job; templates.ts can't
  *  import it without a circular dependency back through render.ts). Image/
  *  list slots start unset and are filled by the user via the studio UI. */
-function seedTextSlotValues(cfgScene: any, s: VideoTemplateScene): Record<string, SlotValue> {
+function seedDemoSlotValues(
+  templateId: string,
+  sceneIndex: number,
+  cfgScene: any,
+  s: VideoTemplateScene,
+  sourceId: string | undefined,
+  screenIds: string[] | undefined,
+): Record<string, SlotValue> {
   const values: Record<string, SlotValue> = {};
   const slots: Record<string, unknown> | undefined = cfgScene?.slots ?? undefined;
+
   if (slots?.text && s.text) values.text = { kind: "text", value: htmlSpanToAsterisk(s.text) };
   if (slots?.subtext && s.subtext) values.subtext = { kind: "text", value: htmlSpanToAsterisk(s.subtext) };
+  if (slots?.textRight && s.text) values.textRight = { kind: "text", value: htmlSpanToAsterisk(s.text) };
+  if (slots?.subtextRight && s.subtext) values.subtextRight = { kind: "text", value: htmlSpanToAsterisk(s.subtext) };
+
+  const specs = slotSpecsForScene(templateId, sceneIndex);
+  for (const spec of specs) {
+    if (values[spec.key]) continue;
+    if (spec.kind === "image") {
+      values[spec.key] = { kind: "image", sourceId: spec.key === "logo" ? "demo_logo" : (sourceId ?? `demo_${(sceneIndex % 6) + 1}`) };
+    } else if (spec.kind === "imageList") {
+      // Mirror the legacy screenIds/sourceId this same scene already carries
+      // (see applyVideoTemplate) so the slot-driven and code-generated
+      // render paths never disagree about which demo screenshot is shown.
+      const count = spec.count ?? 1;
+      const base = (screenIds && screenIds.length > 0) ? screenIds : (sourceId ? [sourceId] : []);
+      values[spec.key] = {
+        kind: "imageList",
+        sourceIds: Array.from({ length: count }, (_, j) => base[j % Math.max(base.length, 1)] ?? `demo_${(j % 6) + 1}`),
+      };
+    } else if (spec.kind === "text") {
+      values[spec.key] = { kind: "text", value: spec.key === "text" ? "Headline" : "Subtext" };
+    } else if (spec.kind === "textList") {
+      const count = spec.count ?? 1;
+      values[spec.key] = {
+        kind: "textList",
+        values: Array.from({ length: count }, () => "Label"),
+      };
+    } else if (spec.kind === "platformList") {
+      values[spec.key] = {
+        kind: "platformList",
+        items: [
+          { name: "App Store", icon: "apple", url: "https://apps.apple.com" },
+          { name: "Google Play", icon: "android", url: "https://play.google.com" }
+        ]
+      };
+    }
+  }
   return values;
 }
 
@@ -108,28 +181,25 @@ export function applyVideoTemplate(project: VideoProject, templateId: string): v
   const template = VIDEO_TEMPLATES.find((t) => t.id === resolvedId);
   if (!template) throw new Error(`Unknown video template '${templateId}'.`);
 
-  // Device presets (no `slots` config) still drive their screenshots
-  // positionally through the legacy sourceId/screenIds fields -- that's what
-  // their code-generated render path (sceneHtml) reads. Slot-driven (tpl-*)
-  // templates read screenshots through slotValues instead (see slots.ts),
-  // so they must NOT also claim sources positionally here -- a multi-shot
-  // scene's images are assigned by the user per-slot in the studio UI, not
-  // by first-come-first-served source order.
   const cfg = templateConfig(resolvedId);
   const isDevicePreset = !resolvedId.startsWith("tpl-");
+  const isLandscape = template.aspectRatio === "16:9";
 
-  let sourceCursor = 0;
+  ensureDemoSources(project);
+
   project.template = resolvedId;
+  if (!project.bgm) {
+    project.bgm = "bgm_chill";
+  }
+
   project.scenes = template.scenes.map((s, i): VideoScene => {
     const count = isDevicePreset && s.screenCount && s.screenCount > 1 ? s.screenCount : 1;
-    let sourceId: string | undefined;
-    let screenIds: string[] | undefined;
-    if (isDevicePreset) {
-      const slice = project.sources.slice(sourceCursor, sourceCursor + count);
-      sourceCursor += count;
-      sourceId = slice[0]?.id;
-      screenIds = count > 1 ? Array.from({ length: count }, (_, j) => slice[j]?.id ?? `__placeholder_${i}_${j}__`) : undefined;
-    }
+    // Slot-driven (tpl-*) templates don't read sourceId/screenIds at render
+    // time (they read slotValues instead), but still get a sensible default
+    // here so seedDemoSlotValues below has something real to point at.
+    const sourceId = isLandscape ? "demo_landscape" : "demo_1";
+    const screenIds = isDevicePreset && count > 1 ? Array.from({ length: count }, (_, j) => `demo_${(j % 6) + 1}`) : undefined;
+
     return {
       id: `scene_${i + 1}`,
       order: i,
@@ -150,7 +220,7 @@ export function applyVideoTemplate(project: VideoProject, templateId: string): v
       rotate: s.rotate,
       zoom: s.zoom,
       move: s.move,
-      slotValues: isDevicePreset ? undefined : seedTextSlotValues(cfg?.scenes?.[i], s),
+      slotValues: seedDemoSlotValues(resolvedId, i, cfg?.scenes?.[i], s, sourceId, screenIds),
     };
   });
 }

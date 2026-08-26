@@ -351,6 +351,8 @@
       <div class="rail">
         <div class="rail-btn active" data-section="templates"><span class="ico">&#9636;</span>Templates</div>
         <div class="rail-btn" data-section="scenes"><span class="ico">&#127909;</span>Scenes</div>
+        <div class="rail-btn" data-section="devices"><span class="ico">&#128241;</span>Devices</div>
+        <div class="rail-btn" data-section="saved-configs"><span class="ico">&#128193;</span>Saved Configs</div>
       </div>
       <div class="content">
         <div class="row" style="margin-bottom:1rem;">
@@ -369,18 +371,23 @@
 
         <div class="section-page" id="video-section-scenes">
           <div class="card video-scenes-nav-card scene-navigation-container" id="video-scenes-nav-card">
-            <div class="row">
+            <div class="row" style="align-items: center; justify-content: space-between;">
               <div id="video-scene-nav" class="scene-nav" style="flex:1;"></div>
-              <button id="sc-add" class="secondary small" type="button" title="Add a scene">+ Add scene</button>
-              <button id="sc-remove" class="secondary small" type="button" title="Remove this scene">&times; Remove scene</button>
+              <div class="row" style="gap: 8px; align-items: center; margin-left: 12px;">
+                <button id="sc-add" class="secondary small" type="button" title="Add a scene">+ Add scene</button>
+                <button id="sc-remove" class="secondary small" type="button" title="Remove this scene">&times; Remove scene</button>
+                <button id="video-save-config-btn" class="secondary small" type="button" title="Save this project's template configuration">&#128190; Save Template Configuration</button>
+                <div class="nav-divider" style="width: 1px; height: 24px; background: rgba(255,255,255,0.15); margin: 0 8px;"></div>
+                <button id="video-render" class="btn-render-primary" style="padding: 6px 16px; font-weight: 600; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer; transition: all 0.15s ease;">Render Final Video</button>
+                <a id="video-download" href="#" style="display:none;"><button type="button" class="secondary small" style="padding: 6px 12px;">Download</button></a>
+                <span id="video-result" class="hint" style="font-size: 0.85rem; color: #94a3b8;"></span>
+              </div>
             </div>
           </div>
 
           <div class="card video-scenes-editor-card scene-editor-container" id="video-scenes-editor-card">
             <div class="two-col editor-three-col">
-              <!-- Left nav column: everything that is CONTENT (what this scene
-                   says/shows), detected from the template -- title, subtitle,
-                   screenshots, BGM. Settings/configuration live on the right. -->
+              <!-- Left nav column: CONTENT (what this scene says/shows) -->
               <div class="editor-col editor-col-left">
                 <div class="row" style="justify-content:space-between; align-items:baseline;">
                   <h3 style="margin:0; font-size:.85rem;">Content</h3>
@@ -400,62 +407,117 @@
                 <button id="bgm-upload" class="secondary small" type="button" style="margin-top:.5rem;">Upload BGM</button>
               </div>
 
-              <!-- Center: preview player + transport + within-scene timeline. -->
+              <!-- Center: preview player + transport + Animation Container -->
               <div class="editor-col editor-col-center">
                 <div class="preview-frame"><div class="studio-preview-box"><iframe id="sc-preview"></iframe></div></div>
 
-                <div class="player-transport" id="sc-transport">
+                <div class="player-transport" id="sc-transport" style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; background: rgba(0,0,0,0.2); padding: 8px 12px; border-radius: 6px;">
                   <button type="button" class="secondary small" id="sc-tr-prev-frame" title="Previous frame">&#9198;</button>
                   <button type="button" class="secondary small" id="sc-tr-back" title="Back 1s">&#9664;&#9664;</button>
-                  <button type="button" id="sc-tr-play" title="Play / Pause">&#9654;</button>
+                  <button type="button" id="sc-tr-play" title="Play / Pause" style="min-width: 44px; font-weight: bold; background: #3b82f6; border: none; border-radius: 4px; color: white; cursor: pointer; padding: 4px 8px;">&#9654;</button>
                   <button type="button" class="secondary small" id="sc-tr-fwd" title="Forward 1s">&#9654;&#9654;</button>
                   <button type="button" class="secondary small" id="sc-tr-next-frame" title="Next frame">&#9197;</button>
-                  <span class="hint" id="sc-tr-time" style="margin-left:.5rem;">0.0s / 0.0s</span>
+                  
+                  <div class="nav-divider" style="width: 1px; height: 16px; background: rgba(255,255,255,0.15); margin: 0 4px;"></div>
+                  
+                  <button type="button" class="secondary small" id="sc-tr-loop" title="Toggle Loop" style="padding: 4px 8px;">🔁</button>
+                  <button type="button" class="secondary small" id="sc-tr-mute" title="Mute/Unmute" style="padding: 4px 8px;">🔊</button>
+                  <select id="sc-tr-speed" style="width: 65px; margin: 0; padding: 2px; font-size: 0.8rem; background: #262a33; border: 1px solid rgba(255,255,255,0.15); color: white; border-radius: 4px;">
+                    <option value="0.5">0.5x</option>
+                    <option value="1.0" selected>1.0x</option>
+                    <option value="2.0">2.0x</option>
+                  </select>
+                  
+                  <span class="hint" id="sc-tr-time" style="margin-left:.5rem; font-family: monospace; font-variant-numeric: tabular-nums;">0.0s / 0.0s</span>
                 </div>
 
-                <div class="scene-segments" id="sc-segments-panel" style="display:none;">
-                  <div class="row" style="justify-content:space-between; align-items:baseline;">
-                    <h3 style="margin:0; font-size:.85rem;">Screenshot timeline</h3>
-                    <button type="button" class="secondary small" id="sc-segment-add">+ Add screenshot</button>
+                <!-- Animation Containers (dual split: text/UI vs device motion) -->
+                <div class="scene-animation-container" id="sc-animation-panel" style="margin-top: 1.25rem; display:grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                  <!-- Container 1: Text & UI Elements Animation -->
+                  <div id="sc-anim-text-panel" style="padding: 1rem; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px;">
+                    <h3 style="margin: 0 0 1rem 0; font-size: 0.9rem; font-weight: 600; color: #38bdf8;">&#128221; Text &amp; UI Animation</h3>
+
+                    <label>Text Transition</label>
+                    <select id="sc-text-preset" style="width: 100%; margin-bottom: .8rem;">
+                      <option value="fade-up">Fade Up</option>
+                      <option value="slide-in">Slide In</option>
+                      <option value="zoom-in">Zoom In</option>
+                      <option value="tracking-in">Tracking In</option>
+                      <option value="kinetic">Kinetic</option>
+                      <option value="typewriter">Typewriter</option>
+                    </select>
+
+                    <label>Speed</label>
+                    <select id="sc-text-speed" style="width: 100%; margin-bottom: .8rem;">
+                      <option value="0.5">0.5x</option>
+                      <option value="1" selected>1.0x</option>
+                      <option value="1.5">1.5x</option>
+                      <option value="2">2.0x</option>
+                    </select>
+
+                    <div class="range-label" style="display:flex; justify-content:space-between;"><span>Delay</span><span id="sc-text-delay-val">0</span>ms</div>
+                    <input id="sc-text-delay" type="range" min="0" max="1200" step="50" value="0" style="width: 100%; margin-bottom:.8rem;" />
+
+                    <div class="range-label" style="display:flex; justify-content:space-between;"><span>Scale</span><span id="sc-text-scale-val">1.0</span></div>
+                    <input id="sc-text-scale" type="range" min="0.5" max="1.5" step="0.05" value="1" style="width: 100%;" />
+
+                    <!-- Dynamic Flow Labels Container (Landscape Flow) -->
+                    <div id="sc-flow-panel" style="display:none; margin-top:1.2rem; padding:0.8rem; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:8px;">
+                      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+                        <label style="margin:0; font-weight:600;">Flow Step Subtitles (16:9)</label>
+                        <button id="sc-flow-add-btn" class="secondary small" type="button">+ Add Step</button>
+                      </div>
+                      <p class="hint" style="margin:0 0 0.5rem;">Animated labels that appear on the left/right side during screen recording playback.</p>
+                      <div id="sc-flow-steps-list" style="display:flex; flex-direction:column; gap:0.4rem;"></div>
+                    </div>
+
+                    <!-- Portrait Flow Note -->
+                    <div id="sc-portrait-flow-note" style="display:none; margin-top:1.2rem; padding:0.8rem; background:rgba(56,189,248,0.06); border:1px solid rgba(56,189,248,0.2); border-radius:8px;">
+                      <strong style="color:#38bdf8; display:block; margin-bottom:0.2rem;">&#128241; Cinematic App Flow Scene</strong>
+                      <p class="hint" style="margin:0;">The 3D phone smoothly zooms forward until the screen fills the viewport, seamlessly transitioning into your full screen recording.</p>
+                    </div>
                   </div>
-                  <p class="hint" style="margin:.2rem 0 .6rem;">Show multiple screenshots in sequence within this one scene -- each with its own duration.</p>
-                  <div id="sc-segments-list"></div>
-                </div>
 
-                <!-- Dynamic Flow Labels Container (Landscape Flow) -->
-                <div id="sc-flow-panel" style="display:none; margin-top:1.2rem; padding:0.8rem; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:8px;">
-                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
-                    <label style="margin:0; font-weight:600;">Flow Step Subtitles (16:9)</label>
-                    <button id="sc-flow-add-btn" class="secondary small" type="button">+ Add Step</button>
+                  <!-- Container 2: Device Motion & 3D Camera -->
+                  <div id="sc-anim-device-panel" style="padding: 1rem; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px;">
+                    <h3 style="margin: 0 0 1rem 0; font-size: 0.9rem; font-weight: 600; color: #38bdf8;">&#127909; Device Motion &amp; 3D Camera</h3>
+
+                    <label>Motion Pattern</label>
+                    <select id="sc-template" style="width: 100%; margin-bottom: 1rem;"></select>
+
+                    <div class="range-label" style="display:flex; justify-content:space-between; margin-top:0.5rem;"><span>Rotation</span><span id="sc-rotate-val">20</span></div>
+                    <input id="sc-rotate" type="range" min="0" max="60" value="20" style="width: 100%;" />
+
+                    <div class="range-label" style="display:flex; justify-content:space-between; margin-top:0.5rem;"><span>Zoom</span><span id="sc-zoom-val">8</span></div>
+                    <input id="sc-zoom" type="range" min="0" max="40" value="8" style="width: 100%;" />
+
+                    <div class="range-label" style="display:flex; justify-content:space-between; margin-top:0.5rem;"><span>Movement</span><span id="sc-move-val">40</span></div>
+                    <input id="sc-move" type="range" min="0" max="200" value="40" style="width: 100%;" />
+
+                    <label style="margin-top:0.8rem;">Device depth</label>
+                    <select id="sc-depth" style="width:100%;">
+                      <option value="flat">Flat (2D)</option>
+                      <option value="perspective">Perspective tilt</option>
+                      <option value="float">Floating 3D</option>
+                      <option value="showcase">Full 3D showcase</option>
+                    </select>
                   </div>
-                  <p class="hint" style="margin:0 0 0.5rem;">Animated labels that appear on the left/right side during screen recording playback.</p>
-                  <div id="sc-flow-steps-list" style="display:flex; flex-direction:column; gap:0.4rem;"></div>
-                </div>
-
-                <!-- Portrait Flow Note -->
-                <div id="sc-portrait-flow-note" style="display:none; margin-top:1.2rem; padding:0.8rem; background:rgba(56,189,248,0.06); border:1px solid rgba(56,189,248,0.2); border-radius:8px;">
-                  <strong style="color:#38bdf8; display:block; margin-bottom:0.2rem;">📱 Cinematic App Flow Scene</strong>
-                  <p class="hint" style="margin:0;">The 3D phone smoothly zooms forward until the screen fills the viewport, seamlessly transitioning into your full screen recording.</p>
                 </div>
               </div>
 
-              <!-- Right nav column: everything that is SETTINGS/CONFIGURATION
-                   (how the scene behaves/looks) -- frame, timing, timeline,
-                   display/layout. No content (title/subtitle/screenshots)
-                   lives here; that's all on the left. -->
-              <div class="editor-col editor-col-right">
-                <h3 style="margin:0 0 .5rem; font-size:.85rem;">Frame</h3>
-                <label>Animation</label>
-                <select id="sc-template"></select>
+              <!-- Right nav column: EDITING SETTINGS (how the scene behaves/looks) -->
+              <div class="editor-col editing-settings-panel" id="video-scene-editing-settings">
+                <h3 style="margin:0 0 .5rem; font-size:.85rem;">Device & Frame</h3>
+                
+                <label>Device Model</label>
+                <select id="sc-device"></select>
+                
+                <label>Variant <span class="hint">(foldables)</span></label>
+                <select id="sc-variant"><option value="">default</option></select>
+                
                 <label>Layout <span class="hint">(which side the device sits on)</span></label>
                 <select id="sc-layout"></select>
-                <label>Device depth</label>
-                <select id="sc-depth">
-                  <option value="flat">Flat (2D)</option>
-                  <option value="perspective">Perspective tilt</option>
-                  <option value="float">Floating 3D</option>
-                  <option value="showcase">Full 3D showcase</option>
-                </select>
+                
                 <label>Transition</label>
                 <select id="sc-transition">
                   <option value="cut">Cut</option>
@@ -464,42 +526,100 @@
                   <option value="wipe">Wipe</option>
                   <option value="zoom">Zoom</option>
                 </select>
-                <!-- Device selection is disabled for now: each template already
-                     ships with one of six fixed, hand-tuned devices, and there
-                     is no dynamic device-swap system implemented yet. Left in
-                     place (not removed) so it can be re-enabled once that
-                     system exists -- see the plan's Phase note on this. -->
-                <label>Device <span class="hint">(fixed per template for now)</span></label>
-                <select id="sc-device" disabled></select>
-                <label>Variant <span class="hint">(foldables)</span></label>
-                <select id="sc-variant" disabled><option value="">default</option></select>
-                <label>Background</label>
+                
+                <label>Background Theme</label>
                 <select id="sc-background"></select>
 
                 <h3 style="margin:1.25rem 0 .5rem; font-size:.85rem;">Timing</h3>
                 <label>Duration (seconds)</label>
                 <input id="sc-duration" type="number" min="1" max="20" value="10" />
 
-                <h3 style="margin:1.25rem 0 .5rem; font-size:.85rem;">Motion</h3>
-                <div class="range-label"><span>Rotation</span><span id="sc-rotate-val">20</span></div>
-                <input id="sc-rotate" type="range" min="0" max="60" value="20" />
-                <div class="range-label"><span>Zoom</span><span id="sc-zoom-val">8</span></div>
-                <input id="sc-zoom" type="range" min="0" max="40" value="8" />
-                <div class="range-label"><span>Movement</span><span id="sc-move-val">40</span></div>
-                <input id="sc-move" type="range" min="0" max="200" value="40" />
-
-                <button id="sc-save" style="margin-top:1.25rem;">Save Scene</button>
-
-                <h3 style="margin:1.5rem 0 .5rem; font-size:.85rem;">Render</h3>
-                <div class="row">
-                  <button id="video-render">Render Final Video</button>
-                  <a id="video-download" href="#" style="display:none;"><button type="button" class="secondary small">Download video</button></a>
+                <!-- Screenshot Timeline (repositioned to Right Panel) -->
+                <div class="scene-segments" id="sc-segments-panel" style="display:none; margin-top:1.25rem; border-top:1px solid rgba(255,255,255,0.08); padding-top:1rem;">
+                  <div class="row" style="justify-content:space-between; align-items:baseline; margin-bottom: 0.5rem;">
+                    <h3 style="margin:0; font-size:.85rem;">Screenshot timeline</h3>
+                    <button type="button" class="secondary small" id="sc-segment-add">+ Add screenshot</button>
+                  </div>
+                  <p class="hint" style="margin:.2rem 0 .6rem;">Show multiple screenshots in sequence within this one scene -- each with its own duration.</p>
+                  <div id="sc-segments-list" style="display:flex; flex-direction:column; gap:0.4rem;"></div>
                 </div>
-                <div id="video-result" style="margin-top:1rem;"></div>
+
+                <button id="sc-save" style="margin-top:1.5rem; width:100%; font-weight:600; background:#10b981; border:none; border-radius:4px; padding:8px; color:white; cursor:pointer;">Save Scene</button>
               </div>
             </div>
           </div>
         </div>
+
+        <!-- ============ SUB-TAB: Device Management System ============ -->
+        <div class="section-page" id="video-section-devices">
+          <div class="card" style="padding: 1.5rem;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:1rem;">
+              <div>
+                <h2 style="margin:0; font-size:1.2rem; font-weight:600;">📱 3D Device Registry & Management</h2>
+                <p class="hint" style="margin:.2rem 0 0;">Inspect, search, and import/export real 3D device profile specifications.</p>
+              </div>
+              <div style="display:flex; gap:10px;">
+                <button class="secondary small" id="dev-import-btn" type="button">&#11014; Import JSON</button>
+                <button class="secondary small" id="dev-export-btn" type="button">&#11015; Export Registry</button>
+                <input type="file" id="dev-import-file" accept="application/json" style="display:none;" />
+              </div>
+            </div>
+
+            <div class="row" style="gap:15px; margin-bottom:1.5rem;">
+              <input type="text" id="dev-search" placeholder="Search devices by name or vendor..." style="flex:1; margin:0;" />
+              <select id="dev-filter-platform" style="width:160px; margin:0;">
+                <option value="">All Platforms</option>
+                <option value="google-play">Google Play (Android)</option>
+                <option value="apple-app-store">Apple App Store (iOS)</option>
+              </select>
+              <select id="dev-filter-formfactor" style="width:160px; margin:0;">
+                <option value="">All Form Factors</option>
+                <option value="phone">Phones</option>
+                <option value="tablet">Tablets</option>
+                <option value="foldable">Foldables</option>
+              </select>
+            </div>
+
+            <!-- Device Grid -->
+            <div id="dev-grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:20px;">
+              <div class="hint">Loading devices...</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ SUB-TAB: Saved Template Configurations ============ -->
+        <div class="section-page" id="video-section-saved-configs">
+          <div class="card" style="padding: 1.5rem;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:1rem;">
+              <div>
+                <h2 style="margin:0; font-size:1.2rem; font-weight:600;">&#128193; Saved Configurations</h2>
+                <p class="hint" style="margin:.2rem 0 0;">Named snapshots of this project's template + scenes, saved from the Scenes tab.</p>
+              </div>
+            </div>
+            <div id="saved-configs-grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap:16px;">
+              <div class="hint">No project loaded.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Save Template Configuration modal -->
+<div class="modal-backdrop" id="save-config-backdrop">
+  <div class="modal" style="width: 420px; max-width: 90%;">
+    <div class="modal-header">
+      <h2>Save Template Configuration</h2>
+      <button class="close-btn" id="save-config-close">&times;</button>
+    </div>
+    <div style="padding: 1rem;">
+      <label>Configuration Name</label>
+      <input type="text" id="save-config-name" placeholder="e.g. iPhone 15 Pro Config 1" style="width:100%;" />
+      <p id="save-config-warning" class="hint slot-issue error" style="display:none; margin-top:.6rem;"></p>
+      <div class="row" style="justify-content:flex-end; gap:8px; margin-top:1.2rem;">
+        <button class="secondary small" id="save-config-cancel" type="button">Cancel</button>
+        <button id="save-config-confirm" type="button" style="font-weight:600; background:#10b981; border:none; border-radius:4px; padding:6px 14px; color:white; cursor:pointer;">Save</button>
       </div>
     </div>
   </div>
