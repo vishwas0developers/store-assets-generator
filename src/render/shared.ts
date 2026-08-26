@@ -55,20 +55,45 @@ export function device3dMarkup(device: DeviceModel, screenshotUris: string[], va
   const uris = screenshotUris.filter(Boolean);
   const front = uris.length > 1 ? deviceMarkupMultiScreen(device, uris, variantId, durationMs, kinds) : deviceMarkup(device, uris[0] ?? "", variantId, kinds[0] ?? "image");
   const r = device.frame.outerRadius;
+  const body = device.frame.body || "#1e2025";
 
-  return `<div class="device-rig" style="width:${g.width}px;height:${g.height}px">
-      <div class="device-face device-front" style="transform:translateZ(${half}px)">${front}</div>
-      <div class="device-face device-back" style="width:${g.width}px;height:${g.height}px;border-radius:${r}px;background:${device.frame.body};transform:translateZ(-${half}px) rotateY(180deg)">
-        <div class="device-cam-bar">
-          <div class="device-lens"></div>
-          <div class="device-lens"></div>
-          <div class="device-lens"></div>
+  const sideLeftRight = `linear-gradient(to bottom, rgba(255,255,255,0.2) 0%, ${body} 20%, ${body} 80%, rgba(0,0,0,0.3) 100%)`;
+  const sideTop = `linear-gradient(to right, rgba(255,255,255,0.15) 0%, ${body} 25%, ${body} 75%, rgba(0,0,0,0.25) 100%)`;
+  const sideBottom = `linear-gradient(to right, rgba(0,0,0,0.25) 0%, ${body} 25%, ${body} 75%, rgba(255,255,255,0.15) 100%)`;
+
+  let sideLeftContent = "";
+  let sideRightContent = "";
+  if (device.frame.buttons !== false) {
+    sideLeftContent = `
+      <div class="side-btn volume-up" style="position:absolute;width:4px;height:45px;left:-4px;top:120px;background:linear-gradient(to bottom, #cbd5e1, #94a3b8);border:1px solid #475569;border-radius:3px;"></div>
+      <div class="side-btn volume-down" style="position:absolute;width:4px;height:45px;left:-4px;top:180px;background:linear-gradient(to bottom, #cbd5e1, #94a3b8);border:1px solid #475569;border-radius:3px;"></div>
+    `;
+    sideRightContent = `
+      <div class="side-btn power-btn" style="position:absolute;width:4px;height:50px;right:-4px;top:140px;background:linear-gradient(to bottom, #cbd5e1, #94a3b8);border:1px solid #475569;border-radius:3px;"></div>
+    `;
+  }
+
+  return `<div class="device-rig-wrap">
+      <div class="device-rig" style="width:${g.width}px;height:${g.height}px">
+        <div class="device-face device-front" style="transform:translateZ(${half}px);border-radius:${r}px;padding:4px;box-sizing:border-box;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08),0 20px 45px rgba(0,0,0,.5)">
+          ${front}
+          <div class="device-sheen"></div>
         </div>
+        <div class="device-face device-back" style="width:${g.width}px;height:${g.height}px;border-radius:${r}px;background:${device.frame.body};transform:translateZ(-${half}px) rotateY(180deg)">
+          <div class="device-cam-bar">
+            <div class="device-lens"></div>
+            <div class="device-lens"></div>
+            <div class="device-lens"></div>
+          </div>
+        </div>
+        <div class="device-face device-side" style="width:${t}px;height:${g.height}px;transform:rotateY(-90deg) translateZ(${half}px);background:${sideLeftRight}">${sideLeftContent}</div>
+        <div class="device-face device-side" style="width:${t}px;height:${g.height}px;left:${g.width - t}px;transform:rotateY(90deg) translateZ(${half}px);background:${sideLeftRight}">${sideRightContent}</div>
+        <div class="device-face device-side" style="width:${g.width}px;height:${t}px;transform:rotateX(90deg) translateZ(${half}px);background:${sideTop}"></div>
+        <div class="device-face device-side" style="width:${g.width}px;height:${t}px;top:${g.height - t}px;transform:rotateX(-90deg) translateZ(${half}px);background:${sideBottom}"></div>
       </div>
-      <div class="device-face device-side" style="width:${t}px;height:${g.height}px;transform:rotateY(-90deg) translateZ(${half}px);background:linear-gradient(90deg, rgba(255,255,255,.16), rgba(0,0,0,.35))"></div>
-      <div class="device-face device-side" style="width:${t}px;height:${g.height}px;left:${g.width - t}px;transform:rotateY(90deg) translateZ(${half}px);background:linear-gradient(270deg, rgba(0,0,0,.5), rgba(255,255,255,.06))"></div>
-      <div class="device-face device-side" style="width:${g.width}px;height:${t}px;transform:rotateX(90deg) translateZ(${half}px);background:linear-gradient(180deg, rgba(255,255,255,.22), rgba(0,0,0,.25))"></div>
-      <div class="device-face device-side" style="width:${g.width}px;height:${t}px;top:${g.height - t}px;transform:rotateX(-90deg) translateZ(${half}px);background:linear-gradient(0deg, rgba(255,255,255,.12), rgba(0,0,0,.35))"></div>
+      <div class="device-reflection" style="width:${g.width}px;height:${g.height}px">
+        <div class="device-face device-front" style="transform:translateZ(${half}px);border-radius:${r}px;padding:4px;box-sizing:border-box">${front}</div>
+      </div>
     </div>`;
 }
 
@@ -125,13 +150,18 @@ export const DEVICE_CSS = `
 
   /* -- Genuine six-face 3D rig -- front/back/left/right/top/bottom as real
      planes, not a flat image with a border. See device3dMarkup. -- */
+  .device-rig-wrap { position: relative; transform-style: preserve-3d; }
   .device-rig { position: relative; transform-style: preserve-3d; filter: drop-shadow(0 24px 42px rgba(0,0,0,.48)); }
   .device-face { position: absolute; top: 0; left: 0; backface-visibility: hidden; }
-  .device-face.device-front { transform-style: preserve-3d; }
+  .device-face.device-front { transform-style: preserve-3d; overflow: hidden; }
   .device-back { border: 1px solid rgba(255,255,255,.08); display: flex; align-items: flex-start; justify-content: center; }
   .device-cam-bar { display: flex; gap: 8px; align-items: center; justify-content: center; padding: 6px 14px; background: rgba(0,0,0,.4); border-radius: 20px; margin-top: 5%; border: 1px solid rgba(255,255,255,.1); }
   .device-lens { width: 14px; height: 14px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #555, #080808 70%); border: 1px solid rgba(255,255,255,.15); }
   .device-side { opacity: .96; }
+
+  /* -- Floor reflection: a mirrored, blurred, faint copy of the rig sitting
+     beneath it, matching the reference templates' glass-floor look. -- */
+  .device-reflection { position: absolute; top: 100%; left: 0; transform-style: preserve-3d; transform: scaleY(-1); transform-origin: top center; opacity: .16; filter: blur(4px); pointer-events: none; mask-image: linear-gradient(to bottom, rgba(0,0,0,.6), transparent 70%); -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,.6), transparent 70%); }
 `;
 
 /** Solid colours — a flat swatch, distinct from a gradient preset. */

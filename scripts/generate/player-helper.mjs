@@ -257,17 +257,31 @@ export function getUniversalPlayerScriptAndStyle(config) {
       document.getAnimations().forEach(a => {
         try {
           if (playState === "playing") {
-            a.play();
+            if (a.playState !== "running") {
+              a.play();
+            }
           } else {
-            a.pause();
-            a.currentTime = sceneRelMs;
+            if (a.playState !== "paused") {
+              a.pause();
+            }
+            // Only set currentTime if it deviates to avoid micro-stutters
+            if (Math.abs((a.currentTime || 0) - sceneRelMs) > 16) {
+              a.currentTime = sceneRelMs;
+            }
           }
         } catch(e) {}
       });
       document.querySelectorAll("video").forEach(v => {
         try {
-          if (playState === "playing") v.play();
-          else { v.pause(); v.currentTime = sceneRelMs / 1000; }
+          if (playState === "playing") {
+            if (v.paused) v.play();
+          } else {
+            if (!v.paused) v.pause();
+            // Only seek if difference is significant
+            if (Math.abs(v.currentTime - (sceneRelMs / 1000)) > 0.05) {
+              v.currentTime = sceneRelMs / 1000;
+            }
+          }
         } catch(e) {}
       });
     }
@@ -277,7 +291,11 @@ export function getUniversalPlayerScriptAndStyle(config) {
       
       // Dynamic hook for template-specific 3D rigs if defined
       if (typeof window.__customSceneTransform === 'function') {
-        window.__customSceneTransform(sceneIdx, progress, globalTimeMs);
+        try {
+          window.__customSceneTransform(sceneIdx, progress, globalTimeMs);
+        } catch (err) {
+          console.error("Custom transform error:", err);
+        }
       } else {
         const rig = document.getElementById("phone-rig-" + sceneIdx);
         if (rig) {
@@ -325,11 +343,14 @@ export function getUniversalPlayerScriptAndStyle(config) {
       updateUiTime();
     }
 
+    let animationFrameId = null;
+
     function startLoop() {
-      if (playbackInterval) clearInterval(playbackInterval);
-      lastTickTime = Date.now();
-      playbackInterval = setInterval(() => {
-        const now = Date.now();
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+      lastTickTime = performance.now();
+      
+      function tick(now) {
+        if (playState !== "playing") return;
         const delta = now - lastTickTime;
         lastTickTime = now;
 
@@ -344,7 +365,10 @@ export function getUniversalPlayerScriptAndStyle(config) {
         }
 
         renderFrameAt(globalTimeMs);
-      }, 1000 / 60);
+        animationFrameId = requestAnimationFrame(tick);
+      }
+      
+      animationFrameId = requestAnimationFrame(tick);
     }
 
     function resetAutoHide() {
@@ -376,9 +400,9 @@ export function getUniversalPlayerScriptAndStyle(config) {
 
     window.pause = function() {
       playState = "paused";
-      if (playbackInterval) {
-        clearInterval(playbackInterval);
-        playbackInterval = null;
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
       }
       renderFrameAt(globalTimeMs);
       notify();

@@ -8,7 +8,6 @@ import {
   dataUri,
   decorationsMarkup,
   deviceMarkup,
-  deviceMarkupMultiScreen,
   device3dMarkup,
   deviceScaleFor,
   escapeHtml,
@@ -59,6 +58,9 @@ export interface SceneAnimation {
    *  are the scene's full screen list (front-face cross-fade candidates),
    *  not just the first. Falls back to `deviceRigMarkup` (depth-aware). */
   renderDevice?: (device: DeviceModel, uris: string[], kinds: ("image" | "video")[], scene: VideoScene, durationMs: number) => string;
+  /** Optional extra per-scene CSS beyond the standard device/backdrop/copy
+   *  keyframes -- used by portrait-flow's screen-merge bezel fade-out. */
+  extraCss?: (scene: VideoScene, selector: string, gateSelector: string, keyframeSuffix: string, durationMs: number) => string;
 }
 
 /** Every entrance/exit distance is expressed in terms of `move`/`zoom`/`rotate`
@@ -97,9 +99,8 @@ export const SCENE_ANIMATIONS: Record<string, SceneAnimation> = {
       return `
       0%   { transform: perspective(1800px) rotateY(${-18 - rot}deg) translateY(${cappedMove(s.move) * 0.25}px) scale(${0.92 - s.zoom / 300}); opacity: 0; }
       15%  { opacity: 1; }
-      55%  { transform: perspective(1800px) rotateY(${rot * 0.4}deg) translateY(0) scale(${1 + s.zoom / 120}); opacity: 1; }
-      88%  { transform: perspective(1800px) rotateY(0deg) translateY(0) scale(${1 + s.zoom / 120}); opacity: 1; }
-      100% { transform: perspective(1800px) rotateY(0deg) translateY(0) scale(${1 + s.zoom / 130}); opacity: 1; }
+      55%  { transform: perspective(1800px) rotateY(0deg) translateY(0) scale(${1 + s.zoom / 120}); opacity: 1; }
+      100% { transform: perspective(1800px) rotateY(0deg) translateY(0) scale(${1 + s.zoom / 120}); opacity: 1; }
     `;
     },
     backdropKeyframes: (s) => `
@@ -188,8 +189,7 @@ export const SCENE_ANIMATIONS: Record<string, SceneAnimation> = {
     deviceKeyframes: (s) => `
       0%   { transform: scale(${0.9 - s.zoom / 300}) translateY(${15 + cappedMove(s.move) / 6}px); opacity: 0; }
       18%  { opacity: 1; }
-      50%  { transform: scale(${1.02 + s.zoom / 150}) translateY(0); opacity: 1; }
-      65%  { transform: scale(${1 + s.zoom / 120}) translateY(0); opacity: 1; }
+      50%  { transform: scale(${1 + s.zoom / 120}) translateY(0); opacity: 1; }
       100% { transform: scale(${1 + s.zoom / 120}) translateY(0); opacity: 1; }
     `,
     backdropKeyframes: () => `
@@ -204,20 +204,37 @@ export const SCENE_ANIMATIONS: Record<string, SceneAnimation> = {
     easing: "cubic-bezier(.2,.85,.25,1)",
     // 3D physical phone enters with a full 360-degree rotation (back-to-front),
     // settles at center, then gradually scales up so the screen fits the canvas exactly without overshooting
-    deviceKeyframes: (s) => `
-      0%   { transform: perspective(2000px) rotateY(-360deg) scale(0.85); opacity: 0; }
-      10%  { opacity: 1; }
-      36%  { transform: perspective(2000px) rotateY(0deg) scale(1); opacity: 1; }
-      46%  { transform: perspective(2000px) rotateY(0deg) scale(1); opacity: 1; }
-      72%  { transform: perspective(2000px) rotateY(0deg) scale(1.68); opacity: 1; }
-      100% { transform: perspective(2000px) rotateY(0deg) scale(1.68); opacity: 1; }
-    `,
+    deviceKeyframes: (s) => {
+      const targetScale = (1 / (s.deviceFraction ?? 0.6)).toFixed(3);
+      return `
+        0%   { transform: perspective(2000px) rotateY(-360deg) scale(0.85); opacity: 0; }
+        10%  { opacity: 1; }
+        36%  { transform: perspective(2000px) rotateY(0deg) scale(1); opacity: 1; }
+        46%  { transform: perspective(2000px) rotateY(0deg) scale(1); opacity: 1; }
+        72%  { transform: perspective(2000px) rotateY(0deg) scale(${targetScale}); opacity: 1; }
+        100% { transform: perspective(2000px) rotateY(0deg) scale(${targetScale}); opacity: 1; }
+      `;
+    },
     backdropKeyframes: () => `
       0%   { transform: scale(1.05); filter: brightness(1); }
       50%  { transform: scale(1.15); filter: brightness(0.85); }
       100% { transform: scale(1.2); filter: brightness(0.7); }
     `,
     renderDevice: (device, uris, kinds, scene, durationMs) => device3dMarkup(device, uris, scene.variant, durationMs, kinds),
+    // The bezel/back/sides/reflection fade out as the rig scales past frame,
+    // so only the screen content remains -- a genuine merge with the canvas
+    // rather than just a big scaled-up phone with a darkened backdrop.
+    extraCss: (_scene, selector, gateSelector, keyframeSuffix, durationMs) => `
+      ${gateSelector} .device-frame, ${gateSelector} .device-back, ${gateSelector} .device-side, ${gateSelector} .device-sheen, ${gateSelector} .device-reflection {
+        animation: bezelFade${keyframeSuffix} ${durationMs}ms ease-in forwards;
+      }
+      @keyframes bezelFade${keyframeSuffix} {
+        0%   { opacity: 1; }
+        72%  { opacity: 1; }
+        92%  { opacity: 0; }
+        100% { opacity: 0; }
+      }
+    `,
   },
   "landscape-flow": {
     id: "landscape-flow",
@@ -225,14 +242,17 @@ export const SCENE_ANIMATIONS: Record<string, SceneAnimation> = {
     easing: "cubic-bezier(.2,.85,.25,1)",
     // Phone enters centrally with a 360-degree 3D spin, then scales up to match vertical frame height.
     // Alternating subtitle labels display on left & right.
-    deviceKeyframes: (s) => `
-      0%   { transform: perspective(2000px) rotateY(-360deg) scale(0.85); opacity: 0; }
-      10%  { opacity: 1; }
-      32%  { transform: perspective(2000px) rotateY(0deg) scale(1); opacity: 1; }
-      40%  { transform: perspective(2000px) rotateY(0deg) scale(1); opacity: 1; }
-      60%  { transform: perspective(2000px) rotateY(0deg) scale(1.56); opacity: 1; }
-      100% { transform: perspective(2000px) rotateY(0deg) scale(1.56); opacity: 1; }
-    `,
+    deviceKeyframes: (s) => {
+      const targetScale = (1 / (s.deviceFraction ?? 0.6)).toFixed(3);
+      return `
+        0%   { transform: perspective(2000px) rotateY(-360deg) scale(0.85); opacity: 0; }
+        10%  { opacity: 1; }
+        32%  { transform: perspective(2000px) rotateY(0deg) scale(1); opacity: 1; }
+        40%  { transform: perspective(2000px) rotateY(0deg) scale(1); opacity: 1; }
+        60%  { transform: perspective(2000px) rotateY(0deg) scale(${targetScale}); opacity: 1; }
+        100% { transform: perspective(2000px) rotateY(0deg) scale(${targetScale}); opacity: 1; }
+      `;
+    },
     backdropKeyframes: () => `
       0%   { transform: scale(1.04); filter: brightness(0.95); }
       50%  { transform: scale(1.08); filter: brightness(1.02); }
@@ -289,8 +309,7 @@ export const SCENE_ANIMATIONS: Record<string, SceneAnimation> = {
     deviceKeyframes: (s) => `
       0%   { transform: perspective(2000px) rotateY(-95deg) rotateX(4deg) translateZ(-40px) scale(${0.85 - s.zoom / 320}); opacity: 0; }
       12%  { opacity: 1; }
-      45%  { transform: perspective(2000px) rotateY(-12deg) rotateX(2deg) translateZ(0) scale(${1 + s.zoom / 130}); opacity: 1; }
-      70%  { transform: perspective(2000px) rotateY(4deg) rotateX(0deg) translateZ(0) scale(${1 + s.zoom / 110}); opacity: 1; }
+      55%  { transform: perspective(2000px) rotateY(0deg) rotateX(0deg) translateZ(0) scale(${1 + s.zoom / 110}); opacity: 1; }
       100% { transform: perspective(2000px) rotateY(0deg) rotateX(0deg) translateZ(0) scale(${1 + s.zoom / 110}); opacity: 1; }
     `,
     backdropKeyframes: () => `
@@ -489,6 +508,48 @@ export const SCENE_ANIMATIONS: Record<string, SceneAnimation> = {
       </div>`;
     },
   },
+  "studio-opener": {
+    id: "studio-opener",
+    name: "Studio opener",
+    easing: "cubic-bezier(.16,1,.3,1)",
+    deviceKeyframes: (s) => `0% { opacity: 0; transform: scale(0.9); } 100% { opacity: 1; transform: scale(1); }`,
+  },
+  "studio-phone": {
+    id: "studio-phone",
+    name: "Studio phone",
+    easing: "cubic-bezier(.16,1,.3,1)",
+    deviceKeyframes: (s) => `0% { opacity: 0; transform: scale(0.9); } 100% { opacity: 1; transform: scale(1); }`,
+  },
+  "studio-outro": {
+    id: "studio-outro",
+    name: "Studio outro",
+    easing: "cubic-bezier(.16,1,.3,1)",
+    deviceKeyframes: (s) => `0% { opacity: 0; transform: scale(0.9); } 100% { opacity: 1; transform: scale(1); }`,
+  },
+  "studio-macro": {
+    id: "studio-macro",
+    name: "Studio macro",
+    easing: "cubic-bezier(.16,1,.3,1)",
+    deviceKeyframes: (s) => `0% { opacity: 0; transform: scale(0.9); } 100% { opacity: 1; transform: scale(1); }`,
+  },
+  "studio-transition": {
+    id: "studio-transition",
+    name: "Studio transition",
+    easing: "cubic-bezier(.16,1,.3,1)",
+    deviceKeyframes: (s) => `0% { opacity: 0; transform: scale(0.9); } 100% { opacity: 1; transform: scale(1); }`,
+  },
+  "studio-landscape": {
+    id: "studio-landscape",
+    name: "Studio landscape",
+    easing: "cubic-bezier(.16,1,.3,1)",
+    deviceKeyframes: (s) => `0% { opacity: 0; transform: scale(0.9); } 100% { opacity: 1; transform: scale(1); }`,
+  },
+  "studio-split": {
+    id: "studio-split",
+    name: "Studio split",
+    easing: "cubic-bezier(.16,1,.3,1)",
+    deviceKeyframes: (s) => `0% { opacity: 0; transform: scale(0.9); } 100% { opacity: 1; transform: scale(1); }`,
+  },
 };
 
 export function listSceneAnimations() {
@@ -596,21 +657,17 @@ export function sourceKindsFor(project: VideoProject, scene: VideoScene): ("imag
 
 
 /** Depth-aware device rendering for scenes with no custom `renderDevice`
- *  hook: "flat" is today's plain frame (default), "perspective" tilts that
- *  same flat plane with a matched shadow, "float"/"showcase" use the
- *  genuine six-face 3D rig (device3dMarkup) -- real thickness, not a
- *  border around a flat image. */
+ *  hook. Every depth mode now renders the genuine six-face 3D rig
+ *  (device3dMarkup) -- real thickness, real side rails and buttons, not a
+ *  border around a flat image; `depth` only changes the wrapping motion:
+ *  "perspective" adds a static tilt shadow context, "float" adds the bob
+ *  animation, "flat"/"showcase" render the rig directly. */
 function deviceRigMarkup(device: DeviceModel, uris: string[], kinds: ("image" | "video")[], scene: VideoScene, durationMs: number): string {
   const depth = scene.depth ?? "flat";
-  if (depth === "flat") {
-    return uris.length > 1 ? deviceMarkupMultiScreen(device, uris, scene.variant, durationMs, kinds) : deviceMarkup(device, uris[0] ?? "", scene.variant, kinds[0] ?? "image");
-  }
-  if (depth === "perspective") {
-    const inner = uris.length > 1 ? deviceMarkupMultiScreen(device, uris, scene.variant, durationMs, kinds) : deviceMarkup(device, uris[0] ?? "", scene.variant, kinds[0] ?? "image");
-    return `<div class="device-tilt">${inner}</div>`;
-  }
   const rig = device3dMarkup(device, uris, scene.variant, durationMs, kinds);
-  return depth === "float" ? `<div class="device-float">${rig}</div>` : rig;
+  if (depth === "perspective") return `<div class="device-tilt">${rig}</div>`;
+  if (depth === "float") return `<div class="device-float">${rig}</div>`;
+  return rig;
 }
 
 /** Resolves what to actually draw inside the device box for a scene: a
@@ -624,22 +681,14 @@ function deviceInnerMarkup(animation: SceneAnimation, device: DeviceModel, scene
   return deviceRigMarkup(device, filled, filledKinds, scene, durationMs);
 }
 
-/** Splits text into word `<span>`s with a per-word entrance delay, so the
- *  title reads as a staggered reveal rather than popping in as one block. */
-function wordSpans(text: string, className: string, baseDelayMs: number, stepMs: number): string {
-  return text
-    .split(/\s+/)
-    .filter(Boolean)
-    .map((word, i) => `<span class="${className}" style="animation-delay:${baseDelayMs + i * stepMs}ms">${escapeHtml(word)}</span>`)
-    .join(" ");
-}
-
-/** Shared text-block CSS: word-by-word entrance for title/subtitle. The
- *  exit fade itself is emitted per-scene by `sceneLayoutCss` (its timing
- *  depends on that scene's duration). */
+/** Shared text-block CSS: a single-pass fade+rise entrance for the whole
+ *  title/subtitle block -- once displayed the text is 100% stable (no
+ *  per-word staggering/flicker). The exit fade itself is emitted per-scene
+ *  by `sceneLayoutCss` (its timing depends on that scene's duration). */
 const WORD_SPAN_CSS = `
-  .word { display: inline-block; opacity: 0; transform: translateY(22px); animation: wordIn 560ms cubic-bezier(.16,1,.3,1) forwards; }
-  @keyframes wordIn { 0% { opacity: 0; transform: translateY(22px); } 100% { opacity: 1; transform: translateY(0); } }
+  .word { display: inline-block; }
+  .label, .subtext { opacity: 0; transform: translateY(20px); animation: textIn 480ms cubic-bezier(.16,1,.3,1) forwards; }
+  @keyframes textIn { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
 `;
 
 /** Backgrounds pale/bright enough that white text loses contrast against
@@ -655,9 +704,9 @@ function textShadowFor(background: string): string {
 
 function textBlockHtml(scene: VideoScene): string {
   if (!scene.text) return "";
-  const title = `<div class="label">${wordSpans(scene.text, "word", 60, 55)}</div>`;
+  const title = `<div class="label" style="animation-delay:60ms"><span class="word">${escapeHtml(scene.text)}</span></div>`;
   const sub = scene.subtext
-    ? `<div class="subtext">${wordSpans(scene.subtext, "word", 260 + scene.text.split(/\s+/).length * 55, 45)}</div>`
+    ? `<div class="subtext" style="animation-delay:220ms"><span class="word">${escapeHtml(scene.subtext)}</span></div>`
     : "";
   return `<div class="copy" style="color:${textColorFor(scene.background)};text-shadow:${textShadowFor(scene.background)}">${title}${sub}</div>`;
 }
@@ -782,8 +831,14 @@ const FLOW_LABEL_CSS = `
   }
 `;
 
+/** Stacks a scene's flowSteps down each side (1 item = vertically centered,
+ *  as before; 2-3+ items per side = evenly spaced rows) -- reused as-is by
+ *  the mid-sequence "App Flow" walkthrough labels and by landscape-flow's
+ *  Scene 10 climax, which just supplies up to 6 steps (3 left / 3 right)
+ *  instead of 1-3 alternating ones. */
 function flowLabelsHtml(scene: VideoScene, durationMs: number): string {
   if (!scene.flowSteps || scene.flowSteps.length === 0) return "";
+  const bySide = { left: scene.flowSteps.filter((s) => s.side === "left"), right: scene.flowSteps.filter((s) => s.side === "right") };
   return scene.flowSteps
     .map((step, idx) => {
       const startMs = step.startSec * 1000;
@@ -792,8 +847,11 @@ function flowLabelsHtml(scene: VideoScene, durationMs: number): string {
       const animName = `flowStepAnim_${idx}`;
       const sideClass = isLeft ? "flow-label-left" : "flow-label-right";
       const inTranslate = isLeft ? "-32px" : "32px";
+      const sideItems = bySide[step.side];
+      const rowIdx = sideItems.indexOf(step);
+      const topPct = ((rowIdx + 1) / (sideItems.length + 1)) * 100;
       return `
-        <div class="flow-label ${sideClass}" style="animation: ${animName} ${stepDurMs}ms ${startMs}ms cubic-bezier(.2,.85,.25,1) forwards;">
+        <div class="flow-label ${sideClass}" style="top:${topPct}%; animation: ${animName} ${stepDurMs}ms ${startMs}ms cubic-bezier(.2,.85,.25,1) forwards;">
           <div class="flow-label-dot"></div>
           <span>${escapeHtml(step.label)}</span>
         </div>
@@ -850,6 +908,7 @@ function sceneLayoutCss(scene: VideoScene, animation: SceneAnimation, durationMs
     @keyframes bg${keyframeSuffix} { ${backdropKf} }
     @keyframes copyExit${keyframeSuffix} { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-14px); } }
     @keyframes trans${keyframeSuffix} { ${transitionKeyframeBody(scene, durationMs)} }
+    ${animation.extraCss ? animation.extraCss(scene, selector, gateSelector, keyframeSuffix, durationMs) : ""}
   `;
 }
 
