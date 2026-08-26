@@ -116,7 +116,7 @@ export function applyVideoTemplate(project: VideoProject, templateId: string): v
   // scene's images are assigned by the user per-slot in the studio UI, not
   // by first-come-first-served source order.
   const cfg = templateConfig(resolvedId);
-  const isDevicePreset = !cfg?.scenes?.some((s: any) => s.slots);
+  const isDevicePreset = !resolvedId.startsWith("tpl-");
 
   let sourceCursor = 0;
   project.template = resolvedId;
