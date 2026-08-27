@@ -109,6 +109,19 @@ const SLOT_OVERRIDES: Record<string, Record<number, Record<string, string[]>>> =
     0: { logo: ["#s0-logo"] },
     3: { logo: ["#s3-logo"], platforms: ["#s3-platforms"] },
   },
+  "tpl-1371526-hud-blueprint": {
+    // Scene 11 ("SHOWCASE GALLERY") is a section-title card between screenshot groups --
+    // config wrongly declares "screenshot": "slot-11", but no such id (or any phone-screen
+    // element) exists in this scene's markup; slot-1..slot-10 are the real screenshot ids,
+    // already used by other scenes. Suppressed (empty target list) rather than guessed at.
+    11: { screenshot: [] },
+  },
+  "tpl-27720310-dark-matte-spheres": {
+    // Scene 16 ("Outro transition", 1.4s, no text) is a brief kinetic wipe -- config wrongly
+    // declares "screenshot": "slot-16", but no such id exists (slot-15 and slot-17 are real,
+    // used by neighboring scenes; slot-16 was never wired to any element in this markup).
+    16: { screenshot: [] },
+  },
 };
 
 interface TemplateHtmlInfo {
@@ -217,7 +230,15 @@ export function slotSpecsForScene(templateId: string, sceneIndex: number): SlotS
   // from the legacy VideoTemplateScene fields so the editor is uniform across
   // all 16 templates, while the code-generated render path (which already
   // handles these) stays untouched.
-  if (!declaredSlots && scene && !Array.isArray(scene.platforms)) {
+  //
+  // Restricted to actual device-preset templates (id doesn't start with "tpl-"):
+  // a tpl-* template's scene can also lack a `slots` block, but that means
+  // something different there -- a legacy/outro card with genuinely no image in
+  // its design (e.g. tpl-23552607's "envato" outro brand card, scene 14, text-only).
+  // Synthesizing a *required* screenshot for that scene wrongly blocked render and
+  // showed nothing where nothing was ever supposed to render.
+  const isDevicePresetTemplate = !templateId.startsWith("tpl-");
+  if (!declaredSlots && scene && isDevicePresetTemplate && !Array.isArray(scene.platforms)) {
     if (typeof scene.text === "string") specs.push({ key: "text", kind: "text", targets: [], op: "text", label: "Headline", required: true, maxLength: 60 });
     if (typeof scene.subtext === "string") specs.push({ key: "subtext", kind: "text", targets: [], op: "text", label: "Subtext", required: false, maxLength: 120 });
     const count = scene.screenCount && scene.screenCount > 1 ? scene.screenCount : 1;
