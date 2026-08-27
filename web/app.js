@@ -3936,75 +3936,15 @@ function renderDevicesCatalogueList() {
   bind3dDeviceViewers(grid);
 }
 
-/** A generic (non-pixel-exact) six-face CSS-3D box for the device catalogue's
- *  360° preview -- not the render engine's frame-accurate device3dMarkup
- *  (src/render/shared.ts), which needs a real screenshot/scene context this
- *  catalogue card doesn't have. Faces are proportioned from the device's own
- *  geometry/frame traits so different devices still read as visually
- *  distinct (aspect ratio, bezel, cutout, body color). */
+/** Real per-model 3D preview -- a <canvas> painted from the device's actual
+ *  GLB (init3dDeviceViewport, below) instead of a generic hardcoded box, so
+ *  different devices show genuinely different geometry (camera island
+ *  shape/lens layout, edge profile, button placement), not just a
+ *  differently-sized identical box. */
 function device3dViewerHtml(d) {
-  const maxW = 110, maxH = 150;
-  const scale = Math.min(maxW / d.geometry.width, maxH / d.geometry.height);
-  const w = Math.round(d.geometry.width * scale);
-  const h = Math.round(d.geometry.height * scale);
-  const thickness = Math.max(12, Math.round((d.frame.thickness ?? 22) * scale * 2.5));
-  const body = d.frame.body || "#1a1d24";
-  const accent = d.frame.accent || "#3a3f4b";
-  const insetTop = Math.round(d.geometry.screenInset.top * scale);
-  const insetLeft = Math.round(d.geometry.screenInset.left * scale);
-  const insetW = Math.round(d.geometry.screenInset.width * scale);
-  const insetH = Math.round(d.geometry.screenInset.height * scale);
-  
-  const cutout = d.frame.cutout === "notch"
-    ? `<div style="position:absolute; top:0; left:50%; transform:translateX(-50%); width:${Math.round(w * 0.32)}px; height:6px; background:#000; border-radius:0 0 8px 8px;"></div>`
-    : d.frame.cutout === "punch-hole" || d.frame.cutout === "dynamic-island"
-    ? `<div style="position:absolute; top:6px; left:50%; transform:translateX(-50%); width:10px; height:10px; background:#000; border-radius:50%;"></div>`
-    : "";
-
   return `
-    <div class="device-3d-viewport" style="width:100%; height:190px;" data-w="${w}" data-h="${h}" data-t="${thickness}">
-      <div class="device-3d-rig" style="width:${w}px; height:${h}px; transform-style:preserve-3d; position:relative;">
-        <!-- Front -->
-        <div class="d3-face d3-front" style="width:${w}px; height:${h}px; background:${body}; transform: translateZ(${thickness / 2}px); position: absolute; left: 0; top: 0;">
-          <div style="position:absolute; top:${insetTop}px; left:${insetLeft}px; width:${insetW}px; height:${insetH}px; background:linear-gradient(160deg,#0b1622,#1c2b3d); border-radius:4px; border:1px solid rgba(255,255,255,0.08);"></div>
-          ${cutout}
-        </div>
-        <!-- Back -->
-        <div class="d3-face d3-back" style="width:${w}px; height:${h}px; background:${body}; transform: rotateY(180deg) translateZ(${thickness / 2}px); position: absolute; left: 0; top: 0; border:1px solid ${accent};">
-          <!-- Camera housing -->
-          <div style="position:absolute; top:8px; left:8px; width:${Math.round(w*0.35)}px; height:${Math.round(w*0.35)}px; background:${accent}; border-radius:6px; box-shadow:0 1px 3px rgba(0,0,0,0.4);">
-            <div style="position:absolute; top:20%; left:20%; width:6px; height:6px; border-radius:50%; background:#111;"></div>
-            <div style="position:absolute; top:20%; right:20%; width:6px; height:6px; border-radius:50%; background:#111;"></div>
-            <div style="position:absolute; bottom:20%; left:20%; width:6px; height:6px; border-radius:50%; background:#111;"></div>
-          </div>
-        </div>
-        <!-- Top -->
-        <div class="d3-face d3-top" style="position:absolute; width:${w}px; height:${thickness}px; left:0; top:-${thickness}px; background:${accent}; transform-origin: bottom center; transform: rotateX(90deg); border-bottom:1px solid rgba(255,255,255,0.15);">
-          <div style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:3px; height:3px; border-radius:50%; background:#111;"></div>
-        </div>
-        <!-- Bottom -->
-        <div class="d3-face d3-bottom" style="position:absolute; width:${w}px; height:${thickness}px; left:0; top:${h}px; background:${accent}; transform-origin: top center; transform: rotateX(-90deg); border-top:1px solid rgba(255,255,255,0.15);">
-          <!-- USB-C -->
-          <div style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:18px; height:4px; background:#111; border-radius:2px; border:1px solid #444; box-shadow:inset 0 1px 2px rgba(0,0,0,0.8);"></div>
-          <!-- Speakers -->
-          <div style="position:absolute; left:25%; top:50%; transform:translateY(-50%); display:flex; gap:2px;">
-            <span style="width:2px; height:2px; border-radius:50%; background:#111;"></span>
-            <span style="width:2px; height:2px; border-radius:50%; background:#111;"></span>
-            <span style="width:2px; height:2px; border-radius:50%; background:#111;"></span>
-          </div>
-        </div>
-        <!-- Left -->
-        <div class="d3-face d3-left" style="position:absolute; width:${thickness}px; height:${h}px; left:-${thickness}px; top:0; background:${accent}; transform-origin: right center; transform: rotateY(-90deg); border-right:1px solid rgba(255,255,255,0.15);">
-          <!-- Volume keys -->
-          <div style="position:absolute; width:${thickness}px; height:18px; top:35px; left:0; background:linear-gradient(to bottom, #777, #333); border:1px solid #111; border-radius:1px;"></div>
-          <div style="position:absolute; width:${thickness}px; height:18px; top:58px; left:0; background:linear-gradient(to bottom, #777, #333); border:1px solid #111; border-radius:1px;"></div>
-        </div>
-        <!-- Right -->
-        <div class="d3-face d3-right" style="position:absolute; width:${thickness}px; height:${h}px; left:${w}px; top:0; background:${accent}; transform-origin: left center; transform: rotateY(90deg); border-left:1px solid rgba(255,255,255,0.15);">
-          <!-- Power key -->
-          <div style="position:absolute; width:${thickness}px; height:24px; top:45px; left:0; background:linear-gradient(to bottom, #777, #333); border:1px solid #111; border-radius:1px;"></div>
-        </div>
-      </div>
+    <div class="device-3d-viewport" style="width:100%; height:190px;" data-device-id="${d.id}">
+      <canvas class="device-3d-canvas" style="width:100%; height:100%; display:block;"></canvas>
       <div class="device-3d-controls">
         <button type="button" class="secondary small d3-orbit-btn" title="Toggle auto-orbit">&#8635; Orbit</button>
         <button type="button" class="secondary small d3-reset-btn" title="Reset view">&#8634; Reset</button>
@@ -4013,19 +3953,110 @@ function device3dViewerHtml(d) {
   `;
 }
 
+/** Real per-model 3D preview: loads the device's actual GLB (real body
+ *  geometry, camera island/lenses, buttons, edge profile -- see
+ *  src/devices/) via three.js instead of the old six-hardcoded-div box.
+ *  Served same-origin by web/server.ts's /vendor/three/ and
+ *  /api/devices/:id/glb routes (see plan "Catalogue rendering strategy").
+ *
+ *  ponytail: one WebGLRenderer per *visible* card (via IntersectionObserver
+ *  virtualization below), not the plan's fully shared single-renderer/blit
+ *  approach -- simpler, and in practice keeps concurrent contexts well
+ *  under the browser's ~8-16 cap since the grid rarely has that many cards
+ *  scrolled into view at once. Upgrade to a shared renderer if a real
+ *  catalogue size/scroll pattern ever proves this insufficient. */
+let __threeModulePromise = null;
+function loadThreeModule() {
+  if (!__threeModulePromise) {
+    __threeModulePromise = Promise.all([
+      import("/vendor/three/build/three.module.js"),
+      import("/vendor/three/examples/jsm/loaders/GLTFLoader.js"),
+    ]).then(([THREE, { GLTFLoader }]) => ({ THREE, GLTFLoader }));
+  }
+  return __threeModulePromise;
+}
+
+async function init3dDeviceViewport(vp) {
+  if (vp.dataset.d3Inited) return;
+  vp.dataset.d3Inited = "1";
+  const deviceId = vp.dataset.deviceId;
+  const canvas = vp.querySelector(".device-3d-canvas");
+  if (!canvas || !deviceId) return;
+
+  const { THREE, GLTFLoader } = await loadThreeModule();
+  const w = canvas.clientWidth || 220, h = canvas.clientHeight || 190;
+  canvas.width = w; canvas.height = h;
+
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  renderer.setSize(w, h, false);
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(32, w / h, 0.01, 100);
+  // Intensities tuned for three.js's physically-based lighting (post-r152)
+  // -- MeshStandardMaterial reads much darker than legacy lighting at the
+  // old "1.0 = full bright" intensities, hence the higher numbers here.
+  scene.add(new THREE.AmbientLight(0xffffff, 2.4));
+  const key = new THREE.DirectionalLight(0xffffff, 4.5);
+  key.position.set(2, 3, 4);
+  scene.add(key);
+  const rim = new THREE.DirectionalLight(0x88aaff, 2.2);
+  rim.position.set(-2, -1, -3);
+  scene.add(rim);
+  const fill = new THREE.DirectionalLight(0xffffff, 2.0);
+  fill.position.set(0, 0, 5);
+  scene.add(fill);
+
+  let root = null;
+  let dist = 0.3;
+  try {
+    const buf = await fetch(`/api/devices/${encodeURIComponent(deviceId)}/glb`).then((r) => r.arrayBuffer());
+    const gltf = await new Promise((resolve, reject) => new GLTFLoader().parse(buf, "", resolve, reject));
+    root = gltf.scene.children.find((n) => n.userData?.role === "device-root") || gltf.scene.children[0];
+    scene.add(root);
+    const box = new THREE.Box3().setFromObject(root);
+    const size = box.getSize(new THREE.Vector3());
+    dist = Math.max(size.x, size.y, size.z) * 1.8 + 0.05;
+  } catch (e) {
+    console.error("device catalogue 3D preview failed to load " + deviceId, e);
+  }
+
+  let rx = -18, ry = 25;
+  const apply = () => {
+    if (!root) return;
+    const phi = (90 - rx) * (Math.PI / 180);
+    const theta = ry * (Math.PI / 180);
+    camera.position.set(
+      dist * Math.sin(phi) * Math.sin(theta),
+      dist * Math.cos(phi),
+      dist * Math.sin(phi) * Math.cos(theta),
+    );
+    camera.lookAt(0, 0, 0);
+    renderer.render(scene, camera);
+  };
+  apply();
+
+  vp.__d3 = { apply, get rx() { return rx; }, set rx(v) { rx = v; }, get ry() { return ry; }, set ry(v) { ry = v; } };
+}
+
 function bind3dDeviceViewers(grid) {
-  grid.querySelectorAll(".device-3d-viewport").forEach((vp) => {
-    const rig = vp.querySelector(".device-3d-rig");
-    let rx = -18, ry = 25;
+  const viewports = Array.from(grid.querySelectorAll(".device-3d-viewport"));
+
+  const io = new IntersectionObserver((entries) => {
+    for (const entry of entries) {
+      if (entry.isIntersecting) init3dDeviceViewport(entry.target);
+    }
+  }, { root: null, rootMargin: "200px" });
+  viewports.forEach((vp) => io.observe(vp));
+
+  viewports.forEach((vp) => {
     let dragging = false, lastX = 0, lastY = 0;
     let orbitTimer = null;
 
-    const apply = () => { rig.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`; };
-    apply();
+    const state = () => vp.__d3;
 
     const stopOrbit = () => { if (orbitTimer) { clearInterval(orbitTimer); orbitTimer = null; } vp.querySelector(".d3-orbit-btn").textContent = "↻ Orbit"; };
     const startOrbit = () => {
-      orbitTimer = setInterval(() => { ry = (ry + 0.6) % 360; apply(); }, 30);
+      orbitTimer = setInterval(() => { const s = state(); if (!s) return; s.ry = (s.ry + 0.6) % 360; s.apply(); }, 30);
       vp.querySelector(".d3-orbit-btn").textContent = "⏸ Stop";
     };
 
@@ -4037,16 +4068,18 @@ function bind3dDeviceViewers(grid) {
     });
     vp.addEventListener("pointermove", (e) => {
       if (!dragging) return;
-      ry += (e.clientX - lastX) * 0.5;
-      rx = Math.max(-80, Math.min(80, rx - (e.clientY - lastY) * 0.5));
+      const s = state();
+      if (!s) return;
+      s.ry += (e.clientX - lastX) * 0.5;
+      s.rx = Math.max(-80, Math.min(80, s.rx - (e.clientY - lastY) * 0.5));
       lastX = e.clientX; lastY = e.clientY;
-      apply();
+      s.apply();
     });
     vp.addEventListener("pointerup", () => { dragging = false; });
     vp.addEventListener("pointerleave", () => { dragging = false; });
 
     vp.querySelector(".d3-orbit-btn").onclick = () => { if (orbitTimer) stopOrbit(); else startOrbit(); };
-    vp.querySelector(".d3-reset-btn").onclick = () => { stopOrbit(); rx = -18; ry = 25; apply(); };
+    vp.querySelector(".d3-reset-btn").onclick = () => { stopOrbit(); const s = state(); if (s) { s.rx = -18; s.ry = 25; s.apply(); } };
   });
 }
 

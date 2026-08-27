@@ -23,6 +23,7 @@ import { VIDEO_TEMPLATES, type VideoTemplate } from "./templates.js";
 import { templateHtmlPath, templateConfig } from "./templateConfig.js";
 import { placeholderScreenUri } from "./placeholder.js";
 import { resolveSlots, resolveImageSequences } from "./slots.js";
+import { installThreeJsRoutes, THREE_BRIDGE_SCRIPT } from "../render/three-bridge.js";
 import { resolveDemoAsset } from "./demoAssets.js";
 import { BGM_PRESETS, renderBgmWav } from "./bgm.js";
 
@@ -1107,6 +1108,9 @@ export function sceneHtml(
   const canvas = canvasFor(scene);
   const durationMs = Math.max(1, scene.durationSeconds) * 1000;
 
+  const contentHtml = sceneContentHtml(scene, device, screenshotUris, screenshotKinds, durationMs);
+  const usesDeviceRig = contentHtml.includes("device-rig-canvas");
+
   return `<!doctype html>
 <html><head><meta charset="utf-8" /><style>
   html, body { margin: 0; padding: 0; width: ${canvas.width}px; height: ${canvas.height}px; overflow: hidden; }
@@ -1119,7 +1123,7 @@ export function sceneHtml(
   ${sceneLayoutCss(scene, animation, durationMs, ".canvas", "")}
 </style></head>
 <body>
-  <div class="canvas">${sceneContentHtml(scene, device, screenshotUris, screenshotKinds, durationMs)}</div>
+  <div class="canvas">${contentHtml}</div>
   ${
     seekable
       ? `<script>
@@ -1137,6 +1141,7 @@ export function sceneHtml(
 </script>`
       : ""
   }
+  ${usesDeviceRig ? THREE_BRIDGE_SCRIPT : ""}
 </body></html>`;
 }
 
@@ -1391,6 +1396,7 @@ export async function renderVideo(project: VideoProject): Promise<string> {
   try {
     const scenes = [...project.scenes].sort((a, b) => a.order - b.order);
     const page = await browser.newPage({ viewport: canvasFor(scenes[0] ?? ({} as VideoScene)) });
+    await installThreeJsRoutes(page, scenes.map((s) => s.device));
     for (const scene of scenes) {
       await page.setViewportSize(canvasFor(scene));
       // allowDemo=false: template-preview demo photos must never end up baked into an

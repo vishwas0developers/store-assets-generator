@@ -1,6 +1,7 @@
 node_modules/
 dist/
 output/
+.device-glb-cache/
 .auth/
 .env
 *.log
