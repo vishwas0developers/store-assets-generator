@@ -3,6 +3,8 @@ import qrcode from "qrcode-generator";
 import { templateConfig, templateHtmlPath } from "./templateConfig.js";
 import { placeholderScreenUri } from "./placeholder.js";
 import { type VideoProject, type VideoScene, type SlotValue } from "./project.js";
+import { resolveDemoAsset } from "./demoAssets.js";
+import { dataUri } from "../render/shared.js";
 
 /**
  * Derives what dynamic content each scene of each template needs, from the
@@ -75,7 +77,29 @@ const ROLE_TABLE: Record<string, RoleDef> = {
  * template's ids are wrong -- the template.html files themselves are never
  * edited, so the design stays byte-for-byte unchanged.
  */
+// The 10 device-preset dual-screenshot templates below share one generator-copied bug:
+// their config's 2-screenshot scenes declare ids like "slot-2a"/"slot-2b", but the actual
+// DOM elements are "slot-2-0"/"slot-2-1" (landscape templates: scenes 1 and 3; portrait
+// templates: scene 2). Confirmed identical across all 10 by direct DOM inspection.
+const DUAL_SCREEN_LANDSCAPE_OVERRIDE = {
+  1: { screenshots: ["#slot-1-0", "#slot-1-1"] },
+  3: { screenshots: ["#slot-3-0", "#slot-3-1"] },
+};
+const DUAL_SCREEN_PORTRAIT_OVERRIDE = {
+  2: { screenshots: ["#slot-2-0", "#slot-2-1"] },
+};
+
 const SLOT_OVERRIDES: Record<string, Record<number, Record<string, string[]>>> = {
+  "galaxy-s25-landscape": DUAL_SCREEN_LANDSCAPE_OVERRIDE,
+  "galaxy-s25-portrait": DUAL_SCREEN_PORTRAIT_OVERRIDE,
+  "iphone-15-pro-landscape": DUAL_SCREEN_LANDSCAPE_OVERRIDE,
+  "iphone-15-pro-portrait": DUAL_SCREEN_PORTRAIT_OVERRIDE,
+  "iphone-16-pro-landscape": DUAL_SCREEN_LANDSCAPE_OVERRIDE,
+  "iphone-16-pro-portrait": DUAL_SCREEN_PORTRAIT_OVERRIDE,
+  "pixel-9-landscape": DUAL_SCREEN_LANDSCAPE_OVERRIDE,
+  "pixel-9-portrait": DUAL_SCREEN_PORTRAIT_OVERRIDE,
+  "pixel-9-pro-landscape": DUAL_SCREEN_LANDSCAPE_OVERRIDE,
+  "pixel-9-pro-portrait": DUAL_SCREEN_PORTRAIT_OVERRIDE,
   "tpl-38180229-minimal-skyblue": {
     0: { logo: ["#s0-logo"] }, // config says "slot-logo" -- no such id in the DOM
     5: { features: ["#s5-badge-1", "#s5-badge-2", "#s5-badge-3"] }, // declared nowhere in config
@@ -360,6 +384,7 @@ export function resolveSlots(
   project: VideoProject,
   sceneIndex: number,
   resolveUri: (rel: string) => string,
+  allowDemo = true,
 ): ResolvedSlot[] {
   const templateId = project.template;
   // Precedence, most to least specific: scene.slotValues[key] -> project.brand
@@ -382,6 +407,8 @@ export function resolveSlots(
     if (sourceId) {
       const source = project.sources.find((s) => s.id === sourceId);
       if (source) return resolveUri(source.file);
+      const demo = allowDemo ? resolveDemoAsset(sourceId) : undefined;
+      if (demo) return dataUri(demo.absPath);
     }
     return placeholderScreenUri(placeholderIndex);
   };
@@ -453,7 +480,7 @@ export interface ImageSequenceEntry {
  *  single-image slot present on nearly every scene across all 16 templates;
  *  extending to other image roles is a ROLE_TABLE/SlotKind change, not a
  *  rewrite of this function. */
-export function resolveImageSequences(project: VideoProject, resolveUri: (rel: string) => string): ImageSequenceEntry[] {
+export function resolveImageSequences(project: VideoProject, resolveUri: (rel: string) => string, allowDemo = true): ImageSequenceEntry[] {
   const templateId = project.template;
   if (!templateId) return [];
   const entries: ImageSequenceEntry[] = [];
@@ -469,7 +496,8 @@ export function resolveImageSequences(project: VideoProject, resolveUri: (rel: s
         const segments = value.segments.map((seg) => {
           const segDurMs = Math.max(100, seg.durationSec * 1000);
           const source = seg.sourceId ? project.sources.find((s) => s.id === seg.sourceId) : undefined;
-          const src = source ? resolveUri(source.file) : placeholderScreenUri();
+          const demo = !source && seg.sourceId && allowDemo ? resolveDemoAsset(seg.sourceId) : undefined;
+          const src = source ? resolveUri(source.file) : demo ? dataUri(demo.absPath) : placeholderScreenUri();
           const entry = { src, startMs: segStart, endMs: segStart + segDurMs };
           segStart += segDurMs;
           return entry;

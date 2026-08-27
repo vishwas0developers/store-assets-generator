@@ -1,36 +1,14 @@
-import { type FlowStep, type VideoProject, type VideoScene, type SlotValue, videoDir } from "./project.js";
+import { type FlowStep, type VideoProject, type VideoScene, type SlotValue } from "./project.js";
 import { templateConfig, htmlSpanToAsterisk } from "./templateConfig.js";
 import { slotSpecsForScene } from "./slots.js";
 import fs from "fs";
 import path from "path";
 
-/** Real demo screenshot/logo files (see scripts/generate/create-demo-assets.mjs)
- *  copied once into every project's own sources/ dir and registered as
- *  ordinary VideoSourceImage entries -- so a freshly-applied template
- *  validates against actual files on disk, not synthetic ids that only
- *  happen to satisfy validateScene(). Idempotent: re-applying a template
- *  (or applying a second one) doesn't re-copy or duplicate entries. */
-const DEMO_ASSETS_DIR = path.join(process.cwd(), "assets", "demo");
-const DEMO_ASSET_SPECS: { id: string; file: string; width: number; height: number }[] = [
-  ...Array.from({ length: 6 }, (_, i) => ({ id: `demo_${i + 1}`, file: `demo_screen_${i + 1}.png`, width: 1080, height: 2400 })),
-  { id: "demo_landscape", file: "demo_landscape.png", width: 1920, height: 1080 },
-  { id: "demo_logo", file: "demo_logo.png", width: 512, height: 512 },
-];
-
-function ensureDemoSources(project: VideoProject): void {
-  const existingIds = new Set(project.sources.map((s) => s.id));
-  const missing = DEMO_ASSET_SPECS.filter((spec) => !existingIds.has(spec.id));
-  if (missing.length === 0) return;
-  const destDir = path.join(videoDir(project.id), "sources");
-  fs.mkdirSync(destDir, { recursive: true });
-  for (const spec of missing) {
-    const srcPath = path.join(DEMO_ASSETS_DIR, spec.file);
-    if (!fs.existsSync(srcPath)) continue; // demo assets not generated yet -- scenes fall back to the in-app SVG placeholder
-    const relFile = `sources/${spec.file}`;
-    fs.copyFileSync(srcPath, path.join(destDir, spec.file));
-    project.sources.push({ id: spec.id, name: spec.file, file: relFile, width: spec.width, height: spec.height, kind: "image" });
-  }
-}
+// Scenes below default to sourceId/screenIds like "demo_landscape"/"demo_1" so a
+// freshly-applied template previews with real photo content immediately. These ids are
+// resolved at render time against the shared global demo assets (see demoAssets.ts,
+// used from render.ts/slots.ts) -- never copied into or registered as this project's
+// own sources/files.
 
 export interface VideoTemplateScene {
   label: string;
@@ -184,8 +162,6 @@ export function applyVideoTemplate(project: VideoProject, templateId: string): v
   const cfg = templateConfig(resolvedId);
   const isDevicePreset = !resolvedId.startsWith("tpl-");
   const isLandscape = template.aspectRatio === "16:9";
-
-  ensureDemoSources(project);
 
   project.template = resolvedId;
   if (!project.bgm) {
