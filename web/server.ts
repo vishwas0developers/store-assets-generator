@@ -44,7 +44,16 @@ import {
 import archiver from "archiver";
 
 import { captureWebsiteScreens } from "../src/capture/websiteCapture.js";
-import { captureAndroidScreen, listAndroidDevices } from "../src/capture/androidCapture.js";
+import {
+  listAndroidDevices,
+  startAndroidSession,
+  stopAndroidSession,
+  getAndroidFrame,
+  captureAndroidScreen,
+  listAndroidApps,
+  launchAndroidApp,
+  executeAndroidAction,
+} from "../src/capture/androidLive.js";
 
 import {
   addColumn,
@@ -610,6 +619,92 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
     if (method === "POST" && p === "/api/browser/stop") {
       await stopBrowserSession();
       sendJson(res, 200, { ok: true });
+      return;
+    }
+
+    // =========================================================
+    // Live Android Engine Routes
+    // =========================================================
+
+    if (method === "GET" && p === "/api/android/devices") {
+      const devices = await listAndroidDevices();
+      sendJson(res, 200, { devices });
+      return;
+    }
+
+    if (method === "POST" && p === "/api/android/start") {
+      const body = await readJsonBody(req);
+      if (!body.projectId) {
+        return sendError(res, 400, "projectId is required");
+      }
+      try {
+        const result = await startAndroidSession(body.projectId, body.deviceId);
+        sendJson(res, 200, { ok: true, ...result });
+      } catch (err: any) {
+        sendError(res, 500, err.message || "Failed to start Android session");
+      }
+      return;
+    }
+
+    if (method === "GET" && p === "/api/android/frame") {
+      try {
+        const frameBuffer = await getAndroidFrame();
+        res.writeHead(200, { "Content-Type": "image/png" });
+        res.end(frameBuffer);
+      } catch (err: any) {
+        sendError(res, 500, err.message || "Failed to capture frame");
+      }
+      return;
+    }
+
+    if (method === "POST" && p === "/api/android/capture") {
+      const body = await readJsonBody(req);
+      if (!body.projectId) {
+        return sendError(res, 400, "projectId is required");
+      }
+      const capture = await captureAndroidScreen(body.projectId);
+      sendJson(res, 200, capture);
+      return;
+    }
+
+    if (method === "POST" && p === "/api/android/stop") {
+      stopAndroidSession();
+      sendJson(res, 200, { ok: true });
+      return;
+    }
+
+    if (method === "GET" && p === "/api/android/apps") {
+      try {
+        const apps = await listAndroidApps();
+        sendJson(res, 200, { apps });
+      } catch (err: any) {
+        sendError(res, 500, err.message || "Failed to list apps");
+      }
+      return;
+    }
+
+    if (method === "POST" && p === "/api/android/launch") {
+      const body = await readJsonBody(req);
+      if (!body.packageName) {
+        return sendError(res, 400, "packageName is required");
+      }
+      try {
+        await launchAndroidApp(body.packageName);
+        sendJson(res, 200, { ok: true });
+      } catch (err: any) {
+        sendError(res, 500, err.message || "Failed to launch app");
+      }
+      return;
+    }
+
+    if (method === "POST" && p === "/api/android/action") {
+      const body = await readJsonBody(req);
+      try {
+        await executeAndroidAction(body);
+        sendJson(res, 200, { ok: true });
+      } catch (err: any) {
+        sendError(res, 500, err.message || "Failed to execute action");
+      }
       return;
     }
 
