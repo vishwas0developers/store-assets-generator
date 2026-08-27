@@ -1,8 +1,11 @@
-import { execSync } from "child_process";
+import { execFile } from "child_process";
+import { promisify } from "util";
 import fs from "fs";
 import path from "path";
 import { projectFile, loadProject, saveProject } from "../project/projectStore.js";
 import { AndroidCaptureBackend } from "../android/capture.js";
+
+const execFileAsync = promisify(execFile);
 
 const backend = new AndroidCaptureBackend();
 let currentDeviceId: string | null = null;
@@ -12,12 +15,12 @@ export async function listAndroidDevices(): Promise<string[]> {
   return backend.listDevices();
 }
 
-function queryScreenSize(deviceId: string): { width: number; height: number } {
-  const out = execSync(`adb -s ${deviceId} shell wm size`, { encoding: "utf-8" });
+async function queryScreenSize(deviceId: string): Promise<{ width: number; height: number }> {
+  const { stdout } = await execFileAsync("adb", ["-s", deviceId, "shell", "wm", "size"]);
   // "wm size" prints "Physical size: WxH" and, if overridden, an additional
   // "Override size: WxH" line — the override (if present) reflects what's
   // actually rendered, so take the LAST match rather than the first.
-  const matches = [...out.matchAll(/(\d+)x(\d+)/g)];
+  const matches = [...stdout.matchAll(/(\d+)x(\d+)/g)];
   const last = matches[matches.length - 1];
   if (!last) throw new Error(`Could not determine screen size for device ${deviceId}`);
   return { width: Number(last[1]), height: Number(last[2]) };
@@ -33,7 +36,7 @@ export async function startAndroidSession(
   }
   const chosen = deviceId && devices.includes(deviceId) ? deviceId : devices[0];
   currentDeviceId = chosen;
-  currentScreenSize = queryScreenSize(chosen);
+  currentScreenSize = await queryScreenSize(chosen);
   return { deviceId: chosen, ...currentScreenSize };
 }
 
@@ -45,8 +48,8 @@ export function stopAndroidSession(): void {
 export async function listAndroidApps(): Promise<string[]> {
   if (!currentDeviceId) throw new Error("No active Android session.");
   // -3 = third-party (user-installed) packages, the relevant "apps" a user would pick to explore.
-  const out = execSync(`adb -s ${currentDeviceId} shell pm list packages -3`, { encoding: "utf-8" });
-  return out
+  const { stdout } = await execFileAsync("adb", ["-s", currentDeviceId, "shell", "pm", "list", "packages", "-3"]);
+  return stdout
     .split("\n")
     .map((line) => line.trim().replace(/^package:/, ""))
     .filter(Boolean)
@@ -55,10 +58,10 @@ export async function listAndroidApps(): Promise<string[]> {
 
 export async function launchAndroidApp(packageName: string): Promise<void> {
   if (!currentDeviceId) throw new Error("No active Android session.");
-  execSync(
-    `adb -s ${currentDeviceId} shell monkey -p ${packageName} -c android.intent.category.LAUNCHER 1`,
-    { encoding: "utf-8" }
-  );
+  await execFileAsync("adb", [
+    "-s", currentDeviceId,
+    "shell", "monkey", "-p", packageName, "-c", "android.intent.category.LAUNCHER", "1",
+  ]);
 }
 
 export interface AndroidAction {
@@ -72,6 +75,7 @@ export interface AndroidAction {
 
 export async function executeAndroidAction(action: AndroidAction): Promise<void> {
   if (!currentDeviceId || !currentScreenSize) throw new Error("No active Android session.");
+  const deviceId = currentDeviceId;
   const { width, height } = currentScreenSize;
   const toX = (pct: number) => Math.round((pct / 100) * width);
   const toY = (pct: number) => Math.round((pct / 100) * height);
@@ -79,7 +83,9 @@ export async function executeAndroidAction(action: AndroidAction): Promise<void>
   switch (action.type) {
     case "tap": {
       if (action.xPct === undefined || action.yPct === undefined) return;
-      execSync(`adb -s ${currentDeviceId} shell input tap ${toX(action.xPct)} ${toY(action.yPct)}`);
+      await execFileAsync("adb", [
+        "-s", deviceId, "shell", "input", "tap", String(toX(action.xPct)), String(toY(action.yPct)),
+      ]);
       break;
     }
     case "swipe": {
@@ -90,14 +96,17 @@ export async function executeAndroidAction(action: AndroidAction): Promise<void>
         action.y2Pct === undefined
       )
         return;
-      execSync(
-        `adb -s ${currentDeviceId} shell input swipe ${toX(action.xPct)} ${toY(action.yPct)} ${toX(action.x2Pct)} ${toY(action.y2Pct)} 220`
-      );
+      await execFileAsync("adb", [
+        "-s", deviceId, "shell", "input", "swipe",
+        String(toX(action.xPct)), String(toY(action.yPct)),
+        String(toX(action.x2Pct)), String(toY(action.y2Pct)),
+        "220",
+      ]);
       break;
     }
     case "key": {
       if (action.keycode === undefined) return;
-      execSync(`adb -s ${currentDeviceId} shell input keyevent ${action.keycode}`);
+      await execFileAsync("adb", ["-s", deviceId, "shell", "input", "keyevent", String(action.keycode)]);
       break;
     }
   }
@@ -107,9 +116,12 @@ export async function getAndroidFrame(): Promise<Buffer> {
   if (!currentDeviceId) {
     throw new Error("No active Android session.");
   }
-  return execSync(`adb -s ${currentDeviceId} exec-out screencap -p`, {
-    maxBuffer: 1024 * 1024 * 64,
-  });
+  const { stdout } = await execFileAsync(
+    "adb",
+    ["-s", currentDeviceId, "exec-out", "screencap", "-p"],
+    { encoding: "buffer", maxBuffer: 1024 * 1024 * 64 }
+  );
+  return stdout;
 }
 
 function pngSize(buf: Buffer): { width: number; height: number } {
@@ -128,8 +140,8 @@ export async function captureAndroidScreen(projectId: string): Promise<{ id: num
   const absPath = projectFile(projectId, relPath);
 
   const buffer = await getAndroidFrame();
-  fs.mkdirSync(path.dirname(absPath), { recursive: true });
-  fs.writeFileSync(absPath, buffer);
+  await fs.promises.mkdir(path.dirname(absPath), { recursive: true });
+  await fs.promises.writeFile(absPath, buffer);
 
   const { width, height } = pngSize(buffer);
   const resolutionKey = `${width}x${height}`;

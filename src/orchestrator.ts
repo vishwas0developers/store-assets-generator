@@ -11,7 +11,7 @@ import { type ProjectDocument } from "./project/schema.js";
  * not a delete.
  *
  * Replacement: three independent tabs, each with its own project store --
- * src/capture/store.ts + websiteCapture.ts/androidCapture.ts (Screen Capture),
+ * src/capture/liveBrowser.ts + androidLive.ts (Screen Capture),
  * src/mockup/project.ts + render.ts + export.ts (Studio Mockup),
  * src/video/project.ts + render.ts (Video) -- wired up in web/server.ts's
  * /api/captures/*, /api/mockups/*, /api/videos/* routes.

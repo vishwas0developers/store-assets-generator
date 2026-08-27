@@ -42,8 +42,8 @@ import {
   captureBrowserScreen,
 } from "../src/capture/liveBrowser.js";
 import archiver from "archiver";
+import { invalidateDataUri } from "../src/render/shared.js";
 
-import { captureWebsiteScreens } from "../src/capture/websiteCapture.js";
 import {
   listAndroidDevices,
   startAndroidSession,
@@ -497,6 +497,7 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
           if (fs.existsSync(abs)) {
             try { fs.unlinkSync(abs); } catch (e) {}
           }
+          invalidateDataUri(abs);
           const normRel = capture.file.replace(/\\/g, "/");
           project.captures = (project.captures || []).filter((c: any) => c.id !== captureId);
           if (project.mockup && project.mockup.sources) {
@@ -788,7 +789,13 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
       if (m && method === "GET") {
         const rel = url.searchParams.get("p");
         if (!rel) return sendError(res, 400, "query param 'p' is required");
-        const abs = mockupFile(decodeURIComponent(m[1]), rel);
+        const id = decodeURIComponent(m[1]);
+        // Uploaded/panoramic sources live under the mockup dir ("sources/...");
+        // Live Web/Android captures live at the project root ("captures/N.png")
+        // and are referenced by the same relative path in mockup.sources -- fall
+        // back to the project dir when the mockup-relative path doesn't exist.
+        let abs = mockupFile(id, rel);
+        if (!fs.existsSync(abs)) abs = projectFile(id, rel);
         const ext = path.extname(abs).toLowerCase();
         sendFile(res, abs, ext === ".zip" ? "application/zip" : "image/png");
         return;
@@ -1093,7 +1100,11 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
       if (m && method === "GET") {
         const rel = url.searchParams.get("p");
         if (!rel) return sendError(res, 400, "query param 'p' is required");
-        const abs = videoFile(decodeURIComponent(m[1]), rel);
+        const id = decodeURIComponent(m[1]);
+        // Same fallback as the mockup /file route: uploaded video sources live under the
+        // video dir, but Live Web/Android captures live at the project root ("captures/N.png").
+        let abs = videoFile(id, rel);
+        if (!fs.existsSync(abs)) abs = projectFile(id, rel);
         const ext = path.extname(abs).toLowerCase();
         sendFile(res, abs, ext === ".mp4" ? "video/mp4" : "image/png");
         return;
@@ -1612,6 +1623,15 @@ export async function startUiServer(options: UiServerOptions = {}): Promise<http
         `Run "npm run build" (it copies web/index.html into dist/web/) and try again.`,
     );
   }
+
+  // Last-resort safety net: keep the process (and any live browser/ADB sessions) alive on
+  // an error that somehow escapes handleRequest's own try/catch, instead of crashing silently.
+  process.on("uncaughtException", (err) => {
+    console.error("[SAG-SERVER] Uncaught exception:", err);
+  });
+  process.on("unhandledRejection", (reason) => {
+    console.error("[SAG-SERVER] Unhandled rejection:", reason);
+  });
 
   const server = http.createServer((req, res) => {
     handleRequest(req, res).catch((err) => sendError(res, 500, (err as Error).message));

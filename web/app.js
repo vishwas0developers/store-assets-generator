@@ -18,6 +18,18 @@ async function uploadFile(path, file) {
   return data;
 }
 
+// Best-effort cleanup so closing the tab without clicking Disconnect doesn't leak a
+// headless Chromium/ADB session server-side. sendBeacon fires a fire-and-forget POST
+// that survives page teardown (fetch would get cancelled).
+window.addEventListener("beforeunload", () => {
+  if (typeof browserConnected !== "undefined" && browserConnected) {
+    navigator.sendBeacon("/api/browser/stop");
+  }
+  if (typeof androidConnected !== "undefined" && androidConnected) {
+    navigator.sendBeacon("/api/android/stop");
+  }
+});
+
 /* ================= Custom Dialog & Toast System ================= */
 
 function showAlert(message, type = "warning", title = "Alert") {
@@ -471,38 +483,25 @@ async function loadCaptureTab() {
   await renderAndroidCaptures();
 }
 
-async function renderLiveBrowserCaptures() {
-  const gallery = $("live-captures-gallery");
+// Shared by both the Live Web and Android galleries — same card markup/delete/lightbox
+// behavior, differing only in which captures to show and what to say when there are none.
+async function renderCaptureGallery(galleryId, filterFn, emptyMessage) {
+  const gallery = $(galleryId);
+  if (!gallery) return;
   gallery.innerHTML = "";
 
   if (!activeProjectId) return;
 
-  const selectedResolution = $("browser-resolution-select").value;
-  const dims = selectedResolution.split("x");
-  const targetWidth = Number(dims[0]);
-  const targetHeight = Number(dims[1]);
-
-  // Update Section Title with size info
-  const titleEl = $("session-captures-title");
-  if (titleEl) {
-    titleEl.textContent = `Session Captures (${selectedResolution})`;
-  }
+  const showEmpty = () => {
+    gallery.innerHTML = `<div class="hint" style="grid-column: span 2; text-align: center; padding: 2rem 0;">${emptyMessage}</div>`;
+  };
 
   try {
     const proj = await api(`/api/projects/${activeProjectId}`);
-    if (!proj.captures || proj.captures.length === 0) {
-      gallery.innerHTML = `<div class="hint" style="grid-column: span 2; text-align: center; padding: 2rem 0;">No screenshots captured yet.</div>`;
-      return;
-    }
-
-    const filtered = proj.captures.filter(c => {
-      if (c.resolution === selectedResolution) return true;
-      // Fallback matching logic for old/unlabeled captures
-      return c.width === targetWidth && c.height === targetHeight;
-    });
+    const filtered = (proj.captures || []).filter(filterFn);
 
     if (filtered.length === 0) {
-      gallery.innerHTML = `<div class="hint" style="grid-column: span 2; text-align: center; padding: 2rem 0;">No screenshots captured for ${selectedResolution} yet.<br><br><span style="font-size:0.8rem; color:#888;">Change resolution or capture a new screenshot at this size.</span></div>`;
+      showEmpty();
       return;
     }
 
@@ -539,9 +538,7 @@ async function renderLiveBrowserCaptures() {
 
         // Remove from DOM immediately for instant feedback
         item.remove();
-        if (gallery.children.length === 0) {
-          gallery.innerHTML = `<div class="hint" style="grid-column: span 2; text-align: center; padding: 2rem 0;">No screenshots captured for ${selectedResolution} yet.</div>`;
-        }
+        if (gallery.children.length === 0) showEmpty();
 
         try {
           await api(`/api/projects/${activeProjectId}/captures/${c.id}`, { method: "DELETE" });
@@ -551,7 +548,7 @@ async function renderLiveBrowserCaptures() {
             await api(`/api/projects/${activeProjectId}/file?p=${encodeURIComponent(c.file)}`, { method: "DELETE" });
           } catch (err2) {
             showToast("Delete failed: " + err2.message, "error");
-            renderLiveBrowserCaptures();
+            renderCaptureGallery(galleryId, filterFn, emptyMessage);
             return;
           }
         }
@@ -578,6 +575,22 @@ async function renderLiveBrowserCaptures() {
   } catch (e) {
     gallery.innerHTML = `<div class="hint">Failed to load captures: ${e.message}</div>`;
   }
+}
+
+async function renderLiveBrowserCaptures() {
+  const selectedResolution = $("browser-resolution-select").value;
+  const dims = selectedResolution.split("x");
+  const targetWidth = Number(dims[0]);
+  const targetHeight = Number(dims[1]);
+
+  const titleEl = $("session-captures-title");
+  if (titleEl) titleEl.textContent = `Session Captures (${selectedResolution})`;
+
+  await renderCaptureGallery(
+    "live-captures-gallery",
+    (c) => c.resolution === selectedResolution || (c.width === targetWidth && c.height === targetHeight),
+    `No screenshots captured for ${selectedResolution} yet.<br><br><span style="font-size:0.8rem; color:#888;">Change resolution or capture a new screenshot at this size.</span>`
+  );
 }
 
 /* ============================================================
@@ -835,90 +848,11 @@ async function triggerAndroidCapture() {
 $("android-bottom-capture").onclick = triggerAndroidCapture;
 
 async function renderAndroidCaptures() {
-  const gallery = $("android-captures-gallery");
-  if (!gallery) return;
-  gallery.innerHTML = "";
-
-  if (!activeProjectId) return;
-
-  try {
-    const proj = await api(`/api/projects/${activeProjectId}`);
-    const filtered = (proj.captures || []).filter(c => c.deviceLabel && c.deviceLabel.startsWith("Android"));
-
-    if (filtered.length === 0) {
-      gallery.innerHTML = `<div class="hint" style="grid-column: span 2; text-align: center; padding: 2rem 0;">No screenshots captured yet.</div>`;
-      return;
-    }
-
-    for (const c of filtered) {
-      const item = document.createElement("div");
-      item.className = "thumb";
-      item.style = "height: fit-content; align-self: start;";
-      const fileUrl = `/api/projects/${activeProjectId}/file?p=${encodeURIComponent(c.file)}`;
-
-      const img = document.createElement("img");
-      img.src = fileUrl;
-      img.style.cssText = "cursor:pointer; width:100%; height:auto; max-height:220px; display:block; aspect-ratio:9/16; object-fit:contain; background:#000;";
-
-      const cap = document.createElement("div");
-      cap.style.cssText = "display:flex; justify-content:space-between; align-items:center; padding:0.35rem 0.5rem; background:#14171f; border-top:1px solid #21252f;";
-
-      const label = document.createElement("span");
-      label.style.cssText = "font-weight:600; color:#e5e7eb; font-size:0.75rem;";
-      label.textContent = `Screen ${c.id}`;
-
-      const delBtn = document.createElement("button");
-      delBtn.type = "button";
-      delBtn.style.cssText = "padding:0.25rem 0.35rem; border-radius:4px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; color:#fff; background:#dc2626; border:none; transition:background 0.2s;";
-      delBtn.title = "Delete screenshot";
-      delBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>`;
-
-      delBtn.addEventListener("click", async (e) => {
-        e.stopPropagation();
-        e.preventDefault();
-
-        const confirmed = await showConfirm(`Delete Screenshot ${c.id}? This cannot be undone.`, "Delete Screenshot", true);
-        if (!confirmed) return;
-
-        item.remove();
-        if (gallery.children.length === 0) {
-          gallery.innerHTML = `<div class="hint" style="grid-column: span 2; text-align: center; padding: 2rem 0;">No screenshots captured yet.</div>`;
-        }
-
-        try {
-          await api(`/api/projects/${activeProjectId}/captures/${c.id}`, { method: "DELETE" });
-        } catch (_) {
-          try {
-            await api(`/api/projects/${activeProjectId}/file?p=${encodeURIComponent(c.file)}`, { method: "DELETE" });
-          } catch (err2) {
-            showToast("Delete failed: " + err2.message, "error");
-            renderAndroidCaptures();
-            return;
-          }
-        }
-
-        showToast(`Screenshot ${c.id} deleted`, "info");
-        activeProject = await api(`/api/projects/${activeProjectId}`).catch(() => activeProject);
-        if (typeof refreshFileExplorer === "function") refreshFileExplorer();
-      });
-
-      img.addEventListener("click", () => {
-        const box = document.createElement("div");
-        box.style.cssText = "position:fixed; inset:0; background:rgba(0,0,0,0.85); display:flex; align-items:center; justify-content:center; z-index:200; cursor:pointer;";
-        box.innerHTML = `<img src="${fileUrl}" style="max-width:90%; max-height:90%; border-radius:8px;" />`;
-        box.addEventListener("click", () => box.remove());
-        document.body.appendChild(box);
-      });
-
-      cap.appendChild(label);
-      cap.appendChild(delBtn);
-      item.appendChild(img);
-      item.appendChild(cap);
-      gallery.appendChild(item);
-    }
-  } catch (e) {
-    gallery.innerHTML = `<div class="hint">Failed to load captures: ${e.message}</div>`;
-  }
+  await renderCaptureGallery(
+    "android-captures-gallery",
+    (c) => c.deviceLabel && c.deviceLabel.startsWith("Android"),
+    "No screenshots captured yet."
+  );
 }
 
 // Connect / Disconnect Live Session

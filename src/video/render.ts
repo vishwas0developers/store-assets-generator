@@ -1,6 +1,9 @@
 import fs from "fs";
 import path from "path";
-import { execSync } from "child_process";
+import { execFile } from "child_process";
+import { promisify } from "util";
+
+const execFileAsync = promisify(execFile);
 import {
   BACKGROUNDS,
   DEVICE_CSS,
@@ -15,6 +18,7 @@ import {
 } from "../render/shared.js";
 import { DEVICE_REGISTRY, resolveGeometry, frameSvgFor, type DeviceModel } from "../devices/registry.js";
 import { videoDir, videoFile, type VideoProject, type VideoScene } from "./project.js";
+import { projectFile } from "../project/projectStore.js";
 import { VIDEO_TEMPLATES, type VideoTemplate } from "./templates.js";
 import { templateHtmlPath, templateConfig } from "./templateConfig.js";
 import { placeholderScreenUri } from "./placeholder.js";
@@ -1328,9 +1332,9 @@ export function templatePreviewHtml(project: VideoProject): string {
 
 const FPS = 30;
 
-function ensureFfmpegAvailable(): void {
+async function ensureFfmpegAvailable(): Promise<void> {
   try {
-    execSync("ffmpeg -version", { stdio: "ignore" });
+    await execFileAsync("ffmpeg", ["-version"]);
   } catch {
     throw new Error("ffmpeg is not installed or not on PATH. Install ffmpeg and ensure the 'ffmpeg' command is available, then retry.");
   }
@@ -1354,7 +1358,7 @@ function ensureGeneratedBgm(templateId: string, seconds: number): string {
  *  from the project's template preset) with volume + fade in/out. */
 export async function renderVideo(project: VideoProject): Promise<string> {
   if (project.scenes.length === 0) throw new Error("No scenes configured -- pick a template first.");
-  ensureFfmpegAvailable();
+  await ensureFfmpegAvailable();
 
   const orientations = new Set(project.scenes.map((s) => orientationOf(s)));
   if (orientations.size > 1) throw new Error("Mixed-orientation project: every scene must share the same aspect ratio (9:16 or 16:9) before rendering.");
@@ -1367,7 +1371,12 @@ export async function renderVideo(project: VideoProject): Promise<string> {
   const { chromium } = await import("playwright");
   const browser = await chromium.launch({ headless: true });
   let frameIndex = 0;
-  const resolveUri = (rel: string) => dataUri(videoFile(project.id, rel));
+  // Uploaded video sources live under the video dir; Live Web/Android captures live at
+  // the project root ("captures/N.png") and are referenced by the same relative path.
+  const resolveUri = (rel: string) => {
+    const abs = videoFile(project.id, rel);
+    return dataUri(fs.existsSync(abs) ? abs : projectFile(project.id, rel));
+  };
 
   try {
     const scenes = [...project.scenes].sort((a, b) => a.order - b.order);
@@ -1392,7 +1401,15 @@ export async function renderVideo(project: VideoProject): Promise<string> {
 
   const totalSeconds = project.scenes.reduce((sum, s) => sum + Math.max(1, s.durationSeconds), 0);
   const rawVideoPath = path.join(outDir, "promo_raw.mp4");
-  execSync(`ffmpeg -y -framerate ${FPS} -i "${framesDir}/frame_%06d.png" -c:v libx264 -pix_fmt yuv420p "${rawVideoPath}"`, { stdio: "ignore" });
+  await execFileAsync("ffmpeg", [
+    "-y",
+    "-framerate", String(FPS),
+    "-i", path.join(framesDir, "frame_%06d.png"),
+    "-c:v", "libx264",
+    "-preset", "veryfast",
+    "-pix_fmt", "yuv420p",
+    rawVideoPath,
+  ]);
 
   const finalVideoPath = path.join(outDir, "promo.mp4");
   const bgmPath = project.bgm ? videoFile(project.id, project.bgm) : project.template ? ensureGeneratedBgm(project.template, totalSeconds) : null;
@@ -1403,10 +1420,19 @@ export async function renderVideo(project: VideoProject): Promise<string> {
     const fadeOutMs = project.bgmFadeOutMs ?? 2000;
     const fadeOutStart = Math.max(0, totalSeconds - fadeOutMs / 1000);
     const filter = `[1:a]volume=${volume},afade=t=in:st=0:d=${(fadeInMs / 1000).toFixed(2)},afade=t=out:st=${fadeOutStart.toFixed(2)}:d=${(fadeOutMs / 1000).toFixed(2)}[a]`;
-    execSync(
-      `ffmpeg -y -i "${rawVideoPath}" -stream_loop -1 -i "${bgmPath}" -filter_complex "${filter}" -map 0:v -map "[a]" -c:v copy -c:a aac -shortest "${finalVideoPath}"`,
-      { stdio: "ignore" },
-    );
+    await execFileAsync("ffmpeg", [
+      "-y",
+      "-i", rawVideoPath,
+      "-stream_loop", "-1",
+      "-i", bgmPath,
+      "-filter_complex", filter,
+      "-map", "0:v",
+      "-map", "[a]",
+      "-c:v", "copy",
+      "-c:a", "aac",
+      "-shortest",
+      finalVideoPath,
+    ]);
     fs.rmSync(rawVideoPath, { force: true });
   } else {
     fs.renameSync(rawVideoPath, finalVideoPath);

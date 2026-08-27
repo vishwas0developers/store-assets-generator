@@ -8,6 +8,7 @@ import {
   resolveBackground,
 } from "../render/shared.js";
 import { DEVICE_REGISTRY, resolveGeometry } from "../devices/registry.js";
+import { projectFile } from "../project/projectStore.js";
 import { getLayoutPreset, presentationTransform } from "./layouts.js";
 import {
   effectiveCellStyle,
@@ -137,7 +138,12 @@ export async function renderDeviceRowExport(project: MockupProject, deviceRowId:
   const { chromium } = await import("playwright");
   const browser = await chromium.launch({ headless: true });
   const written: string[] = [];
-  const resolveUri = (relativePath: string) => dataUri(mockupFile(project.id, relativePath));
+  // Uploaded sources live under the mockup dir; Live Web/Android captures live at the
+  // project root ("captures/N.png") and are referenced by the same relative path.
+  const resolveUri = (relativePath: string) => {
+    const abs = mockupFile(project.id, relativePath);
+    return dataUri(fs.existsSync(abs) ? abs : projectFile(project.id, relativePath));
+  };
   try {
     const page = await browser.newPage({ viewport: canvas });
     const columns = [...project.columns].sort((a, b) => a.order - b.order);
