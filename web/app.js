@@ -2474,6 +2474,12 @@ function renderVideoScenes() {
   }
   $("sc-source").innerHTML = videoSourceHtml;
 
+  const templateLabel = $("video-selected-template-label");
+  if (templateLabel) {
+    const t = videoTemplates.find((x) => x.id === videoProject.template);
+    templateLabel.textContent = videoProject.template ? `Template: ${t ? t.name : videoProject.template}` : "";
+  }
+
   const nav = $("video-scene-nav");
   nav.innerHTML = "";
   videoProject.scenes.forEach((s, i) => {
