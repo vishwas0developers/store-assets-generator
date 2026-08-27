@@ -467,6 +467,8 @@ async function loadCaptureTab() {
     }
   }
   await renderLiveBrowserCaptures();
+  await loadAndroidDevices();
+  await renderAndroidCaptures();
 }
 
 async function renderLiveBrowserCaptures() {
@@ -550,6 +552,347 @@ async function renderLiveBrowserCaptures() {
           } catch (err2) {
             showToast("Delete failed: " + err2.message, "error");
             renderLiveBrowserCaptures();
+            return;
+          }
+        }
+
+        showToast(`Screenshot ${c.id} deleted`, "info");
+        activeProject = await api(`/api/projects/${activeProjectId}`).catch(() => activeProject);
+        if (typeof refreshFileExplorer === "function") refreshFileExplorer();
+      });
+
+      img.addEventListener("click", () => {
+        const box = document.createElement("div");
+        box.style.cssText = "position:fixed; inset:0; background:rgba(0,0,0,0.85); display:flex; align-items:center; justify-content:center; z-index:200; cursor:pointer;";
+        box.innerHTML = `<img src="${fileUrl}" style="max-width:90%; max-height:90%; border-radius:8px;" />`;
+        box.addEventListener("click", () => box.remove());
+        document.body.appendChild(box);
+      });
+
+      cap.appendChild(label);
+      cap.appendChild(delBtn);
+      item.appendChild(img);
+      item.appendChild(cap);
+      gallery.appendChild(item);
+    }
+  } catch (e) {
+    gallery.innerHTML = `<div class="hint">Failed to load captures: ${e.message}</div>`;
+  }
+}
+
+/* ============================================================
+   Screen Capture tab -- Live Android Device (via ADB)
+   ============================================================ */
+
+let androidConnected = false;
+let androidFrameIntervalId = null;
+let androidFrameInFlight = false;
+let androidFastStream = false;
+let androidBoostTimer = null;
+
+async function loadAndroidDevices() {
+  const sel = $("android-device-select");
+  if (!sel) return;
+  const previousValue = sel.value;
+  try {
+    const { devices } = await api("/api/android/devices");
+    sel.innerHTML = "";
+    if (!devices || devices.length === 0) {
+      sel.innerHTML = `<option value="">No devices found</option>`;
+      return;
+    }
+    for (const d of devices) {
+      const opt = document.createElement("option");
+      opt.value = d;
+      opt.textContent = d;
+      sel.appendChild(opt);
+    }
+    if (devices.includes(previousValue)) sel.value = previousValue;
+  } catch (e) {
+    sel.innerHTML = `<option value="">Error listing devices</option>`;
+  }
+}
+
+$("android-refresh-devices-btn").onclick = loadAndroidDevices;
+
+$("android-connect-btn").onclick = async () => {
+  const deviceId = $("android-device-select").value;
+  $("android-connect-btn").disabled = true;
+  $("android-connect-btn").textContent = "Connecting...";
+  $("android-status").textContent = "Connecting to device...";
+
+  try {
+    await api("/api/android/start", {
+      method: "POST",
+      body: { projectId: activeProjectId, deviceId: deviceId || undefined }
+    });
+
+    androidConnected = true;
+    $("android-connect-btn").style.display = "none";
+    $("android-disconnect-btn").style.display = "inline-flex";
+    $("android-device-frame").style.display = "block";
+    $("android-bottom-controls").style.display = "flex";
+    $("android-status").textContent = "Live device preview active. Click inside the device frame to interact.";
+    $("android-app-select").disabled = false;
+    $("android-refresh-apps-btn").disabled = false;
+    startAndroidFrameStream();
+    await loadAndroidApps();
+  } catch (e) {
+    await alert("Connection failed: " + e.message);
+    $("android-status").textContent = "Connection failed. Please check the device connection and try again.";
+  } finally {
+    $("android-connect-btn").disabled = false;
+    $("android-connect-btn").textContent = "Connect";
+  }
+};
+
+$("android-disconnect-btn").onclick = async () => {
+  clearInterval(androidFrameIntervalId);
+  $("android-disconnect-btn").disabled = true;
+  $("android-disconnect-btn").textContent = "Disconnecting...";
+
+  try {
+    await api("/api/android/stop", { method: "POST" });
+  } catch (e) {}
+
+  androidConnected = false;
+  $("android-connect-btn").style.display = "inline-flex";
+  $("android-disconnect-btn").disabled = false;
+  $("android-disconnect-btn").textContent = "Disconnect";
+  $("android-disconnect-btn").style.display = "none";
+  $("android-status").textContent = "Session closed. Click 'Connect' to start a new live session.";
+  $("android-device-frame").style.display = "none";
+  $("android-bottom-controls").style.display = "none";
+  $("android-app-select").disabled = true;
+  $("android-app-select").innerHTML = `<option value="">Connect a device to list applications...</option>`;
+  $("android-refresh-apps-btn").disabled = true;
+};
+
+async function loadAndroidApps() {
+  const sel = $("android-app-select");
+  sel.innerHTML = `<option value="">Loading applications...</option>`;
+  try {
+    const { apps } = await api("/api/android/apps");
+    if (!apps || apps.length === 0) {
+      sel.innerHTML = `<option value="">No third-party apps found</option>`;
+      return;
+    }
+    sel.innerHTML = `<option value="">Select an application to open...</option>`;
+    for (const pkg of apps) {
+      const opt = document.createElement("option");
+      opt.value = pkg;
+      opt.textContent = pkg;
+      sel.appendChild(opt);
+    }
+  } catch (e) {
+    sel.innerHTML = `<option value="">Failed to list applications</option>`;
+  }
+}
+
+$("android-refresh-apps-btn").onclick = loadAndroidApps;
+
+$("android-app-select").addEventListener("change", async () => {
+  const pkg = $("android-app-select").value;
+  if (!pkg || !androidConnected) return;
+  try {
+    await api("/api/android/launch", { method: "POST", body: { packageName: pkg } });
+    $("android-status").textContent = `Opened ${pkg}. Explore the app in the preview below.`;
+    boostAndroidFrameStream();
+  } catch (e) {
+    await alert("Failed to launch app: " + e.message);
+  }
+});
+
+async function sendAndroidKey(keycode) {
+  if (!androidConnected) return;
+  try {
+    await api("/api/android/action", { method: "POST", body: { type: "key", keycode } });
+    boostAndroidFrameStream();
+  } catch (e) {}
+}
+
+$("android-back-btn").onclick = () => sendAndroidKey(4);
+$("android-home-btn").onclick = () => sendAndroidKey(3);
+$("android-recents-btn").onclick = () => sendAndroidKey(187);
+
+function loadNextAndroidFrame() {
+  if (!androidConnected || androidFrameInFlight) return;
+  androidFrameInFlight = true;
+  const img = $("android-frame-img");
+  const newImg = new Image();
+  newImg.onload = () => {
+    img.src = newImg.src;
+    androidFrameInFlight = false;
+  };
+  newImg.onerror = () => {
+    androidFrameInFlight = false;
+  };
+  newImg.src = `/api/android/frame?t=${Date.now()}`;
+}
+
+function startAndroidFrameStream() {
+  clearInterval(androidFrameIntervalId);
+  loadNextAndroidFrame();
+  androidFrameIntervalId = setInterval(loadNextAndroidFrame, 500); // idle 2fps
+}
+
+// ponytail: polling, not real video streaming (adb screencap round-trip ~150-400ms).
+// Boosted to ~4fps for a few seconds after any interaction so tap/swipe feels responsive;
+// swap for a real scrcpy H264-over-websocket pipeline later if smoother live video is needed.
+function boostAndroidFrameStream() {
+  if (!androidConnected) return;
+  if (!androidFastStream) {
+    androidFastStream = true;
+    clearInterval(androidFrameIntervalId);
+    androidFrameIntervalId = setInterval(loadNextAndroidFrame, 250);
+  }
+  clearTimeout(androidBoostTimer);
+  androidBoostTimer = setTimeout(() => {
+    androidFastStream = false;
+    clearInterval(androidFrameIntervalId);
+    androidFrameIntervalId = setInterval(loadNextAndroidFrame, 500);
+  }, 2000);
+}
+
+// Interactive tap & swipe on the Android device frame
+const androidImgEl = $("android-frame-img");
+let androidPointerDown = false;
+let androidDragged = false;
+let androidStartX = 0;
+let androidStartY = 0;
+let androidPointerStartTime = 0;
+
+androidImgEl.addEventListener("pointerdown", (e) => {
+  if (!androidConnected) return;
+  e.preventDefault();
+  androidPointerDown = true;
+  androidDragged = false;
+  androidStartX = e.clientX;
+  androidStartY = e.clientY;
+  androidPointerStartTime = Date.now();
+  try { androidImgEl.setPointerCapture(e.pointerId); } catch (err) {}
+});
+
+androidImgEl.addEventListener("pointermove", (e) => {
+  if (!androidConnected || !androidPointerDown) return;
+  e.preventDefault();
+  const dist = Math.hypot(e.clientX - androidStartX, e.clientY - androidStartY);
+  if (dist > 6) androidDragged = true;
+});
+
+const handleAndroidPointerEnd = async (e) => {
+  if (!androidConnected || !androidPointerDown) return;
+  const elapsed = Date.now() - androidPointerStartTime;
+  try { androidImgEl.releasePointerCapture(e.pointerId); } catch (err) {}
+
+  const rect = androidImgEl.getBoundingClientRect();
+  const xPct = ((androidStartX - rect.left) / rect.width) * 100;
+  const yPct = ((androidStartY - rect.top) / rect.height) * 100;
+  const x2Pct = ((e.clientX - rect.left) / rect.width) * 100;
+  const y2Pct = ((e.clientY - rect.top) / rect.height) * 100;
+
+  androidPointerDown = false;
+
+  try {
+    if (androidDragged) {
+      await api("/api/android/action", { method: "POST", body: { type: "swipe", xPct, yPct, x2Pct, y2Pct } });
+    } else if (elapsed < 400) {
+      androidImgEl.style.opacity = "0.6";
+      setTimeout(() => { androidImgEl.style.opacity = "1"; }, 100);
+      await api("/api/android/action", { method: "POST", body: { type: "tap", xPct, yPct } });
+    }
+    boostAndroidFrameStream();
+  } catch (err) {}
+
+  androidDragged = false;
+};
+
+androidImgEl.addEventListener("pointerup", handleAndroidPointerEnd);
+androidImgEl.addEventListener("pointercancel", handleAndroidPointerEnd);
+
+async function triggerAndroidCapture() {
+  if (!androidConnected || !activeProjectId) {
+    await alert("Please connect to an Android device first before capturing.", "warning");
+    return;
+  }
+
+  const img = $("android-frame-img");
+  img.style.opacity = "0.3";
+  setTimeout(() => { img.style.opacity = "1"; }, 150);
+
+  try {
+    const capture = await api("/api/android/capture", {
+      method: "POST",
+      body: { projectId: activeProjectId }
+    });
+    showToast(`Captured Screen ${capture.id} (${capture.file})`, "success");
+    await renderAndroidCaptures();
+  } catch (e) {
+    await alert("Capture failed: " + e.message);
+  }
+}
+
+$("android-bottom-capture").onclick = triggerAndroidCapture;
+
+async function renderAndroidCaptures() {
+  const gallery = $("android-captures-gallery");
+  if (!gallery) return;
+  gallery.innerHTML = "";
+
+  if (!activeProjectId) return;
+
+  try {
+    const proj = await api(`/api/projects/${activeProjectId}`);
+    const filtered = (proj.captures || []).filter(c => c.deviceLabel && c.deviceLabel.startsWith("Android"));
+
+    if (filtered.length === 0) {
+      gallery.innerHTML = `<div class="hint" style="grid-column: span 2; text-align: center; padding: 2rem 0;">No screenshots captured yet.</div>`;
+      return;
+    }
+
+    for (const c of filtered) {
+      const item = document.createElement("div");
+      item.className = "thumb";
+      item.style = "height: fit-content; align-self: start;";
+      const fileUrl = `/api/projects/${activeProjectId}/file?p=${encodeURIComponent(c.file)}`;
+
+      const img = document.createElement("img");
+      img.src = fileUrl;
+      img.style.cssText = "cursor:pointer; width:100%; height:auto; max-height:220px; display:block; aspect-ratio:9/16; object-fit:contain; background:#000;";
+
+      const cap = document.createElement("div");
+      cap.style.cssText = "display:flex; justify-content:space-between; align-items:center; padding:0.35rem 0.5rem; background:#14171f; border-top:1px solid #21252f;";
+
+      const label = document.createElement("span");
+      label.style.cssText = "font-weight:600; color:#e5e7eb; font-size:0.75rem;";
+      label.textContent = `Screen ${c.id}`;
+
+      const delBtn = document.createElement("button");
+      delBtn.type = "button";
+      delBtn.style.cssText = "padding:0.25rem 0.35rem; border-radius:4px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; color:#fff; background:#dc2626; border:none; transition:background 0.2s;";
+      delBtn.title = "Delete screenshot";
+      delBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>`;
+
+      delBtn.addEventListener("click", async (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+
+        const confirmed = await showConfirm(`Delete Screenshot ${c.id}? This cannot be undone.`, "Delete Screenshot", true);
+        if (!confirmed) return;
+
+        item.remove();
+        if (gallery.children.length === 0) {
+          gallery.innerHTML = `<div class="hint" style="grid-column: span 2; text-align: center; padding: 2rem 0;">No screenshots captured yet.</div>`;
+        }
+
+        try {
+          await api(`/api/projects/${activeProjectId}/captures/${c.id}`, { method: "DELETE" });
+        } catch (_) {
+          try {
+            await api(`/api/projects/${activeProjectId}/file?p=${encodeURIComponent(c.file)}`, { method: "DELETE" });
+          } catch (err2) {
+            showToast("Delete failed: " + err2.message, "error");
+            renderAndroidCaptures();
             return;
           }
         }
@@ -1036,7 +1379,12 @@ document.addEventListener("keydown", async (e) => {
   const isCaptureTabActive = $("tab-capture").classList.contains("active");
   if (isCaptureTabActive && e.altKey && e.key.toLowerCase() === 'c') {
     e.preventDefault();
-    await triggerScreenshotCapture();
+    const isAndroidSectionActive = $("capture-section-android").classList.contains("active");
+    if (isAndroidSectionActive) {
+      await triggerAndroidCapture();
+    } else {
+      await triggerScreenshotCapture();
+    }
   }
 });
 
