@@ -16,7 +16,13 @@ export class StillCompositionEngine {
     const outputDir = path.join(options.outputDir, "store");
     fs.mkdirSync(outputDir, { recursive: true });
 
-    for (let i = 0; i < doc.screens.length; i++) {
+    // One Chromium instance reused across all screens instead of relaunching per screen
+    // (launch/close is the dominant cost here, ~200ms-1s+ each).
+    const { chromium } = await import("playwright");
+    const browser = await chromium.launch({ headless: true });
+
+    try {
+      for (let i = 0; i < doc.screens.length; i++) {
       const screen = doc.screens[i];
       const deviceId = screen.device || "phone";
       const device = DEVICE_REGISTRY[deviceId];
@@ -96,21 +102,21 @@ export class StillCompositionEngine {
         </html>
       `;
 
-      // Import Playwright dynamically to avoid context collision
-      const { chromium } = await import("playwright");
-      const browser = await chromium.launch({ headless: true });
       const context = await browser.newContext({
         viewport: { width: device.geometry.width, height: device.geometry.height }
       });
       const page = await context.newPage();
-      
+
       await page.setContent(htmlContent);
       const outPath = path.join(outputDir, `composed_screen_${i + 1}.png`);
       await page.screenshot({ path: outPath, type: "png" });
-      await browser.close();
+      await context.close();
 
       outputs.push(outPath);
       console.log(`Rendered composed store screenshot: ${outPath}`);
+      }
+    } finally {
+      await browser.close();
     }
 
     return outputs;

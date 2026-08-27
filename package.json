@@ -8,6 +8,7 @@
     "store-assets": "./dist/cli/index.js"
   },
   "scripts": {
+    "postinstall": "playwright install chromium",
     "build": "tsc && node scripts/copy-web-assets.mjs",
     "start": "node dist/cli/index.js ui",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",

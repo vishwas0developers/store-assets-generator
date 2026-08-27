@@ -1,10 +1,25 @@
 import fs from "fs";
 import { frameSvgFor, resolveGeometry, type DeviceModel } from "../devices/registry.js";
 
+// A render pass (multi-scene video, multi-cell mockup grid) commonly reuses the same
+// source screenshot many times; cache its base64 encoding instead of re-reading per use.
+const dataUriCache = new Map<string, string>();
+
 /** Inline the screenshot so rendered HTML is self-contained (no file:// or
  *  http fetches to race with the screenshot call). */
 export function dataUri(absPath: string): string {
-  return `data:image/png;base64,${fs.readFileSync(absPath, "base64")}`;
+  let cached = dataUriCache.get(absPath);
+  if (cached === undefined) {
+    cached = `data:image/png;base64,${fs.readFileSync(absPath, "base64")}`;
+    dataUriCache.set(absPath, cached);
+  }
+  return cached;
+}
+
+/** Call when a capture file is deleted -- capture IDs (and therefore filenames) can be
+ *  reused after all captures are cleared, so a stale cache entry must not survive that. */
+export function invalidateDataUri(absPath: string): void {
+  dataUriCache.delete(absPath);
 }
 
 export function escapeHtml(value: string): string {
