@@ -48,83 +48,26 @@ export function deviceMarkup(device: DeviceModel, screenshotUri: string, variant
     </div>`;
 }
 
-/** Physical thickness for the 3D rig -- a data-driven trait
- *  (`frame.thickness`) with a bezel-proportional fallback so every existing
- *  catalogue entry (no `thickness` field) still renders a plausible body. */
-function deviceThickness(device: DeviceModel): number {
-  return device.frame.thickness ?? Math.round((device.frame.bezelWidth || 24) * 1.6);
-}
-
-/** Genuine six-face 3D device -- front, back, left, right, top and bottom
- *  as separate `preserve-3d` planes positioned with `translateZ`/`rotateX`/
- *  `rotateY` at half the device's thickness. Rotating the *ancestor* that
- *  wraps this markup (see video/render.ts's showcase-3d / "float" depth
- *  modes) genuinely reveals the side rails and back panel, because they are
- *  real planes in 3D space -- not a border drawn around a flat image.
- *  `screenshotUris` (1+) drives the front face: a single URI renders once,
- *  2+ cross-fades via `deviceMarkupMultiScreen`. */
+/** Genuine 3D device rig, rendered from the device's real GLB (real
+ *  per-model camera-island/button/edge geometry — see `src/devices/`)
+ *  instead of six hardcoded CSS planes. This function only emits a
+ *  `<canvas>` placeholder; `src/render/three-bridge.ts`'s injected script
+ *  loads the GLB and paints it, mirroring whatever CSS transform the
+ *  scene's animation applies to the enclosing `.stage-inner` on each
+ *  `window.seek(t)` — see that file's top comment for how. Only a single
+ *  screenshot/video texture is supported on the 3D rig today (`uris[0]`);
+ *  multi-screen crossfade on this path is unimplemented — see
+ *  three-bridge.ts's `ponytail:` note. */
 export function device3dMarkup(device: DeviceModel, screenshotUris: string[], variantId: string | undefined, durationMs: number, kinds: ("image" | "video")[] = []): string {
   const g = resolveGeometry(device, variantId);
-  const t = deviceThickness(device);
-  const half = t / 2;
   const uris = screenshotUris.filter(Boolean);
-  const front = uris.length > 1 ? deviceMarkupMultiScreen(device, uris, variantId, durationMs, kinds) : deviceMarkup(device, uris[0] ?? "", variantId, kinds[0] ?? "image");
-  const r = device.frame.outerRadius;
-  const body = device.frame.body || "#1e2025";
-  const accent = device.frame.accent || "#3a3f4b";
-
-  const sideLeftRight = `linear-gradient(to bottom, rgba(255,255,255,0.2) 0%, ${body} 20%, ${body} 80%, rgba(0,0,0,0.3) 100%)`;
-  const sideTop = `linear-gradient(to right, rgba(255,255,255,0.15) 0%, ${body} 25%, ${body} 75%, rgba(0,0,0,0.25) 100%)`;
-  const sideBottom = `linear-gradient(to right, rgba(0,0,0,0.25) 0%, ${body} 25%, ${body} 75%, rgba(255,255,255,0.15) 100%)`;
+  const screens = uris.map((src, i) => ({ src, kind: kinds[i] ?? "image" }));
 
   return `<div class="device-rig-wrap">
-      <div class="device-rig" style="width:${g.width}px;height:${g.height}px;transform-style:preserve-3d;position:relative;">
-        <!-- Front Face -->
-        <div class="device-face device-front" style="width:${g.width}px;height:${g.height}px;transform:translateZ(${half}px);border-radius:${r}px;padding:4px;box-sizing:border-box;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08),0 20px 45px rgba(0,0,0,.5);position:absolute;left:0;top:0;">
-          ${front}
-          <div class="device-sheen"></div>
-        </div>
-        <!-- Back Face -->
-        <div class="device-face device-back" style="width:${g.width}px;height:${g.height}px;border-radius:${r}px;background:${body};transform:translateZ(-${half}px) rotateY(180deg);position:absolute;left:0;top:0;border:1px solid ${accent};">
-          <!-- Realistic Camera Bump -->
-          <div style="position:absolute; top:25px; left:25px; width:${Math.round(g.width * 0.32)}px; height:${Math.round(g.width * 0.32)}px; background:${accent}; border-radius:24px; box-shadow:0 4px 12px rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.15); display:flex; flex-wrap:wrap; gap:12px; padding:16px; box-sizing:border-box; align-items:center; justify-content:center;">
-            <div class="device-lens" style="width:34px; height:34px; border-radius:50%; background:radial-gradient(circle at 30% 30%, #555 0%, #080808 70%); border:2px solid #222; box-shadow:inset 0 2px 4px rgba(255,255,255,0.25);"></div>
-            <div class="device-lens" style="width:34px; height:34px; border-radius:50%; background:radial-gradient(circle at 30% 30%, #555 0%, #080808 70%); border:2px solid #222; box-shadow:inset 0 2px 4px rgba(255,255,255,0.25);"></div>
-            <div class="device-lens" style="width:34px; height:34px; border-radius:50%; background:radial-gradient(circle at 30% 30%, #555 0%, #080808 70%); border:2px solid #222; box-shadow:inset 0 2px 4px rgba(255,255,255,0.25);"></div>
-          </div>
-        </div>
-        <!-- Top Face -->
-        <div class="device-face device-side" style="width:${g.width}px;height:${t}px;position:absolute;left:0;top:-${t}px;background:${sideTop};transform-origin: bottom center;transform:rotateX(90deg);border-bottom:1px solid rgba(255,255,255,0.15);">
-          <!-- Top microphone hole -->
-          <div style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:6px; height:6px; border-radius:50%; background:#111;"></div>
-        </div>
-        <!-- Bottom Face -->
-        <div class="device-face device-side" style="width:${g.width}px;height:${t}px;position:absolute;left:0;top:${g.height}px;background:${sideBottom};transform-origin: top center;transform:rotateX(-90deg);border-top:1px solid rgba(255,255,255,0.15);">
-          <!-- USB-C Port -->
-          <div style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:60px; height:12px; background:#111; border-radius:6px; border:1px solid #444; box-shadow:inset 0 2px 4px rgba(0,0,0,0.8);"></div>
-          <!-- Speaker holes -->
-          <div style="position:absolute; left:30%; top:50%; transform:translateY(-50%); display:flex; gap:4px;">
-            <span style="width:5px; height:5px; border-radius:50%; background:#111;"></span>
-            <span style="width:5px; height:5px; border-radius:50%; background:#111;"></span>
-            <span style="width:5px; height:5px; border-radius:50%; background:#111;"></span>
-            <span style="width:5px; height:5px; border-radius:50%; background:#111;"></span>
-          </div>
-        </div>
-        <!-- Left Face -->
-        <div class="device-face device-side" style="width:${t}px;height:${g.height}px;position:absolute;left:-${t}px;top:0;background:${sideLeftRight};transform-origin: right center;transform:rotateY(-90deg);border-right:1px solid rgba(255,255,255,0.15);">
-          <!-- Volume buttons -->
-          <div class="side-btn volume-up" style="position:absolute;width:${t}px;height:55px;top:170px;left:0;background:linear-gradient(to bottom, #777, #333);border:1px solid #222;border-radius:2px;box-shadow:0 1px 3px rgba(0,0,0,0.4);"></div>
-          <div class="side-btn volume-down" style="position:absolute;width:${t}px;height:55px;top:235px;left:0;background:linear-gradient(to bottom, #777, #333);border:1px solid #222;border-radius:2px;box-shadow:0 1px 3px rgba(0,0,0,0.4);"></div>
-        </div>
-        <!-- Right Face -->
-        <div class="device-face device-side" style="width:${t}px;height:${g.height}px;position:absolute;left:${g.width}px;top:0;background:${sideLeftRight};transform-origin: left center;transform:rotateY(90deg);border-left:1px solid rgba(255,255,255,0.15);">
-          <!-- Power button -->
-          <div class="side-btn power-btn" style="position:absolute;width:${t}px;height:75px;top:210px;left:0;background:linear-gradient(to bottom, #777, #333);border:1px solid #222;border-radius:2px;box-shadow:0 1px 3px rgba(0,0,0,0.4);"></div>
-        </div>
-      </div>
-      <div class="device-reflection" style="width:${g.width}px;height:${g.height}px">
-        <div class="device-face device-front" style="transform:translateZ(${half}px);border-radius:${r}px;padding:4px;box-sizing:border-box">${front}</div>
-      </div>
+      <canvas class="device-rig-canvas" data-device-id="${device.id}" data-variant-id="${variantId ?? ""}"
+        data-screens="${escapeHtml(JSON.stringify(screens))}" data-duration-ms="${durationMs}"
+        width="${g.width}" height="${g.height}"
+        style="width:${g.width}px;height:${g.height}px;display:block;"></canvas>
     </div>`;
 }
 
@@ -179,20 +122,17 @@ export const DEVICE_CSS = `
   .device-float { position: relative; animation: deviceFloat 5200ms ease-in-out infinite; }
   @keyframes deviceFloat { 0% { transform: translateY(0) rotateY(-4deg); } 50% { transform: translateY(-14px) rotateY(4deg); } 100% { transform: translateY(0) rotateY(-4deg); } }
 
-  /* -- Genuine six-face 3D rig -- front/back/left/right/top/bottom as real
-     planes, not a flat image with a border. See device3dMarkup. -- */
-  .device-rig-wrap { position: relative; transform-style: preserve-3d; }
-  .device-rig { position: relative; transform-style: preserve-3d; filter: drop-shadow(0 24px 42px rgba(0,0,0,.48)); }
-  .device-face { position: absolute; top: 0; left: 0; backface-visibility: hidden; }
-  .device-face.device-front { transform-style: preserve-3d; overflow: hidden; }
-  .device-back { border: 1px solid rgba(255,255,255,.08); display: flex; align-items: flex-start; justify-content: center; }
-  .device-cam-bar { display: flex; gap: 8px; align-items: center; justify-content: center; padding: 6px 14px; background: rgba(0,0,0,.4); border-radius: 20px; margin-top: 5%; border: 1px solid rgba(255,255,255,.1); }
-  .device-lens { width: 14px; height: 14px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #555, #080808 70%); border: 1px solid rgba(255,255,255,.15); }
-  .device-side { opacity: .96; }
-
-  /* -- Floor reflection: a mirrored, blurred, faint copy of the rig sitting
-     beneath it, matching the reference templates' glass-floor look. -- */
-  .device-reflection { position: absolute; top: 100%; left: 0; transform-style: preserve-3d; transform: scaleY(-1); transform-origin: top center; opacity: .16; filter: blur(4px); pointer-events: none; mask-image: linear-gradient(to bottom, rgba(0,0,0,.6), transparent 70%); -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,.6), transparent 70%); }
+  /* -- Genuine 3D rig: a <canvas> painted by the real device GLB via
+     three-bridge.ts, not flat CSS planes. See device3dMarkup. Reflection
+     (previously a mirrored CSS copy of the six-plane rig) is dropped for
+     the canvas path -- ponytail: cosmetic-only, add a mirrored second
+     render pass if the floor-reflection look is needed again. -- */
+  .device-rig-wrap { position: relative; filter: drop-shadow(0 24px 42px rgba(0,0,0,.48)); }
+  /* Plausible placeholder in case the bridge script can't reach the device
+     GLB (e.g. the live browser preview -- see three-bridge.ts's top
+     comment on where the bridge is wired vs. not yet). Painted over once
+     the canvas actually renders. */
+  .device-rig-canvas { display: block; background: #1a1a1a; border-radius: 6%; }
 `;
 
 /** Solid colours — a flat swatch, distinct from a gradient preset. */

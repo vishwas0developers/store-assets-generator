@@ -22,7 +22,8 @@ import {
 import { setProviderKey, clearProviderKey } from "../src/ai/keystore.js";
 import { fetchModelsForProvider, testProvider, isDiscoveryError } from "../src/ai/adapters.js";
 import { chat, extractJsonArray } from "../src/ai/chat.js";
-import { listDevices, reloadRegistry } from "../src/devices/registry.js";
+import { DEVICE_REGISTRY, listDevices, reloadRegistry } from "../src/devices/registry.js";
+import { getDeviceGlbPath } from "../src/devices/device-manager.js";
 import { loadPlatformSpec } from "../src/platform/index.js";
 
 import {
@@ -368,6 +369,28 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
           return { id, name: spec.name, deviceClasses: spec.deviceClasses };
         }),
       });
+      return;
+    }
+
+    // Device catalogue 3D preview (web/app.js's #dev-grid) -- same-origin
+    // static routes so a real browser can load three.js and a device's GLB.
+    // Separate from src/render/three-bridge.ts's Playwright-only
+    // page.route interception, which this real HTTP server has no need for.
+    if (method === "GET" && p.startsWith("/vendor/three/")) {
+      const rel = p.slice("/vendor/three/".length);
+      const filePath = path.join(process.cwd(), "node_modules", "three", rel);
+      const resolved = path.resolve(filePath);
+      const threeRoot = path.resolve(path.join(process.cwd(), "node_modules", "three"));
+      if (!resolved.startsWith(threeRoot)) { sendError(res, 400, "invalid path"); return; }
+      sendFile(res, resolved, "application/javascript; charset=utf-8");
+      return;
+    }
+    if (method === "GET" && /^\/api\/devices\/[^/]+\/glb$/.test(p)) {
+      const id = decodeURIComponent(p.split("/")[3]);
+      const device = DEVICE_REGISTRY[id];
+      if (!device) { sendError(res, 404, `Device '${id}' not found`); return; }
+      const glbPath = await getDeviceGlbPath(device.definition);
+      sendFile(res, glbPath, "model/gltf-binary");
       return;
     }
 

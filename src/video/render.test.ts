@@ -119,14 +119,21 @@ function demo() {
   const swapScene = showcase.scenes.find((s) => (s.screenIds?.length ?? 0) > 1);
   assert.ok(swapScene, "iphone-15-pro-portrait must include at least one multi-screen scene");
   const swapHtml = sceneHtml(swapScene!, ["data:x", "data:y", "data:z"], false);
-  assert.ok(swapHtml.includes("device-screen-0") && swapHtml.includes("device-screen-1"), "multi-screen scene must render multiple device-screen layers");
+  // Multi-screen crossfade now renders via the GLB/canvas 3D rig
+  // (src/render/three-bridge.ts), not DOM <img>/<video> layers -- the
+  // contract is that all screenshot URIs reach the canvas as data-screens.
+  const screensMatch = swapHtml.match(/data-screens="([^"]*)"/);
+  assert.ok(screensMatch, "multi-screen scene must render a device-rig-canvas with data-screens");
+  const screens = JSON.parse(screensMatch![1].replace(/&quot;/g, '"'));
+  assert.strictEqual(screens.length, 3, "data-screens must carry every screenshot URI for the crossfade");
+  assert.ok(screens.every((s: any) => typeof s.src === "string" && s.src.length > 0), "every screen entry must carry its source URI");
 
-  // -- The 3D showcase scene renders the six-face rig, not a flat device --
+  // -- The 3D showcase scene renders the real GLB rig canvas, not a flat device --
   const cinematic = scratchVideoProject("iphone-15-pro-landscape");
   const rigScene = cinematic.scenes.find((s) => s.sceneTemplate === "landscape-flow" || s.sceneTemplate === "showcase-3d");
   assert.ok(rigScene, "iphone-15-pro-landscape must include a 3D showcase / landscape-flow scene");
   const rigHtml = sceneHtml(rigScene!, ["data:x"], false);
-  assert.ok(rigHtml.includes("device-rig") && rigHtml.includes("device-back") && rigHtml.includes("device-face"), "3D scene must render the six-face 3D rig");
+  assert.ok(rigHtml.includes("device-rig-canvas") && rigHtml.includes("data-device-id="), "3D scene must render the device-rig-canvas backed by a real device GLB");
 
   // -- deviceMarkupMultiScreen: N screens -> N distinct keyframe blocks --
   const multi = deviceMarkupMultiScreen(DEVICE_REGISTRY["phone"], ["a", "b", "c"], undefined, 3000);

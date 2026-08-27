@@ -747,6 +747,11 @@ select:disabled { opacity: .55; cursor: not-allowed; }
   border-radius: 8px;
 }
 .device-3d-viewport:active { cursor: grabbing; }
+.device-3d-canvas { border-radius: 10px; }
+/* Below: dead now that the catalogue preview renders the device's real GLB
+   via three.js onto a <canvas> (see device3dViewerHtml in app.js) instead
+   of six hardcoded CSS-3D planes -- left in place harmlessly since nothing
+   still emits these classes. */
 .device-3d-rig {
   position: relative;
   transform-style: preserve-3d;
