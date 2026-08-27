@@ -23,6 +23,7 @@ import { VIDEO_TEMPLATES, type VideoTemplate } from "./templates.js";
 import { templateHtmlPath, templateConfig } from "./templateConfig.js";
 import { placeholderScreenUri } from "./placeholder.js";
 import { resolveSlots, resolveImageSequences } from "./slots.js";
+import { resolveDemoAsset } from "./demoAssets.js";
 import { BGM_PRESETS, renderBgmWav } from "./bgm.js";
 
 /**
@@ -626,24 +627,32 @@ function canvasFor(scene: VideoScene): { width: number; height: number } {
   return scene.aspectRatio === "16:9" ? CANVAS_LANDSCAPE : CANVAS;
 }
 
-function sourceUriFor(project: VideoProject, scene: VideoScene, resolveUri: (rel: string) => string): string {
+function sourceUriFor(project: VideoProject, scene: VideoScene, resolveUri: (rel: string) => string, allowDemo: boolean): string {
   const source = project.sources.find((s) => s.id === scene.sourceId) ?? project.sources[0];
-  return source ? resolveUri(source.file) : "";
+  if (source) return resolveUri(source.file);
+  const demo = allowDemo ? resolveDemoAsset(scene.sourceId) : undefined;
+  return demo ? dataUri(demo.absPath) : "";
 }
 
 /** Ordered screenshot URIs for a scene -- `screenIds` (2+) drives an
  *  in-device screen swap; otherwise falls back to the single `sourceId`.
  *  When a multi-screen scene has no real source uploaded yet (e.g.
  *  previewing a template before applying it), each slot still gets its own
- *  distinct placeholder so the swap is visible ahead of real screenshots. */
-export function sourceUrisFor(project: VideoProject, scene: VideoScene, resolveUri: (rel: string) => string): string[] {
+ *  distinct placeholder (or the shared global demo photo) so the swap is
+ *  visible ahead of real screenshots. `allowDemo` gates the demo-photo
+ *  fallback -- it is only ever off for the actual `renderVideo()` export, so
+ *  demo/template-preview assets never end up baked into a real rendered
+ *  video, only the interactive editor preview. */
+export function sourceUrisFor(project: VideoProject, scene: VideoScene, resolveUri: (rel: string) => string, allowDemo = true): string[] {
   if (scene.screenIds && scene.screenIds.length > 1) {
     return scene.screenIds.map((id, i) => {
       const source = project.sources.find((s) => s.id === id);
-      return source ? resolveUri(source.file) : placeholderScreenUri(i);
+      if (source) return resolveUri(source.file);
+      const demo = allowDemo ? resolveDemoAsset(id) : undefined;
+      return demo ? dataUri(demo.absPath) : placeholderScreenUri(i);
     });
   }
-  const uri = sourceUriFor(project, scene, resolveUri);
+  const uri = sourceUriFor(project, scene, resolveUri, allowDemo);
   return uri ? [uri] : [];
 }
 
@@ -971,7 +980,7 @@ function sceneContentHtml(scene: VideoScene, device: DeviceModel, uris: string[]
  *  scene's markup in isolation -- some templates reference `<defs>` (e.g.
  *  an SVG gradient) declared in an earlier scene (tpl-62155880 scene 4
  *  reuses `url(#pinGrad)` from scene 1). */
-export function composeStandaloneHtml(project: VideoProject, activeSceneIndex?: number, resolveUri?: (rel: string) => string): string {
+export function composeStandaloneHtml(project: VideoProject, activeSceneIndex?: number, resolveUri?: (rel: string) => string, allowDemo = true): string {
   const templateId = project.template || "iphone-15-pro-portrait";
   const htmlPath = templateHtmlPath(templateId);
   if (!fs.existsSync(htmlPath)) {
@@ -995,10 +1004,10 @@ export function composeStandaloneHtml(project: VideoProject, activeSceneIndex?: 
   // Build one flat payload for every scene the template declares slots for
   // -- resolveSlots is the single normalizer both the studio editor and this
   // renderer use, so there is no second description of what a scene needs.
-  const payload = project.scenes.flatMap((_pScene, idx) => resolveSlots(project, idx, uriFor));
+  const payload = project.scenes.flatMap((_pScene, idx) => resolveSlots(project, idx, uriFor, allowDemo));
   // Within-scene multi-screenshot timelines (project-wide -- see
   // resolveImageSequences's doc comment for why this can't be per-scene).
-  const sequences = resolveImageSequences(project, uriFor);
+  const sequences = resolveImageSequences(project, uriFor, allowDemo);
 
   const injectionScript = `
   <script>
@@ -1078,6 +1087,7 @@ export function sceneHtml(
   screenshotKinds: ("image" | "video")[] = [],
   project?: VideoProject,
   resolveUri?: (rel: string) => string,
+  allowDemo = true,
 ): string {
   if (project && project.template) {
     // Only templates that declare `slots` (the replicated tpl-* promos) go
@@ -1087,7 +1097,7 @@ export function sceneHtml(
     // actually understands their screenshots/screenCount/word-split text.
     const cfg = templateConfig(project.template);
     if (cfg?.scenes?.some((s: any) => s.slots)) {
-      return composeStandaloneHtml(project, scene.order, resolveUri ?? previewResolveUri(project.id));
+      return composeStandaloneHtml(project, scene.order, resolveUri ?? previewResolveUri(project.id), allowDemo);
     }
   }
 
@@ -1383,7 +1393,10 @@ export async function renderVideo(project: VideoProject): Promise<string> {
     const page = await browser.newPage({ viewport: canvasFor(scenes[0] ?? ({} as VideoScene)) });
     for (const scene of scenes) {
       await page.setViewportSize(canvasFor(scene));
-      const html = sceneHtml(scene, sourceUrisFor(project, scene, resolveUri), true, sourceKindsFor(project, scene), project, resolveUri);
+      // allowDemo=false: template-preview demo photos must never end up baked into an
+      // actual exported video -- a scene with no real screenshot yet falls back to the
+      // neutral placeholder here instead, same as it would with no template applied.
+      const html = sceneHtml(scene, sourceUrisFor(project, scene, resolveUri, false), true, sourceKindsFor(project, scene), project, resolveUri, false);
       await page.setContent(html, { waitUntil: "load" });
 
       const totalFrames = Math.round(Math.max(1, scene.durationSeconds) * FPS);
