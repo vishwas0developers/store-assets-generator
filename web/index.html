@@ -223,28 +223,45 @@
         <div class="section-page" id="capture-section-android">
           <!-- Android Device Bar -->
           <div class="card" style="display: flex; gap: 0.75rem; align-items: center; padding: 0.75rem 1rem;">
-            <span style="color: var(--text-secondary); font-size: 0.8rem; white-space: nowrap;">Device</span>
-            <select id="android-device-select" style="width: 18rem;">
-              <option value="">No devices found</option>
-            </select>
-            <button id="android-refresh-devices-btn" class="secondary icon-btn" title="Refresh device list">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
-            </button>
-
-            <div style="flex: 1; display: flex; align-items: center; background: var(--bg-main); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 0 0.75rem;">
-              <span style="color: var(--text-secondary); margin-right: 0.5rem; display: flex; align-items: center;">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
-              </span>
-              <select id="android-app-select" style="flex: 1; border: none; background: transparent; padding: 0.5rem 0; outline: none; color: var(--text-primary);" disabled>
-                <option value="">Connect a device to list applications...</option>
+            <!-- Device-related controls -->
+            <div style="display: flex; gap: 0.75rem; align-items: center;">
+              <span style="color: var(--text-secondary); font-size: 0.8rem; white-space: nowrap;">Device</span>
+              <select id="android-device-select" style="width: 12rem;">
+                <option value="">No devices found</option>
               </select>
-            </div>
-            <button id="android-refresh-apps-btn" class="secondary icon-btn" title="Refresh app list" disabled>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
-            </button>
+              <button id="android-refresh-devices-btn" class="secondary icon-btn" title="Refresh device list">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+              </button>
 
-            <button id="android-connect-btn">Connect</button>
-            <button id="android-disconnect-btn" class="secondary" style="display: none;">✕ Disconnect</button>
+              <button id="android-connect-btn" class="icon-btn" title="Connect Device" style="background: #10b981; border: none;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>
+              </button>
+            </div>
+
+            <!-- Visual Separator between Device and App sections -->
+            <div style="align-self: stretch; width: 2px; background: var(--border-subtle); margin: -0.75rem 0.6rem;"></div>
+
+            <!-- Application-related controls -->
+            <div style="flex: 1; display: flex; gap: 0.75rem; align-items: center;">
+              <div style="flex: 1; display: flex; align-items: center; background: var(--bg-main); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 0 0.75rem;">
+                <span style="color: var(--text-secondary); margin-right: 0.5rem; display: flex; align-items: center;">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+                </span>
+                <select id="android-app-select" class="custom-app-select" style="flex: 1; border: none; background: transparent; padding: 0.5rem 0; outline: none; color: var(--text-primary);" disabled>
+                  <option value="">Connect a device to list applications...</option>
+                </select>
+              </div>
+              <button id="android-refresh-apps-btn" class="secondary icon-btn" title="Refresh app list" disabled>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+              </button>
+              
+              <!-- Run/Launch Application Button -->
+              <button id="android-launch-app-btn" class="secondary icon-btn" title="Run/Launch Selected Application" disabled style="background: #10b981; border: none;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+              </button>
+            </div>
           </div>
 
           <!-- Split Workspace Layout -->

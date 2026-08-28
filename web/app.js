@@ -673,26 +673,48 @@ async function loadAndroidDevices() {
 
 $("android-refresh-devices-btn").onclick = loadAndroidDevices;
 
+const ANDROID_CONNECT_ICON = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>`;
+const ANDROID_DISCONNECT_ICON = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
+
+function setAndroidConnectButtonState(connected) {
+  const btn = $("android-connect-btn");
+  btn.innerHTML = connected ? ANDROID_DISCONNECT_ICON : ANDROID_CONNECT_ICON;
+  btn.title = connected ? "Disconnect Device" : "Connect Device";
+  btn.style.background = connected ? "#ef4444" : "#10b981";
+}
+
 $("android-connect-btn").onclick = async () => {
+  if (androidConnected) {
+    await disconnectAndroidDevice();
+  } else {
+    await connectAndroidDevice();
+  }
+};
+
+async function connectAndroidDevice() {
   const deviceId = $("android-device-select").value;
   $("android-connect-btn").disabled = true;
-  $("android-connect-btn").textContent = "Connecting...";
   $("android-status").textContent = "Connecting to device...";
 
   try {
-    await api("/api/android/start", {
+    const startRes = await api("/api/android/start", {
       method: "POST",
       body: { projectId: activeProjectId, deviceId: deviceId || undefined }
     });
 
     androidConnected = true;
-    $("android-connect-btn").style.display = "none";
-    $("android-disconnect-btn").style.display = "inline-flex";
+    setAndroidConnectButtonState(true);
     $("android-device-frame").style.display = "block";
     $("android-bottom-controls").style.display = "flex";
-    $("android-status").textContent = "Live device preview active. Click inside the device frame to interact.";
+    $("android-status").textContent = "Physical screen off. A live, touch-controllable scrcpy window has opened for this device -- interact there; the frame below is for on-demand screenshots.";
     $("android-app-select").disabled = false;
     $("android-refresh-apps-btn").disabled = false;
+    
+    // Store device dimensions for aspect-ratio responsive scaling
+    window.androidDeviceWidth = startRes.width || 1080;
+    window.androidDeviceHeight = startRes.height || 1920;
+    resizeAndroidPreview();
+
     startAndroidFrameStream();
     await loadAndroidApps();
   } catch (e) {
@@ -700,35 +722,81 @@ $("android-connect-btn").onclick = async () => {
     $("android-status").textContent = "Connection failed. Please check the device connection and try again.";
   } finally {
     $("android-connect-btn").disabled = false;
-    $("android-connect-btn").textContent = "Connect";
   }
-};
+}
 
-$("android-disconnect-btn").onclick = async () => {
+// Fits the live preview to the actual space available inside its card, using
+// the connected device's real aspect ratio -- never larger than the viewport,
+// scaled down as needed, and re-run on window resize.
+function resizeAndroidPreview() {
+  if (!androidConnected || !window.androidDeviceWidth || !window.androidDeviceHeight) return;
+  const deviceFrame = $("android-device-frame");
+  const card = deviceFrame && deviceFrame.parentElement;
+  if (!card) return;
+
+  const cardRect = card.getBoundingClientRect();
+  const cs = getComputedStyle(card);
+  const padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
+  const padY = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+
+  const statusEl = $("android-status");
+  const statusH = statusEl ? statusEl.getBoundingClientRect().height + 12 : 0;
+  const bottomControls = $("android-bottom-controls");
+  const controlsH = (bottomControls && bottomControls.style.display !== "none")
+    ? bottomControls.getBoundingClientRect().height + 16
+    : 0;
+
+  const availW = Math.max(200, cardRect.width - padX);
+  const availH = Math.max(200, cardRect.height - padY - statusH - controlsH);
+
+  const aspect = window.androidDeviceWidth / window.androidDeviceHeight; // w/h
+  let previewWidth = availW;
+  let previewHeight = Math.round(previewWidth / aspect);
+  if (previewHeight > availH) {
+    previewHeight = availH;
+    previewWidth = Math.round(previewHeight * aspect);
+  }
+  previewWidth = Math.round(previewWidth);
+
+  const frameEl = $("android-viewport-container");
+  if (frameEl) {
+    frameEl.style.width = `${previewWidth}px`;
+    frameEl.style.height = `${previewHeight}px`;
+  }
+  if (deviceFrame) {
+    deviceFrame.style.width = `${previewWidth}px`;
+    deviceFrame.style.height = `${previewHeight}px`;
+  }
+}
+
+window.addEventListener("resize", () => {
+  if (androidConnected) resizeAndroidPreview();
+});
+
+async function disconnectAndroidDevice() {
   clearInterval(androidFrameIntervalId);
-  $("android-disconnect-btn").disabled = true;
-  $("android-disconnect-btn").textContent = "Disconnecting...";
+  $("android-connect-btn").disabled = true;
 
   try {
     await api("/api/android/stop", { method: "POST" });
   } catch (e) {}
 
   androidConnected = false;
-  $("android-connect-btn").style.display = "inline-flex";
-  $("android-disconnect-btn").disabled = false;
-  $("android-disconnect-btn").textContent = "Disconnect";
-  $("android-disconnect-btn").style.display = "none";
+  setAndroidConnectButtonState(false);
+  $("android-connect-btn").disabled = false;
   $("android-status").textContent = "Session closed. Click 'Connect' to start a new live session.";
   $("android-device-frame").style.display = "none";
   $("android-bottom-controls").style.display = "none";
   $("android-app-select").disabled = true;
   $("android-app-select").innerHTML = `<option value="">Connect a device to list applications...</option>`;
   $("android-refresh-apps-btn").disabled = true;
-};
+  $("android-launch-app-btn").disabled = true;
+}
 
 async function loadAndroidApps() {
   const sel = $("android-app-select");
   sel.innerHTML = `<option value="">Loading applications...</option>`;
+  $("android-launch-app-btn").disabled = true;
   try {
     const { apps } = await api("/api/android/apps");
     if (!apps || apps.length === 0) {
@@ -749,17 +817,26 @@ async function loadAndroidApps() {
 
 $("android-refresh-apps-btn").onclick = loadAndroidApps;
 
-$("android-app-select").addEventListener("change", async () => {
+$("android-app-select").addEventListener("change", () => {
+  const pkg = $("android-app-select").value;
+  $("android-launch-app-btn").disabled = !pkg;
+});
+
+// Run/Launch app button handler
+$("android-launch-app-btn").onclick = async () => {
   const pkg = $("android-app-select").value;
   if (!pkg || !androidConnected) return;
+  $("android-launch-app-btn").disabled = true;
   try {
     await api("/api/android/launch", { method: "POST", body: { packageName: pkg } });
     $("android-status").textContent = `Opened ${pkg}. Explore the app in the preview below.`;
     boostAndroidFrameStream();
   } catch (e) {
     await alert("Failed to launch app: " + e.message);
+  } finally {
+    $("android-launch-app-btn").disabled = false;
   }
-});
+};
 
 async function sendAndroidKey(keycode) {
   if (!androidConnected) return;
