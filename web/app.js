@@ -814,13 +814,14 @@ function boostAndroidFrameStream() {
 
 // Interactive tap & swipe on the Android device frame
 const androidImgEl = $("android-frame-img");
+const androidOverlayEl = $("android-interaction-overlay");
 let androidPointerDown = false;
 let androidDragged = false;
 let androidStartX = 0;
 let androidStartY = 0;
 let androidPointerStartTime = 0;
 
-androidImgEl.addEventListener("pointerdown", (e) => {
+androidOverlayEl.addEventListener("pointerdown", (e) => {
   if (!androidConnected) return;
   e.preventDefault();
   androidPointerDown = true;
@@ -828,10 +829,10 @@ androidImgEl.addEventListener("pointerdown", (e) => {
   androidStartX = e.clientX;
   androidStartY = e.clientY;
   androidPointerStartTime = Date.now();
-  try { androidImgEl.setPointerCapture(e.pointerId); } catch (err) {}
+  try { androidOverlayEl.setPointerCapture(e.pointerId); } catch (err) {}
 });
 
-androidImgEl.addEventListener("pointermove", (e) => {
+androidOverlayEl.addEventListener("pointermove", (e) => {
   if (!androidConnected || !androidPointerDown) return;
   e.preventDefault();
   const dist = Math.hypot(e.clientX - androidStartX, e.clientY - androidStartY);
@@ -841,9 +842,9 @@ androidImgEl.addEventListener("pointermove", (e) => {
 const handleAndroidPointerEnd = async (e) => {
   if (!androidConnected || !androidPointerDown) return;
   const elapsed = Date.now() - androidPointerStartTime;
-  try { androidImgEl.releasePointerCapture(e.pointerId); } catch (err) {}
+  try { androidOverlayEl.releasePointerCapture(e.pointerId); } catch (err) {}
 
-  const rect = androidImgEl.getBoundingClientRect();
+  const rect = androidOverlayEl.getBoundingClientRect();
   const xPct = ((androidStartX - rect.left) / rect.width) * 100;
   const yPct = ((androidStartY - rect.top) / rect.height) * 100;
   const x2Pct = ((e.clientX - rect.left) / rect.width) * 100;
@@ -865,8 +866,8 @@ const handleAndroidPointerEnd = async (e) => {
   androidDragged = false;
 };
 
-androidImgEl.addEventListener("pointerup", handleAndroidPointerEnd);
-androidImgEl.addEventListener("pointercancel", handleAndroidPointerEnd);
+androidOverlayEl.addEventListener("pointerup", handleAndroidPointerEnd);
+androidOverlayEl.addEventListener("pointercancel", handleAndroidPointerEnd);
 
 async function triggerAndroidCapture() {
   if (!androidConnected || !activeProjectId) {
@@ -1098,6 +1099,7 @@ function boostFrameStream() {
 
 // Interactive touch & scroll events on the device frame
 const imgEl = $("browser-frame-img");
+const overlayEl = $("browser-interaction-overlay");
 
 let isPointerDown = false;
 let hasDragged = false;
@@ -1206,7 +1208,7 @@ function queueScroll(dx, dy, xPct, yPct) {
   }
 }
 
-imgEl.addEventListener("pointerdown", (e) => {
+overlayEl.addEventListener("pointerdown", (e) => {
   if (!browserConnected) return;
   e.preventDefault();
   cancelAnimationFrame(inertiaRafId); // Catch moving screen instantly
@@ -1218,10 +1220,10 @@ imgEl.addEventListener("pointerdown", (e) => {
   lastY = e.clientY;
   pointerStartTime = Date.now();
   moveHistory = [{ x: e.clientX, y: e.clientY, t: performance.now() }];
-  try { imgEl.setPointerCapture(e.pointerId); } catch (err) {}
+  try { overlayEl.setPointerCapture(e.pointerId); } catch (err) {}
 });
 
-imgEl.addEventListener("pointermove", (e) => {
+overlayEl.addEventListener("pointermove", (e) => {
   if (!browserConnected || !isPointerDown) return;
   e.preventDefault();
 
@@ -1240,7 +1242,7 @@ imgEl.addEventListener("pointermove", (e) => {
       lastX = e.clientX;
       lastY = e.clientY;
 
-      const rect = imgEl.getBoundingClientRect();
+      const rect = overlayEl.getBoundingClientRect();
       const xPct = ((e.clientX - rect.left) / rect.width) * 100;
       const yPct = ((e.clientY - rect.top) / rect.height) * 100;
 
@@ -1261,18 +1263,20 @@ const handlePointerEnd = async (e) => {
   if (!browserConnected || !isPointerDown) return;
   const elapsed = Date.now() - pointerStartTime;
   
-  try { imgEl.releasePointerCapture(e.pointerId); } catch (err) {}
+  try { overlayEl.releasePointerCapture(e.pointerId); } catch (err) {}
 
-  const rect = imgEl.getBoundingClientRect();
-  const xPct = ((e.clientX - rect.left) / rect.width) * 100;
-  const yPct = ((e.clientY - rect.top) / rect.height) * 100;
+  const rect = overlayEl.getBoundingClientRect();
+  const xPct = Math.min(100, Math.max(0, ((e.clientX - rect.left) / rect.width) * 100));
+  const yPct = Math.min(100, Math.max(0, ((e.clientY - rect.top) / rect.height) * 100));
 
   if (!hasDragged && elapsed < 350) {
-    // Instant single tap
+    // Calculate exact contact coordinates using stable start coordinates to avoid release drift
+    const tapXPct = Math.min(100, Math.max(0, ((startX - rect.left) / rect.width) * 100));
+    const tapYPct = Math.min(100, Math.max(0, ((startY - rect.top) / rect.height) * 100));
     try {
       await api("/api/browser/action", {
         method: "POST",
-        body: { type: "click", xPct, yPct }
+        body: { type: "click", xPct: tapXPct, yPct: tapYPct }
       });
       boostFrameStream();
       imgEl.src = `/api/browser/frame?t=${Date.now()}`;
@@ -1287,15 +1291,15 @@ const handlePointerEnd = async (e) => {
   hasDragged = false;
 };
 
-imgEl.addEventListener("pointerup", handlePointerEnd);
-imgEl.addEventListener("pointercancel", handlePointerEnd);
+overlayEl.addEventListener("pointerup", handlePointerEnd);
+overlayEl.addEventListener("pointercancel", handlePointerEnd);
 
 // Wheel & Trackpad scroll listener
-imgEl.addEventListener("wheel", (e) => {
+overlayEl.addEventListener("wheel", (e) => {
   if (!browserConnected) return;
   e.preventDefault();
   cancelAnimationFrame(inertiaRafId);
-  const rect = imgEl.getBoundingClientRect();
+  const rect = overlayEl.getBoundingClientRect();
   const xPct = ((e.clientX - rect.left) / rect.width) * 100;
   const yPct = ((e.clientY - rect.top) / rect.height) * 100;
   
