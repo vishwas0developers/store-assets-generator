@@ -229,13 +229,35 @@ export async function executeBrowserAction(action: {
   switch (action.type) {
     case "click": {
       if (action.xPct !== undefined && action.yPct !== undefined) {
-        const x = Math.round((action.xPct / 100) * currentPreset.cssWidth);
-        const y = Math.round((action.yPct / 100) * currentPreset.cssHeight);
-        console.log(`[SAG-BROWSER] Mobile Click / Touch at (${x}, ${y})`);
+        const clampedXPct = Math.min(100, Math.max(0, action.xPct));
+        const clampedYPct = Math.min(100, Math.max(0, action.yPct));
+        const vp = activePage.viewportSize() || { width: currentPreset.cssWidth, height: currentPreset.cssHeight };
+        const x = Math.min(vp.width - 1, Math.max(0, Math.round((clampedXPct / 100) * vp.width)));
+        const y = Math.min(vp.height - 1, Math.max(0, Math.round((clampedYPct / 100) * vp.height)));
+        console.log(`[SAG-BROWSER] Multi-Strategy Click at (${x}, ${y}) on viewport (${vp.width}x${vp.height}) [xPct=${clampedXPct.toFixed(1)}%, yPct=${clampedYPct.toFixed(1)}%]`);
+        
+        // 1. Playwright mouse click (pointerdown, mousedown, mouseup, click)
+        await activePage.mouse.move(x, y).catch(() => {});
+        await activePage.mouse.click(x, y, { delay: 30 }).catch(() => {});
+
+        // 2. Playwright touch tap for touch-specific listeners
         if (currentPreset.hasTouch) {
           await activePage.touchscreen.tap(x, y).catch(() => {});
         }
-        await activePage.mouse.click(x, y);
+
+        // 3. In-page DOM fallback: directly click the element at (x, y) or its closest interactive parent
+        await activePage.evaluate(({ clickX, clickY }) => {
+          try {
+            const el = document.elementFromPoint(clickX, clickY);
+            if (el) {
+              const clickable = el.closest("button, a, [role='button'], input, select, textarea, [onclick], .btn, .icon-btn, [tabindex]") || el;
+              if (clickable && typeof (clickable as HTMLElement).click === "function") {
+                (clickable as HTMLElement).focus?.();
+                (clickable as HTMLElement).click();
+              }
+            }
+          } catch (_) {}
+        }, { clickX: x, clickY: y }).catch(() => {});
       }
       break;
     }

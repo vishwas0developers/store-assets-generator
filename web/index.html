@@ -182,10 +182,11 @@
               <div id="live-browser-status" class="hint" style="margin-bottom: 0.75rem;">Click 'Connect' to start live browser session.</div>
               
               <!-- Clean Simple Device Frame -->
-              <div id="browser-device-frame" style="display: none; position: relative; border: 1px solid var(--border-subtle); border-radius: 12px; background: #000; overflow: hidden; box-shadow: 0 12px 36px rgba(0,0,0,0.6); max-height: calc(100vh - 290px); max-width: 100%;">
-                <div id="browser-viewport-container" style="position: relative; overflow: hidden; max-height: 100%; max-width: 100%;">
-                  <img id="browser-frame-img" class="touch-pointer" draggable="false" style="width: 100%; height: 100%; object-fit: fill; user-select: none; touch-action: none;" />
+              <div id="browser-device-frame" style="display: none; position: relative; border: 1px solid var(--border-subtle); border-radius: 12px; background: #000; box-shadow: 0 12px 36px rgba(0,0,0,0.6); max-height: calc(100vh - 290px); max-width: 100%;">
+                <div id="browser-viewport-container" style="position: relative; overflow: hidden; border-radius: 12px; max-height: 100%; max-width: 100%;">
+                  <img id="browser-frame-img" class="touch-pointer" draggable="false" style="width: 100%; height: 100%; object-fit: fill; user-select: none; touch-action: none; pointer-events: none;" />
                 </div>
+                <div id="browser-interaction-overlay" class="touch-pointer" style="position: absolute; inset: 0; z-index: 10; touch-action: none;"></div>
               </div>
 
               <!-- Controls bar below viewport -->
@@ -252,10 +253,11 @@
             <div class="card" style="flex: 0 0 auto; min-width: 380px; max-width: 50%; margin-top: 0 !important; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.25rem; background: var(--bg-card); border: 1px solid var(--border-subtle); overflow: hidden;">
               <div id="android-status" class="hint" style="margin-bottom: 0.75rem;">Select a device and click 'Connect' to start live preview.</div>
 
-              <div id="android-device-frame" style="display: none; position: relative; border: 1px solid var(--border-subtle); border-radius: 12px; background: #000; overflow: hidden; box-shadow: 0 12px 36px rgba(0,0,0,0.6); max-height: calc(100vh - 290px); max-width: 100%;">
-                <div id="android-viewport-container" style="position: relative; overflow: hidden; max-height: 100%; max-width: 100%;">
-                  <img id="android-frame-img" class="touch-pointer" draggable="false" style="width: 100%; height: 100%; object-fit: fill; user-select: none; touch-action: none;" />
+              <div id="android-device-frame" style="display: none; position: relative; border: 1px solid var(--border-subtle); border-radius: 12px; background: #000; box-shadow: 0 12px 36px rgba(0,0,0,0.6); max-height: calc(100vh - 290px); max-width: 100%;">
+                <div id="android-viewport-container" style="position: relative; overflow: hidden; border-radius: 12px; max-height: 100%; max-width: 100%;">
+                  <img id="android-frame-img" class="touch-pointer" draggable="false" style="width: 100%; height: 100%; object-fit: fill; user-select: none; touch-action: none; pointer-events: none;" />
                 </div>
+                <div id="android-interaction-overlay" class="touch-pointer" style="position: absolute; inset: 0; z-index: 10; touch-action: none;"></div>
               </div>
 
               <!-- Controls bar below viewport -->
