@@ -109,23 +109,15 @@
       height: 55px;
     }
 
-    .phone-side {
-      position: absolute;
-      top: 52px;
-      height: calc(100% - 104px);
-      width: 14px;
-      z-index: 5;
-    }
-    .phone-side.left {
-      left: 0;
-      transform-origin: left center;
-      transform: rotateY(-90deg);
-    }
-    .phone-side.right {
-      right: 0;
-      transform-origin: right center;
-      transform: rotateY(90deg);
-    }
+    /* Device shell now comes from a real GLB rendered by
+       src/render/three-bridge.ts's shell-only mode (see the
+       <canvas class="device-shell-canvas"> inserted per scene below) --
+       these rules neutralize the old flat-CSS chrome so the canvas shows
+       through cleanly instead of fighting a hardcoded background/rails. */
+    .phone-3d-rig.shell-migrated { background: transparent; box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
+    .phone-3d-rig.shell-migrated::before, .phone-3d-rig.shell-migrated::after { display: none; }
+    .phone-face.front.shell-migrated { background: transparent; }
+    .device-shell-canvas { pointer-events: none; }
 
     .phone-face.front {
       position: absolute;
@@ -271,12 +263,10 @@
         <div class="device-col" style="flex: 0.9; display: flex; align-items: center; justify-content: center; height: 100%; z-index: 4;">
           <div class="phone-3d-viewport" id="viewport-0" style="transform-origin: center center;">
             <div class="phone-3d-scaler" id="scaler-0">
-              <div class="phone-3d-rig" id="phone-rig-0" style="background: #18191c;">
-                <div class="phone-side left" style="background: linear-gradient(180deg, #3e4045 0%, #151618 50%, #3e4045 100%);"></div>
-                <div class="phone-side right" style="background: linear-gradient(180deg, #3e4045 0%, #151618 50%, #3e4045 100%);"></div>
+              <div class="phone-3d-rig shell-migrated" id="phone-rig-0">
+                <canvas class="device-shell-canvas" data-device-id="{{DEVICE_ID}}" data-shell-only="1" width="{{DEVICE_W}}" height="{{DEVICE_H}}" style="position:absolute;inset:0;width:100%;height:100%;z-index:1;"></canvas>
                 
-          <div class="phone-face front">
-            <div class="cutout punch-hole" style="position:absolute; top:20px; left:50%; transform:translateX(-50%); width:14px; height:14px; background:#08080c; border-radius:50%; z-index:15; border:1.5px solid #1a1a24;"></div>
+          <div class="phone-face front shell-migrated">
             <div class="gloss-sheen"></div>
             <div class="screen-edge-glare left-edge"></div>
             <div class="screen-edge-glare right-edge"></div>
@@ -315,12 +305,10 @@
         <div class="device-col" style="flex: 0.9; display: flex; align-items: center; justify-content: center; height: 100%; z-index: 4;">
           <div class="phone-3d-viewport" id="viewport-1" style="transform-origin: center center;">
             <div class="phone-3d-scaler" id="scaler-1">
-              <div class="phone-3d-rig" id="phone-rig-1" style="background: #18191c;">
-                <div class="phone-side left" style="background: linear-gradient(180deg, #3e4045 0%, #151618 50%, #3e4045 100%);"></div>
-                <div class="phone-side right" style="background: linear-gradient(180deg, #3e4045 0%, #151618 50%, #3e4045 100%);"></div>
+              <div class="phone-3d-rig shell-migrated" id="phone-rig-1">
+                <canvas class="device-shell-canvas" data-device-id="{{DEVICE_ID}}" data-shell-only="1" width="{{DEVICE_W}}" height="{{DEVICE_H}}" style="position:absolute;inset:0;width:100%;height:100%;z-index:1;"></canvas>
                 
-          <div class="phone-face front">
-            <div class="cutout punch-hole" style="position:absolute; top:20px; left:50%; transform:translateX(-50%); width:14px; height:14px; background:#08080c; border-radius:50%; z-index:15; border:1.5px solid #1a1a24;"></div>
+          <div class="phone-face front shell-migrated">
             <div class="gloss-sheen"></div>
             <div class="screen-edge-glare left-edge"></div>
             <div class="screen-edge-glare right-edge"></div>
@@ -360,12 +348,10 @@
         <div class="device-col" style="flex: 0.9; display: flex; align-items: center; justify-content: center; height: 100%; z-index: 4;">
           <div class="phone-3d-viewport" id="viewport-2" style="transform-origin: center center;">
             <div class="phone-3d-scaler" id="scaler-2">
-              <div class="phone-3d-rig" id="phone-rig-2" style="background: #18191c;">
-                <div class="phone-side left" style="background: linear-gradient(180deg, #3e4045 0%, #151618 50%, #3e4045 100%);"></div>
-                <div class="phone-side right" style="background: linear-gradient(180deg, #3e4045 0%, #151618 50%, #3e4045 100%);"></div>
+              <div class="phone-3d-rig shell-migrated" id="phone-rig-2">
+                <canvas class="device-shell-canvas" data-device-id="{{DEVICE_ID}}" data-shell-only="1" width="{{DEVICE_W}}" height="{{DEVICE_H}}" style="position:absolute;inset:0;width:100%;height:100%;z-index:1;"></canvas>
                 
-          <div class="phone-face front">
-            <div class="cutout punch-hole" style="position:absolute; top:20px; left:50%; transform:translateX(-50%); width:14px; height:14px; background:#08080c; border-radius:50%; z-index:15; border:1.5px solid #1a1a24;"></div>
+          <div class="phone-face front shell-migrated">
             <div class="gloss-sheen"></div>
             <div class="screen-edge-glare left-edge"></div>
             <div class="screen-edge-glare right-edge"></div>
@@ -404,12 +390,10 @@
         <div class="device-col" style="flex: 0.9; display: flex; align-items: center; justify-content: center; height: 100%; z-index: 4;">
           <div class="phone-3d-viewport" id="viewport-3" style="transform-origin: center center;">
             <div class="phone-3d-scaler" id="scaler-3">
-              <div class="phone-3d-rig" id="phone-rig-3" style="background: #18191c;">
-                <div class="phone-side left" style="background: linear-gradient(180deg, #3e4045 0%, #151618 50%, #3e4045 100%);"></div>
-                <div class="phone-side right" style="background: linear-gradient(180deg, #3e4045 0%, #151618 50%, #3e4045 100%);"></div>
+              <div class="phone-3d-rig shell-migrated" id="phone-rig-3">
+                <canvas class="device-shell-canvas" data-device-id="{{DEVICE_ID}}" data-shell-only="1" width="{{DEVICE_W}}" height="{{DEVICE_H}}" style="position:absolute;inset:0;width:100%;height:100%;z-index:1;"></canvas>
                 
-          <div class="phone-face front">
-            <div class="cutout punch-hole" style="position:absolute; top:20px; left:50%; transform:translateX(-50%); width:14px; height:14px; background:#08080c; border-radius:50%; z-index:15; border:1.5px solid #1a1a24;"></div>
+          <div class="phone-face front shell-migrated">
             <div class="gloss-sheen"></div>
             <div class="screen-edge-glare left-edge"></div>
             <div class="screen-edge-glare right-edge"></div>
@@ -449,12 +433,10 @@
         <div class="device-col" style="flex: 0.9; display: flex; align-items: center; justify-content: center; height: 100%; z-index: 4;">
           <div class="phone-3d-viewport" id="viewport-4" style="transform-origin: center center;">
             <div class="phone-3d-scaler" id="scaler-4">
-              <div class="phone-3d-rig" id="phone-rig-4" style="background: #18191c;">
-                <div class="phone-side left" style="background: linear-gradient(180deg, #3e4045 0%, #151618 50%, #3e4045 100%);"></div>
-                <div class="phone-side right" style="background: linear-gradient(180deg, #3e4045 0%, #151618 50%, #3e4045 100%);"></div>
+              <div class="phone-3d-rig shell-migrated" id="phone-rig-4">
+                <canvas class="device-shell-canvas" data-device-id="{{DEVICE_ID}}" data-shell-only="1" width="{{DEVICE_W}}" height="{{DEVICE_H}}" style="position:absolute;inset:0;width:100%;height:100%;z-index:1;"></canvas>
                 
-          <div class="phone-face front">
-            <div class="cutout punch-hole" style="position:absolute; top:20px; left:50%; transform:translateX(-50%); width:14px; height:14px; background:#08080c; border-radius:50%; z-index:15; border:1.5px solid #1a1a24;"></div>
+          <div class="phone-face front shell-migrated">
             <div class="gloss-sheen"></div>
             <div class="screen-edge-glare left-edge"></div>
             <div class="screen-edge-glare right-edge"></div>
@@ -493,12 +475,10 @@
         <div class="device-col" style="flex: 0.9; display: flex; align-items: center; justify-content: center; height: 100%; z-index: 4;">
           <div class="phone-3d-viewport" id="viewport-5" style="transform-origin: center center;">
             <div class="phone-3d-scaler" id="scaler-5">
-              <div class="phone-3d-rig" id="phone-rig-5" style="background: #18191c;">
-                <div class="phone-side left" style="background: linear-gradient(180deg, #3e4045 0%, #151618 50%, #3e4045 100%);"></div>
-                <div class="phone-side right" style="background: linear-gradient(180deg, #3e4045 0%, #151618 50%, #3e4045 100%);"></div>
+              <div class="phone-3d-rig shell-migrated" id="phone-rig-5">
+                <canvas class="device-shell-canvas" data-device-id="{{DEVICE_ID}}" data-shell-only="1" width="{{DEVICE_W}}" height="{{DEVICE_H}}" style="position:absolute;inset:0;width:100%;height:100%;z-index:1;"></canvas>
                 
-          <div class="phone-face front">
-            <div class="cutout punch-hole" style="position:absolute; top:20px; left:50%; transform:translateX(-50%); width:14px; height:14px; background:#08080c; border-radius:50%; z-index:15; border:1.5px solid #1a1a24;"></div>
+          <div class="phone-face front shell-migrated">
             <div class="gloss-sheen"></div>
             <div class="screen-edge-glare left-edge"></div>
             <div class="screen-edge-glare right-edge"></div>
@@ -537,12 +517,10 @@
         <div class="device-col" style="flex: 0.9; display: flex; align-items: center; justify-content: center; height: 100%; z-index: 4;">
           <div class="phone-3d-viewport" id="viewport-6" style="transform-origin: center center;">
             <div class="phone-3d-scaler" id="scaler-6">
-              <div class="phone-3d-rig" id="phone-rig-6" style="background: #18191c;">
-                <div class="phone-side left" style="background: linear-gradient(180deg, #3e4045 0%, #151618 50%, #3e4045 100%);"></div>
-                <div class="phone-side right" style="background: linear-gradient(180deg, #3e4045 0%, #151618 50%, #3e4045 100%);"></div>
+              <div class="phone-3d-rig shell-migrated" id="phone-rig-6">
+                <canvas class="device-shell-canvas" data-device-id="{{DEVICE_ID}}" data-shell-only="1" width="{{DEVICE_W}}" height="{{DEVICE_H}}" style="position:absolute;inset:0;width:100%;height:100%;z-index:1;"></canvas>
                 
-          <div class="phone-face front">
-            <div class="cutout punch-hole" style="position:absolute; top:20px; left:50%; transform:translateX(-50%); width:14px; height:14px; background:#08080c; border-radius:50%; z-index:15; border:1.5px solid #1a1a24;"></div>
+          <div class="phone-face front shell-migrated">
             <div class="gloss-sheen"></div>
             <div class="screen-edge-glare left-edge"></div>
             <div class="screen-edge-glare right-edge"></div>
@@ -581,12 +559,10 @@
         <div class="device-col" style="flex: 0.9; display: flex; align-items: center; justify-content: center; height: 100%; z-index: 4;">
           <div class="phone-3d-viewport" id="viewport-7" style="transform-origin: center center;">
             <div class="phone-3d-scaler" id="scaler-7">
-              <div class="phone-3d-rig" id="phone-rig-7" style="background: #18191c;">
-                <div class="phone-side left" style="background: linear-gradient(180deg, #3e4045 0%, #151618 50%, #3e4045 100%);"></div>
-                <div class="phone-side right" style="background: linear-gradient(180deg, #3e4045 0%, #151618 50%, #3e4045 100%);"></div>
+              <div class="phone-3d-rig shell-migrated" id="phone-rig-7">
+                <canvas class="device-shell-canvas" data-device-id="{{DEVICE_ID}}" data-shell-only="1" width="{{DEVICE_W}}" height="{{DEVICE_H}}" style="position:absolute;inset:0;width:100%;height:100%;z-index:1;"></canvas>
                 
-          <div class="phone-face front">
-            <div class="cutout punch-hole" style="position:absolute; top:20px; left:50%; transform:translateX(-50%); width:14px; height:14px; background:#08080c; border-radius:50%; z-index:15; border:1.5px solid #1a1a24;"></div>
+          <div class="phone-face front shell-migrated">
             <div class="gloss-sheen"></div>
             <div class="screen-edge-glare left-edge"></div>
             <div class="screen-edge-glare right-edge"></div>
@@ -625,12 +601,10 @@
         <div class="device-col" style="flex: 0.9; display: flex; align-items: center; justify-content: center; height: 100%; z-index: 4;">
           <div class="phone-3d-viewport" id="viewport-8" style="transform-origin: center center;">
             <div class="phone-3d-scaler" id="scaler-8">
-              <div class="phone-3d-rig" id="phone-rig-8" style="background: #18191c;">
-                <div class="phone-side left" style="background: linear-gradient(180deg, #3e4045 0%, #151618 50%, #3e4045 100%);"></div>
-                <div class="phone-side right" style="background: linear-gradient(180deg, #3e4045 0%, #151618 50%, #3e4045 100%);"></div>
+              <div class="phone-3d-rig shell-migrated" id="phone-rig-8">
+                <canvas class="device-shell-canvas" data-device-id="{{DEVICE_ID}}" data-shell-only="1" width="{{DEVICE_W}}" height="{{DEVICE_H}}" style="position:absolute;inset:0;width:100%;height:100%;z-index:1;"></canvas>
                 
-          <div class="phone-face front">
-            <div class="cutout punch-hole" style="position:absolute; top:20px; left:50%; transform:translateX(-50%); width:14px; height:14px; background:#08080c; border-radius:50%; z-index:15; border:1.5px solid #1a1a24;"></div>
+          <div class="phone-face front shell-migrated">
             <div class="gloss-sheen"></div>
             <div class="screen-edge-glare left-edge"></div>
             <div class="screen-edge-glare right-edge"></div>
@@ -669,12 +643,10 @@
         <div class="device-col" style="display: flex; align-items: center; justify-content: center; z-index: 4;">
           <div class="phone-3d-viewport" id="viewport-9" style="transform-origin: center center;">
             <div class="phone-3d-scaler" id="scaler-9">
-              <div class="phone-3d-rig" id="phone-rig-9" style="background: #18191c;">
-                <div class="phone-side left" style="background: linear-gradient(180deg, #3e4045 0%, #151618 50%, #3e4045 100%);"></div>
-                <div class="phone-side right" style="background: linear-gradient(180deg, #3e4045 0%, #151618 50%, #3e4045 100%);"></div>
+              <div class="phone-3d-rig shell-migrated" id="phone-rig-9">
+                <canvas class="device-shell-canvas" data-device-id="{{DEVICE_ID}}" data-shell-only="1" width="{{DEVICE_W}}" height="{{DEVICE_H}}" style="position:absolute;inset:0;width:100%;height:100%;z-index:1;"></canvas>
                 
-          <div class="phone-face front">
-            <div class="cutout punch-hole" style="position:absolute; top:20px; left:50%; transform:translateX(-50%); width:14px; height:14px; background:#08080c; border-radius:50%; z-index:15; border:1.5px solid #1a1a24;"></div>
+          <div class="phone-face front shell-migrated">
             <div class="gloss-sheen"></div>
             <div class="screen-edge-glare left-edge"></div>
             <div class="screen-edge-glare right-edge"></div>

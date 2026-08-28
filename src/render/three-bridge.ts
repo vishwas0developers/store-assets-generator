@@ -83,6 +83,25 @@ const PX_TO_M = 1 / 12000;
 const PERSPECTIVE_PX = 1800; // matches ".stage { perspective: 1800px }"
 const rigs = [];
 
+// Product-shot 3-point rig: key (upper-right-front, the dominant light),
+// fill (opposite side, low intensity, softens shadows), rim (behind/above,
+// catches the curved bevel edge -- this is what actually sells "metal" on
+// the clearcoat body material, not raw intensity). Paired with
+// ACESFilmicToneMapping on the renderer for filmic falloff instead of
+// flat/clipped highlights.
+function addStudioLighting(scene) {
+  scene.add(new THREE.AmbientLight(0xffffff, 1.8));
+  const key = new THREE.DirectionalLight(0xfff4e6, 3.5);
+  key.position.set(3, 4, 5);
+  scene.add(key);
+  const fill = new THREE.DirectionalLight(0xd6e4ff, 2.0);
+  fill.position.set(-4, 2, 4);
+  scene.add(fill);
+  const rim = new THREE.DirectionalLight(0xffffff, 2.2);
+  rim.position.set(-1.5, 3, -4);
+  scene.add(rim);
+}
+
 // Mirrors deviceMarkupMultiScreen's CSS keyframe timing exactly (same
 // holdPct/fadeMs/fadePct math) so the canvas crossfade matches the DOM
 // path's crossfade -- see src/render/shared.ts::deviceMarkupMultiScreen.
@@ -126,13 +145,16 @@ function opacityAtPct(stops, pct) {
 
 async function initCanvas(canvas) {
   const deviceId = canvas.dataset.deviceId;
-  const screens = JSON.parse(canvas.dataset.screens || "[]");
+  const shellOnly = canvas.dataset.shellOnly === "1";
+  const screens = shellOnly ? [] : JSON.parse(canvas.dataset.screens || "[]");
   const durationMs = Number(canvas.dataset.durationMs) || 1;
   const w = canvas.width, h = canvas.height;
 
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, preserveDrawingBuffer: true });
   renderer.setSize(w, h, false);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.1;
   const gl = renderer.getContext();
 
   const scene = new THREE.Scene();
@@ -141,19 +163,7 @@ async function initCanvas(canvas) {
   camera.position.set(0, 0, PERSPECTIVE_PX * PX_TO_M);
   camera.lookAt(0, 0, 0);
 
-  // Intensities tuned for three.js's physically-based lighting (post-r152)
-  // -- MeshStandardMaterial reads much darker than legacy lighting at the
-  // old "1.0 = full bright" intensities, hence the higher numbers here.
-  scene.add(new THREE.AmbientLight(0xffffff, 2.4));
-  const key = new THREE.DirectionalLight(0xffffff, 4.5);
-  key.position.set(2, 3, 4);
-  scene.add(key);
-  const rim = new THREE.DirectionalLight(0x88aaff, 2.2);
-  rim.position.set(-2, -1, -3);
-  scene.add(rim);
-  const fill = new THREE.DirectionalLight(0xffffff, 2.0);
-  fill.position.set(0, 0, 5);
-  scene.add(fill);
+  addStudioLighting(scene);
 
   let root;
   const screenLayers = [];
@@ -168,6 +178,14 @@ async function initCanvas(canvas) {
       root.traverse((n) => { if (!found && n.userData && n.userData.role === "screen") found = n; });
       return found;
     })();
+
+    if (shellOnly && screenNode) {
+      // Leave the screen aperture fully transparent -- the standalone
+      // templates library (templates/video/*.html) layers its own,
+      // untouched <img id="slot-N"> screenshot element in that same screen
+      // rect behind this canvas; see deviceShellMarkup's doc comment.
+      screenNode.visible = false;
+    }
 
     if (screenNode && screens.length > 0) {
       const count = screens.length;
@@ -207,7 +225,12 @@ async function initCanvas(canvas) {
   const px1 = new Uint8Array(4);
   gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px1);
 
-  const rigEl = canvas.closest(".stage-inner") || canvas.parentElement;
+  // ".phone-3d-rig" is templates/video/*.html's own animated element (its
+  // own JS timeline applies rotateX/rotateY directly to it, unrelated to
+  // the code-generated path's ".stage-inner") -- both conventions decompose
+  // the same way via getComputedStyle, so no other bridge logic needs to
+  // know which template family produced this canvas.
+  const rigEl = canvas.closest(".stage-inner") || canvas.closest(".phone-3d-rig") || canvas.parentElement;
   rigs.push({ canvas, renderer, scene, camera, root, rigEl, gl, screenLayers, durationMs });
 }
 
@@ -232,7 +255,7 @@ function decomposeCssTransform(el) {
   return { pos, quat, scale };
 }
 
-const canvases = Array.from(document.querySelectorAll("canvas.device-rig-canvas"));
+const canvases = Array.from(document.querySelectorAll("canvas.device-rig-canvas, canvas.device-shell-canvas"));
 window.__deviceRigsReady = Promise.all(canvases.map(initCanvas));
 
 const prevSeek = window.seek;

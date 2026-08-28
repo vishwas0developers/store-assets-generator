@@ -71,6 +71,22 @@ export function device3dMarkup(device: DeviceModel, screenshotUris: string[], va
     </div>`;
 }
 
+/** Shell-only variant of `device3dMarkup` for the standalone
+ *  `templates/video/*` HTML library: renders the device's real GLB body/
+ *  rails/camera-island/buttons via three.js, but leaves the screen mesh
+ *  fully transparent instead of texturing it — so it can be layered
+ *  *behind* a template's existing `.screen-scroll-wrap`/`<img id="slot-N">`
+ *  (already wired to `resolveSlots()`, must not change) without touching
+ *  screenshot content at all. See three-bridge.ts's shell-only mode and
+ *  the plan's "Migration mechanism" section for why this is a separate
+ *  function rather than reusing `device3dMarkup`. */
+export function deviceShellMarkup(device: DeviceModel, variantId?: string): string {
+  const g = resolveGeometry(device, variantId);
+  return `<canvas class="device-shell-canvas" data-device-id="${device.id}" data-variant-id="${variantId ?? ""}"
+      data-shell-only="1" width="${g.width}" height="${g.height}"
+      style="width:100%;height:100%;display:block;position:absolute;inset:0;z-index:0;"></canvas>`;
+}
+
 /** Same as `deviceMarkup` but stacks multiple screenshots inside the screen
  *  aperture and cross-fades between them on evenly-spaced keyframes across
  *  `durationMs` -- lets one scene show several UI states inside the same

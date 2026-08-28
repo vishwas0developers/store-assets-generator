@@ -992,6 +992,20 @@ export function composeStandaloneHtml(project: VideoProject, activeSceneIndex?: 
   const config = templateConfig(templateId);
   if (!config) return html;
   const scenes = config.scenes || [];
+
+  // Migrated templates (see deviceShellMarkup) carry {{DEVICE_ID}}/
+  // {{DEVICE_W}}/{{DEVICE_H}} placeholders on their device-shell <canvas>
+  // tags instead of a hardcoded CSS device shape -- substitute the
+  // template's own (already-present, previously-unused) `config.device`
+  // field. Plain string substitution, not regex/DOM surgery, so this is a
+  // no-op for not-yet-migrated templates (no placeholders present).
+  if (html.includes("{{DEVICE_ID}}")) {
+    const shellDevice = DEVICE_REGISTRY[config.device ?? ""] ?? DEVICE_REGISTRY["phone"];
+    html = html
+      .replaceAll("{{DEVICE_ID}}", shellDevice.id)
+      .replaceAll("{{DEVICE_W}}", String(shellDevice.geometry.width))
+      .replaceAll("{{DEVICE_H}}", String(shellDevice.geometry.height));
+  }
   const uriFor = resolveUri ?? previewResolveUri(project.id);
 
   // Calculate scene offset if activeSceneIndex is set

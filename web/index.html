@@ -5,14 +5,35 @@
 <meta name="viewport" content="width=1280" />
 <title>Store Assets Generator</title>
 <link rel="stylesheet" href="/app.css" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css" />
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="/vendor/sweetalert2/dark.min.css" />
+<script src="/vendor/sweetalert2/sweetalert2.min.js" defer></script>
 <!-- three.js addon modules (GLTFLoader etc.) import the bare specifier
      "three" internally -- this import map resolves it for the device
      catalogue's 3D preview (app.js's init3dDeviceViewport). -->
 <script type="importmap">{"imports":{"three":"/vendor/three/build/three.module.js"}}</script>
+<!-- Still CDN-hosted: cdn.tailwindcss.com is a runtime JIT compiler, not a
+     static file, so it can't be vendored the same way as sweetalert2/three
+     without adding a real Tailwind build step. `defer` keeps it from blocking
+     app.js if the CDN is slow/unreachable; a hard-down CDN still loses styling. -->
+<script id="tw-cdn" src="https://cdn.tailwindcss.com" defer></script>
+<script>
+  // `defer` is a no-op on inline scripts, so this must wait for the deferred
+  // CDN script's own load event rather than assuming `tailwind` already exists.
+  document.getElementById('tw-cdn').addEventListener('load', () => {
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: { 500: '#3b82f6', 600: '#2563eb' }
+          }
+        }
+      }
+    }
+  });
+</script>
 </head>
-<body>
+<body class="bg-[var(--bg-main)] text-[var(--text-primary)] transition-colors duration-200">
 <div style="display:flex; flex-direction:column; height:100vh;">
 
   <div class="topbar">
@@ -24,6 +45,7 @@
       <div class="topbar-tab" data-tab="video" id="tab-nav-video">Video Studio</div>
     </div>
     <div class="topbar-icons">
+      <button id="theme-toggle-btn" class="icon-btn" title="Toggle Light/Dark Theme"><span id="theme-icon">&#9788;</span></button>
       <button id="open-credentials" class="icon-btn" title="Demo Access">&#128273;</button>
       <button id="open-settings" class="icon-btn" title="AI Providers">&#9881;</button>
     </div>
@@ -32,70 +54,76 @@
   <!-- ============ TAB: Projects List ============ -->
   <div class="tab-page active" id="tab-projects">
     <div class="app-body">
-      <div class="content" style="max-width: 1200px; margin: 0 auto; width: 100%;">
-        <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 1.5rem;">
-          <!-- Create Project / Active Info -->
-          <div>
-            <div class="card">
-              <h3>Create New Project</h3>
-              <label>Project Name</label>
-              <input id="proj-new-name" type="text" placeholder="e.g. My Shopping App" />
-              <label>App Category</label>
-              <select id="proj-new-category" style="width: 100%; margin-bottom: 0.5rem;">
-                <option value="Education">Education</option>
-                <option value="Shopping & E-Commerce">Shopping & E-Commerce</option>
-                <option value="Finance & Banking">Finance & Banking</option>
-                <option value="Productivity & Business">Productivity & Business</option>
-                <option value="Social & Communication">Social & Communication</option>
-                <option value="Health & Fitness">Health & Fitness</option>
-                <option value="Tools & Utilities">Tools & Utilities</option>
-                <option value="Entertainment & Games">Entertainment & Games</option>
-              </select>
-              <label>Starting URL</label>
-              <input id="proj-new-url" type="text" placeholder="https://example.com" />
-              <button id="proj-create-btn" style="margin-top: 1rem; width: 100%;">Create Project</button>
-            </div>
-            
-            <div class="card" id="active-project-card" style="display: none; margin-top: 1rem;">
-              <h3>Active Project Details</h3>
-              <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.85rem;">
-                <div><strong>Name:</strong> <span id="active-proj-name-display">-</span></div>
-                <div><strong>Category:</strong> <span id="active-proj-cat-display">-</span></div>
-                <div><strong>Starting URL:</strong> <span id="active-proj-url-display">-</span></div>
-              </div>
-            </div>
+      <div class="content" style="display: flex; gap: 1.5rem; width: 100%; padding: 1.5rem; min-height: 0;">
+        
+        <!-- Left: Project Creation & Active Project Inspector -->
+        <div style="flex: 0 0 380px; display: flex; flex-direction: column; gap: 1.25rem; min-height: 0;">
+          <!-- Create New Project Card -->
+          <div class="card" style="margin-top: 0;">
+            <h3>Create New Project</h3>
+            <label>Project Name</label>
+            <input id="proj-new-name" type="text" placeholder="e.g. My Shopping App" />
+            <label>App Category</label>
+            <select id="proj-new-category" style="width: 100%; margin-bottom: 0.5rem;">
+              <option value="Education">Education</option>
+              <option value="Shopping & E-Commerce">Shopping & E-Commerce</option>
+              <option value="Finance & Banking">Finance & Banking</option>
+              <option value="Productivity & Business">Productivity & Business</option>
+              <option value="Social & Communication">Social & Communication</option>
+              <option value="Health & Fitness">Health & Fitness</option>
+              <option value="Tools & Utilities">Tools & Utilities</option>
+              <option value="Entertainment & Games">Entertainment & Games</option>
+            </select>
+            <label>Starting URL</label>
+            <input id="proj-new-url" type="text" placeholder="https://example.com" />
+            <button id="proj-create-btn" style="margin-top: 1rem; width: 100%;">Create Project</button>
           </div>
-
-          <!-- Projects List -->
-          <div>
-            <div class="card">
-              <h3>Projects</h3>
-              <div id="projects-list-container" style="max-height: 400px; overflow-y: auto;">
-                Loading projects...
-              </div>
+          
+          <!-- Active Project HUD Card -->
+          <div class="card" id="active-project-card" style="display: none; margin-top: 0;">
+            <h3>Active Project Details</h3>
+            <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.85rem;">
+              <div><strong>Name:</strong> <span id="active-proj-name-display">-</span></div>
+              <div><strong>Category:</strong> <span id="active-proj-cat-display">-</span></div>
+              <div><strong>Starting URL:</strong> <span id="active-proj-url-display">-</span></div>
             </div>
           </div>
         </div>
 
-        <!-- Embedded File Explorer -->
-        <div class="card" id="project-explorer-card" style="margin-top: 1.5rem; display: none;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-            <h3 style="margin: 0;">Project Files & Outputs</h3>
-            <div>
-              <button id="proj-download-zip-btn" class="secondary small">Download All as ZIP</button>
+        <!-- Right: Projects Catalog & File Explorer Workstation -->
+        <div style="flex: 1; display: flex; flex-direction: column; gap: 1.25rem; min-height: 0;">
+          <!-- Projects Catalog Card -->
+          <div class="card" style="flex: 1; display: flex; flex-direction: column; min-height: 280px; margin-top: 0;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+              <h3 style="margin: 0;">Projects Library</h3>
+              <span id="projects-count-badge" class="badge">0 Projects</span>
+            </div>
+            <div id="projects-list-container" style="overflow-y: auto; flex: 1;">
+              Loading projects...
             </div>
           </div>
-          <div class="tabs" style="margin-bottom: 1rem;">
-            <div class="tab active" data-file-filter="all">All Files</div>
-            <div class="tab" data-file-filter="captures">Screenshots</div>
-            <div class="tab" data-file-filter="mockup">Mockups</div>
-            <div class="tab" data-file-filter="video">Videos</div>
-            <div class="tab" data-file-filter="uploads">Uploads</div>
-          </div>
-          <div id="project-files-list" style="max-height: 400px; overflow-y: auto;">
-            Select a project to inspect files.
+
+          <!-- Embedded File Explorer -->
+          <div class="card" id="project-explorer-card" style="flex: 1; display: none; flex-direction: column; min-height: 320px; margin-top: 0;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+              <h3 style="margin: 0;">Project Files & Outputs</h3>
+              <div>
+                <button id="proj-download-zip-btn" class="secondary small">Download All as ZIP</button>
+              </div>
+            </div>
+            <div class="tabs" style="margin-bottom: 1rem;">
+              <div class="tab active" data-file-filter="all">All Files</div>
+              <div class="tab" data-file-filter="captures">Screenshots</div>
+              <div class="tab" data-file-filter="mockup">Mockups</div>
+              <div class="tab" data-file-filter="video">Videos</div>
+              <div class="tab" data-file-filter="uploads">Uploads</div>
+            </div>
+            <div id="project-files-list" style="overflow-y: auto; flex: 1; min-height: 0;">
+              Select a project to inspect files.
+            </div>
           </div>
         </div>
+
       </div>
     </div>
   </div>
@@ -107,101 +135,105 @@
         <div class="rail-btn active" data-section="live-web"><span class="ico">&#127760;</span>Live Web</div>
         <div class="rail-btn" data-section="android"><span class="ico">&#128241;</span>Android View</div>
       </div>
-      <div class="content" style="max-width: 1100px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 1rem;">
+      <div class="content" style="display: flex; flex-direction: column; padding: 1.5rem; gap: 1rem; width: 100%;">
+        
+        <!-- ============ SUB-SECTION: Live Web ============ -->
         <div class="section-page active" id="capture-section-live-web">
-        <!-- Browser Navigation Bar -->
-        <div class="card" style="display: flex; gap: 0.5rem; align-items: center; padding: 0.75rem 1rem;">
-          <button id="browser-back" class="secondary icon-btn" title="Back">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-          </button>
-          <button id="browser-forward" class="secondary icon-btn" title="Forward">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-          </button>
-          <button id="browser-reload" class="secondary icon-btn" title="Reload">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
-          </button>
-          <button id="browser-top-capture-btn" class="secondary icon-btn" title="Capture Screenshot (Alt+C)">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
-          </button>
           
-          <div style="flex: 1; display: flex; align-items: center; background: #14171f; border: 1px solid #262a33; border-radius: 6px; padding: 0 0.65rem;">
-            <span style="color: #9aa0a6; margin-right: 0.5rem; display: flex; align-items: center;">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-            </span>
-            <input id="browser-url-input" type="text" placeholder="Enter starting URL (e.g. https://example.com)" style="flex: 1; border: none; background: transparent; padding: 0.5rem 0; outline: none;" />
-          </div>
-
-          <select id="browser-resolution-select" style="width: 15rem;">
-            <option value="1242x2688">Phone – 6.5" Display (1242 × 2688)</option>
-            <option value="1290x2796">Phone – 6.7" / Standard (1290 × 2796)</option>
-            <option value="1200x1920">Tablet – 7" Display (1200 × 1920)</option>
-            <option value="2048x2732">Tablet – 10" / 12.9" Pro (2048 × 2732)</option>
-          </select>
-          <button id="browser-connect-btn">Connect</button>
-          <button id="browser-disconnect-btn" class="secondary" style="display: none;">✕ Disconnect</button>
-        </div>
-
-        <div style="display: grid; grid-template-columns: 1fr 320px; gap: 1.5rem; align-items: start;">
-          <!-- Live Interactive Screen Viewport -->
-          <div class="card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 500px; padding: 2rem; background: #0a0c10;">
-            <div id="live-browser-status" class="hint" style="margin-bottom: 0.75rem;">Click 'Connect' to start live browser session.</div>
-            
-            <!-- Clean Simple Device Frame (No Dynamic Island, No Thick Bezels) -->
-            <div id="browser-device-frame" style="display: none; position: relative; border: 1px solid #2d3341; border-radius: 12px; background: #000; overflow: hidden; box-shadow: 0 12px 36px rgba(0,0,0,0.6);">
-              <!-- Frame Display -->
-              <div id="browser-viewport-container" style="position: relative; overflow: hidden; width: 360px; height: 780px;">
-                <img id="browser-frame-img" class="touch-pointer" draggable="false" style="width: 100%; height: 100%; object-fit: contain; user-select: none; -webkit-user-drag: none; touch-action: none;" />
-              </div>
-            </div>
-
-            <!-- Controls bar just below the phone preview -->
-            <div id="browser-bottom-controls" style="display: none; margin-top: 1rem; align-items: center; justify-content: center; gap: 0.5rem; background: #14171f; border: 1px solid #232733; padding: 0.4rem 0.75rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
-              <button id="browser-bottom-back" class="secondary icon-btn" title="Back">
+          <!-- Browser Navigation Bar -->
+          <div class="card" style="display: flex; gap: 0.75rem; align-items: center; padding: 0.75rem 1rem;">
+            <div style="display: flex; gap: 0.4rem;">
+              <button id="browser-back" class="secondary icon-btn" title="Back">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
               </button>
-              <button id="browser-bottom-forward" class="secondary icon-btn" title="Forward">
+              <button id="browser-forward" class="secondary icon-btn" title="Forward">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
               </button>
-              <button id="browser-bottom-reload" class="secondary icon-btn" title="Refresh">
+              <button id="browser-reload" class="secondary icon-btn" title="Reload">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
               </button>
-              <button id="browser-bottom-capture" class="secondary icon-btn" title="Capture Screenshot (Alt+C)">
+              <button id="browser-top-capture-btn" class="secondary icon-btn" title="Capture Screenshot (Alt+C)">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
               </button>
             </div>
+            
+            <div style="flex: 1; display: flex; align-items: center; background: var(--bg-main); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 0 0.75rem;">
+              <span style="color: var(--text-secondary); margin-right: 0.5rem; display: flex; align-items: center;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+              </span>
+              <input id="browser-url-input" type="text" placeholder="Enter starting URL (e.g. https://example.com)" style="flex: 1; border: none; background: transparent; padding: 0.5rem 0; outline: none; color: var(--text-primary);" />
+            </div>
+
+            <select id="browser-resolution-select" style="width: 18rem;">
+              <option value="1242x2688">Phone – 6.5" Display (1242 × 2688)</option>
+              <option value="1290x2796">Phone – 6.7" / Standard (1290 × 2796)</option>
+              <option value="1200x1920">Tablet – 7" Display (1200 × 1920)</option>
+              <option value="2048x2732">Tablet – 10" / 12.9" Pro (2048 × 2732)</option>
+            </select>
+            <button id="browser-connect-btn">Connect</button>
+            <button id="browser-disconnect-btn" class="secondary" style="display: none;">✕ Disconnect</button>
           </div>
 
-          <!-- Capture Gallery & Shortcuts Info -->
-          <div class="card" style="align-self: stretch; display: flex; flex-direction: column;">
-            <h3 id="session-captures-title">Session Captures</h3>
-            <div class="hint" style="margin-bottom: 1rem;">
-              Navigate to the target screen in the device view, then click the red capture button or press <kbd>Alt + C</kbd> to save. Screenshots are automatically numbered sequentially.
+          <!-- Split Workspace Layout -->
+          <div style="display: flex; gap: 1.25rem; margin-top: 1.25rem; flex: 1; min-height: 0; align-items: stretch; width: 100%;">
+            <!-- Left: Live Viewport Card -->
+            <div class="card" style="flex: 0 0 45%; margin-top: 0 !important; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 500px; padding: 1.25rem; background: var(--bg-card); border: 1px solid var(--border-subtle);">
+              <div id="live-browser-status" class="hint" style="margin-bottom: 0.75rem;">Click 'Connect' to start live browser session.</div>
+              
+              <!-- Clean Simple Device Frame -->
+              <div id="browser-device-frame" style="display: none; position: relative; border: 1px solid var(--border-subtle); border-radius: 12px; background: #000; overflow: hidden; box-shadow: 0 12px 36px rgba(0,0,0,0.6);">
+                <div id="browser-viewport-container" style="position: relative; overflow: hidden; width: 360px; height: 780px;">
+                  <img id="browser-frame-img" class="touch-pointer" draggable="false" style="width: 100%; height: 100%; object-fit: contain; user-select: none; touch-action: none;" />
+                </div>
+              </div>
+
+              <!-- Controls bar below viewport -->
+              <div id="browser-bottom-controls" style="display: none; margin-top: 1rem; align-items: center; justify-content: center; gap: 0.5rem; background: var(--bg-topbar); border: 1px solid var(--border-subtle); padding: 0.4rem 0.75rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+                <button id="browser-bottom-back" class="secondary icon-btn" title="Back">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline>
+                </button>
+                <button id="browser-bottom-forward" class="secondary icon-btn" title="Forward">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline>
+                </button>
+                <button id="browser-bottom-reload" class="secondary icon-btn" title="Refresh">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                </button>
+                <button id="browser-bottom-capture" class="secondary icon-btn" title="Capture Screenshot (Alt+C)">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                </button>
+              </div>
             </div>
-            <div id="live-captures-gallery" class="thumb-grid" style="grid-template-columns: 1fr 1fr; gap: 0.6rem; align-items: start; align-content: start; overflow-y: auto; flex: 1; max-height: 480px;">
-              <!-- Captured images list -->
-              <div class="hint" style="grid-column: span 2; text-align: center; padding: 2rem 0;">No screenshots captured yet.</div>
+
+            <!-- Right: Gallery List Card -->
+            <div class="card" style="flex: 1; margin-top: 0 !important; display: flex; flex-direction: column; min-height: 0; border: 1px solid var(--border-subtle);">
+              <h3 id="session-captures-title">Session Captures</h3>
+              <div class="hint" style="margin-bottom: 1rem;">
+                Navigate to the target screen in the device view, then click the red capture button or press <kbd>Alt + C</kbd> to save.
+              </div>
+              <div id="live-captures-gallery" class="thumb-grid" style="grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 0.8rem; align-items: start; align-content: start; overflow-y: auto; flex: 1; min-height: 0;">
+                <div class="hint" style="grid-column: span 2; text-align: center; padding: 2rem 0;">No screenshots captured yet.</div>
+              </div>
             </div>
           </div>
         </div>
 
-        </div>
-
+        <!-- ============ SUB-SECTION: Android View ============ -->
         <div class="section-page" id="capture-section-android">
           <!-- Android Device Bar -->
-          <div class="card" style="display: flex; gap: 0.5rem; align-items: center; padding: 0.75rem 1rem;">
-            <span style="color: #9aa0a6; font-size: 0.8rem; white-space: nowrap;">Device</span>
-            <select id="android-device-select" style="width: 15rem;">
+          <div class="card" style="display: flex; gap: 0.75rem; align-items: center; padding: 0.75rem 1rem;">
+            <span style="color: var(--text-secondary); font-size: 0.8rem; white-space: nowrap;">Device</span>
+            <select id="android-device-select" style="width: 18rem;">
               <option value="">No devices found</option>
             </select>
             <button id="android-refresh-devices-btn" class="secondary icon-btn" title="Refresh device list">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
             </button>
 
-            <div style="flex: 1; display: flex; align-items: center; background: #14171f; border: 1px solid #262a33; border-radius: 6px; padding: 0 0.65rem;">
-              <span style="color: #9aa0a6; margin-right: 0.5rem; display: flex; align-items: center;">
+            <div style="flex: 1; display: flex; align-items: center; background: var(--bg-main); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 0 0.75rem;">
+              <span style="color: var(--text-secondary); margin-right: 0.5rem; display: flex; align-items: center;">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
               </span>
-              <select id="android-app-select" style="flex: 1; border: none; background: transparent; padding: 0.5rem 0; outline: none;" disabled>
+              <select id="android-app-select" style="flex: 1; border: none; background: transparent; padding: 0.5rem 0; outline: none; color: var(--text-primary);" disabled>
                 <option value="">Connect a device to list applications...</option>
               </select>
             </div>
@@ -213,23 +245,25 @@
             <button id="android-disconnect-btn" class="secondary" style="display: none;">✕ Disconnect</button>
           </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 320px; gap: 1.5rem; align-items: start;">
-            <!-- Live Android Device Viewport -->
-            <div class="card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 500px; padding: 2rem; background: #0a0c10;">
+          <!-- Split Workspace Layout -->
+          <div style="display: flex; gap: 1.25rem; margin-top: 1.25rem; flex: 1; min-height: 0; align-items: stretch; width: 100%;">
+            <!-- Left: Live Android Device Viewport -->
+            <div class="card" style="flex: 0 0 45%; margin-top: 0 !important; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 500px; padding: 1.25rem; background: var(--bg-card); border: 1px solid var(--border-subtle);">
               <div id="android-status" class="hint" style="margin-bottom: 0.75rem;">Select a device and click 'Connect' to start live preview.</div>
 
-              <div id="android-device-frame" style="display: none; position: relative; border: 1px solid #2d3341; border-radius: 12px; background: #000; overflow: hidden; box-shadow: 0 12px 36px rgba(0,0,0,0.6);">
+              <div id="android-device-frame" style="display: none; position: relative; border: 1px solid var(--border-subtle); border-radius: 12px; background: #000; overflow: hidden; box-shadow: 0 12px 36px rgba(0,0,0,0.6);">
                 <div id="android-viewport-container" style="position: relative; overflow: hidden; width: 360px; height: 780px;">
-                  <img id="android-frame-img" class="touch-pointer" draggable="false" style="width: 100%; height: 100%; object-fit: contain; user-select: none; -webkit-user-drag: none; touch-action: none;" />
+                  <img id="android-frame-img" class="touch-pointer" draggable="false" style="width: 100%; height: 100%; object-fit: contain; user-select: none; touch-action: none;" />
                 </div>
               </div>
 
-              <div id="android-bottom-controls" style="display: none; margin-top: 1rem; align-items: center; justify-content: center; gap: 0.5rem; background: #14171f; border: 1px solid #232733; padding: 0.4rem 0.75rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+              <!-- Controls bar below viewport -->
+              <div id="android-bottom-controls" style="display: none; margin-top: 1rem; align-items: center; justify-content: center; gap: 0.5rem; background: var(--bg-topbar); border: 1px solid var(--border-subtle); padding: 0.4rem 0.75rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
                 <button id="android-back-btn" class="secondary icon-btn" title="Back">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline>
                 </button>
                 <button id="android-home-btn" class="secondary icon-btn" title="Home">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline>
                 </button>
                 <button id="android-recents-btn" class="secondary icon-btn" title="Recent Apps">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
@@ -240,13 +274,13 @@
               </div>
             </div>
 
-            <!-- Android Capture Gallery -->
-            <div class="card" style="align-self: stretch; display: flex; flex-direction: column;">
+            <!-- Right: Android Capture Gallery -->
+            <div class="card" style="flex: 1; margin-top: 0 !important; display: flex; flex-direction: column; min-height: 0; border: 1px solid var(--border-subtle);">
               <h3>Session Captures</h3>
               <div class="hint" style="margin-bottom: 1rem;">
                 Click the capture button or press <kbd>Alt + C</kbd> to save a full-resolution screenshot from the connected device.
               </div>
-              <div id="android-captures-gallery" class="thumb-grid" style="grid-template-columns: 1fr 1fr; gap: 0.6rem; align-items: start; align-content: start; overflow-y: auto; flex: 1; max-height: 480px;">
+              <div id="android-captures-gallery" class="thumb-grid" style="grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 0.8rem; align-items: start; align-content: start; overflow-y: auto; flex: 1; min-height: 0;">
                 <div class="hint" style="grid-column: span 2; text-align: center; padding: 2rem 0;">No screenshots captured yet.</div>
               </div>
             </div>
@@ -659,7 +693,7 @@
             </div>
 
             <!-- Device Grid -->
-            <div id="dev-grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:20px;">
+            <div id="dev-grid">
               <div class="hint">Loading devices...</div>
             </div>
           </div>

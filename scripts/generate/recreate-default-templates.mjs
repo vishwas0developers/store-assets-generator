@@ -23,30 +23,12 @@ const BACKGROUNDS = {
   "solid-cream": "linear-gradient(135deg,#fafaf9 0%,#f5f5f4 100%)"
 };
 
-function cutoutMarkupFor(device) {
-  if (device.includes("iphone-15") || device.includes("iphone-16")) {
-    // Dynamic island
-    return `<div class="cutout dynamic-island" style="position:absolute; top:18px; left:50%; transform:translateX(-50%); width:110px; height:28px; background:#08080c; border-radius:14px; z-index:15; border:1px solid rgba(255,255,255,0.05);"></div>`;
-  }
-  // Punch hole (Pixel / Galaxy)
-  return `<div class="cutout punch-hole" style="position:absolute; top:20px; left:50%; transform:translateX(-50%); width:14px; height:14px; background:#08080c; border-radius:50%; z-index:15; border:1.5px solid #1a1a24;"></div>`;
-}
-
-function getSideRailGradient(device) {
-  if (device.includes("galaxy") || device.includes("s25")) {
-    return "linear-gradient(180deg, #2e2f33 0%, #0d0d0f 50%, #2e2f33 100%)"; // Onyx Black Aluminum
-  }
-  if (device.includes("pixel")) {
-    return "linear-gradient(180deg, #3e4045 0%, #151618 50%, #3e4045 100%)"; // Polished Obsidian
-  }
-  return "linear-gradient(180deg, #514f4d 0%, #1c1a19 50%, #514f4d 100%)"; // Natural Titanium
-}
-
 async function main() {
-  console.log("Rebuilding all 10 default templates with high-fidelity progress-driven reference architecture...");
+  console.log("Rebuilding all 10 default templates, device shell sourced from the Device Management registry...");
 
   const tempOrigModule = await import('../../dist/src/video/temp_orig_templates.js');
   const originalTemplates = tempOrigModule.VIDEO_TEMPLATES;
+  const { DEVICE_REGISTRY } = await import('../../dist/src/devices/registry.js');
   const outBaseDir = path.join(rootDir, 'templates', 'video');
 
   for (const t of originalTemplates) {
@@ -57,9 +39,16 @@ async function main() {
     const width = isLandscape ? 1920 : 1080;
     const height = isLandscape ? 1080 : 1920;
 
-    const deviceColor = t.device.includes("galaxy") ? "#121316" : t.device.includes("pixel") ? "#18191c" : "#1a1a1c";
-    const cut = cutoutMarkupFor(t.device);
-    const railGrad = getSideRailGradient(t.device);
+    // Device shell now comes from the central registry (src/devices/registry.ts)
+    // via {{DEVICE_ID}}/{{DEVICE_W}}/{{DEVICE_H}} placeholders substituted by
+    // composeStandaloneHtml() at render time -- see
+    // src/render/shared.ts::deviceShellMarkup and src/render/three-bridge.ts's
+    // shell-only mode. No per-template device-shape guessing here any more;
+    // this generator only fails loudly if `t.device` isn't a real registered
+    // device instead of silently falling back to a generic/wrong shape.
+    if (!DEVICE_REGISTRY[t.device]) {
+      throw new Error(`Template "${t.id}" declares device "${t.device}", which is not in config/devices.json. Add it to the registry before regenerating.`);
+    }
 
     let htmlScenes = "";
     t.scenes.forEach((s, idx) => {
@@ -104,8 +93,7 @@ async function main() {
       let screenHtml = "";
       if (s.screenCount === 2) {
         screenHtml = `
-          <div class="phone-face front">
-            ${cut}
+          <div class="phone-face front shell-migrated">
             <div class="gloss-sheen"></div>
             <div class="screen-edge-glare left-edge"></div>
             <div class="screen-edge-glare right-edge"></div>
@@ -119,8 +107,7 @@ async function main() {
         `;
       } else {
         screenHtml = `
-          <div class="phone-face front">
-            ${cut}
+          <div class="phone-face front shell-migrated">
             <div class="gloss-sheen"></div>
             <div class="screen-edge-glare left-edge"></div>
             <div class="screen-edge-glare right-edge"></div>
@@ -172,9 +159,8 @@ async function main() {
         <div class="device-col" style="${deviceColStyle}">
           <div class="phone-3d-viewport" id="viewport-${idx}" style="${viewportExtraStyle}">
             <div class="phone-3d-scaler" id="scaler-${idx}">
-              <div class="phone-3d-rig" id="phone-rig-${idx}" style="background: ${deviceColor};">
-                <div class="phone-side left" style="background: ${railGrad};"></div>
-                <div class="phone-side right" style="background: ${railGrad};"></div>
+              <div class="phone-3d-rig shell-migrated" id="phone-rig-${idx}">
+                <canvas class="device-shell-canvas" data-device-id="{{DEVICE_ID}}" data-shell-only="1" width="{{DEVICE_W}}" height="{{DEVICE_H}}" style="position:absolute;inset:0;width:100%;height:100%;z-index:1;"></canvas>
                 ${screenHtml}
               </div>
             </div>
@@ -301,23 +287,15 @@ async function main() {
       height: 55px;
     }
 
-    .phone-side {
-      position: absolute;
-      top: 52px;
-      height: calc(100% - 104px);
-      width: 14px;
-      z-index: 5;
-    }
-    .phone-side.left {
-      left: 0;
-      transform-origin: left center;
-      transform: rotateY(-90deg);
-    }
-    .phone-side.right {
-      right: 0;
-      transform-origin: right center;
-      transform: rotateY(90deg);
-    }
+    /* Device shell now comes from a real GLB rendered by
+       src/render/three-bridge.ts's shell-only mode (see the
+       <canvas class="device-shell-canvas"> inserted per scene below) --
+       these rules neutralize the old flat-CSS chrome so the canvas shows
+       through cleanly instead of fighting a hardcoded background/rails. */
+    .phone-3d-rig.shell-migrated { background: transparent; box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
+    .phone-3d-rig.shell-migrated::before, .phone-3d-rig.shell-migrated::after { display: none; }
+    .phone-face.front.shell-migrated { background: transparent; }
+    .device-shell-canvas { pointer-events: none; }
 
     .phone-face.front {
       position: absolute;

@@ -385,6 +385,17 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
       sendFile(res, resolved, "application/javascript; charset=utf-8");
       return;
     }
+    // Same-origin vendoring for index.html's sweetalert2 <script>/<link> tags,
+    // so the app no longer hangs waiting on cdn.jsdelivr.net (root cause of
+    // the stuck-loading-screen bug: a blocking <head> script on an unreachable CDN).
+    if (method === "GET" && p === "/vendor/sweetalert2/sweetalert2.min.js") {
+      sendFile(res, path.join(process.cwd(), "node_modules", "sweetalert2", "dist", "sweetalert2.min.js"), "application/javascript; charset=utf-8");
+      return;
+    }
+    if (method === "GET" && p === "/vendor/sweetalert2/dark.min.css") {
+      sendFile(res, path.join(process.cwd(), "node_modules", "@sweetalert2", "theme-dark", "dark.min.css"), "text/css; charset=utf-8");
+      return;
+    }
     if (method === "GET" && /^\/api\/devices\/[^/]+\/glb$/.test(p)) {
       const id = decodeURIComponent(p.split("/")[3]);
       const device = DEVICE_REGISTRY[id];
