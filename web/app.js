@@ -969,11 +969,29 @@ async function connectLiveBrowser() {
 
     // Set viewport scaling preview aspect ratio matching the target mobile resolution
     const isTablet = resolutionKey === "2048x2732" || resolutionKey === "1200x1920";
-    const previewWidth = isTablet ? 420 : 360;
     const aspect = height / width;
+    
+    // Calculate max height available dynamically (viewport height minus top bars/margins)
+    const maxAvailableHeight = Math.max(400, window.innerHeight - 300);
+    const standardWidth = isTablet ? 420 : 360;
+    
+    let previewWidth = standardWidth;
+    let previewHeight = Math.round(previewWidth * aspect);
+    
+    if (previewHeight > maxAvailableHeight) {
+      previewHeight = maxAvailableHeight;
+      previewWidth = Math.round(previewHeight / aspect);
+    }
+    
     const frameEl = $("browser-viewport-container");
     frameEl.style.width = `${previewWidth}px`;
-    frameEl.style.height = `${Math.round(previewWidth * aspect)}px`;
+    frameEl.style.height = `${previewHeight}px`;
+    
+    const deviceFrame = $("browser-device-frame");
+    if (deviceFrame) {
+      deviceFrame.style.width = `${previewWidth}px`;
+      deviceFrame.style.height = `${previewHeight}px`;
+    }
 
     // Start frame streaming interval
     startFrameStream();
