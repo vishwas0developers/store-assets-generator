@@ -222,10 +222,19 @@ async function refreshProjectsList() {
     const { projects } = await api("/api/projects");
     container.innerHTML = "";
     
+    // Update project count badge in the library title
+    const countBadge = $("projects-count-badge");
+    if (countBadge) {
+      countBadge.textContent = `${projects.length} Project${projects.length === 1 ? '' : 's'}`;
+    }
+
     if (projects.length === 0) {
       container.textContent = "No projects found. Create one to get started!";
       return;
     }
+
+    // Assign grid class
+    container.className = "projects-grid";
 
     // If active project is set, make sure we sync it
     if (activeProjectId && !activeProject) {
@@ -239,26 +248,30 @@ async function refreshProjectsList() {
       card.className = `project-item ${isActive ? 'active' : ''}`;
       
       card.innerHTML = `
-        <div style="flex: 1;">
+        <div style="min-width: 0;">
           <div class="project-item-title">
             ${isActive ? '<span class="active-check">&#10003;</span>' : ''}
-            <span>${p.name}</span>
+            <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${p.name}</span>
           </div>
-          <div class="project-item-meta">Created: ${new Date(p.createdAt).toLocaleString()}</div>
+          <div class="project-item-meta">Created: ${new Date(p.createdAt).toLocaleDateString()}</div>
           <div class="project-stats">
-            <span>Screenshots: ${p.captures?.length ?? 0}</span>
-            <span>Mockup screens: ${p.mockup?.columns?.length ?? 0}</span>
-            <span>Video scenes: ${p.video?.scenes?.length ?? 0}</span>
+            <span>📸 ${p.captures?.length ?? 0}</span>
+            <span>📱 ${p.mockup?.columns?.length ?? 0}</span>
+            <span>🎬 ${p.video?.scenes?.length ?? 0}</span>
           </div>
         </div>
-        <div style="display: flex; gap: 0.5rem; align-items: center;">
-          <button class="small select-btn" style="${isActive ? 'background:#10b981;' : 'background:#262a33;'}">${isActive ? 'Active' : 'Select'}</button>
-          <button class="small danger delete-btn">&#128465;</button>
+        <div style="display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 0.5rem;">
+          <button class="small select-btn" style="flex: 1; ${isActive ? 'background:#10b981;' : ''}">${isActive ? 'Active' : 'Select'}</button>
+          <button class="small danger delete-btn" style="padding: 0.35rem 0.5rem;">&#128465;</button>
         </div>
       `;
 
-      card.querySelector(".select-btn").onclick = () => selectProject(p.id);
-      card.querySelector(".delete-btn").onclick = async () => {
+      card.querySelector(".select-btn").onclick = (e) => {
+        e.stopPropagation();
+        selectProject(p.id);
+      };
+      card.querySelector(".delete-btn").onclick = async (e) => {
+        e.stopPropagation();
         if (await confirm(`Are you sure you want to delete project "${p.name}"? This deletes all files and is irreversible.`)) {
           await api(`/api/projects/${p.id}`, { method: "DELETE" });
           if (activeProjectId === p.id) {
@@ -270,6 +283,8 @@ async function refreshProjectsList() {
           await refreshProjectsList();
         }
       };
+      
+      card.onclick = () => selectProject(p.id);
 
       container.appendChild(card);
     }
@@ -390,8 +405,38 @@ async function refreshFileExplorer() {
   }
 }
 
+// Theme Toggling Logic
+function initTheme() {
+  const savedTheme = localStorage.getItem("sag-theme") || "dark";
+  applyTheme(savedTheme);
+}
+
+function applyTheme(theme) {
+  const htmlEl = document.documentElement;
+  const themeIcon = $("theme-icon");
+  if (theme === "light") {
+    htmlEl.classList.remove("dark");
+    htmlEl.classList.add("light");
+    if (themeIcon) themeIcon.innerHTML = "&#9790;"; // Moon icon
+  } else {
+    htmlEl.classList.add("dark");
+    htmlEl.classList.remove("light");
+    if (themeIcon) themeIcon.innerHTML = "&#9788;"; // Sun icon
+  }
+  localStorage.setItem("sag-theme", theme);
+}
+
+const themeToggle = $("theme-toggle-btn");
+if (themeToggle) {
+  themeToggle.onclick = () => {
+    const currentTheme = localStorage.getItem("sag-theme") || "dark";
+    applyTheme(currentTheme === "dark" ? "light" : "dark");
+  };
+}
+
 // Initial loading check on start
 setTimeout(() => {
+  initTheme();
   refreshProjectsList();
   if (activeProjectId) {
     selectProject(activeProjectId);
@@ -3990,21 +4035,24 @@ async function init3dDeviceViewport(vp) {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
   renderer.setSize(w, h, false);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.1;
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(32, w / h, 0.01, 100);
-  // Intensities tuned for three.js's physically-based lighting (post-r152)
-  // -- MeshStandardMaterial reads much darker than legacy lighting at the
-  // old "1.0 = full bright" intensities, hence the higher numbers here.
-  scene.add(new THREE.AmbientLight(0xffffff, 2.4));
-  const key = new THREE.DirectionalLight(0xffffff, 4.5);
-  key.position.set(2, 3, 4);
+  // Product-shot rig: strong ambient floor so the body is never pitch black
+  // regardless of orbit angle, a key light for the dominant highlight, and
+  // a rim light for the curved-edge metal glint (see
+  // src/render/three-bridge.ts's addStudioLighting for the same recipe).
+  scene.add(new THREE.AmbientLight(0xffffff, 1.8));
+  const key = new THREE.DirectionalLight(0xfff4e6, 3.5);
+  key.position.set(3, 4, 5);
   scene.add(key);
-  const rim = new THREE.DirectionalLight(0x88aaff, 2.2);
-  rim.position.set(-2, -1, -3);
-  scene.add(rim);
-  const fill = new THREE.DirectionalLight(0xffffff, 2.0);
-  fill.position.set(0, 0, 5);
+  const fill = new THREE.DirectionalLight(0xd6e4ff, 2.0);
+  fill.position.set(-4, 2, 4);
   scene.add(fill);
+  const rim = new THREE.DirectionalLight(0xffffff, 2.2);
+  rim.position.set(-1.5, 3, -4);
+  scene.add(rim);
 
   let root = null;
   let dist = 0.3;
@@ -4016,11 +4064,20 @@ async function init3dDeviceViewport(vp) {
     const box = new THREE.Box3().setFromObject(root);
     const size = box.getSize(new THREE.Vector3());
     dist = Math.max(size.x, size.y, size.z) * 1.8 + 0.05;
+
+    // ponytail: a default "powered on" screen texture (glass-black ->
+    // generic list-UI) was attempted here but only ever displayed on the
+    // first catalogue card, reproducibly, with zero console errors across
+    // several fix attempts (per-card Image instead of shared TextureLoader
+    // cache, explicit SVG width/height, forced re-render) -- reverted
+    // rather than ship an inconsistent 1-of-N result. The glass-black idle
+    // screen material (in build-glb.ts) is the real, working improvement
+    // from this pass. Re-add the default screenshot once root-caused.
   } catch (e) {
     console.error("device catalogue 3D preview failed to load " + deviceId, e);
   }
 
-  let rx = -18, ry = 25;
+  let rx = -8, ry = 18;
   const apply = () => {
     if (!root) return;
     const phi = (90 - rx) * (Math.PI / 180);
@@ -4079,7 +4136,7 @@ function bind3dDeviceViewers(grid) {
     vp.addEventListener("pointerleave", () => { dragging = false; });
 
     vp.querySelector(".d3-orbit-btn").onclick = () => { if (orbitTimer) stopOrbit(); else startOrbit(); };
-    vp.querySelector(".d3-reset-btn").onclick = () => { stopOrbit(); const s = state(); if (s) { s.rx = -18; s.ry = 25; s.apply(); } };
+    vp.querySelector(".d3-reset-btn").onclick = () => { stopOrbit(); const s = state(); if (s) { s.rx = -8; s.ry = 18; s.apply(); } };
   });
 }
 

@@ -16,3 +16,7 @@ scripts/*
 scratch/
 .claude/
 .agents/
+.playwright-mcp
+.graphifyignore
+.vscode/mcp.json
+.claude-harness-mcp/

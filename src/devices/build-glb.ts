@@ -33,9 +33,14 @@ function buildBody(def: DeviceDefinition): THREE.Mesh {
   const bevel = def.edgeProfile === "flat" ? { bevelEnabled: false } : def.edgeProfile === "chamfered"
     ? { bevelEnabled: true, bevelThickness: t * 0.15, bevelSize: t * 0.1, bevelSegments: 1 }
     : { bevelEnabled: true, bevelThickness: t * 0.25, bevelSize: t * 0.18, bevelSegments: 6 };
-  const geo = new THREE.ExtrudeGeometry(shape, { depth: t, ...bevel, curveSegments: 24 });
+  const geo = new THREE.ExtrudeGeometry(shape, { depth: t, ...bevel, curveSegments: 32 });
   geo.translate(0, 0, -t / 2);
-  const mat = new THREE.MeshStandardMaterial({ color: def.body, metalness: 0.4, roughness: 0.35 });
+  // Brushed-metal rail: a real product shot's frame reads as metal because
+  // of a tight, curved specular highlight (clearcoat) riding the bevel, not
+  // just a flat base color -- MeshStandardMaterial alone can't produce that.
+  const mat = new THREE.MeshPhysicalMaterial({
+    color: def.body, metalness: 0.85, roughness: 0.35, clearcoat: 0.15, clearcoatRoughness: 0.25,
+  });
   const mesh = new THREE.Mesh(geo, mat);
   mesh.name = "Body";
   mesh.userData = { role: "body", edgeProfile: def.edgeProfile, railMaterial: def.railMaterial };
@@ -43,12 +48,32 @@ function buildBody(def: DeviceDefinition): THREE.Mesh {
 }
 
 function buildScreen(def: DeviceDefinition): THREE.Mesh {
-  const { width, height, thickness } = def.geometry;
+  const { width, height, thickness, cornerRadius } = def.geometry;
   const inset = def.screenInset;
-  const w = inset.width * PX_TO_M;
-  const h = inset.height * PX_TO_M;
-  const geo = new THREE.PlaneGeometry(w, h);
-  const mat = new THREE.MeshBasicMaterial({ color: 0x0a0a0a });
+  // Rounded to the device's own cornerRadius -- same value the flat 2D path
+  // (build-frame-svg.ts) already rounds its screen box to, so the screen
+  // mask/screenshot/frame/3D shell all agree on one per-device curvature
+  // instead of a plain rectangle inside a rounded frame.
+  const shape = roundedRectShape(inset.width, inset.height, cornerRadius);
+  const geo = new THREE.ShapeGeometry(shape, 24);
+  // ShapeGeometry's default UVs are the raw shape-space (x,y), not
+  // normalized to 0-1 -- remap from the actual bounding box so a
+  // screenshot/video texture maps onto the rounded screen once, not tiled.
+  geo.computeBoundingBox();
+  const bb = geo.boundingBox!;
+  const uv = geo.attributes.uv;
+  const spanX = bb.max.x - bb.min.x || 1;
+  const spanY = bb.max.y - bb.min.y || 1;
+  for (let i = 0; i < uv.count; i++) {
+    uv.setXY(i, (uv.getX(i) - bb.min.x) / spanX, (uv.getY(i) - bb.min.y) / spanY);
+  }
+  uv.needsUpdate = true;
+  // Glass-over-OLED look for the idle/no-content state: near-black with a
+  // glossy clearcoat so it catches a specular highlight like real display
+  // glass, instead of a flat matte gray rectangle.
+  const mat = new THREE.MeshPhysicalMaterial({
+    color: 0x050507, roughness: 0.12, metalness: 0, clearcoat: 0.6, clearcoatRoughness: 0.1,
+  });
   const mesh = new THREE.Mesh(geo, mat);
   mesh.name = "Screen";
   // Center offset from device center, in the same px coordinate space as geometry.
@@ -76,7 +101,7 @@ function buildCameraIsland(def: DeviceDefinition): THREE.Group | null {
   const cy = -(island.position.yPct * height - height / 2) * PX_TO_M - islandH / 2;
 
   const padGeo = new THREE.BoxGeometry(islandW, islandH, t * 0.18);
-  const padMat = new THREE.MeshStandardMaterial({ color: def.accent, metalness: 0.5, roughness: 0.4 });
+  const padMat = new THREE.MeshPhysicalMaterial({ color: def.accent, metalness: 0.6, roughness: 0.4, clearcoat: 0.1 });
   const pad = new THREE.Mesh(padGeo, padMat);
   pad.position.set(cx, cy, -t / 2 - (t * 0.18) / 2);
   pad.userData = { role: "camera-island", style: island.style };
@@ -86,7 +111,11 @@ function buildCameraIsland(def: DeviceDefinition): THREE.Group | null {
     const diameter = lens.diameterPct * width * PX_TO_M;
     const lensGeo = new THREE.CylinderGeometry(diameter / 2, diameter / 2, t * 0.12, 24);
     lensGeo.rotateX(Math.PI / 2);
-    const lensMat = new THREE.MeshStandardMaterial({ color: 0x050505, metalness: 0.8, roughness: 0.15 });
+    // True glass-black lens: near-total clearcoat + very low roughness is
+    // what actually reads as a camera lens rather than a plastic dot.
+    const lensMat = new THREE.MeshPhysicalMaterial({
+      color: 0x020202, metalness: 0.3, roughness: 0.04, clearcoat: 1, clearcoatRoughness: 0.03,
+    });
     const lensMesh = new THREE.Mesh(lensGeo, lensMat);
     const lx = (lens.xPct * width - width / 2) * PX_TO_M;
     const ly = -(lens.yPct * height - height / 2) * PX_TO_M;
@@ -127,14 +156,19 @@ function buildEdgeItem(
     axis.along === "height" ? lenM : thick,
     thick,
   );
-  const mat = new THREE.MeshStandardMaterial({ color: def.accent, metalness: 0.7, roughness: 0.3 });
+  const mat = new THREE.MeshPhysicalMaterial({ color: def.accent, metalness: 0.75, roughness: 0.3, clearcoat: 0.1 });
   const mesh = new THREE.Mesh(geo, mat);
   mesh.name = `${role === "button" ? "Button" : "Port"}_${face}_${kind}`;
   mesh.userData = { role, kind, face };
 
   const alongOffset = (offsetPct - 0.5) * spanPx * PX_TO_M;
-  if (face === "left") mesh.position.set(-w / 2, alongOffset, 0);
-  else if (face === "right") mesh.position.set(w / 2, alongOffset, 0);
+  // left/right run along Y (height): px space is top-down, three.js Y is
+  // up-positive -- every other Y placement in this file (screen center,
+  // camera lenses) negates for the same reason; this was missing here,
+  // which is why a button meant for the top of the edge rendered near the
+  // bottom. top/bottom run along X (width), which needs no flip.
+  if (face === "left") mesh.position.set(-w / 2, -alongOffset, 0);
+  else if (face === "right") mesh.position.set(w / 2, -alongOffset, 0);
   else if (face === "top") mesh.position.set(alongOffset, h / 2, 0);
   else mesh.position.set(alongOffset, -h / 2, 0);
 
