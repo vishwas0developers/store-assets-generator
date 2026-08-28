@@ -877,3 +877,22 @@ select:disabled { opacity: .55; cursor: not-allowed; }
 .device-spec-label {
   color: #94a3b8;
 }
+
+/* Applications Select Dropdown text visibility */
+.custom-app-select {
+  color: var(--text-primary) !important;
+}
+.custom-app-select option {
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+}
+.custom-app-select option:checked,
+.custom-app-select option:hover,
+.custom-app-select option:focus {
+  background: #3b82f6 !important;
+  color: #ffffff !important;
+}
+html.light .custom-app-select option {
+  background: #ffffff !important;
+  color: #0f172a !important;
+}

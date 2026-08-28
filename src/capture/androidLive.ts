@@ -1,4 +1,4 @@
-import { execFile } from "child_process";
+import { execFile, spawn, ChildProcess } from "child_process";
 import { promisify } from "util";
 import fs from "fs";
 import path from "path";
@@ -10,6 +10,7 @@ const execFileAsync = promisify(execFile);
 const backend = new AndroidCaptureBackend();
 let currentDeviceId: string | null = null;
 let currentScreenSize: { width: number; height: number } | null = null;
+let mirrorProcess: ChildProcess | null = null;
 
 export async function listAndroidDevices(): Promise<string[]> {
   return backend.listDevices();
@@ -26,6 +27,39 @@ async function queryScreenSize(deviceId: string): Promise<{ width: number; heigh
   return { width: Number(last[1]), height: Number(last[2]) };
 }
 
+// Turning the physical display off while keeping a *live, touch-controllable*
+// mirror requires scrcpy's own capture pipeline: its on-device server calls
+// Device.setScreenPowerMode(OFF) while capturing the display's SurfaceControl
+// layer directly, independent of backlight state. That capture path only
+// exists inside scrcpy itself (see scrcpy-gui's --turn-screen-off
+// --no-power-on invocation) -- plain `adb shell` (screencap polling, or
+// toggling power/brightness) cannot reproduce it. So the live/interactive
+// session is the real `scrcpy` binary, opened in its own window exactly like
+// the reference app does; our embedded preview card only hosts on-demand
+// screenshots (which still work) once scrcpy has taken over the device.
+function startScrcpyMirror(deviceId: string): void {
+  stopScrcpyMirror();
+  const child = spawn(
+    "scrcpy",
+    ["-s", deviceId, "--turn-screen-off", "--no-power-on", "--stay-awake", "--window-title", "Store Assets Generator - Android"],
+    { stdio: "ignore" }
+  );
+  child.on("error", (err) => {
+    console.error(`[SAG-ANDROID] Could not launch scrcpy (${err.message}). Install scrcpy and ensure it's on PATH.`);
+  });
+  child.on("exit", () => {
+    if (mirrorProcess === child) mirrorProcess = null;
+  });
+  mirrorProcess = child;
+}
+
+function stopScrcpyMirror(): void {
+  if (mirrorProcess) {
+    mirrorProcess.kill();
+    mirrorProcess = null;
+  }
+}
+
 export async function startAndroidSession(
   projectId: string,
   deviceId?: string
@@ -37,10 +71,12 @@ export async function startAndroidSession(
   const chosen = deviceId && devices.includes(deviceId) ? deviceId : devices[0];
   currentDeviceId = chosen;
   currentScreenSize = await queryScreenSize(chosen);
+  startScrcpyMirror(chosen); // real live/interactive mirror with the physical screen off, via scrcpy
   return { deviceId: chosen, ...currentScreenSize };
 }
 
 export function stopAndroidSession(): void {
+  stopScrcpyMirror();
   currentDeviceId = null;
   currentScreenSize = null;
 }
@@ -116,6 +152,7 @@ export async function getAndroidFrame(): Promise<Buffer> {
   if (!currentDeviceId) {
     throw new Error("No active Android session.");
   }
+
   const { stdout } = await execFileAsync(
     "adb",
     ["-s", currentDeviceId, "exec-out", "screencap", "-p"],
