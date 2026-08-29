@@ -11,6 +11,7 @@ import { setCredentials, getCredentialStatus, clearCredentials, resolveCredentia
 import { resolveAuthConfig, slugify } from "../src/auth/appConfig.js";
 import { defaultSessionStatePath } from "../src/capture/auth.js";
 import { WebCaptureBackend } from "../src/capture/browser.js";
+import { ensureBinaries } from "../src/toolchain/binaries.js";
 import path from "path";
 
 const program = new Command();
@@ -65,6 +66,17 @@ program
   .option("--no-open", "Do not open the browser automatically")
   .action(async (options) => {
     try {
+      // Self-provisions scrcpy/adb/ffmpeg into vendor/bin/ on first run (or
+      // after they go missing) so the Android live-preview pipeline and video
+      // rendering work without a manual install step. Best-effort: a failed
+      // download (offline machine, GitHub unreachable) shouldn't block the
+      // rest of the UI -- Android/video features just report the real error
+      // (via resolveTool) when actually used.
+      try {
+        await ensureBinaries((msg) => console.log(`[setup] ${msg}`));
+      } catch (err) {
+        console.warn(`[setup] Could not auto-provision scrcpy/ffmpeg: ${(err as Error).message}`);
+      }
       await startUiServer({ port: options.port, openBrowser: options.open });
     } catch (err) {
       console.error("Failed to start the web interface:");

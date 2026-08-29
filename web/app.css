@@ -896,3 +896,35 @@ html.light .custom-app-select option {
   background: #ffffff !important;
   color: #0f172a !important;
 }
+
+/* SAG Spinner & Touch Feedback */
+@keyframes sag-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.sag-spinner {
+  display: inline-block;
+  width: 36px;
+  height: 36px;
+  border: 3px solid rgba(255, 255, 255, 0.15);
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: sag-spin 0.75s linear infinite;
+}
+
+.android-touch-ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(59, 130, 246, 0.4);
+  transform: translate(-50%, -50%) scale(0.2);
+  pointer-events: none;
+  animation: ripple-anim 0.35s ease-out forwards;
+  z-index: 12;
+}
+
+@keyframes ripple-anim {
+  0% { opacity: 1; transform: translate(-50%, -50%) scale(0.2); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.4); }
+}
+

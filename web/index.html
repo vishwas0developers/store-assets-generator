@@ -267,26 +267,36 @@
           <!-- Split Workspace Layout -->
           <div style="display: flex; gap: 1.25rem; margin-top: 1.25rem; flex: 1; min-height: 0; align-items: stretch; width: 100%;">
             <!-- Left: Live Android Device Viewport -->
-            <div class="card" style="flex: 0 0 auto; min-width: 380px; max-width: 50%; margin-top: 0 !important; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.25rem; background: var(--bg-card); border: 1px solid var(--border-subtle); overflow: hidden;">
+            <div class="card" style="flex: 0 0 auto; min-width: 380px; max-width: 50%; margin-top: 0 !important; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.25rem; background: var(--bg-card); border: none !important; overflow: hidden;">
               <div id="android-status" class="hint" style="margin-bottom: 0.75rem;">Select a device and click 'Connect' to start live preview.</div>
 
-              <div id="android-device-frame" style="display: none; position: relative; border: 1px solid var(--border-subtle); border-radius: 12px; background: #000; box-shadow: 0 12px 36px rgba(0,0,0,0.6); max-height: calc(100vh - 290px); max-width: 100%;">
+              <div id="android-device-frame" style="display: none; position: relative; border-radius: 12px; background: #000; box-shadow: 0 12px 36px rgba(0,0,0,0.6); max-height: calc(100vh - 290px); max-width: 100%;">
                 <div id="android-viewport-container" style="position: relative; overflow: hidden; border-radius: 12px; max-height: 100%; max-width: 100%;">
                   <img id="android-frame-img" class="touch-pointer" draggable="false" style="width: 100%; height: 100%; object-fit: fill; user-select: none; touch-action: none; pointer-events: none;" />
                 </div>
+                <!-- Loading spinner overlay while connection is establishing -->
+                <div id="android-loading-overlay" style="position: absolute; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; background: rgba(11, 13, 18, 0.88); z-index: 20; border-radius: 12px; backdrop-filter: blur(4px);">
+                  <div class="sag-spinner"></div>
+                  <div style="color: #f1f5f9; font-size: 0.85rem; font-weight: 600; margin-top: 0.85rem; letter-spacing: 0.02em;">Connecting live stream...</div>
+                  <div style="color: #94a3b8; font-size: 0.75rem; margin-top: 0.25rem;">Initializing high-speed mirror</div>
+                </div>
+                <!-- Interaction overlay for touch events, spans entire frame -->
                 <div id="android-interaction-overlay" class="touch-pointer" style="position: absolute; inset: 0; z-index: 10; touch-action: none;"></div>
               </div>
 
-              <!-- Controls bar below viewport -->
-              <div id="android-bottom-controls" style="display: none; margin-top: 1rem; align-items: center; justify-content: center; gap: 0.5rem; background: var(--bg-topbar); border: 1px solid var(--border-subtle); padding: 0.4rem 0.75rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); width: 100%; max-width: 360px;">
+              <!-- Controls bar below viewport: visible by default if session starts -->
+              <div id="android-bottom-controls" style="display: flex; margin-top: 1rem; align-items: center; justify-content: center; gap: 0.5rem; background: var(--bg-topbar); padding: 0.4rem 0.75rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); width: 100%; max-width: 360px;">
                 <button id="android-back-btn" class="secondary icon-btn" title="Back">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
                 </button>
                 <button id="android-home-btn" class="secondary icon-btn" title="Home">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
                 </button>
                 <button id="android-recents-btn" class="secondary icon-btn" title="Recent Apps">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                </button>
+                <button id="android-power-btn" class="secondary icon-btn" title="Power (toggle device screen)">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line></svg>
                 </button>
                 <button id="android-bottom-capture" class="secondary icon-btn" title="Capture Screenshot (Alt+C)">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>

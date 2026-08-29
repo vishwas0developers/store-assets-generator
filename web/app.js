@@ -643,10 +643,6 @@ async function renderLiveBrowserCaptures() {
    ============================================================ */
 
 let androidConnected = false;
-let androidFrameIntervalId = null;
-let androidFrameInFlight = false;
-let androidFastStream = false;
-let androidBoostTimer = null;
 
 async function loadAndroidDevices() {
   const sel = $("android-device-select");
@@ -695,6 +691,8 @@ async function connectAndroidDevice() {
   const deviceId = $("android-device-select").value;
   $("android-connect-btn").disabled = true;
   $("android-status").textContent = "Connecting to device...";
+  const loadingOverlay = $("android-loading-overlay");
+  if (loadingOverlay) loadingOverlay.style.display = "flex";
 
   try {
     const startRes = await api("/api/android/start", {
@@ -706,18 +704,28 @@ async function connectAndroidDevice() {
     setAndroidConnectButtonState(true);
     $("android-device-frame").style.display = "block";
     $("android-bottom-controls").style.display = "flex";
-    $("android-status").textContent = "Physical screen off. A live, touch-controllable scrcpy window has opened for this device -- interact there; the frame below is for on-demand screenshots.";
+    $("android-status").textContent = "Live mirror active -- interact directly using your mouse or controls below.";
     $("android-app-select").disabled = false;
     $("android-refresh-apps-btn").disabled = false;
-    
+
     // Store device dimensions for aspect-ratio responsive scaling
     window.androidDeviceWidth = startRes.width || 1080;
     window.androidDeviceHeight = startRes.height || 1920;
     resizeAndroidPreview();
 
-    startAndroidFrameStream();
+    // Pushed MJPEG stream -- hide loading overlay on first loaded frame
+    const frameImg = $("android-frame-img");
+    frameImg.onload = () => {
+      if (loadingOverlay) loadingOverlay.style.display = "none";
+    };
+    frameImg.src = `/api/android/stream?t=${Date.now()}`;
+    setTimeout(() => {
+      if (loadingOverlay && androidConnected) loadingOverlay.style.display = "none";
+    }, 1500);
+
     await loadAndroidApps();
   } catch (e) {
+    if (loadingOverlay) loadingOverlay.style.display = "none";
     await alert("Connection failed: " + e.message);
     $("android-status").textContent = "Connection failed. Please check the device connection and try again.";
   } finally {
@@ -774,7 +782,9 @@ window.addEventListener("resize", () => {
 });
 
 async function disconnectAndroidDevice() {
-  clearInterval(androidFrameIntervalId);
+  const loadingOverlay = $("android-loading-overlay");
+  if (loadingOverlay) loadingOverlay.style.display = "none";
+  $("android-frame-img").src = "";
   $("android-connect-btn").disabled = true;
 
   try {
@@ -804,10 +814,10 @@ async function loadAndroidApps() {
       return;
     }
     sel.innerHTML = `<option value="">Select an application to open...</option>`;
-    for (const pkg of apps) {
+    for (const app of apps) {
       const opt = document.createElement("option");
-      opt.value = pkg;
-      opt.textContent = pkg;
+      opt.value = app.packageName;
+      opt.textContent = `${app.label} (${app.packageName})`;
       sel.appendChild(opt);
     }
   } catch (e) {
@@ -830,7 +840,6 @@ $("android-launch-app-btn").onclick = async () => {
   try {
     await api("/api/android/launch", { method: "POST", body: { packageName: pkg } });
     $("android-status").textContent = `Opened ${pkg}. Explore the app in the preview below.`;
-    boostAndroidFrameStream();
   } catch (e) {
     await alert("Failed to launch app: " + e.message);
   } finally {
@@ -842,52 +851,13 @@ async function sendAndroidKey(keycode) {
   if (!androidConnected) return;
   try {
     await api("/api/android/action", { method: "POST", body: { type: "key", keycode } });
-    boostAndroidFrameStream();
   } catch (e) {}
 }
 
 $("android-back-btn").onclick = () => sendAndroidKey(4);
 $("android-home-btn").onclick = () => sendAndroidKey(3);
 $("android-recents-btn").onclick = () => sendAndroidKey(187);
-
-function loadNextAndroidFrame() {
-  if (!androidConnected || androidFrameInFlight) return;
-  androidFrameInFlight = true;
-  const img = $("android-frame-img");
-  const newImg = new Image();
-  newImg.onload = () => {
-    img.src = newImg.src;
-    androidFrameInFlight = false;
-  };
-  newImg.onerror = () => {
-    androidFrameInFlight = false;
-  };
-  newImg.src = `/api/android/frame?t=${Date.now()}`;
-}
-
-function startAndroidFrameStream() {
-  clearInterval(androidFrameIntervalId);
-  loadNextAndroidFrame();
-  androidFrameIntervalId = setInterval(loadNextAndroidFrame, 500); // idle 2fps
-}
-
-// ponytail: polling, not real video streaming (adb screencap round-trip ~150-400ms).
-// Boosted to ~4fps for a few seconds after any interaction so tap/swipe feels responsive;
-// swap for a real scrcpy H264-over-websocket pipeline later if smoother live video is needed.
-function boostAndroidFrameStream() {
-  if (!androidConnected) return;
-  if (!androidFastStream) {
-    androidFastStream = true;
-    clearInterval(androidFrameIntervalId);
-    androidFrameIntervalId = setInterval(loadNextAndroidFrame, 250);
-  }
-  clearTimeout(androidBoostTimer);
-  androidBoostTimer = setTimeout(() => {
-    androidFastStream = false;
-    clearInterval(androidFrameIntervalId);
-    androidFrameIntervalId = setInterval(loadNextAndroidFrame, 500);
-  }, 2000);
-}
+$("android-power-btn").onclick = () => sendAndroidKey(26);
 
 // Interactive tap & swipe on the Android device frame
 const androidImgEl = $("android-frame-img");
@@ -897,6 +867,15 @@ let androidDragged = false;
 let androidStartX = 0;
 let androidStartY = 0;
 let androidPointerStartTime = 0;
+
+function showTouchRipple(x, y) {
+  const ripple = document.createElement("div");
+  ripple.className = "android-touch-ripple";
+  ripple.style.left = `${x}px`;
+  ripple.style.top = `${y}px`;
+  androidOverlayEl.appendChild(ripple);
+  setTimeout(() => ripple.remove(), 400);
+}
 
 androidOverlayEl.addEventListener("pointerdown", (e) => {
   if (!androidConnected) return;
@@ -913,34 +892,32 @@ androidOverlayEl.addEventListener("pointermove", (e) => {
   if (!androidConnected || !androidPointerDown) return;
   e.preventDefault();
   const dist = Math.hypot(e.clientX - androidStartX, e.clientY - androidStartY);
-  if (dist > 6) androidDragged = true;
+  if (dist > 8) androidDragged = true;
 });
 
 const handleAndroidPointerEnd = async (e) => {
   if (!androidConnected || !androidPointerDown) return;
-  const elapsed = Date.now() - androidPointerStartTime;
   try { androidOverlayEl.releasePointerCapture(e.pointerId); } catch (err) {}
 
   const rect = androidOverlayEl.getBoundingClientRect();
-  const xPct = ((androidStartX - rect.left) / rect.width) * 100;
-  const yPct = ((androidStartY - rect.top) / rect.height) * 100;
-  const x2Pct = ((e.clientX - rect.left) / rect.width) * 100;
-  const y2Pct = ((e.clientY - rect.top) / rect.height) * 100;
+  const clamp = (val, min, max) => Math.min(Math.max(val, min), max);
+  const xPct = clamp(((androidStartX - rect.left) / rect.width) * 100, 0, 100);
+  const yPct = clamp(((androidStartY - rect.top) / rect.height) * 100, 0, 100);
+  const x2Pct = clamp(((e.clientX - rect.left) / rect.width) * 100, 0, 100);
+  const y2Pct = clamp(((e.clientY - rect.top) / rect.height) * 100, 0, 100);
 
+  const wasDragged = androidDragged;
   androidPointerDown = false;
+  androidDragged = false;
 
   try {
-    if (androidDragged) {
+    if (wasDragged) {
       await api("/api/android/action", { method: "POST", body: { type: "swipe", xPct, yPct, x2Pct, y2Pct } });
-    } else if (elapsed < 400) {
-      androidImgEl.style.opacity = "0.6";
-      setTimeout(() => { androidImgEl.style.opacity = "1"; }, 100);
+    } else {
+      showTouchRipple(androidStartX - rect.left, androidStartY - rect.top);
       await api("/api/android/action", { method: "POST", body: { type: "tap", xPct, yPct } });
     }
-    boostAndroidFrameStream();
   } catch (err) {}
-
-  androidDragged = false;
 };
 
 androidOverlayEl.addEventListener("pointerup", handleAndroidPointerEnd);

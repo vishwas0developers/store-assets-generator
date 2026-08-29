@@ -1,23 +1,33 @@
-import { execFile, spawn, ChildProcess } from "child_process";
+import { execFile } from "child_process";
 import { promisify } from "util";
 import fs from "fs";
 import path from "path";
 import { projectFile, loadProject, saveProject } from "../project/projectStore.js";
 import { AndroidCaptureBackend } from "../android/capture.js";
+import { resolveTool } from "../toolchain/binaries.js";
+import {
+  startAndroidStream,
+  stopAndroidStream,
+  getLatestStreamFrame,
+  getLatestFramePng,
+  sendShellInput,
+  subscribeAndroidFrames,
+} from "./androidStream.js";
+
+export { subscribeAndroidFrames };
 
 const execFileAsync = promisify(execFile);
 
 const backend = new AndroidCaptureBackend();
 let currentDeviceId: string | null = null;
 let currentScreenSize: { width: number; height: number } | null = null;
-let mirrorProcess: ChildProcess | null = null;
 
 export async function listAndroidDevices(): Promise<string[]> {
   return backend.listDevices();
 }
 
 async function queryScreenSize(deviceId: string): Promise<{ width: number; height: number }> {
-  const { stdout } = await execFileAsync("adb", ["-s", deviceId, "shell", "wm", "size"]);
+  const { stdout } = await execFileAsync(resolveTool("adb"), ["-s", deviceId, "shell", "wm", "size"]);
   // "wm size" prints "Physical size: WxH" and, if overridden, an additional
   // "Override size: WxH" line — the override (if present) reflects what's
   // actually rendered, so take the LAST match rather than the first.
@@ -25,39 +35,6 @@ async function queryScreenSize(deviceId: string): Promise<{ width: number; heigh
   const last = matches[matches.length - 1];
   if (!last) throw new Error(`Could not determine screen size for device ${deviceId}`);
   return { width: Number(last[1]), height: Number(last[2]) };
-}
-
-// Turning the physical display off while keeping a *live, touch-controllable*
-// mirror requires scrcpy's own capture pipeline: its on-device server calls
-// Device.setScreenPowerMode(OFF) while capturing the display's SurfaceControl
-// layer directly, independent of backlight state. That capture path only
-// exists inside scrcpy itself (see scrcpy-gui's --turn-screen-off
-// --no-power-on invocation) -- plain `adb shell` (screencap polling, or
-// toggling power/brightness) cannot reproduce it. So the live/interactive
-// session is the real `scrcpy` binary, opened in its own window exactly like
-// the reference app does; our embedded preview card only hosts on-demand
-// screenshots (which still work) once scrcpy has taken over the device.
-function startScrcpyMirror(deviceId: string): void {
-  stopScrcpyMirror();
-  const child = spawn(
-    "scrcpy",
-    ["-s", deviceId, "--turn-screen-off", "--no-power-on", "--stay-awake", "--window-title", "Store Assets Generator - Android"],
-    { stdio: "ignore" }
-  );
-  child.on("error", (err) => {
-    console.error(`[SAG-ANDROID] Could not launch scrcpy (${err.message}). Install scrcpy and ensure it's on PATH.`);
-  });
-  child.on("exit", () => {
-    if (mirrorProcess === child) mirrorProcess = null;
-  });
-  mirrorProcess = child;
-}
-
-function stopScrcpyMirror(): void {
-  if (mirrorProcess) {
-    mirrorProcess.kill();
-    mirrorProcess = null;
-  }
 }
 
 export async function startAndroidSession(
@@ -70,34 +47,64 @@ export async function startAndroidSession(
   }
   const chosen = deviceId && devices.includes(deviceId) ? deviceId : devices[0];
   currentDeviceId = chosen;
-  currentScreenSize = await queryScreenSize(chosen);
-  startScrcpyMirror(chosen); // real live/interactive mirror with the physical screen off, via scrcpy
+
+  // Run screen size query and stream initialization in parallel to cut connection latency in half
+  const [size] = await Promise.all([
+    queryScreenSize(chosen),
+    startAndroidStream(chosen),
+  ]);
+
+  currentScreenSize = size;
   return { deviceId: chosen, ...currentScreenSize };
 }
 
 export function stopAndroidSession(): void {
-  stopScrcpyMirror();
+  void stopAndroidStream();
   currentDeviceId = null;
   currentScreenSize = null;
 }
 
-export async function listAndroidApps(): Promise<string[]> {
+export interface AndroidAppInfo {
+  packageName: string;
+  label: string;
+}
+
+// ponytail: label is guessed from the package id (title-cased last segment),
+// not the app's real launcher name -- getting the real name needs aapt or an
+// AndroidManifest/resources.arsc parse, neither of which is in this toolchain
+// (and pulling every APK to parse it would reintroduce the exact "everything
+// is slow" complaint this session is fixing). Swap in an APK-label parser
+// (e.g. app-info-parser) if exact names are needed later.
+function prettifyPackageName(pkg: string): string {
+  const segment = pkg.split(".").filter(Boolean).pop() || pkg;
+  return segment
+    .replace(/[_-]+/g, " ")
+    .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+    .split(" ")
+    .filter(Boolean)
+    .map((w) => w[0].toUpperCase() + w.slice(1))
+    .join(" ");
+}
+
+export async function listAndroidApps(): Promise<AndroidAppInfo[]> {
   if (!currentDeviceId) throw new Error("No active Android session.");
   // -3 = third-party (user-installed) packages, the relevant "apps" a user would pick to explore.
-  const { stdout } = await execFileAsync("adb", ["-s", currentDeviceId, "shell", "pm", "list", "packages", "-3"]);
-  return stdout
+  const { stdout } = await execFileAsync(resolveTool("adb"), ["-s", currentDeviceId, "shell", "pm", "list", "packages", "-3"]);
+  const packages = stdout
     .split("\n")
     .map((line) => line.trim().replace(/^package:/, ""))
-    .filter(Boolean)
-    .sort();
+    .filter(Boolean);
+  return packages
+    .map((packageName) => ({ packageName, label: prettifyPackageName(packageName) }))
+    .sort((a, b) => a.label.localeCompare(b.label));
 }
+
+const PACKAGE_NAME_RE = /^[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)+$/;
 
 export async function launchAndroidApp(packageName: string): Promise<void> {
   if (!currentDeviceId) throw new Error("No active Android session.");
-  await execFileAsync("adb", [
-    "-s", currentDeviceId,
-    "shell", "monkey", "-p", packageName, "-c", "android.intent.category.LAUNCHER", "1",
-  ]);
+  if (!PACKAGE_NAME_RE.test(packageName)) throw new Error("Invalid package name.");
+  sendShellInput(`monkey -p ${packageName} -c android.intent.category.LAUNCHER 1`);
 }
 
 export interface AndroidAction {
@@ -109,19 +116,19 @@ export interface AndroidAction {
   keycode?: number;
 }
 
-export async function executeAndroidAction(action: AndroidAction): Promise<void> {
+export function executeAndroidAction(action: AndroidAction): void {
   if (!currentDeviceId || !currentScreenSize) throw new Error("No active Android session.");
-  const deviceId = currentDeviceId;
   const { width, height } = currentScreenSize;
   const toX = (pct: number) => Math.round((pct / 100) * width);
   const toY = (pct: number) => Math.round((pct / 100) * height);
 
+  // Sent over the session's persistent shell (see androidStream.ts) rather
+  // than spawning a fresh adb process per action -- that per-call spawn +
+  // adb-server round trip was the dominant source of touch-to-screen lag.
   switch (action.type) {
     case "tap": {
       if (action.xPct === undefined || action.yPct === undefined) return;
-      await execFileAsync("adb", [
-        "-s", deviceId, "shell", "input", "tap", String(toX(action.xPct)), String(toY(action.yPct)),
-      ]);
+      sendShellInput(`input tap ${toX(action.xPct)} ${toY(action.yPct)}`);
       break;
     }
     case "swipe": {
@@ -132,33 +139,30 @@ export async function executeAndroidAction(action: AndroidAction): Promise<void>
         action.y2Pct === undefined
       )
         return;
-      await execFileAsync("adb", [
-        "-s", deviceId, "shell", "input", "swipe",
-        String(toX(action.xPct)), String(toY(action.yPct)),
-        String(toX(action.x2Pct)), String(toY(action.y2Pct)),
-        "220",
-      ]);
+      sendShellInput(
+        `input swipe ${toX(action.xPct)} ${toY(action.yPct)} ${toX(action.x2Pct)} ${toY(action.y2Pct)} 220`
+      );
       break;
     }
     case "key": {
       if (action.keycode === undefined) return;
-      await execFileAsync("adb", ["-s", deviceId, "shell", "input", "keyevent", String(action.keycode)]);
+      sendShellInput(`input keyevent ${Math.trunc(action.keycode)}`);
       break;
     }
   }
 }
 
-export async function getAndroidFrame(): Promise<Buffer> {
+// Latest JPEG frame from the live scrcpy stream, for the polled preview
+// endpoint. Not a PNG (unlike a one-off screenshot) -- see captureAndroidScreen.
+export function getAndroidFrame(): Buffer {
   if (!currentDeviceId) {
     throw new Error("No active Android session.");
   }
-
-  const { stdout } = await execFileAsync(
-    "adb",
-    ["-s", currentDeviceId, "exec-out", "screencap", "-p"],
-    { encoding: "buffer", maxBuffer: 1024 * 1024 * 64 }
-  );
-  return stdout;
+  const frame = getLatestStreamFrame();
+  if (!frame) {
+    throw new Error("Live frame not ready yet.");
+  }
+  return frame;
 }
 
 function pngSize(buf: Buffer): { width: number; height: number } {
@@ -176,7 +180,7 @@ export async function captureAndroidScreen(projectId: string): Promise<{ id: num
   const relPath = path.posix.join("captures", filename);
   const absPath = projectFile(projectId, relPath);
 
-  const buffer = await getAndroidFrame();
+  const buffer = await getLatestFramePng();
   await fs.promises.mkdir(path.dirname(absPath), { recursive: true });
   await fs.promises.writeFile(absPath, buffer);
 
