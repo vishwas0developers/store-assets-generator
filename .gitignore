@@ -1,5 +1,6 @@
 node_modules/
 dist/
+vendor/
 output/
 .device-glb-cache/
 .auth/

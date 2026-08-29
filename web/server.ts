@@ -54,6 +54,7 @@ import {
   listAndroidApps,
   launchAndroidApp,
   executeAndroidAction,
+  subscribeAndroidFrames,
 } from "../src/capture/androidLive.js";
 
 import {
@@ -681,14 +682,51 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
       return;
     }
 
+    // Single-frame polled endpoint (legacy fallback for cached browsers)
     if (method === "GET" && p === "/api/android/frame") {
       try {
-        const frameBuffer = await getAndroidFrame();
-        res.writeHead(200, { "Content-Type": "image/png" });
+        const frameBuffer = getAndroidFrame();
+        res.writeHead(200, { "Content-Type": "image/jpeg" });
         res.end(frameBuffer);
       } catch (err: any) {
-        sendError(res, 500, err.message || "Failed to capture frame");
+        sendError(res, 503, err.message || "Live frame not ready yet.");
       }
+      return;
+    }
+
+    // Pushed MJPEG stream (multipart/x-mixed-replace) -- the browser's native
+    // <img src="..."> support renders each frame the instant it arrives, no
+    // polling loop or per-frame HTTP round trip needed on the client side.
+    if (method === "GET" && p === "/api/android/stream") {
+      let initialFrame: Buffer | null = null;
+      try {
+        initialFrame = getAndroidFrame();
+      } catch (err: any) {
+        if (err.message === "No active Android session.") {
+          sendError(res, 503, err.message);
+          return;
+        }
+        // Session is active but no frame decoded yet -- still open the
+        // stream; the first frame arrives via the "frame" event below.
+      }
+
+      res.writeHead(200, {
+        "Content-Type": "multipart/x-mixed-replace; boundary=sagframe",
+        "Cache-Control": "no-store",
+        Connection: "keep-alive",
+      });
+      const writeFrame = (frame: Buffer) => {
+        try {
+          res.write(`--sagframe\r\nContent-Type: image/jpeg\r\nContent-Length: ${frame.length}\r\n\r\n`);
+          res.write(frame);
+          res.write("\r\n");
+        } catch (_) {
+          unsubscribe();
+        }
+      };
+      const unsubscribe = subscribeAndroidFrames(writeFrame);
+      req.on("close", unsubscribe);
+      if (initialFrame) writeFrame(initialFrame);
       return;
     }
 

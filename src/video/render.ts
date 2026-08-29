@@ -4,6 +4,7 @@ import { execFile } from "child_process";
 import { promisify } from "util";
 
 const execFileAsync = promisify(execFile);
+import { resolveTool } from "../toolchain/binaries.js";
 import {
   BACKGROUNDS,
   DEVICE_CSS,
@@ -1363,7 +1364,7 @@ const FPS = 30;
 
 async function ensureFfmpegAvailable(): Promise<void> {
   try {
-    await execFileAsync("ffmpeg", ["-version"]);
+    await execFileAsync(resolveTool("ffmpeg"), ["-version"]);
   } catch {
     throw new Error("ffmpeg is not installed or not on PATH. Install ffmpeg and ensure the 'ffmpeg' command is available, then retry.");
   }
@@ -1434,7 +1435,7 @@ export async function renderVideo(project: VideoProject): Promise<string> {
 
   const totalSeconds = project.scenes.reduce((sum, s) => sum + Math.max(1, s.durationSeconds), 0);
   const rawVideoPath = path.join(outDir, "promo_raw.mp4");
-  await execFileAsync("ffmpeg", [
+  await execFileAsync(resolveTool("ffmpeg"), [
     "-y",
     "-framerate", String(FPS),
     "-i", path.join(framesDir, "frame_%06d.png"),
@@ -1453,7 +1454,7 @@ export async function renderVideo(project: VideoProject): Promise<string> {
     const fadeOutMs = project.bgmFadeOutMs ?? 2000;
     const fadeOutStart = Math.max(0, totalSeconds - fadeOutMs / 1000);
     const filter = `[1:a]volume=${volume},afade=t=in:st=0:d=${(fadeInMs / 1000).toFixed(2)},afade=t=out:st=${fadeOutStart.toFixed(2)}:d=${(fadeOutMs / 1000).toFixed(2)}[a]`;
-    await execFileAsync("ffmpeg", [
+    await execFileAsync(resolveTool("ffmpeg"), [
       "-y",
       "-i", rawVideoPath,
       "-stream_loop", "-1",
