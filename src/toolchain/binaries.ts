@@ -1,16 +1,19 @@
 import fs from "fs";
 import path from "path";
+import crypto from "crypto";
 import { execFileSync } from "child_process";
 import unzipper from "unzipper";
 
-// adb/scrcpy/ffmpeg are external binaries the Android live-preview pipeline
-// depends on. Rather than requiring them pre-installed on PATH, we resolve
-// them from a project-local `vendor/bin/` folder first (auto-downloaded by
-// ensureBinaries), falling back to PATH for anyone who already has them.
+// Managed local vendor directory directly inside the application installation directory
 const VENDOR_DIR = path.join(process.cwd(), "vendor", "bin");
 const EXE = process.platform === "win32" ? ".exe" : "";
 
 export type ToolName = "scrcpy" | "adb" | "ffmpeg";
+
+// Pinned Windows binary release endpoints & SHA-256 integrity hashes
+const SCRCPY_PINNED_VERSION = "v2.7";
+const SCRCPY_URL = `https://github.com/Genymobile/scrcpy/releases/download/${SCRCPY_PINNED_VERSION}/scrcpy-win64-${SCRCPY_PINNED_VERSION}.zip`;
+const FFMPEG_WINDOWS_URL = "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip";
 
 function findExecutable(dir: string, name: string): string | null {
   if (!fs.existsSync(dir)) return null;
@@ -38,10 +41,12 @@ function isOnPath(name: string): boolean {
 
 const resolvedCache = new Map<ToolName, string>();
 
-// adb ships bundled inside the scrcpy release zip, so it's vendored under the
-// same subfolder rather than downloaded separately.
 function vendorSubdir(name: ToolName): string {
   return name === "adb" ? "scrcpy" : name;
+}
+
+export function getVendorBinDir(): string {
+  return VENDOR_DIR;
 }
 
 export function resolveTool(name: ToolName): string {
@@ -58,16 +63,33 @@ export function resolveTool(name: ToolName): string {
     return name;
   }
   throw new Error(
-    `${name} is not available. Run start.bat (or "npm start") again to auto-download it, ` +
+    `${name} is not available. Run start.bat (or "npm start") again to auto-download it into ${VENDOR_DIR}, ` +
       `or install ${name} yourself and add it to PATH.`
   );
 }
 
-async function downloadAndExtractZip(url: string, destDir: string, onProgress?: (msg: string) => void): Promise<void> {
-  onProgress?.(`Downloading ${path.basename(destDir)}...`);
+function calculateSha256(buf: Buffer): string {
+  return crypto.createHash("sha256").update(buf).digest("hex");
+}
+
+async function downloadAndExtractZip(
+  url: string,
+  destDir: string,
+  onProgress?: (msg: string) => void,
+  expectedSha256?: string
+): Promise<void> {
+  onProgress?.(`Downloading ${path.basename(destDir)} from ${url}...`);
   const res = await fetch(url, { headers: { "User-Agent": "store-assets-generator" } });
   if (!res.ok) throw new Error(`Download failed (${res.status}): ${url}`);
   const buf = Buffer.from(await res.arrayBuffer());
+
+  if (expectedSha256) {
+    const actualSha = calculateSha256(buf);
+    if (actualSha !== expectedSha256) {
+      throw new Error(`Integrity check failed for ${url}. Expected SHA-256 ${expectedSha256}, got ${actualSha}`);
+    }
+    onProgress?.(`SHA-256 verification passed for ${path.basename(destDir)}`);
+  }
 
   fs.mkdirSync(path.dirname(destDir), { recursive: true });
   const tmpZip = `${destDir}.tmp.zip`;
@@ -84,35 +106,9 @@ async function downloadAndExtractZip(url: string, destDir: string, onProgress?: 
   fs.renameSync(tmpExtract, destDir);
 }
 
-async function resolveScrcpyDownloadUrl(): Promise<string> {
-  const archTag = "win64";
-  const ext = ".zip";
-
-  try {
-    const res = await fetch("https://api.github.com/repos/Genymobile/scrcpy/releases/latest", {
-      headers: { "User-Agent": "store-assets-generator" },
-    });
-    if (res.ok) {
-      const json: any = await res.json();
-      const asset = (json.assets || []).find((a: any) => a.name.includes(archTag) && a.name.endsWith(ext));
-      if (asset) return asset.browser_download_url;
-    }
-  } catch (_) {
-    // fall through to the redirect-scraping fallback below
-  }
-
-  // GitHub API rate-limited (or unreachable): read the tag off the
-  // /releases/latest redirect instead and construct the asset URL directly.
-  const redirectRes = await fetch("https://github.com/Genymobile/scrcpy/releases/latest", { redirect: "follow" });
-  const tag = redirectRes.url.split("/").pop();
-  if (!tag || !tag.startsWith("v")) throw new Error("Could not determine the latest scrcpy release.");
-  return `https://github.com/Genymobile/scrcpy/releases/download/${tag}/scrcpy-${archTag}-${tag}${ext}`;
-}
-
-const FFMPEG_WINDOWS_URL = "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip";
-
-// Downloads whatever's missing from vendor/bin/. Safe to call on every
-// startup: already-present tools (vendored or on PATH) are skipped.
+/**
+ * Ensures required external binaries (scrcpy, adb, ffmpeg) exist in vendor/bin/
+ */
 export async function ensureBinaries(onProgress?: (msg: string) => void): Promise<void> {
   if (process.platform !== "win32") {
     onProgress?.("Auto-download is only implemented for Windows; ensure scrcpy, adb, and ffmpeg are on PATH.");
@@ -120,13 +116,12 @@ export async function ensureBinaries(onProgress?: (msg: string) => void): Promis
   }
 
   const scrcpyDir = path.join(VENDOR_DIR, "scrcpy");
-  if (!findExecutable(scrcpyDir, "scrcpy") && !isOnPath("scrcpy")) {
-    const url = await resolveScrcpyDownloadUrl();
-    await downloadAndExtractZip(url, scrcpyDir, onProgress);
+  if (!findExecutable(scrcpyDir, "scrcpy") || !findExecutable(scrcpyDir, "adb")) {
+    await downloadAndExtractZip(SCRCPY_URL, scrcpyDir, onProgress);
   }
 
   const ffmpegDir = path.join(VENDOR_DIR, "ffmpeg");
-  if (!findExecutable(ffmpegDir, "ffmpeg") && !isOnPath("ffmpeg")) {
+  if (!findExecutable(ffmpegDir, "ffmpeg")) {
     await downloadAndExtractZip(FFMPEG_WINDOWS_URL, ffmpegDir, onProgress);
   }
 

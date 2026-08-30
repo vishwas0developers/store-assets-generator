@@ -3,7 +3,27 @@
   "version": "1.0.0",
   "description": "AI Agent driven Store Assets Generator (screenshots, device frames, and promotional videos)",
   "type": "module",
-  "main": "dist/mcp/server.js",
+  "main": "main.js",
+  "build": {
+    "appId": "com.storeassets.generator",
+    "productName": "Store Assets Generator",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.cjs",
+      "dist/**/*",
+      "web/**/*",
+      "vendor/**/*"
+    ],
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ]
+    }
+  },
   "bin": {
     "store-assets": "./dist/cli/index.js"
   },
@@ -17,6 +37,7 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.1",
     "@sweetalert2/theme-dark": "^5.0.27",
+    "@types/ws": "^8.18.1",
     "archiver": "^7.0.1",
     "chalk": "^5.3.0",
     "commander": "^12.1.0",
@@ -25,6 +46,7 @@
     "sweetalert2": "^11.26.25",
     "three": "^0.185.1",
     "unzipper": "^0.12.3",
+    "ws": "^8.21.3",
     "yaml": "^2.5.0",
     "zod": "^3.23.8"
   },
@@ -33,6 +55,8 @@
     "@types/node": "^20.14.9",
     "@types/three": "^0.185.4",
     "@types/unzipper": "^0.10.9",
+    "electron": "^44.0.0",
+    "electron-builder": "^26.15.3",
     "typescript": "^5.5.2"
   }
 }

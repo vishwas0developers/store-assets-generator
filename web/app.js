@@ -740,7 +740,7 @@ async function connectAndroidDevice() {
     $("android-device-frame").style.display = "block";
     setAndroidBottomControlsEnabled(true);
     $("android-status").textContent = "Live mirror active -- interact directly using your mouse or controls below.";
-    $("android-app-select").disabled = false;
+    $("android-app-search-input").disabled = false;
     $("android-refresh-apps-btn").disabled = false;
 
     // Store device dimensions for aspect-ratio responsive scaling
@@ -748,12 +748,7 @@ async function connectAndroidDevice() {
     window.androidDeviceHeight = startRes.height || 1920;
     resizeAndroidPreview();
 
-    // Pushed MJPEG stream -- hide loading overlay on first loaded frame
-    const frameImg = $("android-frame-img");
-    frameImg.onload = () => {
-      if (loadingOverlay) loadingOverlay.style.display = "none";
-    };
-    frameImg.src = `/api/android/stream?t=${Date.now()}`;
+    startAndroidWs(loadingOverlay);
     setTimeout(() => {
       if (loadingOverlay && androidConnected) loadingOverlay.style.display = "none";
     }, 1500);
@@ -765,6 +760,81 @@ async function connectAndroidDevice() {
     $("android-status").textContent = "Connection failed. Please check the device connection and try again.";
   } finally {
     $("android-connect-btn").disabled = false;
+  }
+}
+
+let androidWs = null;
+let androidWsFrameUrl = null;
+let androidCanvasCtx = null;
+let androidRendering = false;
+let androidPendingBitmap = null;
+
+// High-speed live mirror over WebSocket using zero-copy createImageBitmap + Canvas:
+// decodes incoming frames off the main thread and renders via requestAnimationFrame
+// with desynchronized low-latency 2D context. Drops intermediate frames if rendering
+// is busy to ensure near-instantaneous live device preview matching native scrcpy.
+function startAndroidWs(loadingOverlay) {
+  stopAndroidWs();
+  const canvas = $("android-frame-canvas");
+  const frameImg = $("android-frame-img");
+  if (canvas) {
+    androidCanvasCtx = canvas.getContext("2d", { alpha: false, desynchronized: true });
+  }
+  const proto = location.protocol === "https:" ? "wss:" : "ws:";
+  const ws = new WebSocket(`${proto}//${location.host}/api/android/ws`);
+  ws.binaryType = "blob";
+  ws.onmessage = async (ev) => {
+    if (canvas && androidCanvasCtx && typeof window.createImageBitmap === "function") {
+      try {
+        const bmp = await createImageBitmap(ev.data);
+        if (androidPendingBitmap) {
+          androidPendingBitmap.close();
+        }
+        androidPendingBitmap = bmp;
+        if (!androidRendering) {
+          androidRendering = true;
+          requestAnimationFrame(() => {
+            if (androidPendingBitmap) {
+              if (canvas.width !== androidPendingBitmap.width || canvas.height !== androidPendingBitmap.height) {
+                canvas.width = androidPendingBitmap.width;
+                canvas.height = androidPendingBitmap.height;
+              }
+              androidCanvasCtx.drawImage(androidPendingBitmap, 0, 0);
+              androidPendingBitmap.close();
+              androidPendingBitmap = null;
+            }
+            androidRendering = false;
+            if (loadingOverlay) loadingOverlay.style.display = "none";
+          });
+        }
+      } catch (_) {}
+    } else if (frameImg) {
+      frameImg.style.display = "block";
+      const url = URL.createObjectURL(ev.data);
+      const prevUrl = androidWsFrameUrl;
+      androidWsFrameUrl = url;
+      frameImg.onload = () => {
+        if (loadingOverlay) loadingOverlay.style.display = "none";
+        if (prevUrl) URL.revokeObjectURL(prevUrl);
+      };
+      frameImg.src = url;
+    }
+  };
+  androidWs = ws;
+}
+
+function stopAndroidWs() {
+  if (androidWs) {
+    try { androidWs.close(); } catch (_) {}
+    androidWs = null;
+  }
+  if (androidPendingBitmap) {
+    try { androidPendingBitmap.close(); } catch (_) {}
+    androidPendingBitmap = null;
+  }
+  if (androidWsFrameUrl) {
+    URL.revokeObjectURL(androidWsFrameUrl);
+    androidWsFrameUrl = null;
   }
 }
 
@@ -816,6 +886,7 @@ window.addEventListener("resize", () => {
 
 async function disconnectAndroidDevice() {
   await androidRecorder.stopIfActive();
+  stopAndroidWs();
   const loadingOverlay = $("android-loading-overlay");
   if (loadingOverlay) loadingOverlay.style.display = "none";
   $("android-frame-img").src = "";
@@ -831,49 +902,173 @@ async function disconnectAndroidDevice() {
   $("android-status").textContent = "Session closed. Click 'Connect' to start a new live session.";
   $("android-device-frame").style.display = "none";
   setAndroidBottomControlsEnabled(false);
-  $("android-app-select").disabled = true;
-  $("android-app-select").innerHTML = `<option value="">Connect a device to list applications...</option>`;
+  resetAndroidAppCombobox("Connect a device to list applications...");
   $("android-refresh-apps-btn").disabled = true;
   $("android-launch-app-btn").disabled = true;
 }
 
-async function loadAndroidApps() {
-  const sel = $("android-app-select");
-  sel.innerHTML = `<option value="">Loading applications...</option>`;
+let allAndroidApps = [];
+let selectedAndroidApp = null;
+let activeComboboxIndex = -1;
+
+function resetAndroidAppCombobox(placeholder = "Connect a device to list applications...") {
+  allAndroidApps = [];
+  selectedAndroidApp = null;
+  activeComboboxIndex = -1;
+  const input = $("android-app-search-input");
+  const dropdown = $("android-app-dropdown-list");
+  if (input) {
+    input.value = "";
+    input.placeholder = placeholder;
+    input.disabled = true;
+  }
+  if (dropdown) {
+    dropdown.innerHTML = "";
+    dropdown.style.display = "none";
+  }
+  $("android-launch-app-btn").disabled = true;
+}
+
+function renderComboboxDropdown(filterText = "") {
+  const dropdown = $("android-app-dropdown-list");
+  if (!dropdown) return;
+  const query = filterText.trim().toLowerCase();
+  const matches = allAndroidApps.filter((app) =>
+    app.label.toLowerCase().includes(query) || app.packageName.toLowerCase().includes(query)
+  );
+
+  dropdown.innerHTML = "";
+  if (matches.length === 0) {
+    const empty = document.createElement("div");
+    empty.className = "combobox-empty";
+    empty.textContent = query ? "No matching applications found" : "No applications available";
+    dropdown.appendChild(empty);
+    dropdown.style.display = "block";
+    return;
+  }
+
+  matches.forEach((app, idx) => {
+    const item = document.createElement("div");
+    item.className = `combobox-item ${idx === activeComboboxIndex ? "active" : ""}`;
+    item.dataset.pkg = app.packageName;
+
+    const labelSpan = document.createElement("span");
+    labelSpan.className = "combobox-item-label";
+    labelSpan.textContent = app.label;
+
+    const pkgSpan = document.createElement("span");
+    pkgSpan.className = "combobox-item-pkg";
+    pkgSpan.textContent = `(${app.packageName})`;
+
+    item.appendChild(labelSpan);
+    item.appendChild(pkgSpan);
+
+    item.addEventListener("mousedown", (e) => {
+      e.preventDefault();
+      selectAndroidApp(app);
+    });
+
+    dropdown.appendChild(item);
+  });
+
+  dropdown.style.display = "block";
+}
+
+function selectAndroidApp(app) {
+  selectedAndroidApp = app;
+  const input = $("android-app-search-input");
+  const dropdown = $("android-app-dropdown-list");
+  if (input) {
+    input.value = `${app.label} (${app.packageName})`;
+  }
+  if (dropdown) {
+    dropdown.style.display = "none";
+  }
+  $("android-app-select").value = app.packageName;
+  $("android-launch-app-btn").disabled = false;
+}
+
+const searchInput = $("android-app-search-input");
+const comboboxDropdown = $("android-app-dropdown-list");
+
+searchInput.addEventListener("focus", () => {
+  if (!searchInput.disabled && allAndroidApps.length > 0) {
+    activeComboboxIndex = -1;
+    renderComboboxDropdown(selectedAndroidApp ? "" : searchInput.value);
+  }
+});
+
+searchInput.addEventListener("input", () => {
+  selectedAndroidApp = null;
+  $("android-launch-app-btn").disabled = true;
+  activeComboboxIndex = -1;
+  renderComboboxDropdown(searchInput.value);
+});
+
+searchInput.addEventListener("keydown", (e) => {
+  if (comboboxDropdown.style.display === "none") return;
+  const items = comboboxDropdown.querySelectorAll(".combobox-item");
+  if (!items.length) return;
+
+  if (e.key === "ArrowDown") {
+    e.preventDefault();
+    activeComboboxIndex = (activeComboboxIndex + 1) % items.length;
+    renderComboboxDropdown(searchInput.value);
+    items[activeComboboxIndex]?.scrollIntoView({ block: "nearest" });
+  } else if (e.key === "ArrowUp") {
+    e.preventDefault();
+    activeComboboxIndex = (activeComboboxIndex - 1 + items.length) % items.length;
+    renderComboboxDropdown(searchInput.value);
+    items[activeComboboxIndex]?.scrollIntoView({ block: "nearest" });
+  } else if (e.key === "Enter") {
+    e.preventDefault();
+    if (activeComboboxIndex >= 0 && activeComboboxIndex < items.length) {
+      const pkg = items[activeComboboxIndex].dataset.pkg;
+      const app = allAndroidApps.find((a) => a.packageName === pkg);
+      if (app) selectAndroidApp(app);
+    }
+  } else if (e.key === "Escape") {
+    comboboxDropdown.style.display = "none";
+  }
+});
+
+document.addEventListener("click", (e) => {
+  const container = $("android-app-combobox");
+  if (container && !container.contains(e.target)) {
+    comboboxDropdown.style.display = "none";
+  }
+});
+
+async function loadAndroidApps(forceRefresh = false) {
+  const input = $("android-app-search-input");
+  input.placeholder = "Loading applications...";
   $("android-launch-app-btn").disabled = true;
   try {
-    const { apps } = await api("/api/android/apps");
+    const url = forceRefresh ? "/api/android/apps?refresh=1" : "/api/android/apps";
+    const { apps } = await api(url);
     if (!apps || apps.length === 0) {
-      sel.innerHTML = `<option value="">No third-party apps found</option>`;
+      input.placeholder = "No third-party apps found";
+      allAndroidApps = [];
       return;
     }
-    sel.innerHTML = `<option value="">Select an application to open...</option>`;
-    for (const app of apps) {
-      const opt = document.createElement("option");
-      opt.value = app.packageName;
-      opt.textContent = `${app.label} (${app.packageName})`;
-      sel.appendChild(opt);
-    }
+    allAndroidApps = apps;
+    input.placeholder = "Search application...";
+    input.disabled = false;
   } catch (e) {
-    sel.innerHTML = `<option value="">Failed to list applications</option>`;
+    input.placeholder = "Failed to list applications";
   }
 }
 
-$("android-refresh-apps-btn").onclick = loadAndroidApps;
-
-$("android-app-select").addEventListener("change", () => {
-  const pkg = $("android-app-select").value;
-  $("android-launch-app-btn").disabled = !pkg;
-});
+$("android-refresh-apps-btn").onclick = () => loadAndroidApps(true);
 
 // Run/Launch app button handler
 $("android-launch-app-btn").onclick = async () => {
-  const pkg = $("android-app-select").value;
+  const pkg = selectedAndroidApp?.packageName || $("android-app-select").value;
   if (!pkg || !androidConnected) return;
   $("android-launch-app-btn").disabled = true;
   try {
     await api("/api/android/launch", { method: "POST", body: { packageName: pkg } });
-    $("android-status").textContent = `Opened ${pkg}. Explore the app in the preview below.`;
+    $("android-status").textContent = `Opened ${selectedAndroidApp ? selectedAndroidApp.label : pkg}. Explore the app in the preview below.`;
   } catch (e) {
     await alert("Failed to launch app: " + e.message);
   } finally {
@@ -881,11 +1076,17 @@ $("android-launch-app-btn").onclick = async () => {
   }
 };
 
-async function sendAndroidKey(keycode) {
+function sendAndroidAction(action) {
   if (!androidConnected) return;
-  try {
-    await api("/api/android/action", { method: "POST", body: { type: "key", keycode } });
-  } catch (e) {}
+  if (androidWs && androidWs.readyState === WebSocket.OPEN) {
+    androidWs.send(JSON.stringify(action));
+  } else {
+    api("/api/android/action", { method: "POST", body: action }).catch(() => {});
+  }
+}
+
+async function sendAndroidKey(keycode) {
+  sendAndroidAction({ type: "key", keycode });
 }
 
 $("android-back-btn").onclick = () => sendAndroidKey(4);
@@ -973,10 +1174,10 @@ const handleAndroidPointerEnd = async (e) => {
 
   try {
     if (wasDragged) {
-      await api("/api/android/action", { method: "POST", body: { type: "swipe", xPct, yPct, x2Pct, y2Pct } });
+      sendAndroidAction({ type: "swipe", xPct, yPct, x2Pct, y2Pct });
     } else {
       showTouchRipple(androidStartX - rect.left, androidStartY - rect.top);
-      await api("/api/android/action", { method: "POST", body: { type: "tap", xPct, yPct } });
+      sendAndroidAction({ type: "tap", xPct, yPct });
     }
   } catch (err) {}
 };
@@ -990,9 +1191,13 @@ async function triggerAndroidCapture() {
     return;
   }
 
+  const canvas = $("android-frame-canvas");
   const img = $("android-frame-img");
-  img.style.opacity = "0.3";
-  setTimeout(() => { img.style.opacity = "1"; }, 150);
+  const target = (canvas && canvas.style.display !== "none") ? canvas : img;
+  if (target) {
+    target.style.opacity = "0.3";
+    setTimeout(() => { target.style.opacity = "1"; }, 150);
+  }
 
   try {
     const capture = await api("/api/android/capture", {

@@ -107,11 +107,13 @@ export async function startAndroidStream(deviceId: string, options: { screenOff?
   //     i.e. it deliberately adds delay. The preview wants each frame the
   //     instant it decodes; scrcpy's --max-fps already caps the rate.
   const ffmpeg = spawn(resolveTool("ffmpeg"), [
+    "-hwaccel", "auto",
     "-probesize", "32",
     "-analyzeduration", "0",
     "-f", "matroska",
-    "-fflags", "nobuffer+discardcorrupt",
+    "-fflags", "nobuffer+discardcorrupt+fastseek",
     "-flags", "low_delay",
+    "-threads", "1",
     "-i", "pipe:0",
     "-f", "mjpeg",
     "-flush_packets", "1",
@@ -193,8 +195,10 @@ export async function startAndroidStream(deviceId: string, options: { screenOff?
     "--keep-active",
     "--max-size=1024",
     "--max-fps=60",
-    "--video-bit-rate=8M",
-    "--video-codec-options=i-frame-interval=1",
+    "--video-bit-rate=6M",
+    "--video-buffer=0",
+    "--video-codec=h264",
+    "--video-codec-options=i-frame-interval=1,intra-refresh-period=1",
     "--record-format=mkv",
     `--record=${pipeName}`,
   ];

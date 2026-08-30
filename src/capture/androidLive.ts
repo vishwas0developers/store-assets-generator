@@ -123,12 +123,8 @@ export interface AndroidAppInfo {
   label: string;
 }
 
-// ponytail: label is guessed from the package id (title-cased last segment),
-// not the app's real launcher name -- getting the real name needs aapt or an
-// AndroidManifest/resources.arsc parse, neither of which is in this toolchain
-// (and pulling every APK to parse it would reintroduce the exact "everything
-// is slow" complaint this session is fixing). Swap in an APK-label parser
-// (e.g. app-info-parser) if exact names are needed later.
+// Fallback only -- used if scrcpy --list-apps returns nothing for a package
+// (shouldn't normally happen, but keeps the dropdown populated either way).
 function prettifyPackageName(pkg: string): string {
   const segment = pkg.split(".").filter(Boolean).pop() || pkg;
   return segment
@@ -140,17 +136,30 @@ function prettifyPackageName(pkg: string): string {
     .join(" ");
 }
 
-export async function listAndroidApps(): Promise<AndroidAppInfo[]> {
+// scrcpy --list-apps pushes its on-device server and calls Android's real
+// PackageManager.getApplicationLabel() -- the only way to get the actual
+// localized app name (e.g. "WhatsApp") rather than a guess from the package
+// id. Output lines look like " - WhatsApp                com.whatsapp" ('-'
+// = third-party, '*' = system); label and package are separated by 2+ spaces.
+const LIST_APPS_LINE = /^\s*([*-])\s+(.+?)\s{2,}(\S+)\s*$/;
+
+let appsCache: { deviceId: string; apps: AndroidAppInfo[] } | null = null;
+
+export async function listAndroidApps(forceRefresh = false): Promise<AndroidAppInfo[]> {
   if (!currentDeviceId) throw new Error("No active Android session.");
-  // -3 = third-party (user-installed) packages, the relevant "apps" a user would pick to explore.
-  const { stdout } = await execFileAsync(resolveTool("adb"), ["-s", currentDeviceId, "shell", "pm", "list", "packages", "-3"]);
-  const packages = stdout
-    .split("\n")
-    .map((line) => line.trim().replace(/^package:/, ""))
-    .filter(Boolean);
-  return packages
-    .map((packageName) => ({ packageName, label: prettifyPackageName(packageName) }))
-    .sort((a, b) => a.label.localeCompare(b.label));
+  if (!forceRefresh && appsCache?.deviceId === currentDeviceId) return appsCache.apps;
+
+  const { stdout } = await execFileAsync(resolveTool("scrcpy"), ["-s", currentDeviceId, "--list-apps"], { timeout: 15000 });
+  const apps: AndroidAppInfo[] = [];
+  for (const line of stdout.split("\n")) {
+    const m = line.match(LIST_APPS_LINE);
+    if (!m || m[1] !== "-") continue; // third-party only, matching prior "pm list packages -3" scope
+    const [, , label, packageName] = m;
+    apps.push({ packageName, label: label.trim() || prettifyPackageName(packageName) });
+  }
+  apps.sort((a, b) => a.label.localeCompare(b.label));
+  appsCache = { deviceId: currentDeviceId, apps };
+  return apps;
 }
 
 const PACKAGE_NAME_RE = /^[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)+$/;
