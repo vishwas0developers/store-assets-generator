@@ -551,34 +551,46 @@ async function renderCaptureGallery(galleryId, filterFn, emptyMessage) {
     }
 
     for (const c of filtered) {
+      const isVideo = c.kind === "video" || /\.mp4$/i.test(c.file);
       const item = document.createElement("div");
       item.className = "thumb";
-      item.style = "height: fit-content; align-self: start;";
+      item.style = "height: fit-content; align-self: start; position: relative;";
       const fileUrl = `/api/projects/${activeProjectId}/file?p=${encodeURIComponent(c.file)}`;
 
       // Build card manually via DOM (no innerHTML) to guarantee onclick works
-      const img = document.createElement("img");
+      const img = document.createElement(isVideo ? "video" : "img");
       img.src = fileUrl;
       img.style.cssText = "cursor:pointer; width:100%; height:auto; max-height:220px; display:block; aspect-ratio:9/16; object-fit:contain; background:#000;";
+      if (isVideo) {
+        // Metadata only: enough to paint the first frame, without pulling the
+        // whole MP4 for every card in the gallery.
+        img.preload = "metadata";
+        img.muted = true;
+        const badge = document.createElement("span");
+        badge.className = "video-badge";
+        badge.textContent = "VIDEO";
+        item.appendChild(badge);
+      }
 
       const cap = document.createElement("div");
       cap.style.cssText = "display:flex; justify-content:space-between; align-items:center; padding:0.35rem 0.5rem; background:#14171f; border-top:1px solid #21252f;";
 
       const label = document.createElement("span");
       label.style.cssText = "font-weight:600; color:#e5e7eb; font-size:0.75rem;";
-      label.textContent = `Screen ${c.id}`;
+      label.textContent = isVideo ? `Video ${c.id} (${c.durationSec ?? "?"}s)` : `Screen ${c.id}`;
 
       const delBtn = document.createElement("button");
       delBtn.type = "button";
       delBtn.style.cssText = "padding:0.25rem 0.35rem; border-radius:4px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; color:#fff; background:#dc2626; border:none; transition:background 0.2s;";
-      delBtn.title = "Delete screenshot";
+      delBtn.title = isVideo ? "Delete recording" : "Delete screenshot";
       delBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>`;
 
       delBtn.addEventListener("click", async (e) => {
         e.stopPropagation();
         e.preventDefault();
 
-        const confirmed = await showConfirm(`Delete Screenshot ${c.id}? This cannot be undone.`, "Delete Screenshot", true);
+        const noun = isVideo ? "Recording" : "Screenshot";
+        const confirmed = await showConfirm(`Delete ${noun} ${c.id}? This cannot be undone.`, `Delete ${noun}`, true);
         if (!confirmed) return;
 
         // Remove from DOM immediately for instant feedback
@@ -598,7 +610,7 @@ async function renderCaptureGallery(galleryId, filterFn, emptyMessage) {
           }
         }
 
-        showToast(`Screenshot ${c.id} deleted`, "info");
+        showToast(`${noun} ${c.id} deleted`, "info");
         activeProject = await api(`/api/projects/${activeProjectId}`).catch(() => activeProject);
         if (typeof refreshFileExplorer === "function") refreshFileExplorer();
       });
@@ -606,7 +618,16 @@ async function renderCaptureGallery(galleryId, filterFn, emptyMessage) {
       img.addEventListener("click", () => {
         const box = document.createElement("div");
         box.style.cssText = "position:fixed; inset:0; background:rgba(0,0,0,0.85); display:flex; align-items:center; justify-content:center; z-index:200; cursor:pointer;";
-        box.innerHTML = `<img src="${fileUrl}" style="max-width:90%; max-height:90%; border-radius:8px;" />`;
+        const media = document.createElement(isVideo ? "video" : "img");
+        media.src = fileUrl;
+        media.style.cssText = "max-width:90%; max-height:90%; border-radius:8px;";
+        if (isVideo) {
+          media.controls = true;
+          media.autoplay = true;
+          // Clicking the scrub bar shouldn't dismiss the lightbox.
+          media.addEventListener("click", (ev) => ev.stopPropagation());
+        }
+        box.appendChild(media);
         box.addEventListener("click", () => box.remove());
         document.body.appendChild(box);
       });
@@ -672,6 +693,19 @@ $("android-refresh-devices-btn").onclick = loadAndroidDevices;
 const ANDROID_CONNECT_ICON = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>`;
 const ANDROID_DISCONNECT_ICON = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
 
+// #android-bottom-controls stays visible at all times; only its buttons
+// toggle enabled/disabled based on connection state.
+const ANDROID_BOTTOM_BTN_IDS = [
+  "android-back-btn", "android-home-btn", "android-recents-btn", "android-power-btn",
+  "android-screen-off-btn", "android-bottom-capture", "android-bottom-record",
+];
+function setAndroidBottomControlsEnabled(enabled) {
+  for (const id of ANDROID_BOTTOM_BTN_IDS) {
+    const btn = $(id);
+    if (btn) btn.disabled = !enabled;
+  }
+}
+
 function setAndroidConnectButtonState(connected) {
   const btn = $("android-connect-btn");
   btn.innerHTML = connected ? ANDROID_DISCONNECT_ICON : ANDROID_CONNECT_ICON;
@@ -697,13 +731,14 @@ async function connectAndroidDevice() {
   try {
     const startRes = await api("/api/android/start", {
       method: "POST",
-      body: { projectId: activeProjectId, deviceId: deviceId || undefined }
+      body: { projectId: activeProjectId, deviceId: deviceId || undefined, screenOff: true }
     });
 
     androidConnected = true;
+    updateScreenOffUI(startRes.screenOff !== false);
     setAndroidConnectButtonState(true);
     $("android-device-frame").style.display = "block";
-    $("android-bottom-controls").style.display = "flex";
+    setAndroidBottomControlsEnabled(true);
     $("android-status").textContent = "Live mirror active -- interact directly using your mouse or controls below.";
     $("android-app-select").disabled = false;
     $("android-refresh-apps-btn").disabled = false;
@@ -750,9 +785,7 @@ function resizeAndroidPreview() {
   const statusEl = $("android-status");
   const statusH = statusEl ? statusEl.getBoundingClientRect().height + 12 : 0;
   const bottomControls = $("android-bottom-controls");
-  const controlsH = (bottomControls && bottomControls.style.display !== "none")
-    ? bottomControls.getBoundingClientRect().height + 16
-    : 0;
+  const controlsH = bottomControls ? bottomControls.getBoundingClientRect().height + 16 : 0;
 
   const availW = Math.max(200, cardRect.width - padX);
   const availH = Math.max(200, cardRect.height - padY - statusH - controlsH);
@@ -782,6 +815,7 @@ window.addEventListener("resize", () => {
 });
 
 async function disconnectAndroidDevice() {
+  await androidRecorder.stopIfActive();
   const loadingOverlay = $("android-loading-overlay");
   if (loadingOverlay) loadingOverlay.style.display = "none";
   $("android-frame-img").src = "";
@@ -796,7 +830,7 @@ async function disconnectAndroidDevice() {
   $("android-connect-btn").disabled = false;
   $("android-status").textContent = "Session closed. Click 'Connect' to start a new live session.";
   $("android-device-frame").style.display = "none";
-  $("android-bottom-controls").style.display = "none";
+  setAndroidBottomControlsEnabled(false);
   $("android-app-select").disabled = true;
   $("android-app-select").innerHTML = `<option value="">Connect a device to list applications...</option>`;
   $("android-refresh-apps-btn").disabled = true;
@@ -858,6 +892,33 @@ $("android-back-btn").onclick = () => sendAndroidKey(4);
 $("android-home-btn").onclick = () => sendAndroidKey(3);
 $("android-recents-btn").onclick = () => sendAndroidKey(187);
 $("android-power-btn").onclick = () => sendAndroidKey(26);
+
+let androidScreenOffState = true;
+
+function updateScreenOffUI(isOff) {
+  androidScreenOffState = isOff;
+  const btn = $("android-screen-off-btn");
+  if (btn) {
+    btn.style.color = isOff ? "#10b981" : "var(--text-secondary)";
+    btn.title = isOff
+      ? "Screen Off (Phone display light is OFF -- click to turn on)"
+      : "Screen Off (Phone display light is ON -- click to turn off)";
+  }
+}
+
+$("android-screen-off-btn").onclick = async () => {
+  if (!androidConnected) return;
+  const nextState = !androidScreenOffState;
+  try {
+    const res = await api("/api/android/screen-off", {
+      method: "POST",
+      body: { screenOff: nextState },
+    });
+    updateScreenOffUI(res.screenOff);
+  } catch (e) {
+    console.error("Failed to toggle screen off:", e);
+  }
+};
 
 // Interactive tap & swipe on the Android device frame
 const androidImgEl = $("android-frame-img");
@@ -954,6 +1015,91 @@ async function renderAndroidCaptures() {
     "No screenshots captured yet."
   );
 }
+
+/* ============================================================
+   Screen recording -- shared by the Live Web and Android views.
+   Both expose the same /api/<view>/record/{start,stop} contract, so the only
+   per-view differences are which button, which connected flag, and which
+   gallery to refresh.
+   ============================================================ */
+
+const REC_ICON = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7"></circle><circle cx="12" cy="12" r="3.5" fill="currentColor" stroke="none"></circle></svg>`;
+const STOP_ICON = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor" stroke="none"></rect></svg>`;
+
+function setupRecorder(view, btnId, timerId, isConnected, refreshGallery) {
+  const btn = $(btnId);
+  const timer = $(timerId);
+  if (!btn) return { stopIfActive: async () => {} };
+
+  let active = false;
+  let busy = false;
+  let startedAt = 0;
+  let tick = null;
+
+  const paint = () => {
+    btn.classList.toggle("recording", active);
+    btn.innerHTML = active ? STOP_ICON : REC_ICON;
+    btn.title = active ? "Stop Screen Recording" : "Start Screen Recording (MP4)";
+    if (timer) timer.classList.toggle("active", active);
+  };
+
+  const showElapsed = () => {
+    if (!timer) return;
+    const s = Math.floor((Date.now() - startedAt) / 1000);
+    const pad = (n) => String(n).padStart(2, "0");
+    timer.textContent = `REC ${pad(Math.floor(s / 60))}:${pad(s % 60)}`;
+  };
+
+  const finish = async () => {
+    clearInterval(tick);
+    tick = null;
+    active = false;
+    paint();
+    try {
+      const rec = await api(`/api/${view}/record/stop`, { method: "POST" });
+      showToast(`Recorded Video ${rec.id} (${rec.durationSec}s)`, "success");
+      await refreshGallery();
+    } catch (e) {
+      await alert("Recording failed: " + e.message);
+    }
+  };
+
+  btn.onclick = async () => {
+    if (busy) return;
+    busy = true;
+    try {
+      if (active) {
+        await finish();
+        return;
+      }
+      if (!isConnected() || !activeProjectId) {
+        await alert("Please connect a live session first before recording.", "warning");
+        return;
+      }
+      await api(`/api/${view}/record/start`, { method: "POST", body: { projectId: activeProjectId } });
+      active = true;
+      startedAt = Date.now();
+      paint();
+      showElapsed();
+      tick = setInterval(showElapsed, 500);
+      showToast("Recording started", "info");
+    } catch (e) {
+      active = false;
+      paint();
+      await alert("Could not start recording: " + e.message);
+    } finally {
+      busy = false;
+    }
+  };
+
+  paint();
+  // Called before a disconnect: finalise rather than let the server abort and
+  // throw the footage away.
+  return { stopIfActive: async () => { if (active) await finish(); } };
+}
+
+const browserRecorder = setupRecorder("browser", "browser-bottom-record", "browser-rec-timer", () => browserConnected, renderLiveBrowserCaptures);
+const androidRecorder = setupRecorder("android", "android-bottom-record", "android-rec-timer", () => androidConnected, renderAndroidCaptures);
 
 // Connect / Disconnect Live Session
 $("browser-connect-btn").onclick = async () => {
@@ -1087,6 +1233,7 @@ async function connectLiveBrowser() {
 }
 
 async function disconnectLiveBrowser() {
+  await browserRecorder.stopIfActive();
   clearInterval(frameIntervalId);
   if ($("browser-disconnect-btn")) {
     $("browser-disconnect-btn").disabled = true;

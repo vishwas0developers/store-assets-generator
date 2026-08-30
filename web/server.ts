@@ -41,6 +41,9 @@ import {
   executeBrowserAction,
   getBrowserFrame,
   captureBrowserScreen,
+  startBrowserRecording,
+  stopBrowserRecording,
+  isBrowserRecording,
 } from "../src/capture/liveBrowser.js";
 import archiver from "archiver";
 import { invalidateDataUri } from "../src/render/shared.js";
@@ -55,6 +58,11 @@ import {
   launchAndroidApp,
   executeAndroidAction,
   subscribeAndroidFrames,
+  startAndroidRecording,
+  stopAndroidRecording,
+  isAndroidRecording,
+  isAndroidScreenOff,
+  setAndroidScreenOff,
 } from "../src/capture/androidLive.js";
 
 import {
@@ -658,6 +666,33 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
       return;
     }
 
+    // Screen recording -- Chromium's native screencast, independent of the
+    // preview stream (see liveBrowser.ts's startBrowserRecording).
+    if (method === "POST" && p === "/api/browser/record/start") {
+      const body = await readJsonBody(req);
+      if (!body.projectId) return sendError(res, 400, "projectId is required");
+      try {
+        sendJson(res, 200, await startBrowserRecording(body.projectId));
+      } catch (err: any) {
+        sendError(res, 500, err.message || "Failed to start recording");
+      }
+      return;
+    }
+
+    if (method === "POST" && p === "/api/browser/record/stop") {
+      try {
+        sendJson(res, 200, await stopBrowserRecording());
+      } catch (err: any) {
+        sendError(res, 500, err.message || "Failed to stop recording");
+      }
+      return;
+    }
+
+    if (method === "GET" && p === "/api/browser/record/status") {
+      sendJson(res, 200, { recording: isBrowserRecording() });
+      return;
+    }
+
     // =========================================================
     // Live Android Engine Routes
     // =========================================================
@@ -674,10 +709,27 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
         return sendError(res, 400, "projectId is required");
       }
       try {
-        const result = await startAndroidSession(body.projectId, body.deviceId);
+        const result = await startAndroidSession(body.projectId, body.deviceId, { screenOff: body.screenOff });
         sendJson(res, 200, { ok: true, ...result });
       } catch (err: any) {
         sendError(res, 500, err.message || "Failed to start Android session");
+      }
+      return;
+    }
+
+    if (method === "GET" && p === "/api/android/screen-off") {
+      sendJson(res, 200, { screenOff: isAndroidScreenOff() });
+      return;
+    }
+
+    if (method === "POST" && p === "/api/android/screen-off") {
+      const body = await readJsonBody(req);
+      try {
+        const turnOff = body.screenOff !== undefined ? Boolean(body.screenOff) : !isAndroidScreenOff();
+        const activeState = await setAndroidScreenOff(turnOff);
+        sendJson(res, 200, { ok: true, screenOff: activeState });
+      } catch (err: any) {
+        sendError(res, 500, err.message || "Failed to toggle screen off");
       }
       return;
     }
@@ -715,14 +767,35 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
         "Cache-Control": "no-store",
         Connection: "keep-alive",
       });
-      const writeFrame = (frame: Buffer) => {
+      // Backpressure-aware delivery: if the socket can't keep up, res.write()
+      // would otherwise queue every frame internally, and the client plays
+      // that backlog back sequentially -- exactly the "click, then wait and
+      // watch it catch up" lag. Instead, drop to just the newest pending
+      // frame while backed up, so the client always converges on "now".
+      let writable = true;
+      let pending: Buffer | null = null;
+      const send = (frame: Buffer) => {
+        const header = Buffer.from(`--sagframe\r\nContent-Type: image/jpeg\r\nContent-Length: ${frame.length}\r\n\r\n`);
         try {
-          res.write(`--sagframe\r\nContent-Type: image/jpeg\r\nContent-Length: ${frame.length}\r\n\r\n`);
-          res.write(frame);
-          res.write("\r\n");
+          writable = res.write(Buffer.concat([header, frame, Buffer.from("\r\n")]));
         } catch (_) {
           unsubscribe();
         }
+      };
+      res.on("drain", () => {
+        writable = true;
+        if (pending) {
+          const frame = pending;
+          pending = null;
+          send(frame);
+        }
+      });
+      const writeFrame = (frame: Buffer) => {
+        if (!writable) {
+          pending = frame;
+          return;
+        }
+        send(frame);
       };
       const unsubscribe = subscribeAndroidFrames(writeFrame);
       req.on("close", unsubscribe);
@@ -743,6 +816,33 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
     if (method === "POST" && p === "/api/android/stop") {
       stopAndroidSession();
       sendJson(res, 200, { ok: true });
+      return;
+    }
+
+    // Screen recording -- stream-copies scrcpy's original H.264, so it is
+    // full source quality regardless of the preview's JPEG compression.
+    if (method === "POST" && p === "/api/android/record/start") {
+      const body = await readJsonBody(req);
+      if (!body.projectId) return sendError(res, 400, "projectId is required");
+      try {
+        sendJson(res, 200, startAndroidRecording(body.projectId));
+      } catch (err: any) {
+        sendError(res, 500, err.message || "Failed to start recording");
+      }
+      return;
+    }
+
+    if (method === "POST" && p === "/api/android/record/stop") {
+      try {
+        sendJson(res, 200, await stopAndroidRecording());
+      } catch (err: any) {
+        sendError(res, 500, err.message || "Failed to stop recording");
+      }
+      return;
+    }
+
+    if (method === "GET" && p === "/api/android/record/status") {
+      sendJson(res, 200, { recording: isAndroidRecording() });
       return;
     }
 

@@ -12,9 +12,15 @@ import {
   getLatestFramePng,
   sendShellInput,
   subscribeAndroidFrames,
+  startRawRecording,
+  isScreenOff,
+  setScreenOff,
+  type RawRecording,
 } from "./androidStream.js";
 
-export { subscribeAndroidFrames };
+import { nextRecordingPath, registerRecording } from "./frameRecorder.js";
+
+export { subscribeAndroidFrames, isScreenOff as isAndroidScreenOff, setScreenOff as setAndroidScreenOff };
 
 const execFileAsync = promisify(execFile);
 
@@ -39,8 +45,9 @@ async function queryScreenSize(deviceId: string): Promise<{ width: number; heigh
 
 export async function startAndroidSession(
   projectId: string,
-  deviceId?: string
-): Promise<{ deviceId: string; width: number; height: number }> {
+  deviceId?: string,
+  options?: { screenOff?: boolean }
+): Promise<{ deviceId: string; width: number; height: number; screenOff: boolean }> {
   const devices = await backend.listDevices();
   if (devices.length === 0) {
     throw new Error("No Android devices found via ADB. Connect a device/emulator and enable USB debugging.");
@@ -51,17 +58,64 @@ export async function startAndroidSession(
   // Run screen size query and stream initialization in parallel to cut connection latency in half
   const [size] = await Promise.all([
     queryScreenSize(chosen),
-    startAndroidStream(chosen),
+    startAndroidStream(chosen, options),
   ]);
 
   currentScreenSize = size;
-  return { deviceId: chosen, ...currentScreenSize };
+  return { deviceId: chosen, ...currentScreenSize, screenOff: isScreenOff() };
 }
 
 export function stopAndroidSession(): void {
+  if (recording) {
+    recording.recorder.abort();
+    recording = null;
+  }
   void stopAndroidStream();
   currentDeviceId = null;
   currentScreenSize = null;
+}
+
+// --- Screen recording ---------------------------------------------------
+// Records scrcpy's ORIGINAL H.264 stream (stream-copied, no re-encode), not
+// the preview's downscaled JPEGs -- so the preview can be compressed as hard
+// as interaction speed demands while recordings stay at source quality.
+
+let recording: {
+  projectId: string;
+  id: number;
+  rel: string;
+  recorder: RawRecording;
+} | null = null;
+
+export function isAndroidRecording(): boolean {
+  return recording !== null;
+}
+
+export function startAndroidRecording(projectId: string): { id: number; file: string } {
+  if (!currentDeviceId) throw new Error("No active Android session.");
+  if (recording) throw new Error("A recording is already in progress.");
+
+  const { id, rel, abs } = nextRecordingPath(projectId);
+  recording = { projectId, id, rel, recorder: startRawRecording(abs) };
+  return { id, file: rel };
+}
+
+export async function stopAndroidRecording(): Promise<{ id: number; file: string; durationSec: number }> {
+  if (!recording) throw new Error("No recording in progress.");
+  const r = recording;
+  recording = null;
+
+  const { width, height, durationSec } = await r.recorder.stop();
+  return registerRecording({
+    projectId: r.projectId,
+    id: r.id,
+    rel: r.rel,
+    url: `android:${currentDeviceId}`,
+    width,
+    height,
+    durationSec,
+    deviceLabel: `Android (${currentDeviceId})`,
+  });
 }
 
 export interface AndroidAppInfo {
@@ -140,7 +194,7 @@ export function executeAndroidAction(action: AndroidAction): void {
       )
         return;
       sendShellInput(
-        `input swipe ${toX(action.xPct)} ${toY(action.yPct)} ${toX(action.x2Pct)} ${toY(action.y2Pct)} 220`
+        `input swipe ${toX(action.xPct)} ${toY(action.yPct)} ${toX(action.x2Pct)} ${toY(action.y2Pct)} 150`
       );
       break;
     }

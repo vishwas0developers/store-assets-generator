@@ -203,6 +203,10 @@
                 <button id="browser-bottom-capture" class="secondary icon-btn" title="Capture Screenshot (Alt+C)">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
                 </button>
+                <button id="browser-bottom-record" class="secondary icon-btn record-btn" title="Start Screen Recording (MP4)">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7"></circle><circle cx="12" cy="12" r="3.5" fill="currentColor" stroke="none"></circle></svg>
+                </button>
+                <span id="browser-rec-timer" class="rec-timer">REC 00:00</span>
               </div>
             </div>
 
@@ -236,7 +240,8 @@
               <button id="android-connect-btn" class="icon-btn" title="Connect Device" style="background: #10b981; border: none;">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>
               </button>
-            </div>
+
+                          </div>
 
             <!-- Visual Separator between Device and App sections -->
             <div style="align-self: stretch; width: 2px; background: var(--border-subtle); margin: -0.75rem 0.6rem;"></div>
@@ -284,23 +289,30 @@
                 <div id="android-interaction-overlay" class="touch-pointer" style="position: absolute; inset: 0; z-index: 10; touch-action: none;"></div>
               </div>
 
-              <!-- Controls bar below viewport: visible by default if session starts -->
+              <!-- Controls bar below viewport: always visible -->
               <div id="android-bottom-controls" style="display: flex; margin-top: 1rem; align-items: center; justify-content: center; gap: 0.5rem; background: var(--bg-topbar); padding: 0.4rem 0.75rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); width: 100%; max-width: 360px;">
-                <button id="android-back-btn" class="secondary icon-btn" title="Back">
+                <button id="android-back-btn" class="secondary icon-btn" title="Back" disabled>
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
                 </button>
-                <button id="android-home-btn" class="secondary icon-btn" title="Home">
+                <button id="android-home-btn" class="secondary icon-btn" title="Home" disabled>
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
                 </button>
-                <button id="android-recents-btn" class="secondary icon-btn" title="Recent Apps">
+                <button id="android-recents-btn" class="secondary icon-btn" title="Recent Apps" disabled>
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
                 </button>
-                <button id="android-power-btn" class="secondary icon-btn" title="Power (toggle device screen)">
+                <button id="android-power-btn" class="secondary icon-btn" title="Power (toggle device screen)" disabled>
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line></svg>
                 </button>
-                <button id="android-bottom-capture" class="secondary icon-btn" title="Capture Screenshot (Alt+C)">
+                <button id="android-screen-off-btn" class="secondary icon-btn" title="Screen Off (Keep phone display light off to save battery)" disabled>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line><line x1="2" y1="3" x2="22" y2="21"></line></svg>
+                </button>
+                <button id="android-bottom-capture" class="secondary icon-btn" title="Capture Screenshot (Alt+C)" disabled>
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
                 </button>
+                <button id="android-bottom-record" class="secondary icon-btn record-btn" title="Start Screen Recording (MP4)" disabled>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7"></circle><circle cx="12" cy="12" r="3.5" fill="currentColor" stroke="none"></circle></svg>
+                </button>
+                <span id="android-rec-timer" class="rec-timer">REC 00:00</span>
               </div>
             </div>
 
