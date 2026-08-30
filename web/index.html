@@ -4,36 +4,15 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=1280" />
 <title>Store Assets Generator</title>
-<link rel="stylesheet" href="/app.css" />
-<link rel="stylesheet" href="/vendor/sweetalert2/dark.min.css" />
-<script src="/vendor/sweetalert2/sweetalert2.min.js" defer></script>
+<link rel="stylesheet" href="app.css" />
+<link rel="stylesheet" href="vendor/sweetalert2/dark.min.css" />
+<script src="vendor/sweetalert2/sweetalert2.min.js" defer></script>
 <!-- three.js addon modules (GLTFLoader etc.) import the bare specifier
      "three" internally -- this import map resolves it for the device
      catalogue's 3D preview (app.js's init3dDeviceViewport). -->
-<script type="importmap">{"imports":{"three":"/vendor/three/build/three.module.js"}}</script>
-<!-- Still CDN-hosted: cdn.tailwindcss.com is a runtime JIT compiler, not a
-     static file, so it can't be vendored the same way as sweetalert2/three
-     without adding a real Tailwind build step. `defer` keeps it from blocking
-     app.js if the CDN is slow/unreachable; a hard-down CDN still loses styling. -->
-<script id="tw-cdn" src="https://cdn.tailwindcss.com" defer></script>
-<script>
-  // `defer` is a no-op on inline scripts, so this must wait for the deferred
-  // CDN script's own load event rather than assuming `tailwind` already exists.
-  document.getElementById('tw-cdn').addEventListener('load', () => {
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            brand: { 500: '#3b82f6', 600: '#2563eb' }
-          }
-        }
-      }
-    }
-  });
-</script>
+<script type="importmap">{"imports":{"three":"./vendor/three/build/three.module.js"}}</script>
 </head>
-<body class="bg-[var(--bg-main)] text-[var(--text-primary)] transition-colors duration-200">
+<body>
 <div style="display:flex; flex-direction:column; height:100vh;">
 
   <div class="topbar">
@@ -248,13 +227,15 @@
 
             <!-- Application-related controls -->
             <div style="flex: 1; display: flex; gap: 0.75rem; align-items: center;">
-              <div style="flex: 1; display: flex; align-items: center; background: var(--bg-main); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 0 0.75rem;">
+              <div id="android-app-combobox" style="position: relative; flex: 1; display: flex; align-items: center; background: var(--bg-main); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 0 0.75rem;">
                 <span style="color: var(--text-secondary); margin-right: 0.5rem; display: flex; align-items: center;">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
                 </span>
-                <select id="android-app-select" class="custom-app-select" style="flex: 1; border: none; background: transparent; padding: 0.5rem 0; outline: none; color: var(--text-primary);" disabled>
+                <input type="text" id="android-app-search-input" placeholder="Search application..." autocomplete="off" disabled style="flex: 1; border: none; background: transparent; padding: 0.5rem 0; outline: none; color: var(--text-primary); font-size: 0.85rem;" />
+                <select id="android-app-select" style="display: none;">
                   <option value="">Connect a device to list applications...</option>
                 </select>
+                <div id="android-app-dropdown-list" class="combobox-dropdown" style="display: none;"></div>
               </div>
               <button id="android-refresh-apps-btn" class="secondary icon-btn" title="Refresh app list" disabled>
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
@@ -277,7 +258,8 @@
 
               <div id="android-device-frame" style="display: none; position: relative; border-radius: 12px; background: #000; box-shadow: 0 12px 36px rgba(0,0,0,0.6); max-height: calc(100vh - 290px); max-width: 100%;">
                 <div id="android-viewport-container" style="position: relative; overflow: hidden; border-radius: 12px; max-height: 100%; max-width: 100%;">
-                  <img id="android-frame-img" class="touch-pointer" draggable="false" style="width: 100%; height: 100%; object-fit: fill; user-select: none; touch-action: none; pointer-events: none;" />
+                  <canvas id="android-frame-canvas" class="touch-pointer" style="width: 100%; height: 100%; object-fit: fill; user-select: none; touch-action: none; pointer-events: none; display: block;"></canvas>
+                  <img id="android-frame-img" class="touch-pointer" draggable="false" style="display: none; width: 100%; height: 100%; object-fit: fill; user-select: none; touch-action: none; pointer-events: none;" />
                 </div>
                 <!-- Loading spinner overlay while connection is establishing -->
                 <div id="android-loading-overlay" style="position: absolute; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; background: rgba(11, 13, 18, 0.88); z-index: 20; border-radius: 12px; backdrop-filter: blur(4px);">
@@ -888,6 +870,6 @@
 <!-- Custom Toasts Container -->
 <div id="custom-toast-container" style="position: fixed; top: 1.5rem; right: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; z-index: 100; pointer-events: none;"></div>
 
-<script src="/app.js"></script>
+<script src="app.js"></script>
 </body>
 </html>

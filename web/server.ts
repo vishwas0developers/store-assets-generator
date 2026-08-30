@@ -2,6 +2,7 @@ import { loadEnvFile } from "../src/config/env.js";
 loadEnvFile();
 
 import http from "http";
+import { WebSocketServer } from "ws";
 import fs from "fs";
 import path from "path";
 import { exec } from "child_process";
@@ -848,7 +849,7 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
 
     if (method === "GET" && p === "/api/android/apps") {
       try {
-        const apps = await listAndroidApps();
+        const apps = await listAndroidApps(url.searchParams.get("refresh") === "1");
         sendJson(res, 200, { apps });
       } catch (err: any) {
         sendError(res, 500, err.message || "Failed to list apps");
@@ -1818,6 +1819,61 @@ export async function startUiServer(options: UiServerOptions = {}): Promise<http
       }
     });
     server.listen(port, host, () => resolve());
+  });
+
+  // Live Android mirror over a raw WebSocket instead of the multipart <img>
+  // stream: the browser's multipart decoder queues every part on its main
+  // thread with no way to drop stale ones, so under any sustained load the
+  // backlog grows into the multi-second lag this exists to eliminate. A
+  // WebSocket has no such queue on our side -- we push only the newest
+  // decoded frame per client and skip any frame still in flight, so the
+  // client is always converging on "now" rather than draining a backlog.
+  const androidWss = new WebSocketServer({ noServer: true });
+  server.on("upgrade", (req, socket, head) => {
+    if (req.url === "/api/android/ws") {
+      androidWss.handleUpgrade(req, socket, head, (ws) => androidWss.emit("connection", ws, req));
+    } else {
+      socket.destroy();
+    }
+  });
+  androidWss.on("connection", (ws) => {
+    let sending = false;
+    let pending: Buffer | null = null;
+    const send = (frame: Buffer) => {
+      sending = true;
+      ws.send(frame, () => {
+        sending = false;
+        if (pending) {
+          const next = pending;
+          pending = null;
+          send(next);
+        }
+      });
+    };
+    const onFrame = (frame: Buffer) => {
+      if (sending) {
+        pending = frame;
+        return;
+      }
+      send(frame);
+    };
+    const unsubscribe = subscribeAndroidFrames(onFrame);
+    try {
+      const initial = getAndroidFrame();
+      onFrame(initial);
+    } catch (_) {
+      // No frame yet -- the first one arrives via onFrame above.
+    }
+    ws.on("message", (raw) => {
+      try {
+        const msg = JSON.parse(raw.toString());
+        if (msg && typeof msg === "object" && msg.type) {
+          executeAndroidAction(msg);
+        }
+      } catch (_) {}
+    });
+    ws.on("close", unsubscribe);
+    ws.on("error", unsubscribe);
   });
 
   const address = `http://${host}:${port}`;

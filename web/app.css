@@ -21,7 +21,7 @@ html.light {
 }
 
 * { box-sizing: border-box; }
-html, body { margin: 0; height: 100%; font-family: -apple-system, Segoe UI, Roboto, sans-serif; background: var(--bg-main); color: var(--text-primary); }
+html, body { margin: 0; height: 100%; font-family: -apple-system, Segoe UI, Roboto, sans-serif; background: var(--bg-main); color: var(--text-primary); transition: background-color 0.2s, color 0.2s; }
 
 /* Desktop + large-tablet only -- this is a workstation app, not a phone app. */
 body { min-width: 1180px; overflow-x: auto; }
@@ -876,6 +876,72 @@ select:disabled { opacity: .55; cursor: not-allowed; }
 
 .device-spec-label {
   color: #94a3b8;
+}
+
+/* Applications Searchable Combobox */
+.combobox-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 240px;
+  overflow-y: auto;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  z-index: 100;
+}
+.combobox-item {
+  padding: 0.55rem 0.75rem;
+  font-size: 0.82rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--text-primary);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+.combobox-item:last-child {
+  border-bottom: none;
+}
+.combobox-item:hover,
+.combobox-item.active {
+  background: #3b82f6 !important;
+  color: #ffffff !important;
+}
+.combobox-item-label {
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.combobox-item-pkg {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-left: 0.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  opacity: 0.8;
+}
+.combobox-item:hover .combobox-item-pkg,
+.combobox-item.active .combobox-item-pkg {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+.combobox-empty {
+  padding: 0.75rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  text-align: center;
+}
+html.light .combobox-dropdown {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+html.light .combobox-item {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
 }
 
 /* Applications Select Dropdown text visibility */
