@@ -1,9 +1,10 @@
-import { chromium, type Browser, type BrowserContext, type Page } from "playwright";
+import { chromium, type Browser, type BrowserContext, type CDPSession, type Page } from "playwright";
 import fs from "fs";
 import path from "path";
 import { projectDir, projectFile, loadProject, saveProject } from "../project/projectStore.js";
 import { resolveAuthConfig, slugify } from "../auth/appConfig.js";
 import { defaultSessionStatePath, authenticate } from "./auth.js";
+import { startFrameRecorder, nextRecordingPath, registerRecording, type FrameRecorder } from "./frameRecorder.js";
 
 export interface MobileDevicePreset {
   name: string;
@@ -203,6 +204,10 @@ export async function startBrowserSession(
 
 export async function stopBrowserSession(): Promise<void> {
   console.log(`[SAG-BROWSER] [${new Date().toLocaleTimeString()}] Stopping browser session`);
+  if (recording) {
+    recording.recorder.abort();
+    recording = null;
+  }
   if (activeBrowser) {
     await activeBrowser.close();
   }
@@ -210,6 +215,75 @@ export async function stopBrowserSession(): Promise<void> {
   activeContext = null;
   activePage = null;
   currentProjectId = null;
+}
+
+// --- Screen recording ---------------------------------------------------
+// Chromium's own Page.startScreencast pushes a JPEG whenever the page paints,
+// which is both higher fidelity and far cheaper than the preview's polled
+// page.screenshot() loop -- so recording doesn't compete with the live view.
+
+let recording: {
+  projectId: string;
+  id: number;
+  rel: string;
+  cdp: CDPSession;
+  recorder: FrameRecorder;
+} | null = null;
+
+export function isBrowserRecording(): boolean {
+  return recording !== null;
+}
+
+export async function startBrowserRecording(projectId: string): Promise<{ id: number; file: string }> {
+  if (!activePage || !activeContext) throw new Error("No active browser session.");
+  if (recording) throw new Error("A recording is already in progress.");
+
+  const { id, rel, abs } = nextRecordingPath(projectId);
+  const recorder = startFrameRecorder(abs);
+  const cdp = await activeContext.newCDPSession(activePage);
+
+  cdp.on("Page.screencastFrame", async (params: any) => {
+    recorder.write(Buffer.from(params.data, "base64"));
+    // Chromium stops sending frames until the current one is acked.
+    await cdp.send("Page.screencastFrameAck", { sessionId: params.sessionId }).catch(() => {});
+  });
+
+  // maxWidth/maxHeight pinned to the preset's OUTPUT size: without them Chromium
+  // caps screencast frames at the CSS viewport, so a 1290x2796 session would
+  // record at 430x932 -- both low quality and invisible to the gallery's
+  // resolution filter.
+  await cdp.send("Page.startScreencast", {
+    format: "jpeg",
+    quality: 90,
+    everyNthFrame: 1,
+    maxWidth: currentPreset.outputWidth,
+    maxHeight: currentPreset.outputHeight,
+  });
+  recording = { projectId, id, rel, cdp, recorder };
+  console.log(`[SAG-BROWSER] Recording ${id} started -> ${rel}`);
+  return { id, file: rel };
+}
+
+export async function stopBrowserRecording(): Promise<{ id: number; file: string; durationSec: number }> {
+  if (!recording) throw new Error("No recording in progress.");
+  const r = recording;
+  recording = null;
+
+  await r.cdp.send("Page.stopScreencast").catch(() => {});
+  await r.cdp.detach().catch(() => {});
+
+  const { width, height, durationSec } = await r.recorder.stop();
+  console.log(`[SAG-BROWSER] Recording ${r.id} stopped (${durationSec}s, ${width}x${height})`);
+  return registerRecording({
+    projectId: r.projectId,
+    id: r.id,
+    rel: r.rel,
+    url: activePage?.url() ?? "",
+    width,
+    height,
+    durationSec,
+    deviceLabel: currentPreset.name || "Phone",
+  });
 }
 
 export async function executeBrowserAction(action: {

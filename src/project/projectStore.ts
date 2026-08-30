@@ -10,6 +10,9 @@ export interface ProjectCapture {
   height: number;
   resolution?: string;   // e.g. "1242x2688"
   deviceLabel?: string;  // e.g. "Phone – 6.5\" Display"
+  /** "video" = an .mp4 screen recording. Absent/"image" = a PNG screenshot. */
+  kind?: "image" | "video";
+  durationSec?: number;  // videos only
 }
 
 export interface ProjectState {

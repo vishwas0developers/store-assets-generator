@@ -4,6 +4,7 @@ import net from "net";
 import { randomUUID } from "crypto";
 import { EventEmitter } from "events";
 import { resolveTool } from "../toolchain/binaries.js";
+import { jpegSize } from "./frameRecorder.js";
 
 const execFileAsync = promisify(execFile);
 
@@ -42,6 +43,15 @@ export function subscribeAndroidFrames(cb: (frame: Buffer) => void): () => void 
 // below, which dims it as far down as the OS allows.
 const MIN_BRIGHTNESS = "1";
 
+// Preview JPEG quality (ffmpeg -q:v: 2 = best, 31 = worst). The preview is
+// deliberately cheaper than the source: it only has to look right at ~400px
+// on screen, and smaller frames traverse the pipe + socket faster, which is
+// what "interaction feels instant" actually costs. Recording does NOT go
+// through here -- it stream-copies scrcpy's original H.264 (see
+// subscribeRawStream), so preview quality and recording quality are
+// independent knobs.
+const PREVIEW_JPEG_Q = "8";
+
 interface StreamSession {
   deviceId: string;
   scrcpy: ChildProcess;
@@ -52,23 +62,34 @@ interface StreamSession {
   buf: Buffer;
   healthy: boolean;
   savedBrightness: string | null;
+  screenOff: boolean;
+  /** Matroska init segment (everything before the first Cluster), replayed to
+   *  a recorder that attaches mid-stream so its demuxer has track headers. */
+  mkvHeader: Buffer | null;
+  headerBuf: Buffer;
+  rawSinks: Set<(chunk: Buffer) => void>;
 }
 
 let session: StreamSession | null = null;
 
 const SOI = Buffer.from([0xff, 0xd8]);
 const EOI = Buffer.from([0xff, 0xd9]);
+// Matroska Cluster element id -- a recorder can only join the stream here.
+const MKV_CLUSTER = Buffer.from([0x1f, 0x43, 0xb6, 0x75]);
 
-export async function startAndroidStream(deviceId: string): Promise<void> {
+export async function startAndroidStream(deviceId: string, options: { screenOff?: boolean } = {}): Promise<void> {
   await stopAndroidStream();
 
+  const screenOff = options.screenOff !== false;
   const adb = resolveTool("adb");
   let savedBrightness: string | null = null;
   // Read and set brightness asynchronously so it doesn't block stream startup
   execFileAsync(adb, ["-s", deviceId, "shell", "settings", "get", "system", "screen_brightness"])
     .then(({ stdout }) => {
       savedBrightness = stdout.trim();
-      return execFileAsync(adb, ["-s", deviceId, "shell", "settings", "put", "system", "screen_brightness", MIN_BRIGHTNESS]);
+      if (screenOff) {
+        return execFileAsync(adb, ["-s", deviceId, "shell", "settings", "put", "system", "screen_brightness", MIN_BRIGHTNESS]);
+      }
     })
     .catch(() => {});
 
@@ -77,15 +98,24 @@ export async function startAndroidStream(deviceId: string): Promise<void> {
       ? String.raw`\\.\pipe\sag-scrcpy-${randomUUID()}`
       : `/tmp/sag-scrcpy-${randomUUID()}.sock`;
 
+  // Latency notes (each flag here was a measurable win, don't drop them):
+  //   -probesize/-analyzeduration: ffmpeg otherwise buffers ~5s of input
+  //     before it starts producing output, which showed up as the preview
+  //     being seconds behind the device.
+  //   -fflags nobuffer / -flags low_delay: no reorder or jitter buffer.
+  //   no -vf fps=N: a rate filter queues frames to regularise their timing,
+  //     i.e. it deliberately adds delay. The preview wants each frame the
+  //     instant it decodes; scrcpy's --max-fps already caps the rate.
   const ffmpeg = spawn(resolveTool("ffmpeg"), [
+    "-probesize", "32",
+    "-analyzeduration", "0",
     "-f", "matroska",
-    "-fflags", "nobuffer",
+    "-fflags", "nobuffer+discardcorrupt",
     "-flags", "low_delay",
     "-i", "pipe:0",
     "-f", "mjpeg",
     "-flush_packets", "1",
-    "-q:v", "6",
-    "-vf", "fps=30",
+    "-q:v", PREVIEW_JPEG_Q,
     "pipe:1",
   ], { stdio: ["pipe", "pipe", "ignore"] });
 
@@ -99,6 +129,10 @@ export async function startAndroidStream(deviceId: string): Promise<void> {
     buf: Buffer.alloc(0),
     healthy: true,
     savedBrightness,
+    screenOff,
+    mkvHeader: null,
+    headerBuf: Buffer.alloc(0),
+    rawSinks: new Set(),
   };
 
   let frameCount = 0;
@@ -126,6 +160,19 @@ export async function startAndroidStream(deviceId: string): Promise<void> {
     console.log(`[SAG-ANDROID] scrcpy connected to named pipe`);
     socket.on("error", (err) => console.error(`[SAG-ANDROID] Pipe error: ${err.message}`));
     socket.pipe(ffmpeg.stdin, { end: false });
+
+    // Tee the untouched matroska/H.264 bytes to any recorder. This is scrcpy's
+    // original encode, so a recording is full source quality regardless of how
+    // hard the preview's MJPEG is compressed -- and costs nothing but a
+    // Buffer reference, no extra decode.
+    socket.on("data", (chunk: Buffer) => {
+      if (!state.mkvHeader) {
+        state.headerBuf = Buffer.concat([state.headerBuf, chunk]);
+        const idx = state.headerBuf.indexOf(MKV_CLUSTER);
+        if (idx !== -1) state.mkvHeader = state.headerBuf.subarray(0, idx);
+      }
+      for (const sink of state.rawSinks) sink(chunk);
+    });
   });
   state.pipeServer = pipeServer;
 
@@ -137,22 +184,27 @@ export async function startAndroidStream(deviceId: string): Promise<void> {
   // Wake device and dismiss lock screen asynchronously (don't block stream startup)
   execFileAsync(adb, ["-s", deviceId, "shell", "input keyevent 224 && input keyevent 82"]).catch(() => {});
 
+  const scrcpyArgs = [
+    "-s", deviceId,
+    "--no-audio",
+    "--no-audio-playback",
+    "--no-window",
+    "--stay-awake",
+    "--keep-active",
+    "--max-size=1024",
+    "--max-fps=60",
+    "--video-bit-rate=8M",
+    "--video-codec-options=i-frame-interval=1",
+    "--record-format=mkv",
+    `--record=${pipeName}`,
+  ];
+  if (screenOff) {
+    scrcpyArgs.push("--turn-screen-off", "--no-power-on");
+  }
+
   const scrcpy = spawn(
     resolveTool("scrcpy"),
-    [
-      "-s", deviceId,
-      "--no-audio",
-      "--no-audio-playback",
-      "--no-window",
-      "--stay-awake",
-      "--keep-active",
-      "--max-size=1024",
-      "--max-fps=30",
-      "--video-bit-rate=8M",
-      "--video-codec-options=i-frame-interval=1",
-      "--record-format=mkv",
-      `--record=${pipeName}`,
-    ],
+    scrcpyArgs,
     { stdio: ["ignore", "pipe", "pipe"], env: { ...process.env, ADB: adb } }
   );
 
@@ -195,10 +247,96 @@ export function sendShellInput(cmd: string): void {
   }
 }
 
+// --- Recording (independent of preview quality) -------------------------
+// Stream-copies scrcpy's original H.264 into an MP4 -- no re-encode, no
+// second capture on the device, and unaffected by PREVIEW_JPEG_Q. Costs one
+// ffmpeg remux process and a Buffer reference per chunk.
+
+export interface RawRecording {
+  stop(): Promise<{ width: number; height: number; durationSec: number }>;
+  abort(): void;
+}
+
+export function startRawRecording(outPath: string): RawRecording {
+  const s = session;
+  if (!s) throw new Error("No active Android session.");
+
+  const proc = spawn(resolveTool("ffmpeg"), [
+    "-y",
+    "-fflags", "+discardcorrupt",
+    "-f", "matroska",
+    "-i", "pipe:0",
+    "-c", "copy",
+    // We join the live stream mid-session, so the first packet's timestamp is
+    // "seconds since the session started", not 0 -- without this the MP4 opens
+    // with that much dead time.
+    "-avoid_negative_ts", "make_zero",
+    "-movflags", "+faststart",
+    outPath,
+  ], { stdio: ["pipe", "ignore", "pipe"] });
+
+  let stderr = "";
+  proc.stderr?.on("data", (c: Buffer) => { stderr = (stderr + c.toString()).slice(-4000); });
+  proc.stdin?.on("error", () => {});
+  proc.on("error", () => {});
+
+  // A demuxer can only start at a Cluster, so buffer until one shows up and
+  // prefix the session's saved matroska header.
+  // ponytail: a raw 1F43B675 could in principle occur inside video payload;
+  // -discardcorrupt covers the rare bad join rather than a full EBML parser.
+  let started = false;
+  const sink = (chunk: Buffer) => {
+    if (!proc.stdin?.writable) return;
+    if (!started) {
+      if (!s.mkvHeader) return;
+      const idx = chunk.indexOf(MKV_CLUSTER);
+      if (idx === -1) return;
+      started = true;
+      proc.stdin.write(s.mkvHeader);
+      proc.stdin.write(chunk.subarray(idx));
+      return;
+    }
+    proc.stdin.write(chunk);
+  };
+  s.rawSinks.add(sink);
+
+  const startedAt = Date.now();
+  const detach = () => { s.rawSinks.delete(sink); };
+
+  return {
+    stop() {
+      detach();
+      const durationSec = Math.round(((Date.now() - startedAt) / 1000) * 10) / 10;
+      return new Promise((resolve, reject) => {
+        if (!started) {
+          try { proc.kill(); } catch (_) {}
+          reject(new Error("No video was captured -- the live stream produced no frames."));
+          return;
+        }
+        proc.on("exit", (code) => {
+          if (code === 0) {
+            const dims = s.latestFrame ? jpegSize(s.latestFrame) : null;
+            resolve({ width: dims?.width ?? 0, height: dims?.height ?? 0, durationSec });
+          } else {
+            reject(new Error(`Recording failed (ffmpeg exit ${code}): ${stderr.split("\n").slice(-3).join(" ")}`));
+          }
+        });
+        try { proc.stdin?.end(); } catch (_) {}
+      });
+    },
+    abort() {
+      detach();
+      try { proc.stdin?.end(); } catch (_) {}
+      try { proc.kill(); } catch (_) {}
+    },
+  };
+}
+
 export async function stopAndroidStream(): Promise<void> {
   if (!session) return;
   const s = session;
   session = null;
+  s.rawSinks.clear();
   try { s.scrcpy?.kill(); } catch (_) {}
   try { s.ffmpeg?.kill(); } catch (_) {}
   try { s.pipeServer?.close(); } catch (_) {}
@@ -219,6 +357,29 @@ export function getLatestStreamFrame(): Buffer | null {
 
 export function isStreamHealthy(): boolean {
   return !!session && session.healthy;
+}
+
+export function isScreenOff(): boolean {
+  return session ? session.screenOff : false;
+}
+
+export async function setScreenOff(turnOff: boolean): Promise<boolean> {
+  if (!session) throw new Error("No active Android session.");
+  const adb = resolveTool("adb");
+  session.screenOff = turnOff;
+  if (turnOff) {
+    try {
+      await execFileAsync(adb, ["-s", session.deviceId, "shell", "settings", "put", "system", "screen_brightness", MIN_BRIGHTNESS]);
+    } catch (_) {}
+  } else {
+    try {
+      if (session.savedBrightness && /^\d+$/.test(session.savedBrightness)) {
+        await execFileAsync(adb, ["-s", session.deviceId, "shell", "settings", "put", "system", "screen_brightness", session.savedBrightness]);
+      }
+      await execFileAsync(adb, ["-s", session.deviceId, "shell", "input", "keyevent", "224"]);
+    } catch (_) {}
+  }
+  return session.screenOff;
 }
 
 // Re-encodes the latest live JPEG frame to a lossless PNG, on demand, so
