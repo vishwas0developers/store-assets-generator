@@ -18,8 +18,8 @@ let serverPort = 8787;
 async function startBackgroundServer() {
   try {
     const serverModule = await import('./dist/web/server.js');
-    if (serverModule && typeof serverModule.startUiServer === 'function') {
-      const server = await serverModule.startUiServer({ port: 8787, host: '127.0.0.1', openBrowser: false });
+    if (serverModule && typeof serverModule.startWebServer === 'function') {
+      const server = await serverModule.startWebServer({ port: 8787, host: '127.0.0.1', openBrowser: false });
       const addr = server.address();
       if (addr && typeof addr === 'object') {
         serverPort = addr.port;

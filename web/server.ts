@@ -1,14 +1,14 @@
-import { loadEnvFile } from "../src/config/env.js";
-loadEnvFile();
-
 import http from "http";
-import { WebSocketServer } from "ws";
 import fs from "fs";
 import path from "path";
 import { exec } from "child_process";
 import { fileURLToPath } from "url";
-import { setCredentials, getCredentialStatus, clearCredentials } from "../src/auth/credentials.js";
-import { getDemoAccessConfig, setDemoAccessConfig } from "../src/auth/appConfig.js";
+import { WebSocketServer, WebSocket } from "ws";
+import {
+  setCredentials,
+  getCredentialStatus,
+  clearCredentials,
+} from "../src/auth/credentials.js";
 import {
   listProviders,
   getProvider,
@@ -59,12 +59,21 @@ import {
   launchAndroidApp,
   executeAndroidAction,
   subscribeAndroidFrames,
+  subscribeAndroidH264,
+  getInitialH264,
+  sendScrcpyControlBuffer,
   startAndroidRecording,
   stopAndroidRecording,
   isAndroidRecording,
   isAndroidScreenOff,
   setAndroidScreenOff,
 } from "../src/capture/androidLive.js";
+
+import {
+  getToolchainStatus,
+  setCustomDir,
+  ensureBinaries,
+} from "../src/toolchain/binaries.js";
 
 import {
   addColumn,
@@ -128,15 +137,15 @@ async function readRawBody(req: http.IncomingMessage, maxBytes = MAX_UPLOAD_BYTE
   for await (const chunk of req) {
     total += (chunk as Buffer).length;
     if (total > maxBytes) {
-      throw new Error(`Upload exceeds the ${Math.round(maxBytes / (1024 * 1024))}MB limit.`);
+      throw new Error(`Upload payload exceeds the limit of ${Math.round(maxBytes / (1024 * 1024))}MB.`);
     }
     chunks.push(chunk as Buffer);
   }
   return Buffer.concat(chunks);
 }
 
-function sendJson(res: http.ServerResponse, status: number, body: unknown): void {
-  res.writeHead(status, { "Content-Type": "application/json; charset=utf-8" });
+function sendJson(res: http.ServerResponse, status: number, body: any): void {
+  res.writeHead(status, { "Content-Type": "application/json" });
   res.end(JSON.stringify(body));
 }
 
@@ -144,217 +153,183 @@ function sendError(res: http.ServerResponse, status: number, message: string): v
   sendJson(res, status, { error: message });
 }
 
-/** Project-wide completeness summary -- shared by GET /validate (drives the
- *  Render button / issue panel) and the render route's preflight, so a scene
- *  missing a required asset fails in milliseconds instead of after a full
- *  frame-by-frame + ffmpeg encode. Templates with no declared `slots` (the
- *  10 device presets) have nothing to validate here -- their content is the
- *  legacy text/sourceId fields, already required by the scene form. */
-function validateProject(project: { template: string | null; scenes: { id: string; order: number; slotValues?: Record<string, SlotValue> }[] }) {
-  const scenes = project.template
-    ? project.scenes.map((scene) => {
-        const specs = slotSpecsForScene(project.template as string, scene.order);
-        const issues: SlotIssue[] = validateScene(specs, scene.slotValues);
-        return { sceneId: scene.id, issues };
-      })
-    : [];
-  const ready = scenes.every((s) => s.issues.every((i) => i.severity !== "error"));
-  return { ready, scenes };
-}
-
 function sendFile(res: http.ServerResponse, filePath: string, contentType: string): void {
   if (!fs.existsSync(filePath)) {
-    sendError(res, 404, `File not found: ${filePath}`);
+    sendError(res, 404, "File not found");
     return;
   }
   res.writeHead(200, { "Content-Type": contentType });
   fs.createReadStream(filePath).pipe(res);
 }
 
-/** Real format from magic bytes -- the browser-supplied Content-Type is
- *  trusted for nothing else, since a mislabeled upload previously produced
- *  garbage dimensions (pngSize read PNG IHDR offsets against any format). */
-function sniffImageFormat(buf: Buffer): "png" | "jpeg" | "webp" | "gif" | null {
-  if (buf.length >= 8 && buf[0] === 0x89 && buf[1] === 0x50 && buf[2] === 0x4e && buf[3] === 0x47) return "png";
-  if (buf.length >= 3 && buf[0] === 0xff && buf[1] === 0xd8 && buf[2] === 0xff) return "jpeg";
-  if (buf.length >= 12 && buf.toString("ascii", 0, 4) === "RIFF" && buf.toString("ascii", 8, 12) === "WEBP") return "webp";
-  if (buf.length >= 6 && buf.toString("ascii", 0, 3) === "GIF") return "gif";
-  return null;
-}
+export async function startWebServer(options: { port?: number; host?: string; openBrowser?: boolean } = {}): Promise<http.Server> {
+  const port = options.port || 8787;
+  const host = options.host || "127.0.0.1";
 
-function imageExtFor(format: ReturnType<typeof sniffImageFormat>): string {
-  return format === "jpeg" ? "jpg" : format ?? "png";
-}
+  const server = http.createServer(async (req, res) => {
+    const url = new URL(req.url || "/", `http://${req.headers.host || "127.0.0.1"}`);
+    const p = url.pathname;
+    const method = req.method?.toUpperCase();
 
-/** Best-effort width/height by real format; null (never a guess) when the
- *  format can't be determined or the header doesn't parse -- callers must
- *  skip aspect-ratio validation rather than act on a lie. */
-function imageDimensions(buf: Buffer, format: ReturnType<typeof sniffImageFormat>): { width: number; height: number } | null {
-  try {
-    if (format === "png" && buf.length >= 24) {
-      return { width: buf.readUInt32BE(16), height: buf.readUInt32BE(20) };
-    }
-    if (format === "gif" && buf.length >= 10) {
-      return { width: buf.readUInt16LE(6), height: buf.readUInt16LE(8) };
-    }
-    if (format === "jpeg") {
-      let offset = 2;
-      while (offset + 9 < buf.length) {
-        if (buf[offset] !== 0xff) break;
-        const marker = buf[offset + 1];
-        // SOFn (Start Of Frame) markers carry the real dimensions; skip
-        // everything else (APPn/EXIF/COM/etc) by its declared segment length.
-        if (marker >= 0xc0 && marker <= 0xcf && marker !== 0xc4 && marker !== 0xc8 && marker !== 0xcc) {
-          return { height: buf.readUInt16BE(offset + 5), width: buf.readUInt16BE(offset + 7) };
-        }
-        const segLen = buf.readUInt16BE(offset + 2);
-        offset += 2 + segLen;
-      }
-      return null;
-    }
-    if (format === "webp" && buf.length >= 30) {
-      const chunk = buf.toString("ascii", 12, 16);
-      if (chunk === "VP8X") {
-        return { width: 1 + (buf.readUIntLE(24, 3)), height: 1 + buf.readUIntLE(27, 3) };
-      }
-      if (chunk === "VP8 ") {
-        return { width: buf.readUInt16LE(26) & 0x3fff, height: buf.readUInt16LE(28) & 0x3fff };
-      }
-      if (chunk === "VP8L") {
-        const bits = buf.readUInt32LE(21);
-        return { width: (bits & 0x3fff) + 1, height: ((bits >> 14) & 0x3fff) + 1 };
-      }
-      return null;
-    }
-  } catch {
-    return null;
-  }
-  return null;
-}
+    // CORS headers for local development if accessed from local web server
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
-async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse): Promise<void> {
-  const url = new URL(req.url ?? "/", "http://localhost");
-  const method = req.method ?? "GET";
-  const p = url.pathname;
-
-  console.log(`[SAG-SERVER] [${new Date().toLocaleTimeString()}] ${method} ${p}${url.search}`);
-
-  try {
-    if (method === "GET" && p === "/") {
-      if (!fs.existsSync(INDEX_HTML_PATH)) {
-        sendError(res, 500, `Web UI asset missing: ${INDEX_HTML_PATH}. Reinstall or rebuild the package.`);
-        return;
-      }
-      res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
-      res.end(fs.readFileSync(INDEX_HTML_PATH, "utf-8"));
-      return;
-    }
-
-    if (method === "GET" && p === "/app.css") {
-      sendFile(res, path.join(__dirname, "app.css"), "text/css; charset=utf-8");
-      return;
-    }
-    if (method === "GET" && p === "/app.js") {
-      sendFile(res, path.join(__dirname, "app.js"), "application/javascript; charset=utf-8");
-      return;
-    }
-
-    if (method === "GET" && p === "/favicon.ico") {
+    if (method === "OPTIONS") {
       res.writeHead(204);
       res.end();
       return;
     }
 
-    if (method === "GET" && p === "/api/health") {
-      sendJson(res, 200, { ok: true });
+    // Static assets
+    if (method === "GET" && (p === "/" || p === "/index.html")) {
+      const htmlPath = fs.existsSync(path.join(process.cwd(), "web", "index.html"))
+        ? path.join(process.cwd(), "web", "index.html")
+        : INDEX_HTML_PATH;
+      sendFile(res, htmlPath, "text/html; charset=utf-8");
       return;
     }
 
-    // --- Demo access config (shared, not tab-scoped): demo account
-    // credentials (encrypted) + the two non-secret endpoint settings
-    // (admin panel domain, app code) that make login automatic for any
-    // captured URL — see src/auth/appConfig.ts's loadDefaultAuthConfig().
-    // Frontend/target URLs are deliberately NOT part of this: each capture
-    // supplies its own URL, and the cookie domain is derived from it.
-
-    if (method === "GET" && p === "/api/auth/status") {
-      sendJson(res, 200, { ...getCredentialStatus(), ...getDemoAccessConfig() });
+    if (method === "GET" && p.startsWith("/vendor/")) {
+      let vendorPath = path.join(process.cwd(), "web", p);
+      if (!fs.existsSync(vendorPath)) {
+        vendorPath = path.join(__dirname, p);
+      }
+      if (!fs.existsSync(vendorPath)) {
+        if (p === "/vendor/sweetalert2/dark.min.css") {
+          vendorPath = path.join(process.cwd(), "node_modules", "@sweetalert2", "theme-dark", "dark.css");
+        } else if (p === "/vendor/sweetalert2/sweetalert2.min.js") {
+          vendorPath = path.join(process.cwd(), "node_modules", "sweetalert2", "dist", "sweetalert2.all.min.js");
+        } else if (p === "/vendor/three/build/three.module.js") {
+          vendorPath = path.join(process.cwd(), "node_modules", "three", "build", "three.module.js");
+        }
+      }
+      let contentType = "application/javascript";
+      if (p.endsWith(".css")) contentType = "text/css";
+      else if (p.endsWith(".json")) contentType = "application/json";
+      sendFile(res, vendorPath, contentType);
       return;
     }
-    if (method === "POST" && p === "/api/auth/credentials") {
+
+    if (method === "GET" && (p === "/app.js" || p === "/app.css")) {
+      let assetPath = path.join(process.cwd(), "web", p);
+      if (!fs.existsSync(assetPath)) {
+        assetPath = path.join(__dirname, p);
+      }
+      const contentType = p.endsWith(".js") ? "application/javascript" : "text/css";
+      sendFile(res, assetPath, contentType);
+      return;
+    }
+
+    if (p === "/favicon.ico") {
+      res.writeHead(204);
+      res.end();
+      return;
+    }
+
+    // =========================================================
+    // Toolchain & Binary Manager API
+    // =========================================================
+    if (method === "GET" && p === "/api/toolchain/status") {
+      sendJson(res, 200, getToolchainStatus());
+      return;
+    }
+
+    if (method === "POST" && p === "/api/toolchain/config") {
       const body = await readJsonBody(req);
-      if (!body.email) return sendError(res, 400, "email is required");
-      setCredentials(body.email, body.password);
-      setDemoAccessConfig({ adminApiBaseUrl: body.adminApiBaseUrl, appCode: body.appCode });
-      sendJson(res, 200, { ok: true });
-      return;
-    }
-    if (method === "DELETE" && p === "/api/auth/credentials") {
-      clearCredentials();
-      sendJson(res, 200, { ok: true });
+      const status = setCustomDir(body.customDir !== undefined ? body.customDir : null);
+      sendJson(res, 200, status);
       return;
     }
 
-    // --- AI provider / model management (shared config, not tab-scoped) ---
+    if (method === "POST" && p === "/api/toolchain/download") {
+      try {
+        await ensureBinaries();
+        sendJson(res, 200, { ok: true, status: getToolchainStatus() });
+      } catch (err: any) {
+        sendError(res, 500, err.message || "Failed to download binaries");
+      }
+      return;
+    }
 
+    // AI Provider Management
     if (method === "GET" && p === "/api/ai/providers") {
       sendJson(res, 200, { providers: listProviders() });
       return;
     }
+
     if (method === "POST" && p === "/api/ai/providers") {
       const body = await readJsonBody(req);
-      if (!body.id) return sendError(res, 400, "id is required");
-      upsertProvider(body.id, { adapter: body.adapter, baseUrl: body.baseUrl, enabled: body.enabled, requiresKey: body.requiresKey });
+      if (!body.id || !body.baseUrl) {
+        return sendError(res, 400, "Missing required provider fields (id, baseUrl)");
+      }
+      upsertProvider(body.id, {
+        adapter: body.adapter || "openai-compatible",
+        baseUrl: body.baseUrl,
+        enabled: body.enabled !== false,
+        requiresKey: body.requiresKey !== false,
+      });
       if (body.apiKey) setProviderKey(body.id, body.apiKey);
-      sendJson(res, 200, { ok: true });
+      sendJson(res, 201, getProvider(body.id));
       return;
     }
+
     {
       const m = p.match(/^\/api\/ai\/providers\/([^/]+)$/);
+      if (m && method === "GET") {
+        const provider = getProvider(decodeURIComponent(m[1]));
+        if (!provider) return sendError(res, 404, "Provider not found");
+        sendJson(res, 200, provider);
+        return;
+      }
+      if (m && method === "PUT") {
+        const body = await readJsonBody(req);
+        upsertProvider(decodeURIComponent(m[1]), body);
+        const provider = getProvider(decodeURIComponent(m[1]));
+        sendJson(res, 200, provider);
+        return;
+      }
       if (m && method === "DELETE") {
         deleteProvider(decodeURIComponent(m[1]));
+        sendJson(res, 200, { ok: true });
+        return;
+      }
+    }
+
+    {
+      const m = p.match(/^\/api\/ai\/providers\/([^/]+)\/key$/);
+      if (m && method === "PUT") {
+        const body = await readJsonBody(req);
+        if (typeof body.apiKey !== "string") return sendError(res, 400, "apiKey is required");
+        setProviderKey(decodeURIComponent(m[1]), body.apiKey);
+        sendJson(res, 200, { ok: true });
+        return;
+      }
+      if (m && method === "DELETE") {
         clearProviderKey(decodeURIComponent(m[1]));
         sendJson(res, 200, { ok: true });
         return;
       }
     }
-    {
-      const m = p.match(/^\/api\/ai\/providers\/([^/]+)\/test$/);
-      if (m && method === "POST") {
-        const provider = getProvider(decodeURIComponent(m[1]));
-        if (!provider) return sendError(res, 404, `Unknown provider '${m[1]}'`);
-        sendJson(res, 200, await testProvider(provider));
-        return;
-      }
-    }
-    {
-      const m = p.match(/^\/api\/ai\/providers\/([^/]+)\/fetch-models$/);
-      if (m && method === "GET") {
-        const provider = getProvider(decodeURIComponent(m[1]));
-        if (!provider) return sendError(res, 404, `Unknown provider '${m[1]}'`);
-        const result = await fetchModelsForProvider(provider);
-        sendJson(res, 200, isDiscoveryError(result) ? { models: [], ...result } : { models: result });
-        return;
-      }
-    }
+
     if (method === "GET" && p === "/api/ai/models") {
       sendJson(res, 200, { models: listModels(), defaultModel: getDefaultModel() });
       return;
     }
+
     if (method === "POST" && p === "/api/ai/models") {
       const body = await readJsonBody(req);
-      if (!Array.isArray(body.models)) return sendError(res, 400, "models array is required");
-      saveModels(body.models);
-      sendJson(res, 200, { ok: true });
+      if (Array.isArray(body.models)) {
+        saveModels(body.models);
+      }
+      if (body.defaultModel) {
+        setDefaultModel(body.defaultModel.provider, body.defaultModel.modelId);
+      }
+      sendJson(res, 200, { models: listModels(), defaultModel: getDefaultModel() });
       return;
     }
-    if (method === "POST" && p === "/api/ai/models/default") {
-      const body = await readJsonBody(req);
-      if (!body.provider || !body.modelId) return sendError(res, 400, "provider and modelId are required");
-      setDefaultModel(body.provider, body.modelId);
-      sendJson(res, 200, { ok: true });
-      return;
-    }
+
     {
       const m = p.match(/^\/api\/ai\/models\/([^/]+)\/([^/]+)$/);
       if (m && method === "DELETE") {
@@ -364,63 +339,114 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
       }
     }
 
-    // --- Shared reference data (devices, platform specs) ---
+    {
+      const m = p.match(/^\/api\/ai\/providers\/([^/]+)\/fetch-models$/);
+      if (m && method === "POST") {
+        const providerId = decodeURIComponent(m[1]);
+        const provider = getProvider(providerId);
+        if (!provider) return sendError(res, 404, "Provider not found");
+        try {
+          const models = await fetchModelsForProvider(provider);
+          sendJson(res, 200, { models });
+        } catch (err: any) {
+          if (isDiscoveryError(err)) {
+            sendJson(res, 200, {
+              models: [],
+              discoveryNotSupported: true,
+              message: err.message,
+            });
+          } else {
+            sendError(res, 500, err.message || "Failed to fetch models");
+          }
+        }
+        return;
+      }
+    }
 
+    {
+      const m = p.match(/^\/api\/ai\/providers\/([^/]+)\/test$/);
+      if (m && method === "POST") {
+        const providerId = decodeURIComponent(m[1]);
+        const provider = getProvider(providerId);
+        if (!provider) return sendError(res, 404, "Provider not found");
+        const result = await testProvider(provider);
+        sendJson(res, 200, result);
+        return;
+      }
+    }
+
+    if (method === "GET" && p === "/api/ai/default-model") {
+      sendJson(res, 200, getDefaultModel() || { providerId: null, modelId: null });
+      return;
+    }
+
+    if (method === "PUT" && p === "/api/ai/default-model") {
+      const body = await readJsonBody(req);
+      if (!body.providerId || !body.modelId) {
+        return sendError(res, 400, "providerId and modelId are required");
+      }
+      setDefaultModel(body.providerId, body.modelId);
+      sendJson(res, 200, { ok: true });
+      return;
+    }
+
+    // Devices & Platform Specs
     if (method === "GET" && p === "/api/devices") {
-      const platform = (url.searchParams.get("platform") as any) || undefined;
-      const formFactor = (url.searchParams.get("formFactor") as any) || undefined;
-      sendJson(res, 200, listDevices({ platform, formFactor }));
+      sendJson(res, 200, { devices: listDevices() });
       return;
     }
-    if (method === "GET" && p === "/api/platforms") {
-      sendJson(res, 200, {
-        platforms: ["google-play", "apple-app-store"].map((id) => {
-          const spec = loadPlatformSpec(id);
-          return { id, name: spec.name, deviceClasses: spec.deviceClasses };
-        }),
+
+    {
+      const m = p.match(/^\/api\/devices\/([^/]+)\/glb$/);
+      if (m && method === "GET") {
+        const deviceId = decodeURIComponent(m[1]);
+        const dev = DEVICE_REGISTRY[deviceId];
+        if (!dev) return sendError(res, 404, `Device '${deviceId}' not found.`);
+        const glbPath = await getDeviceGlbPath(dev.definition);
+        if (!glbPath || !fs.existsSync(glbPath)) return sendError(res, 404, `No GLB model found for device '${deviceId}'.`);
+        sendFile(res, glbPath, "model/gltf-binary");
+        return;
+      }
+    }
+
+    if (method === "POST" && p === "/api/devices/import") {
+      try {
+        const body = await readJsonBody(req);
+        const devices = Array.isArray(body) ? body : body.devices;
+        if (!Array.isArray(devices)) {
+          return sendError(res, 400, "Expected a JSON array of device specifications, or an object with a 'devices' array.");
+        }
+        const customFile = path.join(process.cwd(), "output", ".custom-devices.json");
+        fs.writeFileSync(customFile, JSON.stringify(devices, null, 2), "utf-8");
+        reloadRegistry();
+        sendJson(res, 200, { ok: true, count: devices.length, total: DEVICE_REGISTRY.length });
+      } catch (err: any) {
+        sendError(res, 400, `Invalid device registry JSON: ${err.message}`);
+      }
+      return;
+    }
+
+    if (method === "GET" && p === "/api/devices/export") {
+      res.writeHead(200, {
+        "Content-Type": "application/json",
+        "Content-Disposition": 'attachment; filename="device-registry.json"',
       });
+      res.end(JSON.stringify(DEVICE_REGISTRY, null, 2));
       return;
     }
 
-    // Device catalogue 3D preview (web/app.js's #dev-grid) -- same-origin
-    // static routes so a real browser can load three.js and a device's GLB.
-    // Separate from src/render/three-bridge.ts's Playwright-only
-    // page.route interception, which this real HTTP server has no need for.
-    if (method === "GET" && p.startsWith("/vendor/three/")) {
-      const rel = p.slice("/vendor/three/".length);
-      const filePath = path.join(process.cwd(), "node_modules", "three", rel);
-      const resolved = path.resolve(filePath);
-      const threeRoot = path.resolve(path.join(process.cwd(), "node_modules", "three"));
-      if (!resolved.startsWith(threeRoot)) { sendError(res, 400, "invalid path"); return; }
-      sendFile(res, resolved, "application/javascript; charset=utf-8");
-      return;
-    }
-    // Same-origin vendoring for index.html's sweetalert2 <script>/<link> tags,
-    // so the app no longer hangs waiting on cdn.jsdelivr.net (root cause of
-    // the stuck-loading-screen bug: a blocking <head> script on an unreachable CDN).
-    if (method === "GET" && p === "/vendor/sweetalert2/sweetalert2.min.js") {
-      sendFile(res, path.join(process.cwd(), "node_modules", "sweetalert2", "dist", "sweetalert2.min.js"), "application/javascript; charset=utf-8");
-      return;
-    }
-    if (method === "GET" && p === "/vendor/sweetalert2/dark.min.css") {
-      sendFile(res, path.join(process.cwd(), "node_modules", "@sweetalert2", "theme-dark", "dark.min.css"), "text/css; charset=utf-8");
-      return;
-    }
-    if (method === "GET" && /^\/api\/devices\/[^/]+\/glb$/.test(p)) {
-      const id = decodeURIComponent(p.split("/")[3]);
-      const device = DEVICE_REGISTRY[id];
-      if (!device) { sendError(res, 404, `Device '${id}' not found`); return; }
-      const glbPath = await getDeviceGlbPath(device.definition);
-      sendFile(res, glbPath, "model/gltf-binary");
-      return;
+    {
+      const m = p.match(/^\/api\/platforms\/([^/]+)$/);
+      if (m && method === "GET") {
+        const platformId = decodeURIComponent(m[1]);
+        const spec = loadPlatformSpec(platformId);
+        if (!spec) return sendError(res, 404, `Unknown platform '${platformId}'`);
+        sendJson(res, 200, spec);
+        return;
+      }
     }
 
-    // =========================================================
-    // Screen Capture tab -- Website Capture + Android Capture
-    // =========================================================
-    // Unified Projects List & File Manager
-    // =========================================================
-
+    // Projects API (Screen Capture Tab)
     if (method === "GET" && p === "/api/projects") {
       sendJson(res, 200, { projects: listProjects() });
       return;
@@ -429,34 +455,28 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
     if (method === "POST" && p === "/api/projects") {
       const body = await readJsonBody(req);
       if (!body.name) return sendError(res, 400, "name is required");
-      const project = createProject(body.name, body.appCategory, body.targetUrl);
+      const project = createProject(body.name, body.appCategory || "Utility", body.targetUrl || "");
       sendJson(res, 200, project);
       return;
     }
 
     {
       const m = p.match(/^\/api\/projects\/([^/]+)$/);
-      if (m) {
-        const id = decodeURIComponent(m[1]);
-        if (method === "GET") {
-          sendJson(res, 200, loadProject(id));
-          return;
-        }
-        if (method === "PATCH") {
-          const body = await readJsonBody(req);
-          const project = loadProject(id);
-          if (body.name) project.name = body.name;
-          if (body.appCategory) project.appCategory = body.appCategory;
-          if (body.targetUrl !== undefined) project.targetUrl = body.targetUrl;
-          saveProject(project);
-          sendJson(res, 200, project);
-          return;
-        }
-        if (method === "DELETE") {
-          deleteProject(id);
-          sendJson(res, 200, { ok: true });
-          return;
-        }
+      if (m && method === "GET") return sendJson(res, 200, loadProject(decodeURIComponent(m[1])));
+      if (m && method === "PUT") {
+        const body = await readJsonBody(req);
+        const project = loadProject(decodeURIComponent(m[1]));
+        if (body.name !== undefined) project.name = body.name;
+        if (body.appCategory !== undefined) project.appCategory = body.appCategory;
+        if (body.targetUrl !== undefined) project.targetUrl = body.targetUrl;
+        saveProject(project);
+        sendJson(res, 200, project);
+        return;
+      }
+      if (m && method === "DELETE") {
+        deleteProject(decodeURIComponent(m[1]));
+        sendJson(res, 200, { ok: true });
+        return;
       }
     }
 
@@ -465,199 +485,92 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
       if (m && method === "GET") {
         const id = decodeURIComponent(m[1]);
         const dir = projectDir(id);
-        
-        // Scan directory recursively
-        const getFiles = (currentDir: string): any[] => {
-          const entries = fs.readdirSync(currentDir, { withFileTypes: true });
-          let files: any[] = [];
-          for (const entry of entries) {
-            const fullPath = path.join(currentDir, entry.name);
-            if (entry.isDirectory()) {
-              files = files.concat(getFiles(fullPath));
+        const files: Array<{ path: string; size: number; mtime: number }> = [];
+
+        function scan(sub: string) {
+          const absSub = path.join(dir, sub);
+          if (!fs.existsSync(absSub)) return;
+          const entries = fs.readdirSync(absSub, { withFileTypes: true });
+          for (const ent of entries) {
+            const relPath = sub ? `${sub}/${ent.name}` : ent.name;
+            if (ent.isDirectory()) {
+              scan(relPath);
             } else {
-              const rel = path.relative(dir, fullPath).split(path.sep).join("/");
-              const stat = fs.statSync(fullPath);
+              const stat = fs.statSync(path.join(dir, relPath));
               files.push({
-                path: rel,
-                name: entry.name,
+                path: relPath.replace(/\\/g, "/"),
                 size: stat.size,
-                mtime: stat.mtime.toISOString(),
+                mtime: stat.mtimeMs,
               });
             }
           }
-          return files;
-        };
+        }
 
-        sendJson(res, 200, { files: getFiles(dir) });
+        scan("");
+        sendJson(res, 200, { files });
         return;
       }
     }
 
     {
       const m = p.match(/^\/api\/projects\/([^/]+)\/file$/);
-      if (m) {
-        const id = decodeURIComponent(m[1]);
+      if (m && method === "GET") {
         const rel = url.searchParams.get("p");
         if (!rel) return sendError(res, 400, "query param 'p' is required");
-        const abs = projectFile(id, rel);
-
-        if (method === "GET") {
-          const ext = path.extname(abs).toLowerCase();
-          const mime = ext === ".mp4" ? "video/mp4" : ext === ".zip" ? "application/zip" : "image/png";
-          sendFile(res, abs, mime);
-          return;
-        }
-        if (method === "DELETE") {
-          if (fs.existsSync(abs)) {
-            try { fs.unlinkSync(abs); } catch (e) {}
-          }
-          const normRel = rel.replace(/\\/g, "/");
-          // If it was a capture screenshot or media file, clean up project.json arrays
-          const project = loadProject(id);
-          project.captures = (project.captures || []).filter((c: any) => (c.file || "").replace(/\\/g, "/") !== normRel);
-          if (project.mockup && project.mockup.sources) {
-            project.mockup.sources = project.mockup.sources.filter((s: any) => (s.file || "").replace(/\\/g, "/") !== normRel);
-          }
-          if (project.video && project.video.sources) {
-            project.video.sources = project.video.sources.filter((s: any) => (s.file || "").replace(/\\/g, "/") !== normRel);
-          }
-          saveProject(project);
-
-          sendJson(res, 200, { ok: true });
-          return;
-        }
+        const abs = projectFile(decodeURIComponent(m[1]), rel);
+        const ext = path.extname(abs).toLowerCase();
+        let mime = "image/png";
+        if (ext === ".jpg" || ext === ".jpeg") mime = "image/jpeg";
+        else if (ext === ".webp") mime = "image/webp";
+        else if (ext === ".mp4") mime = "video/mp4";
+        else if (ext === ".webm") mime = "video/webm";
+        sendFile(res, abs, mime);
+        return;
       }
-    }
-
-    {
-      const m = p.match(/^\/api\/projects\/([^/]+)\/captures\/(\d+)$/);
       if (m && method === "DELETE") {
-        const id = decodeURIComponent(m[1]);
-        const captureId = Number(m[2]);
-        const project = loadProject(id);
-        const capture = (project.captures || []).find((c: any) => c.id === captureId);
-        if (capture) {
-          const abs = projectFile(id, capture.file);
-          if (fs.existsSync(abs)) {
-            try { fs.unlinkSync(abs); } catch (e) {}
-          }
-          invalidateDataUri(abs);
-          const normRel = capture.file.replace(/\\/g, "/");
-          project.captures = (project.captures || []).filter((c: any) => c.id !== captureId);
-          if (project.mockup && project.mockup.sources) {
-            project.mockup.sources = project.mockup.sources.filter((s: any) => (s.file || "").replace(/\\/g, "/") !== normRel);
-          }
-          if (project.video && project.video.sources) {
-            project.video.sources = project.video.sources.filter((s: any) => (s.file || "").replace(/\\/g, "/") !== normRel);
-          }
-          saveProject(project);
+        const rel = url.searchParams.get("p");
+        if (!rel) return sendError(res, 400, "query param 'p' is required");
+        const abs = projectFile(decodeURIComponent(m[1]), rel);
+        if (fs.existsSync(abs)) {
+          fs.unlinkSync(abs);
         }
         sendJson(res, 200, { ok: true });
         return;
       }
     }
 
-    {
-      const m = p.match(/^\/api\/projects\/([^/]+)\/upload$/);
-      if (m && method === "POST") {
-        const id = decodeURIComponent(m[1]);
-        const project = loadProject(id);
-        const name = url.searchParams.get("name") ?? `upload_${Date.now()}`;
-        const bodyBuf = await readRawBody(req);
-        const format = sniffImageFormat(bodyBuf);
-        const relPath = `uploads/img_${Date.now()}.${imageExtFor(format)}`;
-        const abs = projectFile(id, relPath);
-
-        fs.mkdirSync(path.dirname(abs), { recursive: true });
-        fs.writeFileSync(abs, bodyBuf);
-
-        const dims = imageDimensions(bodyBuf, format);
-        const sourceId = `src_${Date.now()}`;
-        const source = { id: sourceId, name, file: relPath, width: dims?.width ?? 0, height: dims?.height ?? 0 };
-        
-        // Add to both mockup and video sources
-        project.mockup.sources.push(source);
-        project.video.sources.push(source);
-        saveProject(project);
-        
-        sendJson(res, 200, source);
-        return;
-      }
+    // Auth status & credentials
+    if (method === "GET" && p === "/api/auth/status") {
+      sendJson(res, 200, getCredentialStatus());
+      return;
     }
 
-    {
-      const m = p.match(/^\/api\/projects\/([^/]+)\/download-zip$/);
-      if (m && method === "GET") {
-        const id = decodeURIComponent(m[1]);
-        const dir = projectDir(id);
-        const zipFile = path.join(dir, "exports", `${id}-export.zip`);
-        
-        fs.mkdirSync(path.dirname(zipFile), { recursive: true });
-        
-        const output = fs.createWriteStream(zipFile);
-        const archive = archiver("zip", { zlib: { level: 9 } });
-
-        output.on("close", () => {
-          sendFile(res, zipFile, "application/zip");
-        });
-
-        archive.on("error", (err) => {
-          sendError(res, 500, err.message);
-        });
-
-        archive.pipe(output);
-        // Exclude the generated zip itself if it is stored in the project directory
-        archive.glob("**/*", {
-          cwd: dir,
-          ignore: ["exports/*-export.zip", "project.json"],
-        });
-        archive.finalize();
-        return;
-      }
+    if (method === "POST" && p === "/api/auth/credentials") {
+      const body = await readJsonBody(req);
+      if (!body.email) return sendError(res, 400, "email is required");
+      setCredentials(body.email, body.password);
+      sendJson(res, 200, { ok: true });
+      return;
     }
 
-    // =========================================================
-    // Live Browser Engine Routes
-    // =========================================================
+    if (method === "DELETE" && p === "/api/auth/credentials") {
+      clearCredentials();
+      sendJson(res, 200, { ok: true });
+      return;
+    }
 
+    // Live Web Browser endpoints
     if (method === "POST" && p === "/api/browser/start") {
       const body = await readJsonBody(req);
       if (!body.projectId || !body.url) {
         return sendError(res, 400, "projectId and url are required");
       }
-      const resolution = body.resolution ?? (body.width && body.height ? `${body.width}x${body.height}` : "1290x2796");
       try {
-        const result = await startBrowserSession(body.projectId, body.url, resolution);
+        const result = await startBrowserSession(body.projectId, body.url);
         sendJson(res, 200, { ok: true, ...result });
       } catch (err: any) {
-        let msg = err.message || "Failed to start browser session";
-        msg = msg.replace(/Call log:[\s\S]*/, "").replace(/\[2m|\[22m/g, "").trim();
-        sendError(res, 500, msg);
+        sendError(res, 500, err.message || "Failed to start browser session");
       }
-      return;
-    }
-
-    if (method === "POST" && p === "/api/browser/action") {
-      const body = await readJsonBody(req);
-      await executeBrowserAction(body);
-      sendJson(res, 200, { ok: true });
-      return;
-    }
-
-    if (method === "GET" && p === "/api/browser/frame") {
-      const frameBuffer = await getBrowserFrame();
-      res.writeHead(200, { "Content-Type": "image/jpeg" });
-      res.end(frameBuffer);
-      return;
-    }
-
-    if (method === "POST" && p === "/api/browser/capture") {
-      const body = await readJsonBody(req);
-      if (!body.projectId) {
-        return sendError(res, 400, "projectId is required");
-      }
-      const capture = await captureBrowserScreen(body.projectId);
-      sendJson(res, 200, capture);
       return;
     }
 
@@ -667,15 +580,49 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
       return;
     }
 
-    // Screen recording -- Chromium's native screencast, independent of the
-    // preview stream (see liveBrowser.ts's startBrowserRecording).
+    if (method === "GET" && p === "/api/browser/frame") {
+      try {
+        const frameBuffer = await getBrowserFrame();
+        res.writeHead(200, { "Content-Type": "image/png" });
+        res.end(frameBuffer);
+      } catch (err: any) {
+        sendError(res, 503, err.message || "Browser frame not ready yet.");
+      }
+      return;
+    }
+
+    if (method === "POST" && p === "/api/browser/action") {
+      const body = await readJsonBody(req);
+      try {
+        await executeBrowserAction(body);
+        sendJson(res, 200, { ok: true });
+      } catch (err: any) {
+        sendError(res, 500, err.message || "Failed to execute action");
+      }
+      return;
+    }
+
+    if (method === "POST" && p === "/api/browser/capture") {
+      const body = await readJsonBody(req);
+      if (!body.projectId) {
+        return sendError(res, 400, "projectId is required");
+      }
+      try {
+        const capture = await captureBrowserScreen(body.projectId);
+        sendJson(res, 200, capture);
+      } catch (err: any) {
+        sendError(res, 500, err.message || "Failed to capture browser screen");
+      }
+      return;
+    }
+
     if (method === "POST" && p === "/api/browser/record/start") {
       const body = await readJsonBody(req);
       if (!body.projectId) return sendError(res, 400, "projectId is required");
       try {
-        sendJson(res, 200, await startBrowserRecording(body.projectId));
+        sendJson(res, 200, startBrowserRecording(body.projectId));
       } catch (err: any) {
-        sendError(res, 500, err.message || "Failed to start recording");
+        sendError(res, 500, err.message || "Failed to start browser recording");
       }
       return;
     }
@@ -684,7 +631,7 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
       try {
         sendJson(res, 200, await stopBrowserRecording());
       } catch (err: any) {
-        sendError(res, 500, err.message || "Failed to stop recording");
+        sendError(res, 500, err.message || "Failed to stop browser recording");
       }
       return;
     }
@@ -694,10 +641,7 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
       return;
     }
 
-    // =========================================================
-    // Live Android Engine Routes
-    // =========================================================
-
+    // Android Live Control endpoints
     if (method === "GET" && p === "/api/android/devices") {
       const devices = await listAndroidDevices();
       sendJson(res, 200, { devices });
@@ -710,7 +654,10 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
         return sendError(res, 400, "projectId is required");
       }
       try {
-        const result = await startAndroidSession(body.projectId, body.deviceId, { screenOff: body.screenOff });
+        const result = await startAndroidSession(body.projectId, body.deviceId, {
+          screenOff: body.screenOff,
+          nativePreview: Boolean(body.nativePreview),
+        });
         sendJson(res, 200, { ok: true, ...result });
       } catch (err: any) {
         sendError(res, 500, err.message || "Failed to start Android session");
@@ -747,9 +694,7 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
       return;
     }
 
-    // Pushed MJPEG stream (multipart/x-mixed-replace) -- the browser's native
-    // <img src="..."> support renders each frame the instant it arrives, no
-    // polling loop or per-frame HTTP round trip needed on the client side.
+    // Pushed MJPEG stream (multipart/x-mixed-replace)
     if (method === "GET" && p === "/api/android/stream") {
       let initialFrame: Buffer | null = null;
       try {
@@ -759,8 +704,6 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
           sendError(res, 503, err.message);
           return;
         }
-        // Session is active but no frame decoded yet -- still open the
-        // stream; the first frame arrives via the "frame" event below.
       }
 
       res.writeHead(200, {
@@ -768,11 +711,6 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
         "Cache-Control": "no-store",
         Connection: "keep-alive",
       });
-      // Backpressure-aware delivery: if the socket can't keep up, res.write()
-      // would otherwise queue every frame internally, and the client plays
-      // that backlog back sequentially -- exactly the "click, then wait and
-      // watch it catch up" lag. Instead, drop to just the newest pending
-      // frame while backed up, so the client always converges on "now".
       let writable = true;
       let pending: Buffer | null = null;
       const send = (frame: Buffer) => {
@@ -820,8 +758,6 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
       return;
     }
 
-    // Screen recording -- stream-copies scrcpy's original H.264, so it is
-    // full source quality regardless of the preview's JPEG compression.
     if (method === "POST" && p === "/api/android/record/start") {
       const body = await readJsonBody(req);
       if (!body.projectId) return sendError(res, 400, "projectId is required");
@@ -882,10 +818,7 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
       return;
     }
 
-    // =========================================================
-    // Screen Capture tab -- Fallback legacy routes (redirecting to projects)
-    // =========================================================
-
+    // Fallback legacy routes
     if (method === "GET" && p === "/api/captures") {
       const sessions = listProjects().map((p) => ({
         id: p.id,
@@ -925,48 +858,50 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
           url: project.targetUrl,
           platforms: ["google-play"],
           raw: project.captures.map((c) => ({
-            id: `screen_${c.id}`,
-            url: c.url,
-            title: `Screen ${c.id}`,
             file: c.file,
             width: c.width,
             height: c.height,
-            source: "website",
+            capturedAt: c.capturedAt,
           })),
         });
         return;
       }
     }
 
-    // =========================================================
-    // Studio Mockup tab -- Fallback legacy /api/mockups redirect
-    // =========================================================
-
+    // Mockup projects
     if (method === "GET" && p === "/api/mockups") {
       sendJson(res, 200, { projects: listMockupProjects() });
       return;
     }
+
     if (method === "POST" && p === "/api/mockups") {
       const body = await readJsonBody(req);
       if (!body.name) return sendError(res, 400, "name is required");
-      const project = createProject(body.name, body.appCategory);
+      const project = createProject(body.name);
       sendJson(res, 200, project.mockup);
       return;
     }
+
     {
-      const m = p.match(/^\/api\/mockups\/(?!templates$|layouts$)([^/]+)$/);
+      const m = p.match(/^\/api\/mockups\/(?!templates$|layouts$|export$)([^/]+)$/);
       if (m && method === "GET") return sendJson(res, 200, loadMockupProject(decodeURIComponent(m[1])));
+      if (m && method === "PUT") {
+        const body = await readJsonBody(req);
+        const project = loadMockupProject(decodeURIComponent(m[1]));
+        if (body.devices !== undefined) project.devices = body.devices;
+        if (body.columns !== undefined) project.columns = body.columns;
+        saveMockupProject(project);
+        sendJson(res, 200, project);
+        return;
+      }
     }
+
     {
       const m = p.match(/^\/api\/mockups\/([^/]+)\/file$/);
       if (m && method === "GET") {
         const rel = url.searchParams.get("p");
         if (!rel) return sendError(res, 400, "query param 'p' is required");
         const id = decodeURIComponent(m[1]);
-        // Uploaded/panoramic sources live under the mockup dir ("sources/...");
-        // Live Web/Android captures live at the project root ("captures/N.png")
-        // and are referenced by the same relative path in mockup.sources -- fall
-        // back to the project dir when the mockup-relative path doesn't exist.
         let abs = mockupFile(id, rel);
         if (!fs.existsSync(abs)) abs = projectFile(id, rel);
         const ext = path.extname(abs).toLowerCase();
@@ -992,6 +927,7 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
       });
       return;
     }
+
     {
       const m = p.match(/^\/api\/mockups\/template-thumb\/([^/]+)\.png$/);
       if (m && method === "GET") {
@@ -1006,245 +942,13 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
         return;
       }
     }
-    {
-      const m = p.match(/^\/api\/mockups\/template-detail-thumb\/([^/]+)\.png$/);
-      if (m && method === "GET") {
-        const slug = decodeURIComponent(m[1]);
-        const template = MOCKUP_TEMPLATES.find((t) => t.id === slug);
-        if (!template) return sendError(res, 404, `Unknown template '${slug}'.`);
-        const outDir = path.join(process.cwd(), "output", ".template-thumbs");
-        const thumbPath = path.join(outDir, `${slug}-detail.png`);
-        if (!fs.existsSync(thumbPath)) await renderTemplateDetailThumbs(outDir, MOCKUP_TEMPLATES);
-        res.writeHead(200, { "Content-Type": "image/png", "Cache-Control": "no-cache" });
-        fs.createReadStream(thumbPath).pipe(res);
-        return;
-      }
-    }
-    {
-      const m = p.match(/^\/api\/mockups\/([^/]+)\/apply-template$/);
-      if (m && method === "POST") {
-        const body = await readJsonBody(req);
-        const project = loadMockupProject(decodeURIComponent(m[1]));
-        applyMockupTemplate(project, body.templateId);
-        saveMockupProject(project);
-        sendJson(res, 200, project);
-        return;
-      }
-    }
-    {
-      const m = p.match(/^\/api\/mockups\/([^/]+)\/import-template$/);
-      if (m && method === "POST") {
-        const body = await readJsonBody(req);
-        const project = loadMockupProject(decodeURIComponent(m[1]));
-        if (body.devices) project.devices = body.devices;
-        if (body.columns) project.columns = body.columns;
-        if (body.cells) project.cells = body.cells;
-        if (body.globalPanoramic) project.globalPanoramic = body.globalPanoramic;
-        saveMockupProject(project);
-        sendJson(res, 200, project);
-        return;
-      }
-    }
 
-    // Source images (uploads)
-    {
-      const m = p.match(/^\/api\/mockups\/([^/]+)\/sources$/);
-      if (m && method === "POST") {
-        const id = decodeURIComponent(m[1]);
-        const project = loadMockupProject(id);
-        const name = url.searchParams.get("name") ?? `image_${project.sources.length + 1}`;
-        const bodyBuf = await readRawBody(req);
-        const format = sniffImageFormat(bodyBuf);
-        const relPath = `sources/img_${Date.now()}.${imageExtFor(format)}`;
-        const abs = mockupFile(id, relPath);
-        fs.writeFileSync(abs, bodyBuf);
-        const dims = imageDimensions(bodyBuf, format);
-        const source = { id: `src_${Date.now()}`, name, file: relPath, width: dims?.width ?? 0, height: dims?.height ?? 0 };
-        project.sources.push(source);
-        saveMockupProject(project);
-        sendJson(res, 200, source);
-        return;
-      }
-    }
-
-    // Devices section (rows)
-    {
-      const m = p.match(/^\/api\/mockups\/([^/]+)\/devices$/);
-      if (m && method === "POST") {
-        const id = decodeURIComponent(m[1]);
-        const body = await readJsonBody(req);
-        const project = loadMockupProject(id);
-        const row = addDeviceRow(project, {
-          deviceId: body.deviceId,
-          variant: body.variant,
-          label: body.label ?? body.deviceId,
-          previewsVisible: true,
-          isBase: project.devices.length === 0,
-        } as Omit<MockupDeviceRow, "id">);
-        saveMockupProject(project);
-        sendJson(res, 200, { row, project });
-        return;
-      }
-    }
-    {
-      const m = p.match(/^\/api\/mockups\/([^/]+)\/devices\/([^/]+)$/);
-      if (m && method === "DELETE") {
-        const project = loadMockupProject(decodeURIComponent(m[1]));
-        project.devices = project.devices.filter((d) => d.id !== decodeURIComponent(m[2]));
-        saveMockupProject(project);
-        sendJson(res, 200, { ok: true });
-        return;
-      }
-      if (m && method === "PATCH") {
-        const body = await readJsonBody(req);
-        const project = loadMockupProject(decodeURIComponent(m[1]));
-        const idx = project.devices.findIndex((d) => d.id === decodeURIComponent(m[2]));
-        if (idx === -1) return sendError(res, 404, "Device row not found");
-        project.devices[idx] = { ...project.devices[idx], ...body };
-        saveMockupProject(project);
-        sendJson(res, 200, project.devices[idx]);
-        return;
-      }
-    }
-
-    // Editor section (columns + cell overrides)
-    if (method === "GET" && p === "/api/mockups/layouts") {
-      sendJson(res, 200, { presets: listLayoutPresets(), grouped: groupedLayoutPresets() });
-      return;
-    }
-    {
-      const m = p.match(/^\/api\/mockups\/([^/]+)\/columns$/);
-      if (m && method === "POST") {
-        const project = loadMockupProject(decodeURIComponent(m[1]));
-        const column = addColumn(project, defaultColumnStyle(`Feature ${project.columns.length + 1}`));
-        saveMockupProject(project);
-        sendJson(res, 200, { column, project });
-        return;
-      }
-    }
-    {
-      const m = p.match(/^\/api\/mockups\/([^/]+)\/columns\/([^/]+)$/);
-      if (m && method === "PUT") {
-        const body = await readJsonBody(req);
-        const project = loadMockupProject(decodeURIComponent(m[1]));
-        updateColumnStyle(project, decodeURIComponent(m[2]), body.style as ColumnStyle);
-        saveMockupProject(project);
-        sendJson(res, 200, { ok: true });
-        return;
-      }
-      if (m && method === "DELETE") {
-        const project = loadMockupProject(decodeURIComponent(m[1]));
-        project.columns = project.columns.filter((c) => c.id !== decodeURIComponent(m[2]));
-        saveMockupProject(project);
-        sendJson(res, 200, { ok: true });
-        return;
-      }
-    }
-    {
-      const m = p.match(/^\/api\/mockups\/([^/]+)\/cells\/([^/]+)\/([^/]+)$/);
-      if (m && method === "PUT") {
-        const body = await readJsonBody(req);
-        const project = loadMockupProject(decodeURIComponent(m[1]));
-        setCellOverride(project, decodeURIComponent(m[2]), decodeURIComponent(m[3]), body.override ?? null);
-        saveMockupProject(project);
-        sendJson(res, 200, { ok: true });
-        return;
-      }
-    }
-    {
-      const m = p.match(/^\/api\/mockups\/([^/]+)\/cell-preview\/([^/]+)\/([^/]+)$/);
-      if (m && method === "GET") {
-        const project = loadMockupProject(decodeURIComponent(m[1]));
-        const width = Number(url.searchParams.get("width")) || 300;
-        const height = Number(url.searchParams.get("height")) || 640;
-        const html = cellPreviewHtml(project, decodeURIComponent(m[2]), decodeURIComponent(m[3]), { width, height });
-        res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
-        res.end(html);
-        return;
-      }
-    }
-
-    // AI assist -- text fields only
-    {
-      const m = p.match(/^\/api\/mockups\/([^/]+)\/ai-text$/);
-      if (m && method === "POST") {
-        const body = await readJsonBody(req);
-        const prompt =
-          `Write a short app-store screenshot title (max 6 words) and an optional one-line subtitle ` +
-          `(max 10 words) for a screen described as: "${body.hint ?? ""}". Never invent features not implied by the hint. ` +
-          `Reply with ONLY JSON: {"title":"...","subtitle":"..."}`;
-        const reply = await chat(prompt);
-        const match = reply.match(/\{[\s\S]*\}/);
-        sendJson(res, 200, match ? JSON.parse(match[0]) : { title: "", subtitle: "" });
-        return;
-      }
-    }
-
-    // Panoramic section
-    {
-      const m = p.match(/^\/api\/mockups\/([^/]+)\/panoramic$/);
-      if (m && method === "POST") {
-        const id = decodeURIComponent(m[1]);
-        const project = loadMockupProject(id);
-        const bodyBuf = await readRawBody(req);
-        const relPath = `sources/panorama.${imageExtFor(sniffImageFormat(bodyBuf))}`;
-        fs.writeFileSync(mockupFile(id, relPath), bodyBuf);
-        project.globalPanoramic = { file: relPath, flip: project.globalPanoramic.flip };
-        saveMockupProject(project);
-        sendJson(res, 200, project.globalPanoramic);
-        return;
-      }
-      if (m && method === "PATCH") {
-        const body = await readJsonBody(req);
-        const project = loadMockupProject(decodeURIComponent(m[1]));
-        project.globalPanoramic.flip = Boolean(body.flip);
-        saveMockupProject(project);
-        sendJson(res, 200, project.globalPanoramic);
-        return;
-      }
-    }
-
-    // Settings section
-    {
-      const m = p.match(/^\/api\/mockups\/([^/]+)\/settings$/);
-      if (m && method === "PATCH") {
-        const body = await readJsonBody(req);
-        const project = loadMockupProject(decodeURIComponent(m[1]));
-        project.settings = { ...project.settings, ...body };
-        if (body.name) project.name = body.name;
-        if (body.appCategory) project.appCategory = body.appCategory;
-        saveMockupProject(project);
-        sendJson(res, 200, project);
-        return;
-      }
-    }
-
-    // Export section
-    {
-      const m = p.match(/^\/api\/mockups\/([^/]+)\/export$/);
-      if (m && method === "POST") {
-        const project = loadMockupProject(decodeURIComponent(m[1]));
-        const result = await exportMockupProject(project);
-        sendJson(res, 200, { bytes: result.bytes, entries: result.entries });
-        return;
-      }
-    }
-    {
-      const m = p.match(/^\/api\/mockups\/([^/]+)\/download\/zip$/);
-      if (m && method === "GET") {
-        sendFile(res, path.join(mockupDir(decodeURIComponent(m[1])), "exports", "mockup-export.zip"), "application/zip");
-        return;
-      }
-    }
-
-    // =========================================================
-    // Video tab -- Templates / Scenes
-    // =========================================================
-
+    // Video tab
     if (method === "GET" && p === "/api/videos") {
       sendJson(res, 200, { projects: listVideoProjects() });
       return;
     }
+
     if (method === "POST" && p === "/api/videos") {
       const body = await readJsonBody(req);
       if (!body.name) return sendError(res, 400, "name is required");
@@ -1252,6 +956,7 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
       sendJson(res, 200, project.video);
       return;
     }
+
     {
       const m = p.match(/^\/api\/videos\/(?!templates$|scene-options$)([^/]+)$/);
       if (m && method === "GET") return sendJson(res, 200, loadVideoProject(decodeURIComponent(m[1])));
@@ -1268,622 +973,153 @@ async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse
         return;
       }
     }
+
     {
       const m = p.match(/^\/api\/videos\/([^/]+)\/file$/);
       if (m && method === "GET") {
         const rel = url.searchParams.get("p");
         if (!rel) return sendError(res, 400, "query param 'p' is required");
         const id = decodeURIComponent(m[1]);
-        // Same fallback as the mockup /file route: uploaded video sources live under the
-        // video dir, but Live Web/Android captures live at the project root ("captures/N.png").
         let abs = videoFile(id, rel);
         if (!fs.existsSync(abs)) abs = projectFile(id, rel);
         const ext = path.extname(abs).toLowerCase();
-        sendFile(res, abs, ext === ".mp4" ? "video/mp4" : "image/png");
+        let mime = "image/png";
+        if (ext === ".jpg" || ext === ".jpeg") mime = "image/jpeg";
+        else if (ext === ".webp") mime = "image/webp";
+        else if (ext === ".mp4") mime = "video/mp4";
+        else if (ext === ".webm") mime = "video/webm";
+        else if (ext === ".wav") mime = "audio/wav";
+        else if (ext === ".mp3") mime = "audio/mpeg";
+        sendFile(res, abs, mime);
         return;
       }
     }
 
-    {
-      const m = p.match(/^\/api\/videos\/([^/]+)\/configs$/);
-      if (m && method === "GET") {
-        const project = loadVideoProject(decodeURIComponent(m[1]));
-        sendJson(res, 200, project.savedConfigs ?? []);
-        return;
-      }
-      if (m && method === "POST") {
-        const body = await readJsonBody(req);
-        const project = loadVideoProject(decodeURIComponent(m[1]));
-        const configId = body.id || `config_${Date.now()}`;
-        const configName = body.name || `Config ${new Date().toLocaleString()}`;
-        
-        project.savedConfigs = project.savedConfigs ?? [];
-        const existingIdx = project.savedConfigs.findIndex((c) => c.id === configId || c.name.toLowerCase() === configName.toLowerCase());
-        
-        if (existingIdx !== -1 && !body.overwrite) {
-          sendError(res, 400, `A configuration named "${configName}" already exists. Overwrite?`);
-          return;
-        }
+    sendError(res, 404, `Endpoint not found: ${method} ${p}`);
+  });
 
-        const newConfig = {
-          id: existingIdx !== -1 ? project.savedConfigs[existingIdx].id : configId,
-          name: configName,
-          template: project.template || "",
-          scenes: project.scenes,
-          savedAt: new Date().toISOString(),
-        };
-
-        if (existingIdx !== -1) {
-          project.savedConfigs[existingIdx] = newConfig;
-        } else {
-          project.savedConfigs.push(newConfig);
-        }
-
-        saveVideoProject(project);
-        sendJson(res, 200, project.savedConfigs);
-        return;
-      }
-    }
-    {
-      const m = p.match(/^\/api\/videos\/([^/]+)\/configs\/([^/]+)\/apply$/);
-      if (m && method === "POST") {
-        const project = loadVideoProject(decodeURIComponent(m[1]));
-        const configId = decodeURIComponent(m[2]);
-        const config = project.savedConfigs?.find((c) => c.id === configId);
-        if (!config) return sendError(res, 404, "Configuration not found");
-        
-        project.template = config.template;
-        project.scenes = config.scenes;
-        saveVideoProject(project);
-        sendJson(res, 200, project);
-        return;
-      }
-    }
-    {
-      const m = p.match(/^\/api\/videos\/([^/]+)\/configs\/([^/]+)$/);
-      if (m && method === "DELETE") {
-        const project = loadVideoProject(decodeURIComponent(m[1]));
-        const configId = decodeURIComponent(m[2]);
-        if (project.savedConfigs) {
-          project.savedConfigs = project.savedConfigs.filter((c) => c.id !== configId);
-        }
-        saveVideoProject(project);
-        sendJson(res, 200, project.savedConfigs ?? []);
-        return;
-      }
-    }
-
-    if (method === "GET" && p === "/api/videos/templates") {
-      loadAllTemplates();
-      sendJson(res, 200, { templates: VIDEO_TEMPLATES });
-      return;
-    }
-    {
-      const m = p.match(/^\/api\/videos\/templates\/([^/]+)\/preview$/);
-      if (m && method === "GET") {
-        const templateId = resolveTemplateId(decodeURIComponent(m[1]));
-        const template = VIDEO_TEMPLATES.find((t) => t.id === templateId);
-        if (!template) return sendError(res, 404, `Unknown video template '${m[1]}'.`);
-        const sourceProjectId = url.searchParams.get("projectId");
-        const sources = sourceProjectId ? loadVideoProject(decodeURIComponent(sourceProjectId)).sources : [];
-        const scratch = scratchVideoProject(templateId, sources);
-        res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
-        res.end(templatePreviewHtml(scratch));
-        return;
-      }
-    }
-    {
-      const m = p.match(/^\/api\/videos\/templates\/([^/]+)\/scene\/(\d+)\/preview$/);
-      if (m && method === "GET") {
-        const templateId = resolveTemplateId(decodeURIComponent(m[1]));
-        const sceneIndex = Number(m[2]);
-        const template = VIDEO_TEMPLATES.find((t) => t.id === templateId);
-        if (!template) return sendError(res, 404, `Unknown video template '${m[1]}'.`);
-        const sourceProjectId = url.searchParams.get("projectId");
-        const sources = sourceProjectId ? loadVideoProject(decodeURIComponent(sourceProjectId)).sources : [];
-        const scratch = scratchVideoProject(templateId, sources);
-        const scene = scratch.scenes[sceneIndex];
-        if (!scene) return sendError(res, 404, `Scene index ${sceneIndex} out of range for '${templateId}'.`);
-        const resolveUri = (rel: string) => `/api/videos/${scratch.id}/file?p=${encodeURIComponent(rel)}`;
-        res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
-        res.end(sceneHtml(scene, sourceUrisFor(scratch, scene, resolveUri), false, sourceKindsFor(scratch, scene)));
-        return;
-      }
-    }
-    {
-      const m = p.match(/^\/api\/videos\/template-thumb\/([^/]+)\.png$/);
-      if (m && method === "GET") {
-        const slug = resolveTemplateId(decodeURIComponent(m[1]));
-        const template = VIDEO_TEMPLATES.find((t) => t.id === slug);
-        if (!template) return sendError(res, 404, `Unknown video template '${m[1]}'.`);
-        const outDir = path.join(process.cwd(), "output", ".template-thumbs");
-        const thumbPath = path.join(outDir, `video-${slug}.png`);
-        if (!fs.existsSync(thumbPath)) await renderVideoTemplateThumbs(outDir, VIDEO_TEMPLATES);
-        res.writeHead(200, { "Content-Type": "image/png", "Cache-Control": "no-cache" });
-        fs.createReadStream(thumbPath).pipe(res);
-        return;
-      }
-    }
-    {
-      const m = p.match(/^\/api\/videos\/templates\/([^/]+)\/bgm\.wav$/);
-      if (m && method === "GET") {
-        const templateId = resolveTemplateId(decodeURIComponent(m[1]));
-        const preset = BGM_PRESETS[templateId];
-        if (!preset) return sendError(res, 404, `No BGM preset for template '${m[1]}'.`);
-        const outDir = path.join(process.cwd(), "output", ".bgm");
-        fs.mkdirSync(outDir, { recursive: true });
-        const wavPath = path.join(outDir, `${templateId}.wav`);
-        if (!fs.existsSync(wavPath)) fs.writeFileSync(wavPath, renderBgmWav(preset, 30));
-        res.writeHead(200, { "Content-Type": "audio/wav", "Cache-Control": "no-cache" });
-        fs.createReadStream(wavPath).pipe(res);
-        return;
-      }
-    }
-    {
-      const m = p.match(/^\/api\/videos\/([^/]+)\/apply-template$/);
-      if (m && method === "POST") {
-        const body = await readJsonBody(req);
-        const project = loadVideoProject(decodeURIComponent(m[1]));
-        applyVideoTemplate(project, body.templateId);
-        saveVideoProject(project);
-        sendJson(res, 200, project);
-        return;
-      }
-    }
-    {
-      const m = p.match(/^\/api\/videos\/([^/]+)\/template-preview$/);
-      if (m && method === "GET") {
-        const project = loadVideoProject(decodeURIComponent(m[1]));
-        res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
-        res.end(templatePreviewHtml(project));
-        return;
-      }
-    }
-
-    if (method === "GET" && p === "/api/videos/scene-options") {
-      sendJson(res, 200, { animations: listSceneAnimations(), backgrounds: listVideoBackgrounds(), layouts: { "9:16": listSceneLayouts("9:16"), "16:9": listSceneLayouts("16:9") } });
-      return;
-    }
-
-    if (method === "GET" && p === "/api/devices/export") {
-      const configPath = path.join(process.cwd(), "config", "devices.json");
-      res.writeHead(200, { 
-        "Content-Type": "application/json", 
-        "Content-Disposition": "attachment; filename=devices-registry.json" 
+  return new Promise((resolve) => {
+    server.listen(port, host, () => {
+      // High-speed WebSocket server for low-latency live Android mirroring
+      const androidWss = new WebSocketServer({
+        noServer: true,
+        maxPayload: 10 * 1024 * 1024,
+        perMessageDeflate: false,
       });
-      res.end(fs.readFileSync(configPath, "utf8"));
-      return;
-    }
-    if (method === "POST" && p === "/api/devices/import") {
-      try {
-        const body = await readJsonBody(req);
-        if (!body || !Array.isArray(body.devices)) {
-          sendError(res, 400, "Invalid JSON structure. Must have a 'devices' array.");
-          return;
-        }
-        const configPath = path.join(process.cwd(), "config", "devices.json");
-        fs.writeFileSync(configPath, JSON.stringify(body, null, 2), "utf8");
-        reloadRegistry();
-        sendJson(res, 200, { success: true });
-      } catch (err) {
-        sendError(res, 500, (err as Error).message);
-      }
-      return;
-    }
-    {
-      const m = p.match(/^\/api\/videos\/([^/]+)\/sources$/);
-      if (m && method === "POST") {
-        const id = decodeURIComponent(m[1]);
-        const project = loadVideoProject(id);
-        const name = url.searchParams.get("name") ?? `image_${project.sources.length + 1}`;
-        const contentType = req.headers["content-type"] ?? "";
-        const isVideo = contentType.includes("video/");
-        if (isVideo) {
-          const ext = contentType.includes("webm") ? "webm" : "mp4";
-          const relPath = `sources/rec_${Date.now()}.${ext}`;
-          fs.writeFileSync(videoFile(id, relPath), await readRawBody(req));
-          const source = { id: `src_${Date.now()}`, name, file: relPath, width: 0, height: 0, kind: "video" as const };
-          project.sources.push(source);
-          saveVideoProject(project);
-          sendJson(res, 200, source);
-          return;
-        }
-        const bodyBuf = await readRawBody(req);
-        const format = sniffImageFormat(bodyBuf);
-        if (!format) return sendError(res, 400, "Unrecognized image format (expected PNG, JPEG, WebP, or GIF).");
-        const relPath = `sources/img_${Date.now()}.${imageExtFor(format)}`;
-        const abs = videoFile(id, relPath);
-        fs.writeFileSync(abs, bodyBuf);
-        const dims = imageDimensions(bodyBuf, format);
-        const source = { id: `src_${Date.now()}`, name, file: relPath, width: dims?.width ?? 0, height: dims?.height ?? 0, kind: "image" as const };
-        project.sources.push(source);
 
-        // UPLOAD/REPLACE CONTRACT: an upload ALWAYS creates a new source and
-        // rebinds the slot to it -- it never overwrites or deletes the
-        // previously-bound source, even when this is functionally a
-        // "replace" from the user's perspective. This is deliberate: the old
-        // source may still be referenced by another scene/slot (e.g. the
-        // same screenshot reused in two scenes), and silently mutating a
-        // shared source out from under other slots would be a much worse
-        // surprise than leaving an unused file behind. Freeing storage is a
-        // separate, explicit action -- DELETE .../sources/:sourceId below --
-        // and is never triggered implicitly by an upload.
-        //
-        // ?slot=<sceneId>:<slotKey>[:<index>] binds this upload straight to
-        // the slot that requested it, instead of the user re-picking it from
-        // a dropdown afterward.
-        const slotParam = url.searchParams.get("slot");
-        if (slotParam) {
-          const [sceneId, slotKey, indexStr] = slotParam.split(":");
-          const scene = project.scenes.find((s) => s.id === sceneId);
-          if (scene) {
-            scene.slotValues = scene.slotValues ?? {};
-            const spec = slotSpecsForScene(project.template ?? "", scene.order).find((sp) => sp.key === slotKey);
-            if (spec?.kind === "imageList") {
-              const index = indexStr ? Number(indexStr) : 0;
-              const existing = scene.slotValues[slotKey];
-              const sourceIds = existing?.kind === "imageList" ? [...existing.sourceIds] : new Array(spec.count ?? 1).fill(null);
-              sourceIds[index] = source.id;
-              scene.slotValues[slotKey] = { kind: "imageList", sourceIds };
-            } else if (spec) {
-              scene.slotValues[slotKey] = { kind: "image", sourceId: source.id };
+      server.on("upgrade", (req, socket, head) => {
+        const u = new URL(req.url || "/", `http://${req.headers.host || "127.0.0.1"}`);
+        if (u.pathname === "/api/android/ws" || u.pathname === "/api/android/h264-ws") {
+          androidWss.handleUpgrade(req, socket, head, (ws) => androidWss.emit("connection", ws, req));
+        } else {
+          socket.destroy();
+        }
+      });
+
+      androidWss.on("connection", (ws, req) => {
+        const u = new URL(req.url || "/", `http://${req.headers.host || "127.0.0.1"}`);
+        const isH264 = u.pathname === "/api/android/h264-ws" || u.searchParams.get("codec") === "h264";
+
+        let unsubscribe: (() => void) | null = null;
+
+        if (isH264) {
+          const clientTimestamp = new Date().toISOString();
+          let forwardedChunks = 0;
+          // Flush cached SPS/PPS + keyframe so the VideoDecoder configures instantly — eliminates long black screen.
+          try {
+            const { header, keyFrame } = getInitialH264();
+            console.log(`[${clientTimestamp}] [SAG-WS] New H264 client connected. Initial flush: header=${header?.length ?? 0} bytes, keyFrame=${keyFrame?.length ?? 0} bytes`);
+            if (header && ws.readyState === WebSocket.OPEN) ws.send(header, { binary: true, compress: false });
+            if (keyFrame && ws.readyState === WebSocket.OPEN) ws.send(keyFrame, { binary: true, compress: false });
+          } catch (_) {}
+          const onH264Chunk = (chunk: Buffer) => {
+            if (ws.readyState === WebSocket.OPEN) {
+              forwardedChunks++;
+              if (forwardedChunks === 1 || forwardedChunks % 120 === 0) {
+                console.log(`[${new Date().toISOString()}] [SAG-WS] Forwarding chunk #${forwardedChunks} (${chunk.length} bytes) to WS client`);
+              }
+              ws.send(chunk, { binary: true, compress: false });
             }
-          }
-        }
-
-        saveVideoProject(project);
-        sendJson(res, 200, source);
-        return;
-      }
-    }
-    {
-      // Explicit, separate from upload: removes a source outright. Per the
-      // "leave dangling ids, let validation report them" edge-case decision
-      // (rather than cascading through every scene's slotValues), any slot
-      // still pointing at this id is NOT cleared here -- GET .../validate
-      // will flag it as a missing required asset, same as never having been
-      // filled, so the user sees exactly which slots broke.
-      const m = p.match(/^\/api\/videos\/([^/]+)\/sources\/([^/]+)$/);
-      if (m && method === "DELETE") {
-        const project = loadVideoProject(decodeURIComponent(m[1]));
-        const sourceId = decodeURIComponent(m[2]);
-        const idx = project.sources.findIndex((s) => s.id === sourceId);
-        if (idx === -1) return sendError(res, 404, "Source not found");
-        project.sources.splice(idx, 1);
-        saveVideoProject(project);
-        sendJson(res, 200, { ok: true });
-        return;
-      }
-    }
-    {
-      const m = p.match(/^\/api\/videos\/([^/]+)\/scenes$/);
-      if (m && method === "POST") {
-        const project = loadVideoProject(decodeURIComponent(m[1]));
-        if (project.scenes.length === 0) return sendError(res, 400, "Apply a template before adding scenes.");
-        if (project.scenes.length >= 24) return sendError(res, 400, "24 scenes is the maximum for this project.");
-        const last = [...project.scenes].sort((a, b) => a.order - b.order).at(-1)!;
-        const order = project.scenes.length;
-        const newScene = { ...last, id: `scene_${Date.now()}`, order, screenIds: undefined, text: "", subtext: "" };
-        project.scenes.push(newScene);
-        saveVideoProject(project);
-        sendJson(res, 200, project);
-        return;
-      }
-    }
-    {
-      const m = p.match(/^\/api\/videos\/([^/]+)\/scenes\/order$/);
-      if (m && method === "PATCH") {
-        const body = await readJsonBody(req);
-        const project = loadVideoProject(decodeURIComponent(m[1]));
-        const order: string[] = body.order ?? [];
-        for (const scene of project.scenes) {
-          const idx = order.indexOf(scene.id);
-          if (idx !== -1) scene.order = idx;
-        }
-        project.scenes.sort((a, b) => a.order - b.order);
-        saveVideoProject(project);
-        sendJson(res, 200, project);
-        return;
-      }
-    }
-    {
-      const m = p.match(/^\/api\/videos\/([^/]+)\/configs$/);
-      if (m && method === "GET") {
-        const project = loadVideoProject(decodeURIComponent(m[1]));
-        sendJson(res, 200, project.savedConfigs ?? []);
-        return;
-      }
-      if (m && method === "POST") {
-        const body = await readJsonBody(req);
-        const name = String(body.name ?? "").trim();
-        if (!name) return sendError(res, 400, "A configuration name is required.");
-        const project = loadVideoProject(decodeURIComponent(m[1]));
-        if (!project.template || project.scenes.length === 0) return sendError(res, 400, "Apply a template before saving a configuration.");
-        project.savedConfigs = project.savedConfigs ?? [];
-        const existing = project.savedConfigs.find((c) => c.name === name);
-        const snapshot = {
-          id: existing?.id ?? `cfg_${Date.now()}`,
-          name,
-          template: project.template,
-          scenes: JSON.parse(JSON.stringify(project.scenes)),
-          savedAt: new Date().toISOString(),
-        };
-        if (existing) {
-          if (!body.overwrite) return sendError(res, 409, `A configuration named '${name}' already exists.`);
-          Object.assign(existing, snapshot);
+          };
+          unsubscribe = subscribeAndroidH264(onH264Chunk);
         } else {
-          project.savedConfigs.push(snapshot);
+          let sending = false;
+          let pendingFrame: Buffer | null = null;
+
+          const sendNext = (frame: Buffer) => {
+            if (ws.readyState !== WebSocket.OPEN) return;
+            sending = true;
+            ws.send(frame, { binary: true, compress: false }, (err) => {
+              sending = false;
+              if (!err && pendingFrame) {
+                const next = pendingFrame;
+                pendingFrame = null;
+                sendNext(next);
+              }
+            });
+          };
+
+          const onFrame = (frame: Buffer) => {
+            if (ws.readyState !== WebSocket.OPEN) return;
+            if (sending) {
+              pendingFrame = frame;
+              return;
+            }
+            sendNext(frame);
+          };
+
+          unsubscribe = subscribeAndroidFrames(onFrame);
+          try {
+            const initial = getAndroidFrame();
+            onFrame(initial);
+          } catch (_) {}
         }
-        saveVideoProject(project);
-        sendJson(res, 200, project.savedConfigs);
-        return;
-      }
-    }
-    {
-      const m = p.match(/^\/api\/videos\/([^/]+)\/configs\/([^/]+)\/apply$/);
-      if (m && method === "POST") {
-        const project = loadVideoProject(decodeURIComponent(m[1]));
-        const cfg = (project.savedConfigs ?? []).find((c) => c.id === decodeURIComponent(m[2]));
-        if (!cfg) return sendError(res, 404, "Saved configuration not found");
-        project.template = cfg.template;
-        project.scenes = JSON.parse(JSON.stringify(cfg.scenes));
-        saveVideoProject(project);
-        sendJson(res, 200, project);
-        return;
-      }
-    }
-    {
-      const m = p.match(/^\/api\/videos\/([^/]+)\/configs\/([^/]+)$/);
-      if (m && method === "DELETE") {
-        const project = loadVideoProject(decodeURIComponent(m[1]));
-        const before = project.savedConfigs?.length ?? 0;
-        project.savedConfigs = (project.savedConfigs ?? []).filter((c) => c.id !== decodeURIComponent(m[2]));
-        if (project.savedConfigs.length === before) return sendError(res, 404, "Saved configuration not found");
-        saveVideoProject(project);
-        sendJson(res, 200, project.savedConfigs);
-        return;
-      }
-    }
-    {
-      const m = p.match(/^\/api\/videos\/([^/]+)\/scenes\/([^/]+)$/);
-      if (m && method === "PUT") {
-        const body = await readJsonBody(req);
-        const project = loadVideoProject(decodeURIComponent(m[1]));
-        const idx = project.scenes.findIndex((s) => s.id === decodeURIComponent(m[2]));
-        if (idx === -1) return sendError(res, 404, "Scene not found");
-        const nextAspect = body.aspectRatio ?? project.scenes[idx].aspectRatio;
-        if (project.scenes.some((s, i) => i !== idx && (s.aspectRatio ?? "9:16") !== (nextAspect ?? "9:16"))) {
-          return sendError(res, 400, "Every scene in a project must share the same aspect ratio.");
-        }
-        project.scenes[idx] = { ...project.scenes[idx], ...body };
-        saveVideoProject(project);
-        sendJson(res, 200, project.scenes[idx]);
-        return;
-      }
-      if (m && method === "DELETE") {
-        const project = loadVideoProject(decodeURIComponent(m[1]));
-        const idx = project.scenes.findIndex((s) => s.id === decodeURIComponent(m[2]));
-        if (idx === -1) return sendError(res, 404, "Scene not found");
-        if (project.scenes.length <= 1) return sendError(res, 400, "A project needs at least one scene.");
-        project.scenes.splice(idx, 1);
-        project.scenes.sort((a, b) => a.order - b.order).forEach((s, i) => (s.order = i));
-        saveVideoProject(project);
-        sendJson(res, 200, project);
-        return;
-      }
-    }
-    {
-      const m = p.match(/^\/api\/videos\/([^/]+)\/scenes\/([^/]+)\/ai-text$/);
-      if (m && method === "POST") {
-        const body = await readJsonBody(req);
-        const prompt =
-          `Write a short promo-video on-screen line (max 6 words) and an optional subtext (max 10 words) ` +
-          `for a scene described as: "${body.hint ?? ""}". Never invent features not implied by the hint. ` +
-          `Reply with ONLY JSON: {"text":"...","subtext":"..."}`;
-        const reply = await chat(prompt);
-        const match = reply.match(/\{[\s\S]*\}/);
-        sendJson(res, 200, match ? JSON.parse(match[0]) : { text: "", subtext: "" });
-        return;
-      }
-    }
-    {
-      const m = p.match(/^\/api\/videos\/([^/]+)\/scene-preview\/([^/]+)$/);
-      if (m && method === "GET") {
-        const project = loadVideoProject(decodeURIComponent(m[1]));
-        res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
-        res.end(scenePreviewHtml(project, decodeURIComponent(m[2])));
-        return;
-      }
-    }
-    {
-      const m = p.match(/^\/api\/videos\/([^/]+)\/scene-spec\/([^/]+)$/);
-      if (m && method === "GET") {
-        const project = loadVideoProject(decodeURIComponent(m[1]));
-        const scene = project.scenes.find((s) => s.id === decodeURIComponent(m[2]));
-        if (!scene || !project.template) return sendError(res, 404, "Scene not found");
-        const specs = slotSpecsForScene(project.template, scene.order);
-        const issues = validateScene(specs, scene.slotValues);
-        sendJson(res, 200, { specs, values: scene.slotValues ?? {}, issues });
-        return;
-      }
-    }
-    {
-      const m = p.match(/^\/api\/videos\/([^/]+)\/scenes\/([^/]+)\/slots$/);
-      if (m && method === "PUT") {
-        const body = await readJsonBody(req);
-        const project = loadVideoProject(decodeURIComponent(m[1]));
-        const scene = project.scenes.find((s) => s.id === decodeURIComponent(m[2]));
-        if (!scene) return sendError(res, 404, "Scene not found");
-        scene.slotValues = { ...(scene.slotValues ?? {}), ...(body.slotValues ?? {}) };
-        saveVideoProject(project);
-        const specs = project.template ? slotSpecsForScene(project.template, scene.order) : [];
-        sendJson(res, 200, { values: scene.slotValues, issues: validateScene(specs, scene.slotValues) });
-        return;
-      }
-    }
-    {
-      const m = p.match(/^\/api\/videos\/([^/]+)\/validate$/);
-      if (m && method === "GET") {
-        const project = loadVideoProject(decodeURIComponent(m[1]));
-        const result = validateProject(project);
-        sendJson(res, 200, result);
-        return;
-      }
-    }
-    {
-      const m = p.match(/^\/api\/videos\/([^/]+)\/bgm$/);
-      if (m && method === "POST") {
-        const id = decodeURIComponent(m[1]);
-        const project = loadVideoProject(id);
-        const contentType = req.headers["content-type"] ?? "audio/mpeg";
-        const ext = contentType.includes("wav") ? "wav" : contentType.includes("ogg") ? "ogg" : "mp3";
-        const relPath = `bgm.${ext}`;
-        fs.writeFileSync(videoFile(id, relPath), await readRawBody(req));
-        project.bgm = relPath;
-        saveVideoProject(project);
-        sendJson(res, 200, { ok: true, bgm: relPath });
-        return;
-      }
-    }
-    {
-      const m = p.match(/^\/api\/videos\/([^/]+)\/render$/);
-      if (m && method === "POST") {
-        const id = decodeURIComponent(m[1]);
-        const project = loadVideoProject(id);
-        const preflight = validateProject(project);
-        if (!preflight.ready) {
-          res.writeHead(400, { "Content-Type": "application/json; charset=utf-8" });
-          res.end(JSON.stringify({ error: "Some scenes are missing required content.", ...preflight }));
-          return;
-        }
-        const videoPath = await renderVideo(project);
-        project.outputs.video = path.relative(videoDir(id), videoPath).split(path.sep).join("/");
-        saveVideoProject(project);
-        sendJson(res, 200, { videoPath: project.outputs.video });
-        return;
-      }
-    }
-    {
-      const m = p.match(/^\/api\/videos\/([^/]+)\/download$/);
-      if (m && method === "GET") {
-        sendFile(res, path.join(videoDir(decodeURIComponent(m[1])), "promo.mp4"), "video/mp4");
-        return;
-      }
-    }
 
-    sendError(res, 404, `No route for ${method} ${p}`);
-  } catch (err) {
-    // Every failure surfaces as a real, readable message -- never a silent
-    // 500 or a hung request. This is the same "fail loud" discipline as
-    // the capture/auth layers.
-    sendError(res, 500, (err as Error).message || String(err));
-  }
-}
+        ws.on("message", (raw) => {
+          // Binary scrcpy control packets (32/14/21 bytes): pass through to control socket with zero-copy.
+          try {
+            if (raw instanceof Buffer && (raw.length === 32 || raw.length === 14 || raw.length === 21)) {
+              if (raw[0] === 2 || raw[0] === 0 || raw[0] === 3) {
+                if (sendScrcpyControlBuffer(raw as unknown as Buffer)) return;
+              }
+            }
+            const msg = raw.toString();
+            const parsedForBinary = Buffer.from(msg);
+            if (parsedForBinary.length === 32 && parsedForBinary[0] === 2) {
+              if (sendScrcpyControlBuffer(parsedForBinary)) return;
+            } else if (parsedForBinary.length === 14 && parsedForBinary[0] === 0) {
+              if (sendScrcpyControlBuffer(parsedForBinary)) return;
+            } else if (parsedForBinary.length === 21 && parsedForBinary[0] === 3) {
+              if (sendScrcpyControlBuffer(parsedForBinary)) return;
+            }
+            const parsed = JSON.parse(msg);
+            if (parsed && typeof parsed === "object" && parsed.type) {
+              executeAndroidAction(parsed);
+            }
+          } catch (_) {}
+        });
 
-export interface UiServerOptions {
-  port?: number;
-  host?: string;
-  openBrowser?: boolean;
-}
+        const cleanup = () => {
+          if (unsubscribe) {
+            unsubscribe();
+            unsubscribe = null;
+          }
+        };
 
-export async function startUiServer(options: UiServerOptions = {}): Promise<http.Server> {
-  const port = options.port ?? 8787;
-  const host = options.host ?? "127.0.0.1";
-
-  if (!fs.existsSync(INDEX_HTML_PATH)) {
-    throw new Error(
-      `Cannot start the web interface: missing UI asset at ${INDEX_HTML_PATH}. ` +
-        `Run "npm run build" (it copies web/index.html into dist/web/) and try again.`,
-    );
-  }
-
-  // Last-resort safety net: keep the process (and any live browser/ADB sessions) alive on
-  // an error that somehow escapes handleRequest's own try/catch, instead of crashing silently.
-  process.on("uncaughtException", (err) => {
-    console.error("[SAG-SERVER] Uncaught exception:", err);
-  });
-  process.on("unhandledRejection", (reason) => {
-    console.error("[SAG-SERVER] Unhandled rejection:", reason);
-  });
-
-  const server = http.createServer((req, res) => {
-    handleRequest(req, res).catch((err) => sendError(res, 500, (err as Error).message));
-  });
-
-  await new Promise<void>((resolve, reject) => {
-    server.once("error", (err: NodeJS.ErrnoException) => {
-      if (err.code === "EADDRINUSE") {
-        reject(new Error(`Port ${port} is already in use. Set SAG_UI_PORT to a different port and try again.`));
-      } else {
-        reject(err);
-      }
-    });
-    server.listen(port, host, () => resolve());
-  });
-
-  // Live Android mirror over a raw WebSocket instead of the multipart <img>
-  // stream: the browser's multipart decoder queues every part on its main
-  // thread with no way to drop stale ones, so under any sustained load the
-  // backlog grows into the multi-second lag this exists to eliminate. A
-  // WebSocket has no such queue on our side -- we push only the newest
-  // decoded frame per client and skip any frame still in flight, so the
-  // client is always converging on "now" rather than draining a backlog.
-  const androidWss = new WebSocketServer({ noServer: true });
-  server.on("upgrade", (req, socket, head) => {
-    if (req.url === "/api/android/ws") {
-      androidWss.handleUpgrade(req, socket, head, (ws) => androidWss.emit("connection", ws, req));
-    } else {
-      socket.destroy();
-    }
-  });
-  androidWss.on("connection", (ws) => {
-    let sending = false;
-    let pending: Buffer | null = null;
-    const send = (frame: Buffer) => {
-      sending = true;
-      ws.send(frame, () => {
-        sending = false;
-        if (pending) {
-          const next = pending;
-          pending = null;
-          send(next);
-        }
+        ws.on("close", cleanup);
+        ws.on("error", cleanup);
       });
-    };
-    const onFrame = (frame: Buffer) => {
-      if (sending) {
-        pending = frame;
-        return;
+
+      const address = `http://${host}:${port}`;
+      console.log(`Store Assets Generator web interface running at ${address}`);
+
+      if (options.openBrowser !== false) {
+        openInBrowser(address);
       }
-      send(frame);
-    };
-    const unsubscribe = subscribeAndroidFrames(onFrame);
-    try {
-      const initial = getAndroidFrame();
-      onFrame(initial);
-    } catch (_) {
-      // No frame yet -- the first one arrives via onFrame above.
-    }
-    ws.on("message", (raw) => {
-      try {
-        const msg = JSON.parse(raw.toString());
-        if (msg && typeof msg === "object" && msg.type) {
-          executeAndroidAction(msg);
-        }
-      } catch (_) {}
+
+      resolve(server);
     });
-    ws.on("close", unsubscribe);
-    ws.on("error", unsubscribe);
   });
-
-  const address = `http://${host}:${port}`;
-  console.log(`Store Assets Generator web interface running at ${address}`);
-
-  if (options.openBrowser !== false) {
-    openInBrowser(address);
-  }
-
-  return server;
 }
 
 function openInBrowser(url: string): void {
@@ -1892,7 +1128,5 @@ function openInBrowser(url: string): void {
     if (platform === "win32") exec(`start "" "${url}"`);
     else if (platform === "darwin") exec(`open "${url}"`);
     else exec(`xdg-open "${url}"`);
-  } catch {
-    // Non-fatal -- the URL is already printed to the console above.
-  }
+  } catch {}
 }
