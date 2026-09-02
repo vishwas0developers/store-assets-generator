@@ -395,7 +395,10 @@ function pngSize(buf: Buffer): { width: number; height: number } {
   return { width: buf.readUInt32BE(16), height: buf.readUInt32BE(20) };
 }
 
-export async function captureAndroidScreen(projectId: string): Promise<{ id: number; file: string }> {
+export async function captureAndroidScreen(
+  projectId: string,
+  imageBase64?: string
+): Promise<{ id: number; file: string }> {
   if (!currentDeviceId) {
     throw new Error("No active Android session.");
   }
@@ -408,21 +411,38 @@ export async function captureAndroidScreen(projectId: string): Promise<{ id: num
 
   let buffer: Buffer | null = null;
 
-  // Try direct high-res native ADB screenshot capture (screencap -p)
-  try {
-    const adb = resolveTool("adb");
-    const { stdout } = await execFileAsync(adb, ["-s", currentDeviceId, "exec-out", "screencap", "-p"], {
-      maxBuffer: 50 * 1024 * 1024,
-      encoding: "buffer" as any,
-    });
-    const buf = stdout as unknown as Buffer;
-    if (buf && buf.length > 8 && buf[0] === 0x89 && buf[1] === 0x50 && buf[2] === 0x4e && buf[3] === 0x47) {
-      buffer = buf;
+  // 1. If high-quality imageBase64 was provided from client's active WebCodecs canvas, use it
+  if (imageBase64 && typeof imageBase64 === "string") {
+    try {
+      const cleanBase64 = imageBase64.replace(/^data:image\/\w+;base64,/, "");
+      const buf = Buffer.from(cleanBase64, "base64");
+      if (buf && buf.length > 8 && buf[0] === 0x89 && buf[1] === 0x50 && buf[2] === 0x4e && buf[3] === 0x47) {
+        buffer = buf;
+      }
+    } catch (err) {
+      console.warn("[SAG-ANDROID] Failed to decode client canvas base64 image:", err);
     }
-  } catch (err) {
-    console.warn("[SAG-ANDROID] Native screencap failed, falling back to stream frame:", err);
   }
 
+  // 2. Try direct high-res native ADB screenshot capture (screencap -p) with strict timeout
+  if (!buffer) {
+    try {
+      const adb = resolveTool("adb");
+      const { stdout } = await execFileAsync(adb, ["-s", currentDeviceId, "exec-out", "screencap", "-p"], {
+        maxBuffer: 50 * 1024 * 1024,
+        encoding: "buffer" as any,
+        timeout: 4000,
+      });
+      const buf = stdout as unknown as Buffer;
+      if (buf && buf.length > 8 && buf[0] === 0x89 && buf[1] === 0x50 && buf[2] === 0x4e && buf[3] === 0x47) {
+        buffer = buf;
+      }
+    } catch (err) {
+      console.warn("[SAG-ANDROID] Native screencap failed, falling back to stream frame:", err);
+    }
+  }
+
+  // 3. Fallback to decoding current H.264 live stream keyframe via ffmpeg
   if (!buffer) {
     buffer = await getLatestFramePng();
   }

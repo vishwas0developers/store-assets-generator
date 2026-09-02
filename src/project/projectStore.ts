@@ -132,3 +132,48 @@ export function deleteProject(id: string): void {
   const dir = projectDir(id);
   fs.rmSync(dir, { recursive: true, force: true });
 }
+
+export function deleteProjectCapture(projectId: string, captureIdOrFile: number | string): boolean {
+  const project = loadProject(projectId);
+  const isNumeric = typeof captureIdOrFile === "number" || /^\d+$/.test(String(captureIdOrFile));
+  const numericId = isNumeric ? Number(captureIdOrFile) : -1;
+  const filePath = String(captureIdOrFile);
+
+  const captureIndex = project.captures.findIndex((c) =>
+    (numericId !== -1 && c.id === numericId) || c.file === filePath
+  );
+
+  let targetFile = "";
+  if (captureIndex !== -1) {
+    targetFile = project.captures[captureIndex].file;
+    project.captures.splice(captureIndex, 1);
+  } else if (filePath) {
+    targetFile = filePath;
+  }
+
+  // Also remove from nested mockup and video sources if present
+  if (project.mockup && Array.isArray(project.mockup.sources)) {
+    project.mockup.sources = project.mockup.sources.filter((s: any) =>
+      !(s.file === targetFile || (numericId !== -1 && s.file === `captures/${numericId}.png`))
+    );
+  }
+  if (project.video && Array.isArray(project.video.sources)) {
+    project.video.sources = project.video.sources.filter((s: any) =>
+      !(s.file === targetFile || (numericId !== -1 && s.file === `captures/${numericId}.mp4`))
+    );
+  }
+
+  // Delete physical file from disk if exists
+  if (targetFile) {
+    try {
+      const absPath = projectFile(projectId, targetFile);
+      if (fs.existsSync(absPath)) {
+        fs.unlinkSync(absPath);
+      }
+    } catch (_) {}
+  }
+
+  saveProject(project);
+  return captureIndex !== -1;
+}
+

@@ -1713,7 +1713,7 @@ androidOverlayEl.addEventListener("wheel", (e) => {
 
 async function triggerAndroidCapture() {
   if (!androidConnected || !activeProjectId) {
-    await alert("Please connect to an Android device first before capturing.", "warning");
+    showAlert("Please connect to an Android device first before capturing.", "warning");
     return;
   }
 
@@ -1725,15 +1725,26 @@ async function triggerAndroidCapture() {
     setTimeout(() => { target.style.opacity = "1"; }, 150);
   }
 
+  // Extract high-res WebCodecs GPU decoded canvas image if available
+  let imageData = undefined;
+  if (canvas && canvas.width > 0 && canvas.height > 0) {
+    try {
+      imageData = canvas.toDataURL("image/png");
+    } catch (_) {}
+  }
+
   try {
     const capture = await api("/api/android/capture", {
       method: "POST",
-      body: { projectId: activeProjectId }
+      body: {
+        projectId: activeProjectId,
+        imageData,
+      }
     });
     showToast(`Captured Screen ${capture.id} (${capture.file})`, "success");
     await renderAndroidCaptures();
   } catch (e) {
-    await alert("Capture failed: " + e.message);
+    showAlert("Capture failed: " + e.message, "error", "Capture Error");
   }
 }
 
@@ -1791,7 +1802,7 @@ function setupRecorder(view, btnId, timerId, isConnected, refreshGallery) {
       showToast(`Recorded Video ${rec.id} (${rec.durationSec}s)`, "success");
       await refreshGallery();
     } catch (e) {
-      await alert("Recording failed: " + e.message);
+      showAlert("Recording failed: " + e.message, "error", "Recording Error");
     }
   };
 
@@ -1804,7 +1815,7 @@ function setupRecorder(view, btnId, timerId, isConnected, refreshGallery) {
         return;
       }
       if (!isConnected() || !activeProjectId) {
-        await alert("Please connect a live session first before recording.", "warning");
+        showAlert("Please connect a live session first before recording.", "warning");
         return;
       }
       await api(`/api/${view}/record/start`, { method: "POST", body: { projectId: activeProjectId } });
@@ -1817,7 +1828,7 @@ function setupRecorder(view, btnId, timerId, isConnected, refreshGallery) {
     } catch (e) {
       active = false;
       paint();
-      await alert("Could not start recording: " + e.message);
+      showAlert("Could not start recording: " + e.message, "error", "Recording Error");
     } finally {
       busy = false;
     }
