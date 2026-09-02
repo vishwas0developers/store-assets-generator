@@ -785,7 +785,9 @@ export async function startWebServer(options: { port?: number; host?: string; op
 
     if (method === "GET" && p === "/api/android/apps") {
       try {
-        const apps = await listAndroidApps(url.searchParams.get("refresh") === "1");
+        const refresh = url.searchParams.get("refresh") === "1" || url.searchParams.get("refresh") === "true";
+        const deviceId = url.searchParams.get("deviceId") || undefined;
+        const apps = await listAndroidApps(refresh, deviceId);
         sendJson(res, 200, { apps });
       } catch (err: any) {
         sendError(res, 500, err.message || "Failed to list apps");

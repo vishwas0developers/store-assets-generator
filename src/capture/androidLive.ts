@@ -155,35 +155,132 @@ function prettifyPackageName(pkg: string): string {
     .join(" ");
 }
 
+/**
+ * Extracts authentic human-readable application labels directly from Android PackageManager
+ * via one-shot scrcpy-server list_apps or cmd package query-intent-activities.
+ */
+async function fetchRealAndroidAppLabels(deviceId: string, adb: string): Promise<Map<string, string>> {
+  const labelMap = new Map<string, string>();
+
+  // Primary strategy: One-shot scrcpy-server execution on a private jar path with list_apps=true cleanup=false
+  try {
+    const scrcpyBin = resolveTool("scrcpy");
+    const scrcpyDir = path.dirname(scrcpyBin);
+    const scrcpyServerPath = path.join(scrcpyDir, "scrcpy-server");
+
+    // Ensure distinct jar path /data/local/tmp/sag-applist.jar so it never conflicts with active session jar
+    if (fs.existsSync(scrcpyServerPath)) {
+      await execFileAsync(adb, ["-s", deviceId, "push", scrcpyServerPath, "/data/local/tmp/sag-applist.jar"]).catch(() => {});
+    }
+
+    const { stdout: serverOut } = await execFileAsync(
+      adb,
+      [
+        "-s", deviceId, "shell",
+        "CLASSPATH=/data/local/tmp/sag-applist.jar",
+        "app_process", "/", "com.genymobile.scrcpy.Server", "4.1",
+        "list_apps=true", "cleanup=false", "log_level=info"
+      ],
+      { timeout: 15000 }
+    );
+
+    if (serverOut && serverOut.includes("List of apps:")) {
+      const lines = serverOut.split("\n");
+      let pendingName: string | null = null;
+      for (const line of lines) {
+        const clean = line.replace(/[ \s]+/g, " ").trim();
+        // Standard single-line entry: "- App Name com.package.name" or "* App Name com.package.name"
+        const directMatch = clean.match(/^[*-]\s+(.+?)\s+([a-zA-Z][a-zA-Z0-9_.]+\.[a-zA-Z][a-zA-Z0-9_]+)$/);
+        if (directMatch) {
+          const name = directMatch[1].trim();
+          const pkg = directMatch[2].trim();
+          if (name && pkg) {
+            labelMap.set(pkg, name);
+          }
+          pendingName = null;
+          continue;
+        }
+
+        // Long name wrapping onto two lines
+        const nameMatch = clean.match(/^[*-]\s+(.+)$/);
+        if (nameMatch && !clean.includes("List of apps:")) {
+          pendingName = nameMatch[1].trim();
+          continue;
+        }
+
+        if (pendingName) {
+          const pkgMatch = clean.match(/^([a-zA-Z][a-zA-Z0-9_.]+\.[a-zA-Z][a-zA-Z0-9_]+)$/);
+          if (pkgMatch) {
+            labelMap.set(pkgMatch[1].trim(), pendingName);
+          }
+          pendingName = null;
+        }
+      }
+
+      console.log(`[SAG-APPS] Successfully extracted ${labelMap.size} authentic app titles from Android device`);
+      if (labelMap.size > 0) return labelMap;
+    }
+  } catch (err: any) {
+    console.log(`[SAG-APPS] scrcpy-server list_apps notice: ${err?.message || err}`);
+  }
+
+  // Secondary fallback: query launcher activities via cmd package
+  try {
+    const { stdout: queryOut } = await execFileAsync(
+      adb,
+      ["-s", deviceId, "shell", "cmd", "package", "query-intent-activities", "-a", "android.intent.action.MAIN", "-c", "android.intent.category.LAUNCHER"],
+      { timeout: 10000 }
+    );
+    if (queryOut) {
+      const pkgMatches = queryOut.matchAll(/packageName=([a-zA-Z0-9_.]+)(?:[\s\S]*?nonLocalizedLabel=([^\n]+))?/g);
+      for (const match of pkgMatches) {
+        const pkg = match[1];
+        const label = match[2]?.trim();
+        if (pkg && label && label !== "null" && label !== "") {
+          labelMap.set(pkg, label);
+        }
+      }
+    }
+  } catch {
+    // Ignore error
+  }
+
+  return labelMap;
+}
+
 let appsCache: { deviceId: string; apps: AndroidAppInfo[] } | null = null;
 
-// Uses pure ADB shell (pm list packages + dumpsys) — does NOT invoke scrcpy.exe
-// so it cannot push a new scrcpy-server.jar that would kill the active mirroring session.
-export async function listAndroidApps(forceRefresh = false): Promise<AndroidAppInfo[]> {
-  if (!currentDeviceId) throw new Error("No active Android session.");
-  if (!forceRefresh && appsCache?.deviceId === currentDeviceId) return appsCache.apps;
+// Retrieves third-party applications with real Android application labels
+export async function listAndroidApps(forceRefresh = false, deviceId?: string): Promise<AndroidAppInfo[]> {
+  const devices = await backend.listDevices();
+  const targetDeviceId = deviceId || currentDeviceId || devices[0];
+  if (!targetDeviceId) throw new Error("No connected Android device found.");
+  if (!forceRefresh && appsCache?.deviceId === targetDeviceId) return appsCache.apps;
 
   const adb = resolveTool("adb");
 
   // Step 1: list all third-party package names via pm list packages -3
-  const { stdout: pkgOut } = await execFileAsync(adb, ["-s", currentDeviceId, "shell", "pm", "list", "packages", "-3"], { timeout: 10000 });
+  const { stdout: pkgOut } = await execFileAsync(adb, ["-s", targetDeviceId, "shell", "pm", "list", "packages", "-3"], { timeout: 10000 });
   const packages = pkgOut
     .split("\n")
     .map((l) => l.replace(/^package:/, "").trim())
     .filter((p) => /^[a-zA-Z][a-zA-Z0-9_.]+\.[a-zA-Z][a-zA-Z0-9_]+$/.test(p));
 
   if (packages.length === 0) {
-    appsCache = { deviceId: currentDeviceId, apps: [] };
+    appsCache = { deviceId: targetDeviceId, apps: [] };
     return [];
   }
 
-  // Step 2: format app labels
+  // Step 2: fetch real Android OS application names
+  const realLabels = await fetchRealAndroidAppLabels(targetDeviceId, adb);
+
+  // Step 3: format app info using authentic labels, falling back to prettifyPackageName only if unresolvable
   const apps: AndroidAppInfo[] = packages.map((pkg) => ({
     packageName: pkg,
-    label: prettifyPackageName(pkg),
+    label: realLabels.get(pkg) || prettifyPackageName(pkg),
   }));
   apps.sort((a, b) => a.label.localeCompare(b.label));
-  appsCache = { deviceId: currentDeviceId, apps };
+  appsCache = { deviceId: targetDeviceId, apps };
   return apps;
 }
 
