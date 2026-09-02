@@ -1076,27 +1076,37 @@ export async function startWebServer(options: { port?: number; host?: string; op
         }
 
         ws.on("message", (raw) => {
-          // Binary scrcpy control packets (32/14/21 bytes): pass through to control socket with zero-copy.
+          // Binary scrcpy control packets (32/14/21/2/1 bytes): pass through to control socket with zero-copy.
           try {
-            if (raw instanceof Buffer && (raw.length === 32 || raw.length === 14 || raw.length === 21)) {
-              if (raw[0] === 2 || raw[0] === 0 || raw[0] === 3) {
-                if (sendScrcpyControlBuffer(raw as unknown as Buffer)) return;
+            const buf = Buffer.isBuffer(raw)
+              ? raw
+              : raw instanceof ArrayBuffer
+              ? Buffer.from(raw)
+              : Array.isArray(raw)
+              ? Buffer.concat(raw)
+              : null;
+
+            if (buf && (buf.length === 32 || buf.length === 14 || buf.length === 21 || buf.length === 2 || buf.length === 1)) {
+              if (sendScrcpyControlBuffer(buf)) {
+                if (buf[0] === 2 && buf[1] !== 2) {
+                  console.log(`[SAG-WS-CONTROL] Forwarded binary touch opcode=2 action=${buf[1]} (${buf.length}b)`);
+                } else if (buf[0] === 0) {
+                  console.log(`[SAG-WS-CONTROL] Forwarded binary key opcode=0 keycode=${buf.readUInt32BE(2)} (${buf.length}b)`);
+                } else if (buf[0] === 3) {
+                  console.log(`[SAG-WS-CONTROL] Forwarded binary scroll opcode=3 (${buf.length}b)`);
+                }
+                return;
               }
             }
-            const msg = raw.toString();
-            const parsedForBinary = Buffer.from(msg);
-            if (parsedForBinary.length === 32 && parsedForBinary[0] === 2) {
-              if (sendScrcpyControlBuffer(parsedForBinary)) return;
-            } else if (parsedForBinary.length === 14 && parsedForBinary[0] === 0) {
-              if (sendScrcpyControlBuffer(parsedForBinary)) return;
-            } else if (parsedForBinary.length === 21 && parsedForBinary[0] === 3) {
-              if (sendScrcpyControlBuffer(parsedForBinary)) return;
-            }
+
+            const msg = (buf ? buf : Buffer.from(raw as any)).toString("utf-8");
             const parsed = JSON.parse(msg);
             if (parsed && typeof parsed === "object" && parsed.type) {
               executeAndroidAction(parsed);
             }
-          } catch (_) {}
+          } catch (err: any) {
+            // Non-JSON string or unparseable buffer
+          }
         });
 
         const cleanup = () => {

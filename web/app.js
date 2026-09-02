@@ -860,19 +860,24 @@ function extractSpsCodecString(nalBytes) {
   return "avc1.42e01f";
 }
 
+function floatToI16fp(val) {
+  const clamped = Math.max(-1, Math.min(1, val));
+  return Math.floor(clamped === 1 ? 0x7fff : clamped * 0x8000);
+}
+
 function serializeBinaryTouch(action, x, y, width, height) {
   const buf = new ArrayBuffer(32);
   const v = new DataView(buf);
   v.setUint8(0, 2); // INJECT_TOUCH_EVENT
   v.setUint8(1, action === "down" ? 0 : action === "up" ? 1 : 2);
-  v.setBigInt64(2, -2n, false); // GENERIC_FINGER (-2n)
+  v.setBigInt64(2, -2n, false); // SC_POINTER_ID_GENERIC_FINGER (-2n)
   v.setInt32(10, Math.round(x), false);
   v.setInt32(14, Math.round(y), false);
-  v.setUint16(18, Math.round(width), false);
-  v.setUint16(20, Math.round(height), false);
-  v.setUint16(22, action === "up" ? 0 : 0xffff, false);
-  v.setUint32(24, 0, false);
-  v.setUint32(28, action === "up" ? 0 : 1, false);
+  v.setUint16(18, Math.max(1, Math.round(width)), false);
+  v.setUint16(20, Math.max(1, Math.round(height)), false);
+  v.setUint16(22, action === "up" ? 0 : 0xffff, false); // pressure
+  v.setUint32(24, 1, false); // actionButton = AMOTION_EVENT_BUTTON_PRIMARY
+  v.setUint32(28, action === "up" ? 0 : 1, false); // buttons
   return buf;
 }
 
@@ -885,6 +890,31 @@ function serializeBinaryKey(action, keycode) {
   v.setUint32(6, 0, false);
   v.setUint32(10, 0, false);
   return buf;
+}
+
+function serializeBinaryScroll(x, y, width, height, hscroll, vscroll) {
+  const buf = new ArrayBuffer(21);
+  const v = new DataView(buf);
+  v.setUint8(0, 3); // INJECT_SCROLL_EVENT
+  v.setInt32(1, Math.round(x), false);
+  v.setInt32(5, Math.round(y), false);
+  v.setUint16(9, Math.max(1, Math.round(width)), false);
+  v.setUint16(11, Math.max(1, Math.round(height)), false);
+  v.setInt16(13, floatToI16fp(hscroll), false);
+  v.setInt16(15, floatToI16fp(vscroll), false);
+  v.setUint32(17, 0, false);
+  return buf;
+}
+
+function getActiveStreamDimensions() {
+  const canvas = $("android-frame-canvas");
+  if (canvas && canvas.width > 0 && canvas.height > 0) {
+    return { width: canvas.width, height: canvas.height };
+  }
+  return {
+    width: window.androidStreamWidth || window.androidDeviceWidth || 1080,
+    height: window.androidStreamHeight || window.androidDeviceHeight || 2400,
+  };
 }
 
 // High-speed live mirror over WebSocket using hardware WebCodecs VideoDecoder:
@@ -1456,20 +1486,31 @@ $("android-launch-app-btn").onclick = async () => {
 
 function sendAndroidAction(action) {
   if (!androidConnected) return;
+  const { width: streamW, height: streamH } = getActiveStreamDimensions();
+
   if (androidWs && androidWs.readyState === WebSocket.OPEN) {
     if (action.type === "touch" && action.xPct !== undefined && action.yPct !== undefined) {
-      const w = window.androidDeviceWidth || 1080;
-      const h = window.androidDeviceHeight || 2400;
-      const x = Math.round((action.xPct / 100) * w);
-      const y = Math.round((action.yPct / 100) * h);
-      const bin = serializeBinaryTouch(action.action || "down", x, y, w, h);
+      const x = Math.round((action.xPct / 100) * streamW);
+      const y = Math.round((action.yPct / 100) * streamH);
+      const bin = serializeBinaryTouch(action.action || "down", x, y, streamW, streamH);
       androidWs.send(bin);
+      if (action.action !== "move") {
+        console.log(`[SAG-CLIENT] Sent binary touch: ${action.action} x=${x}, y=${y}, w=${streamW}, h=${streamH}`);
+      }
+      return;
+    } else if (action.type === "scroll" && action.xPct !== undefined && action.yPct !== undefined) {
+      const x = Math.round((action.xPct / 100) * streamW);
+      const y = Math.round((action.yPct / 100) * streamH);
+      const bin = serializeBinaryScroll(x, y, streamW, streamH, action.hscroll || 0, action.vscroll || 0);
+      androidWs.send(bin);
+      console.log(`[SAG-CLIENT] Sent binary scroll: x=${x}, y=${y}, w=${streamW}, h=${streamH}, vscroll=${action.vscroll}`);
       return;
     } else if (action.type === "key" && action.keycode !== undefined) {
       const down = serializeBinaryKey(0, action.keycode);
       const up = serializeBinaryKey(1, action.keycode);
       androidWs.send(down);
       androidWs.send(up);
+      console.log(`[SAG-CLIENT] Sent binary keycode: ${action.keycode}`);
       return;
     }
     androidWs.send(JSON.stringify(action));
@@ -1582,6 +1623,22 @@ const handleAndroidPointerEnd = async (e) => {
 
 androidOverlayEl.addEventListener("pointerup", handleAndroidPointerEnd);
 androidOverlayEl.addEventListener("pointercancel", handleAndroidPointerEnd);
+
+androidOverlayEl.addEventListener("wheel", (e) => {
+  if (!androidConnected) return;
+  e.preventDefault();
+  const coords = getPointerCoords(e);
+  // scrcpy v4.1: vscroll < 0 scrolls down, vscroll > 0 scrolls up
+  const vscroll = -Math.sign(e.deltaY);
+  const hscroll = Math.sign(e.deltaX);
+  sendAndroidAction({
+    type: "scroll",
+    xPct: coords.xPct,
+    yPct: coords.yPct,
+    hscroll: hscroll,
+    vscroll: vscroll,
+  });
+}, { passive: false });
 
 async function triggerAndroidCapture() {
   if (!androidConnected || !activeProjectId) {

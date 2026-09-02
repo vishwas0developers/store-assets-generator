@@ -68,12 +68,12 @@ export function serializeInjectTouchEvent(opts: {
   const buf = Buffer.alloc(32);
   buf.writeUInt8(ScrcpyControlMessageType.INJECT_TOUCH_EVENT, 0);
   buf.writeUInt8(opts.action, 1);
-  buf.writeBigInt64BE(opts.pointerId ?? 0xfffffffffffffffen, 2); // default -2n (GENERIC_FINGER)
+  buf.writeBigInt64BE(opts.pointerId ?? SC_POINTER_ID_GENERIC_FINGER, 2); // default -2n (GENERIC_FINGER)
 
   buf.writeInt32BE(Math.round(opts.x), 10);
   buf.writeInt32BE(Math.round(opts.y), 14);
-  buf.writeUInt16BE(Math.round(opts.width), 18);
-  buf.writeUInt16BE(Math.round(opts.height), 20);
+  buf.writeUInt16BE(Math.max(1, Math.round(opts.width)), 18);
+  buf.writeUInt16BE(Math.max(1, Math.round(opts.height)), 20);
 
   const pressureFp = floatToU16fp(opts.pressure ?? (opts.action === AndroidMotionEventAction.UP ? 0 : 1));
   buf.writeUInt16BE(pressureFp, 22);
@@ -120,8 +120,8 @@ export function serializeInjectScrollEvent(opts: {
 
   buf.writeInt32BE(Math.round(opts.x), 1);
   buf.writeInt32BE(Math.round(opts.y), 5);
-  buf.writeUInt16BE(Math.round(opts.width), 9);
-  buf.writeUInt16BE(Math.round(opts.height), 11);
+  buf.writeUInt16BE(Math.max(1, Math.round(opts.width)), 9);
+  buf.writeUInt16BE(Math.max(1, Math.round(opts.height)), 11);
 
   buf.writeInt16BE(floatToI16fp(opts.hscroll), 13);
   buf.writeInt16BE(floatToI16fp(opts.vscroll), 15);

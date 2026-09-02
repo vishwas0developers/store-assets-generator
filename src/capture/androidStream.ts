@@ -286,18 +286,23 @@ async function _startAndroidStream(deviceId: string, options: { screenOff?: bool
 }
 
 // Low-latency binary socket control input functions (<1ms execution)
-export function sendScrcpyTouch(action: "down" | "move" | "up", x: number, y: number, width: number, height: number): void {
+export function sendScrcpyTouch(action: "down" | "move" | "up", x: number, y: number, width?: number, height?: number): void {
   if (!session || !session.healthy || !session.controlSocket.writable) return;
   const act = action === "down" ? AndroidMotionEventAction.DOWN : action === "up" ? AndroidMotionEventAction.UP : AndroidMotionEventAction.MOVE;
+  const streamW = width || session.width || 1080;
+  const streamH = height || session.height || 2400;
   const buf = serializeInjectTouchEvent({
     action: act,
     x,
     y,
-    width: width || session.width || 1080,
-    height: height || session.height || 2400,
+    width: streamW,
+    height: streamH,
     pointerId: SC_POINTER_ID_GENERIC_FINGER,
   });
   session.controlSocket.write(buf);
+  if (action !== "move") {
+    console.log(`[SAG-TOUCH] ${action} at (${x}, ${y}) streamSize=${streamW}x${streamH}`);
+  }
 }
 
 export function sendScrcpyKey(keycode: number): void {
@@ -306,12 +311,16 @@ export function sendScrcpyKey(keycode: number): void {
   const upBuf = serializeInjectKeyCode({ action: AndroidKeyEventAction.UP, keycode });
   session.controlSocket.write(downBuf);
   session.controlSocket.write(upBuf);
+  console.log(`[SAG-KEY] Injected keycode ${keycode}`);
 }
 
 export function sendScrcpyScroll(x: number, y: number, width: number, height: number, hscroll: number, vscroll: number): void {
   if (!session || !session.healthy || !session.controlSocket.writable) return;
-  const buf = serializeInjectScrollEvent({ x, y, width, height, hscroll, vscroll });
+  const streamW = width || session.width || 1080;
+  const streamH = height || session.height || 2400;
+  const buf = serializeInjectScrollEvent({ x, y, width: streamW, height: streamH, hscroll, vscroll });
   session.controlSocket.write(buf);
+  console.log(`[SAG-SCROLL] at (${x}, ${y}) streamSize=${streamW}x${streamH} vscroll=${vscroll} hscroll=${hscroll}`);
 }
 
 export function sendShellInput(cmd: string, targetDeviceId?: string): void {

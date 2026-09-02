@@ -14,6 +14,7 @@ import {
   sendShellInput,
   sendTouchStream,
   sendScrcpyKey,
+  sendScrcpyScroll,
   sendScrcpyControlBuffer,
   requestKeyFrame,
   subscribeAndroidFrames,
@@ -190,7 +191,7 @@ export async function launchAndroidApp(packageName: string): Promise<void> {
 }
 
 export interface AndroidAction {
-  type: "tap" | "swipe" | "key" | "touch";
+  type: "tap" | "swipe" | "key" | "touch" | "scroll";
   action?: "down" | "move" | "up";
   wasDragged?: boolean;
   xPct?: number;
@@ -198,6 +199,8 @@ export interface AndroidAction {
   x2Pct?: number;
   y2Pct?: number;
   keycode?: number;
+  hscroll?: number;
+  vscroll?: number;
 }
 
 export function executeAndroidAction(action: AndroidAction): void {
@@ -245,6 +248,13 @@ export function executeAndroidAction(action: AndroidAction): void {
     case "key": {
       if (action.keycode === undefined) return;
       sendScrcpyKey(Math.trunc(action.keycode));
+      break;
+    }
+    case "scroll": {
+      if (action.xPct === undefined || action.yPct === undefined) return;
+      const x = toX(action.xPct);
+      const y = toY(action.yPct);
+      sendScrcpyScroll(x, y, width, height, action.hscroll ?? 0, action.vscroll ?? 0);
       break;
     }
   }
