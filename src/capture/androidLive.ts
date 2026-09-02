@@ -74,7 +74,12 @@ export async function startAndroidSession(
   currentScreenSize = size;
 
   // Launch background stream for real-time WebCodecs H.264 GPU decoding
-  await startAndroidStream(chosen, options);
+  // Default screenOff to true so physical display remains off while mirroring
+  const streamOptions = {
+    ...options,
+    screenOff: options?.screenOff !== undefined ? options.screenOff : true,
+  };
+  await startAndroidStream(chosen, streamOptions);
 
   return { deviceId: chosen, ...currentScreenSize, screenOff: isScreenOff() };
 }
