@@ -15,6 +15,7 @@ import {
   sendTouchStream,
   sendScrcpyKey,
   sendScrcpyScroll,
+  sendScrcpyRotate,
   sendScrcpyControlBuffer,
   requestKeyFrame,
   subscribeAndroidFrames,
@@ -22,6 +23,8 @@ import {
   startRawRecording,
   isScreenOff,
   setScreenOff,
+  isAutoRotate,
+  setAutoRotate,
   type RawRecording,
 } from "./androidStream.js";
 
@@ -35,6 +38,8 @@ export {
   requestKeyFrame,
   isScreenOff as isAndroidScreenOff,
   setScreenOff as setAndroidScreenOff,
+  isAutoRotate as isAndroidAutoRotate,
+  setAutoRotate as setAndroidAutoRotate,
 };
 
 const execFileAsync = promisify(execFile);
@@ -61,8 +66,8 @@ async function queryScreenSize(deviceId: string): Promise<{ width: number; heigh
 export async function startAndroidSession(
   projectId: string,
   deviceId?: string,
-  options?: { screenOff?: boolean; nativePreview?: boolean }
-): Promise<{ deviceId: string; width: number; height: number; screenOff: boolean }> {
+  options?: { screenOff?: boolean; nativePreview?: boolean; autoRotate?: boolean }
+): Promise<{ deviceId: string; width: number; height: number; screenOff: boolean; autoRotate: boolean }> {
   const devices = await backend.listDevices();
   if (devices.length === 0) {
     throw new Error("No Android devices found via ADB. Connect a device/emulator and enable USB debugging.");
@@ -81,7 +86,14 @@ export async function startAndroidSession(
   };
   await startAndroidStream(chosen, streamOptions);
 
-  return { deviceId: chosen, ...currentScreenSize, screenOff: isScreenOff() };
+  // Configure initial rotation lock (default to disabled/locked = 0)
+  if (options?.autoRotate !== undefined) {
+    await setAutoRotate(options.autoRotate);
+  } else {
+    await setAutoRotate(false);
+  }
+
+  return { deviceId: chosen, ...currentScreenSize, screenOff: isScreenOff(), autoRotate: isAutoRotate() };
 }
 
 export function stopAndroidSession(): void {
@@ -293,7 +305,7 @@ export async function launchAndroidApp(packageName: string): Promise<void> {
 }
 
 export interface AndroidAction {
-  type: "tap" | "swipe" | "key" | "touch" | "scroll";
+  type: "tap" | "swipe" | "key" | "touch" | "scroll" | "rotate";
   action?: "down" | "move" | "up";
   wasDragged?: boolean;
   xPct?: number;
@@ -357,6 +369,10 @@ export function executeAndroidAction(action: AndroidAction): void {
       const x = toX(action.xPct);
       const y = toY(action.yPct);
       sendScrcpyScroll(x, y, width, height, action.hscroll ?? 0, action.vscroll ?? 0);
+      break;
+    }
+    case "rotate": {
+      sendScrcpyRotate();
       break;
     }
   }

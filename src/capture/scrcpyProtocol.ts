@@ -141,6 +141,16 @@ export function serializeSetDisplayPower(on: boolean): Buffer {
 }
 
 /**
+ * Serializes a ROTATE_DEVICE control message (1 byte, opcode 11)
+ * Toggles auto-rotation or rotates the device display in scrcpy.
+ */
+export function serializeRotateDevice(): Buffer {
+  const buf = Buffer.alloc(1);
+  buf.writeUInt8(ScrcpyControlMessageType.ROTATE_DEVICE, 0);
+  return buf;
+}
+
+/**
  * Serializes a RESET_VIDEO control message (1 byte, opcode 17)
  * Signals the encoder to emit an immediate IDR keyframe.
  * Use after a new WebSocket client connects to eliminate the wait for the next scheduled IDR.
@@ -166,6 +176,7 @@ export function serializeInjectText(text: string): Buffer {
 /**
  * Scrcpy Stream Packet Header Flags (from Streamer.java)
  */
+export const PACKET_FLAG_SESSION = 1n << 63n;
 export const PACKET_FLAG_CONFIG = 1n << 62n;
 export const PACKET_FLAG_KEY_FRAME = 1n << 61n;
 
@@ -236,8 +247,18 @@ export class ScrcpyStreamParser {
 
       if (this.headerState === "packets") {
         if (this.options.sendFrameMeta !== false) {
-          // Packet header: 8 bytes (PTS + Flags), 4 bytes size
+          // Packet or session header: 12 bytes
           if (this.buffer.length < 12) break;
+
+          // Check if this is a mid-stream SESSION metadata packet (sc_demuxer_is_session: header[0] & 0x80)
+          // Streamer.java: writeSessionMeta emits 12 bytes (4B flags with bit 63 set, 4B width, 4B height) with NO payload.
+          const isSession = (this.buffer[0] & 0x80) !== 0;
+          if (isSession) {
+            this.width = this.buffer.readUInt32BE(4);
+            this.height = this.buffer.readUInt32BE(8);
+            this.buffer = this.buffer.subarray(12);
+            continue; // session packet consumed, continue parsing loop for following media packets
+          }
 
           const ptsAndFlags = this.buffer.readBigUInt64BE(0);
           const size = this.buffer.readUInt32BE(8);

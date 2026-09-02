@@ -254,13 +254,13 @@
           <!-- Split Workspace Layout -->
           <div style="display: flex; gap: 1.25rem; margin-top: 1.25rem; flex: 1; min-height: 0; align-items: stretch; width: 100%;">
             <!-- Left: Live Android Device Viewport -->
-            <div class="card" style="flex: 0 0 auto; min-width: 380px; max-width: 50%; margin-top: 0 !important; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.25rem; background: var(--bg-card); border: none !important; overflow: hidden;">
+            <div id="android-viewport-card" class="card" style="flex: 0 0 auto; min-width: 380px; max-width: 50%; margin-top: 0 !important; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.25rem; background: var(--bg-card); border: none !important; overflow: hidden;">
               <div id="android-status" class="hint" style="margin-bottom: 0.75rem;">Select a device and click 'Connect' to start live preview.</div>
 
-              <div id="android-device-frame" style="display: none; position: relative; border-radius: 12px; background: #000; box-shadow: 0 12px 36px rgba(0,0,0,0.6); max-height: calc(100vh - 290px); max-width: 100%;">
-                <div id="android-viewport-container" style="position: relative; overflow: hidden; border-radius: 12px; max-height: 100%; max-width: 100%;">
-                  <canvas id="android-frame-canvas" class="touch-pointer" style="width: 100%; height: 100%; object-fit: fill; user-select: none; touch-action: none; pointer-events: none; display: block;"></canvas>
-                  <img id="android-frame-img" class="touch-pointer" draggable="false" style="display: none; width: 100%; height: 100%; object-fit: fill; user-select: none; touch-action: none; pointer-events: none;" />
+              <div id="android-device-frame" style="display: none; position: relative; border-radius: 12px; background: #000; box-shadow: 0 12px 36px rgba(0,0,0,0.6); max-height: calc(100vh - 290px); max-width: 100%; transition: width 0.15s ease, height 0.15s ease;">
+                <div id="android-viewport-container" style="position: relative; overflow: hidden; border-radius: 12px; width: 100%; height: 100%; max-height: 100%; max-width: 100%; display: flex; align-items: center; justify-content: center;">
+                  <canvas id="android-frame-canvas" class="touch-pointer" style="width: 100%; height: 100%; object-fit: contain; user-select: none; touch-action: none; pointer-events: none; display: block;"></canvas>
+                  <img id="android-frame-img" class="touch-pointer" draggable="false" style="display: none; width: 100%; height: 100%; object-fit: contain; user-select: none; touch-action: none; pointer-events: none;" />
                 </div>
                 <!-- Loading spinner overlay while connection is establishing -->
                 <div id="android-loading-overlay" style="position: absolute; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; background: rgba(11, 13, 18, 0.88); z-index: 20; border-radius: 12px; backdrop-filter: blur(4px);">
@@ -273,7 +273,7 @@
               </div>
 
               <!-- Controls bar below viewport: always visible -->
-              <div id="android-bottom-controls" style="display: flex; margin-top: 1rem; align-items: center; justify-content: center; gap: 0.5rem; background: var(--bg-topbar); padding: 0.4rem 0.75rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); width: 100%; max-width: 360px;">
+              <div id="android-bottom-controls" style="display: flex; margin-top: 1rem; align-items: center; justify-content: center; gap: 0.5rem; background: var(--bg-topbar); padding: 0.4rem 0.75rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); width: 100%; max-width: 400px;">
                 <button id="android-back-btn" class="secondary icon-btn" title="Back" disabled>
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
                 </button>
@@ -288,6 +288,12 @@
                 </button>
                 <button id="android-screen-off-btn" class="secondary icon-btn" title="Screen Off (Keep phone display light off to save battery)" disabled>
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line><line x1="2" y1="3" x2="22" y2="21"></line></svg>
+                </button>
+                <button id="android-rotation-lock-btn" class="secondary icon-btn" title="Rotation Disabled (Auto-rotation is OFF -- click to enable)" disabled>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6"/><path d="M21.34 15.57a10 10 0 1 1-.57-8.38"/><line x1="2" y1="2" x2="22" y2="22"></line></svg>
+                </button>
+                <button id="android-rotate-btn" class="secondary icon-btn" title="Rotate Screen (Manual)" disabled>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6"/><path d="M21.34 15.57a10 10 0 1 1-.57-8.38"/></svg>
                 </button>
                 <button id="android-bottom-capture" class="secondary icon-btn" title="Capture Screenshot (Alt+C)" disabled>
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>

@@ -67,6 +67,8 @@ import {
   isAndroidRecording,
   isAndroidScreenOff,
   setAndroidScreenOff,
+  isAndroidAutoRotate,
+  setAndroidAutoRotate,
 } from "../src/capture/androidLive.js";
 
 import {
@@ -678,6 +680,23 @@ export async function startWebServer(options: { port?: number; host?: string; op
         sendJson(res, 200, { ok: true, screenOff: activeState });
       } catch (err: any) {
         sendError(res, 500, err.message || "Failed to toggle screen off");
+      }
+      return;
+    }
+
+    if (method === "GET" && p === "/api/android/auto-rotate") {
+      sendJson(res, 200, { autoRotate: isAndroidAutoRotate() });
+      return;
+    }
+
+    if (method === "POST" && p === "/api/android/auto-rotate") {
+      const body = await readJsonBody(req);
+      try {
+        const enable = body.autoRotate !== undefined ? Boolean(body.autoRotate) : !isAndroidAutoRotate();
+        const activeState = await setAndroidAutoRotate(enable);
+        sendJson(res, 200, { ok: true, autoRotate: activeState });
+      } catch (err: any) {
+        sendError(res, 500, err.message || "Failed to toggle auto-rotation");
       }
       return;
     }

@@ -10,6 +10,7 @@ import {
   serializeInjectKeyCode,
   serializeInjectScrollEvent,
   serializeSetDisplayPower,
+  serializeRotateDevice,
   ScrcpyStreamParser,
   AndroidMotionEventAction,
   AndroidKeyEventAction,
@@ -44,6 +45,7 @@ interface StreamSession {
   healthy: boolean;
   savedBrightness: string | null;
   screenOff: boolean;
+  autoRotate: boolean;
   latestH264Header: Buffer | null; // Cached SPS/PPS NAL units
   latestKeyFrame: Buffer | null;
   rawSinks: Set<(chunk: Buffer) => void>;
@@ -189,6 +191,7 @@ async function _startAndroidStream(deviceId: string, options: { screenOff?: bool
     healthy: true,
     savedBrightness: null,
     screenOff,
+    autoRotate: false,
     latestH264Header: null,
     latestKeyFrame: null,
     rawSinks: new Set(),
@@ -321,6 +324,12 @@ export function sendScrcpyScroll(x: number, y: number, width: number, height: nu
   const buf = serializeInjectScrollEvent({ x, y, width: streamW, height: streamH, hscroll, vscroll });
   session.controlSocket.write(buf);
   console.log(`[SAG-SCROLL] at (${x}, ${y}) streamSize=${streamW}x${streamH} vscroll=${vscroll} hscroll=${hscroll}`);
+}
+
+export function sendScrcpyRotate(): void {
+  if (!session || !session.healthy || !session.controlSocket.writable) return;
+  session.controlSocket.write(serializeRotateDevice());
+  console.log(`[SAG-ROTATE] Sent ROTATE_DEVICE control message to Android device`);
 }
 
 export function sendShellInput(cmd: string, targetDeviceId?: string): void {
@@ -472,6 +481,32 @@ export function isStreamHealthy(): boolean {
 
 export function isScreenOff(): boolean {
   return session ? session.screenOff : false;
+}
+
+export function isAutoRotate(): boolean {
+  return session ? session.autoRotate : false;
+}
+
+export async function setAutoRotate(enabled: boolean): Promise<boolean> {
+  if (!session) throw new Error("No active Android session.");
+  session.autoRotate = enabled;
+  const adb = resolveTool("adb");
+  try {
+    await execFileAsync(adb, [
+      "-s",
+      session.deviceId,
+      "shell",
+      "settings",
+      "put",
+      "system",
+      "accelerometer_rotation",
+      enabled ? "1" : "0",
+    ]);
+    console.log(`[SAG-ANDROID] setAutoRotate: accelerometer_rotation set to ${enabled ? "1 (enabled)" : "0 (disabled)"}`);
+  } catch (err) {
+    console.warn(`[SAG-ANDROID] setAutoRotate failed:`, err);
+  }
+  return session.autoRotate;
 }
 
 export async function setScreenOff(turnOff: boolean): Promise<boolean> {
