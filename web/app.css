@@ -1021,6 +1021,16 @@ html.light .custom-app-select option {
 
 .rec-timer.active { display: inline-flex; }
 
+/* Live Android viewport: expand left card when the stream is landscape */
+#android-viewport-card {
+  transition: flex-basis 0.2s ease, max-width 0.2s ease, min-width 0.2s ease;
+}
+#android-viewport-card.is-landscape {
+  flex: 1 1 65% !important;
+  min-width: 500px !important;
+  max-width: 70% !important;
+}
+
 .rec-timer::before {
   content: "";
   width: 7px;

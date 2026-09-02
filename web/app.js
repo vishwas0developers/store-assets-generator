@@ -698,7 +698,7 @@ const ANDROID_DISCONNECT_ICON = `<svg width="15" height="15" viewBox="0 0 24 24"
 // toggle enabled/disabled based on connection state.
 const ANDROID_BOTTOM_BTN_IDS = [
   "android-back-btn", "android-home-btn", "android-recents-btn", "android-power-btn",
-  "android-screen-off-btn", "android-bottom-capture", "android-bottom-record",
+  "android-screen-off-btn", "android-rotation-lock-btn", "android-rotate-btn", "android-bottom-capture", "android-bottom-record",
 ];
 function setAndroidBottomControlsEnabled(enabled) {
   for (const id of ANDROID_BOTTOM_BTN_IDS) {
@@ -743,6 +743,7 @@ async function connectAndroidDevice() {
 
     androidConnected = true;
     updateScreenOffUI(startRes.screenOff !== false);
+    updateAutoRotateUI(startRes.autoRotate === true);
     setAndroidConnectButtonState(true);
     $("android-device-frame").style.display = "block";
     setAndroidBottomControlsEnabled(true);
@@ -967,9 +968,13 @@ function startAndroidWs(loadingOverlay) {
           const now = performance.now();
           const frameDelta = (now - lastRenderTime).toFixed(1);
           lastRenderTime = now;
-          if (canvas.width !== frame.displayWidth || canvas.height !== frame.displayHeight) {
+          const sizeChanged = canvas.width !== frame.displayWidth || canvas.height !== frame.displayHeight;
+          if (sizeChanged) {
             canvas.width = frame.displayWidth;
             canvas.height = frame.displayHeight;
+            window.androidDeviceWidth = frame.displayWidth;
+            window.androidDeviceHeight = frame.displayHeight;
+            resizeAndroidPreview();
           }
           if (canvas.style.display !== "block") {
             canvas.style.display = "block";
@@ -1103,26 +1108,35 @@ function startAndroidWs(loadingOverlay) {
         hasDecodedFirstKeyFrame = false;
       }
 
-      if (spsNAL && ppsNAL && (!decoderConfigured || webCodecsDecoder.state === "unconfigured")) {
-        h264SpsBuffer = spsNAL.body;
-        h264PpsBuffer = ppsNAL.body;
-        const codecStr = `avc1.${spsNAL.body[1].toString(16).padStart(2,"0")}${spsNAL.body[2].toString(16).padStart(2,"0")}${spsNAL.body[3].toString(16).padStart(2,"0")}`;
-        try {
-          if (webCodecsDecoder && webCodecsDecoder.state !== "closed") {
-            webCodecsDecoder.configure({
-              codec: codecStr,
-              optimizeForLatency: true,
-              hardwareAcceleration: "prefer-hardware",
-            });
-            decoderConfigured = true;
-            console.log(`[${now}] [SAG-DECODER] VideoDecoder configured (Annex-B): ${codecStr}, spsLen=${spsNAL.body.length}, ppsLen=${ppsNAL.body.length}`);
+      if (spsNAL && ppsNAL) {
+        const spsChanged = !h264SpsBuffer || spsNAL.body.length !== h264SpsBuffer.length ||
+          spsNAL.body.some((b, i) => b !== h264SpsBuffer[i]);
+
+        if (spsChanged || !decoderConfigured || webCodecsDecoder.state === "unconfigured") {
+          h264SpsBuffer = spsNAL.body;
+          h264PpsBuffer = ppsNAL.body;
+          const codecStr = `avc1.${spsNAL.body[1].toString(16).padStart(2,"0")}${spsNAL.body[2].toString(16).padStart(2,"0")}${spsNAL.body[3].toString(16).padStart(2,"0")}`;
+          try {
+            if (webCodecsDecoder && webCodecsDecoder.state !== "closed") {
+              webCodecsDecoder.configure({
+                codec: codecStr,
+                optimizeForLatency: true,
+                hardwareAcceleration: "prefer-hardware",
+              });
+              decoderConfigured = true;
+              hasDecodedFirstKeyFrame = false; // Reset to cleanly wait for the new post-switch IDR keyframe
+              console.log(`[${now}] [SAG-DECODER] VideoDecoder (re)configured (Annex-B): ${codecStr}, spsLen=${spsNAL.body.length}, ppsLen=${ppsNAL.body.length}, spsChanged=${spsChanged}`);
+            }
+          } catch (e) {
+            console.error(`[${now}] [SAG-DECODER] VideoDecoder configure failed:`, e);
           }
-        } catch (e) {
-          console.error(`[${now}] [SAG-DECODER] VideoDecoder configure failed:`, e);
         }
         if (!hasNonConfig) return; // pure config packet (SPS+PPS only), no frame to decode
       } else if (spsNAL) {
         h264SpsBuffer = spsNAL.body;
+        if (!hasNonConfig) return;
+      } else if (ppsNAL) {
+        h264PpsBuffer = ppsNAL.body;
         if (!hasNonConfig) return;
       }
 
@@ -1248,8 +1262,18 @@ function stopAndroidWs() {
 function resizeAndroidPreview() {
   if (!androidConnected || !window.androidDeviceWidth || !window.androidDeviceHeight) return;
   const deviceFrame = $("android-device-frame");
-  const card = deviceFrame && deviceFrame.parentElement;
+  const card = $("android-viewport-card") || (deviceFrame && deviceFrame.parentElement);
   if (!card) return;
+
+  const aspect = window.androidDeviceWidth / window.androidDeviceHeight;
+  const isLandscape = window.androidDeviceWidth > window.androidDeviceHeight || aspect > 1.2;
+  const wasLandscape = card.classList.contains("is-landscape");
+  card.classList.toggle("is-landscape", isLandscape);
+
+  if (wasLandscape !== isLandscape) {
+    requestAnimationFrame(resizeAndroidPreview);
+    return;
+  }
 
   const cardRect = card.getBoundingClientRect();
   const cs = getComputedStyle(card);
@@ -1264,7 +1288,6 @@ function resizeAndroidPreview() {
   const availW = Math.max(200, cardRect.width - padX);
   const availH = Math.max(200, cardRect.height - padY - statusH - controlsH);
 
-  const aspect = window.androidDeviceWidth / window.androidDeviceHeight; // w/h
   let previewWidth = availW;
   let previewHeight = Math.round(previewWidth / aspect);
   if (previewHeight > availH) {
@@ -1305,6 +1328,11 @@ async function disconnectAndroidDevice() {
   } catch (e) {}
 
   androidConnected = false;
+  const viewportCard = $("android-viewport-card");
+  if (viewportCard) {
+    viewportCard.classList.remove("is-landscape");
+    viewportCard._landscapeSized = false;
+  }
   setAndroidConnectButtonState(false);
   $("android-connect-btn").disabled = false;
   $("android-status").textContent = "Session closed. Click 'Connect' to start a new live session.";
@@ -1512,6 +1540,11 @@ function sendAndroidAction(action) {
       androidWs.send(up);
       console.log(`[SAG-CLIENT] Sent binary keycode: ${action.keycode}`);
       return;
+    } else if (action.type === "rotate") {
+      // ROTATE_DEVICE = opcode 11 (1 byte)
+      androidWs.send(new Uint8Array([11]));
+      console.log(`[SAG-CLIENT] Sent binary ROTATE_DEVICE opcode 11`);
+      return;
     }
     androidWs.send(JSON.stringify(action));
   } else {
@@ -1554,6 +1587,44 @@ $("android-screen-off-btn").onclick = async () => {
     console.error("Failed to toggle screen off:", e);
   }
 };
+
+let androidAutoRotateState = false;
+
+function updateAutoRotateUI(enabled) {
+  androidAutoRotateState = Boolean(enabled);
+  const btn = $("android-rotation-lock-btn");
+  if (!btn) return;
+  const locked = !androidAutoRotateState;
+  btn.style.color = locked ? "#10b981" : "var(--text-secondary)";
+  btn.title = locked
+    ? "Rotation Disabled (Auto-rotation is OFF -- click to enable)"
+    : "Rotation Enabled (Auto-rotation is ON -- click to lock)";
+}
+
+const rotationLockBtn = $("android-rotation-lock-btn");
+if (rotationLockBtn) {
+  rotationLockBtn.onclick = async () => {
+    if (!androidConnected) return;
+    const nextState = !androidAutoRotateState;
+    try {
+      const res = await api("/api/android/auto-rotate", {
+        method: "POST",
+        body: { autoRotate: nextState },
+      });
+      updateAutoRotateUI(res.autoRotate);
+    } catch (e) {
+      console.error("Failed to toggle auto-rotation:", e);
+    }
+  };
+}
+
+const rotateBtn = $("android-rotate-btn");
+if (rotateBtn) {
+  rotateBtn.onclick = () => {
+    if (!androidConnected) return;
+    sendAndroidAction({ type: "rotate" });
+  };
+}
 
 // Interactive real-time continuous touch & drag on the Android device frame
 const androidImgEl = $("android-frame-img");
