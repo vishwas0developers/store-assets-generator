@@ -33,6 +33,7 @@ import {
   loadProject,
   saveProject,
   deleteProject,
+  deleteProjectCapture,
   projectDir,
   projectFile,
 } from "../src/project/projectStore.js";
@@ -515,6 +516,17 @@ export async function startWebServer(options: { port?: number; host?: string; op
     }
 
     {
+      const m = p.match(/^\/api\/projects\/([^/]+)\/captures\/([^/]+)$/);
+      if (m && method === "DELETE") {
+        const projId = decodeURIComponent(m[1]);
+        const captureId = decodeURIComponent(m[2]);
+        deleteProjectCapture(projId, captureId);
+        sendJson(res, 200, { ok: true });
+        return;
+      }
+    }
+
+    {
       const m = p.match(/^\/api\/projects\/([^/]+)\/file$/);
       if (m && method === "GET") {
         const rel = url.searchParams.get("p");
@@ -532,10 +544,8 @@ export async function startWebServer(options: { port?: number; host?: string; op
       if (m && method === "DELETE") {
         const rel = url.searchParams.get("p");
         if (!rel) return sendError(res, 400, "query param 'p' is required");
-        const abs = projectFile(decodeURIComponent(m[1]), rel);
-        if (fs.existsSync(abs)) {
-          fs.unlinkSync(abs);
-        }
+        const projId = decodeURIComponent(m[1]);
+        deleteProjectCapture(projId, rel);
         sendJson(res, 200, { ok: true });
         return;
       }
@@ -766,7 +776,7 @@ export async function startWebServer(options: { port?: number; host?: string; op
       if (!body.projectId) {
         return sendError(res, 400, "projectId is required");
       }
-      const capture = await captureAndroidScreen(body.projectId);
+      const capture = await captureAndroidScreen(body.projectId, body.imageData);
       sendJson(res, 200, capture);
       return;
     }

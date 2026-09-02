@@ -212,9 +212,6 @@ async function _startAndroidStream(deviceId: string, options: { screenOff?: bool
   videoSocket.on("data", (chunk: Buffer) => {
     if (session !== state) return;
 
-    // Send raw chunk to raw recording sinks
-    for (const sink of state.rawSinks) sink(chunk);
-
     // Parse packet
     parser.parse(chunk, (packet: ScrcpyMediaPacket) => {
       packetCount++;
@@ -245,6 +242,9 @@ async function _startAndroidStream(deviceId: string, options: { screenOff?: bool
         console.log(`[${now}] [SAG-STREAM] [dev:${deviceId}] Merged config (${pendingConfigBuffer.length}b) with media packet #${packetCount} -> total ${payload.length}b`);
         pendingConfigBuffer = null;
       }
+
+      // Forward pure Annex-B H.264 NAL payload to active MP4 recording sinks
+      for (const sink of state.rawSinks) sink(payload);
 
       if (packet.isKeyFrame) {
         state.latestKeyFrame = payload;
@@ -359,20 +359,35 @@ export function startRawRecording(outPath: string): RawRecording {
   const s = session;
   if (!s) throw new Error("No active Android session.");
 
+  fs.mkdirSync(path.dirname(outPath), { recursive: true });
+
+  // Use wallclock timestamps on the raw H.264 stream and convert variable-rate scrcpy frames
+  // to a steady 30fps CFR MP4 so idle/static pauses match real time instead of rushing through in 2s.
   const proc = spawn(resolveTool("ffmpeg"), [
     "-y",
-    "-fflags", "+discardcorrupt",
+    "-use_wallclock_as_timestamps", "1",
+    "-fflags", "+genpts+discardcorrupt",
     "-f", "h264",
     "-i", "pipe:0",
-    "-c", "copy",
-    "-avoid_negative_ts", "make_zero",
+    "-vf", "fps=30,scale=trunc(iw/2)*2:trunc(ih/2)*2",
+    "-c:v", "libx264",
+    "-preset", "veryfast",
+    "-crf", "18",
+    "-pix_fmt", "yuv420p",
     "-movflags", "+faststart",
     outPath,
   ], { stdio: ["pipe", "ignore", "pipe"] });
 
+  // Preload SPS/PPS and latest keyframe to guarantee valid H.264 stream header
   if (s.latestH264Header) {
     try { proc.stdin?.write(s.latestH264Header); } catch (_) {}
   }
+  if (s.latestKeyFrame) {
+    try { proc.stdin?.write(s.latestKeyFrame); } catch (_) {}
+  }
+
+  // Request immediate IDR keyframe from scrcpy encoder
+  requestKeyFrame();
 
   let stderr = "";
   proc.stderr?.on("data", (c: Buffer) => { stderr = (stderr + c.toString()).slice(-4000); });
@@ -402,7 +417,7 @@ export function startRawRecording(outPath: string): RawRecording {
           return;
         }
         proc.on("exit", (code) => {
-          if (code === 0) {
+          if (code === 0 && fs.existsSync(outPath)) {
             resolve({ width: s.width || 1080, height: s.height || 2400, durationSec });
           } else {
             reject(new Error(`Recording failed (ffmpeg exit ${code}): ${stderr.split("\n").slice(-3).join(" ")}`));
@@ -527,14 +542,24 @@ export async function setScreenOff(turnOff: boolean): Promise<boolean> {
 }
 
 export async function getLatestFramePng(): Promise<Buffer> {
-  const frame = getLatestStreamFrame();
-  if (!frame) throw new Error("No live Android H.264 frame available yet.");
+  if (!session || !session.healthy) throw new Error("No live Android session active.");
+
+  // Combine SPS/PPS config header and latest keyframe to guarantee ffmpeg can decode
+  const header = session.latestH264Header;
+  const frame = session.latestKeyFrame;
+  if (!frame && !header) throw new Error("No live Android H.264 frame available yet.");
+
+  const inputBuffer = header && frame ? Buffer.concat([header, frame]) : (frame || header)!;
 
   return new Promise((resolve, reject) => {
     const chunks: Buffer[] = [];
     const proc = spawn(resolveTool("ffmpeg"), [
-      "-f", "h264", "-i", "pipe:0",
-      "-frames:v", "1", "-f", "image2pipe", "-vcodec", "png",
+      "-y",
+      "-f", "h264",
+      "-i", "pipe:0",
+      "-frames:v", "1",
+      "-f", "image2pipe",
+      "-vcodec", "png",
       "pipe:1",
     ], { stdio: ["pipe", "pipe", "ignore"] });
     proc.stdout.on("data", (c: Buffer) => chunks.push(c));
@@ -543,6 +568,6 @@ export async function getLatestFramePng(): Promise<Buffer> {
       if (code === 0 && chunks.length) resolve(Buffer.concat(chunks));
       else reject(new Error(`Failed to convert H.264 frame to PNG (exit ${code})`));
     });
-    proc.stdin.end(frame);
+    proc.stdin.end(inputBuffer);
   });
 }
