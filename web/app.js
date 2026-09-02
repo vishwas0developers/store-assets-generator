@@ -736,7 +736,7 @@ async function connectAndroidDevice() {
       body: {
         projectId: activeProjectId,
         deviceId: deviceId || undefined,
-        screenOff: false,
+        screenOff: true,
         nativePreview: isElectron,
       }
     });
