@@ -21,3 +21,5 @@ scratch/
 .graphifyignore
 .vscode/mcp.json
 .claude-harness-mcp/
+scrcpy-master/
+scrcpy-gui/

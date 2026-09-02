@@ -10,8 +10,14 @@ import {
   stopAndroidStream,
   getLatestStreamFrame,
   getLatestFramePng,
+  getInitialH264,
   sendShellInput,
+  sendTouchStream,
+  sendScrcpyKey,
+  sendScrcpyControlBuffer,
+  requestKeyFrame,
   subscribeAndroidFrames,
+  subscribeAndroidH264,
   startRawRecording,
   isScreenOff,
   setScreenOff,
@@ -20,7 +26,15 @@ import {
 
 import { nextRecordingPath, registerRecording } from "./frameRecorder.js";
 
-export { subscribeAndroidFrames, isScreenOff as isAndroidScreenOff, setScreenOff as setAndroidScreenOff };
+export {
+  subscribeAndroidFrames,
+  subscribeAndroidH264,
+  getInitialH264,
+  sendScrcpyControlBuffer,
+  requestKeyFrame,
+  isScreenOff as isAndroidScreenOff,
+  setScreenOff as setAndroidScreenOff,
+};
 
 const execFileAsync = promisify(execFile);
 
@@ -46,7 +60,7 @@ async function queryScreenSize(deviceId: string): Promise<{ width: number; heigh
 export async function startAndroidSession(
   projectId: string,
   deviceId?: string,
-  options?: { screenOff?: boolean }
+  options?: { screenOff?: boolean; nativePreview?: boolean }
 ): Promise<{ deviceId: string; width: number; height: number; screenOff: boolean }> {
   const devices = await backend.listDevices();
   if (devices.length === 0) {
@@ -55,13 +69,12 @@ export async function startAndroidSession(
   const chosen = deviceId && devices.includes(deviceId) ? deviceId : devices[0];
   currentDeviceId = chosen;
 
-  // Run screen size query and stream initialization in parallel to cut connection latency in half
-  const [size] = await Promise.all([
-    queryScreenSize(chosen),
-    startAndroidStream(chosen, options),
-  ]);
-
+  const size = await queryScreenSize(chosen);
   currentScreenSize = size;
+
+  // Launch background stream for real-time WebCodecs H.264 GPU decoding
+  await startAndroidStream(chosen, options);
+
   return { deviceId: chosen, ...currentScreenSize, screenOff: isScreenOff() };
 }
 
@@ -136,27 +149,33 @@ function prettifyPackageName(pkg: string): string {
     .join(" ");
 }
 
-// scrcpy --list-apps pushes its on-device server and calls Android's real
-// PackageManager.getApplicationLabel() -- the only way to get the actual
-// localized app name (e.g. "WhatsApp") rather than a guess from the package
-// id. Output lines look like " - WhatsApp                com.whatsapp" ('-'
-// = third-party, '*' = system); label and package are separated by 2+ spaces.
-const LIST_APPS_LINE = /^\s*([*-])\s+(.+?)\s{2,}(\S+)\s*$/;
-
 let appsCache: { deviceId: string; apps: AndroidAppInfo[] } | null = null;
 
+// Uses pure ADB shell (pm list packages + dumpsys) — does NOT invoke scrcpy.exe
+// so it cannot push a new scrcpy-server.jar that would kill the active mirroring session.
 export async function listAndroidApps(forceRefresh = false): Promise<AndroidAppInfo[]> {
   if (!currentDeviceId) throw new Error("No active Android session.");
   if (!forceRefresh && appsCache?.deviceId === currentDeviceId) return appsCache.apps;
 
-  const { stdout } = await execFileAsync(resolveTool("scrcpy"), ["-s", currentDeviceId, "--list-apps"], { timeout: 15000 });
-  const apps: AndroidAppInfo[] = [];
-  for (const line of stdout.split("\n")) {
-    const m = line.match(LIST_APPS_LINE);
-    if (!m || m[1] !== "-") continue; // third-party only, matching prior "pm list packages -3" scope
-    const [, , label, packageName] = m;
-    apps.push({ packageName, label: label.trim() || prettifyPackageName(packageName) });
+  const adb = resolveTool("adb");
+
+  // Step 1: list all third-party package names via pm list packages -3
+  const { stdout: pkgOut } = await execFileAsync(adb, ["-s", currentDeviceId, "shell", "pm", "list", "packages", "-3"], { timeout: 10000 });
+  const packages = pkgOut
+    .split("\n")
+    .map((l) => l.replace(/^package:/, "").trim())
+    .filter((p) => /^[a-zA-Z][a-zA-Z0-9_.]+\.[a-zA-Z][a-zA-Z0-9_]+$/.test(p));
+
+  if (packages.length === 0) {
+    appsCache = { deviceId: currentDeviceId, apps: [] };
+    return [];
   }
+
+  // Step 2: format app labels
+  const apps: AndroidAppInfo[] = packages.map((pkg) => ({
+    packageName: pkg,
+    label: prettifyPackageName(pkg),
+  }));
   apps.sort((a, b) => a.label.localeCompare(b.label));
   appsCache = { deviceId: currentDeviceId, apps };
   return apps;
@@ -171,7 +190,9 @@ export async function launchAndroidApp(packageName: string): Promise<void> {
 }
 
 export interface AndroidAction {
-  type: "tap" | "swipe" | "key";
+  type: "tap" | "swipe" | "key" | "touch";
+  action?: "down" | "move" | "up";
+  wasDragged?: boolean;
   xPct?: number;
   yPct?: number;
   x2Pct?: number;
@@ -185,13 +206,18 @@ export function executeAndroidAction(action: AndroidAction): void {
   const toX = (pct: number) => Math.round((pct / 100) * width);
   const toY = (pct: number) => Math.round((pct / 100) * height);
 
-  // Sent over the session's persistent shell (see androidStream.ts) rather
-  // than spawning a fresh adb process per action -- that per-call spawn +
-  // adb-server round trip was the dominant source of touch-to-screen lag.
   switch (action.type) {
+    case "touch": {
+      if (action.xPct === undefined || action.yPct === undefined || !action.action) return;
+      sendTouchStream(action.action, toX(action.xPct), toY(action.yPct), action.wasDragged, currentDeviceId);
+      break;
+    }
     case "tap": {
       if (action.xPct === undefined || action.yPct === undefined) return;
-      sendShellInput(`input tap ${toX(action.xPct)} ${toY(action.yPct)}`);
+      const x = toX(action.xPct);
+      const y = toY(action.yPct);
+      sendTouchStream("down", x, y, false, currentDeviceId);
+      sendTouchStream("up", x, y, false, currentDeviceId);
       break;
     }
     case "swipe": {
@@ -202,14 +228,23 @@ export function executeAndroidAction(action: AndroidAction): void {
         action.y2Pct === undefined
       )
         return;
-      sendShellInput(
-        `input swipe ${toX(action.xPct)} ${toY(action.yPct)} ${toX(action.x2Pct)} ${toY(action.y2Pct)} 150`
-      );
+      const x1 = toX(action.xPct);
+      const y1 = toY(action.yPct);
+      const x2 = toX(action.x2Pct);
+      const y2 = toY(action.y2Pct);
+      sendTouchStream("down", x1, y1, false, currentDeviceId);
+      const steps = 5;
+      for (let i = 1; i <= steps; i++) {
+        const cx = Math.round(x1 + (x2 - x1) * (i / steps));
+        const cy = Math.round(y1 + (y2 - y1) * (i / steps));
+        sendTouchStream("move", cx, cy, true, currentDeviceId);
+      }
+      sendTouchStream("up", x2, y2, true, currentDeviceId);
       break;
     }
     case "key": {
       if (action.keycode === undefined) return;
-      sendShellInput(`input keyevent ${Math.trunc(action.keycode)}`);
+      sendScrcpyKey(Math.trunc(action.keycode));
       break;
     }
   }
@@ -243,7 +278,27 @@ export async function captureAndroidScreen(projectId: string): Promise<{ id: num
   const relPath = path.posix.join("captures", filename);
   const absPath = projectFile(projectId, relPath);
 
-  const buffer = await getLatestFramePng();
+  let buffer: Buffer | null = null;
+
+  // Try direct high-res native ADB screenshot capture (screencap -p)
+  try {
+    const adb = resolveTool("adb");
+    const { stdout } = await execFileAsync(adb, ["-s", currentDeviceId, "exec-out", "screencap", "-p"], {
+      maxBuffer: 50 * 1024 * 1024,
+      encoding: "buffer" as any,
+    });
+    const buf = stdout as unknown as Buffer;
+    if (buf && buf.length > 8 && buf[0] === 0x89 && buf[1] === 0x50 && buf[2] === 0x4e && buf[3] === 0x47) {
+      buffer = buf;
+    }
+  } catch (err) {
+    console.warn("[SAG-ANDROID] Native screencap failed, falling back to stream frame:", err);
+  }
+
+  if (!buffer) {
+    buffer = await getLatestFramePng();
+  }
+
   await fs.promises.mkdir(path.dirname(absPath), { recursive: true });
   await fs.promises.writeFile(absPath, buffer);
 

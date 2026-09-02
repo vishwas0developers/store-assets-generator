@@ -1,261 +1,337 @@
 import { execFile, spawn, ChildProcess } from "child_process";
 import { promisify } from "util";
 import net from "net";
-import { randomUUID } from "crypto";
+import fs from "fs";
+import path from "path";
 import { EventEmitter } from "events";
 import { resolveTool } from "../toolchain/binaries.js";
-import { jpegSize } from "./frameRecorder.js";
+import {
+  serializeInjectTouchEvent,
+  serializeInjectKeyCode,
+  serializeInjectScrollEvent,
+  serializeSetDisplayPower,
+  ScrcpyStreamParser,
+  AndroidMotionEventAction,
+  AndroidKeyEventAction,
+  ScrcpyMediaPacket,
+  SC_POINTER_ID_GENERIC_FINGER,
+} from "./scrcpyProtocol.js";
 
 const execFileAsync = promisify(execFile);
 
-// Frame consumers (the MJPEG multipart route) subscribe here instead of
-// polling getLatestStreamFrame() -- pushes each decoded frame the instant
-// ffmpeg produces it, which is what actually fixes "the preview is behind /
-// laggy": polling on an interval added up to a full interval's worth of
-// avoidable delay on top of the encode itself.
+const h264Emitter = new EventEmitter();
+h264Emitter.setMaxListeners(100);
+export function subscribeAndroidH264(cb: (chunk: Buffer) => void): () => void {
+  h264Emitter.on("h264", cb);
+  return () => h264Emitter.off("h264", cb);
+}
+
+// Deprecated frame emitter maintained for backward compatibility
 const frameEmitter = new EventEmitter();
+frameEmitter.setMaxListeners(100);
 export function subscribeAndroidFrames(cb: (frame: Buffer) => void): () => void {
   frameEmitter.on("frame", cb);
   return () => frameEmitter.off("frame", cb);
 }
 
-// screencap/screenrecord read the physical display buffer, which stops
-// updating once the panel is powered off -- verified empirically (screencap
-// returns solid black under `dumpsys power` state=OFF). scrcpy's on-device
-// server captures the SurfaceControl layer directly, independent of panel
-// power, so it can keep producing real frames while the screen is dark.
-// We spawn it with --record pointed at a Windows named pipe (verified: scrcpy
-// connects and streams matroska/h264 into it) and pipe that into ffmpeg,
-// which re-encodes to MJPEG on stdout -- we keep only the latest decoded
-// frame in memory for the preview/capture endpoints.
-//
-// --turn-screen-off alone was tested against real hardware and does NOT keep
-// the stream alive indefinitely: without a wake lock, the device reaches
-// PowerManager wakefulness=Asleep about 8-10s after the panel goes dark, and
-// at that exact moment ALL capture paths freeze -- screencap, screenrecord,
-// and scrcpy's own SurfaceControl capture alike (verified with and without a
-// visible scrcpy window). --stay-awake is required to hold wakefulness and
-// keep frames flowing continuously, but on this hardware it maps to Android's
-// "stay awake while charging" policy, which keeps the backlight lit (dimmed,
-// not black). That's an accepted, deliberate trade-off: an always-live,
-// always touch-controllable preview with a dim (not pitch-black) panel, over
-// a black panel that freezes solid after ~8s. See screen_brightness handling
-// below, which dims it as far down as the OS allows.
-const MIN_BRIGHTNESS = "1";
-
-// Preview JPEG quality (ffmpeg -q:v: 2 = best, 31 = worst). The preview is
-// deliberately cheaper than the source: it only has to look right at ~400px
-// on screen, and smaller frames traverse the pipe + socket faster, which is
-// what "interaction feels instant" actually costs. Recording does NOT go
-// through here -- it stream-copies scrcpy's original H.264 (see
-// subscribeRawStream), so preview quality and recording quality are
-// independent knobs.
-const PREVIEW_JPEG_Q = "8";
-
 interface StreamSession {
   deviceId: string;
-  scrcpy: ChildProcess;
-  ffmpeg: ChildProcess;
-  pipeServer: net.Server;
-  inputShell: ChildProcess | null;
-  latestFrame: Buffer | null;
-  buf: Buffer;
+  serverProcess: ChildProcess;
+  videoSocket: net.Socket;
+  controlSocket: net.Socket;
+  localServer: net.Server;
+  abstractName: string;
   healthy: boolean;
   savedBrightness: string | null;
   screenOff: boolean;
-  /** Matroska init segment (everything before the first Cluster), replayed to
-   *  a recorder that attaches mid-stream so its demuxer has track headers. */
-  mkvHeader: Buffer | null;
-  headerBuf: Buffer;
+  latestH264Header: Buffer | null; // Cached SPS/PPS NAL units
+  latestKeyFrame: Buffer | null;
   rawSinks: Set<(chunk: Buffer) => void>;
+  parser: ScrcpyStreamParser;
+  width: number;
+  height: number;
 }
 
 let session: StreamSession | null = null;
+let streamStarting = false;
 
-const SOI = Buffer.from([0xff, 0xd8]);
-const EOI = Buffer.from([0xff, 0xd9]);
-// Matroska Cluster element id -- a recorder can only join the stream here.
-const MKV_CLUSTER = Buffer.from([0x1f, 0x43, 0xb6, 0x75]);
+const MIN_BRIGHTNESS = "1";
 
 export async function startAndroidStream(deviceId: string, options: { screenOff?: boolean } = {}): Promise<void> {
+  if (streamStarting) {
+    console.log(`[SAG-ANDROID] startAndroidStream: ignoring concurrent start request`);
+    return;
+  }
+  streamStarting = true;
+  try {
+    await _startAndroidStream(deviceId, options);
+  } finally {
+    streamStarting = false;
+  }
+}
+
+async function _startAndroidStream(deviceId: string, options: { screenOff?: boolean } = {}): Promise<void> {
   await stopAndroidStream();
 
-  const screenOff = options.screenOff !== false;
   const adb = resolveTool("adb");
-  let savedBrightness: string | null = null;
-  // Read and set brightness asynchronously so it doesn't block stream startup
-  execFileAsync(adb, ["-s", deviceId, "shell", "settings", "get", "system", "screen_brightness"])
-    .then(({ stdout }) => {
-      savedBrightness = stdout.trim();
-      if (screenOff) {
-        return execFileAsync(adb, ["-s", deviceId, "shell", "settings", "put", "system", "screen_brightness", MIN_BRIGHTNESS]);
+  const scrcpyBin = resolveTool("scrcpy");
+  const scrcpyDir = path.dirname(scrcpyBin);
+  const scrcpyServerPath = path.join(scrcpyDir, "scrcpy-server");
+
+  if (!fs.existsSync(scrcpyServerPath)) {
+    throw new Error(`scrcpy-server not found at ${scrcpyServerPath}`);
+  }
+
+  const screenOff = options.screenOff === true;
+
+  // 1. Push scrcpy-server to device (Android app_process requires .jar extension in CLASSPATH).
+  // Delete any existing copy first: overwriting the file in place at the same path can leave ART's
+  // dexopt/verification cache for that path referencing stale class data, causing a spurious
+  // ClassNotFoundException/SIGABRT on app_process launch even though the freshly-written jar is intact.
+  console.log(`[SAG-ANDROID] Pushing scrcpy-server to device ${deviceId}...`);
+  await execFileAsync(adb, ["-s", deviceId, "shell", "rm", "-f", "/data/local/tmp/scrcpy-server.jar"]).catch(() => {});
+  await execFileAsync(adb, ["-s", deviceId, "push", scrcpyServerPath, "/data/local/tmp/scrcpy-server.jar"]);
+
+  // 2. Open a local TCP server and reverse-tunnel the device's abstract socket to it.
+  // This matches the topology scrcpy's own desktop client uses by default (tunnel_forward=false):
+  // the on-device server connects OUT to us, rather than us connecting IN through `adb forward`.
+  // On this hardware, `adb forward` + tunnel_forward=true reliably accepted the TCP handshake but
+  // the server then closed the connection immediately with zero bytes written -- `adb reverse`
+  // (verified working via the reference scrcpy.exe client) does not have that problem.
+  const scid = Math.floor(Math.random() * 0x7fffffff).toString(16).padStart(8, "0");
+  const abstractName = `scrcpy_${scid}`;
+
+  const localServer = net.createServer();
+  await new Promise<void>((resolve, reject) => {
+    localServer.once("error", reject);
+    localServer.listen(0, "127.0.0.1", () => resolve());
+  });
+  const localPort = (localServer.address() as net.AddressInfo).port;
+
+  // The server connects video first, then control -- accept in that order.
+  const socketsPromise = new Promise<{ video: net.Socket; control: net.Socket }>((resolve, reject) => {
+    let videoSocket: net.Socket | null = null;
+    const timeout = setTimeout(() => reject(new Error("Timed out waiting for scrcpy-server to connect back")), 8000);
+    localServer.on("connection", (sock) => {
+      sock.setNoDelay(true);
+      if (!videoSocket) {
+        videoSocket = sock;
+        console.log(`[SAG-ANDROID] Connected to scrcpy Video socket (reverse tunnel)`);
+      } else {
+        console.log(`[SAG-ANDROID] Connected to scrcpy Control socket (reverse tunnel)`);
+        clearTimeout(timeout);
+        resolve({ video: videoSocket, control: sock });
       }
-    })
-    .catch(() => {});
+    });
+  });
 
-  const pipeName =
-    process.platform === "win32"
-      ? String.raw`\\.\pipe\sag-scrcpy-${randomUUID()}`
-      : `/tmp/sag-scrcpy-${randomUUID()}.sock`;
+  console.log(`[SAG-ANDROID] Setting up ADB reverse localabstract:${abstractName} tcp:${localPort}`);
+  await execFileAsync(adb, ["-s", deviceId, "reverse", `localabstract:${abstractName}`, `tcp:${localPort}`]);
 
-  // Latency notes (each flag here was a measurable win, don't drop them):
-  //   -probesize/-analyzeduration: ffmpeg otherwise buffers ~5s of input
-  //     before it starts producing output, which showed up as the preview
-  //     being seconds behind the device.
-  //   -fflags nobuffer / -flags low_delay: no reorder or jitter buffer.
-  //   no -vf fps=N: a rate filter queues frames to regularise their timing,
-  //     i.e. it deliberately adds delay. The preview wants each frame the
-  //     instant it decodes; scrcpy's --max-fps already caps the rate.
-  const ffmpeg = spawn(resolveTool("ffmpeg"), [
-    "-hwaccel", "auto",
-    "-probesize", "32",
-    "-analyzeduration", "0",
-    "-f", "matroska",
-    "-fflags", "nobuffer+discardcorrupt+fastseek",
-    "-flags", "low_delay",
-    "-threads", "1",
-    "-i", "pipe:0",
-    "-f", "mjpeg",
-    "-flush_packets", "1",
-    "-q:v", PREVIEW_JPEG_Q,
-    "pipe:1",
-  ], { stdio: ["pipe", "pipe", "ignore"] });
+  // 3. Wake device and dismiss keyguard
+  execFileAsync(adb, ["-s", deviceId, "shell", "input", "keyevent", "224"]).catch(() => {});
+  execFileAsync(adb, ["-s", deviceId, "shell", "wm", "dismiss-keyguard"]).catch(() => {});
+
+  // 4. Launch scrcpy-server on Android device via app_process
+  const serverArgs = [
+    "-s", deviceId, "shell",
+    "CLASSPATH=/data/local/tmp/scrcpy-server.jar",
+    "app_process", "/", "com.genymobile.scrcpy.Server", "4.1",
+    `scid=${scid}`,
+    "tunnel_forward=false",
+    "video=true",
+    "audio=false",
+    "control=true",
+    "max_size=1080",
+    "video_bit_rate=8000000",
+    "max_fps=60",
+    "stay_awake=true",
+    "send_device_meta=true",
+    "send_frame_meta=true",
+    "send_dummy_byte=false",
+    "send_stream_meta=true",
+    "video_codec=h264",
+    "video_codec_options=i-frame-interval=1",
+  ];
+
+  console.log(`[SAG-ANDROID] Spawning scrcpy-server app_process...`);
+  const serverProcess = spawn(adb, serverArgs, { stdio: ["ignore", "pipe", "pipe"] });
+
+  serverProcess.stderr?.on("data", (chunk: Buffer) => {
+    const msg = chunk.toString("utf-8").trim();
+    if (msg) console.log(`[SAG-ANDROID] scrcpy-server: ${msg}`);
+  });
+
+  serverProcess.on("exit", (code) => {
+    console.log(`[SAG-ANDROID] scrcpy-server exited with code ${code}`);
+    if (session?.serverProcess === serverProcess) session.healthy = false;
+  });
+
+  // 5. Wait for the server to connect back: Video socket first, then Control socket
+  const { video: videoSocket, control: controlSocket } = await socketsPromise;
+
+  // tunnel_forward=false: the server connects OUT to us; DesktopConnection.java only
+  // writes the dummy byte inside the tunnelForward=true branch, so never send it here.
+  const parser = new ScrcpyStreamParser({
+    sendDummyByte: false,
+    sendDeviceMeta: true,
+    sendCodecMeta: true,
+    sendFrameMeta: true,
+  });
 
   const state: StreamSession = {
     deviceId,
-    scrcpy: null as any,
-    ffmpeg,
-    pipeServer: null as any,
-    inputShell: null,
-    latestFrame: null,
-    buf: Buffer.alloc(0),
+    serverProcess,
+    videoSocket,
+    controlSocket,
+    localServer,
+    abstractName,
     healthy: true,
-    savedBrightness,
+    savedBrightness: null,
     screenOff,
-    mkvHeader: null,
-    headerBuf: Buffer.alloc(0),
+    latestH264Header: null,
+    latestKeyFrame: null,
     rawSinks: new Set(),
+    parser,
+    width: 0,
+    height: 0,
   };
 
-  let frameCount = 0;
-  ffmpeg.stdout.on("data", (chunk: Buffer) => {
-    state.buf = Buffer.concat([state.buf, chunk]);
-    while (true) {
-      const soi = state.buf.indexOf(SOI);
-      if (soi === -1) break;
-      const eoi = state.buf.indexOf(EOI, soi + 2);
-      if (eoi === -1) break;
-      state.latestFrame = state.buf.subarray(soi, eoi + 2);
-      state.buf = state.buf.subarray(eoi + 2);
-      frameCount++;
-      if (frameCount === 1 || frameCount % 30 === 0) {
-        console.log(`[SAG-ANDROID] Decoded frame #${frameCount} (${state.latestFrame.length} bytes)`);
-      }
-      if (session === state) frameEmitter.emit("frame", state.latestFrame);
-    }
-  });
-  ffmpeg.on("exit", () => {
-    if (session === state) state.healthy = false;
-  });
+  let packetCount = 0;
+  // ponytail: packet_merger replicates scrcpy-master/app/src/packet_merger.c
+  // Cache the config (SPS+PPS) packet and prepend it to the next media packet so
+  // WebCodecs VideoDecoder sees [SPS+PPS+IDR] or [SPS+PPS+delta] in one chunk.
+  let pendingConfigBuffer: Buffer | null = null;
+  // ponytail: one-shot flag — SET_DISPLAY_POWER(false) must fire exactly once after first IDR,
+  // not on every keyframe (~1/sec). Repeated sends can cause OEM encoder stalls on some devices.
+  let screenOffApplied = false;
 
-  const pipeServer = net.createServer((socket) => {
-    console.log(`[SAG-ANDROID] scrcpy connected to named pipe`);
-    socket.on("error", (err) => console.error(`[SAG-ANDROID] Pipe error: ${err.message}`));
-    socket.pipe(ffmpeg.stdin, { end: false });
+  videoSocket.on("data", (chunk: Buffer) => {
+    if (session !== state) return;
 
-    // Tee the untouched matroska/H.264 bytes to any recorder. This is scrcpy's
-    // original encode, so a recording is full source quality regardless of how
-    // hard the preview's MJPEG is compressed -- and costs nothing but a
-    // Buffer reference, no extra decode.
-    socket.on("data", (chunk: Buffer) => {
-      if (!state.mkvHeader) {
-        state.headerBuf = Buffer.concat([state.headerBuf, chunk]);
-        const idx = state.headerBuf.indexOf(MKV_CLUSTER);
-        if (idx !== -1) state.mkvHeader = state.headerBuf.subarray(0, idx);
+    // Send raw chunk to raw recording sinks
+    for (const sink of state.rawSinks) sink(chunk);
+
+    // Parse packet
+    parser.parse(chunk, (packet: ScrcpyMediaPacket) => {
+      packetCount++;
+      const now = new Date().toISOString();
+      if (packetCount === 1 || packetCount <= 5 || packetCount % 120 === 0) {
+        console.log(`[${now}] [SAG-STREAM] [dev:${deviceId}] Packet #${packetCount}: ${packet.data.length} bytes, keyframe=${packet.isKeyFrame}, config=${packet.isConfig}, pts=${packet.pts}`);
       }
-      for (const sink of state.rawSinks) sink(chunk);
+
+      if (parser.width && parser.height && (state.width !== parser.width || state.height !== parser.height)) {
+        state.width = parser.width;
+        state.height = parser.height;
+        console.log(`[${now}] [SAG-STREAM] [dev:${deviceId}] Stream resolution identified: ${state.width}x${state.height}, deviceName="${parser.deviceName}"`);
+      }
+
+      if (packet.isConfig) {
+        // Cache SPS/PPS — will be prepended to next media packet (packet_merger pattern)
+        state.latestH264Header = packet.data;
+        pendingConfigBuffer = packet.data;
+        console.log(`[${now}] [SAG-STREAM] [dev:${deviceId}] Cached SPS/PPS config packet #${packetCount} (${packet.data.length} bytes)`);
+        // Don't emit config packet standalone; it will ride with the next media packet.
+        return;
+      }
+
+      // Merge pending config (SPS/PPS) onto the front of this media packet
+      let payload = packet.data;
+      if (pendingConfigBuffer) {
+        payload = Buffer.concat([pendingConfigBuffer, packet.data]);
+        console.log(`[${now}] [SAG-STREAM] [dev:${deviceId}] Merged config (${pendingConfigBuffer.length}b) with media packet #${packetCount} -> total ${payload.length}b`);
+        pendingConfigBuffer = null;
+      }
+
+      if (packet.isKeyFrame) {
+        state.latestKeyFrame = payload;
+        console.log(`[${now}] [SAG-STREAM] [dev:${deviceId}] KeyFrame captured on packet #${packetCount} (${payload.length} bytes)`);
+      }
+
+      // If screenOff was requested on startup, turn the physical screen off once the first
+      // genuine IDR media frame arrives (isKeyFrame=true AND isConfig=false).
+      // CRITICAL: must NOT fire on the codec config packet — scrcpy sets both CONFIG and KEY_FRAME
+      // flags on the SPS/PPS config packet (Streamer.java). Powering off before an actual IDR
+      // frame kills the virtual display before MediaCodec encodes the first real frame, causing
+      // zero IDR frames to ever arrive and permanent black screen on the client.
+      if (state.screenOff && !screenOffApplied && state.controlSocket?.writable && packet.isKeyFrame && !packet.isConfig) {
+        try {
+          state.controlSocket.write(serializeSetDisplayPower(false));
+          screenOffApplied = true;
+          console.log(`[${now}] [SAG-ANDROID] [dev:${deviceId}] SET_DISPLAY_POWER(false) queued on first real IDR frame (packet #${packetCount}).`);
+        } catch (err) {
+          console.error(`[${now}] [SAG-ANDROID] [dev:${deviceId}] Failed to send deferred SET_DISPLAY_POWER:`, err);
+        }
+      }
+
+      // Emit merged Annex-B packet to WebCodecs WebSocket clients
+      h264Emitter.emit("h264", payload);
     });
   });
-  state.pipeServer = pipeServer;
 
-  await new Promise<void>((resolve, reject) => {
-    pipeServer.once("error", reject);
-    pipeServer.listen(pipeName, () => resolve());
-  });
-
-  // Wake device and dismiss lock screen asynchronously (don't block stream startup)
-  execFileAsync(adb, ["-s", deviceId, "shell", "input keyevent 224 && input keyevent 82"]).catch(() => {});
-
-  const scrcpyArgs = [
-    "-s", deviceId,
-    "--no-audio",
-    "--no-audio-playback",
-    "--no-window",
-    "--stay-awake",
-    "--keep-active",
-    "--max-size=1024",
-    "--max-fps=60",
-    "--video-bit-rate=6M",
-    "--video-buffer=0",
-    "--video-codec=h264",
-    "--video-codec-options=i-frame-interval=1,intra-refresh-period=1",
-    "--record-format=mkv",
-    `--record=${pipeName}`,
-  ];
-  if (screenOff) {
-    scrcpyArgs.push("--turn-screen-off", "--no-power-on");
-  }
-
-  const scrcpy = spawn(
-    resolveTool("scrcpy"),
-    scrcpyArgs,
-    { stdio: ["ignore", "pipe", "pipe"], env: { ...process.env, ADB: adb } }
-  );
-
-  // Diagnostic logging: capture scrcpy's stderr to see connection/encoding errors
-  scrcpy.stderr?.on("data", (chunk: Buffer) => {
-    const msg = chunk.toString("utf-8").trim();
-    if (msg) console.log(`[SAG-ANDROID] scrcpy: ${msg}`);
-  });
-
-  scrcpy.on("error", (err) => {
-    console.error(`[SAG-ANDROID] Failed to launch scrcpy: ${err.message}`);
-    state.healthy = false;
-  });
-  scrcpy.on("exit", (code) => {
-    console.log(`[SAG-ANDROID] scrcpy exited with code ${code}`);
+  videoSocket.on("error", (err) => {
+    console.error(`[SAG-ANDROID] Video socket error: ${err.message}`);
     if (session === state) state.healthy = false;
   });
-  state.scrcpy = scrcpy;
 
-  // A single long-lived `adb shell` fed over stdin, instead of spawning a new
-  // adb process (fork + new adb-server connection) per tap -- that per-call
-  // overhead was the bulk of the perceptible touch lag.
-  const inputShell = spawn(adb, ["-s", deviceId, "shell"], { stdio: ["pipe", "ignore", "ignore"] });
-  inputShell.on("exit", () => {
-    if (session === state) state.inputShell = null;
+  videoSocket.on("close", () => {
+    if (session === state) state.healthy = false;
   });
-  state.inputShell = inputShell;
+
+  controlSocket.on("error", (err) => {
+    console.error(`[SAG-ANDROID] Control socket error: ${err.message}`);
+  });
 
   session = state;
 }
 
-// Fire-and-forget input command (e.g. "input tap 500 800") over the
-// session's persistent shell. Falls back to execFileAsync if the shell isn't up yet.
-export function sendShellInput(cmd: string): void {
-  if (session?.inputShell && !session.inputShell.killed && session.inputShell.stdin?.writable) {
-    session.inputShell.stdin.write(cmd + "\n");
-  } else if (session?.deviceId) {
+// Low-latency binary socket control input functions (<1ms execution)
+export function sendScrcpyTouch(action: "down" | "move" | "up", x: number, y: number, width: number, height: number): void {
+  if (!session || !session.healthy || !session.controlSocket.writable) return;
+  const act = action === "down" ? AndroidMotionEventAction.DOWN : action === "up" ? AndroidMotionEventAction.UP : AndroidMotionEventAction.MOVE;
+  const buf = serializeInjectTouchEvent({
+    action: act,
+    x,
+    y,
+    width: width || session.width || 1080,
+    height: height || session.height || 2400,
+    pointerId: SC_POINTER_ID_GENERIC_FINGER,
+  });
+  session.controlSocket.write(buf);
+}
+
+export function sendScrcpyKey(keycode: number): void {
+  if (!session || !session.healthy || !session.controlSocket.writable) return;
+  const downBuf = serializeInjectKeyCode({ action: AndroidKeyEventAction.DOWN, keycode });
+  const upBuf = serializeInjectKeyCode({ action: AndroidKeyEventAction.UP, keycode });
+  session.controlSocket.write(downBuf);
+  session.controlSocket.write(upBuf);
+}
+
+export function sendScrcpyScroll(x: number, y: number, width: number, height: number, hscroll: number, vscroll: number): void {
+  if (!session || !session.healthy || !session.controlSocket.writable) return;
+  const buf = serializeInjectScrollEvent({ x, y, width, height, hscroll, vscroll });
+  session.controlSocket.write(buf);
+}
+
+export function sendShellInput(cmd: string, targetDeviceId?: string): void {
+  // Legacy shell fallback
+  const dev = targetDeviceId || session?.deviceId;
+  if (dev) {
     const adb = resolveTool("adb");
-    execFileAsync(adb, ["-s", session.deviceId, "shell", ...cmd.split(" ")]).catch(() => {});
+    execFileAsync(adb, ["-s", dev, "shell", ...cmd.split(" ")]).catch(() => {});
   }
 }
 
-// --- Recording (independent of preview quality) -------------------------
-// Stream-copies scrcpy's original H.264 into an MP4 -- no re-encode, no
-// second capture on the device, and unaffected by PREVIEW_JPEG_Q. Costs one
-// ffmpeg remux process and a Buffer reference per chunk.
+export function sendTouchStream(action: "down" | "move" | "up", x: number, y: number, wasDragged?: boolean, targetDeviceId?: string): void {
+  if (session && session.healthy) {
+    sendScrcpyTouch(action, x, y, session.width || 1080, session.height || 2400);
+  } else {
+    sendShellInput(`input motionevent ${action.toUpperCase()} ${x} ${y}`, targetDeviceId);
+  }
+}
 
+// --- Recording ---------------------------------------------------------
 export interface RawRecording {
   stop(): Promise<{ width: number; height: number; durationSec: number }>;
   abort(): void;
@@ -268,39 +344,29 @@ export function startRawRecording(outPath: string): RawRecording {
   const proc = spawn(resolveTool("ffmpeg"), [
     "-y",
     "-fflags", "+discardcorrupt",
-    "-f", "matroska",
+    "-f", "h264",
     "-i", "pipe:0",
     "-c", "copy",
-    // We join the live stream mid-session, so the first packet's timestamp is
-    // "seconds since the session started", not 0 -- without this the MP4 opens
-    // with that much dead time.
     "-avoid_negative_ts", "make_zero",
     "-movflags", "+faststart",
     outPath,
   ], { stdio: ["pipe", "ignore", "pipe"] });
+
+  if (s.latestH264Header) {
+    try { proc.stdin?.write(s.latestH264Header); } catch (_) {}
+  }
 
   let stderr = "";
   proc.stderr?.on("data", (c: Buffer) => { stderr = (stderr + c.toString()).slice(-4000); });
   proc.stdin?.on("error", () => {});
   proc.on("error", () => {});
 
-  // A demuxer can only start at a Cluster, so buffer until one shows up and
-  // prefix the session's saved matroska header.
-  // ponytail: a raw 1F43B675 could in principle occur inside video payload;
-  // -discardcorrupt covers the rare bad join rather than a full EBML parser.
-  let started = false;
+  let chunksReceived = 0;
   const sink = (chunk: Buffer) => {
-    if (!proc.stdin?.writable) return;
-    if (!started) {
-      if (!s.mkvHeader) return;
-      const idx = chunk.indexOf(MKV_CLUSTER);
-      if (idx === -1) return;
-      started = true;
-      proc.stdin.write(s.mkvHeader);
-      proc.stdin.write(chunk.subarray(idx));
-      return;
+    if (proc.stdin?.writable) {
+      chunksReceived++;
+      proc.stdin.write(chunk);
     }
-    proc.stdin.write(chunk);
   };
   s.rawSinks.add(sink);
 
@@ -312,15 +378,14 @@ export function startRawRecording(outPath: string): RawRecording {
       detach();
       const durationSec = Math.round(((Date.now() - startedAt) / 1000) * 10) / 10;
       return new Promise((resolve, reject) => {
-        if (!started) {
+        if (chunksReceived === 0) {
           try { proc.kill(); } catch (_) {}
           reject(new Error("No video was captured -- the live stream produced no frames."));
           return;
         }
         proc.on("exit", (code) => {
           if (code === 0) {
-            const dims = s.latestFrame ? jpegSize(s.latestFrame) : null;
-            resolve({ width: dims?.width ?? 0, height: dims?.height ?? 0, durationSec });
+            resolve({ width: s.width || 1080, height: s.height || 2400, durationSec });
           } else {
             reject(new Error(`Recording failed (ffmpeg exit ${code}): ${stderr.split("\n").slice(-3).join(" ")}`));
           }
@@ -341,22 +406,55 @@ export async function stopAndroidStream(): Promise<void> {
   const s = session;
   session = null;
   s.rawSinks.clear();
-  try { s.scrcpy?.kill(); } catch (_) {}
-  try { s.ffmpeg?.kill(); } catch (_) {}
-  try { s.pipeServer?.close(); } catch (_) {}
-  try { s.inputShell?.kill(); } catch (_) {}
+  try { s.videoSocket?.destroy(); } catch (_) {}
+  try { s.controlSocket?.destroy(); } catch (_) {}
+  try { s.serverProcess?.kill(); } catch (_) {}
+  try { s.localServer?.close(); } catch (_) {}
+
+  const adb = resolveTool("adb");
+  try {
+    await execFileAsync(adb, ["-s", s.deviceId, "reverse", "--remove", `localabstract:${s.abstractName}`]);
+  } catch (_) {}
+
   try {
     if (s.savedBrightness && /^\d+$/.test(s.savedBrightness)) {
-      await execFileAsync(resolveTool("adb"), ["-s", s.deviceId, "shell", "settings", "put", "system", "screen_brightness", s.savedBrightness]);
+      await execFileAsync(adb, ["-s", s.deviceId, "shell", "settings", "put", "system", "screen_brightness", s.savedBrightness]);
     }
-  } catch (_) {}
-  try {
-    await execFileAsync(resolveTool("adb"), ["-s", s.deviceId, "shell", "input", "keyevent", "224"]);
   } catch (_) {}
 }
 
+export function sendScrcpyControlBuffer(buf: Buffer): boolean {
+  if (session && session.healthy && session.controlSocket.writable) {
+    session.controlSocket.write(buf);
+    return true;
+  }
+  return false;
+}
+
+/**
+ * Sends TYPE_RESET_VIDEO (opcode 17) to force an immediate IDR keyframe from the encoder.
+ * Call this when a new WebSocket client connects so the decoder receives an IDR quickly
+ * instead of waiting up to i-frame-interval seconds.
+ */
+export function requestKeyFrame(): boolean {
+  if (!session || !session.healthy || !session.controlSocket.writable) return false;
+  // TYPE_RESET_VIDEO = 17, single-byte message, no payload (per ControlMessageReader.java)
+  const buf = Buffer.alloc(1);
+  buf.writeUInt8(17, 0);
+  session.controlSocket.write(buf);
+  console.log(`[SAG-ANDROID] TYPE_RESET_VIDEO sent — requesting immediate IDR keyframe.`);
+  return true;
+}
+
+export function getInitialH264(): { header: Buffer | null; keyFrame: Buffer | null } {
+  return {
+    header: session?.latestH264Header || null,
+    keyFrame: session?.latestKeyFrame || null,
+  };
+}
+
 export function getLatestStreamFrame(): Buffer | null {
-  return session && session.healthy ? session.latestFrame : null;
+  return session && session.healthy ? (session.latestKeyFrame || session.latestH264Header) : null;
 }
 
 export function isStreamHealthy(): boolean {
@@ -369,35 +467,29 @@ export function isScreenOff(): boolean {
 
 export async function setScreenOff(turnOff: boolean): Promise<boolean> {
   if (!session) throw new Error("No active Android session.");
-  const adb = resolveTool("adb");
   session.screenOff = turnOff;
-  if (turnOff) {
-    try {
-      await execFileAsync(adb, ["-s", session.deviceId, "shell", "settings", "put", "system", "screen_brightness", MIN_BRIGHTNESS]);
-    } catch (_) {}
+  if (session.healthy && session.controlSocket && session.controlSocket.writable) {
+    session.controlSocket.write(serializeSetDisplayPower(!turnOff));
   } else {
-    try {
-      if (session.savedBrightness && /^\d+$/.test(session.savedBrightness)) {
-        await execFileAsync(adb, ["-s", session.deviceId, "shell", "settings", "put", "system", "screen_brightness", session.savedBrightness]);
-      }
-      await execFileAsync(adb, ["-s", session.deviceId, "shell", "input", "keyevent", "224"]);
-    } catch (_) {}
+    // Fallback if control socket is unavailable
+    const adb = resolveTool("adb");
+    if (turnOff) {
+      execFileAsync(adb, ["-s", session.deviceId, "shell", "input", "keyevent", "26"]).catch(() => {});
+    } else {
+      execFileAsync(adb, ["-s", session.deviceId, "shell", "input", "keyevent", "224"]).catch(() => {});
+    }
   }
   return session.screenOff;
 }
 
-// Re-encodes the latest live JPEG frame to a lossless PNG, on demand, so
-// saved captures stay PNG (matching what the rest of the app -- e.g. the
-// mockup renderer's hardcoded `data:image/png` URIs -- expects) even though
-// the live preview itself is JPEG.
 export async function getLatestFramePng(): Promise<Buffer> {
   const frame = getLatestStreamFrame();
-  if (!frame) throw new Error("No live Android frame available yet.");
+  if (!frame) throw new Error("No live Android H.264 frame available yet.");
 
   return new Promise((resolve, reject) => {
     const chunks: Buffer[] = [];
     const proc = spawn(resolveTool("ffmpeg"), [
-      "-f", "mjpeg", "-i", "pipe:0",
+      "-f", "h264", "-i", "pipe:0",
       "-frames:v", "1", "-f", "image2pipe", "-vcodec", "png",
       "pipe:1",
     ], { stdio: ["pipe", "pipe", "ignore"] });
@@ -405,7 +497,7 @@ export async function getLatestFramePng(): Promise<Buffer> {
     proc.on("error", reject);
     proc.on("exit", (code) => {
       if (code === 0 && chunks.length) resolve(Buffer.concat(chunks));
-      else reject(new Error(`Failed to convert live frame to PNG (exit ${code})`));
+      else reject(new Error(`Failed to convert H.264 frame to PNG (exit ${code})`));
     });
     proc.stdin.end(frame);
   });

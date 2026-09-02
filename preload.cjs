@@ -3,13 +3,21 @@ const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('electronNative', {
   isElectron: true,
   send: (channel, data) => {
-    const validChannels = ['send-touch-input', 'start-android-stream', 'stop-android-stream'];
+    const validChannels = [
+      'send-touch-input',
+      'start-android-stream',
+      'stop-android-stream'
+    ];
     if (validChannels.includes(channel)) {
       ipcRenderer.send(channel, data);
     }
   },
   invoke: (channel, data) => {
-    const validChannels = ['get-gpu-caps', 'ensure-binaries', 'get-stream-frame'];
+    const validChannels = [
+      'get-gpu-caps',
+      'ensure-binaries',
+      'get-stream-frame'
+    ];
     if (validChannels.includes(channel)) {
       return ipcRenderer.invoke(channel, data);
     }

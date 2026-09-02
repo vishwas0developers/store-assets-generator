@@ -454,6 +454,7 @@ for (const railBtn of document.querySelectorAll(".rail-btn")) {
     railBtn.classList.add("active");
     const prefix = tabPage.id === "tab-capture" ? "capture" : tabPage.id === "tab-mockup" ? "mockup" : "video";
     $(prefix + "-section-" + railBtn.dataset.section).classList.add("active");
+
     if (prefix === "mockup") $("mockup-inspector").style.display = railBtn.dataset.section === "editor" ? "block" : "none";
     if (prefix === "video" && railBtn.dataset.section === "scenes") {
       if (videoProject) {
@@ -729,9 +730,15 @@ async function connectAndroidDevice() {
   if (loadingOverlay) loadingOverlay.style.display = "flex";
 
   try {
+    const isElectron = Boolean(window.electronNative && typeof window.electronNative.invoke === "function");
     const startRes = await api("/api/android/start", {
       method: "POST",
-      body: { projectId: activeProjectId, deviceId: deviceId || undefined, screenOff: true }
+      body: {
+        projectId: activeProjectId,
+        deviceId: deviceId || undefined,
+        screenOff: false,
+        nativePreview: isElectron,
+      }
     });
 
     androidConnected = true;
@@ -748,7 +755,11 @@ async function connectAndroidDevice() {
     window.androidDeviceHeight = startRes.height || 1920;
     resizeAndroidPreview();
 
+    // Enable interaction overlay and start WebCodecs GPU hardware stream
+    const overlay = $("android-interaction-overlay");
+    if (overlay) overlay.style.pointerEvents = "auto";
     startAndroidWs(loadingOverlay);
+
     setTimeout(() => {
       if (loadingOverlay && androidConnected) loadingOverlay.style.display = "none";
     }, 1500);
@@ -756,11 +767,65 @@ async function connectAndroidDevice() {
     await loadAndroidApps();
   } catch (e) {
     if (loadingOverlay) loadingOverlay.style.display = "none";
-    await alert("Connection failed: " + e.message);
-    $("android-status").textContent = "Connection failed. Please check the device connection and try again.";
+    showAlert("Connection failed: " + e.message, "error", "Connection Error");
+    $("android-status").textContent = "Connection failed: " + e.message;
   } finally {
     $("android-connect-btn").disabled = false;
   }
+}
+
+class AnnexBParser {
+  constructor() {
+    this.buffer = new Uint8Array(0);
+  }
+
+  append(data) {
+    const next = new Uint8Array(this.buffer.length + data.byteLength);
+    next.set(this.buffer);
+    next.set(new Uint8Array(data), this.buffer.length);
+    this.buffer = next;
+  }
+
+  extractNALs() {
+    const nals = [];
+    let start = -1;
+    const buf = this.buffer;
+    const len = buf.length;
+
+    let i = 0;
+    while (i < len - 3) {
+      if (buf[i] === 0 && buf[i + 1] === 0) {
+        let prefixLen = 0;
+        if (buf[i + 2] === 1) prefixLen = 3;
+        else if (buf[i + 2] === 0 && buf[i + 3] === 1) prefixLen = 4;
+
+        if (prefixLen > 0) {
+          if (start >= 0 && i > start) {
+            nals.push(buf.subarray(start, i));
+          }
+          i += prefixLen;
+          start = i;
+          continue;
+        }
+      }
+      i++;
+    }
+
+    if (start >= 0) {
+      this.buffer = buf.subarray(start);
+    }
+    return nals;
+  }
+}
+
+function getAvcCodecString(sps) {
+  if (sps && sps.length >= 4) {
+    const profile = sps[1].toString(16).padStart(2, "0");
+    const compat = sps[2].toString(16).padStart(2, "0");
+    const level = sps[3].toString(16).padStart(2, "0");
+    return `avc1.${profile}${compat}${level}`;
+  }
+  return "avc1.42e01f";
 }
 
 let androidWs = null;
@@ -768,28 +833,327 @@ let androidWsFrameUrl = null;
 let androidCanvasCtx = null;
 let androidRendering = false;
 let androidPendingBitmap = null;
+let webCodecsDecoder = null;
+let h264SpsBuffer = null;
+let h264PpsBuffer = null;
+let decoderConfigured = false;
 
-// High-speed live mirror over WebSocket using zero-copy createImageBitmap + Canvas:
-// decodes incoming frames off the main thread and renders via requestAnimationFrame
-// with desynchronized low-latency 2D context. Drops intermediate frames if rendering
-// is busy to ensure near-instantaneous live device preview matching native scrcpy.
+function maybeFindStartCode(buf) {
+  for (let i = 0; i < buf.length - 3; i++) {
+    if (buf[i] === 0 && buf[i + 1] === 0 && buf[i + 2] === 1) return i;
+    if (buf[i] === 0 && buf[i + 1] === 0 && buf[i + 2] === 0 && buf[i + 3] === 1) return i;
+  }
+  return -1;
+}
+
+function extractSpsCodecString(nalBytes) {
+  const offset = maybeFindStartCode(nalBytes);
+  if (offset < 0) return "avc1.42e01f";
+  const prefixLen = nalBytes[offset + 2] === 1 ? 3 : 4;
+  const start = offset + prefixLen;
+  if (start + 3 <= nalBytes.length) {
+    const profile = nalBytes[start + 1].toString(16).padStart(2, "0");
+    const compat = nalBytes[start + 2].toString(16).padStart(2, "0");
+    const level = nalBytes[start + 3].toString(16).padStart(2, "0");
+    return `avc1.${profile}${compat}${level}`;
+  }
+  return "avc1.42e01f";
+}
+
+function serializeBinaryTouch(action, x, y, width, height) {
+  const buf = new ArrayBuffer(32);
+  const v = new DataView(buf);
+  v.setUint8(0, 2); // INJECT_TOUCH_EVENT
+  v.setUint8(1, action === "down" ? 0 : action === "up" ? 1 : 2);
+  v.setBigInt64(2, -2n, false); // GENERIC_FINGER (-2n)
+  v.setInt32(10, Math.round(x), false);
+  v.setInt32(14, Math.round(y), false);
+  v.setUint16(18, Math.round(width), false);
+  v.setUint16(20, Math.round(height), false);
+  v.setUint16(22, action === "up" ? 0 : 0xffff, false);
+  v.setUint32(24, 0, false);
+  v.setUint32(28, action === "up" ? 0 : 1, false);
+  return buf;
+}
+
+function serializeBinaryKey(action, keycode) {
+  const buf = new ArrayBuffer(14);
+  const v = new DataView(buf);
+  v.setUint8(0, 0); // INJECT_KEYCODE
+  v.setUint8(1, action); // 0=DOWN, 1=UP
+  v.setUint32(2, keycode, false);
+  v.setUint32(6, 0, false);
+  v.setUint32(10, 0, false);
+  return buf;
+}
+
+// High-speed live mirror over WebSocket using hardware WebCodecs VideoDecoder:
+// decodes incoming H.264 NAL stream on GPU and renders via desynchronized 2D context.
 function startAndroidWs(loadingOverlay) {
   stopAndroidWs();
   const canvas = $("android-frame-canvas");
   const frameImg = $("android-frame-img");
   if (canvas) {
+    canvas.style.display = "block";
     androidCanvasCtx = canvas.getContext("2d", { alpha: false, desynchronized: true });
   }
+  if (frameImg) {
+    frameImg.style.display = "none";
+  }
+
   const proto = location.protocol === "https:" ? "wss:" : "ws:";
-  const ws = new WebSocket(`${proto}//${location.host}/api/android/ws`);
-  ws.binaryType = "blob";
-  ws.onmessage = async (ev) => {
-    if (canvas && androidCanvasCtx && typeof window.createImageBitmap === "function") {
-      try {
-        const bmp = await createImageBitmap(ev.data);
-        if (androidPendingBitmap) {
-          androidPendingBitmap.close();
+  const ws = new WebSocket(`${proto}//${location.host}/api/android/h264-ws`);
+  ws.binaryType = "arraybuffer";
+  androidWs = ws;
+  window.androidWs = ws;
+
+  decoderConfigured = false;
+  h264SpsBuffer = null;
+  h264PpsBuffer = null;
+  let hasDecodedFirstKeyFrame = false;
+
+  const useWebCodecs = typeof window.VideoDecoder === "function";
+
+  window.androidDebug = {
+    wsPacketCount: 0,
+    frameRenderCount: 0,
+    lastNals: [],
+    lastError: null,
+    getDecoderState: () => webCodecsDecoder ? webCodecsDecoder.state : 'none',
+    getHasKeyFrame: () => hasDecodedFirstKeyFrame,
+    getConfigured: () => decoderConfigured,
+  };
+
+  let frameRenderCount = 0;
+
+  function createVideoDecoder() {
+    if (!useWebCodecs || !canvas || !androidCanvasCtx) return null;
+    try {
+      let lastRenderTime = performance.now();
+      return new VideoDecoder({
+        output: (frame) => {
+          frameRenderCount++;
+          if (window.androidDebug) window.androidDebug.frameRenderCount = frameRenderCount;
+          const now = performance.now();
+          const frameDelta = (now - lastRenderTime).toFixed(1);
+          lastRenderTime = now;
+          if (canvas.width !== frame.displayWidth || canvas.height !== frame.displayHeight) {
+            canvas.width = frame.displayWidth;
+            canvas.height = frame.displayHeight;
+          }
+          if (canvas.style.display !== "block") {
+            canvas.style.display = "block";
+          }
+          androidCanvasCtx.drawImage(frame, 0, 0);
+          frame.close();
+          if (loadingOverlay && loadingOverlay.style.display !== "none") {
+            loadingOverlay.style.display = "none";
+          }
+          if (frameRenderCount === 1 || frameRenderCount <= 5 || frameRenderCount % 120 === 0) {
+            console.log(`[${new Date().toISOString()}] [SAG-RENDERER] Frame #${frameRenderCount} rendered to canvas (${canvas.width}x${canvas.height}) delta=${frameDelta}ms`);
+          }
+        },
+        error: (err) => {
+          console.error(`[${new Date().toISOString()}] [SAG-DECODER] WebCodecs decode error:`, err);
+          if (window.androidDebug) window.androidDebug.lastError = err.message || String(err);
+          decoderConfigured = false;
+          hasDecodedFirstKeyFrame = false;
+        },
+      });
+    } catch (err) {
+      console.warn("[SAG-CLIENT] Failed to create WebCodecs VideoDecoder:", err);
+      return null;
+    }
+  }
+
+  webCodecsDecoder = createVideoDecoder();
+
+  // --- Scrcpy WebCodecs demuxer ---
+  // scrcpy sends H.264 packets framed by ScrcpyStreamParser in androidStream.ts:
+  //   - Config (SPS/PPS) packet: one Annex-B buffer with SPS NAL (type 7) followed by PPS NAL (type 8).
+  //   - Keyframe (IDR) packet: Annex-B IDR NAL, sometimes preceded by SPS+PPS again.
+  //   - Delta packet: Annex-B non-IDR NAL.
+  // On WebSocket connect, server.ts flushes latestH264Header (config) then latestKeyFrame.
+  // We configure VideoDecoder the moment we see SPS and keep the SPS/PPS to prepend onto IDR frames.
+
+  // Build AVCC extradata from Annex-B SPS/PPS nalBytes (for VideoDecoder description).
+  function buildAvcCExtraData(spsNAL, ppsNAL) {
+    // spsNAL/ppsNAL are Uint8Array of the raw NAL body (without start code prefix)
+    const out = new Uint8Array(11 + spsNAL.length + ppsNAL.length);
+    let i = 0;
+    out[i++] = 1;                 // configurationVersion
+    out[i++] = spsNAL[1];         // AVCProfileIndication
+    out[i++] = spsNAL[2];         // profile_compatibility
+    out[i++] = spsNAL[3];         // AVCLevelIndication
+    out[i++] = 0xff;              // lengthSizeMinusOne = 3 (4-byte NAL lengths)
+    out[i++] = 0xe1;              // numSequenceParameterSets = 1
+    out[i++] = (spsNAL.length >> 8) & 0xff;
+    out[i++] = spsNAL.length & 0xff;
+    for (let j = 0; j < spsNAL.length; j++) out[i++] = spsNAL[j];
+    out[i++] = 1;                 // numPictureParameterSets = 1
+    out[i++] = (ppsNAL.length >> 8) & 0xff;
+    out[i++] = ppsNAL.length & 0xff;
+    for (let j = 0; j < ppsNAL.length; j++) out[i++] = ppsNAL[j];
+    return out;
+  }
+
+  // Parse all NAL units out of an Annex-B buffer. Returns [{type, body}] where body excludes start code.
+  function parseAnnexBNALs(data) {
+    const nals = [];
+    let i = 0;
+    while (i < data.length - 3) {
+      let startLen = 0;
+      if (data[i] === 0 && data[i+1] === 0 && data[i+2] === 1) startLen = 3;
+      else if (data[i] === 0 && data[i+1] === 0 && data[i+2] === 0 && data[i+3] === 1) startLen = 4;
+      if (startLen > 0) {
+        const bodyStart = i + startLen;
+        // find next start code
+        let end = data.length;
+        for (let j = bodyStart + 1; j < data.length - 3; j++) {
+          if (data[j] === 0 && data[j+1] === 0 && (data[j+2] === 1 || (data[j+2] === 0 && data[j+3] === 1))) {
+            end = j; break;
+          }
         }
+        if (bodyStart < end) {
+          nals.push({ type: data[bodyStart] & 0x1f, body: data.subarray(bodyStart, end) });
+        }
+        i = end;
+      } else {
+        i++;
+      }
+    }
+    return nals;
+  }
+
+  function containsStartCode(data) {
+    for (let i = 0; i < data.length - 3; i++) {
+      if (data[i] === 0 && data[i+1] === 0 && (data[i+2] === 1 || (data[i+2] === 0 && data[i+3] === 1))) return true;
+    }
+    return false;
+  }
+
+  let wsPacketCount = 0;
+
+  ws.onmessage = async (ev) => {
+    let rawData = ev.data;
+    if (rawData instanceof Blob) {
+      rawData = await rawData.arrayBuffer();
+    }
+    if (!(rawData instanceof ArrayBuffer)) return;
+    wsPacketCount++;
+    if (window.androidDebug) {
+      window.androidDebug.wsPacketCount = wsPacketCount;
+    }
+    const now = new Date().toISOString();
+    const data = new Uint8Array(rawData);
+    if (wsPacketCount === 1 || wsPacketCount <= 5 || wsPacketCount % 120 === 0) {
+      console.log(`[${now}] [SAG-CLIENT] WS packet #${wsPacketCount}: ${data.length} bytes, configured=${decoderConfigured}, first4=[${data[0]},${data[1]},${data[2]},${data[3]}]`);
+    }
+
+    if (webCodecsDecoder) {
+      if (!containsStartCode(data)) return; // not a valid Annex-B packet, skip
+
+      const nals = parseAnnexBNALs(data);
+      if (!nals.length) return;
+
+      if (wsPacketCount <= 5 || wsPacketCount % 120 === 0) {
+        console.log(`[${now}] [SAG-CLIENT] Packet #${wsPacketCount} NALs: [${nals.map(n => n.type).join(",")}]`);
+      }
+
+      const spsNAL = nals.find(n => n.type === 7);
+      const ppsNAL = nals.find(n => n.type === 8);
+      const idrNAL = nals.find(n => n.type === 5);
+      const hasNonConfig = nals.some(n => n.type !== 7 && n.type !== 8);
+
+      // --- Configure or recover decoder on SPS encounter or closed state ---
+      if (webCodecsDecoder.state === "closed") {
+        console.warn(`[${now}] [SAG-DECODER] VideoDecoder was closed, recreating...`);
+        webCodecsDecoder = createVideoDecoder();
+        decoderConfigured = false;
+        hasDecodedFirstKeyFrame = false;
+      }
+
+      if (spsNAL && ppsNAL && (!decoderConfigured || webCodecsDecoder.state === "unconfigured")) {
+        h264SpsBuffer = spsNAL.body;
+        h264PpsBuffer = ppsNAL.body;
+        const codecStr = `avc1.${spsNAL.body[1].toString(16).padStart(2,"0")}${spsNAL.body[2].toString(16).padStart(2,"0")}${spsNAL.body[3].toString(16).padStart(2,"0")}`;
+        try {
+          if (webCodecsDecoder && webCodecsDecoder.state !== "closed") {
+            webCodecsDecoder.configure({
+              codec: codecStr,
+              optimizeForLatency: true,
+              hardwareAcceleration: "prefer-hardware",
+            });
+            decoderConfigured = true;
+            console.log(`[${now}] [SAG-DECODER] VideoDecoder configured (Annex-B): ${codecStr}, spsLen=${spsNAL.body.length}, ppsLen=${ppsNAL.body.length}`);
+          }
+        } catch (e) {
+          console.error(`[${now}] [SAG-DECODER] VideoDecoder configure failed:`, e);
+        }
+        if (!hasNonConfig) return; // pure config packet (SPS+PPS only), no frame to decode
+      } else if (spsNAL) {
+        h264SpsBuffer = spsNAL.body;
+        if (!hasNonConfig) return;
+      }
+
+      if (!decoderConfigured || !webCodecsDecoder || webCodecsDecoder.state !== "configured") {
+        return;
+      }
+
+      try {
+        // Determine keyframe: packet contains IDR NAL (type 5)
+        const isKeyFrame = !!idrNAL;
+
+        // Track first keyframe, but also accept delta frames once the decoder is configured.
+        if (isKeyFrame) {
+          hasDecodedFirstKeyFrame = true;
+        } else if (!hasDecodedFirstKeyFrame && !h264SpsBuffer) {
+          // Haven't seen SPS yet at all — truly no decoder init data, skip
+          return;
+        }
+
+        // For IDR frames: ensure SPS+PPS are prepended (some decoders require it on every keyframe)
+        let payload = data;
+        if (isKeyFrame && h264SpsBuffer && h264PpsBuffer) {
+          const hasSps = nals[0] && nals[0].type === 7;
+          if (!hasSps) {
+            const sc4 = new Uint8Array([0, 0, 0, 1]);
+            const combined = new Uint8Array(sc4.length + h264SpsBuffer.length + sc4.length + h264PpsBuffer.length + data.length);
+            let off = 0;
+            combined.set(sc4, off); off += sc4.length;
+            combined.set(h264SpsBuffer, off); off += h264SpsBuffer.length;
+            combined.set(sc4, off); off += sc4.length;
+            combined.set(h264PpsBuffer, off); off += h264PpsBuffer.length;
+            combined.set(data, off);
+            payload = combined;
+          }
+        }
+
+        // ponytail: WebCodecs VideoDecoder requires a real IDR as the first "key" chunk.
+        // Labeling a non-IDR P-frame as "key" causes DataError → error-callback reset loop → black screen.
+        // Drop all non-IDR frames until the first genuine IDR is decoded.
+        if (!isKeyFrame && !hasDecodedFirstKeyFrame) {
+          return; // wait for a real IDR keyframe
+        }
+        const chunkType = isKeyFrame ? "key" : "delta";
+        if (isKeyFrame && !hasDecodedFirstKeyFrame) hasDecodedFirstKeyFrame = true;
+
+        if (wsPacketCount <= 5 || wsPacketCount % 120 === 0) {
+          console.log(`[${now}] [SAG-DECODER] decode() pkt#${wsPacketCount}: type=${chunkType}, size=${payload.length}b, isIDR=${isKeyFrame}`);
+        }
+        webCodecsDecoder.decode(new EncodedVideoChunk({
+          type: chunkType,
+          timestamp: performance.now() * 1000,
+          data: payload,
+        }));
+      } catch (decErr) {
+        console.error(`[${now}] [SAG-DECODER] decode error:`, decErr);
+      }
+    } else if (canvas && androidCanvasCtx && typeof window.createImageBitmap === "function") {
+      try {
+        const blob = new Blob([data], { type: "image/jpeg" });
+        const bmp = await createImageBitmap(blob);
+        if (androidPendingBitmap) androidPendingBitmap.close();
         androidPendingBitmap = bmp;
         if (!androidRendering) {
           androidRendering = true;
@@ -808,23 +1172,33 @@ function startAndroidWs(loadingOverlay) {
           });
         }
       } catch (_) {}
-    } else if (frameImg) {
-      frameImg.style.display = "block";
-      const url = URL.createObjectURL(ev.data);
-      const prevUrl = androidWsFrameUrl;
-      androidWsFrameUrl = url;
-      frameImg.onload = () => {
-        if (loadingOverlay) loadingOverlay.style.display = "none";
-        if (prevUrl) URL.revokeObjectURL(prevUrl);
-      };
-      frameImg.src = url;
     }
   };
+
+  ws.onopen = () => {
+    console.log("[SAG-CLIENT] Android H.264 WebSocket connected successfully");
+  };
+
+  ws.onerror = (err) => {
+    console.error("[SAG-CLIENT] Android H.264 WebSocket error:", err);
+  };
+
+  ws.onclose = (ev) => {
+    console.log(`[SAG-CLIENT] Android H.264 WebSocket closed (code=${ev.code})`);
+    if (androidConnected && !ws._closedManually) {
+      console.log("[SAG-CLIENT] Attempting WebSocket reconnect in 1000ms...");
+      setTimeout(() => {
+        if (androidConnected) startAndroidWs(loadingOverlay);
+      }, 1000);
+    }
+  };
+
   androidWs = ws;
 }
 
 function stopAndroidWs() {
   if (androidWs) {
+    androidWs._closedManually = true;
     try { androidWs.close(); } catch (_) {}
     androidWs = null;
   }
@@ -886,6 +1260,10 @@ window.addEventListener("resize", () => {
 
 async function disconnectAndroidDevice() {
   await androidRecorder.stopIfActive();
+
+  const overlay = $("android-interaction-overlay");
+  if (overlay) overlay.style.pointerEvents = "auto";
+
   stopAndroidWs();
   const loadingOverlay = $("android-loading-overlay");
   if (loadingOverlay) loadingOverlay.style.display = "none";
@@ -1079,6 +1457,21 @@ $("android-launch-app-btn").onclick = async () => {
 function sendAndroidAction(action) {
   if (!androidConnected) return;
   if (androidWs && androidWs.readyState === WebSocket.OPEN) {
+    if (action.type === "touch" && action.xPct !== undefined && action.yPct !== undefined) {
+      const w = window.androidDeviceWidth || 1080;
+      const h = window.androidDeviceHeight || 2400;
+      const x = Math.round((action.xPct / 100) * w);
+      const y = Math.round((action.yPct / 100) * h);
+      const bin = serializeBinaryTouch(action.action || "down", x, y, w, h);
+      androidWs.send(bin);
+      return;
+    } else if (action.type === "key" && action.keycode !== undefined) {
+      const down = serializeBinaryKey(0, action.keycode);
+      const up = serializeBinaryKey(1, action.keycode);
+      androidWs.send(down);
+      androidWs.send(up);
+      return;
+    }
     androidWs.send(JSON.stringify(action));
   } else {
     api("/api/android/action", { method: "POST", body: action }).catch(() => {});
@@ -1121,14 +1514,14 @@ $("android-screen-off-btn").onclick = async () => {
   }
 };
 
-// Interactive tap & swipe on the Android device frame
+// Interactive real-time continuous touch & drag on the Android device frame
 const androidImgEl = $("android-frame-img");
 const androidOverlayEl = $("android-interaction-overlay");
 let androidPointerDown = false;
 let androidDragged = false;
 let androidStartX = 0;
 let androidStartY = 0;
-let androidPointerStartTime = 0;
+let androidLastMoveTime = 0;
 
 function showTouchRipple(x, y) {
   const ripple = document.createElement("div");
@@ -1139,6 +1532,14 @@ function showTouchRipple(x, y) {
   setTimeout(() => ripple.remove(), 400);
 }
 
+function getPointerCoords(e) {
+  const rect = androidOverlayEl.getBoundingClientRect();
+  const clamp = (val, min, max) => Math.min(Math.max(val, min), max);
+  const xPct = clamp(((e.clientX - rect.left) / rect.width) * 100, 0, 100);
+  const yPct = clamp(((e.clientY - rect.top) / rect.height) * 100, 0, 100);
+  return { xPct, yPct, relX: e.clientX - rect.left, relY: e.clientY - rect.top };
+}
+
 androidOverlayEl.addEventListener("pointerdown", (e) => {
   if (!androidConnected) return;
   e.preventDefault();
@@ -1146,40 +1547,37 @@ androidOverlayEl.addEventListener("pointerdown", (e) => {
   androidDragged = false;
   androidStartX = e.clientX;
   androidStartY = e.clientY;
-  androidPointerStartTime = Date.now();
   try { androidOverlayEl.setPointerCapture(e.pointerId); } catch (err) {}
+
+  const coords = getPointerCoords(e);
+  showTouchRipple(coords.relX, coords.relY);
+  sendAndroidAction({ type: "touch", action: "down", xPct: coords.xPct, yPct: coords.yPct });
 });
 
 androidOverlayEl.addEventListener("pointermove", (e) => {
   if (!androidConnected || !androidPointerDown) return;
   e.preventDefault();
   const dist = Math.hypot(e.clientX - androidStartX, e.clientY - androidStartY);
-  if (dist > 8) androidDragged = true;
+  if (dist > 5) androidDragged = true;
+
+  const now = Date.now();
+  if (now - androidLastMoveTime >= 16) {
+    androidLastMoveTime = now;
+    const coords = getPointerCoords(e);
+    sendAndroidAction({ type: "touch", action: "move", xPct: coords.xPct, yPct: coords.yPct });
+  }
 });
 
 const handleAndroidPointerEnd = async (e) => {
   if (!androidConnected || !androidPointerDown) return;
   try { androidOverlayEl.releasePointerCapture(e.pointerId); } catch (err) {}
 
-  const rect = androidOverlayEl.getBoundingClientRect();
-  const clamp = (val, min, max) => Math.min(Math.max(val, min), max);
-  const xPct = clamp(((androidStartX - rect.left) / rect.width) * 100, 0, 100);
-  const yPct = clamp(((androidStartY - rect.top) / rect.height) * 100, 0, 100);
-  const x2Pct = clamp(((e.clientX - rect.left) / rect.width) * 100, 0, 100);
-  const y2Pct = clamp(((e.clientY - rect.top) / rect.height) * 100, 0, 100);
-
+  const coords = getPointerCoords(e);
   const wasDragged = androidDragged;
   androidPointerDown = false;
   androidDragged = false;
 
-  try {
-    if (wasDragged) {
-      sendAndroidAction({ type: "swipe", xPct, yPct, x2Pct, y2Pct });
-    } else {
-      showTouchRipple(androidStartX - rect.left, androidStartY - rect.top);
-      sendAndroidAction({ type: "tap", xPct, yPct });
-    }
-  } catch (err) {}
+  sendAndroidAction({ type: "touch", action: "up", xPct: coords.xPct, yPct: coords.yPct, wasDragged });
 };
 
 androidOverlayEl.addEventListener("pointerup", handleAndroidPointerEnd);
@@ -4042,6 +4440,163 @@ $("video-render").onclick = async () => {
 };
 
 /* ============================================================
+   Toolchain & Binaries Settings Modal + First-Launch Check
+   ============================================================ */
+
+const toolchainBackdrop = $("toolchain-backdrop");
+
+if ($("open-toolchain")) {
+  $("open-toolchain").onclick = () => openToolchainModal();
+}
+if ($("toolchain-close")) {
+  $("toolchain-close").onclick = () => closeToolchainModal();
+}
+if (toolchainBackdrop) {
+  toolchainBackdrop.onclick = (e) => {
+    if (e.target === toolchainBackdrop) closeToolchainModal();
+  };
+}
+
+function openToolchainModal() {
+  if (toolchainBackdrop) toolchainBackdrop.classList.add("open");
+  refreshToolchainStatus();
+}
+
+function closeToolchainModal() {
+  if (toolchainBackdrop) toolchainBackdrop.classList.remove("open");
+}
+
+async function refreshToolchainStatus() {
+  const summaryEl = $("toolchain-status-summary");
+  const listEl = $("toolchain-tools-list");
+  const customDirInput = $("toolchain-custom-dir");
+  if (!summaryEl || !listEl) return;
+
+  try {
+    const status = await api("/api/toolchain/status");
+    customDirInput.value = status.customDir || "";
+
+    if (status.ready) {
+      summaryEl.style.background = "rgba(16, 185, 129, 0.15)";
+      summaryEl.style.border = "1px solid rgba(16, 185, 129, 0.3)";
+      summaryEl.style.color = "#10b981";
+      summaryEl.innerHTML = "&#10003; Toolchain Ready: ADB, scrcpy, and FFmpeg are installed and accessible.";
+    } else {
+      summaryEl.style.background = "rgba(239, 68, 68, 0.15)";
+      summaryEl.style.border = "1px solid rgba(239, 68, 68, 0.3)";
+      summaryEl.style.color = "#ef4444";
+      summaryEl.innerHTML = "&#9888; Action Required: One or more required binaries are missing.";
+    }
+
+    listEl.innerHTML = "";
+    const toolNames = ["adb", "scrcpy", "ffmpeg"];
+    for (const name of toolNames) {
+      const t = status.tools[name];
+      const row = document.createElement("div");
+      row.style.cssText = "display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0.8rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px;";
+
+      const badgeBg = t.available ? (t.source === "custom" ? "#8b5cf6" : "#10b981") : "#ef4444";
+      const badgeText = t.available ? (t.source === "custom" ? "Custom" : t.source === "vendor" ? "Vendor" : "PATH") : "Missing";
+
+      row.innerHTML = `
+        <div>
+          <strong style="text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.85rem;">${t.name}</strong>
+          <span style="margin-left: 0.5rem; font-family: monospace; font-size: 0.8rem; color: #9aa0a6;">${t.version || (t.available ? "Unknown version" : "Not installed")}</span>
+          <div style="font-size: 0.75rem; color: #6b7280; font-family: monospace; margin-top: 0.2rem; word-break: break-all;">${t.path || "No binary path found"}</div>
+        </div>
+        <span style="padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; background: ${badgeBg}; color: white;">${badgeText}</span>
+      `;
+      listEl.appendChild(row);
+    }
+  } catch (e) {
+    summaryEl.textContent = "Failed to load status: " + e.message;
+  }
+}
+
+if ($("toolchain-save-dir")) {
+  $("toolchain-save-dir").onclick = async () => {
+    const customDir = $("toolchain-custom-dir").value.trim();
+    try {
+      await api("/api/toolchain/config", { method: "POST", body: { customDir: customDir || null } });
+      await refreshToolchainStatus();
+    } catch (e) {
+      await alert("Failed to set directory: " + e.message);
+    }
+  };
+}
+
+if ($("toolchain-reset-dir")) {
+  $("toolchain-reset-dir").onclick = async () => {
+    $("toolchain-custom-dir").value = "";
+    try {
+      await api("/api/toolchain/config", { method: "POST", body: { customDir: null } });
+      await refreshToolchainStatus();
+    } catch (e) {
+      await alert("Failed to reset directory: " + e.message);
+    }
+  };
+}
+
+if ($("toolchain-download-btn")) {
+  $("toolchain-download-btn").onclick = async () => {
+    const btn = $("toolchain-download-btn");
+    const progressContainer = $("toolchain-progress-container");
+    const msgEl = $("toolchain-progress-msg");
+    const pctEl = $("toolchain-progress-pct");
+    const barEl = $("toolchain-progress-bar");
+
+    btn.disabled = true;
+    progressContainer.style.display = "block";
+    msgEl.textContent = "Initiating download...";
+    pctEl.textContent = "0%";
+    barEl.style.width = "0%";
+
+    const eventSource = new EventSource("/api/toolchain/download-stream");
+    eventSource.onmessage = (ev) => {
+      try {
+        const data = JSON.parse(ev.data);
+        msgEl.textContent = data.message || "Downloading...";
+        const pct = Math.min(100, Math.max(0, data.progress || 0));
+        pctEl.textContent = `${pct}%`;
+        barEl.style.width = `${pct}%`;
+
+        if (data.status === "complete") {
+          eventSource.close();
+          btn.disabled = false;
+          refreshToolchainStatus();
+        } else if (data.status === "error") {
+          eventSource.close();
+          btn.disabled = false;
+          alert("Download failed: " + data.message);
+        }
+      } catch (_) {}
+    };
+
+    eventSource.onerror = () => {
+      eventSource.close();
+      btn.disabled = false;
+    };
+
+    try {
+      await api("/api/toolchain/download", { method: "POST" });
+    } catch (e) {
+      eventSource.close();
+      btn.disabled = false;
+      await alert("Failed to start download: " + e.message);
+    }
+  };
+}
+
+async function checkToolchainStatusOnStartup() {
+  try {
+    const status = await api("/api/toolchain/status");
+    if (!status.ready) {
+      openToolchainModal();
+    }
+  } catch (_) {}
+}
+
+/* ============================================================
    Settings modal (AI providers/models) -- shared config
    ============================================================ */
 
@@ -4606,3 +5161,4 @@ if (devImportBtn && devImportFile) {
 }
 
 refreshAuthStatus();
+checkToolchainStatusOnStartup();

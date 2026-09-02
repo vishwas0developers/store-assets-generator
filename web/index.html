@@ -27,6 +27,7 @@
       <button id="theme-toggle-btn" class="icon-btn" title="Toggle Light/Dark Theme"><span id="theme-icon">&#9788;</span></button>
       <button id="open-credentials" class="icon-btn" title="Demo Access">&#128273;</button>
       <button id="open-settings" class="icon-btn" title="AI Providers">&#9881;</button>
+      <button id="open-toolchain" class="icon-btn" title="Toolchain & Binaries (ADB, scrcpy, FFmpeg)">&#128193;</button>
     </div>
   </div>
 
@@ -865,6 +866,59 @@
       <button id="add-provider-save" style="margin-top:1rem;">Add Provider</button>
     </div>
   </div>
+</div>
+
+<!-- Toolchain & Binaries Settings Modal -->
+<div class="modal-backdrop" id="toolchain-backdrop">
+  <div class="modal" style="width: 580px; max-width: 95%;">
+    <div class="modal-header">
+      <h2>Toolchain Settings (ADB, scrcpy, FFmpeg)</h2>
+      <button class="close-btn" id="toolchain-close">&times;</button>
+    </div>
+    <div style="padding: 1rem; display: flex; flex-direction: column; gap: 1rem;">
+      <div id="toolchain-status-summary" style="padding: 0.75rem 1rem; border-radius: 6px; font-weight: 500;">
+        Checking toolchain status...
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 0.75rem;" id="toolchain-tools-list">
+        <!-- ADB, scrcpy, ffmpeg tool rows rendered dynamically -->
+      </div>
+
+      <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 0.5rem 0;" />
+
+      <div>
+        <label style="font-weight: 600; display: block; margin-bottom: 0.4rem;">Custom Binaries Directory</label>
+        <div style="display: flex; gap: 0.5rem;">
+          <input type="text" id="toolchain-custom-dir" placeholder="e.g. C:\Tools\bin or leave blank for vendor/bin" style="flex: 1; margin-bottom: 0;" />
+          <button id="toolchain-save-dir" class="secondary" type="button">Save Path</button>
+          <button id="toolchain-reset-dir" class="secondary" type="button" title="Reset to default vendor/bin">Reset</button>
+        </div>
+        <p class="hint" style="margin-top: 0.4rem;">Specify a folder containing `adb.exe`, `scrcpy.exe`, and `ffmpeg.exe` if you prefer your own local installation.</p>
+      </div>
+
+      <div id="toolchain-download-section" style="border: 1px solid rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px; background: rgba(0,0,0,0.2);">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <strong style="display: block; font-size: 0.95rem;">Automated Binary Downloader</strong>
+            <span class="hint">Downloads pinned scrcpy v2.7 (with ADB) & FFmpeg for Windows</span>
+          </div>
+          <button id="toolchain-download-btn" style="background: #3b82f6; color: white; border: none; border-radius: 4px; padding: 6px 14px; font-weight: 600; cursor: pointer;">
+            Download / Reinstall Binaries
+          </button>
+        </div>
+        <div id="toolchain-progress-container" style="display: none; margin-top: 0.8rem;">
+          <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 0.3rem;">
+            <span id="toolchain-progress-msg">Starting download...</span>
+            <span id="toolchain-progress-pct">0%</span>
+          </div>
+          <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden;">
+            <div id="toolchain-progress-bar" style="width: 0%; height: 100%; background: #3b82f6; transition: width 0.2s;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 <!-- SweetAlert2 renders all dialogs dynamically -->
 
 <!-- Custom Toasts Container -->

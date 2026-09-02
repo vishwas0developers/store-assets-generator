@@ -5,7 +5,7 @@ loadEnvFile();
 import { Command } from "commander";
 import { AssetPipeline } from "../src/orchestrator.js";
 import { startMcpServer } from "../mcp/server.js";
-import { startUiServer } from "../web/server.js";
+import { startWebServer } from "../web/server.js";
 import { installSkillsAndMcp } from "../install/index.js";
 import { setCredentials, getCredentialStatus, clearCredentials, resolveCredentials } from "../src/auth/credentials.js";
 import { resolveAuthConfig, slugify } from "../src/auth/appConfig.js";
@@ -77,7 +77,7 @@ program
       } catch (err) {
         console.warn(`[setup] Could not auto-provision scrcpy/ffmpeg: ${(err as Error).message}`);
       }
-      await startUiServer({ port: options.port, openBrowser: options.open });
+      await startWebServer({ port: options.port, openBrowser: options.open });
     } catch (err) {
       console.error("Failed to start the web interface:");
       console.error((err as Error).message);
