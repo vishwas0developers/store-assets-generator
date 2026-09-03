@@ -2,7 +2,7 @@ import http from "http";
 import fs from "fs";
 import path from "path";
 import { exec } from "child_process";
-import { fileURLToPath } from "url";
+import { fileURLToPath, pathToFileURL } from "url";
 import { WebSocketServer, WebSocket } from "ws";
 import {
   setCredentials,
@@ -93,7 +93,7 @@ import {
   type MockupDeviceRow,
 } from "../src/mockup/project.js";
 import { groupedLayoutPresets, listLayoutPresets } from "../src/mockup/layouts.js";
-import { cellPreviewHtml, renderTemplateDetailThumbs, renderTemplateThumbs } from "../src/mockup/render.js";
+import { cellPreviewHtml, renderTemplateDetailThumbs, renderTemplateThumbs, templateThumbHtml, templateDetailThumbHtml, templateScreenHtml } from "../src/mockup/render.js";
 import { exportMockupProject } from "../src/mockup/export.js";
 import { MOCKUP_TEMPLATES, applyMockupTemplate } from "../src/mockup/templates.js";
 
@@ -163,6 +163,71 @@ function sendFile(res: http.ServerResponse, filePath: string, contentType: strin
   }
   res.writeHead(200, { "Content-Type": contentType });
   fs.createReadStream(filePath).pipe(res);
+}
+
+function validateProject(project: { template: string | null; scenes: { id: string; order: number; slotValues?: Record<string, SlotValue> }[] }) {
+  const scenes = project.template
+    ? project.scenes.map((scene) => {
+        const specs = slotSpecsForScene(project.template as string, scene.order);
+        const issues: SlotIssue[] = validateScene(specs, scene.slotValues);
+        return { sceneId: scene.id, issues };
+      })
+    : [];
+  const ready = scenes.every((s) => s.issues.every((i) => i.severity !== "error"));
+  return { ready, scenes };
+}
+
+function sniffImageFormat(buf: Buffer): "png" | "jpeg" | "webp" | "gif" | null {
+  if (buf.length >= 8 && buf[0] === 0x89 && buf[1] === 0x50 && buf[2] === 0x4e && buf[3] === 0x47) return "png";
+  if (buf.length >= 3 && buf[0] === 0xff && buf[1] === 0xd8 && buf[2] === 0xff) return "jpeg";
+  if (buf.length >= 12 && buf.toString("ascii", 0, 4) === "RIFF" && buf.toString("ascii", 8, 12) === "WEBP") return "webp";
+  if (buf.length >= 6 && buf.toString("ascii", 0, 3) === "GIF") return "gif";
+  return null;
+}
+
+function imageExtFor(format: ReturnType<typeof sniffImageFormat>): string {
+  return format === "jpeg" ? "jpg" : format ?? "png";
+}
+
+function imageDimensions(buf: Buffer, format: ReturnType<typeof sniffImageFormat>): { width: number; height: number } | null {
+  try {
+    if (format === "png" && buf.length >= 24) {
+      return { width: buf.readUInt32BE(16), height: buf.readUInt32BE(20) };
+    }
+    if (format === "gif" && buf.length >= 10) {
+      return { width: buf.readUInt16LE(6), height: buf.readUInt16LE(8) };
+    }
+    if (format === "jpeg") {
+      let offset = 2;
+      while (offset + 9 < buf.length) {
+        if (buf[offset] !== 0xff) break;
+        const marker = buf[offset + 1];
+        if (marker >= 0xc0 && marker <= 0xcf && marker !== 0xc4 && marker !== 0xc8 && marker !== 0xcc) {
+          return { height: buf.readUInt16BE(offset + 5), width: buf.readUInt16BE(offset + 7) };
+        }
+        const segLen = buf.readUInt16BE(offset + 2);
+        offset += 2 + segLen;
+      }
+      return null;
+    }
+    if (format === "webp" && buf.length >= 30) {
+      const chunk = buf.toString("ascii", 12, 16);
+      if (chunk === "VP8X") {
+        return { width: 1 + (buf.readUIntLE(24, 3)), height: 1 + buf.readUIntLE(27, 3) };
+      }
+      if (chunk === "VP8 ") {
+        return { width: buf.readUInt16LE(26) & 0x3fff, height: buf.readUInt16LE(28) & 0x3fff };
+      }
+      if (chunk === "VP8L") {
+        const bits = buf.readUInt32LE(21);
+        return { width: (bits & 0x3fff) + 1, height: ((bits >> 14) & 0x3fff) + 1 };
+      }
+      return null;
+    }
+  } catch {
+    return null;
+  }
+  return null;
 }
 
 export async function startWebServer(options: { port?: number; host?: string; openBrowser?: boolean } = {}): Promise<http.Server> {
@@ -900,6 +965,14 @@ export async function startWebServer(options: { port?: number; host?: string; op
     }
 
     // Mockup projects
+    if (method === "GET" && p === "/api/mockups/layouts") {
+      sendJson(res, 200, {
+        presets: listLayoutPresets(),
+        grouped: groupedLayoutPresets()
+      });
+      return;
+    }
+
     if (method === "GET" && p === "/api/mockups") {
       sendJson(res, 200, { projects: listMockupProjects() });
       return;
@@ -943,8 +1016,18 @@ export async function startWebServer(options: { port?: number; host?: string; op
 
     // Templates section
     if (method === "GET" && p === "/api/mockups/templates") {
+      let list = MOCKUP_TEMPLATES;
+      try {
+        const modPath = path.join(process.cwd(), "dist", "src", "mockup", "templates.js");
+        if (fs.existsSync(modPath)) {
+          const fresh = await import(`${pathToFileURL(modPath).href}?t=${Date.now()}`);
+          if (fresh && fresh.MOCKUP_TEMPLATES) {
+            list = fresh.MOCKUP_TEMPLATES;
+          }
+        }
+      } catch (_) {}
       sendJson(res, 200, {
-        templates: MOCKUP_TEMPLATES.map((t) => ({
+        templates: list.map((t: any) => ({
           id: t.id,
           name: t.name,
           category: t.category,
@@ -960,6 +1043,84 @@ export async function startWebServer(options: { port?: number; host?: string; op
     }
 
     {
+      const m = p.match(/^\/api\/mockups\/template-preview\/([^/]+)$/);
+      if (m && method === "GET") {
+        const slug = decodeURIComponent(m[1]);
+        let template = MOCKUP_TEMPLATES.find((t) => t.id === slug);
+        if (!template) {
+          try {
+            const modPath = path.join(process.cwd(), "dist", "src", "mockup", "templates.js");
+            if (fs.existsSync(modPath)) {
+              const fresh = await import(`${pathToFileURL(modPath).href}?t=${Date.now()}`);
+              if (fresh && fresh.MOCKUP_TEMPLATES) {
+                template = fresh.MOCKUP_TEMPLATES.find((t: any) => t.id === slug);
+              }
+            }
+          } catch (_) {}
+        }
+        if (!template) return sendError(res, 404, `Unknown template '${slug}'.`);
+        const panelQuery = url.searchParams.get("panel");
+        const panelIndex = panelQuery !== null ? parseInt(panelQuery, 10) : undefined;
+        let html: string;
+        if (panelIndex !== undefined && !isNaN(panelIndex)) {
+          html = templateScreenHtml(template, panelIndex);
+        } else {
+          html = templateThumbHtml(template);
+        }
+        res.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, max-age=3600" });
+        res.end(html);
+        return;
+      }
+    }
+
+    {
+      const m = p.match(/^\/api\/mockups\/template-screen\/([^/]+)\/(\d+)$/);
+      if (m && method === "GET") {
+        const slug = decodeURIComponent(m[1]);
+        const colIdx = parseInt(m[2], 10);
+        let template = MOCKUP_TEMPLATES.find((t) => t.id === slug);
+        if (!template) {
+          try {
+            const modPath = path.join(process.cwd(), "dist", "src", "mockup", "templates.js");
+            if (fs.existsSync(modPath)) {
+              const fresh = await import(`${pathToFileURL(modPath).href}?t=${Date.now()}`);
+              if (fresh && fresh.MOCKUP_TEMPLATES) {
+                template = fresh.MOCKUP_TEMPLATES.find((t: any) => t.id === slug);
+              }
+            }
+          } catch (_) {}
+        }
+        if (!template) return sendError(res, 404, `Unknown template '${slug}'.`);
+        let html = templateScreenHtml(template, colIdx);
+        try {
+          const renderPath = path.join(process.cwd(), "dist", "src", "mockup", "render.js");
+          if (fs.existsSync(renderPath)) {
+            const freshRender = await import(`${pathToFileURL(renderPath).href}?t=${Date.now()}`);
+            if (freshRender && freshRender.templateScreenHtml) {
+              html = freshRender.templateScreenHtml(template, colIdx);
+            }
+          }
+        } catch (_) {}
+        res.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, max-age=3600" });
+        res.end(html);
+        return;
+      }
+    }
+
+    {
+      const m = p.match(/^\/api\/mockups\/template-detail-preview\/([^/]+)$/);
+      if (m && method === "GET") {
+        const slug = decodeURIComponent(m[1]);
+        const template = MOCKUP_TEMPLATES.find((t) => t.id === slug);
+        if (!template) return sendError(res, 404, `Unknown template '${slug}'.`);
+        const html = templateDetailThumbHtml(template);
+        res.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, max-age=3600" });
+        res.end(html);
+        return;
+      }
+    }
+
+    {
       const m = p.match(/^\/api\/mockups\/template-thumb\/([^/]+)\.png$/);
       if (m && method === "GET") {
         const slug = decodeURIComponent(m[1]);
@@ -970,6 +1131,49 @@ export async function startWebServer(options: { port?: number; host?: string; op
         if (!fs.existsSync(thumbPath)) await renderTemplateThumbs(outDir, MOCKUP_TEMPLATES);
         res.writeHead(200, { "Content-Type": "image/png", "Cache-Control": "no-cache" });
         fs.createReadStream(thumbPath).pipe(res);
+        return;
+      }
+    }
+
+    {
+      const m = p.match(/^\/api\/mockups\/template-detail-thumb\/([^/]+)\.png$/);
+      if (m && method === "GET") {
+        const slug = decodeURIComponent(m[1]);
+        const template = MOCKUP_TEMPLATES.find((t) => t.id === slug);
+        if (!template) return sendError(res, 404, `Unknown template '${slug}'.`);
+        const outDir = path.join(process.cwd(), "output", ".template-detail-thumbs");
+        const thumbPath = path.join(outDir, `${slug}.png`);
+        if (!fs.existsSync(thumbPath)) await renderTemplateDetailThumbs(outDir, MOCKUP_TEMPLATES);
+        res.writeHead(200, { "Content-Type": "image/png", "Cache-Control": "no-cache" });
+        fs.createReadStream(thumbPath).pipe(res);
+        return;
+      }
+    }
+
+    {
+      const m = p.match(/^\/api\/mockups\/([^/]+)\/apply-template$/);
+      if (m && method === "POST") {
+        const body = await readJsonBody(req);
+        if (!body.templateId) return sendError(res, 400, "templateId is required");
+        const id = decodeURIComponent(m[1]);
+        const project = loadMockupProject(id);
+        applyMockupTemplate(project, body.templateId);
+        saveMockupProject(project);
+        sendJson(res, 200, project);
+        return;
+      }
+    }
+
+    {
+      const m = p.match(/^\/api\/mockups\/([^/]+)\/cell-preview\/([^/]+)\/([^/]+)$/);
+      if (m && method === "GET") {
+        const id = decodeURIComponent(m[1]);
+        const deviceRowId = decodeURIComponent(m[2]);
+        const columnId = decodeURIComponent(m[3]);
+        const project = loadMockupProject(id);
+        const html = cellPreviewHtml(project, deviceRowId, columnId, { width: 1080, height: 1920 });
+        res.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-cache" });
+        res.end(html);
         return;
       }
     }
@@ -1022,6 +1226,404 @@ export async function startWebServer(options: { port?: number; host?: string; op
         else if (ext === ".wav") mime = "audio/wav";
         else if (ext === ".mp3") mime = "audio/mpeg";
         sendFile(res, abs, mime);
+        return;
+      }
+    }
+
+    if (method === "GET" && p === "/api/videos/templates") {
+      loadAllTemplates();
+      sendJson(res, 200, { templates: VIDEO_TEMPLATES });
+      return;
+    }
+
+    {
+      const m = p.match(/^\/api\/videos\/templates\/([^/]+)\/preview$/);
+      if (m && method === "GET") {
+        const templateId = resolveTemplateId(decodeURIComponent(m[1]));
+        const template = VIDEO_TEMPLATES.find((t) => t.id === templateId);
+        if (!template) return sendError(res, 404, `Unknown video template '${m[1]}'.`);
+        const sourceProjectId = url.searchParams.get("projectId");
+        const sources = sourceProjectId ? loadVideoProject(decodeURIComponent(sourceProjectId)).sources : [];
+        const scratch = scratchVideoProject(templateId, sources);
+        res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
+        res.end(templatePreviewHtml(scratch));
+        return;
+      }
+    }
+
+    {
+      const m = p.match(/^\/api\/videos\/templates\/([^/]+)\/scene\/(\d+)\/preview$/);
+      if (m && method === "GET") {
+        const templateId = resolveTemplateId(decodeURIComponent(m[1]));
+        const sceneIndex = Number(m[2]);
+        const template = VIDEO_TEMPLATES.find((t) => t.id === templateId);
+        if (!template) return sendError(res, 404, `Unknown video template '${m[1]}'.`);
+        const sourceProjectId = url.searchParams.get("projectId");
+        const sources = sourceProjectId ? loadVideoProject(decodeURIComponent(sourceProjectId)).sources : [];
+        const scratch = scratchVideoProject(templateId, sources);
+        const scene = scratch.scenes[sceneIndex];
+        if (!scene) return sendError(res, 404, `Scene index ${sceneIndex} out of range for '${templateId}'.`);
+        const resolveUri = (rel: string) => `/api/videos/${scratch.id}/file?p=${encodeURIComponent(rel)}`;
+        res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
+        res.end(sceneHtml(scene, sourceUrisFor(scratch, scene, resolveUri), false, sourceKindsFor(scratch, scene)));
+        return;
+      }
+    }
+
+    {
+      const m = p.match(/^\/api\/videos\/template-thumb\/([^/]+)\.png$/);
+      if (m && method === "GET") {
+        const slug = resolveTemplateId(decodeURIComponent(m[1]));
+        const template = VIDEO_TEMPLATES.find((t) => t.id === slug);
+        if (!template) return sendError(res, 404, `Unknown video template '${m[1]}'.`);
+        const outDir = path.join(process.cwd(), "output", ".template-thumbs");
+        const thumbPath = path.join(outDir, `video-${slug}.png`);
+        if (!fs.existsSync(thumbPath)) await renderVideoTemplateThumbs(outDir, VIDEO_TEMPLATES);
+        res.writeHead(200, { "Content-Type": "image/png", "Cache-Control": "no-cache" });
+        fs.createReadStream(thumbPath).pipe(res);
+        return;
+      }
+    }
+
+    {
+      const m = p.match(/^\/api\/videos\/templates\/([^/]+)\/bgm\.wav$/);
+      if (m && method === "GET") {
+        const templateId = resolveTemplateId(decodeURIComponent(m[1]));
+        const preset = BGM_PRESETS[templateId];
+        if (!preset) return sendError(res, 404, `No BGM preset for template '${m[1]}'.`);
+        const outDir = path.join(process.cwd(), "output", ".bgm");
+        fs.mkdirSync(outDir, { recursive: true });
+        const wavPath = path.join(outDir, `${templateId}.wav`);
+        if (!fs.existsSync(wavPath)) fs.writeFileSync(wavPath, renderBgmWav(preset, 30));
+        res.writeHead(200, { "Content-Type": "audio/wav", "Cache-Control": "no-cache" });
+        fs.createReadStream(wavPath).pipe(res);
+        return;
+      }
+    }
+
+    {
+      const m = p.match(/^\/api\/videos\/([^/]+)\/apply-template$/);
+      if (m && method === "POST") {
+        const body = await readJsonBody(req);
+        const project = loadVideoProject(decodeURIComponent(m[1]));
+        applyVideoTemplate(project, body.templateId);
+        saveVideoProject(project);
+        sendJson(res, 200, project);
+        return;
+      }
+    }
+
+    {
+      const m = p.match(/^\/api\/videos\/([^/]+)\/template-preview$/);
+      if (m && method === "GET") {
+        const project = loadVideoProject(decodeURIComponent(m[1]));
+        res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
+        res.end(templatePreviewHtml(project));
+        return;
+      }
+    }
+
+    if (method === "GET" && p === "/api/videos/scene-options") {
+      sendJson(res, 200, {
+        animations: listSceneAnimations(),
+        backgrounds: listVideoBackgrounds(),
+        layouts: { "9:16": listSceneLayouts("9:16"), "16:9": listSceneLayouts("16:9") }
+      });
+      return;
+    }
+
+    {
+      const m = p.match(/^\/api\/videos\/([^/]+)\/sources$/);
+      if (m && method === "POST") {
+        const id = decodeURIComponent(m[1]);
+        const project = loadVideoProject(id);
+        const name = url.searchParams.get("name") ?? `image_${project.sources.length + 1}`;
+        const contentType = req.headers["content-type"] ?? "";
+        const isVideo = contentType.includes("video/");
+        if (isVideo) {
+          const ext = contentType.includes("webm") ? "webm" : "mp4";
+          const relPath = `sources/rec_${Date.now()}.${ext}`;
+          fs.writeFileSync(videoFile(id, relPath), await readRawBody(req));
+          const source = { id: `src_${Date.now()}`, name, file: relPath, width: 0, height: 0, kind: "video" as const };
+          project.sources.push(source);
+          saveVideoProject(project);
+          sendJson(res, 200, source);
+          return;
+        }
+        const bodyBuf = await readRawBody(req);
+        const format = sniffImageFormat(bodyBuf);
+        if (!format) return sendError(res, 400, "Unrecognized image format (expected PNG, JPEG, WebP, or GIF).");
+        const relPath = `sources/img_${Date.now()}.${imageExtFor(format)}`;
+        const abs = videoFile(id, relPath);
+        fs.writeFileSync(abs, bodyBuf);
+        const dims = imageDimensions(bodyBuf, format);
+        const source = { id: `src_${Date.now()}`, name, file: relPath, width: dims?.width ?? 0, height: dims?.height ?? 0, kind: "image" as const };
+        project.sources.push(source);
+
+        const slotParam = url.searchParams.get("slot");
+        if (slotParam) {
+          const [sceneId, slotKey, indexStr] = slotParam.split(":");
+          const scene = project.scenes.find((s) => s.id === sceneId);
+          if (scene) {
+            scene.slotValues = scene.slotValues ?? {};
+            const spec = slotSpecsForScene(project.template ?? "", scene.order).find((sp) => sp.key === slotKey);
+            if (spec?.kind === "imageList") {
+              const index = indexStr ? Number(indexStr) : 0;
+              const existing = scene.slotValues[slotKey];
+              const sourceIds = existing?.kind === "imageList" ? [...existing.sourceIds] : new Array(spec.count ?? 1).fill(null);
+              sourceIds[index] = source.id;
+              scene.slotValues[slotKey] = { kind: "imageList", sourceIds };
+            } else if (spec) {
+              scene.slotValues[slotKey] = { kind: "image", sourceId: source.id };
+            }
+          }
+        }
+
+        saveVideoProject(project);
+        sendJson(res, 200, source);
+        return;
+      }
+    }
+
+    {
+      const m = p.match(/^\/api\/videos\/([^/]+)\/sources\/([^/]+)$/);
+      if (m && method === "DELETE") {
+        const project = loadVideoProject(decodeURIComponent(m[1]));
+        const sourceId = decodeURIComponent(m[2]);
+        const idx = project.sources.findIndex((s) => s.id === sourceId);
+        if (idx === -1) return sendError(res, 404, "Source not found");
+        project.sources.splice(idx, 1);
+        saveVideoProject(project);
+        sendJson(res, 200, { ok: true });
+        return;
+      }
+    }
+
+    {
+      const m = p.match(/^\/api\/videos\/([^/]+)\/scenes$/);
+      if (m && method === "POST") {
+        const project = loadVideoProject(decodeURIComponent(m[1]));
+        if (project.scenes.length === 0) return sendError(res, 400, "Apply a template before adding scenes.");
+        if (project.scenes.length >= 24) return sendError(res, 400, "24 scenes is the maximum for this project.");
+        const last = [...project.scenes].sort((a, b) => a.order - b.order).at(-1)!;
+        const order = project.scenes.length;
+        const newScene = { ...last, id: `scene_${Date.now()}`, order, screenIds: undefined, text: "", subtext: "" };
+        project.scenes.push(newScene);
+        saveVideoProject(project);
+        sendJson(res, 200, project);
+        return;
+      }
+    }
+
+    {
+      const m = p.match(/^\/api\/videos\/([^/]+)\/scenes\/order$/);
+      if (m && method === "PATCH") {
+        const body = await readJsonBody(req);
+        const project = loadVideoProject(decodeURIComponent(m[1]));
+        const order: string[] = body.order ?? [];
+        for (const scene of project.scenes) {
+          const idx = order.indexOf(scene.id);
+          if (idx !== -1) scene.order = idx;
+        }
+        project.scenes.sort((a, b) => a.order - b.order);
+        saveVideoProject(project);
+        sendJson(res, 200, project);
+        return;
+      }
+    }
+
+    {
+      const m = p.match(/^\/api\/videos\/([^/]+)\/configs$/);
+      if (m && method === "GET") {
+        const project = loadVideoProject(decodeURIComponent(m[1]));
+        sendJson(res, 200, project.savedConfigs ?? []);
+        return;
+      }
+      if (m && method === "POST") {
+        const body = await readJsonBody(req);
+        const name = String(body.name ?? "").trim();
+        if (!name) return sendError(res, 400, "A configuration name is required.");
+        const project = loadVideoProject(decodeURIComponent(m[1]));
+        if (!project.template || project.scenes.length === 0) return sendError(res, 400, "Apply a template before saving a configuration.");
+        project.savedConfigs = project.savedConfigs ?? [];
+        const existing = project.savedConfigs.find((c) => c.name === name);
+        const snapshot = {
+          id: existing?.id ?? `cfg_${Date.now()}`,
+          name,
+          template: project.template,
+          scenes: JSON.parse(JSON.stringify(project.scenes)),
+          savedAt: new Date().toISOString(),
+        };
+        if (existing) {
+          if (!body.overwrite) return sendError(res, 409, `A configuration named '${name}' already exists.`);
+          Object.assign(existing, snapshot);
+        } else {
+          project.savedConfigs.push(snapshot);
+        }
+        saveVideoProject(project);
+        sendJson(res, 200, project.savedConfigs);
+        return;
+      }
+    }
+
+    {
+      const m = p.match(/^\/api\/videos\/([^/]+)\/configs\/([^/]+)\/apply$/);
+      if (m && method === "POST") {
+        const project = loadVideoProject(decodeURIComponent(m[1]));
+        const cfg = (project.savedConfigs ?? []).find((c) => c.id === decodeURIComponent(m[2]));
+        if (!cfg) return sendError(res, 404, "Saved configuration not found");
+        project.template = cfg.template;
+        project.scenes = JSON.parse(JSON.stringify(cfg.scenes));
+        saveVideoProject(project);
+        sendJson(res, 200, project);
+        return;
+      }
+    }
+
+    {
+      const m = p.match(/^\/api\/videos\/([^/]+)\/configs\/([^/]+)$/);
+      if (m && method === "DELETE") {
+        const project = loadVideoProject(decodeURIComponent(m[1]));
+        const before = project.savedConfigs?.length ?? 0;
+        project.savedConfigs = (project.savedConfigs ?? []).filter((c) => c.id !== decodeURIComponent(m[2]));
+        if (project.savedConfigs.length === before) return sendError(res, 404, "Saved configuration not found");
+        saveVideoProject(project);
+        sendJson(res, 200, project.savedConfigs);
+        return;
+      }
+    }
+
+    {
+      const m = p.match(/^\/api\/videos\/([^/]+)\/scenes\/([^/]+)$/);
+      if (m && method === "PUT") {
+        const body = await readJsonBody(req);
+        const project = loadVideoProject(decodeURIComponent(m[1]));
+        const idx = project.scenes.findIndex((s) => s.id === decodeURIComponent(m[2]));
+        if (idx === -1) return sendError(res, 404, "Scene not found");
+        const nextAspect = body.aspectRatio ?? project.scenes[idx].aspectRatio;
+        if (project.scenes.some((s, i) => i !== idx && (s.aspectRatio ?? "9:16") !== (nextAspect ?? "9:16"))) {
+          return sendError(res, 400, "Every scene in a project must share the same aspect ratio.");
+        }
+        project.scenes[idx] = { ...project.scenes[idx], ...body };
+        saveVideoProject(project);
+        sendJson(res, 200, project.scenes[idx]);
+        return;
+      }
+      if (m && method === "DELETE") {
+        const project = loadVideoProject(decodeURIComponent(m[1]));
+        const idx = project.scenes.findIndex((s) => s.id === decodeURIComponent(m[2]));
+        if (idx === -1) return sendError(res, 404, "Scene not found");
+        if (project.scenes.length <= 1) return sendError(res, 400, "A project needs at least one scene.");
+        project.scenes.splice(idx, 1);
+        project.scenes.sort((a, b) => a.order - b.order).forEach((s, i) => (s.order = i));
+        saveVideoProject(project);
+        sendJson(res, 200, project);
+        return;
+      }
+    }
+
+    {
+      const m = p.match(/^\/api\/videos\/([^/]+)\/scenes\/([^/]+)\/ai-text$/);
+      if (m && method === "POST") {
+        const body = await readJsonBody(req);
+        const prompt =
+          `Write a short promo-video on-screen line (max 6 words) and an optional subtext (max 10 words) ` +
+          `for a scene described as: "${body.hint ?? ""}". Never invent features not implied by the hint. ` +
+          `Reply with ONLY JSON: {"text":"...","subtext":"..."}`;
+        const reply = await chat(prompt);
+        const match = reply.match(/\{[\s\S]*\}/);
+        sendJson(res, 200, match ? JSON.parse(match[0]) : { text: "", subtext: "" });
+        return;
+      }
+    }
+
+    {
+      const m = p.match(/^\/api\/videos\/([^/]+)\/scene-preview\/([^/]+)$/);
+      if (m && method === "GET") {
+        const project = loadVideoProject(decodeURIComponent(m[1]));
+        res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
+        res.end(scenePreviewHtml(project, decodeURIComponent(m[2])));
+        return;
+      }
+    }
+
+    {
+      const m = p.match(/^\/api\/videos\/([^/]+)\/scene-spec\/([^/]+)$/);
+      if (m && method === "GET") {
+        const project = loadVideoProject(decodeURIComponent(m[1]));
+        const scene = project.scenes.find((s) => s.id === decodeURIComponent(m[2]));
+        if (!scene || !project.template) return sendError(res, 404, "Scene not found");
+        const specs = slotSpecsForScene(project.template, scene.order);
+        const issues = validateScene(specs, scene.slotValues);
+        sendJson(res, 200, { specs, values: scene.slotValues ?? {}, issues });
+        return;
+      }
+    }
+
+    {
+      const m = p.match(/^\/api\/videos\/([^/]+)\/scenes\/([^/]+)\/slots$/);
+      if (m && method === "PUT") {
+        const body = await readJsonBody(req);
+        const project = loadVideoProject(decodeURIComponent(m[1]));
+        const scene = project.scenes.find((s) => s.id === decodeURIComponent(m[2]));
+        if (!scene) return sendError(res, 404, "Scene not found");
+        scene.slotValues = { ...(scene.slotValues ?? {}), ...(body.slotValues ?? {}) };
+        saveVideoProject(project);
+        const specs = project.template ? slotSpecsForScene(project.template, scene.order) : [];
+        sendJson(res, 200, { values: scene.slotValues, issues: validateScene(specs, scene.slotValues) });
+        return;
+      }
+    }
+
+    {
+      const m = p.match(/^\/api\/videos\/([^/]+)\/validate$/);
+      if (m && method === "GET") {
+        const project = loadVideoProject(decodeURIComponent(m[1]));
+        const result = validateProject(project);
+        sendJson(res, 200, result);
+        return;
+      }
+    }
+
+    {
+      const m = p.match(/^\/api\/videos\/([^/]+)\/bgm$/);
+      if (m && method === "POST") {
+        const id = decodeURIComponent(m[1]);
+        const project = loadVideoProject(id);
+        const contentType = req.headers["content-type"] ?? "audio/mpeg";
+        const ext = contentType.includes("wav") ? "wav" : contentType.includes("ogg") ? "ogg" : "mp3";
+        const relPath = `bgm.${ext}`;
+        fs.writeFileSync(videoFile(id, relPath), await readRawBody(req));
+        project.bgm = relPath;
+        saveVideoProject(project);
+        sendJson(res, 200, { ok: true, bgm: relPath });
+        return;
+      }
+    }
+
+    {
+      const m = p.match(/^\/api\/videos\/([^/]+)\/render$/);
+      if (m && method === "POST") {
+        const id = decodeURIComponent(m[1]);
+        const project = loadVideoProject(id);
+        const preflight = validateProject(project);
+        if (!preflight.ready) {
+          res.writeHead(400, { "Content-Type": "application/json; charset=utf-8" });
+          res.end(JSON.stringify({ error: "Some scenes are missing required content.", ...preflight }));
+          return;
+        }
+        const videoPath = await renderVideo(project);
+        project.outputs.video = path.relative(videoDir(id), videoPath).split(path.sep).join("/");
+        saveVideoProject(project);
+        sendJson(res, 200, { videoPath: project.outputs.video });
+        return;
+      }
+    }
+
+    {
+      const m = p.match(/^\/api\/videos\/([^/]+)\/download$/);
+      if (m && method === "GET") {
+        sendFile(res, path.join(videoDir(decodeURIComponent(m[1])), "promo.mp4"), "video/mp4");
         return;
       }
     }

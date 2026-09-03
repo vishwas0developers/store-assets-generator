@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "Starting Store Assets Generator..."
+echo "Starting Store Assets Generator Desktop Application..."
 
 # Check if build exists, if not build it
 if [ ! -d "dist" ]; then
@@ -7,11 +7,4 @@ if [ ! -d "dist" ]; then
     npm run build
 fi
 
-# Run the CLI help command by default or start MCP
-echo "Starting CLI tool..."
-node dist/cli/index.js --help
-
-echo ""
-echo "Use 'node dist/cli/index.js generate --url <url>' to generate assets."
-echo "Use 'node dist/cli/index.js mcp' to launch the MCP stdio server."
-echo ""
+npm start
