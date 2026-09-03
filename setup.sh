@@ -19,8 +19,4 @@ npx playwright install chromium
 echo "Compiling TypeScript project..."
 npm run build
 
-# Install Agent Skills & configure MCP
-echo "Installing agent skills..."
-node dist/cli/index.js install
-
-echo "Setup complete! You can now start the project using ./start.sh"
+echo "Setup complete! You can now start the application using ./start.sh or start.bat"

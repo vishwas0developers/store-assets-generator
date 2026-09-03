@@ -120,11 +120,11 @@ export function presentationTransform(presentation: string): {
     case "right-side":
       return { deviceOne: { xPct: 28, rotate: 0 } };
     case "two-devices":
-      return { deviceOne: { xPct: -22, rotate: 0 }, deviceTwo: { xPct: 22, yPct: 0, rotate: 0 } };
+      return { deviceOne: { xPct: -16, rotate: 0 }, deviceTwo: { xPct: 52, yPct: 5, rotate: 0 } };
     case "two-devices-connected-left":
-      return { deviceOne: { xPct: -12, rotate: -6 }, deviceTwo: { xPct: 12, yPct: 4, rotate: 6 } };
+      return { deviceOne: { xPct: -16, rotate: -4 }, deviceTwo: { xPct: 50, yPct: 6, rotate: 4 } };
     case "two-devices-connected-right":
-      return { deviceOne: { xPct: 12, rotate: 6 }, deviceTwo: { xPct: -12, yPct: 4, rotate: -6 } };
+      return { deviceOne: { xPct: 16, rotate: 4 }, deviceTwo: { xPct: -50, yPct: 6, rotate: -4 } };
     case "the-airbnb-left-1":
       return { deviceOne: { xPct: -10, rotate: -4 }, deviceTwo: { xPct: 14, yPct: 10, rotate: 4 } };
     case "the-airbnb-left-2":

@@ -50,17 +50,6 @@ if !errorlevel! neq 0 (
     exit /b 1
 )
 
-:: Install Agent Skills and configure MCP
 echo.
-echo Installing agent skills...
-call node dist\cli\index.js install
-if !errorlevel! neq 0 (
-    echo.
-    echo [WARNING] Agent skill installation reported an error ^(exit code !errorlevel!^).
-    echo           Core setup ^(dependencies + build^) succeeded - you can retry skill
-    echo           installation later with "node dist\cli\index.js install".
-)
-
-echo.
-echo Setup complete. Start the project with start.bat.
+echo Setup complete. Start the application with start.bat.
 pause

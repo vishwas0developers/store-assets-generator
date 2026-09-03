@@ -1,7 +1,8 @@
 {
   "name": "store-assets-generator",
   "version": "1.0.0",
-  "description": "AI Agent driven Store Assets Generator (screenshots, device frames, and promotional videos)",
+  "description": "Standalone Studio application for Store Assets Generation (screenshots, device frames, and promotional videos)",
+  "private": true,
   "type": "module",
   "main": "main.js",
   "build": {
@@ -24,23 +25,17 @@
       ]
     }
   },
-  "bin": {
-    "store-assets": "./dist/cli/index.js"
-  },
   "scripts": {
     "postinstall": "playwright install chromium",
     "build": "tsc",
-    "start": "node dist/cli/index.js ui",
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "start": "electron .",
+    "package:win": "npm run build && electron-builder --win nsis --x64",
     "test:video": "npm run build && node dist/src/video/render.test.js"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.1",
     "@sweetalert2/theme-dark": "^5.0.27",
     "@types/ws": "^8.18.1",
     "archiver": "^7.0.1",
-    "chalk": "^5.3.0",
-    "commander": "^12.1.0",
     "playwright": "^1.46.0",
     "qrcode-generator": "^2.0.4",
     "sweetalert2": "^11.26.25",
