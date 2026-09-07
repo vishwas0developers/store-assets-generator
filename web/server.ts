@@ -94,7 +94,7 @@ import {
 } from "../src/mockup/project.js";
 import { groupedLayoutPresets, listLayoutPresets } from "../src/mockup/layouts.js";
 import { cellPreviewHtml, renderTemplateDetailThumbs, renderTemplateThumbs, templateThumbHtml, templateDetailThumbHtml, templateScreenHtml } from "../src/mockup/render.js";
-import { exportMockupProject } from "../src/mockup/export.js";
+import { exportMockupProject, exportSingleScreen, exportPanoramicBanner } from "../src/mockup/export.js";
 import { MOCKUP_TEMPLATES, applyMockupTemplate } from "../src/mockup/templates.js";
 
 import {
@@ -978,6 +978,19 @@ export async function startWebServer(options: { port?: number; host?: string; op
       return;
     }
 
+    if (method === "GET" && p === "/api/mockups/devices-library") {
+      const list = Object.entries(DEVICE_REGISTRY).map(([id, d]) => ({
+        id,
+        name: d.name,
+        category: d.formFactor || "phone",
+        width: d.geometry?.width || 1080,
+        height: d.geometry?.height || 1920,
+        aspectRatio: `${d.geometry?.width || 1080}:${d.geometry?.height || 1920}`,
+      }));
+      sendJson(res, 200, { devices: list });
+      return;
+    }
+
     if (method === "POST" && p === "/api/mockups") {
       const body = await readJsonBody(req);
       if (!body.name) return sendError(res, 400, "name is required");
@@ -994,11 +1007,165 @@ export async function startWebServer(options: { port?: number; host?: string; op
         const project = loadMockupProject(decodeURIComponent(m[1]));
         if (body.devices !== undefined) project.devices = body.devices;
         if (body.columns !== undefined) project.columns = body.columns;
+        if (body.cells !== undefined) project.cells = body.cells;
+        if (body.sources !== undefined) project.sources = body.sources;
+        if (body.globalPanoramic !== undefined) project.globalPanoramic = body.globalPanoramic;
+        if (body.settings !== undefined) project.settings = body.settings;
         saveMockupProject(project);
         sendJson(res, 200, project);
         return;
       }
     }
+
+    {
+      const m = p.match(/^\/api\/mockups\/([^/]+)\/columns$/);
+      if (m && method === "POST") {
+        const id = decodeURIComponent(m[1]);
+        const body = (await readJsonBody(req).catch(() => ({}))) || {};
+        const project = loadMockupProject(id);
+        const style = body.style || defaultColumnStyle(`Screen ${project.columns.length + 1}`);
+        const col = addColumn(project, style);
+        saveMockupProject(project);
+        sendJson(res, 200, { project, column: col });
+        return;
+      }
+    }
+
+    {
+      const m = p.match(/^\/api\/mockups\/([^/]+)\/columns\/([^/]+)$/);
+      if (m && method === "PUT") {
+        const id = decodeURIComponent(m[1]);
+        const colId = decodeURIComponent(m[2]);
+        const body = await readJsonBody(req);
+        const project = loadMockupProject(id);
+        if (body.style) {
+          updateColumnStyle(project, colId, body.style);
+          saveMockupProject(project);
+        }
+        sendJson(res, 200, { project });
+        return;
+      }
+    }
+
+    {
+      const m = p.match(/^\/api\/mockups\/([^/]+)\/cells\/([^/]+)\/([^/]+)$/);
+      if (m && method === "PUT") {
+        const id = decodeURIComponent(m[1]);
+        const rowId = decodeURIComponent(m[2]);
+        const colId = decodeURIComponent(m[3]);
+        const body = await readJsonBody(req);
+        const project = loadMockupProject(id);
+        setCellOverride(project, rowId, colId, body.style || null);
+        saveMockupProject(project);
+        sendJson(res, 200, { project });
+        return;
+      }
+    }
+
+    {
+      const m = p.match(/^\/api\/mockups\/([^/]+)\/devices(?:\/([^/]+))?$/);
+      if (m) {
+        const id = decodeURIComponent(m[1]);
+        const rowId = m[2] ? decodeURIComponent(m[2]) : null;
+        const project = loadMockupProject(id);
+        if (method === "POST") {
+          const body = await readJsonBody(req);
+          const dev = addDeviceRow(project, {
+            deviceId: body.deviceId || "phone",
+            variant: body.variant,
+            label: body.label || "Row",
+            previewsVisible: true,
+            isBase: project.devices.length === 0,
+          });
+          saveMockupProject(project);
+          sendJson(res, 200, { project, device: dev });
+          return;
+        }
+        if (method === "DELETE" && rowId) {
+          project.devices = project.devices.filter((d) => d.id !== rowId);
+          saveMockupProject(project);
+          sendJson(res, 200, { project });
+          return;
+        }
+      }
+    }
+
+    {
+      const m = p.match(/^\/api\/mockups\/([^/]+)\/upload-asset$/);
+      if (m && method === "POST") {
+        const id = decodeURIComponent(m[1]);
+        const body = await readJsonBody(req);
+        if (!body.data) return sendError(res, 400, "data (base64) is required");
+        const filename = body.name || `asset_${Date.now()}.png`;
+        const base64Data = body.data.replace(/^data:image\/\w+;base64,/, "");
+        const project = loadMockupProject(id);
+        const rel = `sources/${Date.now()}_${filename}`;
+        const abs = mockupFile(id, rel);
+        fs.mkdirSync(path.dirname(abs), { recursive: true });
+        fs.writeFileSync(abs, Buffer.from(base64Data, "base64"));
+        const sourceObj = {
+          id: `source_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
+          name: filename,
+          file: rel,
+          width: body.width || 1080,
+          height: body.height || 1920,
+        };
+        project.sources = project.sources || [];
+        project.sources.push(sourceObj);
+        saveMockupProject(project);
+        sendJson(res, 200, { project, source: sourceObj });
+        return;
+      }
+    }
+
+    {
+      const m = p.match(/^\/api\/mockups\/([^/]+)\/export$/);
+      if (m && method === "POST") {
+        const id = decodeURIComponent(m[1]);
+        const project = loadMockupProject(id);
+        try {
+          const result = await exportMockupProject(project);
+          sendJson(res, 200, { ok: true, result, downloadUrl: `/api/mockups/${id}/file?p=exports/mockup-export.zip` });
+        } catch (err: any) {
+          sendError(res, 500, err?.message || "Export failed");
+        }
+        return;
+      }
+    }
+
+    {
+      const m = p.match(/^\/api\/mockups\/([^/]+)\/export\/single$/);
+      if (m && method === "POST") {
+        const id = decodeURIComponent(m[1]);
+        const project = loadMockupProject(id);
+        const body = await readJsonBody(req);
+        try {
+          const file = await exportSingleScreen(project, body?.columnId);
+          const rel = path.relative(mockupDir(id), file).replace(/\\/g, "/");
+          sendJson(res, 200, { ok: true, downloadUrl: `/api/mockups/${id}/file?p=${encodeURIComponent(rel)}` });
+        } catch (err: any) {
+          sendError(res, 500, err?.message || "Single screen export failed");
+        }
+        return;
+      }
+    }
+
+    {
+      const m = p.match(/^\/api\/mockups\/([^/]+)\/export\/panoramic$/);
+      if (m && method === "POST") {
+        const id = decodeURIComponent(m[1]);
+        const project = loadMockupProject(id);
+        try {
+          const file = await exportPanoramicBanner(project);
+          const rel = path.relative(mockupDir(id), file).replace(/\\/g, "/");
+          sendJson(res, 200, { ok: true, downloadUrl: `/api/mockups/${id}/file?p=${encodeURIComponent(rel)}` });
+        } catch (err: any) {
+          sendError(res, 500, err?.message || "Panoramic export failed");
+        }
+        return;
+      }
+    }
+
 
     {
       const m = p.match(/^\/api\/mockups\/([^/]+)\/file$/);

@@ -1,5 +1,505 @@
 const $ = (id) => document.getElementById(id);
 
+// ============================
+// Fabric.js Core Canvas Setup
+// ============================
+
+// Global Fabric.js canvas instance - the primary interactive artboard
+let mockupFabricCanvas = null;
+
+function initMockupFabricCanvas() {
+  const canvasEl = $("mockup-fabric-canvas");
+  if (!canvasEl) return;
+
+  if (mockupFabricCanvas) {
+    mockupFabricCanvas.dispose();
+    mockupFabricCanvas = null;
+  }
+
+  mockupFabricCanvas = new fabric.Canvas('mockup-fabric-canvas', {
+    width: 1080,
+    height: 1920,
+    preserveObjectStacking: true,
+    selection: true,
+    renderOnAddRemove: true,
+    backgroundColor: '#0f172a'
+  });
+
+  mockupFabricCanvas
+    .on('object:modified', onFabricObjectModified)
+    .on('selection:created', onFabricSelectionCreated)
+    .on('selection:updated', onFabricSelectionUpdated)
+    .on('text:changed', onFabricTextChanged);
+}
+
+function onFabricObjectModified(e) {
+  const obj = e.target;
+  if (!obj || !obj.layerId) return;
+  syncFabricObjectToModel(obj);
+}
+
+function onFabricSelectionCreated(e) {
+  const obj = e.selected?.[0];
+  if (!obj || !obj.layerId) return;
+  selectedLayerId = obj.layerId;
+  if (selectedColumn) {
+    renderMockupLayersPanel(selectedColumn);
+    syncSection2Inputs(selectedColumn, selectedLayerId);
+    routeInspectorForLayer(selectedLayerId);
+    renderMockupCanvas();
+  }
+}
+
+function onFabricSelectionUpdated(e) {
+  const obj = e.selected?.[0];
+  if (!obj || !obj.layerId) return;
+  selectedLayerId = obj.layerId;
+  if (selectedColumn) {
+    renderMockupLayersPanel(selectedColumn);
+    syncSection2Inputs(selectedColumn, selectedLayerId);
+    routeInspectorForLayer(selectedLayerId);
+    renderMockupCanvas();
+  }
+}
+
+function routeInspectorForLayer(layerId) {
+  if (layerId === 'title' || layerId === 'subtitle') switchInspectorTab('text');
+  else if (layerId === 'deviceOne' || layerId === 'deviceTwo') switchInspectorTab('dev');
+  else if (layerId?.startsWith('asset:') || layerId?.startsWith('decoration:')) switchInspectorTab('asset');
+  else switchInspectorTab('col');
+}
+
+function onFabricTextChanged(e) {
+  const obj = e.target;
+  if (!obj || !obj.layerId) return;
+  if (obj.layerId === 'title') {
+    selectedColumn.style.title.text = obj.text;
+  } else if (obj.layerId === 'subtitle') {
+    selectedColumn.style.subtitle.text = obj.text;
+  }
+  setMockupDirty(true);
+  syncSection2Inputs(selectedColumn, obj.layerId);
+}
+
+function syncFabricObjectToModel(obj) {
+  if (!obj || !obj.layerId || !selectedColumn) return;
+  const style = selectedColumn.style;
+
+  switch (obj.layerId) {
+    case 'title':
+      if (obj.text !== undefined) style.title.text = obj.text;
+      if (obj.fill !== undefined) style.title.color = rgbToHex(obj.fill);
+      if (obj.fontSize !== undefined) style.title.size = obj.fontSize;
+      if (obj.textAlign !== undefined) style.title.align = obj.textAlign;
+      if (obj.angle !== undefined) style.title.rotation = obj.angle;
+      break;
+
+    case 'subtitle':
+      if (obj.text !== undefined) style.subtitle.text = obj.text;
+      if (obj.fill !== undefined) style.subtitle.color = rgbToHex(obj.fill);
+      if (obj.fontSize !== undefined) style.subtitle.size = obj.fontSize;
+      if (obj.textAlign !== undefined) style.subtitle.align = obj.textAlign;
+      if (obj.angle !== undefined) style.subtitle.rotation = obj.angle;
+      break;
+
+    case 'deviceOne': {
+      const coords = getDeviceCoordsFromFabricObject(obj);
+      if (coords) {
+        style.deviceOne.x = coords.xPct;
+        style.deviceOne.y = coords.yPct;
+        style.deviceOne.size = coords.size;
+        style.deviceOne.rotation = obj.angle ?? 0;
+      }
+      break;
+    }
+
+    case 'deviceTwo': {
+      const coords = getDeviceCoordsFromFabricObject(obj);
+      if (coords) {
+        style.deviceTwo.x = coords.xPct;
+        style.deviceTwo.y = coords.yPct;
+        style.deviceTwo.size = coords.size;
+        style.deviceTwo.rotation = obj.angle ?? 0;
+      }
+      break;
+    }
+
+    default: {
+      if (obj.layerId?.startsWith('asset:')) {
+        const idx = parseInt(obj.layerId.split(':')[1], 10);
+        const ast = style.assetLayers && style.assetLayers[idx];
+        if (ast) {
+          if (obj.left !== undefined) ast.xPct = Math.round(((obj.left + (obj.width || 0) / 2) / 1080) * 100);
+          if (obj.top !== undefined) ast.yPct = Math.round(((obj.top + (obj.height || 0) / 2) / 1920) * 100);
+          if (obj.width !== undefined) ast.widthPct = Math.round((obj.width / 1080) * 100);
+          if (obj.height !== undefined) ast.heightPct = Math.round((obj.height / 1920) * 100);
+          if (obj.angle !== undefined) ast.rotation = obj.angle;
+          if (obj.opacity !== undefined) ast.opacity = obj.opacity;
+          if (obj.flipX !== undefined) ast.flipH = obj.flipX;
+          if (obj.flipY !== undefined) ast.flipV = obj.flipY;
+        }
+      }
+      break;
+    }
+  }
+  setMockupDirty(true);
+  syncSection2Inputs(selectedColumn, obj.layerId);
+  renderMockupMatrix();
+}
+
+// Convert fabric fill color to hex string
+function rgbToHex(color) {
+  if (!color) return '#ffffff';
+  if (typeof color === 'string') return color;
+  try {
+    const c = color.toObject ? color.toObject() : color;
+    const r = Math.round(c.r * 255).toString(16).padStart(2, '0');
+    const g = Math.round(c.g * 255).toString(16).padStart(2, '0');
+    const b = Math.round(c.b * 255).toString(16).padStart(2, '0');
+    return `#${r}${g}${b}`;
+  } catch (_) {
+    return '#ffffff';
+  }
+}
+
+// Extract device position/size percentages from a Fabric object
+function getDeviceCoordsFromFabricObject(obj) {
+  if (!obj) return null;
+  const left = obj.left ?? 0;
+  const top = obj.top ?? 0;
+  const width = obj.width ?? 480;
+  const height = obj.height ?? 960;
+  const xPct = Math.round(((left + width / 2) - 540) / 1080 * 100);
+  const yPct = Math.round(((top + height / 2) - 1100) / 1920 * 100);
+  const size = Math.round((height / 960) * 90);
+  return { xPct, yPct, size };
+}
+
+// Async loader for fabric image from URL - returns Fabric image or null on failure
+function loadFabricImageAsync(url) {
+  return new Promise((resolve) => {
+    if (!url) return resolve(null);
+    const imgCtor = fabric.FabricImage || fabric.Image;
+    if (!imgCtor || !imgCtor.fromURL) return resolve(null);
+    try {
+      const result = imgCtor.fromURL(url, { crossOrigin: 'anonymous' });
+      if (result && typeof result.then === 'function') {
+        result.then((img) => resolve(img || null)).catch(() => resolve(null));
+      } else {
+        // Old-style callback API
+        imgCtor.fromURL(url, (img) => resolve(img || null), { crossOrigin: 'anonymous' });
+      }
+    } catch (_) {
+      resolve(null);
+    }
+  });
+}
+
+// ============================
+// Load Column Style Into Fabric
+// ============================
+
+function getGradientFillForBg(value) {
+  const gradients = {
+    ocean: [
+      { offset: 0, color: '#0f172a' },
+      { offset: 0.5, color: '#1e3a8a' },
+      { offset: 1, color: '#3b82f6' }
+    ],
+    sunset: [
+      { offset: 0, color: '#7c2d12' },
+      { offset: 0.5, color: '#c2410c' },
+      { offset: 1, color: '#fb923c' }
+    ],
+    midnight: [
+      { offset: 0, color: '#020617' },
+      { offset: 0.5, color: '#0f172a' },
+      { offset: 1, color: '#1e1b4b' }
+    ],
+    aurora: [
+      { offset: 0, color: '#064e3b' },
+      { offset: 0.5, color: '#047857' },
+      { offset: 1, color: '#10b981' }
+    ]
+  };
+  return gradients[value] || gradients.ocean;
+}
+
+async function loadColumnIntoFabric(column) {
+  if (!mockupFabricCanvas) initMockupFabricCanvas();
+  if (!mockupFabricCanvas || !column) return;
+
+  mockupFabricCanvas.clear();
+  const style = column.style;
+
+  // 1. Background Layer
+  const bg = style.background || { type: 'gradient', value: 'ocean' };
+  let bgObj = null;
+  if (bg.type === 'solid') {
+    bgObj = new fabric.Rect({
+      left: 0, top: 0, width: 1080, height: 1920,
+      fill: bg.value || '#0f172a',
+      selectable: false,
+      evented: false,
+      name: 'background',
+      layerId: 'background'
+    });
+  } else if (bg.type === 'gradient') {
+    const stops = getGradientFillForBg(bg.value);
+    const gradient = new fabric.Gradient({
+      type: 'linear',
+      coords: { x1: 0, y1: 0, x2: 1080, y2: 1920 },
+      colorStops: stops
+    });
+    bgObj = new fabric.Rect({
+      left: 0, top: 0, width: 1080, height: 1920,
+      fill: gradient,
+      selectable: false,
+      evented: false,
+      name: 'background',
+      layerId: 'background'
+    });
+  } else if (bg.type === 'image' && bg.imageFile) {
+    const imgUrl = `/api/mockups/${mockupId}/file?p=${encodeURIComponent(bg.imageFile)}`;
+    const img = await loadFabricImageAsync(imgUrl);
+    if (img) {
+      img.set({ left: 0, top: 0, selectable: false, evented: false, name: 'background', layerId: 'background' });
+      // Scale to cover 1080x1920
+      const scale = Math.max(1080 / img.width, 1920 / img.height);
+      img.scaleX = scale;
+      img.scaleY = scale;
+      bgObj = img;
+    }
+  }
+  if (!bgObj) {
+    bgObj = new fabric.Rect({
+      left: 0, top: 0, width: 1080, height: 1920,
+      fill: new fabric.Gradient({
+        type: 'linear',
+        coords: { x1: 0, y1: 0, x2: 1080, y2: 1920 },
+        colorStops: getGradientFillForBg('ocean')
+      }),
+      selectable: false,
+      evented: false,
+      name: 'background',
+      layerId: 'background'
+    });
+  }
+  mockupFabricCanvas.add(bgObj);
+  mockupFabricCanvas.sendObjectToBack(bgObj);
+
+  // 2. Title Layer
+  const t = style.title || { text: '', color: '#ffffff', size: 58, align: 'center', x: 54, y: 80, rotation: 0 };
+  const titleText = new fabric.Textbox(t.text || '', {
+    left: t.x ?? 54,
+    top: t.y ?? 80,
+    width: 972,
+    fontSize: t.size || 58,
+    fill: t.color || '#ffffff',
+    textAlign: t.align || 'center',
+    angle: t.rotation || 0,
+    fontWeight: 'bold',
+    name: 'title',
+    layerId: 'title',
+    visible: t.visible !== false,
+    selectable: !t.locked,
+    evented: !t.locked
+  });
+  mockupFabricCanvas.add(titleText);
+
+  // 3. Subtitle Layer
+  const s = style.subtitle || { text: '', color: '#94a3b8', size: 36, align: 'center', x: 54, y: 200, rotation: 0 };
+  if (s.text) {
+    const subtitleText = new fabric.Textbox(s.text, {
+      left: s.x ?? 54,
+      top: s.y ?? 200,
+      width: 972,
+      fontSize: s.size || 36,
+      fill: s.color || '#94a3b8',
+      textAlign: s.align || 'center',
+      angle: s.rotation || 0,
+      fontWeight: 'normal',
+      name: 'subtitle',
+      layerId: 'subtitle',
+      visible: s.visible !== false,
+      selectable: !s.locked,
+      evented: !s.locked
+    });
+    mockupFabricCanvas.add(subtitleText);
+  }
+
+  // 4. Device One
+  const d1 = style.deviceOne || { size: 90, x: 0, y: 0, rotation: 0, brightness: 100 };
+  const d1W = 480 * (d1.size / 90);
+  const d1H = 960 * (d1.size / 90);
+  const d1Cx = 540 + (d1.x / 100 * 1080);
+  const d1Cy = 1100 + (d1.y / 100 * 1920);
+  const d1Left = d1Cx - d1W / 2;
+  const d1Top = d1Cy - d1H / 2;
+
+  // Build device as a Group with bezel + screen
+  const deviceOne = await buildDeviceGroup(d1, 'deviceOne', d1Left, d1Top, d1W, d1H, d1.rotation || 0);
+  if (deviceOne) {
+    mockupFabricCanvas.add(deviceOne);
+  }
+
+  // 5. Device Two (if exists)
+  const d2 = style.deviceTwo;
+  if (d2) {
+    const d2W = 480 * (d2.size / 90);
+    const d2H = 960 * (d2.size / 90);
+    const d2Cx = 540 + (d2.x / 100 * 1080);
+    const d2Cy = 1200 + (d2.y / 100 * 1920);
+    const d2Left = d2Cx - d2W / 2;
+    const d2Top = d2Cy - d2H / 2;
+    const deviceTwo = await buildDeviceGroup(d2, 'deviceTwo', d2Left, d2Top, d2W, d2H, d2.rotation || 0);
+    if (deviceTwo) {
+      mockupFabricCanvas.add(deviceTwo);
+    }
+  }
+
+  // 6. Asset Layers
+  if (style.assetLayers) {
+    for (let i = 0; i < style.assetLayers.length; i++) {
+      const ast = style.assetLayers[i];
+      if (ast.visible === false) continue;
+      const w = (ast.widthPct / 100) * 1080;
+      const h = ast.heightPct ? (ast.heightPct / 100) * 1920 : w * 1.4;
+      const left = (ast.xPct / 100) * 1080 - w / 2;
+      const top = (ast.yPct / 100) * 1920 - h / 2;
+      const srcUrl = ast.assetId.startsWith('sources/')
+        ? `/api/mockups/${mockupId}/file?p=${encodeURIComponent(ast.assetId)}`
+        : `/api/mockups/${mockupId}/file?p=sources/${ast.assetId}.png`;
+
+      const assetImg = await loadFabricImageAsync(srcUrl);
+      if (assetImg) {
+        assetImg.set({
+          left,
+          top,
+          angle: ast.rotation || 0,
+          opacity: ast.opacity ?? 1,
+          flipX: !!ast.flipH,
+          flipY: !!ast.flipV,
+          name: `asset:${i}`,
+          layerId: `asset:${i}`,
+          zIndex: ast.zIndex || 15,
+          selectable: !ast.locked,
+          evented: !ast.locked
+        });
+        assetImg.scaleX = w / assetImg.width;
+        assetImg.scaleY = h / assetImg.height;
+        mockupFabricCanvas.add(assetImg);
+        if (ast.zIndex) mockupFabricCanvas.moveObjectTo(assetImg, ast.zIndex);
+      }
+    }
+  }
+
+  mockupFabricCanvas.requestRenderAll();
+
+  // Restore selected layer
+  if (selectedLayerId) {
+    const target = mockupFabricCanvas.getObjects().find((o) => o.layerId === selectedLayerId);
+    if (target) {
+      mockupFabricCanvas.setActiveObject(target);
+      mockupFabricCanvas.requestRenderAll();
+    }
+  }
+}
+
+// Build a Fabric Group representing a device with bezel frame and screenshot
+async function buildDeviceGroup(device, layerId, left, top, width, height, rotation) {
+  const items = [];
+  const isFrameless = device.frameless;
+
+  // Bezel frame (rounded rect)
+  if (!isFrameless) {
+    const bezel = new fabric.Rect({
+      left: 0,
+      top: 0,
+      width: width,
+      height: height,
+      rx: 36,
+      ry: 36,
+      fill: '#1e293b',
+      originX: 'left',
+      originY: 'top',
+      selectable: false,
+      evented: false
+    });
+    items.push(bezel);
+  }
+
+  // Screenshot image
+  if (device.sourceId) {
+    const imgUrl = `/api/mockups/${mockupId}/file?p=sources/${device.sourceId}.png`;
+    const screen = await loadFabricImageAsync(imgUrl);
+    if (screen) {
+      const padding = isFrameless ? 0 : 12;
+      const screenW = width - padding * 2;
+      const screenH = height - padding * 2;
+      screen.set({
+        left: padding,
+        top: padding,
+        originX: 'left',
+        originY: 'top',
+        selectable: false,
+        evented: false
+      });
+      screen.scaleX = screenW / screen.width;
+      screen.scaleY = screenH / screen.height;
+      items.push(screen);
+    }
+  } else {
+    // Placeholder
+    const placeholder = new fabric.Textbox('No Screenshot', {
+      left: 0,
+      top: 0,
+      width: width,
+      height: height,
+      textAlign: 'center',
+      originX: 'left',
+      originY: 'top',
+      fill: '#64748b',
+      fontSize: 14,
+      fontFamily: 'sans-serif',
+      selectable: false,
+      evented: false
+    });
+    items.push(placeholder);
+  }
+
+  if (items.length === 0) return null;
+
+  const group = new fabric.Group(items, {
+    left,
+    top,
+    angle: rotation,
+    name: layerId,
+    layerId,
+    visible: device.visible !== false,
+    selectable: !device.locked,
+    evented: !device.locked,
+    shadow: !isFrameless ? new fabric.Shadow({
+      color: 'rgba(0,0,0,0.5)',
+      blur: 30,
+      offsetX: 0,
+      offsetY: 25
+    }) : null
+  });
+
+  return group;
+}
+
+// HTML text escaping - prevents ReferenceError in buildHtmlLayerElements
+function escapeHtml(str) {
+  return String(str || "")
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
 async function api(path, options) {
   const resp = await fetch(path, {
     method: options?.method ?? "GET",
@@ -248,27 +748,30 @@ async function refreshProjectsList() {
       card.className = `project-item ${isActive ? 'active' : ''}`;
       
       card.innerHTML = `
-        <div style="min-width: 0;">
-          <div class="project-item-title">
-            ${isActive ? '<span class="active-check">&#10003;</span>' : ''}
-            <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${p.name}</span>
-          </div>
-          <div class="project-item-meta">Created: ${new Date(p.createdAt).toLocaleDateString()}</div>
-          <div class="project-stats">
-            <span>📸 ${p.captures?.length ?? 0}</span>
-            <span>📱 ${p.mockup?.columns?.length ?? 0}</span>
-            <span>🎬 ${p.video?.scenes?.length ?? 0}</span>
-          </div>
+        <button class="small project-item-corner left settings-btn" title="Project settings">&#9881;</button>
+        <button class="small danger project-item-corner right delete-btn" title="Delete">&#128465;</button>
+        <div class="project-item-title">
+          ${isActive ? '<span class="active-check">&#10003;</span>' : ''}
+          <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 11ch;">${p.name}</span>
         </div>
-        <div style="display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 0.5rem;">
-          <button class="small select-btn" style="flex: 1; ${isActive ? 'background:#10b981;' : ''}">${isActive ? 'Active' : 'Select'}</button>
-          <button class="small danger delete-btn" style="padding: 0.35rem 0.5rem;">&#128465;</button>
+        <div class="project-item-meta">Created: ${new Date(p.createdAt).toLocaleDateString()}</div>
+        <div class="project-stats">
+          <span>📸 ${p.captures?.length ?? 0}</span>
+          <span>📱 ${p.mockup?.columns?.length ?? 0}</span>
+          <span>🎬 ${p.video?.scenes?.length ?? 0}</span>
+        </div>
+        <div style="margin-top: 0.35rem;">
+          <button class="small select-btn" style="${isActive ? 'background:#10b981;' : ''}">${isActive ? 'Active' : 'Select'}</button>
         </div>
       `;
 
       card.querySelector(".select-btn").onclick = (e) => {
         e.stopPropagation();
         selectProject(p.id);
+      };
+      card.querySelector(".settings-btn").onclick = (e) => {
+        e.stopPropagation();
+        openProjectSettingsModal(p);
       };
       card.querySelector(".delete-btn").onclick = async (e) => {
         e.stopPropagation();
@@ -291,6 +794,52 @@ async function refreshProjectsList() {
   } catch (e) {
     container.textContent = "Failed to load projects: " + e.message;
   }
+}
+
+/* ================= Project Settings Modal ================= */
+
+let projectSettingsTargetId = null;
+
+function openProjectSettingsModal(p) {
+  projectSettingsTargetId = p.id;
+  $("proj-settings-name").value = p.name || "";
+  $("proj-settings-category").value = p.appCategory || "";
+  $("proj-settings-url").value = p.targetUrl || "";
+  $("project-settings-modal").style.display = "flex";
+}
+
+function closeProjectSettingsModal() {
+  $("project-settings-modal").style.display = "none";
+  projectSettingsTargetId = null;
+}
+
+if ($("proj-settings-cancel")) $("proj-settings-cancel").onclick = closeProjectSettingsModal;
+if ($("project-settings-modal")) {
+  $("project-settings-modal").onclick = (e) => {
+    if (e.target.id === "project-settings-modal") closeProjectSettingsModal();
+  };
+}
+if ($("proj-settings-save")) {
+  $("proj-settings-save").onclick = async () => {
+    if (!projectSettingsTargetId) return;
+    const body = {
+      name: $("proj-settings-name").value.trim(),
+      appCategory: $("proj-settings-category").value.trim(),
+      targetUrl: $("proj-settings-url").value.trim(),
+    };
+    const updated = await api(`/api/projects/${projectSettingsTargetId}`, { method: "PUT", body: JSON.stringify(body) });
+    if (activeProjectId === projectSettingsTargetId) {
+      activeProject = updated;
+      updateTabGating();
+    }
+    closeProjectSettingsModal();
+    await refreshProjectsList();
+  };
+}
+if ($("active-proj-settings-btn")) {
+  $("active-proj-settings-btn").onclick = () => {
+    if (activeProject) openProjectSettingsModal(activeProject);
+  };
 }
 
 /* ================= Embedded Project File Explorer ================= */
@@ -449,31 +998,44 @@ for (const railBtn of document.querySelectorAll(".rail-btn")) {
   railBtn.onclick = () => {
     const rail = railBtn.closest(".rail");
     const tabPage = railBtn.closest(".tab-page");
-    for (const b of rail.querySelectorAll(".rail-btn")) b.classList.remove("active");
-    for (const s of tabPage.querySelectorAll(".section-page")) s.classList.remove("active");
-    railBtn.classList.add("active");
-    const prefix = tabPage.id === "tab-capture" ? "capture" : tabPage.id === "tab-mockup" ? "mockup" : "video";
-    $(prefix + "-section-" + railBtn.dataset.section).classList.add("active");
 
-    if (prefix === "mockup") $("mockup-inspector").style.display = railBtn.dataset.section === "editor" ? "block" : "none";
-    if (prefix === "video" && railBtn.dataset.section === "scenes") {
-      if (videoProject) {
-        renderVideoScenes();
-      } else if (activeProjectId) {
-        loadVideoProjectInto(activeProjectId).then(() => {
-          if (videoProject) renderVideoScenes();
-        });
+    const doSwitch = () => {
+      for (const b of rail.querySelectorAll(".rail-btn")) b.classList.remove("active");
+      for (const s of tabPage.querySelectorAll(".section-page")) s.classList.remove("active");
+      railBtn.classList.add("active");
+      const prefix = tabPage.id === "tab-capture" ? "capture" : tabPage.id === "tab-mockup" ? "mockup" : "video";
+      const targetSec = $(prefix + "-section-" + railBtn.dataset.section);
+      if (targetSec) targetSec.classList.add("active");
+
+      if (prefix === "mockup") {
+        $("mockup-inspector").style.display = railBtn.dataset.section === "editor" ? "block" : "none";
+        if (railBtn.dataset.section === "devices") renderMockupDevicesSection();
       }
-      setTimeout(() => {
-        updateScenePreviewScale();
-        showScenePreview();
-      }, 50);
-    }
-    if (prefix === "video" && railBtn.dataset.section === "devices") {
-      loadDevicesCatalogue();
-    }
-    if (prefix === "video" && railBtn.dataset.section === "saved-configs") {
-      loadSavedConfigs();
+      if (prefix === "video" && railBtn.dataset.section === "scenes") {
+        if (videoProject) {
+          renderVideoScenes();
+        } else if (activeProjectId) {
+          loadVideoProjectInto(activeProjectId).then(() => {
+            if (videoProject) renderVideoScenes();
+          });
+        }
+        setTimeout(() => {
+          updateScenePreviewScale();
+          showScenePreview();
+        }, 50);
+      }
+      if (prefix === "video" && railBtn.dataset.section === "devices") {
+        loadDevicesCatalogue();
+      }
+      if (prefix === "video" && railBtn.dataset.section === "saved-configs") {
+        loadSavedConfigs();
+      }
+    };
+
+    if (tabPage && tabPage.id === "tab-mockup" && mockupIsDirty) {
+      checkUnsavedMockupChanges(doSwitch);
+    } else {
+      doSwitch();
     }
   };
 }
@@ -2333,7 +2895,7 @@ document.addEventListener("keydown", async (e) => {
 });
 
 /* ============================================================
-   Studio Mockup tab
+   Studio Mockup tab & Interactive Stage Engine
    ============================================================ */
 
 let mockupId = null;
@@ -2342,6 +2904,212 @@ let mockupDevicesCatalog = [];
 let mockupLayouts = { presets: [], grouped: [] };
 let mockupOptions = { gradients: [], solids: [], patterns: [] };
 let selectedCell = null; // { deviceRowId, columnId }
+let stageZoomMode = "fit"; // "fit" | "50" | "100" | "custom"
+let stageZoomRatio = 0.2037; // Active scale (fit by default)
+let canvasPan = { x: 0, y: 0 }; // Translation in viewport pixels (transform-space)
+let isPanningCanvas = false;
+let panStart = { x: 0, y: 0, panX: 0, panY: 0 };
+let isSpacePressed = false;
+let mockupIsDirty = false;
+let selectedLayerId = "deviceOne"; // "deviceOne" | "title" | "subtitle" | "asset:0" | "decoration:0" | "background"
+
+function computeElementBounds(col, layerId) {
+  if (!col || !col.style) return { left: 54, top: 540, width: 972, height: 800, rotation: 0, opacity: 1, flipH: false, flipV: false, locked: false, visible: true };
+  const style = col.style;
+  let box = { left: 54, top: 540, width: 972, height: 800, rotation: 0, opacity: 1, flipH: false, flipV: false, locked: false, visible: true };
+
+  if (layerId === "title") {
+    const t = style.title || { text: "", color: "#ffffff", size: 58, align: "center" };
+    box = { left: t.x ?? 54, top: t.y ?? 80, width: 972, height: Math.max(60, (t.size || 58) * 1.5), rotation: t.rotation || 0, opacity: 1, flipH: false, flipV: false, locked: !!t.locked, visible: t.visible !== false };
+  } else if (layerId === "subtitle") {
+    const s = style.subtitle || { text: "", color: "#ffffff", size: 36, align: "center" };
+    box = { left: s.x ?? 54, top: s.y ?? 200, width: 972, height: Math.max(50, (s.size || 36) * 1.5), rotation: s.rotation || 0, opacity: 1, flipH: false, flipV: false, locked: !!s.locked, visible: s.visible !== false };
+  } else if (layerId === "deviceOne") {
+    const d1 = style.deviceOne || { size: 90, x: 0, y: 0, rotation: 0 };
+    const w = 480 * (d1.size / 90);
+    const h = 960 * (d1.size / 90);
+    const cx = 540 + (d1.x / 100 * 1080);
+    const cy = 1100 + (d1.y / 100 * 1920);
+    box = { left: cx - w / 2, top: cy - h / 2, width: w, height: h, rotation: d1.rotation || 0, opacity: 1, flipH: false, flipV: false, locked: !!d1.locked, visible: d1.visible !== false };
+  } else if (layerId === "deviceTwo") {
+    const d2 = style.deviceTwo || { size: 90, x: 0, y: 0, rotation: 0 };
+    const w = 480 * (d2.size / 90);
+    const h = 960 * (d2.size / 90);
+    const cx = 540 + ((d2.x || 0) / 100 * 1080);
+    const cy = 1200 + ((d2.y || 0) / 100 * 1920);
+    box = { left: cx - w / 2, top: cy - h / 2, width: w, height: h, rotation: d2.rotation || 0, opacity: 1, flipH: false, flipV: false, locked: !!d2.locked, visible: d2.visible !== false };
+  } else if (layerId && layerId.startsWith("asset:")) {
+    const idx = parseInt(layerId.split(":")[1], 10);
+    const ast = style.assetLayers ? style.assetLayers[idx] : null;
+    if (ast) {
+      const w = (ast.widthPct / 100) * 1080;
+      const h = ast.heightPct ? (ast.heightPct / 100) * 1920 : w * 1.4;
+      const left = (ast.xPct / 100) * 1080 - w / 2;
+      const top = (ast.yPct / 100) * 1920 - h / 2;
+      box = { left, top, width: w, height: h, rotation: ast.rotation || 0, opacity: ast.opacity ?? 1, flipH: !!ast.flipH, flipV: !!ast.flipV, locked: !!ast.locked, visible: ast.visible !== false };
+    }
+  } else if (layerId && layerId.startsWith("decoration:")) {
+    const idx = parseInt(layerId.split(":")[1], 10);
+    const dec = style.decorations ? style.decorations[idx] : null;
+    if (dec) {
+      const w = (dec.sizePct / 100) * 1080;
+      const h = w;
+      const left = (dec.xPct / 100) * 1080 - w / 2;
+      const top = (dec.yPct / 100) * 1920 - h / 2;
+      box = { left, top, width: w, height: h, rotation: dec.rotate || 0, opacity: 1, flipH: false, flipV: false, locked: !!dec.locked, visible: dec.visible !== false };
+    }
+  } else if (layerId === "background") {
+    box = { left: 0, top: 0, width: 1080, height: 1920, rotation: 0, opacity: 1, flipH: false, flipV: false, locked: !!style.background?.locked, visible: style.background?.visible !== false };
+  }
+  return box;
+}
+
+function syncSection2Inputs(col, layerId) {
+  if (!col) return;
+  const bounds = computeElementBounds(col, layerId || selectedLayerId);
+  const centerX = Math.round(bounds.left + bounds.width / 2);
+  const centerY = Math.round(bounds.top + bounds.height / 2);
+
+  if ($("mk-pos-x")) $("mk-pos-x").value = centerX;
+  if ($("mk-pos-y")) $("mk-pos-y").value = centerY;
+  if ($("mk-pos-w")) $("mk-pos-w").value = Math.round(bounds.width);
+  if ($("mk-pos-h")) $("mk-pos-h").value = Math.round(bounds.height);
+  if ($("mk-pos-rot")) $("mk-pos-rot").value = Math.round(bounds.rotation);
+  if ($("mk-pos-opacity")) $("mk-pos-opacity").value = Math.round(bounds.opacity * 100);
+  if ($("mk-pos-flip-h")) $("mk-pos-flip-h").checked = bounds.flipH;
+  if ($("mk-pos-flip-v")) $("mk-pos-flip-v").checked = bounds.flipV;
+
+  const badge = $("mockup-active-layer-badge");
+  if (badge) {
+    const lid = layerId || selectedLayerId;
+    badge.textContent = lid === "title" ? "Title Text" : lid === "subtitle" ? "Subtitle Text" : lid === "deviceOne" ? "Device Frame 1" : lid === "deviceTwo" ? "Device Frame 2" : lid?.startsWith("asset:") ? "Asset Layer" : lid?.startsWith("decoration:") ? "Sticker / Badge" : lid === "background" ? "Background" : "Screen";
+  }
+}
+
+let pendingNavigationCallback = null;
+
+function setMockupDirty(dirty = true) {
+  mockupIsDirty = dirty;
+  const badge = $("mockup-dirty-badge") || $("mockup-save-indicator");
+  if (badge) {
+    if (badge.id === "mockup-dirty-badge") {
+      badge.style.display = dirty ? "inline-block" : "none";
+    } else {
+      badge.textContent = dirty ? "● Unsaved Changes" : "✓ Saved";
+      badge.style.color = dirty ? "#f59e0b" : "#10b981";
+    }
+  }
+}
+
+function checkUnsavedMockupChanges(onProceed) {
+  if (!mockupIsDirty) {
+    if (onProceed) onProceed();
+    return;
+  }
+  pendingNavigationCallback = onProceed;
+  const modal = $("mockup-unsaved-modal");
+  if (modal) modal.style.display = "flex";
+}
+
+function selectMockupScreen(columnId) {
+  const baseDevice = mockupProject.devices.find((d) => d.isBase) || mockupProject.devices[0];
+  const rowId = baseDevice ? baseDevice.id : "dev_default";
+  selectCell(rowId, columnId);
+  renderMockupStage();
+}
+
+async function deleteMockupScreen(columnId) {
+  if (!mockupProject || mockupProject.columns.length <= 1) {
+    await alert("Cannot delete the only screen.");
+    return;
+  }
+  const idx = mockupProject.columns.findIndex((c) => c.id === columnId);
+  if (idx === -1) return;
+  checkUnsavedMockupChanges(async () => {
+    mockupProject.columns.splice(idx, 1);
+    mockupProject.columns.forEach((c, i) => c.order = i);
+    await saveCurrentMockupProject();
+    pushMockupHistory();
+    renderMockupStage();
+    renderMockupMatrix();
+    const next = mockupProject.columns[Math.min(idx, mockupProject.columns.length - 1)];
+    if (next) selectMockupScreen(next.id);
+  });
+}
+
+// Undo / Redo History Stack
+let mockupHistory = [];
+let mockupHistoryIdx = -1;
+const MAX_MOCKUP_HISTORY = 50;
+
+function pushMockupHistory() {
+  if (!mockupProject) return;
+  const snapshot = JSON.stringify(mockupProject);
+  if (mockupHistoryIdx >= 0 && mockupHistory[mockupHistoryIdx] === snapshot) return;
+  mockupHistory = mockupHistory.slice(0, mockupHistoryIdx + 1);
+  mockupHistory.push(snapshot);
+  if (mockupHistory.length > MAX_MOCKUP_HISTORY) mockupHistory.shift();
+  else mockupHistoryIdx++;
+  updateMockupUndoRedoButtons();
+}
+
+function updateMockupUndoRedoButtons() {
+  const undoBtn = $("mockup-undo-btn");
+  const redoBtn = $("mockup-redo-btn");
+  if (undoBtn) undoBtn.disabled = mockupHistoryIdx <= 0;
+  if (redoBtn) redoBtn.disabled = mockupHistoryIdx >= mockupHistory.length - 1;
+}
+
+async function undoMockupState() {
+  if (mockupHistoryIdx <= 0) return;
+  mockupHistoryIdx--;
+  mockupProject = JSON.parse(mockupHistory[mockupHistoryIdx]);
+  await saveCurrentMockupProject();
+  renderMockupStage();
+  renderMockupMatrix();
+  updateMockupUndoRedoButtons();
+}
+
+async function redoMockupState() {
+  if (mockupHistoryIdx >= mockupHistory.length - 1) return;
+  mockupHistoryIdx++;
+  mockupProject = JSON.parse(mockupHistory[mockupHistoryIdx]);
+  await saveCurrentMockupProject();
+  renderMockupStage();
+  renderMockupMatrix();
+  updateMockupUndoRedoButtons();
+}
+
+async function saveCurrentMockupProject() {
+  if (!mockupId || !mockupProject) return;
+  await api(`/api/mockups/${mockupId}`, {
+    method: "PUT",
+    body: {
+      devices: mockupProject.devices,
+      columns: mockupProject.columns,
+      cells: mockupProject.cells,
+      sources: mockupProject.sources,
+      globalPanoramic: mockupProject.globalPanoramic,
+      settings: mockupProject.settings
+    }
+  });
+}
+
+document.addEventListener("keydown", (e) => {
+  if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA" || e.target.tagName === "SELECT")) return;
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") {
+    if (e.shiftKey) {
+      e.preventDefault();
+      redoMockupState();
+    } else {
+      e.preventDefault();
+      undoMockupState();
+    }
+  } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "y") {
+    e.preventDefault();
+    redoMockupState();
+  }
+});
 
 function mockupFileUrl(rel) { return `/api/mockups/${mockupId}/file?p=${encodeURIComponent(rel)}`; }
 
@@ -2351,7 +3119,13 @@ async function loadMockupProjectInto(id) {
     try {
       mockupProject = await api(`/api/mockups/${id}`);
       $("mockup-project-label").textContent = mockupProject.name;
+      if ($("mockup-header-name")) $("mockup-header-name").value = mockupProject.name;
+      if ($("mockup-header-category")) $("mockup-header-category").value = mockupProject.appCategory || "";
       $("mockup-panorama-flip").checked = mockupProject.globalPanoramic?.flip || false;
+      mockupHistory = [JSON.stringify(mockupProject)];
+      mockupHistoryIdx = 0;
+      updateMockupUndoRedoButtons();
+      validateLoadedTemplate(mockupProject);
     } catch (e) {
       console.error("Failed to load mockup project:", e);
       mockupProject = null;
@@ -2366,12 +3140,30 @@ async function loadMockupProjectInto(id) {
   renderMockupTemplateGrid();
 
   if (mockupProject) {
+    renderMockupStage();
     renderMockupMatrix();
     renderMockupDevicesSection();
-    renderMockupSettingsSection();
+
+    // Auto-select the first screen/device on project load
+    // This ensures the editing canvas shows Screen 1 immediately
+    if (!selectedCell && mockupProject.columns.length > 0) {
+      selectCell(mockupProject.devices[0]?.id ?? "", mockupProject.columns[0].id);
+    }
   } else {
     $("mockup-matrix").innerHTML = `<tr><td class="hint" style="padding:2rem; text-align:center;">Select or create a project first from the Projects List.</td></tr>`;
+    if ($("mockup-stage-filmstrip")) $("mockup-stage-filmstrip").innerHTML = `<div class="hint" style="padding:2rem;">Select or create a project first.</div>`;
   }
+}
+
+function validateLoadedTemplate(proj) {
+  if (!proj) return;
+  console.log(`[Mockup Engine] Project loaded: "${proj.name}" (ID: ${proj.id})`);
+  console.log(`[Mockup Engine] Devices: ${proj.devices?.length ?? 0}, Columns: ${proj.columns?.length ?? 0}, Sources: ${proj.sources?.length ?? 0}`);
+  proj.columns?.forEach((col, idx) => {
+    const assetsCount = col.style?.assetLayers?.length ?? 0;
+    const decsCount = col.style?.decorations?.length ?? 0;
+    console.log(`  - Screen ${idx + 1} (${col.id}): layout=${col.style?.layout}, bg=${col.style?.background?.type}, assets=${assetsCount}, decorations=${decsCount}`);
+  });
 }
 
 async function ensureMockupReferenceData() {
@@ -3037,16 +3829,484 @@ async function loadMockupTemplateNow(id) {
     if (!ok) return;
   }
   mockupProject = await api(`/api/mockups/${mockupId}/apply-template`, { method: "POST", body: { templateId: id } });
+  pushMockupHistory();
+  renderMockupStage();
   renderMockupMatrix();
   renderMockupDevicesSection();
   closeMockupTemplateDetail();
   showToast(`Applied "${t ? t.name : id}" — ${mockupProject.devices.length} device row(s), ${mockupProject.columns.length} screen(s).`, "success");
 }
 
+/* ---- Editor Section: Visual Stage & Matrix ---- */
+function setStageZoomAndCenter(zoom) {
+  const vp = $("mockup-canvas-viewport");
+  if (!vp) return;
+  stageZoomRatio = zoom;
+  const availW = vp.clientWidth;
+  const availH = vp.clientHeight;
+  canvasPan = {
+    x: Math.round((availW - 1080 * zoom) / 2),
+    y: Math.max(20, Math.round((availH - 1920 * zoom) / 2))
+  };
+  applyCanvasTransform();
+  if (typeof moveableInstance !== "undefined" && moveableInstance) {
+    try { moveableInstance.updateRect(); } catch (_) {}
+  }
+}
 
-/* ---- Editor section: devices x columns matrix ---- */
+function centerArtboardInViewport() {
+  const zoom = _fitZoomForViewport();
+  setStageZoomAndCenter(zoom);
+}
+
+function renderMockupStage() {
+  applyCanvasTransform();
+  renderMockupCanvas();
+}
+
+function buildHtmlLayerElements(column) {
+  const style = column.style;
+  const bg = style.background || { type: "gradient", value: "ocean" };
+  let bgStyle = "";
+  if (bg.type === "solid") bgStyle = `background: ${bg.value};`;
+  else if (bg.type === "gradient") {
+    const gradients = {
+      ocean: "linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #3b82f6 100%)",
+      sunset: "linear-gradient(135deg, #7c2d12 0%, #c2410c 50%, #fb923c 100%)",
+      midnight: "linear-gradient(135deg, #020617 0%, #0f172a 50%, #1e1b4b 100%)",
+      aurora: "linear-gradient(135deg, #064e3b 0%, #047857 50%, #10b981 100%)"
+    };
+    bgStyle = `background: ${gradients[bg.value] || gradients.ocean};`;
+  } else if (bg.type === "image" && bg.imageFile) {
+    const imgUrl = `/api/mockups/${mockupId}/file?p=${encodeURIComponent(bg.imageFile)}`;
+    bgStyle = `background: url('${imgUrl}') center/cover no-repeat;`;
+  } else {
+    bgStyle = `background: #0f172a;`;
+  }
+
+  const t = style.title || { text: "", color: "#ffffff", size: 58, align: "center", x: 54, y: 80, rotation: 0 };
+  const s = style.subtitle || { text: "", color: "#94a3b8", size: 36, align: "center", x: 54, y: 200, rotation: 0 };
+  const d1 = style.deviceOne || { size: 90, x: 0, y: 0, rotation: 0, brightness: 100 };
+  const d2 = style.deviceTwo;
+
+  const d1W = 480 * (d1.size / 90);
+  const d1H = 960 * (d1.size / 90);
+  const d1Cx = 540 + (d1.x / 100 * 1080);
+  const d1Cy = 1100 + (d1.y / 100 * 1920);
+
+  let html = `
+    <div class="layer-bg" data-layer-id="background" style="position:absolute; inset:0; ${bgStyle} z-index:0;"></div>
+
+    <!-- Title -->
+    ${t.visible !== false ? `
+    <div class="layer-title" data-layer-id="title" style="
+      position: absolute;
+      left: ${t.x ?? 54}px;
+      top: ${t.y ?? 80}px;
+      width: 972px;
+      transform: rotate(${t.rotation || 0}deg);
+      color: ${t.color || '#fff'};
+      font-size: ${t.size || 58}px;
+      text-align: ${t.align || 'center'};
+      font-weight: 700;
+      line-height: 1.15;
+      z-index: 20;
+      cursor: pointer;
+      user-select: none;
+    ">${escapeHtml(t.text || '')}</div>` : ''}
+
+    <!-- Subtitle -->
+    ${s.visible !== false && s.text ? `
+    <div class="layer-subtitle" data-layer-id="subtitle" style="
+      position: absolute;
+      left: ${s.x ?? 54}px;
+      top: ${s.y ?? 200}px;
+      width: 972px;
+      transform: rotate(${s.rotation || 0}deg);
+      color: ${s.color || '#94a3b8'};
+      font-size: ${s.size || 36}px;
+      text-align: ${s.align || 'center'};
+      font-weight: 400;
+      line-height: 1.25;
+      z-index: 19;
+      cursor: pointer;
+      user-select: none;
+    ">${escapeHtml(s.text)}</div>` : ''}
+
+    <!-- Device One -->
+    ${d1.visible !== false ? `
+    <div class="layer-deviceOne" data-layer-id="deviceOne" style="
+      position: absolute;
+      left: ${d1Cx - d1W/2}px;
+      top: ${d1Cy - d1H/2}px;
+      width: ${d1W}px;
+      height: ${d1H}px;
+      transform: rotate(${d1.rotation || 0}deg);
+      z-index: 10;
+      cursor: pointer;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      border-radius: 36px;
+      overflow: hidden;
+      background: #1e293b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    ">
+      ${d1.sourceId ? `<img src="/api/mockups/${mockupId}/file?p=sources/${d1.sourceId}.png" style="width:100%;height:100%;object-fit:cover;filter:brightness(${d1.brightness || 100}%);" onerror="this.src='/api/mockups/${mockupId}/file?p=sources/${d1.sourceId}';"/>` : `<div style="color:#64748b;font-size:14px;font-family:sans-serif;">No Screenshot</div>`}
+    </div>` : ''}
+  `;
+
+  if (d2 && d2.visible !== false) {
+    const d2W = 480 * (d2.size / 90);
+    const d2H = 960 * (d2.size / 90);
+    const d2Cx = 540 + (d2.x / 100 * 1080);
+    const d2Cy = 1200 + (d2.y / 100 * 1920);
+    html += `
+    <div class="layer-deviceTwo" data-layer-id="deviceTwo" style="
+      position: absolute;
+      left: ${d2Cx - d2W/2}px;
+      top: ${d2Cy - d2H/2}px;
+      width: ${d2W}px;
+      height: ${d2H}px;
+      transform: rotate(${d2.rotation || 0}deg);
+      z-index: 11;
+      cursor: pointer;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      border-radius: 36px;
+      overflow: hidden;
+      background: #1e293b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    ">
+      ${d2.sourceId ? `<img src="/api/mockups/${mockupId}/file?p=sources/${d2.sourceId}.png" style="width:100%;height:100%;object-fit:cover;filter:brightness(${d2.brightness || 100}%);" onerror="this.src='/api/mockups/${mockupId}/file?p=sources/${d2.sourceId}';"/>` : `<div style="color:#64748b;font-size:14px;font-family:sans-serif;">No Screenshot</div>`}
+    </div>`;
+  }
+
+  if (style.assetLayers) {
+    style.assetLayers.forEach((ast, idx) => {
+      if (ast.visible === false) return;
+      const w = (ast.widthPct / 100) * 1080;
+      const h = ast.heightPct ? (ast.heightPct / 100) * 1920 : w * 1.4;
+      const left = (ast.xPct / 100) * 1080 - w / 2;
+      const top = (ast.yPct / 100) * 1920 - h / 2;
+      const srcUrl = ast.assetId.startsWith("sources/") ? `/api/mockups/${mockupId}/file?p=${encodeURIComponent(ast.assetId)}` : `/api/mockups/${mockupId}/file?p=sources/${ast.assetId}.png`;
+      html += `
+      <div class="layer-asset" data-layer-id="asset:${idx}" style="
+        position: absolute;
+        left: ${left}px;
+        top: ${top}px;
+        width: ${w}px;
+        height: ${h}px;
+        transform: rotate(${ast.rotation || 0}deg) scaleX(${ast.flipH ? -1 : 1}) scaleY(${ast.flipV ? -1 : 1});
+        opacity: ${ast.opacity ?? 1};
+        z-index: ${ast.zIndex || 15};
+        cursor: pointer;
+      ">
+        <img src="${srcUrl}" style="width:100%;height:100%;object-fit:${ast.cropFit || 'contain'};" onerror="this.src='${srcUrl.replace('.png', '')}'"/>
+      </div>`;
+    });
+  }
+
+  return html;
+}
+
+let moveableInstance = null;
+
+function initMoveableForCanvas(selectedColumn) {
+  const artboard = $("mockup-canvas-artboard");
+  if (!artboard) return;
+
+  // Find the target layer element: prioritize the currently selected layer,
+  // fall back to the first interactive layer, or default to deviceOne
+  let targetEl = artboard.querySelector(`[data-layer-id="${selectedLayerId}"]`);
+  if (!targetEl) {
+    // No specific layer selected — find the first draggable layer
+    targetEl = artboard.querySelector("[data-layer-id]:not([data-layer-id='background'])");
+  }
+  if (!targetEl) {
+    targetEl = artboard.querySelector('.layer-deviceOne');
+  }
+  if (!targetEl || selectedLayerId === "background") {
+    // Clean up any existing Moveable instance
+    if (moveableInstance) {
+      moveableInstance.destroy();
+      moveableInstance = null;
+    }
+    return;
+  }
+
+  // If Moveable already exists for a different target, destroy and recreate
+  if (moveableInstance && moveableInstance.target !== targetEl) {
+    moveableInstance.destroy();
+    moveableInstance = null;
+  }
+
+  if (typeof Moveable === "undefined") return;
+
+  // Destroy existing and create fresh
+  if (moveableInstance) {
+    moveableInstance.destroy();
+  }
+
+  moveableInstance = new Moveable(artboard, {
+    target: targetEl,
+    draggable: true,
+    resizable: true,
+    rotatable: true,
+    scalable: true,
+    keepRatio: false,
+    snappable: true
+  });
+
+  moveableInstance.on("drag", ({ target, transform }) => {
+    target.style.transform = transform;
+  }).on("dragEnd", ({ target }) => {
+    commitMoveableTransformToModel(selectedColumn, selectedLayerId, target);
+  }).on("resize", ({ target, width, height, transform }) => {
+    target.style.width = `${width}px`;
+    target.style.height = `${height}px`;
+    target.style.transform = transform;
+  }).on("resizeEnd", ({ target }) => {
+    commitMoveableTransformToModel(selectedColumn, selectedLayerId, target);
+  }).on("rotate", ({ target, transform }) => {
+    target.style.transform = transform;
+  }).on("rotateEnd", ({ target }) => {
+    commitMoveableTransformToModel(selectedColumn, selectedLayerId, target);
+  }).on("scale", ({ target, transform }) => {
+    target.style.transform = transform;
+  }).on("scaleEnd", ({ target }) => {
+    commitMoveableTransformToModel(selectedColumn, selectedLayerId, target);
+  });
+}
+
+function commitMoveableTransformToModel(col, layerId, el) {
+  const rect = el.getBoundingClientRect();
+  const artboard = $("mockup-canvas-artboard");
+  if (!artboard) return;
+  const artRect = artboard.getBoundingClientRect();
+
+  // Scale factor relative to 1080x1920 base artboard
+  const scale = artRect.width / 1080;
+  const relLeft = (rect.left - artRect.left) / scale;
+  const relTop = (rect.top - artRect.top) / scale;
+  const relWidth = rect.width / scale;
+  const relHeight = rect.height / scale;
+
+  if (layerId === "title") {
+    col.style.title.x = Math.round(relLeft);
+    col.style.title.y = Math.round(relTop);
+  } else if (layerId === "subtitle") {
+    col.style.subtitle.x = Math.round(relLeft);
+    col.style.subtitle.y = Math.round(relTop);
+  } else if (layerId === "deviceOne") {
+    col.style.deviceOne.size = Math.round((relWidth / 480) * 90);
+    col.style.deviceOne.x = Math.round(((relLeft + relWidth/2 - 540) / 1080) * 100);
+    col.style.deviceOne.y = Math.round(((relTop + relHeight/2 - 1100) / 1920) * 100);
+  } else if (layerId === "deviceTwo" && col.style.deviceTwo) {
+    col.style.deviceTwo.size = Math.round((relWidth / 480) * 90);
+    col.style.deviceTwo.x = Math.round(((relLeft + relWidth/2 - 540) / 1080) * 100);
+    col.style.deviceTwo.y = Math.round(((relTop + relHeight/2 - 1200) / 1920) * 100);
+  } else if (layerId.startsWith("asset:")) {
+    const idx = parseInt(layerId.split(":")[1], 10);
+    if (col.style.assetLayers?.[idx]) {
+      const ast = col.style.assetLayers[idx];
+      ast.widthPct = Math.round((relWidth / 1080) * 100);
+      ast.heightPct = Math.round((relHeight / 1920) * 100);
+      ast.xPct = Math.round(((relLeft + relWidth / 2) / 1080) * 100);
+      ast.yPct = Math.round(((relTop + relHeight / 2) / 1920) * 100);
+    }
+  }
+
+  setMockupDirty(true);
+  syncSection2Inputs(col, layerId);
+  saveCurrentMockupProject();
+  pushMockupHistory();
+}
+
+function renderMockupCanvas() {
+  const viewport = $("mockup-canvas-viewport");
+  if (!viewport) return;
+  if (!mockupProject) {
+    viewport.style.display = "none";
+    return;
+  }
+
+  viewport.style.display = "flex";
+
+  const selectedColumn = selectedCell
+    ? mockupProject.columns.find((c) => c.id === selectedCell.columnId)
+    : mockupProject.columns[0];
+
+  if (!selectedColumn) {
+    viewport.innerHTML = "";
+    return;
+  }
+
+  applyCanvasTransform();
+
+  // Load column template directly into the primary Fabric.js canvas
+  loadColumnIntoFabric(selectedColumn);
+
+  const zoomBadge = $("mockup-zoom-level");
+  if (zoomBadge) zoomBadge.textContent = stageZoomMode;
+}
+
+function renderTransformGizmoOverlay(frameEl, col, zoomRatio) {
+  let gizmo = frameEl.querySelector(".gizmo-overlay");
+  if (!gizmo) {
+    gizmo = document.createElement("div");
+    gizmo.className = "gizmo-overlay";
+    frameEl.appendChild(gizmo);
+  }
+
+  const style = col.style;
+  let box = { left: 100, top: 400, width: 880, height: 1300, rotation: 0 };
+
+  if (selectedLayerId === "title") {
+    box = { left: 54, top: 80, width: 972, height: 120, rotation: 0 };
+  } else if (selectedLayerId === "subtitle") {
+    box = { left: 54, top: 200, width: 972, height: 80, rotation: 0 };
+  } else if (selectedLayerId === "deviceOne") {
+    const d1 = style.deviceOne || { size: 90, x: 0, y: 0, rotation: 0 };
+    const w = 480 * (d1.size / 90);
+    const h = 960 * (d1.size / 90);
+    const cx = 540 + (d1.x / 100 * 1080);
+    const cy = 1100 + (d1.y / 100 * 1920);
+    box = { left: cx - w / 2, top: cy - h / 2, width: w, height: h, rotation: d1.rotation || 0 };
+  } else if (selectedLayerId.startsWith("asset:")) {
+    const idx = parseInt(selectedLayerId.split(":")[1], 10);
+    const ast = style.assetLayers ? style.assetLayers[idx] : null;
+    if (ast) {
+      const w = (ast.widthPct / 100) * 1080;
+      const h = ast.heightPct ? (ast.heightPct / 100) * 1920 : w * 1.4;
+      const left = (ast.xPct / 100) * 1080 - w / 2;
+      const top = (ast.yPct / 100) * 1920 - h / 2;
+      box = { left, top, width: w, height: h, rotation: ast.rotation || 0 };
+    }
+  }
+
+  const leftPx = box.left * zoomRatio;
+  const topPx = box.top * zoomRatio;
+  const widthPx = box.width * zoomRatio;
+  const heightPx = box.height * zoomRatio;
+
+  gizmo.style.left = `${leftPx}px`;
+  gizmo.style.top = `${topPx}px`;
+  gizmo.style.width = `${widthPx}px`;
+  gizmo.style.height = `${heightPx}px`;
+  gizmo.style.transform = `rotate(${box.rotation}deg)`;
+
+  const isCenterX = Math.abs(box.left + box.width / 2 - 540) < 20;
+  const isCenterY = Math.abs(box.top + box.height / 2 - 960) < 20;
+
+  gizmo.innerHTML = `
+    <div class="gizmo-border"></div>
+    <div class="gizmo-handle nw" data-handle="nw" style="top:-5px; left:-5px;"></div>
+    <div class="gizmo-handle ne" data-handle="ne" style="top:-5px; right:-5px;"></div>
+    <div class="gizmo-handle sw" data-handle="sw" style="bottom:-5px; left:-5px;"></div>
+    <div class="gizmo-handle se" data-handle="se" style="bottom:-5px; right:-5px;"></div>
+    <div class="gizmo-handle n" data-handle="n" style="top:-5px; left:calc(50% - 5px);"></div>
+    <div class="gizmo-handle s" data-handle="s" style="bottom:-5px; left:calc(50% - 5px);"></div>
+    <div class="gizmo-handle w" data-handle="w" style="top:calc(50% - 5px); left:-5px;"></div>
+    <div class="gizmo-handle e" data-handle="e" style="top:calc(50% - 5px); right:-5px;"></div>
+    <div class="gizmo-stem"></div>
+    <div class="gizmo-rotate-knob" data-handle="rotate"></div>
+    ${isCenterX || isCenterY
+      ? `<div class="smart-guides-overlay" style="${isCenterX ? 'border-left: 2px solid #f472b6;' : ''}${isCenterY ? 'border-top: 2px solid #f472b6;' : ''}"></div>`
+      : ""}
+  `;
+
+  attachGizmoEvents(gizmo, col, zoomRatio);
+}
+
+let isDraggingGizmo = false;
+
+function attachGizmoEvents(gizmoEl, col, zoomRatio) {
+  gizmoEl.onpointerdown = (e) => {
+    e.stopPropagation();
+    const handleType = e.target.dataset.handle;
+    const startX = e.clientX;
+    const startY = e.clientY;
+    const style = col.style;
+    const d1 = style.deviceOne;
+
+    const initialSize = d1.size;
+    const initialX = d1.x;
+    const initialY = d1.y;
+
+    isDraggingGizmo = true;
+    gizmoEl.setPointerCapture(e.pointerId);
+
+    const onPointerMove = (moveEv) => {
+      if (!isDraggingGizmo) return;
+      const dx = (moveEv.clientX - startX) / zoomRatio;
+      const dy = (moveEv.clientY - startY) / zoomRatio;
+
+      requestAnimationFrame(() => {
+        if (handleType === "rotate") {
+          const rect = gizmoEl.getBoundingClientRect();
+          const cx = rect.left + rect.width / 2;
+          const cy = rect.top + rect.height / 2;
+          const angleRad = Math.atan2(moveEv.clientY - cy, moveEv.clientX - cx);
+          let deg = Math.round((angleRad * 180) / Math.PI) + 90;
+          if (deg > 180) deg -= 360;
+          if (deg < -180) deg += 360;
+
+          if (selectedLayerId === "deviceOne") d1.rotation = deg;
+          else if (selectedLayerId.startsWith("asset:")) {
+            const idx = parseInt(selectedLayerId.split(":")[1], 10);
+            if (style.assetLayers[idx]) style.assetLayers[idx].rotation = deg;
+          }
+        } else if (handleType) {
+          const delta = Math.round((dx + dy) / 4);
+          if (selectedLayerId === "deviceOne") {
+            d1.size = Math.max(10, Math.min(200, initialSize + delta));
+          } else if (selectedLayerId.startsWith("asset:")) {
+            const idx = parseInt(selectedLayerId.split(":")[1], 10);
+            if (style.assetLayers[idx]) {
+              style.assetLayers[idx].widthPct = Math.max(5, Math.min(100, (style.assetLayers[idx].widthPct || 30) + delta));
+            }
+          }
+        } else {
+          const pctX = Math.round((dx / 1080) * 100);
+          const pctY = Math.round((dy / 1920) * 100);
+
+          if (selectedLayerId === "deviceOne") {
+            d1.x = Math.max(-100, Math.min(100, initialX + pctX));
+            d1.y = Math.max(-100, Math.min(100, initialY + pctY));
+          } else if (selectedLayerId.startsWith("asset:")) {
+            const idx = parseInt(selectedLayerId.split(":")[1], 10);
+            if (style.assetLayers[idx]) {
+              style.assetLayers[idx].xPct = Math.max(0, Math.min(100, (style.assetLayers[idx].xPct || 50) + pctX));
+              style.assetLayers[idx].yPct = Math.max(0, Math.min(100, (style.assetLayers[idx].yPct || 50) + pctY));
+            }
+          }
+        }
+
+        renderMockupInspector();
+        setMockupDirty(true);
+        renderTransformGizmoOverlay(gizmoEl.parentElement, col, zoomRatio);
+      });
+    };
+
+    const onPointerUp = (upEv) => {
+      isDraggingGizmo = false;
+      gizmoEl.releasePointerCapture(upEv.pointerId);
+      gizmoEl.onpointermove = null;
+      gizmoEl.onpointerup = null;
+      saveCurrentMockupProject();
+      pushMockupHistory();
+    };
+
+    gizmoEl.onpointermove = onPointerMove;
+    gizmoEl.onpointerup = onPointerUp;
+  };
+}
+
 function renderMockupMatrix() {
   const table = $("mockup-matrix");
+  if (!table) return;
   table.innerHTML = "";
   if (!mockupProject) return;
   const columns = [...mockupProject.columns].sort((a, b) => a.order - b.order);
@@ -3066,7 +4326,11 @@ function renderMockupMatrix() {
       td.className = "cell";
       const isSelected = selectedCell && selectedCell.deviceRowId === row.id && selectedCell.columnId === col.id;
       if (isSelected) td.classList.add("selected");
-      td.innerHTML = `<iframe src="/api/mockups/${mockupId}/cell-preview/${row.id}/${col.id}?width=220&height=390" width="220" height="390"></iframe>`;
+      td.innerHTML = `
+        <div class="mockup-frame-wrapper">
+          <iframe src="/api/mockups/${mockupId}/cell-preview/${row.id}/${col.id}?width=1080&height=1920" scrolling="no"></iframe>
+        </div>
+      `;
       td.onclick = () => selectCell(row.id, col.id);
       tr.appendChild(td);
     }
@@ -3085,58 +4349,753 @@ $("mockup-add-column").onclick = async () => {
     await alert("Start a project first.");
     return;
   }
-  const { project } = await api(`/api/mockups/${mockupId}/columns`, { method: "POST" });
-  mockupProject = project;
+  try {
+    const { project } = await api(`/api/mockups/${mockupId}/columns`, { method: "POST" });
+    mockupProject = project;
+  } catch (err) {
+    console.warn("Column API fallback to project PUT:", err.message);
+    const newCol = {
+      id: `col_${Date.now()}_${Math.round(Math.random() * 1e4)}`,
+      order: mockupProject.columns ? mockupProject.columns.length : 0,
+      style: {
+        layout: "single-title-above",
+        title: { text: `Screen ${(mockupProject.columns ? mockupProject.columns.length : 0) + 1}`, color: "#ffffff", size: 58, align: "center" },
+        subtitle: { text: "", color: "#ffffff", size: 36, align: "center" },
+        background: { type: "gradient", value: "ocean" },
+        deviceOne: { size: 90, x: 0, y: 0, rotation: 0, brightness: 100, frameless: false },
+        decorations: [],
+        assetLayers: []
+      }
+    };
+    if (!mockupProject.columns) mockupProject.columns = [];
+    mockupProject.columns.push(newCol);
+    mockupProject = await api(`/api/mockups/${mockupId}`, { method: "PUT", body: mockupProject });
+  }
+  pushMockupHistory();
+  renderMockupStage();
   renderMockupMatrix();
 };
 
+function buildScreenLayersModel(column) {
+  if (!column || !column.style) return [];
+  const style = column.style;
+  const layers = [];
+
+  // Device 1
+  if (style.deviceOne) {
+    layers.push({
+      id: "deviceOne",
+      type: "device",
+      icon: "📱",
+      name: style.deviceOne.customName || "Device Frame 1",
+      visible: style.deviceOne.visible !== false,
+      locked: !!style.deviceOne.locked,
+      zIndex: style.deviceOne.zIndex ?? 10,
+    });
+  }
+
+  // Device 2
+  if (style.deviceTwo) {
+    layers.push({
+      id: "deviceTwo",
+      type: "device",
+      icon: "📱",
+      name: style.deviceTwo.customName || "Device Frame 2",
+      visible: style.deviceTwo.visible !== false,
+      locked: !!style.deviceTwo.locked,
+      zIndex: style.deviceTwo.zIndex ?? 9,
+    });
+  }
+
+  // Title
+  if (style.title) {
+    layers.push({
+      id: "title",
+      type: "title",
+      icon: "🔤",
+      name: style.title.customName || "Title Text",
+      visible: style.title.visible !== false,
+      locked: !!style.title.locked,
+      zIndex: style.title.zIndex ?? 20,
+    });
+  }
+
+  // Subtitle
+  if (style.subtitle) {
+    layers.push({
+      id: "subtitle",
+      type: "subtitle",
+      icon: "📝",
+      name: style.subtitle.customName || "Subtitle Text",
+      visible: style.subtitle.visible !== false,
+      locked: !!style.subtitle.locked,
+      zIndex: style.subtitle.zIndex ?? 19,
+    });
+  }
+
+  // Asset layers
+  if (style.assetLayers) {
+    style.assetLayers.forEach((ast, idx) => {
+      layers.push({
+        id: `asset:${idx}`,
+        type: "asset",
+        icon: "📦",
+        name: ast.customName || `Asset Layer ${idx + 1}`,
+        visible: ast.visible !== false,
+        locked: !!ast.locked,
+        zIndex: ast.zIndex ?? (15 + idx),
+      });
+    });
+  }
+
+  // Decorations / Badges / Stickers
+  if (style.decorations) {
+    style.decorations.forEach((dec, idx) => {
+      layers.push({
+        id: `decoration:${idx}`,
+        type: "decoration",
+        icon: "🎯",
+        name: dec.customName || `Sticker / Badge ${idx + 1}`,
+        visible: dec.visible !== false,
+        locked: !!dec.locked,
+        zIndex: dec.zIndex ?? (25 + idx),
+      });
+    });
+  }
+
+  // Background
+  if (style.background) {
+    layers.push({
+      id: "background",
+      type: "background",
+      icon: "🎨",
+      name: style.background.customName || `Background (${style.background.type || "gradient"})`,
+      visible: style.background.visible !== false,
+      locked: !!style.background.locked,
+      zIndex: style.background.zIndex ?? 0,
+    });
+  }
+
+  // Sort descending by zIndex for Layers List display (topmost layer on top)
+  return layers.sort((a, b) => b.zIndex - a.zIndex);
+}
+
+function renderMockupLayersPanel(column) {
+  const container = $("mk-layers-list");
+  if (!container) return;
+  if (!column) {
+    container.innerHTML = `<div class="hint" style="padding:0.5rem;">No screen selected</div>`;
+    return;
+  }
+
+  const layers = buildScreenLayersModel(column);
+  container.innerHTML = layers.map((layer) => {
+    const isSelected = selectedLayerId === layer.id;
+    const isHidden = !layer.visible;
+    const isLocked = !!layer.locked;
+    return `
+      <div class="mk-layer-item ${isSelected ? "active" : ""} ${isHidden ? "hidden-layer" : ""}" data-layer-id="${layer.id}" draggable="true">
+        <span class="mk-layer-drag-handle" title="Drag to reorder layer">⋮⋮</span>
+        <span class="mk-layer-type-icon">${layer.icon}</span>
+        <span class="mk-layer-name" title="Double-click to rename" data-layer-id="${layer.id}">${layer.name}</span>
+        <button class="mk-layer-lock-btn" type="button" title="${isLocked ? "Unlock Layer" : "Lock Layer"}" data-lock-id="${layer.id}">
+          ${isLocked ? "🔒" : "🔓"}
+        </button>
+        <button class="mk-layer-vis-btn" type="button" title="${layer.visible ? "Hide Layer" : "Show Layer"}" data-vis-id="${layer.id}">
+          ${layer.visible ? "👁" : "⊘"}
+        </button>
+      </div>
+    `;
+  }).join("");
+
+  // Attach event handlers for layer items
+  container.querySelectorAll(".mk-layer-item").forEach((item) => {
+    const lid = item.dataset.layerId;
+
+    // Click row to select layer on canvas & inspector
+    item.onclick = (e) => {
+      if (e.target.closest(".mk-layer-vis-btn") || e.target.closest(".mk-layer-lock-btn") || e.target.classList.contains("mk-layer-rename-input")) return;
+      selectedLayerId = lid;
+      renderMockupLayersPanel(column);
+      syncSection2Inputs(column, selectedLayerId);
+      if (selectedLayerId === "title" || selectedLayerId === "subtitle") switchInspectorTab("text");
+      else if (selectedLayerId === "deviceOne" || selectedLayerId === "deviceTwo") switchInspectorTab("dev");
+      else if (selectedLayerId?.startsWith("asset:") || selectedLayerId?.startsWith("decoration:")) switchInspectorTab("asset");
+      else switchInspectorTab("col");
+      renderMockupCanvas();
+    };
+
+    // Double-click layer name for inline rename
+    const nameSpan = item.querySelector(".mk-layer-name");
+    if (nameSpan) {
+      nameSpan.ondblclick = (e) => {
+        e.stopPropagation();
+        const currentName = nameSpan.textContent;
+        const input = document.createElement("input");
+        input.type = "text";
+        input.className = "mk-layer-rename-input";
+        input.value = currentName;
+        nameSpan.replaceWith(input);
+        input.focus();
+        input.select();
+
+        const saveRename = () => {
+          const newName = input.value.trim() || currentName;
+          setCustomLayerName(column, lid, newName);
+          setMockupDirty(true);
+          renderMockupLayersPanel(column);
+        };
+
+        input.onblur = saveRename;
+        input.onkeydown = (ev) => {
+          if (ev.key === "Enter") { ev.preventDefault(); saveRename(); }
+          else if (ev.key === "Escape") { renderMockupLayersPanel(column); }
+        };
+      };
+    }
+
+    // Lock toggle click
+    const lockBtn = item.querySelector(".mk-layer-lock-btn");
+    if (lockBtn) {
+      lockBtn.onclick = (e) => {
+        e.stopPropagation();
+        toggleLayerLockInModel(column, lid);
+        setMockupDirty(true);
+        renderMockupLayersPanel(column);
+        renderMockupCanvas();
+      };
+    }
+
+    // Visibility toggle click
+    const visBtn = item.querySelector(".mk-layer-vis-btn");
+    if (visBtn) {
+      visBtn.onclick = (e) => {
+        e.stopPropagation();
+        toggleLayerVisibilityInModel(column, lid);
+        setMockupDirty(true);
+        renderMockupLayersPanel(column);
+        renderMockupCanvas();
+      };
+    }
+  });
+
+  // Attach drag and drop handlers for layer reordering
+  attachLayerDragAndDrop(container, column);
+}
+
+function setCustomLayerName(column, layerId, name) {
+  if (!column || !column.style) return;
+  const style = column.style;
+  if (layerId === "title" && style.title) style.title.customName = name;
+  else if (layerId === "subtitle" && style.subtitle) style.subtitle.customName = name;
+  else if (layerId === "deviceOne" && style.deviceOne) style.deviceOne.customName = name;
+  else if (layerId === "deviceTwo" && style.deviceTwo) style.deviceTwo.customName = name;
+  else if (layerId === "background" && style.background) style.background.customName = name;
+  else if (layerId.startsWith("asset:")) {
+    const idx = parseInt(layerId.split(":")[1], 10);
+    if (style.assetLayers && style.assetLayers[idx]) style.assetLayers[idx].customName = name;
+  } else if (layerId.startsWith("decoration:")) {
+    const idx = parseInt(layerId.split(":")[1], 10);
+    if (style.decorations && style.decorations[idx]) style.decorations[idx].customName = name;
+  }
+}
+
+function toggleLayerVisibilityInModel(column, layerId) {
+  if (!column || !column.style) return;
+  const style = column.style;
+  if (layerId === "title" && style.title) style.title.visible = style.title.visible === false;
+  else if (layerId === "subtitle" && style.subtitle) style.subtitle.visible = style.subtitle.visible === false;
+  else if (layerId === "deviceOne" && style.deviceOne) style.deviceOne.visible = style.deviceOne.visible === false;
+  else if (layerId === "deviceTwo" && style.deviceTwo) style.deviceTwo.visible = style.deviceTwo.visible === false;
+  else if (layerId === "background" && style.background) style.background.visible = style.background.visible === false;
+  else if (layerId.startsWith("asset:")) {
+    const idx = parseInt(layerId.split(":")[1], 10);
+    if (style.assetLayers?.[idx]) style.assetLayers[idx].visible = style.assetLayers[idx].visible === false;
+  } else if (layerId.startsWith("decoration:")) {
+    const idx = parseInt(layerId.split(":")[1], 10);
+    if (style.decorations?.[idx]) style.decorations[idx].visible = style.decorations[idx].visible === false;
+  }
+}
+
+function toggleLayerLockInModel(column, layerId) {
+  if (!column || !column.style) return;
+  const style = column.style;
+  if (layerId === "title" && style.title) style.title.locked = !style.title.locked;
+  else if (layerId === "subtitle" && style.subtitle) style.subtitle.locked = !style.subtitle.locked;
+  else if (layerId === "deviceOne" && style.deviceOne) style.deviceOne.locked = !style.deviceOne.locked;
+  else if (layerId === "deviceTwo" && style.deviceTwo) style.deviceTwo.locked = !style.deviceTwo.locked;
+  else if (layerId === "background" && style.background) style.background.locked = !style.background.locked;
+  else if (layerId.startsWith("asset:")) {
+    const idx = parseInt(layerId.split(":")[1], 10);
+    if (style.assetLayers?.[idx]) style.assetLayers[idx].locked = !style.assetLayers[idx].locked;
+  } else if (layerId.startsWith("decoration:")) {
+    const idx = parseInt(layerId.split(":")[1], 10);
+    if (style.decorations?.[idx]) style.decorations[idx].locked = !style.decorations[idx].locked;
+  }
+}
+
+function attachLayerDragAndDrop(container, column) {
+  let draggedItem = null;
+
+  container.querySelectorAll(".mk-layer-item").forEach((item) => {
+    item.addEventListener("dragstart", (e) => {
+      draggedItem = item;
+      item.style.opacity = "0.4";
+      e.dataTransfer.effectAllowed = "move";
+      e.dataTransfer.setData("text/plain", item.dataset.layerId);
+    });
+
+    item.addEventListener("dragend", () => {
+      if (draggedItem) draggedItem.style.opacity = "1";
+      draggedItem = null;
+      container.querySelectorAll(".drag-over-top, .drag-over-bottom").forEach((el) => {
+        el.classList.remove("drag-over-top", "drag-over-bottom");
+      });
+    });
+
+    item.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      if (!draggedItem || draggedItem === item) return;
+      const rect = item.getBoundingClientRect();
+      const mid = rect.top + rect.height / 2;
+      item.classList.remove("drag-over-top", "drag-over-bottom");
+      if (e.clientY < mid) item.classList.add("drag-over-top");
+      else item.classList.add("drag-over-bottom");
+    });
+
+    item.addEventListener("dragleave", () => {
+      item.classList.remove("drag-over-top", "drag-over-bottom");
+    });
+
+    item.addEventListener("drop", (e) => {
+      e.preventDefault();
+      item.classList.remove("drag-over-top", "drag-over-bottom");
+      if (!draggedItem || draggedItem === item) return;
+      const fromId = draggedItem.dataset.layerId;
+      const toId = item.dataset.layerId;
+
+      reorderLayersInModel(column, fromId, toId);
+      selectedLayerId = fromId;
+      setMockupDirty(true);
+      renderMockupLayersPanel(column);
+      renderMockupCanvas();
+    });
+  });
+}
+
+function reorderLayersInModel(column, fromId, toId) {
+  if (!column || !column.style) return;
+
+  if (fromId.startsWith("asset:") && toId.startsWith("asset:")) {
+    const fromIdx = parseInt(fromId.split(":")[1], 10);
+    const toIdx = parseInt(toId.split(":")[1], 10);
+    const assets = column.style.assetLayers;
+    if (assets && fromIdx >= 0 && toIdx >= 0 && fromIdx < assets.length && toIdx < assets.length) {
+      const [moved] = assets.splice(fromIdx, 1);
+      assets.splice(toIdx, 0, moved);
+      return;
+    }
+  }
+
+  const layers = buildScreenLayersModel(column);
+  const fromLayer = layers.find((l) => l.id === fromId);
+  const toLayer = layers.find((l) => l.id === toId);
+
+  if (fromLayer && toLayer) {
+    const tempZ = fromLayer.zIndex || 10;
+    setLayerZIndex(column, fromId, toLayer.zIndex || 10);
+    setLayerZIndex(column, toId, tempZ);
+  }
+}
+
+function setLayerZIndex(column, layerId, zIndex) {
+  const style = column.style;
+  if (layerId === "title" && style.title) style.title.zIndex = zIndex;
+  else if (layerId === "subtitle" && style.subtitle) style.subtitle.zIndex = zIndex;
+  else if (layerId === "deviceOne" && style.deviceOne) style.deviceOne.zIndex = zIndex;
+  else if (layerId === "deviceTwo" && style.deviceTwo) style.deviceTwo.zIndex = zIndex;
+  else if (layerId === "background" && style.background) style.background.zIndex = zIndex;
+  else if (layerId.startsWith("asset:")) {
+    const idx = parseInt(layerId.split(":")[1], 10);
+    if (style.assetLayers?.[idx]) style.assetLayers[idx].zIndex = zIndex;
+  }
+}
+
 function selectCell(deviceRowId, columnId) {
+  const isScreenChange = !selectedCell || selectedCell.columnId !== columnId;
   selectedCell = { deviceRowId, columnId };
   renderMockupMatrix();
-  $("mockup-inspector").style.display = "block";
+  renderMockupCanvas();
+  if (isScreenChange) {
+    centerArtboardInViewport();
+  }
+  const inspector = $("mockup-inspector");
+  if (inspector) inspector.style.display = "block";
   const row = mockupProject.devices.find((d) => d.id === deviceRowId);
   const colIndex = mockupProject.columns.findIndex((c) => c.id === columnId) + 1;
-  $("mockup-inspector-target").textContent = `${row.label} — Screen ${colIndex}`;
+  const targetEl = $("mockup-inspector-target");
+  if (targetEl) targetEl.textContent = `${row ? row.label : "Device"} — Screen ${colIndex}`;
 
   const cellKey = `${deviceRowId}:${columnId}`;
   const hasOverride = Boolean(mockupProject.cells[cellKey]);
-  $("mk-cell-override").checked = hasOverride;
+  const overrideEl = $("mk-cell-override");
+  if (overrideEl) overrideEl.checked = hasOverride;
   const column = mockupProject.columns.find((c) => c.id === columnId);
+  if (!column) return;
   const style = hasOverride ? { ...column.style, ...mockupProject.cells[cellKey] } : column.style;
 
-  $("mk-layout").value = style.layout;
-  $("mk-title").value = style.title.text;
-  $("mk-title-color").value = style.title.color;
-  $("mk-subtitle").value = style.subtitle.text;
+  // Build and render the screen-specific layers model
+  selectedLayerId = "deviceOne";
+  renderMockupLayersPanel(column);
 
-  $("mk-bg-type").value = style.background.type;
-  populateBgValueSelect(style.background.type, style.background.value);
+  const layoutEl = $("mk-layout");
+  if (layoutEl) layoutEl.value = style.layout;
 
-  const mockupGroups = {};
-  for (const s of mockupProject.sources || []) {
-    const res = s.resolution || "Uploads / General";
-    if (!mockupGroups[res]) mockupGroups[res] = [];
-    mockupGroups[res].push(s);
+  const titleEl = $("mk-title");
+  if (titleEl) titleEl.value = style.title.text;
+
+  const titleColorEl = $("mk-title-color");
+  if (titleColorEl) titleColorEl.value = style.title.color;
+
+  const subtitleEl = $("mk-subtitle");
+  if (subtitleEl) subtitleEl.value = style.subtitle.text;
+
+  const bgTypeEl = $("mk-bg-type");
+  if (bgTypeEl) {
+    bgTypeEl.value = style.background.type;
+    populateBgValueSelect(style.background.type, style.background.value);
   }
-  let mockupSourceHtml = '<option value="">(None)</option>';
-  for (const [res, items] of Object.entries(mockupGroups)) {
-    mockupSourceHtml += `<optgroup label="${res}">`;
-    for (const s of items) {
-      mockupSourceHtml += `<option value="${s.id}">${s.name}</option>`;
+
+  const sourceEl = $("mk-source");
+  if (sourceEl) {
+    sourceEl.innerHTML = '<option value="">(None)</option>';
+    const mockupGroups = {};
+    for (const s of mockupProject.sources || []) {
+      const res = s.resolution || "Uploads / General";
+      if (!mockupGroups[res]) mockupGroups[res] = [];
+      mockupGroups[res].push(s);
     }
-    mockupSourceHtml += `</optgroup>`;
+    for (const [res, items] of Object.entries(mockupGroups)) {
+      sourceEl.innerHTML += `<optgroup label="${res}">`;
+      for (const s of items) {
+        sourceEl.innerHTML += `<option value="${s.id}">${s.name}</option>`;
+      }
+      sourceEl.innerHTML += `</optgroup>`;
+    }
+    if (style.deviceOne.sourceId) sourceEl.value = style.deviceOne.sourceId;
   }
-  $("mk-source").innerHTML = mockupSourceHtml;
-  if (style.deviceOne.sourceId) $("mk-source").value = style.deviceOne.sourceId;
 
-  $("mk-d1-size").value = style.deviceOne.size; $("mk-d1-size-val").textContent = style.deviceOne.size;
-  $("mk-d1-x").value = style.deviceOne.x; $("mk-d1-x-val").textContent = style.deviceOne.x;
-  $("mk-d1-y").value = style.deviceOne.y; $("mk-d1-y-val").textContent = style.deviceOne.y;
-  $("mk-d1-rotate").value = style.deviceOne.rotation; $("mk-d1-rotate-val").textContent = style.deviceOne.rotation;
-  $("mk-d1-brightness").value = style.deviceOne.brightness; $("mk-d1-brightness-val").textContent = style.deviceOne.brightness;
-  $("mk-d1-frameless").checked = style.deviceOne.frameless;
+  const d1SizeEl = $("mk-d1-size");
+  const d1SizeValEl = $("mk-d1-size-val");
+  if (d1SizeEl && d1SizeValEl) {
+    d1SizeEl.value = style.deviceOne.size;
+    d1SizeValEl.textContent = style.deviceOne.size;
+  }
+
+  const d1XEl = $("mk-d1-x");
+  const d1XValEl = $("mk-d1-x-val");
+  if (d1XEl && d1XValEl) {
+    d1XEl.value = style.deviceOne.x;
+    d1XValEl.textContent = style.deviceOne.x;
+  }
+
+  const d1YEl = $("mk-d1-y");
+  const d1YValEl = $("mk-d1-y-val");
+  if (d1YEl && d1YValEl) {
+    d1YEl.value = style.deviceOne.y;
+    d1YValEl.textContent = style.deviceOne.y;
+  }
+
+  const d1RotateEl = $("mk-d1-rotate");
+  const d1RotateValEl = $("mk-d1-rotate-val");
+  if (d1RotateEl && d1RotateValEl) {
+    d1RotateEl.value = style.deviceOne.rotation || 0;
+    d1RotateValEl.textContent = style.deviceOne.rotation || 0;
+  }
+
+  const d1BrightnessEl = $("mk-d1-brightness");
+  const d1BrightnessValEl = $("mk-d1-brightness-val");
+  if (d1BrightnessEl && d1BrightnessValEl) {
+    d1BrightnessEl.value = style.deviceOne.brightness;
+    d1BrightnessValEl.textContent = style.deviceOne.brightness;
+  }
+
+  const d1FramelessEl = $("mk-d1-frameless");
+  if (d1FramelessEl) d1FramelessEl.checked = style.deviceOne.frameless;
 
   renderMkDecorations(style.decorations || []);
+  renderMkAssetLayers(style.assetLayers || []);
+
+  syncSection2Inputs(column, selectedLayerId);
+  if (selectedLayerId === "title" || selectedLayerId === "subtitle") switchInspectorTab("text");
+  else if (selectedLayerId === "deviceOne") switchInspectorTab("dev");
+  else if (selectedLayerId?.startsWith("asset:") || selectedLayerId?.startsWith("decoration:")) switchInspectorTab("asset");
+  else switchInspectorTab("col");
+}
+
+function switchInspectorTab(tabName) {
+  ["col", "dev", "text", "asset"].forEach((t) => {
+    const btn = $(`mk-tab-${t}`);
+    const panel = $(`mk-panel-${t}`);
+    if (btn) btn.className = t === tabName ? "primary small" : "secondary small";
+    if (panel) panel.style.display = t === tabName ? "block" : "none";
+  });
+}
+if ($("mk-tab-col")) $("mk-tab-col").onclick = () => switchInspectorTab("col");
+if ($("mk-tab-dev")) $("mk-tab-dev").onclick = () => switchInspectorTab("dev");
+if ($("mk-tab-text")) $("mk-tab-text").onclick = () => switchInspectorTab("text");
+if ($("mk-tab-asset")) $("mk-tab-asset").onclick = () => switchInspectorTab("asset");
+
+/* Toolbar & Zoom controls */
+if ($("mockup-undo-btn")) $("mockup-undo-btn").onclick = undoMockupState;
+if ($("mockup-redo-btn")) $("mockup-redo-btn").onclick = redoMockupState;
+
+// Zoom controls for single-artboard canvas
+if ($("mockup-zoom-fit")) $("mockup-zoom-fit").onclick = () => { centerArtboardInViewport(); };
+if ($("mockup-zoom-50")) $("mockup-zoom-50").onclick = () => { setStageZoomAndCenter(0.5); };
+if ($("mockup-zoom-100")) $("mockup-zoom-100").onclick = () => { setStageZoomAndCenter(1.0); };
+if ($("mockup-zoom-in")) $("mockup-zoom-in").onclick = () => { setStageZoomAndCenter(Math.min(stageZoomRatio * 1.25, 3.0)); };
+if ($("mockup-zoom-out")) $("mockup-zoom-out").onclick = () => { setStageZoomAndCenter(Math.max(stageZoomRatio * 0.8, 0.1)); };
+
+// Canvas panning & wheel zoom handlers
+let isPanning = false;
+
+function initCanvasPanZoomEvents() {
+  const viewport = $("mockup-canvas-viewport");
+  if (!viewport) return;
+
+  window.addEventListener("keydown", (e) => {
+    if (e.code === "Space" && document.activeElement?.tagName !== "INPUT" && document.activeElement?.tagName !== "TEXTAREA") {
+      if (!isSpacePressed) {
+        isSpacePressed = true;
+        viewport.classList.add("panning");
+      }
+    }
+  });
+
+  window.addEventListener("keyup", (e) => {
+    if (e.code === "Space") {
+      isSpacePressed = false;
+      if (!isPanning) viewport.classList.remove("panning");
+    }
+  });
+
+  viewport.addEventListener("mousedown", (e) => {
+    if (e.button === 1 || (e.button === 0 && isSpacePressed)) {
+      e.preventDefault();
+      isPanning = true;
+      viewport.classList.add("panning");
+      panStart = { x: e.clientX - canvasPan.x, y: e.clientY - canvasPan.y };
+    }
+  });
+
+  window.addEventListener("mouseup", () => {
+    if (isPanning) {
+      isPanning = false;
+      if (!isSpacePressed) viewport.classList.remove("panning");
+    }
+  });
+
+  window.addEventListener("mousemove", (e) => {
+    if (!isPanning) return;
+    canvasPan = { x: e.clientX - panStart.x, y: e.clientY - panStart.y };
+    applyCanvasTransform();
+  });
+
+  viewport.addEventListener("wheel", (e) => {
+    e.preventDefault();
+    const rect = viewport.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+
+    const zoomFactor = e.ctrlKey ? 0.95 : 0.92;
+    const oldRatio = stageZoomRatio;
+    const newRatio = Math.max(0.08, Math.min(3.0, stageZoomRatio * (e.deltaY < 0 ? 1 / zoomFactor : zoomFactor)));
+
+    if (newRatio === oldRatio) return;
+
+    // Zoom focal point calculation around pointer
+    canvasPan.x = mouseX - (mouseX - canvasPan.x) * (newRatio / oldRatio);
+    canvasPan.y = mouseY - (mouseY - canvasPan.y) * (newRatio / oldRatio);
+    stageZoomRatio = newRatio;
+
+    applyCanvasTransform();
+  }, { passive: false });
+}
+
+initCanvasPanZoomEvents();
+
+// Fit calculation: find the largest scale that still fits 1080x1920 inside the viewport
+function _fitZoomForViewport() {
+  const vp = $("mockup-canvas-viewport");
+  if (!vp) return 0.2;
+  const pad = 24; // breathing room around the artboard
+  const availW = vp.clientWidth - pad * 2;
+  const availH = vp.clientHeight - pad * 2;
+  if (availW <= 0 || availH <= 0) return 0.2;
+  return Math.max(0.08, Math.min(availW / 1080, availH / 1920));
+}
+
+function applyCanvasTransform() {
+  const stage = $("mockup-canvas-stage");
+  if (!stage) return;
+  stage.style.transform = `translate(${canvasPan.x}px, ${canvasPan.y}px) scale(${stageZoomRatio})`;
+  stage.style.transformOrigin = "top left";
+  const badge = $("mockup-zoom-level");
+  if (badge) badge.textContent = `${Math.round(stageZoomRatio * 100)}%`;
+}
+
+// Zoom level badge update
+function updateZoomLevelBadge() {
+  const badge = $("mockup-zoom-level");
+  if (!badge) return;
+  if (stageZoomRatio >= 0.95 && stageZoomRatio <= 1.05) {
+    badge.textContent = "100%";
+    badge.title = "100%";
+  } else if (stageZoomRatio >= 0.45 && stageZoomRatio <= 0.55) {
+    badge.textContent = "50%";
+    badge.title = "50%";
+  } else if (stageZoomRatio >= 0.1 && stageZoomRatio < 0.95) {
+    badge.textContent = `${Math.round(stageZoomRatio * 100)}%`;
+    badge.title = `${Math.round(stageZoomRatio * 100)}%`;
+  } else {
+    badge.textContent = "Fit";
+    badge.title = "Fit";
+  }
+}
+
+if ($("mockup-reset-template-btn")) {
+  $("mockup-reset-template-btn").onclick = async () => {
+    if (!selectedCell || !mockupProject) return;
+    const ok = await confirm("Reset active screen style to defaults?");
+    if (!ok) return;
+    const column = mockupProject.columns.find((c) => c.id === selectedCell.columnId);
+    if (column) {
+      const defStyle = defaultColumnStyle(`Screen`);
+      await api(`/api/mockups/${mockupId}/columns/${selectedCell.columnId}`, { method: "PUT", body: { style: defStyle } });
+      await api(`/api/mockups/${mockupId}/cells/${selectedCell.deviceRowId}/${selectedCell.columnId}`, { method: "PUT", body: { override: null } });
+      mockupProject = await api(`/api/mockups/${mockupId}`);
+      pushMockupHistory();
+      renderMockupStage();
+      renderMockupMatrix();
+    }
+  };
+}
+
+/* Custom Asset Layer Handling */
+function renderMkAssetLayers(assets) {
+  const container = $("mk-asset-layers-list");
+  if (!container) return;
+  container.innerHTML = "";
+  assets.forEach((ast) => container.appendChild(mkAssetLayerRow(ast)));
+}
+
+function mkAssetLayerRow(ast) {
+  const row = document.createElement("div");
+  row.className = "decoration-row";
+  row.style.flexWrap = "wrap";
+  row.innerHTML = `
+    <span style="font-size:0.75rem; font-weight:600; color:#e2e8f0; flex:1;">${escapeHtmlAttr(ast.name || "Asset")}</span>
+    <button type="button" class="small danger ast-remove">&times;</button>
+    <div style="display:flex; gap:0.4rem; width:100%; margin-top:0.2rem; align-items:center;">
+      <label style="font-size:0.7rem; color:#94a3b8;">X%</label>
+      <input class="ast-x" type="number" value="${ast.xPct ?? 50}" style="width:3.5rem;" />
+      <label style="font-size:0.7rem; color:#94a3b8;">Y%</label>
+      <input class="ast-y" type="number" value="${ast.yPct ?? 50}" style="width:3.5rem;" />
+      <label style="font-size:0.7rem; color:#94a3b8;">Width%</label>
+      <input class="ast-w" type="number" value="${ast.widthPct ?? 30}" style="width:3.5rem;" />
+    </div>
+  `;
+  row.querySelector(".ast-remove").onclick = () => row.remove();
+  return row;
+}
+
+function mkAssetLayersFromForm() {
+  const container = $("mk-asset-layers-list");
+  if (!container) return [];
+  return [...container.children].map((row, i) => ({
+    id: "asset_" + i + "_" + Date.now(),
+    assetId: "upload",
+    name: row.querySelector("span").textContent,
+    xPct: Number(row.querySelector(".ast-x").value) || 50,
+    yPct: Number(row.querySelector(".ast-y").value) || 50,
+    widthPct: Number(row.querySelector(".ast-w").value) || 30,
+    rotation: 0,
+    opacity: 1,
+    zIndex: 10 + i,
+  }));
+}
+
+if ($("mockup-add-asset-btn")) {
+  $("mockup-add-asset-btn").onclick = () => {
+    if ($("mockup-asset-upload-input")) $("mockup-asset-upload-input").click();
+  };
+}
+if ($("mk-add-asset-layer-btn")) {
+  $("mk-add-asset-layer-btn").onclick = () => {
+    if ($("mockup-asset-upload-input")) $("mockup-asset-upload-input").click();
+  };
+}
+
+if ($("mockup-asset-upload-input")) {
+  $("mockup-asset-upload-input").onchange = async (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file || !mockupId) return;
+    const reader = new FileReader();
+    reader.onload = async (evt) => {
+      const base64Data = evt.target.result;
+      try {
+        const { source } = await api(`/api/mockups/${mockupId}/upload-asset`, {
+          method: "POST",
+          body: { name: file.name, data: base64Data }
+        });
+        mockupProject = await api(`/api/mockups/${mockupId}`);
+
+        if (selectedCell) {
+          const col = mockupProject.columns.find((c) => c.id === selectedCell.columnId);
+          if (col) {
+            col.style.assetLayers = col.style.assetLayers || [];
+            col.style.assetLayers.push({
+              id: `asset_${Date.now()}`,
+              assetId: source.id,
+              name: source.name,
+              xPct: 50,
+              yPct: 50,
+              widthPct: 35,
+              rotation: 0,
+              opacity: 1,
+              zIndex: 10
+            });
+            await saveCurrentMockupProject();
+            pushMockupHistory();
+            renderMockupStage();
+            renderMockupMatrix();
+            renderMkAssetLayers(col.style.assetLayers);
+            showToast(`Asset "${file.name}" added to screen layer.`, "success");
+          }
+        }
+      } catch (err) {
+        await alert("Asset upload failed: " + err.message);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+}
+
+if ($("mockup-export-toolbar-btn")) {
+  $("mockup-export-toolbar-btn").onclick = async () => {
+    if (!mockupId) return;
+    showToast("Generating ZIP export via Playwright...", "info");
+    try {
+      const res = await api(`/api/mockups/${mockupId}/export`, { method: "POST" });
+      if (res.downloadUrl) {
+        window.location.href = res.downloadUrl;
+        showToast("ZIP export download started!", "success");
+      }
+    } catch (err) {
+      await alert("Export failed: " + err.message);
+    }
+  };
 }
 
 function populateBgValueSelect(type, current) {
@@ -3146,13 +5105,15 @@ function populateBgValueSelect(type, current) {
   select.innerHTML = list.map((v) => `<option value="${v}">${v.replace("solid-", "")}</option>`).join("");
   if (current) select.value = current;
 }
-$("mk-bg-type").onchange = () => populateBgValueSelect($("mk-bg-type").value, "");
+if ($("mk-bg-type")) $("mk-bg-type").onchange = () => populateBgValueSelect($("mk-bg-type").value, "");
 
 for (const [id, out] of [
   ["mk-d1-size", "mk-d1-size-val"], ["mk-d1-x", "mk-d1-x-val"], ["mk-d1-y", "mk-d1-y-val"],
   ["mk-d1-rotate", "mk-d1-rotate-val"], ["mk-d1-brightness", "mk-d1-brightness-val"],
 ]) {
-  $(id).oninput = () => { $(out).textContent = $(id).value; };
+  if ($(id) && $(out)) {
+    $(id).oninput = () => { $(out).textContent = $(id).value; };
+  }
 }
 
 let mkDecorationCounter = 0;
@@ -3208,8 +5169,288 @@ function buildCellStyleFromForm() {
       frameless: $("mk-d1-frameless").checked,
     },
     decorations: mkDecorationsFromForm(),
+    assetLayers: mkAssetLayersFromForm(),
   };
 }
+
+/* Section 2 Universal Transform & Alignment Wiring */
+function getActiveCellColumn() {
+  if (!selectedCell || !mockupProject) return null;
+  return mockupProject.columns.find((c) => c.id === selectedCell.columnId);
+}
+
+function handleSection2InputChange() {
+  const col = getActiveCellColumn();
+  if (!col) return;
+  const style = col.style;
+  const x = Number($("mk-pos-x")?.value) || 540;
+  const y = Number($("mk-pos-y")?.value) || 960;
+  const w = Number($("mk-pos-w")?.value) || 200;
+  const h = Number($("mk-pos-h")?.value) || 200;
+  const rot = Number($("mk-pos-rot")?.value) || 0;
+  const opacity = (Number($("mk-pos-opacity")?.value) || 100) / 100;
+  const flipH = Boolean($("mk-pos-flip-h")?.checked);
+  const flipV = Boolean($("mk-pos-flip-v")?.checked);
+
+  if (selectedLayerId === "deviceOne") {
+    const d1 = style.deviceOne || (style.deviceOne = {});
+    d1.x = Math.round(((x - 540) / 1080) * 100);
+    d1.y = Math.round(((y - 1100) / 1920) * 100);
+    d1.size = Math.round((w / 480) * 90);
+    d1.rotation = rot;
+  } else if (selectedLayerId && selectedLayerId.startsWith("asset:")) {
+    const idx = parseInt(selectedLayerId.split(":")[1], 10);
+    const ast = style.assetLayers && style.assetLayers[idx];
+    if (ast) {
+      ast.xPct = Math.round((x / 1080) * 100);
+      ast.yPct = Math.round((y / 1920) * 100);
+      ast.widthPct = Math.round((w / 1080) * 100);
+      ast.heightPct = Math.round((h / 1920) * 100);
+      ast.rotation = rot;
+      ast.opacity = opacity;
+      ast.flipH = flipH;
+      ast.flipV = flipV;
+    }
+  }
+  setMockupDirty(true);
+  renderMockupStage();
+}
+
+["mk-pos-x", "mk-pos-y", "mk-pos-w", "mk-pos-h", "mk-pos-rot", "mk-pos-opacity"].forEach((id) => {
+  const el = $(id);
+  if (el) el.oninput = handleSection2InputChange;
+});
+["mk-pos-flip-h", "mk-pos-flip-v"].forEach((id) => {
+  const el = $(id);
+  if (el) el.onchange = handleSection2InputChange;
+});
+
+if ($("mk-align-left")) {
+  $("mk-align-left").onclick = () => {
+    if ($("mk-pos-x")) {
+      const w = Number($("mk-pos-w")?.value) || 200;
+      $("mk-pos-x").value = w / 2;
+      handleSection2InputChange();
+    }
+  };
+}
+if ($("mk-align-center")) {
+  $("mk-align-center").onclick = () => {
+    if ($("mk-pos-x")) {
+      $("mk-pos-x").value = 540;
+      handleSection2InputChange();
+    }
+  };
+}
+if ($("mk-align-right")) {
+  $("mk-align-right").onclick = () => {
+    if ($("mk-pos-x")) {
+      const w = Number($("mk-pos-w")?.value) || 200;
+      $("mk-pos-x").value = 1080 - w / 2;
+      handleSection2InputChange();
+    }
+  };
+}
+if ($("mk-align-top")) {
+  $("mk-align-top").onclick = () => {
+    if ($("mk-pos-y")) {
+      const h = Number($("mk-pos-h")?.value) || 200;
+      $("mk-pos-y").value = h / 2;
+      handleSection2InputChange();
+    }
+  };
+}
+if ($("mk-align-middle")) {
+  $("mk-align-middle").onclick = () => {
+    if ($("mk-pos-y")) {
+      $("mk-pos-y").value = 960;
+      handleSection2InputChange();
+    }
+  };
+}
+if ($("mk-align-bottom")) {
+  $("mk-align-bottom").onclick = () => {
+    if ($("mk-pos-y")) {
+      const h = Number($("mk-pos-h")?.value) || 200;
+      $("mk-pos-y").value = 1920 - h / 2;
+      handleSection2InputChange();
+    }
+  };
+}
+
+if ($("mk-delete-layer")) {
+  $("mk-delete-layer").onclick = () => {
+    const col = getActiveCellColumn();
+    if (!col || !selectedLayerId) return;
+    if (selectedLayerId.startsWith("asset:")) {
+      const idx = parseInt(selectedLayerId.split(":")[1], 10);
+      if (col.style.assetLayers) {
+        col.style.assetLayers.splice(idx, 1);
+        selectedLayerId = "deviceOne";
+        setMockupDirty(true);
+        renderMockupStage();
+        selectCell(selectedCell.deviceRowId, selectedCell.columnId);
+        showToast("Asset layer deleted.", "success");
+      }
+    } else {
+      showToast("Cannot delete base device or title layer.", "info");
+    }
+  };
+}
+
+if ($("mk-duplicate-layer")) {
+  $("mk-duplicate-layer").onclick = () => {
+    const col = getActiveCellColumn();
+    if (!col || !selectedLayerId) return;
+    if (selectedLayerId.startsWith("asset:")) {
+      const idx = parseInt(selectedLayerId.split(":")[1], 10);
+      const ast = col.style.assetLayers && col.style.assetLayers[idx];
+      if (ast) {
+        const copy = JSON.parse(JSON.stringify(ast));
+        copy.id = `asset_${Date.now()}`;
+        copy.xPct = Math.min(95, (copy.xPct || 50) + 5);
+        copy.yPct = Math.min(95, (copy.yPct || 50) + 5);
+        col.style.assetLayers.push(copy);
+        selectedLayerId = `asset:${col.style.assetLayers.length - 1}`;
+        setMockupDirty(true);
+        renderMockupStage();
+        selectCell(selectedCell.deviceRowId, selectedCell.columnId);
+        showToast("Asset layer duplicated.", "success");
+      }
+    }
+  };
+}
+
+/* Layer reordering: Bring Forward / Send Backward / Front / Back */
+if ($("mk-bring-forward")) {
+  $("mk-bring-forward").onclick = () => {
+    const col = getActiveCellColumn();
+    if (!col || !selectedLayerId?.startsWith("asset:")) return;
+    const idx = parseInt(selectedLayerId.split(":")[1], 10);
+    if (idx < (col.style.assetLayers?.length ?? 0) - 1) {
+      const layers = col.style.assetLayers;
+      [layers[idx], layers[idx + 1]] = [layers[idx + 1], layers[idx]];
+      selectedLayerId = `asset:${idx + 1}`;
+      setMockupDirty(true);
+      renderMockupStage();
+      selectCell(selectedCell.deviceRowId, selectedCell.columnId);
+    }
+  };
+}
+if ($("mk-send-backward")) {
+  $("mk-send-backward").onclick = () => {
+    const col = getActiveCellColumn();
+    if (!col || !selectedLayerId?.startsWith("asset:")) return;
+    const idx = parseInt(selectedLayerId.split(":")[1], 10);
+    if (idx > 0) {
+      const layers = col.style.assetLayers;
+      [layers[idx], layers[idx - 1]] = [layers[idx - 1], layers[idx]];
+      selectedLayerId = `asset:${idx - 1}`;
+      setMockupDirty(true);
+      renderMockupStage();
+      selectCell(selectedCell.deviceRowId, selectedCell.columnId);
+    }
+  };
+}
+if ($("mk-bring-front")) {
+  $("mk-bring-front").onclick = () => {
+    const col = getActiveCellColumn();
+    if (!col || !selectedLayerId?.startsWith("asset:")) return;
+    const idx = parseInt(selectedLayerId.split(":")[1], 10);
+    const layers = col.style.assetLayers;
+    if (!layers || layers.length <= 1) return;
+    const [item] = layers.splice(idx, 1);
+    layers.push(item);
+    selectedLayerId = `asset:${layers.length - 1}`;
+    setMockupDirty(true);
+    renderMockupStage();
+    selectCell(selectedCell.deviceRowId, selectedCell.columnId);
+  };
+}
+if ($("mk-send-back")) {
+  $("mk-send-back").onclick = () => {
+    const col = getActiveCellColumn();
+    if (!col || !selectedLayerId?.startsWith("asset:")) return;
+    const idx = parseInt(selectedLayerId.split(":")[1], 10);
+    const layers = col.style.assetLayers;
+    if (!layers || layers.length <= 1) return;
+    const [item] = layers.splice(idx, 1);
+    layers.unshift(item);
+    selectedLayerId = "asset:0";
+    setMockupDirty(true);
+    renderMockupStage();
+    selectCell(selectedCell.deviceRowId, selectedCell.columnId);
+  };
+}
+
+/* Layers panel buttons & tabs */
+if ($("mk-layer-bring-front")) {
+  $("mk-layer-bring-front").onclick = () => {
+    if ($("mk-bring-front")) $("mk-bring-front").click();
+  };
+}
+if ($("mk-layer-bring-fwd")) {
+  $("mk-layer-bring-fwd").onclick = () => {
+    if ($("mk-bring-forward")) $("mk-bring-forward").click();
+  };
+}
+if ($("mk-layer-send-bwd")) {
+  $("mk-layer-send-bwd").onclick = () => {
+    if ($("mk-send-backward")) $("mk-send-backward").click();
+  };
+}
+if ($("mk-layer-send-back")) {
+  $("mk-layer-send-back").onclick = () => {
+    if ($("mk-send-back")) $("mk-send-back").click();
+  };
+}
+
+if ($("mk-tab-layers")) {
+  $("mk-tab-layers").onclick = () => {
+    $("mk-section-layers")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+}
+if ($("mk-tab-objects")) {
+  $("mk-tab-objects").onclick = () => {
+    $("mk-section-object")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+}
+if ($("mk-tab-transform")) {
+  $("mk-tab-transform").onclick = () => {
+    $("mk-section-transform")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+}
+
+/* Keyboard shortcuts for nudging and deleting */
+window.addEventListener("keydown", (e) => {
+  if (!selectedCell || !mockupProject) return;
+  if (["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement.tagName)) return;
+  const step = e.shiftKey ? 10 : 1;
+  const col = getActiveCellColumn();
+  if (!col) return;
+
+  if (e.key === "ArrowLeft") {
+    e.preventDefault();
+    if ($("mk-pos-x")) { $("mk-pos-x").value = Number($("mk-pos-x").value) - step; handleSection2InputChange(); }
+  } else if (e.key === "ArrowRight") {
+    e.preventDefault();
+    if ($("mk-pos-x")) { $("mk-pos-x").value = Number($("mk-pos-x").value) + step; handleSection2InputChange(); }
+  } else if (e.key === "ArrowUp") {
+    e.preventDefault();
+    if ($("mk-pos-y")) { $("mk-pos-y").value = Number($("mk-pos-y").value) - step; handleSection2InputChange(); }
+  } else if (e.key === "ArrowDown") {
+    e.preventDefault();
+    if ($("mk-pos-y")) { $("mk-pos-y").value = Number($("mk-pos-y").value) + step; handleSection2InputChange(); }
+  } else if (e.key === "Escape") {
+    selectedLayerId = "deviceOne";
+    renderMockupStage();
+    syncSection2Inputs(col, selectedLayerId);
+  } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "d") {
+    e.preventDefault();
+    if ($("mk-duplicate-layer")) $("mk-duplicate-layer").click();
+  }
+});
+
 
 $("mk-source-upload").onclick = async () => {
   if (!activeProjectId) {
@@ -3232,24 +5473,58 @@ $("mk-source-upload").onclick = async () => {
 $("mk-save").onclick = async () => {
   if (!selectedCell) return;
   const style = buildCellStyleFromForm();
-  if ($("mk-cell-override").checked) {
-    await api(`/api/mockups/${mockupId}/cells/${selectedCell.deviceRowId}/${selectedCell.columnId}`, { method: "PUT", body: { override: style } });
-  } else {
-    await api(`/api/mockups/${mockupId}/columns/${selectedCell.columnId}`, { method: "PUT", body: { style } });
-    await api(`/api/mockups/${mockupId}/cells/${selectedCell.deviceRowId}/${selectedCell.columnId}`, { method: "PUT", body: { override: null } });
+  try {
+    if ($("mk-cell-override").checked) {
+      await api(`/api/mockups/${mockupId}/cells/${selectedCell.deviceRowId}/${selectedCell.columnId}`, { method: "PUT", body: { override: style } });
+    } else {
+      await api(`/api/mockups/${mockupId}/columns/${selectedCell.columnId}`, { method: "PUT", body: { style } });
+      await api(`/api/mockups/${mockupId}/cells/${selectedCell.deviceRowId}/${selectedCell.columnId}`, { method: "PUT", body: { override: null } });
+    }
+    mockupProject = await api(`/api/mockups/${mockupId}`);
+  } catch (err) {
+    console.warn("Save style API fallback to project PUT:", err.message);
+    const colIdx = mockupProject.columns.findIndex((c) => c.id === selectedCell.columnId);
+    if (colIdx !== -1) {
+      const key = `${selectedCell.deviceRowId}:${selectedCell.columnId}`;
+      if (!mockupProject.cells) mockupProject.cells = {};
+      if ($("mk-cell-override").checked) {
+        mockupProject.cells[key] = style;
+      } else {
+        mockupProject.columns[colIdx].style = style;
+        delete mockupProject.cells[key];
+      }
+      mockupProject = await api(`/api/mockups/${mockupId}`, { method: "PUT", body: mockupProject });
+    }
   }
-  mockupProject = await api(`/api/mockups/${mockupId}`);
+  pushMockupHistory();
+  renderMockupStage();
   renderMockupMatrix();
 };
 
 $("mk-copy-style").onclick = async () => {
   if (!selectedCell) return;
   const style = buildCellStyleFromForm();
-  await api(`/api/mockups/${mockupId}/columns/${selectedCell.columnId}`, { method: "PUT", body: { style } });
-  for (const row of mockupProject.devices) {
-    await api(`/api/mockups/${mockupId}/cells/${row.id}/${selectedCell.columnId}`, { method: "PUT", body: { override: null } });
+  try {
+    await api(`/api/mockups/${mockupId}/columns/${selectedCell.columnId}`, { method: "PUT", body: { style } });
+    for (const row of mockupProject.devices) {
+      await api(`/api/mockups/${mockupId}/cells/${row.id}/${selectedCell.columnId}`, { method: "PUT", body: { override: null } });
+    }
+    mockupProject = await api(`/api/mockups/${mockupId}`);
+  } catch (err) {
+    console.warn("Copy style API fallback to project PUT:", err.message);
+    const colIdx = mockupProject.columns.findIndex((c) => c.id === selectedCell.columnId);
+    if (colIdx !== -1) {
+      mockupProject.columns[colIdx].style = style;
+      if (mockupProject.cells) {
+        for (const row of mockupProject.devices) {
+          delete mockupProject.cells[`${row.id}:${selectedCell.columnId}`];
+        }
+      }
+      mockupProject = await api(`/api/mockups/${mockupId}`, { method: "PUT", body: mockupProject });
+    }
   }
-  mockupProject = await api(`/api/mockups/${mockupId}`);
+  pushMockupHistory();
+  renderMockupStage();
   renderMockupMatrix();
   await alert("Style copied across all device rows for this screen.");
 };
@@ -3264,171 +5539,446 @@ $("mk-ai-text").onclick = async () => {
   } catch (e) { await alert("AI assist failed: " + e.message); }
 };
 
-/* ---- Devices section ---- */
-function renderMockupDevicesSection() {
+/* ---- Devices & Device Library section ---- */
+async function renderMockupDevicesSection() {
   const list = $("mockup-device-list");
-  list.innerHTML = "";
+  if (list) list.innerHTML = "";
   if (!mockupProject) return;
-  $("mockup-preview-device").innerHTML = mockupProject.devices.map((d) => `<option value="${d.id}">${d.label}</option>`).join("");
-  for (const row of mockupProject.devices) {
-    const el = document.createElement("div");
-    el.className = "provider-row";
-    el.innerHTML = `
-      <span class="provider-name">${row.label}</span>
-      <span class="provider-meta">${row.deviceId}${row.isBase ? " (base)" : ""}</span>
-      <label class="checkbox-row" style="margin:0"><input type="checkbox" ${row.previewsVisible ? "checked" : ""} class="row-visible" /> Visible</label>
-      <button class="small danger" type="button">Remove</button>
-    `;
-    el.querySelector(".row-visible").onchange = async (e) => {
-      await api(`/api/mockups/${mockupId}/devices/${row.id}`, { method: "PATCH", body: { previewsVisible: e.target.checked } });
-      mockupProject = await api(`/api/mockups/${mockupId}`);
-    };
-    el.querySelector("button.danger").onclick = async () => {
-      await api(`/api/mockups/${mockupId}/devices/${row.id}`, { method: "DELETE" });
-      mockupProject = await api(`/api/mockups/${mockupId}`);
-      renderMockupDevicesSection();
-      renderMockupMatrix();
-    };
-    list.appendChild(el);
+  const selectEl = $("mockup-preview-device");
+  if (selectEl) selectEl.innerHTML = mockupProject.devices.map((d) => `<option value="${d.id}">${d.label}</option>`).join("");
+
+  if (list) {
+    for (const row of mockupProject.devices) {
+      const el = document.createElement("div");
+      el.className = "provider-row";
+      el.innerHTML = `
+        <span class="provider-name">${row.label}</span>
+        <span class="provider-meta">${row.deviceId}${row.isBase ? " (base)" : ""}</span>
+        <label class="checkbox-row" style="margin:0"><input type="checkbox" ${row.previewsVisible ? "checked" : ""} class="row-visible" /> Visible</label>
+        <button class="small danger" type="button">Remove</button>
+      `;
+      el.querySelector(".row-visible").onchange = async (e) => {
+        await api(`/api/mockups/${mockupId}/devices/${row.id}`, { method: "PATCH", body: { previewsVisible: e.target.checked } });
+        mockupProject = await api(`/api/mockups/${mockupId}`);
+      };
+      el.querySelector("button.danger").onclick = async () => {
+        await api(`/api/mockups/${mockupId}/devices/${row.id}`, { method: "DELETE" });
+        mockupProject = await api(`/api/mockups/${mockupId}`);
+        renderMockupDevicesSection();
+        renderMockupMatrix();
+      };
+      list.appendChild(el);
+    }
+  }
+
+  // Populate 2D SVG Device Frame Library Grid
+  const grid = $("mockup-device-library-grid");
+  if (grid) {
+    grid.innerHTML = '<div style="color:var(--text-secondary)">Loading device frame catalog…</div>';
+    try {
+      const { devices } = await api("/api/mockups/devices-library");
+      grid.innerHTML = "";
+      for (const dev of devices) {
+        const card = document.createElement("div");
+        card.className = "device-lib-card";
+        card.innerHTML = `
+          <div class="device-lib-title">${dev.name}</div>
+          <div class="device-lib-meta">${dev.category.toUpperCase()} &bull; ${dev.aspectRatio}</div>
+          <div style="font-size:12px; color:var(--text-tertiary); margin-top:4px;">${dev.width} &times; ${dev.height} px</div>
+          <button class="small secondary" type="button" style="margin-top:12px; width:100%">Replace Base Frame</button>
+        `;
+        card.querySelector("button").onclick = async () => {
+          if (!mockupProject) return;
+          const baseDevice = mockupProject.devices.find((d) => d.isBase) || mockupProject.devices[0];
+          if (baseDevice) {
+            baseDevice.deviceId = dev.id;
+            baseDevice.label = dev.name;
+            await saveCurrentMockupProject();
+            renderMockupStage();
+            renderMockupMatrix();
+            renderMockupDevicesSection();
+            await alert(`Updated base device frame to ${dev.name}.`);
+          }
+        };
+        grid.appendChild(card);
+      }
+    } catch (err) {
+      grid.innerHTML = `<div style="color:var(--danger)">Failed to load device library: ${err.message}</div>`;
+    }
   }
 }
-$("mockup-add-device-select").onchange = () => {
-  const device = mockupDevicesCatalog.find((d) => d.id === $("mockup-add-device-select").value);
-  const select = $("mockup-add-device-variant");
-  select.innerHTML = '<option value="">default</option>';
-  if (device?.variants) for (const v of device.variants) select.innerHTML += `<option value="${v.id}">${v.name}</option>`;
-};
-$("mockup-add-device-btn").onclick = async () => {
-  if (!mockupId) {
-    await alert("Start a project first.");
-    return;
-  }
-  const deviceId = $("mockup-add-device-select").value;
-  const label = $("mockup-add-device-label").value.trim() || deviceId;
-  const { project } = await api(`/api/mockups/${mockupId}/devices`, { method: "POST", body: { deviceId, variant: $("mockup-add-device-variant").value || undefined, label } });
-  mockupProject = project;
-  $("mockup-add-device-label").value = "";
-  renderMockupDevicesSection();
-  renderMockupMatrix();
-};
+
+if ($("mockup-add-device-select")) {
+  $("mockup-add-device-select").onchange = () => {
+    const device = mockupDevicesCatalog.find((d) => d.id === $("mockup-add-device-select").value);
+    const select = $("mockup-add-device-variant");
+    select.innerHTML = '<option value="">default</option>';
+    if (device?.variants) for (const v of device.variants) select.innerHTML += `<option value="${v.id}">${v.name}</option>`;
+  };
+}
+
+if ($("mockup-add-device-btn")) {
+  $("mockup-add-device-btn").onclick = async () => {
+    if (!mockupId) {
+      await alert("Start a project first.");
+      return;
+    }
+    const deviceId = $("mockup-add-device-select").value;
+    const label = $("mockup-add-device-label").value.trim() || deviceId;
+    const { project } = await api(`/api/mockups/${mockupId}/devices`, { method: "POST", body: { deviceId, variant: $("mockup-add-device-variant").value || undefined, label } });
+    mockupProject = project;
+    $("mockup-add-device-label").value = "";
+    renderMockupDevicesSection();
+    renderMockupMatrix();
+  };
+}
 
 /* ---- Panoramic section ---- */
-$("mockup-panorama-upload").onclick = async () => {
-  const file = $("mockup-panorama-file").files[0];
-  if (!file || !mockupId) {
-    await alert("Choose an image first.");
-    return;
-  }
-  await uploadFile(`/api/mockups/${mockupId}/panoramic`, file);
-  await alert("Panorama uploaded. Set a column's background type to Panoramic in the Editor to use it.");
-};
-$("mockup-panorama-flip").onchange = async () => {
-  await api(`/api/mockups/${mockupId}/panoramic`, { method: "PATCH", body: { flip: $("mockup-panorama-flip").checked } });
-};
-
-/* ---- Preview section ---- */
-$("mockup-preview-refresh").onclick = () => {
-  const deviceRowId = $("mockup-preview-device").value;
-  const strip = $("mockup-preview-strip");
-  strip.innerHTML = "";
-  if (!mockupProject || !deviceRowId) return;
-  const columns = [...mockupProject.columns].sort((a, b) => a.order - b.order);
-  for (const col of columns) {
-    const frame = document.createElement("iframe");
-    frame.src = `/api/mockups/${mockupId}/cell-preview/${deviceRowId}/${col.id}?width=320&height=568`;
-    frame.width = 320; frame.height = 568; frame.style.border = "1px solid #21252f"; frame.style.borderRadius = "8px"; frame.style.flex = "0 0 auto";
-    strip.appendChild(frame);
-  }
-};
-
-/* ---- Settings section ---- */
-function renderMockupSettingsSection() {
-  if (!mockupProject) return;
-  $("mockup-set-name").value = mockupProject.name;
-  $("mockup-set-category").value = mockupProject.appCategory;
-  $("mockup-set-inspector-position").value = mockupProject.settings.inspectorPosition;
-}
-$("mockup-settings-save").onclick = async () => {
-  mockupProject = await api(`/api/mockups/${mockupId}/settings`, {
-    method: "PATCH",
-    body: { name: $("mockup-set-name").value, appCategory: $("mockup-set-category").value, inspectorPosition: $("mockup-set-inspector-position").value },
-  });
-  $("mockup-project-label").textContent = mockupProject.name;
-  $("mockup-inspector").classList.toggle("left", mockupProject.settings.inspectorPosition === "left");
-};
-
-/* ---- Template level import/export ---- */
-$("mockup-export-template-btn").onclick = async () => {
-  if (!mockupId || !mockupProject) {
-    await alert("Please select or create a project first from the Projects List.");
-    return;
-  }
-  const exportData = {
-    devices: mockupProject.devices,
-    columns: mockupProject.columns,
-    cells: mockupProject.cells,
-    globalPanoramic: mockupProject.globalPanoramic
+if ($("mockup-panorama-upload")) {
+  $("mockup-panorama-upload").onclick = async () => {
+    const file = $("mockup-panorama-file").files[0];
+    if (!file || !mockupId) {
+      await alert("Choose an image first.");
+      return;
+    }
+    await uploadFile(`/api/mockups/${mockupId}/panoramic`, file);
+    await alert("Panorama uploaded. Set a column's background type to Panoramic in the Editor to use it.");
   };
-  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportData, null, 2));
-  const downloadAnchor = document.createElement("a");
-  downloadAnchor.setAttribute("href", dataStr);
-  downloadAnchor.setAttribute("download", `${mockupProject.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-template.json`);
-  document.body.appendChild(downloadAnchor);
-  downloadAnchor.click();
-  downloadAnchor.remove();
-};
+}
+if ($("mockup-panorama-flip")) {
+  $("mockup-panorama-flip").onchange = async () => {
+    await api(`/api/mockups/${mockupId}/panoramic`, { method: "PATCH", body: { flip: $("mockup-panorama-flip").checked } });
+  };
+}
 
-$("mockup-import-template-btn").onclick = async () => {
-  if (!mockupId || !mockupProject) {
-    await alert("Please select or create a project first from the Projects List.");
-    return;
-  }
-  $("mockup-import-file-input").click();
-};
-
-$("mockup-import-file-input").onchange = async (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = async (event) => {
+/* ---- Three Dedicated Export Workflows ---- */
+if ($("mockup-export-single-btn")) {
+  $("mockup-export-single-btn").onclick = async () => {
+    if (!mockupProject || !mockupId) return alert("No active mockup project loaded.");
+    const btn = $("mockup-export-single-btn");
+    btn.disabled = true;
+    btn.textContent = "Exporting PNG…";
     try {
-      const data = JSON.parse(event.target.result);
-      if (!data.devices || !data.columns) {
-        throw new Error("Invalid template format: Missing devices or columns");
-      }
-      mockupProject = await api(`/api/mockups/${mockupId}/import-template`, {
-        method: "POST",
-        body: data
-      });
-      await alert("Template imported successfully!", "success");
-      // Reload UI
-      renderMockupMatrix();
-      renderMockupDevicesSection();
-      renderMockupSettingsSection();
-    } catch (err) {
-      await alert("Failed to import template: " + err.message, "error");
+      const colId = selectedCell ? selectedCell.columnId : (mockupProject.columns[0]?.id || "");
+      const res = await api(`/api/mockups/${mockupId}/export/single`, { method: "POST", body: { columnId: colId } });
+      await alert(`Single Screen exported successfully to:\n${res.path}`);
+    } catch (e) {
+      await alert("Single screen export failed: " + e.message);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Export Screen (PNG)";
     }
   };
-  reader.readAsText(file);
-  e.target.value = "";
-};
+}
 
-/* ---- Export section ---- */
-$("mockup-export-run").onclick = async () => {
-  $("mockup-export-run").disabled = true;
-  $("mockup-export-result").textContent = "Exporting…";
-  try {
-    const result = await api(`/api/mockups/${mockupId}/export`, { method: "POST" });
-    const kb = (result.bytes / 1024).toFixed(1);
-    let html = `<div>ZIP ready — ${kb} KB. <a href="/api/mockups/${mockupId}/download/zip" target="_blank"><button type="button" class="secondary small">Download ZIP</button></a></div>`;
-    html += "<ul>" + result.entries.map((e) => `<li>${e.label}: ${e.files} files (${e.width}&times;${e.height})</li>`).join("") + "</ul>";
-    $("mockup-export-result").innerHTML = html;
-  } catch (e) {
-    $("mockup-export-result").textContent = "Export failed: " + e.message;
-  } finally {
-    $("mockup-export-run").disabled = false;
+if ($("mockup-export-panoramic-btn")) {
+  $("mockup-export-panoramic-btn").onclick = async () => {
+    if (!mockupProject || !mockupId) return alert("No active mockup project loaded.");
+    const btn = $("mockup-export-panoramic-btn");
+    btn.disabled = true;
+    btn.textContent = "Exporting Banner…";
+    try {
+      const res = await api(`/api/mockups/${mockupId}/export/panoramic`, { method: "POST" });
+      await alert(`Panoramic Banner exported successfully to:\n${res.path}`);
+    } catch (e) {
+      await alert("Panoramic banner export failed: " + e.message);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Export Panoramic Banner (PNG)";
+    }
+  };
+}
+
+if ($("mockup-export-store-btn")) {
+  $("mockup-export-store-btn").onclick = async () => {
+    if (!mockupProject || !mockupId) return alert("No active mockup project loaded.");
+    const btn = $("mockup-export-store-btn");
+    btn.disabled = true;
+    btn.textContent = "Generating ZIP Package…";
+    try {
+      const result = await api(`/api/mockups/${mockupId}/export`, { method: "POST" });
+      const kb = (result.bytes / 1024).toFixed(1);
+      let html = `<div>ZIP ready — ${kb} KB. <a href="/api/mockups/${mockupId}/download/zip" target="_blank"><button type="button" class="secondary small">Download ZIP</button></a></div>`;
+      html += "<ul>" + result.entries.map((e) => `<li>${e.label}: ${e.files} files (${e.width}&times;${e.height})</li>`).join("") + "</ul>";
+      const resContainer = $("mockup-export-result");
+      if (resContainer) resContainer.innerHTML = html;
+      await alert(`Store Package ZIP generated successfully (${kb} KB). Click Download in Preview tab to save.`);
+    } catch (e) {
+      await alert("Store Package export failed: " + e.message);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Export Store Package (ZIP)";
+    }
+  };
+}
+
+/* ---- Screen Management Buttons (aux — real column add is mockup-add-column above) ---- */
+function _dupSelectedScreen(colId) {
+  const origCol = mockupProject.columns.find((c) => c.id === colId);
+  if (!origCol) return null;
+  const dupId = "col_" + Math.random().toString(36).substring(2, 9);
+  const dupCol = JSON.parse(JSON.stringify(origCol));
+  dupCol.id = dupId;
+  if (dupCol.label) dupCol.label = `${dupCol.label} (Copy)`;
+  dupCol.order = mockupProject.columns.length;
+  mockupProject.columns.push(dupCol);
+  return dupId;
+}
+if ($("mk-duplicate-screen-btn")) {
+  $("mk-duplicate-screen-btn").onclick = async () => {
+    if (!mockupProject || !selectedCell) return;
+    const dupId = _dupSelectedScreen(selectedCell.columnId);
+    if (!dupId) return;
+    await saveCurrentMockupProject();
+    pushMockupHistory();
+    renderMockupStage();
+    renderMockupMatrix();
+    selectMockupScreen(dupId);
+  };
+}
+if ($("mk-delete-screen-btn")) {
+  $("mk-delete-screen-btn").onclick = async () => {
+    if (!mockupProject || !selectedCell || mockupProject.columns.length <= 1) {
+      return alert("Cannot delete the only screen.");
+    }
+    const colIdx = mockupProject.columns.findIndex((c) => c.id === selectedCell.columnId);
+    if (colIdx === -1) return;
+    mockupProject.columns.splice(colIdx, 1);
+    mockupProject.columns.forEach((c, idx) => c.order = idx);
+    await saveCurrentMockupProject();
+    pushMockupHistory();
+    renderMockupStage();
+    renderMockupMatrix();
+    const nextCol = mockupProject.columns[Math.min(colIdx, mockupProject.columns.length - 1)];
+    if (nextCol) selectMockupScreen(nextCol.id);
+  };
+}
+if ($("mk-move-left-btn")) {
+  $("mk-move-left-btn").onclick = async () => {
+    if (!mockupProject || !selectedCell) return;
+    const idx = mockupProject.columns.findIndex((c) => c.id === selectedCell.columnId);
+    if (idx <= 0) return;
+    const temp = mockupProject.columns[idx];
+    mockupProject.columns[idx] = mockupProject.columns[idx - 1];
+    mockupProject.columns[idx - 1] = temp;
+    mockupProject.columns.forEach((c, i) => c.order = i);
+    await saveCurrentMockupProject();
+    pushMockupHistory();
+    renderMockupStage();
+    renderMockupMatrix();
+  };
+}
+if ($("mk-move-right-btn")) {
+  $("mk-move-right-btn").onclick = async () => {
+    if (!mockupProject || !selectedCell) return;
+    const idx = mockupProject.columns.findIndex((c) => c.id === selectedCell.columnId);
+    if (idx === -1 || idx >= mockupProject.columns.length - 1) return;
+    const temp = mockupProject.columns[idx];
+    mockupProject.columns[idx] = mockupProject.columns[idx + 1];
+    mockupProject.columns[idx + 1] = temp;
+    mockupProject.columns.forEach((c, i) => c.order = i);
+    await saveCurrentMockupProject();
+    pushMockupHistory();
+    renderMockupStage();
+    renderMockupMatrix();
+  };
+}
+
+/* ---- Unsaved Modal & Header Sync ---- */
+if ($("mockup-unsaved-save")) {
+  $("mockup-unsaved-save").onclick = async () => {
+    await saveCurrentMockupProject();
+    setMockupDirty(false);
+    $("mockup-unsaved-modal").style.display = "none";
+    const cb = pendingNavigationCallback;
+    pendingNavigationCallback = null;
+    if (cb) cb();
+  };
+}
+if ($("mockup-unsaved-discard")) {
+  $("mockup-unsaved-discard").onclick = async () => {
+    if (mockupHistoryIdx >= 0) mockupProject = JSON.parse(mockupHistory[mockupHistoryIdx]);
+    setMockupDirty(false);
+    $("mockup-unsaved-modal").style.display = "none";
+    const cb = pendingNavigationCallback;
+    pendingNavigationCallback = null;
+    renderMockupStage();
+    renderMockupMatrix();
+    if (cb) cb();
+  };
+}
+if ($("mockup-unsaved-cancel")) {
+  $("mockup-unsaved-cancel").onclick = () => {
+    $("mockup-unsaved-modal").style.display = "none";
+    pendingNavigationCallback = null;
+  };
+}
+if ($("mockup-header-name")) {
+  $("mockup-header-name").addEventListener("change", async () => {
+    if (!mockupProject) return;
+    mockupProject.name = $("mockup-header-name").value.trim() || mockupProject.name;
+    await saveCurrentMockupProject();
+    $("mockup-project-label").textContent = mockupProject.name;
+    setMockupDirty(false);
+  });
+}
+if ($("mockup-header-category")) {
+  $("mockup-header-category").addEventListener("change", async () => {
+    if (!mockupProject) return;
+    mockupProject.appCategory = $("mockup-header-category").value.trim();
+    await saveCurrentMockupProject();
+    setMockupDirty(false);
+  });
+}
+
+/* ---- Keyboard Controls (Shortcuts) — arrow nudge + Delete + Esc + Ctrl+Z/Y/D/C/V ---- */
+let clipboardLayer = null;
+
+window.addEventListener("keydown", (e) => {
+  if (!mockupProject || !selectedCell) return;
+  if (document.activeElement && ["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement.tagName)) return;
+  const col = mockupProject.columns.find((c) => c.id === selectedCell.columnId);
+  if (!col) return;
+  const step = e.shiftKey ? 10 : 1;
+
+  // Undo / Redo
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") {
+    if (e.shiftKey) {
+      e.preventDefault();
+      redoMockupState();
+    } else {
+      e.preventDefault();
+      undoMockupState();
+    }
+    return;
   }
-};
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "y") {
+    e.preventDefault();
+    redoMockupState();
+    return;
+  }
+
+  // Copy / Paste / Duplicate
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "c" && selectedLayerId) {
+    e.preventDefault();
+    clipboardLayer = { layerId: selectedLayerId, bounds: computeElementBounds(col, selectedLayerId) };
+    showToast("Layer copied to clipboard", "info");
+    return;
+  }
+
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "v" && clipboardLayer) {
+    e.preventDefault();
+    if (clipboardLayer.layerId.startsWith("asset:") && col.style.assetLayers) {
+      const idx = parseInt(clipboardLayer.layerId.split(":")[1], 10);
+      const srcObj = col.style.assetLayers[idx];
+      if (srcObj) {
+        const copyObj = { ...srcObj, id: `ast_${Date.now()}`, name: `${srcObj.name || "Asset"} Copy`, xPct: (srcObj.xPct || 50) + 5, yPct: (srcObj.yPct || 50) + 5, zIndex: col.style.assetLayers.length + 10 };
+        col.style.assetLayers.push(copyObj);
+        selectedLayerId = `asset:${col.style.assetLayers.length - 1}`;
+        setMockupDirty(true);
+        renderMockupLayersPanel(col);
+        renderMockupCanvas();
+        pushMockupHistory();
+        showToast("Layer pasted", "success");
+      }
+    }
+    return;
+  }
+
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "d") {
+    e.preventDefault();
+    if (selectedLayerId && selectedLayerId.startsWith("asset:") && col.style.assetLayers) {
+      const idx = parseInt(selectedLayerId.split(":")[1], 10);
+      const srcObj = col.style.assetLayers[idx];
+      if (srcObj) {
+        const dupObj = { ...srcObj, id: `ast_${Date.now()}`, name: `${srcObj.name || "Asset"} Copy`, xPct: (srcObj.xPct || 50) + 4, yPct: (srcObj.yPct || 50) + 4, zIndex: col.style.assetLayers.length + 10 };
+        col.style.assetLayers.push(dupObj);
+        selectedLayerId = `asset:${col.style.assetLayers.length - 1}`;
+        setMockupDirty(true);
+        renderMockupLayersPanel(col);
+        renderMockupCanvas();
+        pushMockupHistory();
+        showToast("Layer duplicated", "success");
+      }
+    } else if ($("mk-duplicate-screen-btn")) {
+      $("mk-duplicate-screen-btn").click();
+    }
+    return;
+  }
+
+  // Delete Layer
+  if ((e.key === "Delete" || e.key === "Backspace") && selectedLayerId) {
+    if (selectedLayerId.startsWith("asset:") && col.style.assetLayers) {
+      e.preventDefault();
+      const idx = parseInt(selectedLayerId.split(":")[1], 10);
+      col.style.assetLayers.splice(idx, 1);
+      selectedLayerId = null;
+      setMockupDirty(true);
+      renderMockupLayersPanel(col);
+      renderMockupCanvas();
+      pushMockupHistory();
+      showToast("Layer deleted", "info");
+      return;
+    } else if (selectedLayerId.startsWith("decoration:") && col.style.decorations) {
+      e.preventDefault();
+      const idx = parseInt(selectedLayerId.split(":")[1], 10);
+      col.style.decorations.splice(idx, 1);
+      selectedLayerId = null;
+      setMockupDirty(true);
+      renderMockupLayersPanel(col);
+      renderMockupCanvas();
+      pushMockupHistory();
+      showToast("Decoration deleted", "info");
+      return;
+    }
+  }
+
+  // Arrow Keys Nudging
+  if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.key)) {
+    e.preventDefault();
+    const bounds = computeElementBounds(col, selectedLayerId || "deviceOne");
+    let dx = 0; let dy = 0;
+    if (e.key === "ArrowLeft") dx = -step;
+    else if (e.key === "ArrowRight") dx = step;
+    else if (e.key === "ArrowUp") dy = -step;
+    else if (e.key === "ArrowDown") dy = step;
+
+    if (selectedLayerId === "title" && col.style.title) {
+      col.style.title.x = (col.style.title.x ?? bounds.left) + dx;
+      col.style.title.y = (col.style.title.y ?? bounds.top) + dy;
+    } else if (selectedLayerId === "subtitle" && col.style.subtitle) {
+      col.style.subtitle.x = (col.style.subtitle.x ?? bounds.left) + dx;
+      col.style.subtitle.y = (col.style.subtitle.y ?? bounds.top) + dy;
+    } else if (selectedLayerId === "deviceOne" && col.style.deviceOne) {
+      col.style.deviceOne.x = Math.max(-100, Math.min(100, (col.style.deviceOne.x || 0) + (dx / 1080 * 100)));
+      col.style.deviceOne.y = Math.max(-100, Math.min(100, (col.style.deviceOne.y || 0) + (dy / 1920 * 100)));
+    } else if (selectedLayerId === "deviceTwo" && col.style.deviceTwo) {
+      col.style.deviceTwo.x = Math.max(-100, Math.min(100, (col.style.deviceTwo.x || 0) + (dx / 1080 * 100)));
+      col.style.deviceTwo.y = Math.max(-100, Math.min(100, (col.style.deviceTwo.y || 0) + (dy / 1920 * 100)));
+    } else if (selectedLayerId?.startsWith("asset:")) {
+      const idx = parseInt(selectedLayerId.split(":")[1], 10);
+      if (col.style.assetLayers?.[idx]) {
+        col.style.assetLayers[idx].xPct = Math.max(0, Math.min(100, (col.style.assetLayers[idx].xPct || 50) + (dx / 1080 * 100)));
+        col.style.assetLayers[idx].yPct = Math.max(0, Math.min(100, (col.style.assetLayers[idx].yPct || 50) + (dy / 1920 * 100)));
+      }
+    }
+
+    setMockupDirty(true);
+    syncSection2Inputs(col, selectedLayerId);
+    renderTransformGizmoOverlayForCanvas();
+  } else if (e.key === "Escape") {
+    selectedLayerId = null;
+    renderMockupLayersPanel(col);
+    renderTransformGizmoOverlayForCanvas();
+  }
+});
+
+/* ---- Legacy Template export/dup leftovers (now 3-way exports above) ---- */
+if ($("mockup-export-run")) {
+  $("mockup-export-run").onclick = async () => {
+    if ($("mockup-export-store-btn")) $("mockup-export-store-btn").click();
+  };
+}
 
 /* ============================================================
    Video tab

@@ -47,6 +47,18 @@ export interface TextStyle {
   color: string;
   size: number; // px at a 1080-wide reference canvas
   align: "left" | "center" | "right";
+  /** True = text visible on canvas and export; False = hidden */
+  visible?: boolean;
+  /** True = layer locked from canvas movement/editing */
+  locked?: boolean;
+  /** Custom human-readable name for this text layer */
+  customName?: string;
+  /** Z-index stacking order (higher = on top of other elements) */
+  zIndex?: number;
+  /** Custom X/Y position overrides (px from top-left) */
+  x?: number;
+  y?: number;
+  rotation?: number;
 }
 
 export type MockupBackgroundType = "solid" | "gradient" | "pattern" | "image" | "panoramic";
@@ -55,6 +67,11 @@ export interface MockupBackground {
   value: string;
   imageFile?: string;
   panoramaFile?: string;
+  visible?: boolean;
+  locked?: boolean;
+  /** Custom human-readable name for the background layer */
+  customName?: string;
+  zIndex?: number;
 }
 
 export interface DeviceLayerStyle {
@@ -66,6 +83,13 @@ export interface DeviceLayerStyle {
   rotation: number;
   brightness: number; // 0-200, 100 = unchanged
   frameless: boolean; // "snapshot-" layouts skip the device frame
+  /** True = layer visible on canvas and export; False = hidden */
+  visible?: boolean;
+  locked?: boolean;
+  /** Custom human-readable name for this layer */
+  customName?: string;
+  /** Z-index stacking order (higher = on top of other elements) */
+  zIndex?: number;
 }
 
 export interface Decoration {
@@ -77,6 +101,32 @@ export interface Decoration {
   sizePct: number;
   rotate: number;
   color: string;
+  visible?: boolean;
+  locked?: boolean;
+  /** Custom human-readable name for this layer */
+  customName?: string;
+  zIndex?: number;
+}
+
+export interface MockupAssetLayer {
+  id: string;
+  assetId: string; // Refers to MockupSourceImage or uploaded asset path
+  name: string;
+  xPct: number;
+  yPct: number;
+  widthPct: number;
+  heightPct?: number;
+  rotation: number;
+  opacity: number;
+  flipH?: boolean;
+  flipV?: boolean;
+  visible?: boolean;
+  locked?: boolean;
+  /** Custom human-readable name for this layer */
+  customName?: string;
+  zIndex: number;
+  cropFit?: "contain" | "cover" | "stretch";
+  shadow?: { color: string; blur: number; x: number; y: number };
 }
 
 export interface ColumnStyle {
@@ -87,6 +137,23 @@ export interface ColumnStyle {
   deviceOne: DeviceLayerStyle;
   deviceTwo?: DeviceLayerStyle;
   decorations: Decoration[];
+  assetLayers?: MockupAssetLayer[];
+}
+
+export interface EditorObject {
+  id: string;
+  type: "background" | "title" | "subtitle" | "device" | "asset" | "decoration";
+  name: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  rotation: number;
+  visible: boolean;
+  locked: boolean;
+  zIndex: number;
+  parentId?: string | null;
+  data?: any;
 }
 
 export interface MockupColumn {
@@ -145,6 +212,7 @@ export function defaultColumnStyle(title = ""): ColumnStyle {
     background: { type: "gradient", value: "ocean" },
     deviceOne: defaultDeviceLayerStyle(),
     decorations: [],
+    assetLayers: [],
   };
 }
 
