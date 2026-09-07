@@ -6,6 +6,7 @@ const $ = (id) => document.getElementById(id);
 
 // Global Fabric.js canvas instance - the primary interactive artboard
 let mockupFabricCanvas = null;
+let selectedColumn = null;
 
 function initMockupFabricCanvas() {
   const canvasEl = $("mockup-fabric-canvas");
@@ -25,11 +26,10 @@ function initMockupFabricCanvas() {
     backgroundColor: '#0f172a'
   });
 
-  mockupFabricCanvas
-    .on('object:modified', onFabricObjectModified)
-    .on('selection:created', onFabricSelectionCreated)
-    .on('selection:updated', onFabricSelectionUpdated)
-    .on('text:changed', onFabricTextChanged);
+  mockupFabricCanvas.on('object:modified', onFabricObjectModified);
+  mockupFabricCanvas.on('selection:created', onFabricSelectionCreated);
+  mockupFabricCanvas.on('selection:updated', onFabricSelectionUpdated);
+  mockupFabricCanvas.on('text:changed', onFabricTextChanged);
 }
 
 function onFabricObjectModified(e) {
@@ -103,23 +103,27 @@ function syncFabricObjectToModel(obj) {
       break;
 
     case 'deviceOne': {
-      const coords = getDeviceCoordsFromFabricObject(obj);
+      const coords = getDeviceCoordsFromFabricObject(obj, selectedColumn, 'deviceOne');
       if (coords) {
+        const preset = getLayoutPresetClient(style.layout);
+        const transform = presentationTransformClient(preset.presentation);
         style.deviceOne.x = coords.xPct;
         style.deviceOne.y = coords.yPct;
         style.deviceOne.size = coords.size;
-        style.deviceOne.rotation = obj.angle ?? 0;
+        style.deviceOne.rotation = (obj.angle ?? 0) - (transform.d1.rotate || 0);
       }
       break;
     }
 
     case 'deviceTwo': {
-      const coords = getDeviceCoordsFromFabricObject(obj);
+      const coords = getDeviceCoordsFromFabricObject(obj, selectedColumn, 'deviceTwo');
       if (coords) {
+        const preset = getLayoutPresetClient(style.layout);
+        const transform = presentationTransformClient(preset.presentation);
         style.deviceTwo.x = coords.xPct;
         style.deviceTwo.y = coords.yPct;
         style.deviceTwo.size = coords.size;
-        style.deviceTwo.rotation = obj.angle ?? 0;
+        style.deviceTwo.rotation = (obj.angle ?? 0) - (transform.d2 ? transform.d2.rotate || 0 : 0);
       }
       break;
     }
@@ -163,14 +167,38 @@ function rgbToHex(color) {
 }
 
 // Extract device position/size percentages from a Fabric object
-function getDeviceCoordsFromFabricObject(obj) {
+// Inverts the placement math in loadColumnIntoFabric (stage-centered, CSS %-of-own-box
+// translate) so dragging a device writes back the same x/y the render would reproduce.
+function getDeviceCoordsFromFabricObject(obj, column, layerId) {
   if (!obj) return null;
   const left = obj.left ?? 0;
   const top = obj.top ?? 0;
   const width = obj.width ?? 480;
   const height = obj.height ?? 960;
-  const xPct = Math.round(((left + width / 2) - 540) / 1080 * 100);
-  const yPct = Math.round(((top + height / 2) - 1100) / 1920 * 100);
+
+  const style = column ? column.style : null;
+  const preset = getLayoutPresetClient(style ? style.layout : undefined);
+  const transform = presentationTransformClient(preset.presentation);
+  const showText = preset.textPosition !== 'no-text';
+  const textBelow = preset.textPosition.endsWith('below');
+  const PAD = 1080 * 0.06;
+  const t = (style && style.title) || { size: 58 };
+  const s = (style && style.subtitle) || { size: 36 };
+  const titleSize = preset.textPosition.startsWith('caption') ? Math.round((t.size || 58) * 0.72) : (t.size || 58);
+  const copyH = showText ? titleSize * 1.6 + (s.size || 36) * 1.2 + 1920 * 0.04 : 0;
+  const stageTop = showText && !textBelow ? PAD + copyH : PAD;
+  const stageBottom = showText && textBelow ? 1920 - PAD - copyH : 1920 - PAD;
+  const stageCx = 540;
+  const stageCy = (stageTop + stageBottom) / 2;
+
+  const t1 = layerId === 'deviceTwo' ? transform.d2 : transform.d1;
+  const presetXPct = t1 ? t1.xPct : 0;
+  const presetYPct = layerId === 'deviceTwo' && t1 ? t1.yPct : 0;
+
+  const cx = left + width / 2;
+  const cy = top + height / 2;
+  const xPct = Math.round(((cx - stageCx) / width) * 100 - presetXPct);
+  const yPct = Math.round(((cy - stageCy) / height) * 100 - presetYPct);
   const size = Math.round((height / 960) * 90);
   return { xPct, yPct, size };
 }
@@ -199,30 +227,94 @@ function loadFabricImageAsync(url) {
 // Load Column Style Into Fabric
 // ============================
 
+// Mirrors src/render/shared.ts exactly (BACKGROUNDS/SOLID_COLORS/PATTERNS) so
+// the canvas preview matches the server-rendered export pixel-for-pixel on color.
+const BG_GRADIENTS = {
+  ocean: ['#0f2027', '#203a43', '#2c5364'],
+  royal: ['#1e3c72', '#2a5298'],
+  sunset: ['#ff512f', '#dd2476'],
+  mint: ['#134e5e', '#71b280'],
+  graphite: ['#232526', '#414345'],
+  light: ['#f8fafc', '#e2e8f0'],
+  candy: ['#ee9ca7', '#ffdde1'],
+  aurora: ['#00c6ff', '#0072ff'],
+  citrus: ['#f7971e', '#ffd200'],
+  violet: ['#654ea3', '#eaafc8'],
+};
+const BG_RADIAL = {
+  'studio-spotlight': ['#18181b', '#09090b'],
+  'purple-yellow-studio': ['#2e1a47', '#0c0a0f'],
+};
+const BG_SOLIDS = {
+  'solid-navy': '#0f1115', 'solid-charcoal': '#1c1c1c', 'solid-white': '#f8fafc',
+  'solid-cream': '#f5f0e6', 'solid-indigo': '#2a2a72', 'solid-forest': '#0b3d2e',
+};
+// ponytail: patterns are CSS gradients/repeats fabric can't reproduce exactly;
+// approximate with their base color. Upgrade to fabric.Pattern tiles if fidelity matters.
+const BG_PATTERN_APPROX = {
+  dots: '#1e3c72', grid: '#2a2a2a', diagonal: '#0f2027', mesh: '#14161c',
+  waves: '#134e5e', 'blueprint-hud': '#0a1118', 'neon-rings': '#0d0d11',
+  'matte-spheres': '#0a0a0d', 'split-curve': '#0088ff',
+};
+
+/** Returns a Fabric fill (hex string or fabric.Gradient) for a ColumnStyle.background. */
+function resolveFabricBackgroundFill(bg) {
+  if (!bg) bg = { type: 'gradient', value: 'ocean' };
+  if (bg.type === 'solid') return BG_SOLIDS[bg.value] || BG_SOLIDS['solid-navy'];
+  if (bg.type === 'pattern') return BG_PATTERN_APPROX[bg.value] || BG_PATTERN_APPROX.dots;
+  if (BG_RADIAL[bg.value]) {
+    const [c0, c1] = BG_RADIAL[bg.value];
+    return new fabric.Gradient({
+      type: 'radial',
+      coords: { x1: 540, y1: 960, r1: 0, x2: 540, y2: 960, r2: 1100 },
+      colorStops: [{ offset: 0, color: c0 }, { offset: 1, color: c1 }],
+    });
+  }
+  const colors = BG_GRADIENTS[bg.value] || BG_GRADIENTS.ocean;
+  const stops = colors.map((color, i) => ({ offset: colors.length > 1 ? i / (colors.length - 1) : 0, color }));
+  // CSS 135deg diagonal ~ top-left to bottom-right of the 1080x1920 box.
+  return new fabric.Gradient({ type: 'linear', coords: { x1: 0, y1: 0, x2: 1080, y2: 1920 }, colorStops: stops });
+}
+
+// Back-compat shim for any remaining callers expecting the old colorStops-array shape.
 function getGradientFillForBg(value) {
-  const gradients = {
-    ocean: [
-      { offset: 0, color: '#0f172a' },
-      { offset: 0.5, color: '#1e3a8a' },
-      { offset: 1, color: '#3b82f6' }
-    ],
-    sunset: [
-      { offset: 0, color: '#7c2d12' },
-      { offset: 0.5, color: '#c2410c' },
-      { offset: 1, color: '#fb923c' }
-    ],
-    midnight: [
-      { offset: 0, color: '#020617' },
-      { offset: 0.5, color: '#0f172a' },
-      { offset: 1, color: '#1e1b4b' }
-    ],
-    aurora: [
-      { offset: 0, color: '#064e3b' },
-      { offset: 0.5, color: '#047857' },
-      { offset: 1, color: '#10b981' }
-    ]
-  };
-  return gradients[value] || gradients.ocean;
+  const colors = BG_GRADIENTS[value] || BG_GRADIENTS.ocean;
+  return colors.map((color, i) => ({ offset: colors.length > 1 ? i / (colors.length - 1) : 0, color }));
+}
+
+// Mirrors src/mockup/layouts.ts getLayoutPreset()/presentationTransform() exactly --
+// slug grammar is `[snapshot-]<presentation>-<textPosition>`.
+function getLayoutPresetClient(slug) {
+  const s = slug || 'single-title-above';
+  const frameless = s.startsWith('snapshot-');
+  const rest = frameless ? s.slice('snapshot-'.length) : s;
+  const textPositions = ['title-above', 'title-below', 'caption-above', 'caption-below', 'no-text'];
+  const textPosition = textPositions.find((tp) => rest.endsWith(`-${tp}`)) || 'title-above';
+  const presentation = rest.slice(0, rest.length - textPosition.length - 1) || 'single';
+  const twoDevices = presentation.startsWith('two-devices') || presentation.startsWith('the-airbnb');
+  return { presentation, textPosition, frameless, twoDevices };
+}
+
+function presentationTransformClient(presentation) {
+  switch (presentation) {
+    case 'tilted-left': return { d1: { xPct: 0, rotate: -10 } };
+    case 'tilted-right': return { d1: { xPct: 0, rotate: 10 } };
+    case 'rotated-left-1': return { d1: { xPct: 0, rotate: -18 } };
+    case 'rotated-left-2': return { d1: { xPct: 0, rotate: -32 } };
+    case 'rotated-right-1': return { d1: { xPct: 0, rotate: 18 } };
+    case 'rotated-right-2': return { d1: { xPct: 0, rotate: 32 } };
+    case 'left-side': return { d1: { xPct: -28, rotate: 0 } };
+    case 'right-side': return { d1: { xPct: 28, rotate: 0 } };
+    case 'two-devices': return { d1: { xPct: -16, rotate: 0 }, d2: { xPct: 52, yPct: 5, rotate: 0 } };
+    case 'two-devices-connected-left': return { d1: { xPct: -16, rotate: -4 }, d2: { xPct: 50, yPct: 6, rotate: 4 } };
+    case 'two-devices-connected-right': return { d1: { xPct: 16, rotate: 4 }, d2: { xPct: -50, yPct: 6, rotate: -4 } };
+    case 'the-airbnb-left-1': return { d1: { xPct: -10, rotate: -4 }, d2: { xPct: 14, yPct: 10, rotate: 4 } };
+    case 'the-airbnb-left-2': return { d1: { xPct: -18, rotate: -8 }, d2: { xPct: 20, yPct: 14, rotate: 8 } };
+    case 'the-airbnb-right-1': return { d1: { xPct: 10, rotate: 4 }, d2: { xPct: -14, yPct: 10, rotate: -4 } };
+    case 'the-airbnb-right-2': return { d1: { xPct: 18, rotate: 8 }, d2: { xPct: -20, yPct: 14, rotate: -8 } };
+    case 'single':
+    default: return { d1: { xPct: 0, rotate: 0 } };
+  }
 }
 
 async function loadColumnIntoFabric(column) {
@@ -231,35 +323,13 @@ async function loadColumnIntoFabric(column) {
 
   mockupFabricCanvas.clear();
   const style = column.style;
+  const preset = getLayoutPresetClient(style.layout);
+  const transform = presentationTransformClient(preset.presentation);
 
-  // 1. Background Layer
+  // 1. Background Layer -- mirrors src/render/shared.ts resolveBackground()
   const bg = style.background || { type: 'gradient', value: 'ocean' };
   let bgObj = null;
-  if (bg.type === 'solid') {
-    bgObj = new fabric.Rect({
-      left: 0, top: 0, width: 1080, height: 1920,
-      fill: bg.value || '#0f172a',
-      selectable: false,
-      evented: false,
-      name: 'background',
-      layerId: 'background'
-    });
-  } else if (bg.type === 'gradient') {
-    const stops = getGradientFillForBg(bg.value);
-    const gradient = new fabric.Gradient({
-      type: 'linear',
-      coords: { x1: 0, y1: 0, x2: 1080, y2: 1920 },
-      colorStops: stops
-    });
-    bgObj = new fabric.Rect({
-      left: 0, top: 0, width: 1080, height: 1920,
-      fill: gradient,
-      selectable: false,
-      evented: false,
-      name: 'background',
-      layerId: 'background'
-    });
-  } else if (bg.type === 'image' && bg.imageFile) {
+  if (bg.type === 'image' && bg.imageFile) {
     const imgUrl = `/api/mockups/${mockupId}/file?p=${encodeURIComponent(bg.imageFile)}`;
     const img = await loadFabricImageAsync(imgUrl);
     if (img) {
@@ -274,11 +344,7 @@ async function loadColumnIntoFabric(column) {
   if (!bgObj) {
     bgObj = new fabric.Rect({
       left: 0, top: 0, width: 1080, height: 1920,
-      fill: new fabric.Gradient({
-        type: 'linear',
-        coords: { x1: 0, y1: 0, x2: 1080, y2: 1920 },
-        colorStops: getGradientFillForBg('ocean')
-      }),
+      fill: resolveFabricBackgroundFill(bg),
       selectable: false,
       evented: false,
       name: 'background',
@@ -288,71 +354,93 @@ async function loadColumnIntoFabric(column) {
   mockupFabricCanvas.add(bgObj);
   mockupFabricCanvas.sendObjectToBack(bgObj);
 
+  // Text block position mirrors .canvas's flexbox layout in render.ts's cellHtml:
+  // 6% padding, .copy block sits above the stage (title-above) or below it
+  // (title-below), or is omitted entirely (no-text). caption-* just uses a
+  // smaller title font (handled below) at the same above/below position.
+  const PAD = 1080 * 0.06;
+  const showText = preset.textPosition !== 'no-text';
+  const textBelow = preset.textPosition.endsWith('below');
+  const isCaption = preset.textPosition.startsWith('caption');
+
   // 2. Title Layer
-  const t = style.title || { text: '', color: '#ffffff', size: 58, align: 'center', x: 54, y: 80, rotation: 0 };
+  const t = style.title || { text: '', color: '#ffffff', size: 58, align: 'center', rotation: 0 };
+  const titleSize = isCaption ? Math.round((t.size || 58) * 0.72) : (t.size || 58);
+  const titleY = t.y ?? (showText ? (textBelow ? 1920 - PAD - 160 : PAD) : PAD);
   const titleText = new fabric.Textbox(t.text || '', {
-    left: t.x ?? 54,
-    top: t.y ?? 80,
-    width: 972,
-    fontSize: t.size || 58,
+    left: t.x ?? PAD,
+    top: titleY,
+    width: 1080 - PAD * 2,
+    fontSize: titleSize,
     fill: t.color || '#ffffff',
     textAlign: t.align || 'center',
     angle: t.rotation || 0,
     fontWeight: 'bold',
     name: 'title',
     layerId: 'title',
-    visible: t.visible !== false,
+    visible: showText && t.visible !== false,
     selectable: !t.locked,
     evented: !t.locked
   });
   mockupFabricCanvas.add(titleText);
 
-  // 3. Subtitle Layer
-  const s = style.subtitle || { text: '', color: '#94a3b8', size: 36, align: 'center', x: 54, y: 200, rotation: 0 };
-  if (s.text) {
-    const subtitleText = new fabric.Textbox(s.text, {
-      left: s.x ?? 54,
-      top: s.y ?? 200,
-      width: 972,
-      fontSize: s.size || 36,
-      fill: s.color || '#94a3b8',
-      textAlign: s.align || 'center',
-      angle: s.rotation || 0,
-      fontWeight: 'normal',
-      name: 'subtitle',
-      layerId: 'subtitle',
-      visible: s.visible !== false,
-      selectable: !s.locked,
-      evented: !s.locked
-    });
-    mockupFabricCanvas.add(subtitleText);
-  }
+  // 3. Subtitle Layer -- always added (even empty) so it stays selectable/editable.
+  const s = style.subtitle || { text: '', color: '#94a3b8', size: 36, align: 'center', rotation: 0 };
+  const subtitleY = s.y ?? (titleY + titleSize * 1.6);
+  const subtitleText = new fabric.Textbox(s.text || '', {
+    left: s.x ?? PAD,
+    top: subtitleY,
+    width: 1080 - PAD * 2,
+    fontSize: s.size || 36,
+    fill: s.color || '#94a3b8',
+    textAlign: s.align || 'center',
+    angle: s.rotation || 0,
+    fontWeight: 'normal',
+    name: 'subtitle',
+    layerId: 'subtitle',
+    visible: showText && s.visible !== false,
+    selectable: !s.locked,
+    evented: !s.locked
+  });
+  mockupFabricCanvas.add(subtitleText);
+
+  // Stage rect: the area .stage (flex:1) occupies once the copy block and
+  // padding are subtracted -- devices are centered within this, matching
+  // render.ts's flexbox stage instead of a fixed hardcoded centroid.
+  const copyH = showText ? titleSize * 1.6 + (s.size || 36) * 1.2 + 1920 * 0.04 : 0;
+  const stageTop = showText && !textBelow ? PAD + copyH : PAD;
+  const stageBottom = showText && textBelow ? 1920 - PAD - copyH : 1920 - PAD;
+  const stageCx = 540;
+  const stageCy = (stageTop + stageBottom) / 2;
 
   // 4. Device One
   const d1 = style.deviceOne || { size: 90, x: 0, y: 0, rotation: 0, brightness: 100 };
   const d1W = 480 * (d1.size / 90);
   const d1H = 960 * (d1.size / 90);
-  const d1Cx = 540 + (d1.x / 100 * 1080);
-  const d1Cy = 1100 + (d1.y / 100 * 1920);
+  // CSS translate(%) is relative to the element's own box -- matches presentationTransform's xPct/yPct usage in render.ts.
+  const d1Cx = stageCx + ((transform.d1.xPct + d1.x) / 100) * d1W;
+  const d1Cy = stageCy + (d1.y / 100) * d1H;
   const d1Left = d1Cx - d1W / 2;
   const d1Top = d1Cy - d1H / 2;
+  const d1Rotation = (transform.d1.rotate || 0) + (d1.rotation || 0);
 
   // Build device as a Group with bezel + screen
-  const deviceOne = await buildDeviceGroup(d1, 'deviceOne', d1Left, d1Top, d1W, d1H, d1.rotation || 0);
+  const deviceOne = await buildDeviceGroup(d1, 'deviceOne', d1Left, d1Top, d1W, d1H, d1Rotation);
   if (deviceOne) {
     mockupFabricCanvas.add(deviceOne);
   }
 
   // 5. Device Two (if exists)
   const d2 = style.deviceTwo;
-  if (d2) {
+  if (d2 && preset.twoDevices && transform.d2) {
     const d2W = 480 * (d2.size / 90);
     const d2H = 960 * (d2.size / 90);
-    const d2Cx = 540 + (d2.x / 100 * 1080);
-    const d2Cy = 1200 + (d2.y / 100 * 1920);
+    const d2Cx = stageCx + ((transform.d2.xPct + d2.x) / 100) * d2W;
+    const d2Cy = stageCy + ((transform.d2.yPct + d2.y) / 100) * d2H;
     const d2Left = d2Cx - d2W / 2;
     const d2Top = d2Cy - d2H / 2;
-    const deviceTwo = await buildDeviceGroup(d2, 'deviceTwo', d2Left, d2Top, d2W, d2H, d2.rotation || 0);
+    const d2Rotation = (transform.d2.rotate || 0) + (d2.rotation || 0);
+    const deviceTwo = await buildDeviceGroup(d2, 'deviceTwo', d2Left, d2Top, d2W, d2H, d2Rotation);
     if (deviceTwo) {
       mockupFabricCanvas.add(deviceTwo);
     }
