@@ -7,6 +7,9 @@
   --text-secondary: #9aa0a6;
   --bg-rail: #10121a;
   --border-rail: #1e222b;
+  /* Studio Mockup editing viewport height -- tweak this one value to resize it.
+     50px topbar + ~180px of tabs/toolbar/padding above the canvas. */
+  --studio-viewport-height: calc(100vh - 230px);
 }
 
 html.light {
@@ -173,6 +176,15 @@ pre { background: var(--bg-main); border: 1px solid var(--border-subtle); border
 .inspector,
 .mockup-canvas-viewport,
 .template-filmstrip,
+.detail-filmstrip,
+.studio-editor-container,
+#projects-list-container,
+#project-files-list,
+#live-captures-gallery,
+#android-captures-gallery,
+#mockup-panoramic-viewport,
+#mockup-preview-strip,
+#universal-project-assets-grid,
 #mk-layers-list,
 .matrix-scroll {
   scrollbar-width: none !important;
@@ -183,6 +195,15 @@ pre { background: var(--bg-main); border: 1px solid var(--border-subtle); border
 .inspector::-webkit-scrollbar,
 .mockup-canvas-viewport::-webkit-scrollbar,
 .template-filmstrip::-webkit-scrollbar,
+.detail-filmstrip::-webkit-scrollbar,
+.studio-editor-container::-webkit-scrollbar,
+#projects-list-container::-webkit-scrollbar,
+#project-files-list::-webkit-scrollbar,
+#live-captures-gallery::-webkit-scrollbar,
+#android-captures-gallery::-webkit-scrollbar,
+#mockup-panoramic-viewport::-webkit-scrollbar,
+#mockup-preview-strip::-webkit-scrollbar,
+#universal-project-assets-grid::-webkit-scrollbar,
 #mk-layers-list::-webkit-scrollbar,
 .matrix-scroll::-webkit-scrollbar {
   display: none !important;
@@ -219,11 +240,13 @@ pre { background: var(--bg-main); border: 1px solid var(--border-subtle); border
   height: 100%;
   min-height: 0;
   gap: 0.5rem;
+  overflow-y: auto; /* matrix grid below the fixed-height workspace scrolls into view */
 }
 
 .studio-editor-workspace {
   display: flex;
-  flex: 1;
+  flex: 0 0 var(--studio-viewport-height);
+  height: var(--studio-viewport-height);
   min-height: 0;
   gap: 0.75rem;
   align-items: stretch;
@@ -265,10 +288,14 @@ pre { background: var(--bg-main); border: 1px solid var(--border-subtle); border
   width: 100%;
   min-height: 0;
   overflow: hidden;
-  background:
-    radial-gradient(circle, rgba(255,255,255,0.06) 1.1px, transparent 1.1px) 0 0 / 24px 24px,
-    radial-gradient(circle, rgba(99,102,241,0.06) 1px, transparent 1px) 12px 12px / 24px 24px,
-    #07090e;
+  /* Checkerboard background: two offset linear-gradient layers at ~20px tile */
+  background-image:
+    linear-gradient(45deg, #1e293b 25%, #0f172a 25%),
+    linear-gradient(-45deg, #1e293b 25%, #0f172a 25%),
+    linear-gradient(45deg, transparent 75%, #1e293b 75%),
+    linear-gradient(-45deg, transparent 75%, #1e293b 75%);
+  background-size: 20px 20px;
+  background-position: 0 0, 0 10px, 10px -10px, -10px 0;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -312,6 +339,12 @@ pre { background: var(--bg-main); border: 1px solid var(--border-subtle); border
   min-height: 440px;
   height: auto;
   flex: 0 0 auto;
+  margin-top: 0.75rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
 .mockup-layers-root {
@@ -617,19 +650,13 @@ pre { background: var(--bg-main); border: 1px solid var(--border-subtle); border
   border-radius: 10px;
   -webkit-overflow-scrolling: touch;
 }
-.template-filmstrip::-webkit-scrollbar {
-  height: 6px;
-}
-.template-filmstrip::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 4px;
-}
+.template-filmstrip::-webkit-scrollbar,
+.template-filmstrip::-webkit-scrollbar-track,
 .template-filmstrip::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 4px;
-}
-.template-filmstrip::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.28);
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
 }
 
 .filmstrip-card {
@@ -698,9 +725,14 @@ pre { background: var(--bg-main); border: 1px solid var(--border-subtle); border
    own screens at their real device proportions -- not a single tall phone. */
 .template-detail-mockup .template-detail-thumb { width: 100%; border-radius: 12px; overflow: hidden; border: 1px solid #232733; background: #0a0c10; padding: 12px; }
 .detail-filmstrip { display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 8px; }
-.detail-filmstrip::-webkit-scrollbar { height: 8px; }
-.detail-filmstrip::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.25); border-radius: 4px; }
-.detail-filmstrip::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.18); border-radius: 4px; }
+.detail-filmstrip::-webkit-scrollbar,
+.detail-filmstrip::-webkit-scrollbar-track,
+.detail-filmstrip::-webkit-scrollbar-thumb {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+}
 .detail-filmstrip-card {
   flex: 0 0 270px;
   height: 480px;
@@ -1350,16 +1382,6 @@ button.xsmall {
 }
 
 /* ---------- Mockup Studio Canvas Editor & Canva-Grade Gizmo Styles ---------- */
-.mockup-canvas-viewport, .matrix-scroll, .inspector, .inspector-card {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-.mockup-canvas-viewport::-webkit-scrollbar,
-.matrix-scroll::-webkit-scrollbar,
-.inspector::-webkit-scrollbar,
-.inspector-card::-webkit-scrollbar {
-  display: none !important;
-}
 
 .inspector-card {
   background: var(--bg-card, #14161c);
