@@ -36,6 +36,8 @@
     "@sweetalert2/theme-dark": "^5.0.27",
     "@types/ws": "^8.18.1",
     "archiver": "^7.0.1",
+    "fabric": "^7.4.0",
+    "moveable": "^0.53.0",
     "playwright": "^1.46.0",
     "qrcode-generator": "^2.0.4",
     "sweetalert2": "^11.26.25",

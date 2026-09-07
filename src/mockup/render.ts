@@ -16,6 +16,7 @@ import {
   mockupFile,
   type ColumnStyle,
   type DeviceLayerStyle,
+  type MockupAssetLayer,
   type MockupProject,
 } from "./project.js";
 import { applyMockupTemplate, type MockupStarterTemplate } from "./templates.js";
@@ -45,9 +46,12 @@ function textBlock(style: ColumnStyle, textPosition: string): string {
   if (textPosition === "no-text") return "";
   const isCaption = textPosition.startsWith("caption");
   const titleSize = isCaption ? Math.round(style.title.size * 0.72) : style.title.size;
+  const showTitle = style.title.visible !== false && Boolean(style.title.text);
+  const showSubtitle = style.subtitle.visible !== false && Boolean(style.subtitle.text);
+  if (!showTitle && !showSubtitle) return "";
   return `<div class="copy" style="text-align:${style.title.align}">
-    <div class="title" style="color:${style.title.color};font-size:${titleSize}px">${escapeHtml(style.title.text)}</div>
-    ${style.subtitle.text ? `<div class="subtitle" style="color:${style.subtitle.color};font-size:${Math.round(style.subtitle.size * 0.5)}px">${escapeHtml(style.subtitle.text)}</div>` : ""}
+    ${showTitle ? `<div class="title" style="color:${style.title.color};font-size:${titleSize}px">${escapeHtml(style.title.text)}</div>` : ""}
+    ${showSubtitle ? `<div class="subtitle" style="color:${style.subtitle.color};font-size:${Math.round(style.subtitle.size * 0.5)}px">${escapeHtml(style.subtitle.text)}</div>` : ""}
   </div>`;
 }
 
@@ -56,6 +60,29 @@ export interface RenderContext {
   resolveUri: (relativePath: string) => string;
   columnIndex: number;
   columnCount: number;
+}
+
+function assetLayersMarkup(layers: MockupAssetLayer[] = [], resolveUri: (rel: string) => string): string {
+  if (!layers || !layers.length) return "";
+  // Hidden layers are stripped entirely (no DOM cost, no phantom PNG data in export).
+  const visible = layers.filter((l) => l.visible !== false);
+  if (!visible.length) return "";
+  // Respect zIndex stacking: bottom-first DOM order so higher zIndex layers paint above.
+  const sorted = [...visible].sort((a, b) => (a.zIndex ?? 10) - (b.zIndex ?? 10));
+  return sorted
+    .map((layer) => {
+      const src = layer.assetId ? resolveUri(layer.assetId) : placeholderScreenUri(0);
+      const left = layer.xPct;
+      const top = layer.yPct;
+      const width = layer.widthPct;
+      const height = layer.heightPct ? `${layer.heightPct}%` : "auto";
+      const transform = `rotate(${layer.rotation || 0}deg) scaleX(${layer.flipH ? -1 : 1}) scaleY(${layer.flipV ? -1 : 1})`;
+      const shadow = layer.shadow ? `box-shadow: ${layer.shadow.x || 0}px ${layer.shadow.y || 0}px ${layer.shadow.blur || 10}px ${layer.shadow.color || 'rgba(0,0,0,0.3)'};` : "";
+      return `<div class="asset-layer" style="position:absolute;left:${left}%;top:${top}%;width:${width}%;height:${height};transform:${transform};opacity:${layer.opacity ?? 1};z-index:${layer.zIndex ?? 10};${shadow}pointer-events:none;">
+        <img src="${src}" style="width:100%;height:100%;object-fit:${layer.cropFit || 'contain'};display:block;" />
+      </div>`;
+    })
+    .join("\n");
 }
 
 /** Renders one cell (a device row x a column) to a full HTML document. */
@@ -96,6 +123,7 @@ export function cellHtml(project: MockupProject, deviceRowId: string, columnId: 
 
   const textAbove = preset.textPosition.endsWith("above");
   const decorations = decorationsMarkup(style.decorations, canvas);
+  const assets = assetLayersMarkup(style.assetLayers, ctx.resolveUri);
 
   return `<!doctype html>
 <html><head><meta charset="utf-8" /><style>
@@ -118,11 +146,16 @@ export function cellHtml(project: MockupProject, deviceRowId: string, columnId: 
   .layer { position: absolute; }
   ${DEVICE_CSS}
 </style></head>
-<body><div class="canvas">${textBlock(style, preset.textPosition)}<div class="stage">${deviceLayers}</div>${decorations}</div></body></html>`;
+<body><div class="canvas">${textBlock(style, preset.textPosition)}<div class="stage">${deviceLayers}${assets}</div>${decorations}</div></body></html>`;
 }
 
 function projectResolveUri(projectId: string) {
-  return (relativePath: string) => `/api/mockups/${projectId}/file?p=${encodeURIComponent(relativePath)}`;
+  return (relativePath: string) => {
+    if (!relativePath || relativePath === "" || relativePath === "__second_device__") {
+      return placeholderScreenUri(0);
+    }
+    return `/api/mockups/${projectId}/file?p=${encodeURIComponent(relativePath)}`;
+  };
 }
 
 export function cellPreviewHtml(project: MockupProject, deviceRowId: string, columnId: string, canvas: { width: number; height: number }): string {
@@ -165,6 +198,67 @@ export async function renderDeviceRowExport(project: MockupProject, deviceRowId:
     await browser.close();
   }
   return written;
+}
+
+export async function renderSingleScreenExport(project: MockupProject, deviceRowId: string, columnId: string, canvas: { width: number; height: number }): Promise<string> {
+  const exportsRoot = path.join(mockupDir(project.id), "exports");
+  fs.mkdirSync(exportsRoot, { recursive: true });
+  const outPath = path.join(exportsRoot, `single_${columnId}.png`);
+  const { chromium } = await import("playwright");
+  const browser = await chromium.launch({ headless: true });
+  const resolveUri = (relativePath: string) => {
+    const abs = mockupFile(project.id, relativePath);
+    return dataUri(fs.existsSync(abs) ? abs : projectFile(project.id, relativePath));
+  };
+  try {
+    const page = await browser.newPage({ viewport: canvas });
+    const colIdx = project.columns.findIndex((c) => c.id === columnId);
+    const html = cellHtml(project, deviceRowId, columnId, canvas, { resolveUri, columnIndex: Math.max(0, colIdx), columnCount: project.columns.length });
+    await page.setContent(html, { waitUntil: "load" });
+    await page.screenshot({ path: outPath, type: "png" });
+  } finally {
+    await browser.close();
+  }
+  return outPath;
+}
+
+export async function renderPanoramicBannerExport(project: MockupProject, deviceRowId: string, singleCanvas: { width: number; height: number }): Promise<string> {
+  const exportsRoot = path.join(mockupDir(project.id), "exports");
+  fs.mkdirSync(exportsRoot, { recursive: true });
+  const outPath = path.join(exportsRoot, "panoramic_banner.png");
+  const columns = [...project.columns].sort((a, b) => a.order - b.order);
+  const totalWidth = singleCanvas.width * Math.max(1, columns.length);
+  const totalHeight = singleCanvas.height;
+
+  const { chromium } = await import("playwright");
+  const browser = await chromium.launch({ headless: true });
+  const resolveUri = (relativePath: string) => {
+    const abs = mockupFile(project.id, relativePath);
+    return dataUri(fs.existsSync(abs) ? abs : projectFile(project.id, relativePath));
+  };
+
+  try {
+    const page = await browser.newPage({ viewport: { width: totalWidth, height: totalHeight } });
+    const cellHtmls = columns.map((col, idx) => {
+      const singleHtml = cellHtml(project, deviceRowId, col.id, singleCanvas, { resolveUri, columnIndex: idx, columnCount: columns.length });
+      return `<div style="width:${singleCanvas.width}px;height:${singleCanvas.height}px;flex:0 0 ${singleCanvas.width}px;position:relative;overflow:hidden;">
+        <iframe srcdoc="${escapeHtml(singleHtml)}" style="width:${singleCanvas.width}px;height:${singleCanvas.height}px;border:none;pointer-events:none;"></iframe>
+      </div>`;
+    }).join("");
+
+    const bannerHtml = `<!doctype html><html><head><meta charset="utf-8"/><style>
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; width: ${totalWidth}px; height: ${totalHeight}px; overflow: hidden; }
+      .banner { display: flex; flex-direction: row; width: ${totalWidth}px; height: ${totalHeight}px; }
+    </style></head><body><div class="banner">${cellHtmls}</div></body></html>`;
+
+    await page.setContent(bannerHtml, { waitUntil: "load" });
+    await page.waitForTimeout(500);
+    await page.screenshot({ path: outPath, type: "png" });
+  } finally {
+    await browser.close();
+  }
+  return outPath;
 }
 
 /** Synthetic placeholder screens -- no real screenshot exists for a template

@@ -262,6 +262,8 @@ export interface DecorationLike {
   sizePct: number;
   rotate: number;
   color: string;
+  visible?: boolean;
+  zIndex?: number;
 }
 
 const SHAPE_MARKUP: Record<string, (color: string) => string> = {
@@ -273,10 +275,14 @@ const SHAPE_MARKUP: Record<string, (color: string) => string> = {
 /** Decorative stickers/badges/shapes, absolutely positioned in percent so
  *  they land the same place regardless of the canvas's actual pixel size. */
 export function decorationsMarkup(decorations: DecorationLike[], canvas: { width: number; height: number }): string {
-  return decorations
+  if (!decorations || !decorations.length) return "";
+  const visible = decorations.filter((d) => d.visible !== false);
+  if (!visible.length) return "";
+  return visible
     .map((d) => {
       const sizePx = Math.round((canvas.width * d.sizePct) / 100);
-      const style = `position:absolute;left:${d.xPct}%;top:${d.yPct}%;width:${sizePx}px;height:${sizePx}px;transform:translate(-50%,-50%) rotate(${d.rotate}deg);z-index:6;display:flex;align-items:center;justify-content:center;`;
+      const z = d.zIndex ?? 6;
+      const style = `position:absolute;left:${d.xPct}%;top:${d.yPct}%;width:${sizePx}px;height:${sizePx}px;transform:translate(-50%,-50%) rotate(${d.rotate}deg);z-index:${z};display:flex;align-items:center;justify-content:center;`;
       if (d.kind === "shape") {
         const shape = SHAPE_MARKUP[d.content] ?? SHAPE_MARKUP["circle"];
         return `<div style="${style}">${shape(d.color)}</div>`;

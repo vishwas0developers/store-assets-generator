@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import archiver from "archiver";
 import { DEVICE_REGISTRY, resolveGeometry } from "../devices/registry.js";
-import { renderDeviceRowExport } from "./render.js";
+import { renderDeviceRowExport, renderSingleScreenExport, renderPanoramicBannerExport } from "./render.js";
 import { mockupDir, saveMockupProject, type MockupProject } from "./project.js";
 
 /**
@@ -49,6 +49,23 @@ export async function exportMockupProject(project: MockupProject): Promise<Mocku
   saveMockupProject(project);
 
   return { zipPath, bytes: fs.statSync(zipPath).size, entries };
+}
+
+export async function exportSingleScreen(project: MockupProject, columnId?: string): Promise<string> {
+  if (project.columns.length === 0) throw new Error("No screens in this project.");
+  const colId = columnId || project.columns[0].id;
+  const baseDevice = project.devices.find((d) => d.isBase) || project.devices[0] || { id: "dev_default", deviceId: "phone" };
+  const device = DEVICE_REGISTRY[baseDevice.deviceId] ?? DEVICE_REGISTRY["phone"];
+  const geometry = resolveGeometry(device, baseDevice.variant);
+  return renderSingleScreenExport(project, baseDevice.id, colId, { width: geometry.width, height: geometry.height });
+}
+
+export async function exportPanoramicBanner(project: MockupProject): Promise<string> {
+  if (project.columns.length === 0) throw new Error("No screens in this project.");
+  const baseDevice = project.devices.find((d) => d.isBase) || project.devices[0] || { id: "dev_default", deviceId: "phone" };
+  const device = DEVICE_REGISTRY[baseDevice.deviceId] ?? DEVICE_REGISTRY["phone"];
+  const geometry = resolveGeometry(device, baseDevice.variant);
+  return renderPanoramicBannerExport(project, baseDevice.id, { width: geometry.width, height: geometry.height });
 }
 
 function sanitize(label: string): string {
