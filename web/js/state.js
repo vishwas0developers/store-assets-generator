@@ -22,6 +22,11 @@ export let videoId = null;
 export let videoProject = null;
 export let selectedSceneId = null;
 export let videoTemplates = [];
+export let videoDevices = [];
+
+export function setVideoDevices(devs) {
+  videoDevices = devs;
+}
 
 export function setActiveProjectId(id) {
   activeProjectId = id;

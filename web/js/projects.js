@@ -97,7 +97,7 @@ export async function refreshProjectsList() {
     }
 
     for (const p of projects) {
-      const isActive = p.id === activeProjectId;
+      const isActive = Boolean(activeProjectId && activeProject && p.id === activeProjectId);
       const card = document.createElement('div');
       card.className = `project-item ${isActive ? 'active' : ''}`;
 

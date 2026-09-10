@@ -70,7 +70,6 @@ function onFabricSelectionCreated(e) {
     if (typeof window.renderMockupLayersPanel === 'function') window.renderMockupLayersPanel(selectedColumn);
     if (typeof window.syncSection2Inputs === 'function') window.syncSection2Inputs(selectedColumn, obj.layerId);
     if (typeof window.routeInspectorForLayer === 'function') window.routeInspectorForLayer(obj.layerId);
-    if (typeof window.renderMockupCanvas === 'function') window.renderMockupCanvas();
   }
 }
 
@@ -82,7 +81,6 @@ function onFabricSelectionUpdated(e) {
     if (typeof window.renderMockupLayersPanel === 'function') window.renderMockupLayersPanel(selectedColumn);
     if (typeof window.syncSection2Inputs === 'function') window.syncSection2Inputs(selectedColumn, obj.layerId);
     if (typeof window.routeInspectorForLayer === 'function') window.routeInspectorForLayer(obj.layerId);
-    if (typeof window.renderMockupCanvas === 'function') window.renderMockupCanvas();
   }
 }
 
@@ -463,7 +461,118 @@ export async function buildDeviceGroup(device, layerId, left, top, width, height
   return group;
 }
 
+// Zoom, Pan & Viewport State
+export let stageZoomRatio = 0.2;
+export let canvasPan = { x: 0, y: 0 };
+let panStart = { x: 0, y: 0 };
+let isSpacePressed = false;
+let isPanning = false;
+
+export function _fitZoomForViewport() {
+  const vp = document.getElementById("mockup-canvas-viewport");
+  if (!vp) return 0.2;
+  const pad = 24;
+  const availW = vp.clientWidth - pad * 2;
+  const availH = vp.clientHeight - pad * 2;
+  if (availW <= 0 || availH <= 0) return 0.2;
+  return Math.max(0.08, Math.min(availW / 1080, availH / 1920));
+}
+
+export function applyCanvasTransform() {
+  const stage = document.getElementById("mockup-canvas-stage");
+  if (!stage) return;
+  stage.style.transform = `translate(${canvasPan.x}px, ${canvasPan.y}px) scale(${stageZoomRatio})`;
+  stage.style.transformOrigin = "top left";
+  const badge = document.getElementById("mockup-zoom-level");
+  if (badge) badge.textContent = `${Math.round(stageZoomRatio * 100)}%`;
+}
+
+export function setStageZoomAndCenter(zoom) {
+  const vp = document.getElementById("mockup-canvas-viewport");
+  if (!vp) return;
+  stageZoomRatio = zoom;
+  const availW = vp.clientWidth;
+  const availH = vp.clientHeight;
+  canvasPan = {
+    x: Math.round((availW - 1080 * zoom) / 2),
+    y: Math.max(20, Math.round((availH - 1920 * zoom) / 2))
+  };
+  applyCanvasTransform();
+  if (typeof moveableInstance !== "undefined" && moveableInstance) {
+    try { moveableInstance.updateRect(); } catch (_) {}
+  }
+}
+
+export function centerArtboardInViewport() {
+  const zoom = _fitZoomForViewport();
+  setStageZoomAndCenter(zoom);
+}
+
+export function initCanvasPanZoomEvents() {
+  const viewport = document.getElementById("mockup-canvas-viewport");
+  if (!viewport || viewport._panZoomInitialized) return;
+  viewport._panZoomInitialized = true;
+
+  window.addEventListener("keydown", (e) => {
+    if (e.code === "Space" && document.activeElement?.tagName !== "INPUT" && document.activeElement?.tagName !== "TEXTAREA") {
+      if (!isSpacePressed) {
+        isSpacePressed = true;
+        viewport.classList.add("panning");
+      }
+    }
+  });
+
+  window.addEventListener("keyup", (e) => {
+    if (e.code === "Space") {
+      isSpacePressed = false;
+      if (!isPanning) viewport.classList.remove("panning");
+    }
+  });
+
+  viewport.addEventListener("mousedown", (e) => {
+    if (e.button === 1 || (e.button === 0 && isSpacePressed)) {
+      e.preventDefault();
+      isPanning = true;
+      viewport.classList.add("panning");
+      panStart = { x: e.clientX - canvasPan.x, y: e.clientY - canvasPan.y };
+    }
+  });
+
+  window.addEventListener("mouseup", () => {
+    if (isPanning) {
+      isPanning = false;
+      if (!isSpacePressed) viewport.classList.remove("panning");
+    }
+  });
+
+  window.addEventListener("mousemove", (e) => {
+    if (!isPanning) return;
+    canvasPan = { x: e.clientX - panStart.x, y: e.clientY - panStart.y };
+    applyCanvasTransform();
+  });
+
+  viewport.addEventListener("wheel", (e) => {
+    e.preventDefault();
+    const rect = viewport.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+
+    const zoomFactor = e.ctrlKey ? 0.95 : 0.92;
+    const oldRatio = stageZoomRatio;
+    const newRatio = Math.max(0.08, Math.min(3.0, stageZoomRatio * (e.deltaY < 0 ? 1 / zoomFactor : zoomFactor)));
+
+    if (newRatio === oldRatio) return;
+
+    canvasPan.x = mouseX - (mouseX - canvasPan.x) * (newRatio / oldRatio);
+    canvasPan.y = mouseY - (mouseY - canvasPan.y) * (newRatio / oldRatio);
+    stageZoomRatio = newRatio;
+
+    applyCanvasTransform();
+  }, { passive: false });
+}
+
 export function renderMockupCanvas() {
+  applyCanvasTransform();
   loadColumnIntoFabric(selectedColumn);
 }
 

@@ -6,17 +6,29 @@ import {
   selectedLayerId,
   setSelectedLayerId,
   setMockupDirty,
+  mockupId,
   mockupProject,
+  setMockupProject,
+  saveCurrentMockupProject,
   mockupFabricCanvas
 } from './state.js';
-import { escapeHtml } from './utils.js';
-import { loadColumnIntoFabric } from './canvas.js';
+import { escapeHtml, api, uploadFile, showAlert, showToast } from './utils.js';
+import { loadColumnIntoFabric, renderMockupCanvas } from './canvas.js';
+import { renderMockupMatrix, getSelectedCellStyle } from './matrix.js';
 
 export function switchInspectorTab(tabId) {
-  const tabs = document.querySelectorAll("#mockup-inspector .tab");
-  const panels = document.querySelectorAll("#mockup-inspector .tab-panel");
-  tabs.forEach(t => t.classList.toggle("active", t.dataset.tab === tabId));
-  panels.forEach(p => p.classList.toggle("active", p.id === `tab-inspect-${tabId}`));
+  const tabs = document.querySelectorAll("#mockup-inspector .tab, #mk-section-object [id^='mk-tab-']");
+  const panels = document.querySelectorAll("#mockup-inspector .tab-panel, [id^='mk-panel-']");
+  if (["col", "dev", "text", "asset"].includes(tabId)) {
+    ["col", "dev", "text", "asset"].forEach((t) => {
+      const btn = document.getElementById(`mk-tab-${t}`);
+      const panel = document.getElementById(`mk-panel-${t}`);
+      if (btn) btn.className = t === tabId ? "primary small" : "secondary small";
+      if (panel) panel.style.display = t === tabId ? "block" : "none";
+    });
+  } else {
+    tabs.forEach(t => t.classList.toggle("active", t.dataset.tab === tabId));
+  }
 }
 
 export function routeInspectorForLayer(layerId) {
@@ -28,10 +40,9 @@ export function routeInspectorForLayer(layerId) {
 
 export function buildScreenLayersModel(column) {
   if (!column || !column.style) return [];
-  const style = column.style;
+  const style = getSelectedCellStyle() || column.style;
   const layers = [];
 
-  // Device 1
   if (style.deviceOne) {
     layers.push({
       id: "deviceOne",
@@ -43,8 +54,6 @@ export function buildScreenLayersModel(column) {
       zIndex: style.deviceOne.zIndex ?? 10,
     });
   }
-
-  // Device 2
   if (style.deviceTwo) {
     layers.push({
       id: "deviceTwo",
@@ -56,8 +65,6 @@ export function buildScreenLayersModel(column) {
       zIndex: style.deviceTwo.zIndex ?? 9,
     });
   }
-
-  // Title
   if (style.title) {
     layers.push({
       id: "title",
@@ -69,8 +76,6 @@ export function buildScreenLayersModel(column) {
       zIndex: style.title.zIndex ?? 20,
     });
   }
-
-  // Subtitle
   if (style.subtitle) {
     layers.push({
       id: "subtitle",
@@ -82,8 +87,6 @@ export function buildScreenLayersModel(column) {
       zIndex: style.subtitle.zIndex ?? 19,
     });
   }
-
-  // Asset layers
   if (style.assetLayers) {
     style.assetLayers.forEach((ast, idx) => {
       layers.push({
@@ -97,8 +100,6 @@ export function buildScreenLayersModel(column) {
       });
     });
   }
-
-  // Decorations / Badges / Stickers
   if (style.decorations) {
     style.decorations.forEach((dec, idx) => {
       layers.push({
@@ -112,8 +113,6 @@ export function buildScreenLayersModel(column) {
       });
     });
   }
-
-  // Background
   if (style.background) {
     layers.push({
       id: "background",
@@ -126,7 +125,6 @@ export function buildScreenLayersModel(column) {
     });
   }
 
-  // Sort descending by zIndex for Layers List display (topmost layer on top)
   return layers.sort((a, b) => b.zIndex - a.zIndex);
 }
 
@@ -160,7 +158,6 @@ export function renderMockupLayersPanel(column) {
 
   container.querySelectorAll(".mk-layer-item").forEach((item) => {
     const lid = item.dataset.layerId;
-
     item.onclick = (e) => {
       if (e.target.closest(".mk-layer-vis-btn") || e.target.closest(".mk-layer-lock-btn") || e.target.classList.contains("mk-layer-rename-input")) return;
       setSelectedLayerId(lid);
@@ -189,7 +186,6 @@ export function renderMockupLayersPanel(column) {
           setMockupDirty(true);
           renderMockupLayersPanel(column);
         };
-
         input.onblur = saveRename;
         input.onkeydown = (ev) => {
           if (ev.key === "Enter") { ev.preventDefault(); saveRename(); }
@@ -225,8 +221,8 @@ export function renderMockupLayersPanel(column) {
 }
 
 export function setCustomLayerName(column, layerId, name) {
-  if (!column || !column.style) return;
-  const style = column.style;
+  const style = getSelectedCellStyle() || column.style;
+  if (!style) return;
   if (layerId === "title" && style.title) style.title.customName = name;
   else if (layerId === "subtitle" && style.subtitle) style.subtitle.customName = name;
   else if (layerId === "deviceOne" && style.deviceOne) style.deviceOne.customName = name;
@@ -234,16 +230,13 @@ export function setCustomLayerName(column, layerId, name) {
   else if (layerId === "background" && style.background) style.background.customName = name;
   else if (layerId.startsWith("asset:")) {
     const idx = parseInt(layerId.split(":")[1], 10);
-    if (style.assetLayers && style.assetLayers[idx]) style.assetLayers[idx].customName = name;
-  } else if (layerId.startsWith("decoration:")) {
-    const idx = parseInt(layerId.split(":")[1], 10);
-    if (style.decorations && style.decorations[idx]) style.decorations[idx].customName = name;
+    if (style.assetLayers?.[idx]) style.assetLayers[idx].customName = name;
   }
 }
 
 export function toggleLayerVisibilityInModel(column, layerId) {
-  if (!column || !column.style) return;
-  const style = column.style;
+  const style = getSelectedCellStyle() || column.style;
+  if (!style) return;
   if (layerId === "title" && style.title) style.title.visible = style.title.visible === false;
   else if (layerId === "subtitle" && style.subtitle) style.subtitle.visible = style.subtitle.visible === false;
   else if (layerId === "deviceOne" && style.deviceOne) style.deviceOne.visible = style.deviceOne.visible === false;
@@ -252,15 +245,12 @@ export function toggleLayerVisibilityInModel(column, layerId) {
   else if (layerId.startsWith("asset:")) {
     const idx = parseInt(layerId.split(":")[1], 10);
     if (style.assetLayers?.[idx]) style.assetLayers[idx].visible = style.assetLayers[idx].visible === false;
-  } else if (layerId.startsWith("decoration:")) {
-    const idx = parseInt(layerId.split(":")[1], 10);
-    if (style.decorations?.[idx]) style.decorations[idx].visible = style.decorations[idx].visible === false;
   }
 }
 
 export function toggleLayerLockInModel(column, layerId) {
-  if (!column || !column.style) return;
-  const style = column.style;
+  const style = getSelectedCellStyle() || column.style;
+  if (!style) return;
   if (layerId === "title" && style.title) style.title.locked = !style.title.locked;
   else if (layerId === "subtitle" && style.subtitle) style.subtitle.locked = !style.subtitle.locked;
   else if (layerId === "deviceOne" && style.deviceOne) style.deviceOne.locked = !style.deviceOne.locked;
@@ -269,15 +259,11 @@ export function toggleLayerLockInModel(column, layerId) {
   else if (layerId.startsWith("asset:")) {
     const idx = parseInt(layerId.split(":")[1], 10);
     if (style.assetLayers?.[idx]) style.assetLayers[idx].locked = !style.assetLayers[idx].locked;
-  } else if (layerId.startsWith("decoration:")) {
-    const idx = parseInt(layerId.split(":")[1], 10);
-    if (style.decorations?.[idx]) style.decorations[idx].locked = !style.decorations[idx].locked;
   }
 }
 
 export function attachLayerDragAndDrop(container, column) {
   let draggedItem = null;
-
   container.querySelectorAll(".mk-layer-item").forEach((item) => {
     item.addEventListener("dragstart", (e) => {
       draggedItem = item;
@@ -285,7 +271,6 @@ export function attachLayerDragAndDrop(container, column) {
       e.dataTransfer.effectAllowed = "move";
       e.dataTransfer.setData("text/plain", item.dataset.layerId);
     });
-
     item.addEventListener("dragend", () => {
       if (draggedItem) draggedItem.style.opacity = "1";
       draggedItem = null;
@@ -293,7 +278,6 @@ export function attachLayerDragAndDrop(container, column) {
         el.classList.remove("drag-over-top", "drag-over-bottom");
       });
     });
-
     item.addEventListener("dragover", (e) => {
       e.preventDefault();
       if (!draggedItem || draggedItem === item) return;
@@ -303,20 +287,15 @@ export function attachLayerDragAndDrop(container, column) {
       if (e.clientY < mid) item.classList.add("drag-over-top");
       else item.classList.add("drag-over-bottom");
     });
-
     item.addEventListener("dragleave", () => {
       item.classList.remove("drag-over-top", "drag-over-bottom");
     });
-
     item.addEventListener("drop", (e) => {
       e.preventDefault();
       item.classList.remove("drag-over-top", "drag-over-bottom");
       if (!draggedItem || draggedItem === item) return;
-      const fromId = draggedItem.dataset.layerId;
-      const toId = item.dataset.layerId;
-
-      reorderLayersInModel(column, fromId, toId);
-      setSelectedLayerId(fromId);
+      reorderLayersInModel(column, draggedItem.dataset.layerId, item.dataset.layerId);
+      setSelectedLayerId(draggedItem.dataset.layerId);
       setMockupDirty(true);
       renderMockupLayersPanel(column);
       loadColumnIntoFabric(column);
@@ -325,23 +304,21 @@ export function attachLayerDragAndDrop(container, column) {
 }
 
 export function reorderLayersInModel(column, fromId, toId) {
-  if (!column || !column.style) return;
-
+  const style = getSelectedCellStyle() || column.style;
+  if (!style) return;
   if (fromId.startsWith("asset:") && toId.startsWith("asset:")) {
     const fromIdx = parseInt(fromId.split(":")[1], 10);
     const toIdx = parseInt(toId.split(":")[1], 10);
-    const assets = column.style.assetLayers;
+    const assets = style.assetLayers;
     if (assets && fromIdx >= 0 && toIdx >= 0 && fromIdx < assets.length && toIdx < assets.length) {
       const [moved] = assets.splice(fromIdx, 1);
       assets.splice(toIdx, 0, moved);
       return;
     }
   }
-
   const layers = buildScreenLayersModel(column);
   const fromLayer = layers.find((l) => l.id === fromId);
   const toLayer = layers.find((l) => l.id === toId);
-
   if (fromLayer && toLayer) {
     const tempZ = fromLayer.zIndex || 10;
     setLayerZIndex(column, fromId, toLayer.zIndex || 10);
@@ -350,7 +327,8 @@ export function reorderLayersInModel(column, fromId, toId) {
 }
 
 export function setLayerZIndex(column, layerId, zIndex) {
-  const style = column.style;
+  const style = getSelectedCellStyle() || column.style;
+  if (!style) return;
   if (layerId === "title" && style.title) style.title.zIndex = zIndex;
   else if (layerId === "subtitle" && style.subtitle) style.subtitle.zIndex = zIndex;
   else if (layerId === "deviceOne" && style.deviceOne) style.deviceOne.zIndex = zIndex;
@@ -362,20 +340,441 @@ export function setLayerZIndex(column, layerId, zIndex) {
   }
 }
 
+export function populateBgValueSelect(type, selectedVal) {
+  const select = document.getElementById("mk-bg-value");
+  if (!select) return;
+  let html = "";
+  if (type === "gradient") {
+    const gradients = [
+      { id: "ocean", name: "Ocean Blue" },
+      { id: "sunset", name: "Sunset Coral" },
+      { id: "purple", name: "Deep Purple" },
+      { id: "emerald", name: "Emerald Mint" },
+      { id: "fire", name: "Fire Flame" },
+      { id: "midnight", name: "Midnight Dark" },
+      { id: "slate", name: "Slate Minimal" }
+    ];
+    html = gradients.map(g => `<option value="${g.id}">${g.name}</option>`).join("");
+  } else if (type === "solid") {
+    const solids = [
+      { id: "#0f172a", name: "Slate 900 (Dark)" },
+      { id: "#ffffff", name: "Pure White" },
+      { id: "#111827", name: "Gray 900" },
+      { id: "#1e1b4b", name: "Indigo 950" },
+      { id: "#450a0a", name: "Red 950" },
+      { id: "#064e3b", name: "Emerald 950" }
+    ];
+    html = solids.map(s => `<option value="${s.id}">${s.name}</option>`).join("");
+  } else if (type === "pattern") {
+    const patterns = [
+      { id: "mesh", name: "Mesh Gradient" },
+      { id: "neon-rings", name: "Neon Rings" },
+      { id: "dots", name: "Subtle Dots" },
+      { id: "grid", name: "Developer Grid" },
+      { id: "waves", name: "Abstract Waves" }
+    ];
+    html = patterns.map(p => `<option value="${p.id}">${p.name}</option>`).join("");
+  } else if (type === "image" || type === "panoramic") {
+    html = `<option value="${selectedVal || ''}">${selectedVal ? 'Custom File: ' + selectedVal : 'No file selected (upload via project assets)'}</option>`;
+  }
+  select.innerHTML = html;
+  if (selectedVal) select.value = selectedVal;
+}
+
+export function renderMkDecorations(decorations = []) {
+  const container = document.getElementById("mk-decorations");
+  if (!container) return;
+  container.innerHTML = decorations.map((dec, idx) => `
+    <div style="display:flex; gap:0.5rem; align-items:center; margin-bottom:0.4rem;">
+      <input type="text" value="${escapeHtml(dec.text || '')}" data-dec-idx="${idx}" class="mk-dec-input" style="flex:1; font-size:0.8rem; padding:0.2rem 0.4rem;" placeholder="Sticker text" />
+      <button class="small danger mk-dec-del" data-dec-idx="${idx}" type="button">×</button>
+    </div>
+  `).join("");
+
+  container.querySelectorAll(".mk-dec-input").forEach(input => {
+    input.oninput = () => {
+      const idx = parseInt(input.dataset.decIdx, 10);
+      const style = getSelectedCellStyle() || selectedColumn?.style;
+      if (style?.decorations?.[idx]) {
+        style.decorations[idx].text = input.value;
+        setMockupDirty(true);
+        loadColumnIntoFabric(selectedColumn);
+      }
+    };
+  });
+  container.querySelectorAll(".mk-dec-del").forEach(btn => {
+    btn.onclick = () => {
+      const idx = parseInt(btn.dataset.decIdx, 10);
+      const style = getSelectedCellStyle() || selectedColumn?.style;
+      if (style?.decorations) {
+        style.decorations.splice(idx, 1);
+        setMockupDirty(true);
+        renderMkDecorations(style.decorations);
+        loadColumnIntoFabric(selectedColumn);
+      }
+    };
+  });
+}
+
+export function renderMkAssetLayers(assetLayers = []) {
+  const container = document.getElementById("mk-asset-layers-list");
+  if (!container) return;
+  container.innerHTML = assetLayers.map((ast, idx) => `
+    <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.03); padding:0.4rem 0.6rem; border-radius:6px; margin-bottom:0.4rem; font-size:0.8rem;">
+      <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:140px;" title="${escapeHtml(ast.file || ast.customName || '')}">${escapeHtml(ast.customName || ast.file || 'Asset ' + (idx+1))}</span>
+      <button class="small danger mk-ast-del" data-ast-idx="${idx}" type="button">Remove</button>
+    </div>
+  `).join("");
+
+  container.querySelectorAll(".mk-ast-del").forEach(btn => {
+    btn.onclick = () => {
+      const idx = parseInt(btn.dataset.astIdx, 10);
+      const style = getSelectedCellStyle() || selectedColumn?.style;
+      if (style?.assetLayers) {
+        style.assetLayers.splice(idx, 1);
+        setMockupDirty(true);
+        renderMkAssetLayers(style.assetLayers);
+        loadColumnIntoFabric(selectedColumn);
+      }
+    };
+  });
+}
+
 export function syncSection2Inputs(col, layerId) {
-  if (!col || !col.style) return;
+  if (!col) return;
+  const style = getSelectedCellStyle() || col.style;
+  if (!style) return;
   const lid = layerId || selectedLayerId;
-  const style = col.style;
 
-  const titleInput = document.getElementById("mk-title-text");
-  if (titleInput && style.title) titleInput.value = style.title.text || "";
+  const layoutEl = document.getElementById("mk-layout");
+  if (layoutEl && style.layout) layoutEl.value = style.layout;
 
-  const subtitleInput = document.getElementById("mk-subtitle-text");
-  if (subtitleInput && style.subtitle) subtitleInput.value = style.subtitle.text || "";
+  const titleEl = document.getElementById("mk-title");
+  if (titleEl && style.title) titleEl.value = style.title.text || "";
+
+  const titleColorEl = document.getElementById("mk-title-color");
+  if (titleColorEl && style.title) titleColorEl.value = style.title.color || "#ffffff";
+
+  const subtitleEl = document.getElementById("mk-subtitle");
+  if (subtitleEl && style.subtitle) subtitleEl.value = style.subtitle.text || "";
+
+  const bgTypeEl = document.getElementById("mk-bg-type");
+  if (bgTypeEl && style.background) {
+    bgTypeEl.value = style.background.type || "gradient";
+    populateBgValueSelect(style.background.type || "gradient", style.background.value);
+  }
+
+  const d1SizeEl = document.getElementById("mk-d1-size");
+  const d1SizeValEl = document.getElementById("mk-d1-size-val");
+  if (d1SizeEl && d1SizeValEl && style.deviceOne) {
+    d1SizeEl.value = style.deviceOne.size ?? 90;
+    d1SizeValEl.textContent = style.deviceOne.size ?? 90;
+  }
+
+  const d1BrightnessEl = document.getElementById("mk-d1-brightness");
+  const d1BrightnessValEl = document.getElementById("mk-d1-brightness-val");
+  if (d1BrightnessEl && d1BrightnessValEl && style.deviceOne) {
+    d1BrightnessEl.value = style.deviceOne.brightness ?? 100;
+    d1BrightnessValEl.textContent = style.deviceOne.brightness ?? 100;
+  }
+
+  const d1FramelessEl = document.getElementById("mk-d1-frameless");
+  if (d1FramelessEl && style.deviceOne) {
+    d1FramelessEl.checked = !!style.deviceOne.frameless;
+  }
+
+  renderMkDecorations(style.decorations || []);
+  renderMkAssetLayers(style.assetLayers || []);
 
   const badge = document.getElementById("mockup-active-layer-badge");
   if (badge) {
     badge.textContent = lid === "title" ? "Title Text" : lid === "subtitle" ? "Subtitle Text" : lid === "deviceOne" ? "Device Frame 1" : lid === "deviceTwo" ? "Device Frame 2" : lid?.startsWith("asset:") ? "Asset Layer" : lid === "background" ? "Background" : "Screen";
+  }
+}
+
+export function setupInspectorEvents() {
+  // Tab switching inside inspector Section 1
+  ["col", "dev", "text", "asset"].forEach((t) => {
+    const btn = document.getElementById(`mk-tab-${t}`);
+    if (btn) btn.onclick = () => switchInspectorTab(t);
+  });
+  ["layers", "objects", "transform"].forEach((t) => {
+    const btn = document.getElementById(`mk-tab-${t}`);
+    if (btn) btn.onclick = () => switchInspectorTab(t);
+  });
+
+  // Cell override checkbox
+  const cellOverrideEl = document.getElementById("mk-cell-override");
+  if (cellOverrideEl) {
+    cellOverrideEl.onchange = async () => {
+      if (!mockupProject || !selectedColumn) return;
+      const { selectedCell } = await import('./matrix.js');
+      if (!selectedCell || !selectedCell.deviceRowId) return;
+      const key = `${selectedCell.deviceRowId}:${selectedCell.columnId}`;
+      if (!mockupProject.cells) mockupProject.cells = {};
+      if (cellOverrideEl.checked) {
+        mockupProject.cells[key] = { ...selectedColumn.style };
+      } else {
+        delete mockupProject.cells[key];
+      }
+      setMockupDirty(true);
+      renderMockupMatrix();
+      loadColumnIntoFabric(selectedColumn);
+    };
+  }
+
+  // Layout preset change
+  const layoutEl = document.getElementById("mk-layout");
+  if (layoutEl) {
+    layoutEl.onchange = () => {
+      const style = getSelectedCellStyle() || selectedColumn?.style;
+      if (!style) return;
+      style.layout = layoutEl.value;
+      setMockupDirty(true);
+      renderMockupMatrix();
+      loadColumnIntoFabric(selectedColumn);
+    };
+  }
+
+  // Background type change
+  const bgTypeEl = document.getElementById("mk-bg-type");
+  const bgValEl = document.getElementById("mk-bg-value");
+  if (bgTypeEl) {
+    bgTypeEl.onchange = () => {
+      const style = getSelectedCellStyle() || selectedColumn?.style;
+      if (!style) return;
+      if (!style.background) style.background = { type: 'gradient', value: 'ocean' };
+      style.background.type = bgTypeEl.value;
+      populateBgValueSelect(bgTypeEl.value, style.background.value);
+      setMockupDirty(true);
+      renderMockupMatrix();
+      loadColumnIntoFabric(selectedColumn);
+    };
+  }
+  if (bgValEl) {
+    bgValEl.onchange = () => {
+      const style = getSelectedCellStyle() || selectedColumn?.style;
+      if (!style) return;
+      if (!style.background) style.background = { type: 'gradient', value: 'ocean' };
+      style.background.value = bgValEl.value;
+      setMockupDirty(true);
+      renderMockupMatrix();
+      loadColumnIntoFabric(selectedColumn);
+    };
+  }
+
+  // Title inputs
+  const titleEl = document.getElementById("mk-title");
+  if (titleEl) {
+    titleEl.oninput = () => {
+      const style = getSelectedCellStyle() || selectedColumn?.style;
+      if (!style?.title) return;
+      style.title.text = titleEl.value;
+      setMockupDirty(true);
+      loadColumnIntoFabric(selectedColumn);
+      renderMockupMatrix();
+    };
+  }
+
+  const titleColorEl = document.getElementById("mk-title-color");
+  if (titleColorEl) {
+    titleColorEl.oninput = () => {
+      const style = getSelectedCellStyle() || selectedColumn?.style;
+      if (!style?.title) return;
+      style.title.color = titleColorEl.value;
+      setMockupDirty(true);
+      loadColumnIntoFabric(selectedColumn);
+    };
+  }
+
+  // Subtitle input
+  const subEl = document.getElementById("mk-subtitle");
+  if (subEl) {
+    subEl.oninput = () => {
+      const style = getSelectedCellStyle() || selectedColumn?.style;
+      if (!style?.subtitle) return;
+      style.subtitle.text = subEl.value;
+      setMockupDirty(true);
+      loadColumnIntoFabric(selectedColumn);
+    };
+  }
+
+  // Device geometry sliders
+  const d1Size = document.getElementById("mk-d1-size");
+  const d1SizeVal = document.getElementById("mk-d1-size-val");
+  if (d1Size) {
+    d1Size.oninput = () => {
+      const style = getSelectedCellStyle() || selectedColumn?.style;
+      if (!style?.deviceOne) return;
+      style.deviceOne.size = parseInt(d1Size.value, 10);
+      if (d1SizeVal) d1SizeVal.textContent = d1Size.value;
+      setMockupDirty(true);
+      loadColumnIntoFabric(selectedColumn);
+    };
+  }
+
+  const d1Brightness = document.getElementById("mk-d1-brightness");
+  const d1BrightnessVal = document.getElementById("mk-d1-brightness-val");
+  if (d1Brightness) {
+    d1Brightness.oninput = () => {
+      const style = getSelectedCellStyle() || selectedColumn?.style;
+      if (!style?.deviceOne) return;
+      style.deviceOne.brightness = parseInt(d1Brightness.value, 10);
+      if (d1BrightnessVal) d1BrightnessVal.textContent = d1Brightness.value;
+      setMockupDirty(true);
+      loadColumnIntoFabric(selectedColumn);
+    };
+  }
+
+  const d1Frameless = document.getElementById("mk-d1-frameless");
+  if (d1Frameless) {
+    d1Frameless.onchange = () => {
+      const style = getSelectedCellStyle() || selectedColumn?.style;
+      if (!style?.deviceOne) return;
+      style.deviceOne.frameless = d1Frameless.checked;
+      setMockupDirty(true);
+      loadColumnIntoFabric(selectedColumn);
+    };
+  }
+
+  // Z-index layer order buttons
+  const bringFront = document.getElementById("mk-layer-bring-front");
+  const bringFwd = document.getElementById("mk-layer-bring-fwd");
+  const sendBwd = document.getElementById("mk-layer-send-bwd");
+  const sendBack = document.getElementById("mk-layer-send-back");
+
+  if (bringFront && selectedColumn) {
+    bringFront.onclick = () => { setLayerZIndex(selectedColumn, selectedLayerId, 100); renderMockupLayersPanel(selectedColumn); loadColumnIntoFabric(selectedColumn); };
+  }
+  if (bringFwd && selectedColumn) {
+    bringFwd.onclick = () => { const layers = buildScreenLayersModel(selectedColumn); const cur = layers.find(l => l.id === selectedLayerId); if (cur) setLayerZIndex(selectedColumn, selectedLayerId, (cur.zIndex || 10) + 1); renderMockupLayersPanel(selectedColumn); loadColumnIntoFabric(selectedColumn); };
+  }
+  if (sendBwd && selectedColumn) {
+    sendBwd.onclick = () => { const layers = buildScreenLayersModel(selectedColumn); const cur = layers.find(l => l.id === selectedLayerId); if (cur) setLayerZIndex(selectedColumn, selectedLayerId, Math.max(0, (cur.zIndex || 10) - 1)); renderMockupLayersPanel(selectedColumn); loadColumnIntoFabric(selectedColumn); };
+  }
+  if (sendBack && selectedColumn) {
+    sendBack.onclick = () => { setLayerZIndex(selectedColumn, selectedLayerId, 0); renderMockupLayersPanel(selectedColumn); loadColumnIntoFabric(selectedColumn); };
+  }
+
+  // Add Asset Layer button & Add Sticker button
+  const addAssetBtn = document.getElementById("mk-add-asset-layer-btn");
+  if (addAssetBtn) {
+    addAssetBtn.onclick = () => {
+      const style = getSelectedCellStyle() || selectedColumn?.style;
+      if (!style) return;
+      if (!style.assetLayers) style.assetLayers = [];
+      style.assetLayers.push({ xPct: 50, yPct: 50, widthPct: 30, heightPct: 40, rotation: 0, opacity: 1, customName: `Asset ${style.assetLayers.length + 1}` });
+      setMockupDirty(true);
+      renderMkAssetLayers(style.assetLayers);
+      renderMockupLayersPanel(selectedColumn);
+      loadColumnIntoFabric(selectedColumn);
+    };
+  }
+
+  const addDecBtn = document.getElementById("mk-decoration-add");
+  if (addDecBtn) {
+    addDecBtn.onclick = () => {
+      const style = getSelectedCellStyle() || selectedColumn?.style;
+      if (!style) return;
+      if (!style.decorations) style.decorations = [];
+      style.decorations.push({ text: "New Sticker", x: 100, y: 100, color: "#ffffff" });
+      setMockupDirty(true);
+      renderMkDecorations(style.decorations);
+      renderMockupLayersPanel(selectedColumn);
+      loadColumnIntoFabric(selectedColumn);
+    };
+  }
+
+  // AI Assist button
+  const aiTextBtn = document.getElementById("mk-ai-text");
+  if (aiTextBtn) {
+    aiTextBtn.onclick = async () => {
+      const style = getSelectedCellStyle() || selectedColumn?.style;
+      if (!style?.title) return;
+      try {
+        const res = await api("/api/ai/copy", { method: "POST", body: { prompt: style.title.text || "App feature" } });
+        if (res && res.title) {
+          style.title.text = res.title;
+          if (res.subtitle && style.subtitle) style.subtitle.text = res.subtitle;
+          syncSection2Inputs(selectedColumn);
+          loadColumnIntoFabric(selectedColumn);
+          setMockupDirty(true);
+          showToast("AI copy generated successfully!", "success");
+        }
+      } catch (e) {
+        showToast("AI assist error: " + (e.message || e), "error");
+      }
+    };
+  }
+}
+
+export async function renderMockupDevicesSection() {
+  const list = document.getElementById("mockup-device-list");
+  if (list) list.innerHTML = "";
+  if (!mockupProject) return;
+  const selectEl = document.getElementById("mockup-preview-device");
+  if (selectEl) selectEl.innerHTML = (mockupProject.devices || []).map((d) => `<option value="${d.id}">${d.label}</option>`).join("");
+
+  if (list && Array.isArray(mockupProject.devices)) {
+    for (const row of mockupProject.devices) {
+      const el = document.createElement("div");
+      el.className = "provider-row";
+      el.innerHTML = `
+        <span class="provider-name">${row.label}</span>
+        <span class="provider-meta">${row.deviceId}${row.isBase ? " (base)" : ""}</span>
+        <label class="checkbox-row" style="margin:0"><input type="checkbox" ${row.previewsVisible ? "checked" : ""} class="row-visible" /> Visible</label>
+        <button class="small danger" type="button">Remove</button>
+      `;
+      el.querySelector(".row-visible").onchange = async (e) => {
+        await api(`/api/mockups/${mockupId}/devices/${row.id}`, { method: "PATCH", body: { previewsVisible: e.target.checked } });
+        const updated = await api(`/api/mockups/${mockupId}`);
+        setMockupProject(updated);
+      };
+      el.querySelector("button.danger").onclick = async () => {
+        await api(`/api/mockups/${mockupId}/devices/${row.id}`, { method: "DELETE" });
+        const updated = await api(`/api/mockups/${mockupId}`);
+        setMockupProject(updated);
+        renderMockupDevicesSection();
+        renderMockupMatrix();
+      };
+      list.appendChild(el);
+    }
+  }
+
+  // Populate 2D SVG Device Frame Library Grid
+  const grid = document.getElementById("mockup-device-library-grid");
+  if (grid) {
+    grid.innerHTML = '<div style="color:var(--text-secondary)">Loading device frame catalog…</div>';
+    try {
+      const { devices } = await api("/api/mockups/devices-library");
+      grid.innerHTML = "";
+      for (const dev of devices) {
+        const card = document.createElement("div");
+        card.className = "device-lib-card";
+        card.innerHTML = `
+          <div class="device-lib-title">${dev.name}</div>
+          <div class="device-lib-meta">${dev.category.toUpperCase()} &bull; ${dev.aspectRatio}</div>
+          <div style="font-size:12px; color:var(--text-tertiary); margin-top:4px;">${dev.width} &times; ${dev.height} px</div>
+          <button class="small secondary" type="button" style="margin-top:12px; width:100%">Replace Base Frame</button>
+        `;
+        card.querySelector("button").onclick = async () => {
+          if (!mockupProject) return;
+          const baseDevice = (mockupProject.devices || []).find((d) => d.isBase) || mockupProject.devices?.[0];
+          if (baseDevice) {
+            baseDevice.deviceId = dev.id;
+            baseDevice.label = dev.name;
+            await saveCurrentMockupProject();
+            renderMockupCanvas();
+            renderMockupMatrix();
+            renderMockupDevicesSection();
+            await showAlert(`Updated base device frame to ${dev.name}.`);
+          }
+        };
+        grid.appendChild(card);
+      }
+    } catch (err) {
+      grid.innerHTML = `<div style="color:var(--danger)">Failed to load device library: ${err.message}</div>`;
+    }
   }
 }
 

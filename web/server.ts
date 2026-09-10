@@ -124,6 +124,16 @@ import { type SlotValue } from "../src/video/project.js";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const INDEX_HTML_PATH = path.join(__dirname, "index.html");
 
+// In-flight concurrency lock to prevent parallel browser process storms
+const pendingThumbRenders = new Map<string, Promise<void>>();
+async function renderThumbsOnce(key: string, fn: () => Promise<void>): Promise<void> {
+  if (!pendingThumbRenders.has(key)) {
+    const p = fn().finally(() => pendingThumbRenders.delete(key));
+    pendingThumbRenders.set(key, p);
+  }
+  return pendingThumbRenders.get(key)!;
+}
+
 async function readJsonBody(req: http.IncomingMessage): Promise<any> {
   const chunks: Buffer[] = [];
   for await (const chunk of req) chunks.push(chunk as Buffer);
@@ -230,11 +240,39 @@ function imageDimensions(buf: Buffer, format: ReturnType<typeof sniffImageFormat
   return null;
 }
 
+let processGuardsInstalled = false;
+
+/** Keeps a single unexpected rejection/throw (e.g. from a WS message handler or a fire-and-forget async call) from silently killing the dev server. */
+function installProcessGuards(): void {
+  if (processGuardsInstalled) return;
+  processGuardsInstalled = true;
+  process.on("unhandledRejection", (reason) => {
+    console.error("[SAG-SERVER] Unhandled promise rejection:", reason);
+  });
+  process.on("uncaughtException", (err) => {
+    console.error("[SAG-SERVER] Uncaught exception:", err);
+  });
+}
+
 export async function startWebServer(options: { port?: number; host?: string; openBrowser?: boolean } = {}): Promise<http.Server> {
+  installProcessGuards();
   const port = options.port || 8787;
   const host = options.host || "127.0.0.1";
 
   const server = http.createServer(async (req, res) => {
+    try {
+      await handleRequest(req, res);
+    } catch (err: any) {
+      console.error("[SAG-SERVER] Unhandled error in request handler:", err);
+      if (!res.headersSent) {
+        sendError(res, 500, err?.message || "Internal server error");
+      } else {
+        try { res.end(); } catch {}
+      }
+    }
+  });
+
+  async function handleRequest(req: http.IncomingMessage, res: http.ServerResponse): Promise<void> {
     const url = new URL(req.url || "/", `http://${req.headers.host || "127.0.0.1"}`);
     const p = url.pathname;
     const method = req.method?.toUpperCase();
@@ -1199,18 +1237,8 @@ export async function startWebServer(options: { port?: number; host?: string; op
 
     // Templates section
     if (method === "GET" && p === "/api/mockups/templates") {
-      let list = MOCKUP_TEMPLATES;
-      try {
-        const modPath = path.join(process.cwd(), "dist", "src", "mockup", "templates.js");
-        if (fs.existsSync(modPath)) {
-          const fresh = await import(`${pathToFileURL(modPath).href}?t=${Date.now()}`);
-          if (fresh && fresh.MOCKUP_TEMPLATES) {
-            list = fresh.MOCKUP_TEMPLATES;
-          }
-        }
-      } catch (_) {}
       sendJson(res, 200, {
-        templates: list.map((t: any) => ({
+        templates: MOCKUP_TEMPLATES.map((t: any) => ({
           id: t.id,
           name: t.name,
           category: t.category,
@@ -1229,18 +1257,7 @@ export async function startWebServer(options: { port?: number; host?: string; op
       const m = p.match(/^\/api\/mockups\/template-preview\/([^/]+)$/);
       if (m && method === "GET") {
         const slug = decodeURIComponent(m[1]);
-        let template = MOCKUP_TEMPLATES.find((t) => t.id === slug);
-        if (!template) {
-          try {
-            const modPath = path.join(process.cwd(), "dist", "src", "mockup", "templates.js");
-            if (fs.existsSync(modPath)) {
-              const fresh = await import(`${pathToFileURL(modPath).href}?t=${Date.now()}`);
-              if (fresh && fresh.MOCKUP_TEMPLATES) {
-                template = fresh.MOCKUP_TEMPLATES.find((t: any) => t.id === slug);
-              }
-            }
-          } catch (_) {}
-        }
+        const template = MOCKUP_TEMPLATES.find((t) => t.id === slug);
         if (!template) return sendError(res, 404, `Unknown template '${slug}'.`);
         const panelQuery = url.searchParams.get("panel");
         const panelIndex = panelQuery !== null ? parseInt(panelQuery, 10) : undefined;
@@ -1261,29 +1278,9 @@ export async function startWebServer(options: { port?: number; host?: string; op
       if (m && method === "GET") {
         const slug = decodeURIComponent(m[1]);
         const colIdx = parseInt(m[2], 10);
-        let template = MOCKUP_TEMPLATES.find((t) => t.id === slug);
-        if (!template) {
-          try {
-            const modPath = path.join(process.cwd(), "dist", "src", "mockup", "templates.js");
-            if (fs.existsSync(modPath)) {
-              const fresh = await import(`${pathToFileURL(modPath).href}?t=${Date.now()}`);
-              if (fresh && fresh.MOCKUP_TEMPLATES) {
-                template = fresh.MOCKUP_TEMPLATES.find((t: any) => t.id === slug);
-              }
-            }
-          } catch (_) {}
-        }
+        const template = MOCKUP_TEMPLATES.find((t) => t.id === slug);
         if (!template) return sendError(res, 404, `Unknown template '${slug}'.`);
-        let html = templateScreenHtml(template, colIdx);
-        try {
-          const renderPath = path.join(process.cwd(), "dist", "src", "mockup", "render.js");
-          if (fs.existsSync(renderPath)) {
-            const freshRender = await import(`${pathToFileURL(renderPath).href}?t=${Date.now()}`);
-            if (freshRender && freshRender.templateScreenHtml) {
-              html = freshRender.templateScreenHtml(template, colIdx);
-            }
-          }
-        } catch (_) {}
+        const html = templateScreenHtml(template, colIdx);
         res.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, max-age=3600" });
         res.end(html);
         return;
@@ -1311,7 +1308,9 @@ export async function startWebServer(options: { port?: number; host?: string; op
         if (!template) return sendError(res, 404, `Unknown template '${slug}'.`);
         const outDir = path.join(process.cwd(), "output", ".template-thumbs");
         const thumbPath = path.join(outDir, `${slug}.png`);
-        if (!fs.existsSync(thumbPath)) await renderTemplateThumbs(outDir, MOCKUP_TEMPLATES);
+        if (!fs.existsSync(thumbPath)) {
+          await renderThumbsOnce(outDir, () => renderTemplateThumbs(outDir, MOCKUP_TEMPLATES));
+        }
         res.writeHead(200, { "Content-Type": "image/png", "Cache-Control": "no-cache" });
         fs.createReadStream(thumbPath).pipe(res);
         return;
@@ -1326,7 +1325,9 @@ export async function startWebServer(options: { port?: number; host?: string; op
         if (!template) return sendError(res, 404, `Unknown template '${slug}'.`);
         const outDir = path.join(process.cwd(), "output", ".template-detail-thumbs");
         const thumbPath = path.join(outDir, `${slug}.png`);
-        if (!fs.existsSync(thumbPath)) await renderTemplateDetailThumbs(outDir, MOCKUP_TEMPLATES);
+        if (!fs.existsSync(thumbPath)) {
+          await renderThumbsOnce(outDir, () => renderTemplateDetailThumbs(outDir, MOCKUP_TEMPLATES));
+        }
         res.writeHead(200, { "Content-Type": "image/png", "Cache-Control": "no-cache" });
         fs.createReadStream(thumbPath).pipe(res);
         return;
@@ -1461,7 +1462,9 @@ export async function startWebServer(options: { port?: number; host?: string; op
         if (!template) return sendError(res, 404, `Unknown video template '${m[1]}'.`);
         const outDir = path.join(process.cwd(), "output", ".template-thumbs");
         const thumbPath = path.join(outDir, `video-${slug}.png`);
-        if (!fs.existsSync(thumbPath)) await renderVideoTemplateThumbs(outDir, VIDEO_TEMPLATES);
+        if (!fs.existsSync(thumbPath)) {
+          await renderThumbsOnce(outDir + "-video", () => renderVideoTemplateThumbs(outDir, VIDEO_TEMPLATES));
+        }
         res.writeHead(200, { "Content-Type": "image/png", "Cache-Control": "no-cache" });
         fs.createReadStream(thumbPath).pipe(res);
         return;
@@ -1812,7 +1815,7 @@ export async function startWebServer(options: { port?: number; host?: string; op
     }
 
     sendError(res, 404, `Endpoint not found: ${method} ${p}`);
-  });
+  }
 
   return new Promise((resolve) => {
     server.listen(port, host, () => {
