@@ -30,7 +30,9 @@ import {
   toggleLayerLockInModel,
   attachLayerDragAndDrop,
   reorderLayersInModel,
-  setLayerZIndex
+  setLayerZIndex,
+  setupInspectorEvents,
+  renderMockupDevicesSection
 } from './editor.js';
 import {
   renderMockupMatrix,
@@ -55,8 +57,20 @@ import {
 } from './capture.js';
 import {
   loadVideoProjectInto,
-  renderVideoScenes
+  renderVideoScenes,
+  loadSavedConfigs,
+  renderVideoTemplateGrid,
+  openVideoTemplateDetail,
+  closeVideoTemplateDetail,
+  loadVideoTemplateNow
 } from './video.js';
+import {
+  setupSettingsAndModals,
+  checkToolchainStatusOnStartup,
+  refreshAuthStatus,
+  loadDevicesCatalogue,
+  openUniversalUploadModal
+} from './settings.js';
 import {
   activeProjectId,
   activeProject,
@@ -112,7 +126,6 @@ window.switchInspectorTab = switchInspectorTab;
 window.routeInspectorForLayer = routeInspectorForLayer;
 window.renderMockupLayersPanel = renderMockupLayersPanel;
 window.syncSection2Inputs = syncSection2Inputs;
-window.routeInspectorForLayer = routeInspectorForLayer;
 window.renderMockupCanvas = renderMockupCanvas;
 
 // Editor internals — Moveable gizmo + layers panel
@@ -144,6 +157,9 @@ window.triggerAndroidCapture = triggerAndroidCapture;
 window.renderAndroidCaptures = renderAndroidCaptures;
 window.loadVideoProjectInto = loadVideoProjectInto;
 window.renderVideoScenes = renderVideoScenes;
+window.renderMockupDevicesSection = renderMockupDevicesSection;
+window.loadDevicesCatalogue = loadDevicesCatalogue;
+window.openUniversalUploadModal = openUniversalUploadModal;
 
 window.pushMockupHistory = pushMockupHistory;
 window.undoMockupState = undoMockupState;
@@ -170,26 +186,59 @@ document.addEventListener("keydown", (e) => {
 // DOMContentLoaded bootstrapping
 document.addEventListener('DOMContentLoaded', async () => {
   initMockupFabricCanvas();
+  setupInspectorEvents();
   setupExportHandlers();
   setupProjectsHandlers();
+  setupSettingsAndModals();
 
   // Theme init
   const savedTheme = localStorage.getItem("sag-theme") || "dark";
   window.applyTheme(savedTheme);
 
-  // Initial load
+  // Initial load — restore active project and sync all gating right away
   if (activeProjectId) {
     try {
       const proj = await api(`/api/projects/${activeProjectId}`);
       setActiveProject(proj);
-    } catch (_) {}
+    } catch (_) {
+      setActiveProjectId(null);
+      setActiveProject(null);
+    }
   }
+  updateTabGating();
 
   if (typeof window.refreshProjectsList === 'function') {
     window.refreshProjectsList();
   }
 
-  // Bind template grid button and topbar tabs
+  // Bind rail navigation buttons (Templates / Editor / Devices / etc.)
+  for (const railBtn of document.querySelectorAll(".rail-btn")) {
+    railBtn.onclick = () => {
+      const rail = railBtn.closest(".rail");
+      const tabPage = railBtn.closest(".tab-page");
+      if (!rail || !tabPage) return;
+
+      for (const b of rail.querySelectorAll(".rail-btn")) b.classList.remove("active");
+      for (const s of tabPage.querySelectorAll(".section-page")) s.classList.remove("active");
+      railBtn.classList.add("active");
+      const prefix = tabPage.id === "tab-capture" ? "capture" : tabPage.id === "tab-mockup" ? "mockup" : "video";
+      const targetSec = document.getElementById(prefix + "-section-" + railBtn.dataset.section);
+      if (targetSec) targetSec.classList.add("active");
+
+      if (prefix === "mockup") {
+        const inspector = document.getElementById("mockup-inspector");
+        if (inspector) inspector.style.display = railBtn.dataset.section === "editor" ? "block" : "none";
+        if (railBtn.dataset.section === "devices") renderMockupDevicesSection();
+      }
+      if (prefix === "video") {
+        if (railBtn.dataset.section === "scenes") renderVideoScenes();
+        if (railBtn.dataset.section === "devices") loadDevicesCatalogue();
+        if (railBtn.dataset.section === "saved-configs") loadSavedConfigs();
+      }
+    };
+  }
+
+  // Bind topbar tabs
   for (const tab of document.querySelectorAll(".topbar-tab")) {
     tab.addEventListener("click", async () => {
       const targetTab = tab.dataset.tab;
@@ -214,6 +263,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     });
   }
+
+  // Check auth and toolchain on startup
+  refreshAuthStatus();
+  checkToolchainStatusOnStartup();
 });
 
 window.applyTheme = (theme) => {
