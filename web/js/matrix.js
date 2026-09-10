@@ -125,9 +125,10 @@ export function selectCell(deviceRowId, columnId) {
   setSelectedColumn(col);
   renderMockupMatrix();
   try { centerArtboardInViewport(); } catch (_) {}
-  // Inspector: visible + targeted
+  // Inspector: only visible if in editor section
+  const isEditorActive = document.getElementById("mockup-section-editor")?.classList.contains("active");
   const inspector = document.getElementById("mockup-inspector");
-  if (inspector) inspector.style.display = "block";
+  if (inspector) inspector.style.display = isEditorActive ? "block" : "none";
   const row = mockupProject.devices?.find((d) => d.id === deviceRowId);
   const colIndex = mockupProject.columns.findIndex((c) => c.id === columnId) + 1;
   const targetEl = document.getElementById("mockup-inspector-target");
@@ -151,8 +152,9 @@ export function selectMockupScreen(columnId) {
   renderMockupLayersPanel(col);
   syncSection2Inputs(col, null);
   loadColumnIntoFabric(col);
+  const isEditorActive2 = document.getElementById("mockup-section-editor")?.classList.contains("active");
   const insp = document.getElementById("mockup-inspector");
-  if (insp) insp.style.display = "block";
+  if (insp) insp.style.display = isEditorActive2 ? "block" : "none";
 }
 
 export async function deleteMockupScreen(columnId) {
