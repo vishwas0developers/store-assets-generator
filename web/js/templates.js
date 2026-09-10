@@ -744,6 +744,16 @@ export async function loadMockupTemplateNow(id) {
   } catch (e) {
     showAlert("Failed to apply template: " + e.message, "error");
   }
+  // Switch rail navigation to Editor section after template is applied
+  closeMockupTemplateDetail();
+  const editorRailBtn = document.querySelector('#tab-mockup .rail-btn[data-section="editor"]');
+  if (editorRailBtn) {
+    editorRailBtn.click();
+  } else {
+    renderMockupCanvas();
+    renderMockupMatrix();
+    if (updatedProj.columns?.length > 0) selectMockupScreen(updatedProj.columns[0].id);
+  }
 }
 
 export const applyTemplate = loadMockupTemplateNow;
