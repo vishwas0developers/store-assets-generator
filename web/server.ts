@@ -271,6 +271,10 @@ export async function startWebServer(options: { port?: number; host?: string; op
           vendorPath = path.join(process.cwd(), "node_modules", "sweetalert2", "dist", "sweetalert2.all.min.js");
         } else if (p === "/vendor/three/build/three.module.js") {
           vendorPath = path.join(process.cwd(), "node_modules", "three", "build", "three.module.js");
+        } else if (p.startsWith("/vendor/three/")) {
+          // Generic fallback: /vendor/three/<subpath> -> node_modules/three/<subpath>
+          const sub = p.replace("/vendor/three/", "");
+          vendorPath = path.join(process.cwd(), "node_modules", "three", sub);
         }
       }
       let contentType = "application/javascript";
@@ -288,6 +292,18 @@ export async function startWebServer(options: { port?: number; host?: string; op
       const contentType = p.endsWith(".js") ? "application/javascript" : "text/css";
       sendFile(res, assetPath, contentType);
       return;
+    }
+
+    if (method === "GET" && p.startsWith("/js/")) {
+      let jsPath = path.join(process.cwd(), "web", p);
+      if (!fs.existsSync(jsPath)) {
+        jsPath = path.join(__dirname, "..", "..", "dist", "web", p);
+      }
+      if (fs.existsSync(jsPath)) {
+        const contentType = p.endsWith(".js") ? "application/javascript" : "text/css";
+        sendFile(res, jsPath, contentType);
+        return;
+      }
     }
 
     if (p === "/favicon.ico") {
