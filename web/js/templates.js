@@ -732,28 +732,26 @@ export async function loadMockupTemplateNow(id) {
     const ok = await showConfirm("You have unsaved screenshots. Are you sure you want a new project?");
     if (!ok) return;
   }
+  let updatedProj;
   try {
-    const updatedProj = await api(`/api/mockups/${mockupId}/apply-template`, { method: "POST", body: { templateId: id } });
-    setMockupProject(updatedProj);
-    pushMockupHistory();
-    renderMockupCanvas();
-    renderMockupMatrix();
-    if (updatedProj.columns?.length > 0) selectMockupScreen(updatedProj.columns[0].id);
-    closeMockupTemplateDetail();
-    showToast(`Applied "${t ? t.name : id}" — ${updatedProj.devices?.length || 0} device row(s), ${updatedProj.columns?.length || 0} screen(s).`, "success");
+    updatedProj = await api(`/api/mockups/${mockupId}/apply-template`, { method: "POST", body: { templateId: id } });
   } catch (e) {
     showAlert("Failed to apply template: " + e.message, "error");
+    return;
   }
-  // Switch rail navigation to Editor section after template is applied
+  setMockupProject(updatedProj);
+  pushMockupHistory();
   closeMockupTemplateDetail();
+  showToast(`Applied "${t ? t.name : id}" — ${updatedProj.devices?.length || 0} device row(s), ${updatedProj.columns?.length || 0} screen(s).`, "success");
+
+  // Switch rail navigation to Editor section after template is applied
   const editorRailBtn = document.querySelector('#tab-mockup .rail-btn[data-section="editor"]');
   if (editorRailBtn) {
     editorRailBtn.click();
-  } else {
-    renderMockupCanvas();
-    renderMockupMatrix();
-    if (updatedProj.columns?.length > 0) selectMockupScreen(updatedProj.columns[0].id);
   }
+  renderMockupCanvas();
+  renderMockupMatrix();
+  if (updatedProj.columns?.length > 0) selectMockupScreen(updatedProj.columns[0].id);
 }
 
 export const applyTemplate = loadMockupTemplateNow;

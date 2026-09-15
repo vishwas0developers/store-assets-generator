@@ -288,14 +288,15 @@ pre { background: var(--bg-main); border: 1px solid var(--border-subtle); border
   width: 100%;
   min-height: 0;
   overflow: hidden;
-  /* Checkerboard background: two offset linear-gradient layers at ~20px tile */
+  /* Transparency checkerboard (dark mode): two offset linear-gradient layers at 16px tile */
   background-image:
-    linear-gradient(45deg, #1e293b 25%, #0f172a 25%),
-    linear-gradient(-45deg, #1e293b 25%, #0f172a 25%),
-    linear-gradient(45deg, transparent 75%, #1e293b 75%),
-    linear-gradient(-45deg, transparent 75%, #1e293b 75%);
-  background-size: 20px 20px;
-  background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+    linear-gradient(45deg, #666 25%, transparent 25%),
+    linear-gradient(-45deg, #666 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #666 75%),
+    linear-gradient(-45deg, transparent 75%, #666 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+  background-color: #808080;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -303,6 +304,16 @@ pre { background: var(--bg-main); border: 1px solid var(--border-subtle); border
   outline: none;
   cursor: grab;
   user-select: none;
+}
+
+html.light .mockup-canvas-viewport {
+  /* Transparency checkerboard (light mode) */
+  background-image:
+    linear-gradient(45deg, #ccc 25%, transparent 25%),
+    linear-gradient(-45deg, #ccc 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #ccc 75%),
+    linear-gradient(-45deg, transparent 75%, #ccc 75%);
+  background-color: #fff;
 }
 
 .mockup-canvas-viewport.panning {
