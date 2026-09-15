@@ -152,6 +152,7 @@ export function selectMockupScreen(columnId) {
   renderMockupLayersPanel(col);
   syncSection2Inputs(col, null);
   loadColumnIntoFabric(col);
+  try { centerArtboardInViewport(); } catch (_) {}
   const isEditorActive2 = document.getElementById("mockup-section-editor")?.classList.contains("active");
   const insp = document.getElementById("mockup-inspector");
   if (insp) insp.style.display = isEditorActive2 ? "block" : "none";
@@ -176,19 +177,23 @@ export async function deleteMockupScreen(columnId) {
   else renderMockupMatrix();
 }
 
+export function defaultColumnStyle(title) {
+  return {
+    layout: "single-title-above",
+    background: { type: "gradient", value: "ocean" },
+    title: { text: title, color: "#ffffff", size: 58, align: "center" },
+    subtitle: { text: "Add your description here", color: "#94a3b8", size: 36, align: "center" },
+    deviceOne: { size: 90, x: 0, y: 0, rotation: 0, brightness: 100, visible: true },
+    assetLayers: [],
+  };
+}
+
 export async function addMockupScreen() {
   if (!mockupProject) return;
   const newCol = {
     id: `col_${Date.now()}`,
     order: mockupProject.columns.length,
-    style: {
-      layout: "single-title-above",
-      background: { type: "gradient", value: "ocean" },
-      title: { text: `New Screen ${mockupProject.columns.length + 1}`, color: "#ffffff", size: 58, align: "center" },
-      subtitle: { text: "Add your description here", color: "#94a3b8", size: 36, align: "center" },
-      deviceOne: { size: 90, x: 0, y: 0, rotation: 0, brightness: 100, visible: true },
-      assetLayers: [],
-    },
+    style: defaultColumnStyle(`New Screen ${mockupProject.columns.length + 1}`),
   };
 
   mockupProject.columns.push(newCol);

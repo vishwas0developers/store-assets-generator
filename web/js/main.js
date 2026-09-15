@@ -8,7 +8,10 @@ import {
   commitMoveableTransformToModel,
   renderMockupCanvas,
   renderTransformGizmoOverlay,
-  attachGizmoEvents
+  attachGizmoEvents,
+  centerArtboardInViewport,
+  setStageZoomAndCenter,
+  stageZoomRatio
 } from './canvas.js';
 import {
   ensureMockupTemplates,
@@ -38,7 +41,9 @@ import {
   renderMockupMatrix,
   selectMockupScreen,
   deleteMockupScreen,
-  addMockupScreen
+  addMockupScreen,
+  selectedCell,
+  defaultColumnStyle
 } from './matrix.js';
 import {
   generateStorePackage,
@@ -183,6 +188,130 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
+// Real-Time Stage Controls Toolbar — undo/redo, screen/asset management, zoom, save, export.
+function setupMockupToolbar() {
+  const $id = (id) => document.getElementById(id);
+
+  if ($id("mockup-undo-btn")) $id("mockup-undo-btn").onclick = undoMockupState;
+  if ($id("mockup-redo-btn")) $id("mockup-redo-btn").onclick = redoMockupState;
+  if ($id("mockup-add-column")) $id("mockup-add-column").onclick = addMockupScreen;
+
+  if ($id("mockup-zoom-fit")) $id("mockup-zoom-fit").onclick = () => centerArtboardInViewport();
+  if ($id("mockup-zoom-50")) $id("mockup-zoom-50").onclick = () => setStageZoomAndCenter(0.5);
+  if ($id("mockup-zoom-100")) $id("mockup-zoom-100").onclick = () => setStageZoomAndCenter(1.0);
+  if ($id("mockup-zoom-in")) $id("mockup-zoom-in").onclick = () => setStageZoomAndCenter(Math.min(stageZoomRatio * 1.25, 3.0));
+  if ($id("mockup-zoom-out")) $id("mockup-zoom-out").onclick = () => setStageZoomAndCenter(Math.max(stageZoomRatio * 0.8, 0.1));
+
+  if ($id("mockup-add-asset-btn")) {
+    $id("mockup-add-asset-btn").onclick = () => {
+      if ($id("mockup-asset-upload-input")) $id("mockup-asset-upload-input").click();
+    };
+  }
+  if ($id("mockup-asset-upload-input")) {
+    $id("mockup-asset-upload-input").onchange = async (e) => {
+      const file = e.target.files && e.target.files[0];
+      e.target.value = "";
+      if (!file || !mockupId || !selectedCell) return;
+      const reader = new FileReader();
+      reader.onload = async (evt) => {
+        try {
+          const { source } = await api(`/api/mockups/${mockupId}/upload-asset`, {
+            method: "POST",
+            body: { name: file.name, data: evt.target.result }
+          });
+          const col = mockupProject.columns.find((c) => c.id === selectedCell.columnId);
+          if (!col) return;
+          col.style.assetLayers = col.style.assetLayers || [];
+          col.style.assetLayers.push({
+            id: `asset_${Date.now()}`,
+            assetId: source.id,
+            name: source.name,
+            xPct: 50, yPct: 50, widthPct: 35, rotation: 0, opacity: 1, zIndex: 10
+          });
+          await saveCurrentMockupProject();
+          pushMockupHistory();
+          loadColumnIntoFabric(col);
+          renderMockupMatrix();
+          showToast(`Asset "${file.name}" added to screen layer.`, "success");
+        } catch (err) {
+          await showAlert("Asset upload failed: " + err.message);
+        }
+      };
+      reader.readAsDataURL(file);
+    };
+  }
+
+  if ($id("mockup-reset-template-btn")) {
+    $id("mockup-reset-template-btn").onclick = async () => {
+      if (!selectedCell || !mockupProject) return;
+      const ok = await showConfirm("Reset active screen style to defaults?");
+      if (!ok) return;
+      const col = mockupProject.columns.find((c) => c.id === selectedCell.columnId);
+      if (!col) return;
+      col.style = defaultColumnStyle("Screen");
+      if (mockupProject.cells) delete mockupProject.cells[`${selectedCell.deviceRowId}:${selectedCell.columnId}`];
+      await saveCurrentMockupProject();
+      pushMockupHistory();
+      loadColumnIntoFabric(col);
+      renderMockupMatrix();
+    };
+  }
+
+  if ($id("mk-save")) {
+    $id("mk-save").onclick = async () => {
+      if (!selectedCell) return;
+      await saveCurrentMockupProject();
+      pushMockupHistory();
+      setMockupDirty(false);
+      renderMockupMatrix();
+      showToast("Changes saved.", "success");
+    };
+  }
+
+  if ($id("mk-copy-style")) {
+    $id("mk-copy-style").onclick = async () => {
+      if (!selectedCell || !mockupProject) return;
+      const col = mockupProject.columns.find((c) => c.id === selectedCell.columnId);
+      if (!col) return;
+      if (mockupProject.cells) {
+        for (const row of mockupProject.devices || []) {
+          delete mockupProject.cells[`${row.id}:${col.id}`];
+        }
+      }
+      await saveCurrentMockupProject();
+      pushMockupHistory();
+      renderMockupMatrix();
+      await showAlert("Style copied across all device rows for this screen.");
+    };
+  }
+
+  if ($id("mockup-export-single-btn")) {
+    $id("mockup-export-single-btn").onclick = async () => {
+      if (!mockupProject || !mockupId) return showAlert("No active mockup project loaded.");
+      const btn = $id("mockup-export-single-btn");
+      btn.disabled = true;
+      btn.textContent = "Exporting PNG…";
+      try {
+        const colId = selectedCell ? selectedCell.columnId : (mockupProject.columns[0]?.id || "");
+        const res = await api(`/api/mockups/${mockupId}/export/single`, { method: "POST", body: { columnId: colId } });
+        await showAlert(`Single Screen exported successfully to:\n${res.path}`);
+      } catch (e) {
+        await showAlert("Single screen export failed: " + e.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Export Screen (PNG)";
+      }
+    };
+  }
+
+  // Keep the artboard centered when the viewport is resized (panel toggles, window resize).
+  window.addEventListener("resize", () => {
+    if (document.getElementById("mockup-section-editor")?.classList.contains("active")) {
+      try { centerArtboardInViewport(); } catch (_) {}
+    }
+  });
+}
+
 // DOMContentLoaded bootstrapping
 document.addEventListener('DOMContentLoaded', async () => {
   initMockupFabricCanvas();
@@ -190,6 +319,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupExportHandlers();
   setupProjectsHandlers();
   setupSettingsAndModals();
+  setupMockupToolbar();
 
   // Theme init
   const savedTheme = localStorage.getItem("sag-theme") || "dark";
@@ -229,6 +359,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         const inspector = document.getElementById("mockup-inspector");
         if (inspector) inspector.style.display = railBtn.dataset.section === "editor" ? "block" : "none";
         if (railBtn.dataset.section === "devices") renderMockupDevicesSection();
+        // Viewport was hidden (0 width) while off-screen — re-center now that it's visible.
+        if (railBtn.dataset.section === "editor") { try { centerArtboardInViewport(); } catch (_) {} }
       }
       if (prefix === "video") {
         if (railBtn.dataset.section === "scenes") renderVideoScenes();
