@@ -7,7 +7,15 @@ import { api, uploadFile, showAlert, showToast } from './utils.js';
 let browserConnected = false;
 let frameIntervalId = null;
 let frameInFlight = false;
+let isFastStream = false;
+let boostTimer = null;
 let isPointerDown = false;
+let hasDragged = false;
+let startX = 0, startY = 0, lastX = 0, lastY = 0, pointerStartTime = 0;
+let moveHistory = [];
+let inertiaRafId = null;
+let accumDeltaX = 0, accumDeltaY = 0, lastCursorXPct = 50, lastCursorYPct = 50, rafScheduled = false;
+let browserInteractionBound = false;
 let renderLiveBrowserCapturesRef = null;
 
 // Android live state
@@ -35,31 +43,288 @@ export function loadCaptureTab() {
   if (typeof renderAndroidCaptures === 'function') renderAndroidCaptures();
 }
 
-export async function connectLiveBrowser() {
-  const url = (document.getElementById("browser-url-input")?.value || "").trim();
-  if (!url) return alert("Enter a URL to capture from.");
+function loadNextFrame() {
+  if (!browserConnected || frameInFlight) return;
+  frameInFlight = true;
+  const img = document.getElementById("browser-frame-img");
+  const newImg = new Image();
+  newImg.onload = () => { if (img) img.src = newImg.src; frameInFlight = false; };
+  newImg.onerror = () => { frameInFlight = false; };
+  newImg.src = `/api/browser/frame?t=${Date.now()}`;
+}
 
-  await api("/api/browser/start", { method: "POST", body: { url } });
-  browserConnected = true;
-  document.getElementById("btn-browser-connect")?.setAttribute("disabled", "");
-  document.getElementById("btn-browser-disconnect")?.removeAttribute("disabled");
+function startFrameStream() {
+  clearInterval(frameIntervalId);
+  loadNextFrame();
+  frameIntervalId = setInterval(loadNextFrame, 200);
+}
+
+function boostFrameStream() {
+  if (!browserConnected) return;
+  if (!isFastStream) {
+    isFastStream = true;
+    clearInterval(frameIntervalId);
+    frameIntervalId = setInterval(loadNextFrame, 75); // ~13 fps during active motion
+  }
+  clearTimeout(boostTimer);
+  boostTimer = setTimeout(() => {
+    isFastStream = false;
+    clearInterval(frameIntervalId);
+    frameIntervalId = setInterval(loadNextFrame, 200); // idle 5 fps
+  }, 1000);
+}
+
+function recordMoveSample(x, y) {
+  const now = performance.now();
+  moveHistory.push({ x, y, t: now });
+  while (moveHistory.length > 0 && now - moveHistory[0].t > 120) moveHistory.shift();
+}
+
+function getInstantVelocity() {
+  if (moveHistory.length < 2) return { vx: 0, vy: 0 };
+  const first = moveHistory[0];
+  const last = moveHistory[moveHistory.length - 1];
+  const dt = last.t - first.t;
+  if (dt <= 0) return { vx: 0, vy: 0 };
+  return { vx: (last.x - first.x) / dt, vy: (last.y - first.y) / dt };
+}
+
+function flushScrollAccumulator() {
+  if (!browserConnected) { accumDeltaX = 0; accumDeltaY = 0; rafScheduled = false; return; }
+  const dx = accumDeltaX, dy = accumDeltaY, xPct = lastCursorXPct, yPct = lastCursorYPct;
+  accumDeltaX = 0; accumDeltaY = 0; rafScheduled = false;
+  if (dx !== 0 || dy !== 0) {
+    fetch("/api/browser/action", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: "scroll", deltaX: dx, deltaY: dy, xPct, yPct })
+    }).catch(() => {});
+  }
+}
+
+function queueScroll(dx, dy, xPct, yPct) {
+  accumDeltaX += dx;
+  accumDeltaY += dy;
+  if (xPct !== undefined) lastCursorXPct = xPct;
+  if (yPct !== undefined) lastCursorYPct = yPct;
+  if (!rafScheduled) { rafScheduled = true; requestAnimationFrame(flushScrollAccumulator); }
+}
+
+function startMomentumInertia(vx, vy) {
+  cancelAnimationFrame(inertiaRafId);
+  const speed = Math.hypot(vx, vy);
+  if (speed < 0.12) return;
+  let momentumDx = -vx * 18 * 1.5;
+  let momentumDy = -vy * 18 * 1.5;
+  const friction = 0.91;
+  const stepInertia = () => {
+    if (!browserConnected) return;
+    queueScroll(momentumDx, momentumDy, lastCursorXPct, lastCursorYPct);
+    boostFrameStream();
+    momentumDx *= friction;
+    momentumDy *= friction;
+    if (Math.hypot(momentumDx, momentumDy) > 0.4) inertiaRafId = requestAnimationFrame(stepInertia);
+  };
+  inertiaRafId = requestAnimationFrame(stepInertia);
+}
+
+// Interactive touch & scroll — bound once; the overlay stays in the DOM across connect/disconnect.
+function bindBrowserInteraction() {
+  if (browserInteractionBound) return;
+  const overlayEl = document.getElementById("browser-interaction-overlay");
+  const imgEl = document.getElementById("browser-frame-img");
+  if (!overlayEl || !imgEl) return;
+  browserInteractionBound = true;
+
+  overlayEl.addEventListener("pointerdown", (e) => {
+    if (!browserConnected) return;
+    e.preventDefault();
+    cancelAnimationFrame(inertiaRafId);
+    isPointerDown = true;
+    hasDragged = false;
+    startX = e.clientX; startY = e.clientY;
+    lastX = e.clientX; lastY = e.clientY;
+    pointerStartTime = Date.now();
+    moveHistory = [{ x: e.clientX, y: e.clientY, t: performance.now() }];
+    try { overlayEl.setPointerCapture(e.pointerId); } catch (_) {}
+  });
+
+  overlayEl.addEventListener("pointermove", (e) => {
+    if (!browserConnected || !isPointerDown) return;
+    e.preventDefault();
+    recordMoveSample(e.clientX, e.clientY);
+    const totalDist = Math.hypot(e.clientX - startX, e.clientY - startY);
+    if (totalDist > 3) hasDragged = true;
+    if (!hasDragged) return;
+    const distX = e.clientX - lastX, distY = e.clientY - lastY;
+    if (distX === 0 && distY === 0) return;
+    lastX = e.clientX; lastY = e.clientY;
+    const rect = overlayEl.getBoundingClientRect();
+    const xPct = ((e.clientX - rect.left) / rect.width) * 100;
+    const yPct = ((e.clientY - rect.top) / rect.height) * 100;
+    const stepSpeed = Math.hypot(distX, distY);
+    const sensitivity = Math.min(Math.max(stepSpeed * 0.16, 1.4), 3.8);
+    queueScroll(-distX * sensitivity, -distY * sensitivity, xPct, yPct);
+    boostFrameStream();
+  });
+
+  const handlePointerEnd = async (e) => {
+    if (!browserConnected || !isPointerDown) return;
+    const elapsed = Date.now() - pointerStartTime;
+    try { overlayEl.releasePointerCapture(e.pointerId); } catch (_) {}
+    const rect = overlayEl.getBoundingClientRect();
+    if (!hasDragged && elapsed < 350) {
+      const tapXPct = Math.min(100, Math.max(0, ((startX - rect.left) / rect.width) * 100));
+      const tapYPct = Math.min(100, Math.max(0, ((startY - rect.top) / rect.height) * 100));
+      try {
+        await api("/api/browser/action", { method: "POST", body: { type: "click", xPct: tapXPct, yPct: tapYPct } });
+        boostFrameStream();
+        imgEl.src = `/api/browser/frame?t=${Date.now()}`;
+      } catch (_) {}
+    } else if (hasDragged) {
+      const { vx, vy } = getInstantVelocity();
+      startMomentumInertia(vx, vy);
+    }
+    isPointerDown = false;
+    hasDragged = false;
+  };
+  overlayEl.addEventListener("pointerup", handlePointerEnd);
+  overlayEl.addEventListener("pointercancel", handlePointerEnd);
+
+  overlayEl.addEventListener("wheel", (e) => {
+    if (!browserConnected) return;
+    e.preventDefault();
+    cancelAnimationFrame(inertiaRafId);
+    const rect = overlayEl.getBoundingClientRect();
+    const xPct = ((e.clientX - rect.left) / rect.width) * 100;
+    const yPct = ((e.clientY - rect.top) / rect.height) * 100;
+    queueScroll(e.deltaX * 1.5, e.deltaY * 1.5, xPct, yPct);
+    boostFrameStream();
+  }, { passive: false });
+
+  const urlInput = document.getElementById("browser-url-input");
+  if (urlInput) {
+    urlInput.addEventListener("keydown", async (e) => {
+      if (e.key !== "Enter" || !browserConnected) return;
+      const url = urlInput.value.trim();
+      if (url) await api("/api/browser/action", { method: "POST", body: { type: "navigate", url } });
+    });
+  }
+}
+
+export async function connectLiveBrowser() {
+  const urlEl = document.getElementById("browser-url-input");
+  const url = (urlEl?.value || "").trim();
+  if (!url) return showAlert("Please enter a starting URL.");
+
+  const resolutionKey = document.getElementById("browser-resolution-select")?.value || "375x812";
+  const [width, height] = resolutionKey.split("x").map(Number);
+  const connectBtn = document.getElementById("browser-connect-btn");
+  const disconnectBtn = document.getElementById("browser-disconnect-btn");
+  const statusEl = document.getElementById("live-browser-status");
+  if (connectBtn) { connectBtn.disabled = true; connectBtn.textContent = "Connecting..."; }
+  if (statusEl) statusEl.textContent = "Launching Playwright mobile Chromium browser...";
+
+  try {
+    await api("/api/browser/start", { method: "POST", body: { projectId: activeProjectId, url, resolution: resolutionKey, width, height } });
+
+    browserConnected = true;
+    if (connectBtn) { connectBtn.style.display = "none"; connectBtn.disabled = false; connectBtn.textContent = "Connect"; }
+    if (disconnectBtn) { disconnectBtn.style.display = "inline-flex"; disconnectBtn.disabled = false; }
+    if (statusEl) statusEl.textContent = "Live mobile session active. Click inside the device frame to interact.";
+    const deviceFrame = document.getElementById("browser-device-frame");
+    if (deviceFrame) deviceFrame.style.display = "block";
+    const bottomControls = document.getElementById("browser-bottom-controls");
+    if (bottomControls) bottomControls.style.display = "flex";
+
+    const isTablet = resolutionKey === "2048x2732" || resolutionKey === "1200x1920";
+    const aspect = height / width;
+    const maxAvailableHeight = Math.max(400, window.innerHeight - 300);
+    const standardWidth = isTablet ? 420 : 360;
+    let previewWidth = standardWidth;
+    let previewHeight = Math.round(previewWidth * aspect);
+    if (previewHeight > maxAvailableHeight) {
+      previewHeight = maxAvailableHeight;
+      previewWidth = Math.round(previewHeight / aspect);
+    }
+    const frameEl = document.getElementById("browser-viewport-container");
+    if (frameEl) { frameEl.style.width = `${previewWidth}px`; frameEl.style.height = `${previewHeight}px`; }
+    if (deviceFrame) { deviceFrame.style.width = `${previewWidth}px`; deviceFrame.style.height = `${previewHeight}px`; }
+
+    bindBrowserInteraction();
+    startFrameStream();
+  } catch (e) {
+    const cleanMsg = (e.message || "Unknown error").replace(/Call log:[\s\S]*/gi, "").trim();
+    await showAlert("Connection failed: " + cleanMsg);
+    if (connectBtn) { connectBtn.style.display = "inline-flex"; connectBtn.disabled = false; connectBtn.textContent = "Connect"; }
+    if (disconnectBtn) disconnectBtn.style.display = "none";
+    if (statusEl) statusEl.textContent = "Connection failed. Please check the URL and try again.";
+  }
 }
 
 export async function disconnectLiveBrowser() {
-  await api("/api/browser/stop", { method: "POST" });
+  clearInterval(frameIntervalId);
+  frameIntervalId = null;
+  const connectBtn = document.getElementById("browser-connect-btn");
+  const disconnectBtn = document.getElementById("browser-disconnect-btn");
+  if (disconnectBtn) { disconnectBtn.disabled = true; disconnectBtn.textContent = "Disconnecting..."; }
+
+  try { await api("/api/browser/stop", { method: "POST" }); } catch (_) {}
+
   browserConnected = false;
-  if (frameIntervalId) { clearInterval(frameIntervalId); frameIntervalId = null; }
-  document.getElementById("btn-browser-disconnect")?.setAttribute("disabled", "");
-  document.getElementById("btn-browser-connect")?.removeAttribute("disabled");
+  if (connectBtn) { connectBtn.style.display = "inline-flex"; connectBtn.disabled = false; connectBtn.textContent = "Connect"; }
+  if (disconnectBtn) { disconnectBtn.disabled = false; disconnectBtn.textContent = "Disconnect"; disconnectBtn.style.display = "none"; }
+  const statusEl = document.getElementById("live-browser-status");
+  if (statusEl) statusEl.textContent = "Session closed. Click 'Connect' to start a new live session.";
+  const deviceFrame = document.getElementById("browser-device-frame");
+  if (deviceFrame) deviceFrame.style.display = "none";
+  const bottomControls = document.getElementById("browser-bottom-controls");
+  if (bottomControls) bottomControls.style.display = "none";
+}
+
+async function browserNavAction(type) {
+  if (!browserConnected) return;
+  await api("/api/browser/action", { method: "POST", body: { type } });
+}
+
+export async function triggerScreenshotCapture() {
+  if (!browserConnected || !activeProjectId) {
+    await showAlert("Please connect to a live browser session first before capturing.");
+    return;
+  }
+  const imgEl = document.getElementById("browser-frame-img");
+  if (imgEl) { imgEl.style.opacity = "0.3"; setTimeout(() => { imgEl.style.opacity = "1"; }, 150); }
+  try {
+    const capture = await api("/api/browser/capture", { method: "POST", body: { projectId: activeProjectId } });
+    showToast(`Captured Screen ${capture.id} (${capture.file})`, "success");
+    if (typeof renderLiveBrowserCapturesRef === "function") await renderLiveBrowserCapturesRef();
+  } catch (e) {
+    await showAlert("Capture failed: " + e.message);
+  }
+}
+
+export function setupCaptureHandlers() {
+  const $id = (id) => document.getElementById(id);
+  if ($id("browser-connect-btn")) $id("browser-connect-btn").onclick = connectLiveBrowser;
+  if ($id("browser-disconnect-btn")) $id("browser-disconnect-btn").onclick = disconnectLiveBrowser;
+  if ($id("browser-resolution-select")) {
+    $id("browser-resolution-select").addEventListener("change", async () => {
+      if (browserConnected) { await disconnectLiveBrowser(); await connectLiveBrowser(); }
+    });
+  }
+  if ($id("browser-back")) $id("browser-back").onclick = () => browserNavAction("back");
+  if ($id("browser-forward")) $id("browser-forward").onclick = () => browserNavAction("forward");
+  if ($id("browser-reload")) $id("browser-reload").onclick = () => browserNavAction("reload");
+  if ($id("browser-bottom-back")) $id("browser-bottom-back").onclick = () => browserNavAction("back");
+  if ($id("browser-bottom-forward")) $id("browser-bottom-forward").onclick = () => browserNavAction("forward");
+  if ($id("browser-bottom-reload")) $id("browser-bottom-reload").onclick = () => browserNavAction("reload");
+  if ($id("browser-top-capture-btn")) $id("browser-top-capture-btn").onclick = triggerScreenshotCapture;
+  if ($id("browser-bottom-capture")) $id("browser-bottom-capture").onclick = triggerScreenshotCapture;
+  if ($id("android-refresh-devices-btn")) $id("android-refresh-devices-btn").onclick = () => loadAndroidDevices();
 }
 
 export function registerLiveBrowserCapturesRenderer(fn) {
   renderLiveBrowserCapturesRef = fn;
-}
-
-export async function triggerScreenshotCapture() {
-  if (!activeProjectId) return;
-  await api(`/api/projects/${activeProjectId}/captures`, { method: "POST", body: { kind: "screenshot" } });
 }
 
 // Android device functions

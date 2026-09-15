@@ -612,6 +612,8 @@ export function setupSettingsAndModals() {
   }
 
   // Toolchain
+  const openToolchain = $("open-toolchain");
+  if (openToolchain) openToolchain.onclick = () => openToolchainModal();
   const toolchainClose = $("toolchain-close");
   if (toolchainClose) toolchainClose.onclick = () => closeToolchainModal();
   const toolchainBackdrop = $("toolchain-backdrop");

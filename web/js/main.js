@@ -20,7 +20,8 @@ import {
   openMockupTemplateDetail,
   closeMockupTemplateDetail,
   applyTemplate,
-  loadMockupProjectInto
+  loadMockupProjectInto,
+  mockupDevicesCatalog
 } from './templates.js';
 import {
   switchInspectorTab,
@@ -54,6 +55,7 @@ import {
   connectLiveBrowser,
   disconnectLiveBrowser,
   triggerScreenshotCapture,
+  setupCaptureHandlers,
   connectAndroidDevice,
   disconnectAndroidDevice,
   loadAndroidDevices,
@@ -92,7 +94,9 @@ import {
   pushMockupHistory,
   undoMockupState,
   redoMockupState,
-  saveCurrentMockupProject
+  saveCurrentMockupProject,
+  mockupHistory,
+  mockupHistoryIdx
 } from './state.js';
 import { api, uploadFile, showAlert, showConfirm, showPrompt, showToast } from './utils.js';
 import {
@@ -304,6 +308,176 @@ function setupMockupToolbar() {
     };
   }
 
+  if ($id("mockup-export-panoramic-btn")) {
+    $id("mockup-export-panoramic-btn").onclick = async () => {
+      if (!mockupProject || !mockupId) return showAlert("No active mockup project loaded.");
+      const btn = $id("mockup-export-panoramic-btn");
+      btn.disabled = true;
+      btn.textContent = "Exporting Banner…";
+      try {
+        const res = await api(`/api/mockups/${mockupId}/export/panoramic`, { method: "POST" });
+        await showAlert(`Panoramic Banner exported successfully to:\n${res.path}`);
+      } catch (e) {
+        await showAlert("Panoramic banner export failed: " + e.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Export Panoramic Banner (PNG)";
+      }
+    };
+  }
+
+  if ($id("mockup-export-store-btn")) {
+    $id("mockup-export-store-btn").onclick = async () => {
+      if (!mockupProject || !mockupId) return showAlert("No active mockup project loaded.");
+      const btn = $id("mockup-export-store-btn");
+      btn.disabled = true;
+      btn.textContent = "Generating ZIP Package…";
+      try {
+        const result = await api(`/api/mockups/${mockupId}/export`, { method: "POST" });
+        const kb = (result.bytes / 1024).toFixed(1);
+        const resContainer = $id("mockup-export-result");
+        if (resContainer) {
+          resContainer.innerHTML = `<div>ZIP ready — ${kb} KB. <a href="/api/mockups/${mockupId}/download/zip" target="_blank"><button type="button" class="secondary small">Download ZIP</button></a></div>` +
+            "<ul>" + result.entries.map((e) => `<li>${e.label}: ${e.files} files (${e.width}&times;${e.height})</li>`).join("") + "</ul>";
+        }
+        await showAlert(`Store Package ZIP generated successfully (${kb} KB).`);
+      } catch (e) {
+        await showAlert("Store Package export failed: " + e.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Export Store Package (ZIP)";
+      }
+    };
+  }
+
+  if ($id("mockup-add-device-select")) {
+    $id("mockup-add-device-select").onchange = () => {
+      const device = mockupDevicesCatalog.find((d) => d.id === $id("mockup-add-device-select").value);
+      const select = $id("mockup-add-device-variant");
+      if (!select) return;
+      select.innerHTML = '<option value="">default</option>';
+      if (device?.variants) for (const v of device.variants) select.innerHTML += `<option value="${v.id}">${v.name}</option>`;
+    };
+  }
+  if ($id("mockup-add-device-btn")) {
+    $id("mockup-add-device-btn").onclick = async () => {
+      if (!mockupId) return showAlert("Start a project first.");
+      const deviceId = $id("mockup-add-device-select")?.value;
+      const label = $id("mockup-add-device-label")?.value.trim() || deviceId;
+      const { project } = await api(`/api/mockups/${mockupId}/devices`, { method: "POST", body: { deviceId, variant: $id("mockup-add-device-variant")?.value || undefined, label } });
+      setMockupProject(project);
+      if ($id("mockup-add-device-label")) $id("mockup-add-device-label").value = "";
+      renderMockupDevicesSection();
+      renderMockupMatrix();
+    };
+  }
+
+  if ($id("mockup-panorama-upload")) {
+    $id("mockup-panorama-upload").onclick = async () => {
+      const file = $id("mockup-panorama-file")?.files[0];
+      if (!file || !mockupId) return showAlert("Choose an image first.");
+      await uploadFile(`/api/mockups/${mockupId}/panoramic`, file);
+      await showAlert("Panorama uploaded. Set a column's background type to Panoramic in the Editor to use it.");
+    };
+  }
+  if ($id("mockup-panorama-flip")) {
+    $id("mockup-panorama-flip").onchange = async () => {
+      if (!mockupId) return;
+      await api(`/api/mockups/${mockupId}/panoramic`, { method: "PATCH", body: { flip: $id("mockup-panorama-flip").checked } });
+    };
+  }
+
+  if ($id("mockup-header-name")) {
+    $id("mockup-header-name").addEventListener("change", async () => {
+      if (!mockupProject) return;
+      mockupProject.name = $id("mockup-header-name").value.trim() || mockupProject.name;
+      await saveCurrentMockupProject();
+      const label = $id("mockup-project-label");
+      if (label) label.textContent = mockupProject.name;
+      setMockupDirty(false);
+    });
+  }
+  if ($id("mockup-header-category")) {
+    $id("mockup-header-category").addEventListener("change", async () => {
+      if (!mockupProject) return;
+      mockupProject.appCategory = $id("mockup-header-category").value.trim();
+      await saveCurrentMockupProject();
+      setMockupDirty(false);
+    });
+  }
+
+  if ($id("mockup-export-template-btn")) {
+    $id("mockup-export-template-btn").onclick = () => {
+      if (!mockupProject) return showAlert("No active mockup project loaded.");
+      const data = JSON.stringify({ devices: mockupProject.devices, columns: mockupProject.columns, cells: mockupProject.cells }, null, 2);
+      const blob = new Blob([data], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `${(mockupProject.name || "mockup-template").replace(/[^a-z0-9-_]+/gi, "_")}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(a.href);
+    };
+  }
+  if ($id("mockup-import-template-btn")) {
+    $id("mockup-import-template-btn").onclick = () => $id("mockup-import-file-input")?.click();
+  }
+  if ($id("mockup-import-file-input")) {
+    $id("mockup-import-file-input").onchange = async (e) => {
+      const file = e.target.files && e.target.files[0];
+      e.target.value = "";
+      if (!file || !mockupId) return;
+      try {
+        const data = JSON.parse(await file.text());
+        const updated = await api(`/api/mockups/${mockupId}`, { method: "PUT", body: { devices: data.devices, columns: data.columns, cells: data.cells } });
+        setMockupProject(updated);
+        pushMockupHistory();
+        renderMockupMatrix();
+        if (updated.columns?.[0]) selectMockupScreen(updated.columns[0].id);
+        showToast("Template imported.", "success");
+      } catch (err) {
+        await showAlert("Import failed: " + err.message);
+      }
+    };
+  }
+
+  if ($id("mk-source-upload")) {
+    $id("mk-source-upload").onclick = () => {
+      if (!activeProjectId) return showAlert("Select a project first.");
+      openUniversalUploadModal((selectedPath) => {
+        setTimeout(async () => {
+          const updated = await api(`/api/mockups/${activeProjectId}`);
+          setMockupProject(updated);
+          const sourceEl = $id("mk-source");
+          if (!sourceEl) return;
+          sourceEl.innerHTML = (updated.sources || []).map((s) => `<option value="${s.id}">${s.name}</option>`).join("");
+          const src = updated.sources?.find((s) => s.file === selectedPath);
+          if (src) sourceEl.value = src.id;
+        }, 200);
+      });
+    };
+  }
+
+  if ($id("mockup-unsaved-save")) {
+    $id("mockup-unsaved-save").onclick = async () => {
+      await saveCurrentMockupProject();
+      setMockupDirty(false);
+      $id("mockup-unsaved-modal").style.display = "none";
+    };
+  }
+  if ($id("mockup-unsaved-discard")) {
+    $id("mockup-unsaved-discard").onclick = async () => {
+      if (mockupHistoryIdx >= 0) setMockupProject(JSON.parse(mockupHistory[mockupHistoryIdx]));
+      setMockupDirty(false);
+      $id("mockup-unsaved-modal").style.display = "none";
+      renderMockupMatrix();
+    };
+  }
+  if ($id("mockup-unsaved-cancel")) {
+    $id("mockup-unsaved-cancel").onclick = () => { $id("mockup-unsaved-modal").style.display = "none"; };
+  }
+
   // Keep the artboard centered when the viewport is resized (panel toggles, window resize).
   window.addEventListener("resize", () => {
     if (document.getElementById("mockup-section-editor")?.classList.contains("active")) {
@@ -320,6 +494,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupProjectsHandlers();
   setupSettingsAndModals();
   setupMockupToolbar();
+  setupCaptureHandlers();
 
   // Theme init
   const savedTheme = localStorage.getItem("sag-theme") || "dark";
@@ -403,9 +578,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 window.applyTheme = (theme) => {
   document.documentElement.classList.remove("dark", "light");
-  if (theme === "light") document.documentElement.classList.add("light");
-  else document.documentElement.classList.add("dark");
+  document.documentElement.classList.add(theme === "light" ? "light" : "dark");
   localStorage.setItem("sag-theme", theme);
+  const icon = document.getElementById("theme-icon");
+  if (icon) icon.innerHTML = theme === "light" ? "&#9790;" : "&#9788;";
 };
+
+if (document.getElementById("theme-toggle-btn")) {
+  document.getElementById("theme-toggle-btn").onclick = () => {
+    const current = localStorage.getItem("sag-theme") || "dark";
+    window.applyTheme(current === "dark" ? "light" : "dark");
+  };
+}
 
 export { activeProjectId, activeProject, setActiveProjectId, setActiveProject, mockupId, mockupProject, setMockupId, setMockupProject, selectedColumn, setSelectedColumn, mockupIsDirty, setMockupDirty };
