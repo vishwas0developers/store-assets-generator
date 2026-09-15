@@ -19,7 +19,7 @@ import { api, showAlert, showConfirm, showToast } from './utils.js';
 import { renderMockupCanvas } from './canvas.js';
 import { renderMockupMatrix, selectMockupScreen } from './matrix.js';
 
-let mockupDevicesCatalog = [];
+export let mockupDevicesCatalog = [];
 let mockupLayouts = { presets: [], grouped: [] };
 
 /** Fetches and caches device catalog + layout presets, populating the Layout Preset select once. */
@@ -28,6 +28,8 @@ export async function ensureMockupReferenceData() {
     try {
       const res = await api("/api/devices");
       mockupDevicesCatalog = Array.isArray(res) ? res : (Array.isArray(res?.devices) ? res.devices : []);
+      const addDeviceSelect = document.getElementById("mockup-add-device-select");
+      if (addDeviceSelect) addDeviceSelect.innerHTML = mockupDevicesCatalog.map((d) => `<option value="${d.id}">${d.vendor} — ${d.name}</option>`).join("");
     } catch (_) {}
   }
   if (mockupLayouts.presets.length === 0) {
