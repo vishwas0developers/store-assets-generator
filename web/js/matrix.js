@@ -3,15 +3,16 @@ import {
   mockupProject,
   selectedColumn,
   mockupId,
-  selectedPagePair,
+  selectedPages,
   setSelectedColumn,
   setMockupDirty,
   saveCurrentMockupProject,
   pushMockupHistory,
-  togglePagePair,
+  togglePageSelection,
+  clearPageSelection,
 } from "./state.js";
 import { escapeHtml, showToast } from "./utils.js";
-import { centerArtboardInViewport, loadColumnIntoFabric, showSecondaryPagePreview, hideSecondaryPagePreview, refreshSecondaryPagePreviewIfVisible } from "./canvas.js";
+import { centerArtboardInViewport, loadColumnIntoFabric, createPageCanvas, destroyPageCanvas, setActivePage, pageCanvases } from "./canvas.js";
 import { renderMockupLayersPanel, syncSection2Inputs } from "./editor.js";
 
 // Per spec: selectedCell = { deviceRowId, columnId }. Null until matrix interaction.
@@ -116,7 +117,6 @@ export function renderMockupMatrix() {
   // silently goes stale relative to the canvas. Bumped once per render call,
   // not per cell, so every iframe in this render shares one fresh version.
   matrixRenderVersion += 1;
-  refreshSecondaryPagePreviewIfVisible();
 
   // One real id: #mockup-matrix. Keep compat ids as fallbacks.
   const table =
@@ -156,17 +156,16 @@ export function renderMockupMatrix() {
   for (let j = 0; j < columns.length; j++) {
     const cid = columns[j].id;
     const isSelCol = !!selectedColumn && selectedColumn.id === cid;
-    const pairIdx = selectedPagePair.indexOf(cid);
-    // Both pages in a pair are equally "selected" -- one consistent accent
-    // color (the app's existing blue) for any selected page, not a
-    // different color depending on whether it's the primary or the paired
-    // one, which read as if only one selection was actually correct.
-    const isSelectedForPair = isSelCol || pairIdx !== -1;
-    const selStyle = isSelectedForPair ? `background:rgba(59,130,246,.10); border-bottom:2px solid #3b82f6;` : "";
-    const pairBadge = pairIdx !== -1 ? ` <span title="Paired for two-page editing" style="color:#60a5fa;">🔗${pairIdx + 1}</span>` : "";
+    const selIdx = selectedPages.indexOf(cid);
+    // Every selected page is equally "selected" -- one consistent accent
+    // color (the app's existing blue) regardless of how many are checked or
+    // which one is the currently-active editing page.
+    const isSelected = isSelCol || selIdx !== -1;
+    const selStyle = isSelected ? `background:rgba(59,130,246,.10); border-bottom:2px solid #3b82f6;` : "";
+    const selBadge = selIdx !== -1 ? ` <span title="Selected -- shown in the editing canvas" style="color:#60a5fa;">🔗${selIdx + 1}</span>` : "";
     html += `<th data-col-id="${escapeHtml(cid)}" style="font-size:.75rem; padding:.35rem .5rem; text-align:center; ${selStyle}">
-      <input type="checkbox" class="matrix-pair-checkbox" data-col-id="${escapeHtml(cid)}" title="Pair with another page for two-page editing" ${pairIdx !== -1 ? "checked" : ""} style="vertical-align:middle; margin-right:2px; cursor:pointer;" />
-      #${j + 1}${pairBadge}
+      <input type="checkbox" class="matrix-pair-checkbox" data-col-id="${escapeHtml(cid)}" title="Select this page for panorama editing" ${selIdx !== -1 ? "checked" : ""} style="vertical-align:middle; margin-right:2px; cursor:pointer;" />
+      #${j + 1}${selBadge}
     </th>`;
   }
   html += "</tr></thead>";
@@ -182,12 +181,12 @@ export function renderMockupMatrix() {
       const key = `${dev.id}:${col.id}`;
       const isActive =
         !!selectedCell && selectedCell.deviceRowId === dev.id && selectedCell.columnId === col.id;
-      // A page paired for two-page editing (selectedPagePair) must show as
-      // selected across every device row for that column, not just the one
-      // exact (deviceRow, column) cell selectedCell points at -- previously
-      // only the single active cell got any highlight, so with two pages
-      // paired only one ever visibly looked selected in the preview grid.
-      const isPairedCol = !isActive && selectedPagePair.includes(col.id);
+      // Any selected page must show as selected across every device row for
+      // that column, not just the one exact (deviceRow, column) cell
+      // selectedCell points at -- previously only the single active cell
+      // got any highlight, so with multiple pages selected only one ever
+      // visibly looked selected in the preview grid.
+      const isPairedCol = !isActive && selectedPages.includes(col.id);
       const style = resolvedStyleFor(mockupProject, dev.id === "__base" ? null : dev.id, col.id);
       const title = style?.title?.text || col.style?.title?.text || `Page ${columns.indexOf(col) + 1}`;
       // Prefer real server iframe preview; fall back to mini card if unavailable.
@@ -254,44 +253,55 @@ export function renderMockupMatrix() {
   }
   for (const cb of table.querySelectorAll(".matrix-pair-checkbox")) {
     cb.onclick = (e) => e.stopPropagation();
-    cb.onchange = (e) => {
+    cb.onchange = () => {
       const cid = cb.getAttribute("data-col-id");
-      const ok = togglePagePair(cid);
-      if (!ok) {
-        e.target.checked = false;
-        showToast("Deselect a page first -- only two pages can be paired at once.", "info");
-        return;
-      }
-      syncEditingAreaToPagePair();
+      togglePageSelection(cid); // unbounded now -- always succeeds
+      syncEditingAreaToSelectedPages();
       renderMockupMatrix();
+      syncPanoramaAssetButton();
     };
   }
 }
 
-/** Drives the editing area from selectedPagePair (the checkboxes are the
- *  only way pages get selected now -- see renderMockupMatrix above): 1 page
- *  checked shows just that page in the interactive canvas; 2 checked keep
- *  whichever was already the interactive page (if still part of the pair)
- *  and show the other as a live synced preview alongside it, so both
- *  selected pages are visible in the editing area at once instead of only
- *  the interactive one. */
-function syncEditingAreaToPagePair() {
-  const pair = selectedPagePair;
-  if (pair.length === 0) return;
-
-  if (pair.length === 1) {
-    hideSecondaryPagePreview();
-    selectMockupPage(pair[0]);
-    return;
+/** Drives the editing area from selectedPages (the checkboxes are the only
+ *  way pages get selected now -- see renderMockupMatrix above): destroys
+ *  canvases for pages no longer selected, creates canvases for newly
+ *  selected ones, and activates whichever page was already active (if it's
+ *  still selected) or defaults to the first selected page -- so any number
+ *  of selected pages show together as one continuous panorama, with
+ *  exactly one active/fully-editable at a time (see canvas.js's
+ *  setActivePage). 0 selected is a no-op (nothing to show); 1 selected
+ *  degenerates to exactly the original single-canvas editing behavior. */
+export async function syncEditingAreaToSelectedPages() {
+  for (const pageId of [...pageCanvases.keys()]) {
+    if (!selectedPages.includes(pageId)) destroyPageCanvas(pageId);
   }
+  for (const pageId of selectedPages) {
+    if (!pageCanvases.has(pageId)) createPageCanvas(pageId);
+  }
+  if (selectedPages.length === 0) return;
+  const activeId = selectedColumn && selectedPages.includes(selectedColumn.id) ? selectedColumn.id : selectedPages[0];
+  await setActivePage(activeId);
+  const col = mockupProject?.columns?.find((c) => c.id === activeId);
+  if (col) {
+    const deviceRowId = (mockupProject.devices && mockupProject.devices[0]?.id) || "__base";
+    selectedCell = { deviceRowId, columnId: activeId };
+    renderMockupLayersPanel(col);
+    syncSection2Inputs(col, null);
+  }
+}
 
-  const primaryId = selectedColumn && pair.includes(selectedColumn.id) ? selectedColumn.id : pair[0];
-  const secondaryId = pair.find((id) => id !== primaryId);
-  selectMockupPage(primaryId);
-  const secondaryCol = mockupProject?.columns?.find((c) => c.id === secondaryId);
-  const idx = mockupProject?.columns?.findIndex((c) => c.id === secondaryId) ?? -1;
-  const label = secondaryCol?.style?.title?.text || (idx >= 0 ? `Page ${idx + 1}` : "");
-  showSecondaryPagePreview(secondaryId, selectedCell?.deviceRowId, label);
+/** Enables the "+ Add Panorama Asset" button only when there's a boundary
+ *  to span (2+ pages selected) -- a cross-page asset needs at least two
+ *  pages to straddle. */
+export function syncPanoramaAssetButton() {
+  const btn = document.getElementById("mockup-add-panorama-asset-btn");
+  if (!btn) return;
+  const enabled = selectedPages.length >= 2;
+  btn.disabled = !enabled;
+  btn.title = enabled
+    ? "Add an asset that spans across the selected pages"
+    : "Select 2 or more pages to add an asset that spans across them";
 }
 
 /** Mirrors app.js:4812 selectCell (devices × screens). */
@@ -318,22 +328,24 @@ export function selectCell(deviceRowId, columnId) {
   syncSection2Inputs(col, null);
 }
 
-export function selectMockupPage(columnId) {
+/** Switches to viewing/editing just this one page, replacing whatever
+ *  selection was active (used by template load, "+ Add Page", and
+ *  delete-then-select-next -- all "establish a fresh single-page view"
+ *  cases, never meant to preserve an existing multi-page panorama
+ *  selection). Delegates canvas creation/activation to
+ *  syncEditingAreaToSelectedPages, same as the checkbox path. */
+export async function selectMockupPage(columnId) {
   if (!mockupProject) return;
   const col = mockupProject.columns.find((c) => c.id === columnId);
   if (!col) return;
-  // Backward compat: columnId alone → first device row
-  const deviceRowId = (mockupProject.devices && mockupProject.devices[0]?.id) || (mockupProject.cells ? Object.keys(mockupProject.cells)[0]?.split(":")[0] : null) || "__base";
-  selectedCell = { deviceRowId, columnId };
-  setSelectedColumn(col);
+  clearPageSelection();
+  togglePageSelection(columnId);
+  await syncEditingAreaToSelectedPages();
   renderMockupMatrix();
-  renderMockupLayersPanel(col);
-  syncSection2Inputs(col, null);
-  loadColumnIntoFabric(col);
-  try { centerArtboardInViewport(); } catch (_) {}
   const isEditorActive2 = document.getElementById("mockup-section-editor")?.classList.contains("active");
   const insp = document.getElementById("mockup-inspector");
   if (insp) insp.style.display = isEditorActive2 ? "block" : "none";
+  syncPanoramaAssetButton();
 }
 
 export async function deleteMockupPage(columnId) {
@@ -346,6 +358,11 @@ export async function deleteMockupPage(columnId) {
 
   mockupProject.columns.splice(idx, 1);
   mockupProject.columns.forEach((c, i) => (c.order = i));
+  // ponytail: panoramaAssets are positioned in absolute panorama-space px
+  // keyed to column `.order`, which just shifted for every column after the
+  // deleted one -- any panorama asset spanning past this point will render
+  // one page-width off until manually redragged. Not reflowed here; add a
+  // dedicated pass if this is reported as an actual problem in practice.
 
   if (typeof saveCurrentMockupProject === "function") await saveCurrentMockupProject();
   if (typeof pushMockupHistory === "function") pushMockupHistory();

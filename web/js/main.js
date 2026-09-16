@@ -48,7 +48,9 @@ import {
   deleteMockupPage,
   addMockupPage,
   selectedCell,
-  defaultColumnStyle
+  defaultColumnStyle,
+  syncEditingAreaToSelectedPages,
+  syncPanoramaAssetButton
 } from './matrix.js';
 import {
   generateStorePackage,
@@ -93,6 +95,7 @@ import {
   setMockupProject,
   selectedColumn,
   setSelectedColumn,
+  selectedPages,
   mockupIsDirty,
   setMockupDirty,
   pushMockupHistory,
@@ -258,6 +261,56 @@ function setupMockupToolbar() {
           showToast(`Asset "${file.name}" added to screen layer.`, "success");
         } catch (err) {
           await showAlert("Asset upload failed: " + err.message);
+        }
+      };
+      reader.readAsDataURL(file);
+    };
+  }
+
+  if ($id("mockup-add-panorama-asset-btn")) {
+    $id("mockup-add-panorama-asset-btn").onclick = () => {
+      if (selectedPages.length < 2) return;
+      if ($id("mockup-panorama-asset-upload-input")) $id("mockup-panorama-asset-upload-input").click();
+    };
+  }
+  if ($id("mockup-panorama-asset-upload-input")) {
+    $id("mockup-panorama-asset-upload-input").onchange = async (e) => {
+      const file = e.target.files && e.target.files[0];
+      e.target.value = "";
+      if (!file || !mockupId || selectedPages.length < 2) return;
+      const reader = new FileReader();
+      reader.onload = async (evt) => {
+        try {
+          const { source } = await api(`/api/mockups/${mockupId}/upload-asset`, {
+            method: "POST",
+            body: { name: file.name, data: evt.target.result }
+          });
+          // Default placement: straddle the boundary right after the active
+          // page in the current selection (order-sorted), or right before it
+          // if there's no next selected page -- a sensible starting point
+          // the user can then drag to fine-tune.
+          const ordered = [...mockupProject.columns].sort((a, b) => a.order - b.order);
+          const activeIdx = ordered.findIndex((c) => c.id === selectedColumn?.id);
+          const selectedOrderedIdx = ordered.map((c, i) => (selectedPages.includes(c.id) ? i : -1)).filter((i) => i >= 0);
+          const boundaryIdx = selectedOrderedIdx.find((i) => i > activeIdx) ?? selectedOrderedIdx[selectedOrderedIdx.length - 1];
+          const width = 300;
+          const xPx = Math.max(0, boundaryIdx) * 1080 - width / 2;
+          mockupProject.panoramaAssets = mockupProject.panoramaAssets || [];
+          mockupProject.panoramaAssets.push({
+            id: `panorama_${Date.now()}`,
+            assetId: source.id,
+            name: source.name,
+            xPx, widthPx: width,
+            yPct: 40, heightPct: 20,
+            rotation: 0, opacity: 1, zIndex: 15
+          });
+          await saveCurrentMockupProject();
+          pushMockupHistory();
+          await syncEditingAreaToSelectedPages();
+          renderMockupMatrix();
+          showToast(`Panorama asset "${file.name}" added, spanning the selected pages.`, "success");
+        } catch (err) {
+          await showAlert("Panorama asset upload failed: " + err.message);
         }
       };
       reader.readAsDataURL(file);

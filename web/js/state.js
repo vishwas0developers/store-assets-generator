@@ -16,12 +16,16 @@ export let selectedLayerId = "deviceOne";
 export let selectedLayerIds = ["deviceOne"];
 export let mockupIsDirty = false;
 
-/** Two-page pairing (0, 1, or 2 page/column ids; never 3 -- ctrl/shift-click
- *  a second matrix page to pair it with whichever is currently open; a third
- *  such click replaces the oldest of the two rather than growing past two).
- *  Lets a device composition be intentionally split/synchronized across a
- *  page boundary -- see editor.js's linkDeviceLayers/syncLinkedDeviceLayer. */
-export let selectedPagePair = [];
+/** Multi-page selection (unbounded -- checkbox per page in the Page Previews
+ *  grid). All selected pages are shown together as one continuous panorama
+ *  in the editing canvas (see canvas.js's pageCanvases/setActivePage); one
+ *  of them is "active"/fully editable at a time, the rest show real synced
+ *  content but are locked, except cross-page panorama assets which stay
+ *  draggable across all of them -- see canvas.js's syncPanoramaAssetAcrossCanvases.
+ *  Also still used by editor.js's linkDeviceLayers/syncLinkedDeviceLayer,
+ *  which stays scoped to exactly-2-selected (a genuinely pairwise feature,
+ *  unrelated to and unchanged by the panorama work). */
+export let selectedPages = [];
 
 export let mockupTemplates = [];
 export let mockupTemplateCategory = "all";
@@ -66,22 +70,19 @@ export function setSelectedColumn(col) {
   selectedColumn = col;
 }
 
-/** Toggles a page into/out of the pair-select set. A page already in the
- *  pair is removed (un-pairing it). Otherwise it's added, unless two are
- *  already selected -- the caller must deselect one first (returns false
- *  in that case so the UI can reject the attempt with a toast). */
-export function togglePagePair(pageId) {
-  if (selectedPagePair.includes(pageId)) {
-    selectedPagePair = selectedPagePair.filter((id) => id !== pageId);
+/** Toggles a page into/out of the selection set. No cap -- any number of
+ *  pages can be selected simultaneously. */
+export function togglePageSelection(pageId) {
+  if (selectedPages.includes(pageId)) {
+    selectedPages = selectedPages.filter((id) => id !== pageId);
     return true;
   }
-  if (selectedPagePair.length >= 2) return false;
-  selectedPagePair = [...selectedPagePair, pageId];
+  selectedPages = [...selectedPages, pageId];
   return true;
 }
 
-export function clearPagePair() {
-  selectedPagePair = [];
+export function clearPageSelection() {
+  selectedPages = [];
 }
 
 export function setSelectedLayerId(layerId) {
@@ -190,6 +191,7 @@ export async function saveCurrentMockupProject() {
       cells: mockupProject.cells,
       sources: mockupProject.sources,
       globalPanoramic: mockupProject.globalPanoramic,
+      panoramaAssets: mockupProject.panoramaAssets,
       settings: mockupProject.settings
     }
   });

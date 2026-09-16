@@ -378,6 +378,8 @@
               <button id="mockup-add-page" class="secondary small" type="button">+ Add Page</button>
               <button id="mockup-add-asset-btn" class="secondary small" type="button">+ Add Asset Layer</button>
               <input type="file" id="mockup-asset-upload-input" accept="image/*" style="display:none;" />
+              <button id="mockup-add-panorama-asset-btn" class="secondary small" type="button" title="Select 2 or more pages to add an asset that spans across them" disabled>+ Add Panorama Asset</button>
+              <input type="file" id="mockup-panorama-asset-upload-input" accept="image/*" style="display:none;" />
               <button id="mockup-reset-template-btn" class="secondary small" type="button" title="Reset active screen to base template style">Reset to Template</button>
               <div class="divider"></div>
               <span style="font-size: 0.8rem; color: #94a3b8; font-weight: 500;">Zoom:</span>
@@ -397,24 +399,16 @@
             <!-- Workspace: Studio Canvas Container (fixed-height viewport) -->
             <div class="studio-editor-workspace">
               <div class="studio-canvas-container">
-                <!-- Single-Artboard Professional Editing Canvas Viewport -->
+                <!-- Multi-Page Panorama Editing Canvas Viewport -- #mockup-canvas-stage is
+                     left empty; canvas.js dynamically creates one real, interactive Fabric
+                     canvas artboard per currently-selected page (see createPageCanvas/
+                     setActivePage), tiled side by side with a small gap so multiple
+                     selected pages read as one continuous panorama. Exactly one is
+                     "active"/fully editable at a time (light-blue .is-active-page border);
+                     the rest show real synced content but are locked, except cross-page
+                     panorama assets which stay draggable across all of them. -->
                 <div class="mockup-canvas-viewport" id="mockup-canvas-viewport" tabindex="0">
-                  <div class="mockup-canvas-stage" id="mockup-canvas-stage">
-                    <div class="mockup-canvas-artboard" id="mockup-canvas-artboard">
-                      <!-- Core Visible Interactive Fabric.js Canvas Artboard -->
-                      <canvas id="mockup-fabric-canvas" width="1080" height="1920" style="width: 1080px; height: 1920px; display: block;"></canvas>
-                      <div class="mockup-layers-root" id="mockup-layers-root" style="display:none;"></div>
-                    </div>
-                    <!-- Second selected page (only shown when exactly 2 pages are checked in the
-                         Page Previews grid) -- a live, synced preview of the paired page shown
-                         alongside the interactive artboard so both selected pages are visible in
-                         the editing area at once. Click the primary artboard's page in the grid
-                         checkboxes to swap which page is the interactive one. -->
-                    <div class="mockup-canvas-artboard mockup-canvas-artboard-secondary" id="mockup-canvas-artboard-2" style="display:none;">
-                      <div class="mockup-secondary-label" id="mockup-secondary-label">Paired page</div>
-                      <iframe id="mockup-secondary-preview-frame" title="Paired page preview" loading="lazy" style="width:1080px; height:1920px; border:0; display:block; pointer-events:none;"></iframe>
-                    </div>
-                  </div>
+                  <div class="mockup-canvas-stage" id="mockup-canvas-stage"></div>
                   <button id="mockup-hand-tool-btn" class="mockup-hand-tool-btn" type="button" title="Hand Tool (pan) — toggle">&#9995;</button>
                 </div>
               </div>

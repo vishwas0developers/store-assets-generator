@@ -11,6 +11,7 @@ import {
   setSelectedLayerId,
   setSelectedLayerIds,
   setMockupFabricCanvas,
+  setSelectedColumn,
 } from './state.js';
 import {
   resolveFabricBackgroundFill,
@@ -107,23 +108,176 @@ function positionForRotation(L, T, W, H, angle) {
   return { left: L + W / 2, top: T + H / 2, originX: 'center', originY: 'center' };
 }
 
-/**
- * Initializes the primary interactive Fabric.js canvas (1080×1920 reference resolution).
- * Re-disposes old instance if canvas already exists.
- */
-export function initMockupFabricCanvas() {
-  const canvasEl = document.getElementById("mockup-fabric-canvas");
-  if (!canvasEl) return;
+/** Projects a panorama-space asset (positioned once, spanning any number of
+ *  pages) onto one page's local 1080-wide box, in the same shape a regular
+ *  MockupAssetLayer already has -- returns null if it doesn't intersect this
+ *  page at all. xPct/widthPct are deliberately left unclamped (can be
+ *  negative or exceed 100) -- the artboard div's own overflow:hidden (and
+ *  the <canvas> element's own pixel bounds) already clip the off-page
+ *  portion correctly with no extra work.
+ *  Mirrored in src/mockup/render.ts's projectPanoramaAssetToColumn for the
+ *  server-side render -- no shared build step between src/ (TS) and web/js/
+ *  (hand-authored JS) in this codebase, so this small formula is
+ *  intentionally duplicated there. Keep both in sync if it ever changes. */
+/** This page's index within project.columns.order-sorted sequence, or -1 if
+ *  not found -- the one authoritative page-sequence numbering panorama math
+ *  uses everywhere (editor canvas, cell-preview, every export path), kept
+ *  deliberately independent of whatever a given render.ts caller's own
+ *  columnIndex convention happens to mean for OTHER purposes (see the
+ *  matching comment in render.ts's cellHtml). */
+function orderedColumnIndex(pageId) {
+  return (mockupProject?.columns ?? []).slice().sort((a, b) => a.order - b.order).findIndex((c) => c.id === pageId);
+}
 
+/** Builds one Fabric asset Image from an asset-layer-shaped object (a real
+ *  MockupAssetLayer, or a panorama-asset projection from
+ *  projectPanoramaAssetToColumn -- both have the same xPct/yPct/widthPct/
+ *  heightPct/rotation/opacity/flipH/flipV shape). Shared by
+ *  loadColumnIntoFabric's regular per-page asset loop and its panorama-asset
+ *  projection loop (both load-time, async is fine there); the live-drag
+ *  mirror path uses the synchronous cloneAssetImageSync below instead --
+ *  see its doc comment for why an async load isn't safe to call per-tick. */
+// Top-left anchored, matching src/render/shared.ts's assetLayersMarkup()
+// (`left:${xPct}%; top:${yPct}%` on a plain position:absolute div, no
+// centering transform) -- canvas.js previously treated xPct/yPct as the
+// asset's CENTER, a real divergence from the actual exported/previewed
+// position. Purely synchronous (no image loading) -- shared by both
+// buildAssetImage (initial/full-rebuild load, async) and
+// cloneAssetImageSync (live cross-canvas drag mirroring, must stay
+// synchronous -- see that function's doc comment for why). Works
+// identically for any image content (PNG, SVG, a device screenshot,
+// anything Fabric can load as an Image) -- nothing here is specific to any
+// particular asset.
+function applyAssetLayerTransform(img, ast, layerId, interactive) {
+  const w = (ast.widthPct / 100) * 1080;
+  const h = ast.heightPct ? (ast.heightPct / 100) * 1920 : w * 1.4;
+  const left = (ast.xPct / 100) * 1080;
+  const top = (ast.yPct / 100) * 1920;
+  img.set({
+    ...positionForRotation(left, top, w, h, ast.rotation || 0),
+    angle: ast.rotation || 0,
+    opacity: ast.opacity ?? 1,
+    flipX: !!ast.flipH,
+    flipY: !!ast.flipV,
+    name: layerId,
+    layerId,
+    zIndex: ast.zIndex || 15,
+    selectable: interactive,
+    evented: interactive,
+    ...CONTROL_STYLE,
+  });
+  img.scaleX = w / img.width;
+  img.scaleY = h / img.height;
+  return img;
+}
+
+async function buildAssetImage(ast, layerId, { interactive = true } = {}) {
+  if (ast.visible === false) return null;
+  const srcUrl = ast.assetId.startsWith('sources/')
+    ? `/api/mockups/${mockupId}/file?p=${encodeURIComponent(ast.assetId)}`
+    : `/api/mockups/${mockupId}/file?p=sources/${ast.assetId}.png`;
+  const assetImg = await loadFabricImageAsync(srcUrl);
+  if (!assetImg) return null;
+  return applyAssetLayerTransform(assetImg, ast, layerId, interactive);
+}
+
+/** Creates a mirror object on a neighboring canvas WITHOUT any network/async
+ *  image load -- reuses the origin object's own already-decoded image
+ *  element (getElement()) via `new fabric.Image(el, {})`, which is
+ *  synchronous in Fabric. This is the fix for a real bug: the live
+ *  per-tick cross-canvas sync (onPanoramaObjectLiveTransform, fired on
+ *  every object:moving/scaling/rotating event -- many times per second
+ *  during a real drag) used to call the async buildAssetImage() and await
+ *  its image load on EVERY tick. A fast drag fires far more ticks than
+ *  image loads can complete, so those awaited completions could land
+ *  out of order: a stale tick's mirror-creation could finish and get added
+ *  to a canvas AFTER a later tick had already determined that canvas
+ *  shouldn't show the asset anymore (or vice versa) -- visibly, an asset
+ *  could appear to "skip" an intermediate page during a fast drag, landing
+ *  correctly split between two non-adjacent pages instead of every page it
+ *  actually crossed. Making the whole per-tick sync path synchronous (no
+ *  `await` anywhere in it) removes the race entirely: each tick's DOM/Fabric
+ *  updates always run to completion before the next tick's event can fire,
+ *  since JS is single-threaded and nothing here yields the event loop. */
+function cloneAssetImageSync(originObj, ast, layerId, interactive) {
   const fabric = window.fabric;
-  if (!fabric) return;
+  const el = typeof originObj.getElement === 'function' ? originObj.getElement() : originObj._element;
+  if (!fabric || !el) return null;
+  const img = new fabric.Image(el, {});
+  return applyAssetLayerTransform(img, ast, layerId, interactive);
+}
 
-  if (mockupFabricCanvas) {
-    mockupFabricCanvas.dispose();
-    setMockupFabricCanvas(null);
-  }
+function projectPanoramaAssetToColumn(pa, columnIndex) {
+  const localXPx = pa.xPx - columnIndex * 1080;
+  if (localXPx + pa.widthPx <= 0 || localXPx >= 1080) return null;
+  return {
+    assetId: pa.assetId,
+    xPct: (localXPx / 1080) * 100,
+    yPct: pa.yPct,
+    widthPct: (pa.widthPx / 1080) * 100,
+    heightPct: pa.heightPct,
+    rotation: pa.rotation,
+    opacity: pa.opacity,
+    flipH: pa.flipH,
+    flipV: pa.flipV,
+    locked: pa.locked,
+    zIndex: pa.zIndex,
+  };
+}
 
-  const canvas = new fabric.Canvas('mockup-fabric-canvas', {
+/** pageId -> fabric.Canvas, one per currently-visible (selected) page. All
+ *  selected pages get a real, interactive Fabric canvas now (not a
+ *  read-only iframe) -- exactly one is "active" (mockupFabricCanvas points
+ *  to it, its regular objects are interactive) at a time; the rest show
+ *  real synced content but are locked (see loadColumnIntoFabric's
+ *  `interactive` option), except panorama-tagged cross-page assets, which
+ *  stay interactive on every canvas they appear on regardless. */
+export const pageCanvases = new Map();
+
+function attachPageCanvasHandlers(canvas, pageId) {
+  canvas.on('object:modified', (e) => onFabricObjectModified(e, pageId));
+  canvas.on('selection:created', onFabricSelectionCreated);
+  canvas.on('selection:updated', onFabricSelectionUpdated);
+  canvas.on('text:changed', onFabricTextChanged);
+  canvas.on('object:moving', (e) => onPanoramaObjectLiveTransform(e, canvas, pageId));
+  canvas.on('object:scaling', (e) => onPanoramaObjectLiveTransform(e, canvas, pageId));
+  canvas.on('object:rotating', (e) => onPanoramaObjectLiveTransform(e, canvas, pageId));
+  // Click-to-activate: Fabric skips hit-testing non-evented objects
+  // entirely, so a mousedown with no target means it landed on inert
+  // regular content (or empty background) on a non-active page -- promote
+  // it to active. A click that DOES hit a target (always true for a
+  // panorama-tagged object, which stays evented regardless of page
+  // activity) does NOT activate -- it just starts Fabric's normal object
+  // interaction, so a cross-page asset can be grabbed from an inactive page
+  // without needing to activate that page first.
+  canvas.on('mouse:down', (e) => {
+    if (!e.target && pageId !== selectedColumn?.id) setActivePage(pageId);
+  });
+}
+
+/** Creates (or returns the existing) Fabric canvas for one page, as its own
+ *  artboard div appended to #mockup-canvas-stage. Doesn't load any content
+ *  or change which page is active -- see setActivePage. */
+export function createPageCanvas(pageId) {
+  if (pageCanvases.has(pageId)) return pageCanvases.get(pageId);
+  const fabric = window.fabric;
+  const stage = document.getElementById("mockup-canvas-stage");
+  if (!fabric || !stage) return null;
+
+  const artboard = document.createElement("div");
+  artboard.className = "mockup-canvas-artboard";
+  artboard.id = `mockup-canvas-artboard-${pageId}`;
+  artboard.dataset.pageId = pageId;
+
+  const canvasEl = document.createElement("canvas");
+  canvasEl.id = `mockup-fabric-canvas-${pageId}`;
+  canvasEl.width = 1080;
+  canvasEl.height = 1920;
+  canvasEl.style.cssText = "width:1080px;height:1920px;display:block;";
+  artboard.appendChild(canvasEl);
+  stage.appendChild(artboard);
+
+  const canvas = new fabric.Canvas(canvasEl, {
     width: 1080,
     height: 1920,
     preserveObjectStacking: true,
@@ -131,16 +285,61 @@ export function initMockupFabricCanvas() {
     renderOnAddRemove: true,
     backgroundColor: '#0f172a'
   });
-
-  canvas.on('object:modified', onFabricObjectModified);
-  canvas.on('selection:created', onFabricSelectionCreated);
-  canvas.on('selection:updated', onFabricSelectionUpdated);
-  canvas.on('text:changed', onFabricTextChanged);
-
-  setMockupFabricCanvas(canvas);
+  attachPageCanvasHandlers(canvas, pageId);
+  pageCanvases.set(pageId, canvas);
+  return canvas;
 }
 
-function onFabricObjectModified(e) {
+/** Disposes and removes one page's canvas -- called when a page is
+ *  unchecked in the Page Previews grid. */
+export function destroyPageCanvas(pageId) {
+  const canvas = pageCanvases.get(pageId);
+  if (!canvas) return;
+  canvas.dispose();
+  document.getElementById(`mockup-canvas-artboard-${pageId}`)?.remove();
+  pageCanvases.delete(pageId);
+  if (mockupFabricCanvas === canvas) setMockupFabricCanvas(null);
+}
+
+/** Makes one currently-open page the active/fully-editable one -- the core
+ *  of the "one primary + inert others" interaction model. Rebuilds every
+ *  currently-open canvas (creating the target one first if it isn't open
+ *  yet): the target page unlocked, every other open page locked (except
+ *  cross-page panorama assets, always interactive regardless), and moves
+ *  the light-blue .is-active-page border to match. */
+export async function setActivePage(pageId) {
+  const targetCanvas = pageCanvases.get(pageId) || createPageCanvas(pageId);
+  if (!targetCanvas) return;
+
+  const col = mockupProject?.columns?.find((c) => c.id === pageId);
+  if (col) setSelectedColumn(col);
+
+  for (const [pid, canvas] of pageCanvases) {
+    const pcol = mockupProject?.columns?.find((c) => c.id === pid);
+    if (!pcol) continue;
+    setMockupFabricCanvas(canvas);
+    await loadColumnIntoFabric(pcol, { interactive: pid === pageId });
+    document.getElementById(`mockup-canvas-artboard-${pid}`)?.classList.toggle("is-active-page", pid === pageId);
+  }
+  // Iteration order above may not end on the target page -- make sure
+  // mockupFabricCanvas ends up pointed at it regardless (every existing
+  // editor.js/main.js call site reads this binding for "the active page").
+  setMockupFabricCanvas(targetCanvas);
+  try { centerArtboardInViewport(); } catch (_) {}
+}
+
+/** No fixed canvas element exists anymore -- pages get their own
+ *  dynamically created canvas via createPageCanvas()/setActivePage(). This
+ *  is now purely a defensive no-op fallback for loadColumnIntoFabric's
+ *  `if (!mockupFabricCanvas)` guard: normally covered by setActivePage
+ *  (called before loadColumnIntoFabric everywhere), but also legitimately
+ *  hit once on a fresh project load (renderMockupCanvas() firing before
+ *  the first ever page selection) -- loadColumnIntoFabric's own `!column`
+ *  check bails out right after regardless, so there's nothing to do here. */
+export function initMockupFabricCanvas() {
+}
+
+function onFabricObjectModified(e, originPageId) {
   const obj = e.target;
   if (!obj) return;
   // A multi-select drag/rotate/scale fires with an ActiveSelection as the
@@ -148,12 +347,173 @@ function onFabricObjectModified(e) {
   // several layers together would silently fail to persist any of them.
   if (Array.isArray(obj._objects)) {
     for (const member of obj._objects) {
-      if (member?.layerId) syncFabricObjectToModel(member, obj);
+      if (member?.layerId) dispatchObjectSync(member, obj, originPageId);
     }
     return;
   }
   if (!obj.layerId) return;
-  syncFabricObjectToModel(obj);
+  dispatchObjectSync(obj, undefined, originPageId);
+}
+
+/** A panorama-tagged object can be modified on ANY page's canvas (not just
+ *  the active one -- see attachPageCanvasHandlers' mouse:down comment), so
+ *  it needs its own write-back path into mockupProject.panoramaAssets
+ *  rather than syncFabricObjectToModel's selectedColumn.style writes, which
+ *  assume the modified object always belongs to the currently active page
+ *  (true for every regular object, since inert pages lock those). */
+function dispatchObjectSync(obj, group, originPageId) {
+  if (obj.layerId?.startsWith('panorama:')) {
+    syncPanoramaObjectToModel(obj, originPageId);
+  } else {
+    syncFabricObjectToModel(obj, group);
+  }
+}
+
+/** Live per-tick sync while dragging/scaling/rotating a panorama-tagged
+ *  object -- fires continuously (unlike object:modified, which only fires
+ *  once on release), so neighboring canvases' mirror objects stay visually
+ *  in sync in real time as the object crosses a page boundary. Only ever
+ *  touches Fabric objects directly (never mockupProject, never a full
+ *  loadColumnIntoFabric rebuild) -- a full page rebuild on every mousemove
+ *  tick would be far too slow for a smooth drag. The authoritative model
+ *  write-back happens once, on release, in syncPanoramaObjectToModel. */
+function onPanoramaObjectLiveTransform(e, canvas, originPageId) {
+  const obj = e.target;
+  if (!obj?.layerId?.startsWith('panorama:')) return;
+  syncPanoramaAssetAcrossCanvasesSync(obj.panoramaAssetId, originPageId, obj);
+}
+
+/** Computes a live PanoramaAssetLayer-shaped snapshot straight off the
+ *  origin object's current Fabric transform -- NOT yet written to the
+ *  model (see syncPanoramaObjectToModel for the commit path). Used by both
+ *  the sync (live-drag) and async (commit) mirror-sync paths so they always
+ *  agree on what "the asset's current position" means. */
+function readLivePanoramaSnapshot(originObj, originIndex, pa) {
+  const w = typeof originObj.getScaledWidth === 'function' ? originObj.getScaledWidth() : originObj.width;
+  const h = typeof originObj.getScaledHeight === 'function' ? originObj.getScaledHeight() : originObj.height;
+  let left = originObj.left, top = originObj.top;
+  if (originObj.originX === 'center') { left -= w / 2; top -= h / 2; }
+  return {
+    id: pa.id,
+    assetId: pa.assetId,
+    xPx: originIndex * 1080 + left,
+    widthPx: w,
+    yPct: (top / 1920) * 100,
+    heightPct: (h / 1920) * 100,
+    rotation: originObj.angle ?? 0,
+    opacity: originObj.opacity ?? 1,
+    flipH: !!originObj.flipX,
+    flipV: !!originObj.flipY,
+    visible: true,
+    zIndex: pa.zIndex,
+  };
+}
+
+/** Live per-tick cross-canvas mirror sync -- fully SYNCHRONOUS (no image
+ *  loading, no `await`, nothing that yields the event loop) so that a fast
+ *  real drag firing many object:moving events per second can never run two
+ *  ticks' worth of this function interleaved/out of order. That race was a
+ *  real bug: the old async version could finish an old tick's mirror
+ *  creation after a newer tick had already decided that canvas shouldn't
+ *  show the asset, visibly "skipping" whichever intermediate page's update
+ *  lost the race -- an asset dragged from page 2 toward page 4 could land
+ *  split between 2 and 4 with no trace on page 3, even though the drag
+ *  genuinely passed through it. Mirror creation uses cloneAssetImageSync
+ *  (reuses the origin's already-decoded image, no network round trip),
+ *  which is what makes staying fully synchronous possible here at all.
+ *  Correctly handles ANY number of open pages and ANY number of boundaries
+ *  crossed in one gesture -- every open canvas is independently
+ *  re-evaluated against the live snapshot on every tick, not just the
+ *  origin's immediate neighbor, so a fast drag that jumps several pages in
+ *  one tick still lands correctly on every page it now spans. */
+function syncPanoramaAssetAcrossCanvasesSync(panoramaId, originPageId, liveObject) {
+  const originCanvas = pageCanvases.get(originPageId);
+  const originObj = liveObject || originCanvas?.getObjects().find((o) => o.panoramaAssetId === panoramaId);
+  if (!originCanvas || !originObj) return;
+  const originIndex = orderedColumnIndex(originPageId);
+  if (originIndex < 0) return;
+  const pa = mockupProject?.panoramaAssets?.find((p) => p.id === panoramaId);
+  if (!pa) return;
+
+  const liveSnapshot = readLivePanoramaSnapshot(originObj, originIndex, pa);
+
+  for (const [pid, canvas] of pageCanvases) {
+    if (pid === originPageId) continue;
+    const idx = orderedColumnIndex(pid);
+    const projected = idx < 0 ? null : projectPanoramaAssetToColumn(liveSnapshot, idx);
+    const existing = canvas.getObjects().find((o) => o.panoramaAssetId === panoramaId);
+    if (!projected) {
+      if (existing) { canvas.remove(existing); canvas.requestRenderAll(); }
+      continue;
+    }
+    if (existing) {
+      const pw = (projected.widthPct / 100) * 1080;
+      const ph = (projected.heightPct / 100) * 1920;
+      existing.set({
+        ...positionForRotation((projected.xPct / 100) * 1080, (projected.yPct / 100) * 1920, pw, ph, projected.rotation || 0),
+        angle: projected.rotation || 0,
+        opacity: projected.opacity,
+        flipX: !!projected.flipH,
+        flipY: !!projected.flipV,
+      });
+      existing.scaleX = pw / existing.width;
+      existing.scaleY = ph / existing.height;
+      existing.setCoords();
+    } else {
+      const mirror = cloneAssetImageSync(originObj, projected, `panorama:${panoramaId}`, true);
+      if (mirror) {
+        mirror.panoramaAssetId = panoramaId;
+        applyCornerRotationControls(mirror);
+        canvas.add(mirror);
+      }
+    }
+    canvas.requestRenderAll();
+  }
+}
+
+/** Authoritative write-back on drag/transform release: commits the final
+ *  transform into mockupProject.panoramaAssets (reading it fresh, live, off
+ *  the object the user actually released -- not whatever the last live-sync
+ *  tick happened to compute, so a release can't land stale even if ticks
+ *  were dropped), does one more synchronous mirror-sync pass for the
+ *  now-final position, then a full, final-consistency rebuild of every open
+ *  canvas via setActivePage (cleans up any transient drift, e.g. an
+ *  intermediate page's mirror not perfectly matching final scale/rotation)
+ *  -- acceptable cost since this runs once, on release, not per tick. */
+async function syncPanoramaObjectToModel(obj, originPageId) {
+  const panoramaId = obj.panoramaAssetId;
+  if (!panoramaId) return;
+  const originIndex = orderedColumnIndex(originPageId);
+  const pa = mockupProject?.panoramaAssets?.find((p) => p.id === panoramaId);
+  if (originIndex < 0 || !pa) return;
+
+  const finalSnapshot = readLivePanoramaSnapshot(obj, originIndex, pa);
+  pa.xPx = Math.round(finalSnapshot.xPx);
+  pa.widthPx = Math.round(finalSnapshot.widthPx);
+  pa.yPct = Math.round(finalSnapshot.yPct);
+  pa.heightPct = Math.round(finalSnapshot.heightPct);
+  pa.rotation = finalSnapshot.rotation;
+  pa.opacity = finalSnapshot.opacity;
+  pa.flipH = finalSnapshot.flipH;
+  pa.flipV = finalSnapshot.flipV;
+
+  syncPanoramaAssetAcrossCanvasesSync(panoramaId, originPageId, obj);
+  setMockupDirty(true);
+  // Deferred to a fresh tick, not called synchronously here: this function
+  // runs from inside Fabric's own object:modified handler, which is itself
+  // called from _finalizeCurrentTransform -- Fabric is still mid-finalizing
+  // the transform on `obj`'s canvas at this point. setActivePage does a
+  // full clear()+rebuild of every open canvas, INCLUDING the one Fabric is
+  // still finalizing; clearing it out from under Fabric while it's still in
+  // that call corrupts its internal state (a real bug hit while testing --
+  // "Maximum call stack size exceeded" inside Fabric's own clear/setCoords,
+  // from setActivePage's rebuild re-entering while the original
+  // object:modified call was still unwinding). Waiting a tick lets Fabric
+  // finish finalizing first.
+  setTimeout(async () => {
+    if (selectedColumn) await setActivePage(selectedColumn.id);
+    if (typeof window.renderMockupMatrix === 'function') window.renderMockupMatrix();
+  }, 0);
 }
 
 // Fabric's own multi-select (shift-click / marquee) already produces e.selected
@@ -390,8 +750,15 @@ function fabricStageCenter(column) {
 /**
  * Loads a column's style, presentation transform, device models, and asset layers into Fabric stage.
  * @param {object} column
+ * @param {{interactive?: boolean}} [opts] - interactive:false locks every
+ *   regular (non-panorama) object on this page (selectable/evented both
+ *   false, on top of its own `.locked` flag) -- used when this page is
+ *   visible as part of a multi-page panorama selection but isn't the
+ *   currently-active page (see setActivePage). Panorama-tagged objects are
+ *   always interactive regardless of this flag, since cross-page assets
+ *   must stay draggable from any page they overlap.
  */
-export async function loadColumnIntoFabric(column) {
+export async function loadColumnIntoFabric(column, { interactive = true } = {}) {
   if (!mockupFabricCanvas) initMockupFabricCanvas();
   if (!mockupFabricCanvas || !column) return;
 
@@ -505,8 +872,8 @@ export async function loadColumnIntoFabric(column) {
     name: 'title',
     layerId: 'title',
     visible: showText && t.visible !== false,
-    selectable: !t.locked,
-    evented: !t.locked,
+    selectable: !t.locked && interactive,
+    evented: !t.locked && interactive,
     ...CONTROL_STYLE,
   });
   // Textbox height is only known after construction (auto-computed from
@@ -538,8 +905,8 @@ export async function loadColumnIntoFabric(column) {
     name: 'subtitle',
     layerId: 'subtitle',
     visible: showText && s.visible !== false,
-    selectable: !s.locked,
-    evented: !s.locked,
+    selectable: !s.locked && interactive,
+    evented: !s.locked && interactive,
     ...CONTROL_STYLE,
   });
   if (s.rotation) {
@@ -569,7 +936,7 @@ export async function loadColumnIntoFabric(column) {
   const d1Rotation = (transform.d1.rotate || 0) + (d1.rotation || 0);
 
   const d1Source = resolveSourceFor(d1.sourceId);
-  const deviceOne = await buildDeviceGroup(d1, 'deviceOne', d1Left, d1Top, d1W, d1H, d1Rotation, activeDeviceId, activeDeviceVariant, d1Source);
+  const deviceOne = await buildDeviceGroup(d1, 'deviceOne', d1Left, d1Top, d1W, d1H, d1Rotation, activeDeviceId, activeDeviceVariant, d1Source, interactive);
   queueObject(deviceOne, d1.zIndex ?? 10);
 
   // 5. Device Two (if exists)
@@ -587,7 +954,7 @@ export async function loadColumnIntoFabric(column) {
     // render.ts falls back deviceTwo's source to deviceOne's resolved source
     // (not sources[columnIndex+1]) when d2 has no explicit sourceId.
     const d2Source = sources.find((s) => s.id === d2.sourceId) ?? d1Source;
-    const deviceTwo = await buildDeviceGroup(d2, 'deviceTwo', d2Left, d2Top, d2W, d2H, d2Rotation, activeDeviceId, activeDeviceVariant, d2Source);
+    const deviceTwo = await buildDeviceGroup(d2, 'deviceTwo', d2Left, d2Top, d2W, d2H, d2Rotation, activeDeviceId, activeDeviceVariant, d2Source, interactive);
     queueObject(deviceTwo, d2.zIndex ?? 9);
   }
 
@@ -602,7 +969,7 @@ export async function loadColumnIntoFabric(column) {
     const dxCx = stageCx + (dx.x / 100) * dxW;
     const dxCy = stageCy + (dx.y / 100) * dxH;
     const dxSource = sources.find((s) => s.id === dx.sourceId) ?? d1Source;
-    const extraGroup = await buildDeviceGroup(dx, `extra:${i}`, dxCx - dxW / 2, dxCy - dxH / 2, dxW, dxH, dx.rotation || 0, activeDeviceId, activeDeviceVariant, dxSource);
+    const extraGroup = await buildDeviceGroup(dx, `extra:${i}`, dxCx - dxW / 2, dxCy - dxH / 2, dxW, dxH, dx.rotation || 0, activeDeviceId, activeDeviceVariant, dxSource, interactive);
     queueObject(extraGroup, dx.zIndex ?? (8 - i));
   }
 
@@ -610,38 +977,28 @@ export async function loadColumnIntoFabric(column) {
   if (style.assetLayers) {
     for (let i = 0; i < style.assetLayers.length; i++) {
       const ast = style.assetLayers[i];
-      if (ast.visible === false) continue;
-      const w = (ast.widthPct / 100) * 1080;
-      const h = ast.heightPct ? (ast.heightPct / 100) * 1920 : w * 1.4;
-      // Top-left anchored, matching src/render/shared.ts's assetLayersMarkup()
-      // (`left:${xPct}%; top:${yPct}%` on a plain position:absolute div, no
-      // centering transform) -- canvas.js previously treated xPct/yPct as the
-      // asset's CENTER, a real divergence from the actual exported/previewed position.
-      const left = (ast.xPct / 100) * 1080;
-      const top = (ast.yPct / 100) * 1920;
-      const srcUrl = ast.assetId.startsWith('sources/')
-        ? `/api/mockups/${mockupId}/file?p=${encodeURIComponent(ast.assetId)}`
-        : `/api/mockups/${mockupId}/file?p=sources/${ast.assetId}.png`;
+      const assetImg = await buildAssetImage(ast, `asset:${i}`, { interactive: !ast.locked && interactive });
+      if (assetImg) queueObject(assetImg, ast.zIndex ?? (15 + i));
+    }
+  }
 
-      const assetImg = await loadFabricImageAsync(srcUrl);
-      if (assetImg) {
-        assetImg.set({
-          ...positionForRotation(left, top, w, h, ast.rotation || 0),
-          angle: ast.rotation || 0,
-          opacity: ast.opacity ?? 1,
-          flipX: !!ast.flipH,
-          flipY: !!ast.flipV,
-          name: `asset:${i}`,
-          layerId: `asset:${i}`,
-          zIndex: ast.zIndex || 15,
-          selectable: !ast.locked,
-          evented: !ast.locked,
-          ...CONTROL_STYLE,
-        });
-        assetImg.scaleX = w / assetImg.width;
-        assetImg.scaleY = h / assetImg.height;
-        queueObject(assetImg, ast.zIndex ?? (15 + i));
-      }
+  // 7. Cross-page panorama assets -- positioned once in project-level
+  // panorama space (mockupProject.panoramaAssets), projected onto this
+  // page's local box. See projectPanoramaAssetToColumn's doc comment for
+  // why xPct/widthPct can legitimately be negative or exceed 100 (the
+  // portion outside 0-1080 is naturally clipped by the artboard's own
+  // overflow:hidden / the <canvas> element's own pixel bounds). Always
+  // interactive regardless of this page's `interactive` flag -- a cross-page
+  // asset must stay draggable from any page it overlaps, active or not.
+  const columnOrderIndex = orderedColumnIndex(column.id);
+  for (const pa of mockupProject?.panoramaAssets ?? []) {
+    if (pa.visible === false) continue;
+    const projected = projectPanoramaAssetToColumn(pa, columnOrderIndex);
+    if (!projected) continue;
+    const panoramaImg = await buildAssetImage(projected, `panorama:${pa.id}`, { interactive: true });
+    if (panoramaImg) {
+      panoramaImg.panoramaAssetId = pa.id;
+      queueObject(panoramaImg, pa.zIndex ?? 15);
     }
   }
 
@@ -676,7 +1033,7 @@ export async function loadColumnIntoFabric(column) {
  *   sourceId) rendered a blank device here while the real server-rendered
  *   preview/export correctly showed a screenshot.
  */
-export async function buildDeviceGroup(device, layerId, left, top, width, height, rotation, deviceId, variantId, resolvedSource) {
+export async function buildDeviceGroup(device, layerId, left, top, width, height, rotation, deviceId, variantId, resolvedSource, interactive = true) {
   const fabric = window.fabric;
   if (!fabric) return null;
 
@@ -782,8 +1139,8 @@ export async function buildDeviceGroup(device, layerId, left, top, width, height
     name: layerId,
     layerId,
     visible: device.visible !== false,
-    selectable: !device.locked,
-    evented: !device.locked,
+    selectable: !device.locked && interactive,
+    evented: !device.locked && interactive,
     shadow: !isFrameless ? new fabric.Shadow({
       color: 'rgba(0,0,0,0.5)',
       blur: 30,
@@ -809,17 +1166,16 @@ let panStart = { x: 0, y: 0 };
 let isSpacePressed = false;
 let isPanning = false;
 
-const ARTBOARD_GAP = 40; // must match .mockup-canvas-stage's gap in app.css
+const ARTBOARD_GAP = 8; // must match .mockup-canvas-stage's gap in app.css -- small, so adjacent selected pages visually read as one connected panorama
 
-/** Total content width of the stage: one 1080-wide artboard normally, or
- *  two side by side (plus the gap between them) when a second selected page
- *  is being shown -- fit/center math must account for this or it keeps
- *  treating the stage as 1080px wide and the secondary artboard ends up
- *  mostly off-screen instead of both pages being visible together. */
+/** Total content width of the stage: N artboards side by side (plus gaps
+ *  between them), N = however many pages are currently open -- fit/center
+ *  math must account for this or it keeps assuming a fixed 1-2 artboard
+ *  width and pages beyond that end up off-screen instead of all being
+ *  visible together. */
 function stageContentWidth() {
-  const secondary = document.getElementById("mockup-canvas-artboard-2");
-  const showingSecondary = secondary && secondary.style.display !== "none";
-  return showingSecondary ? 1080 * 2 + ARTBOARD_GAP : 1080;
+  const n = Math.max(1, pageCanvases.size);
+  return n * 1080 + (n - 1) * ARTBOARD_GAP;
 }
 
 export function _fitZoomForViewport() {
@@ -862,49 +1218,6 @@ export function centerArtboardInViewport() {
   setStageZoomAndCenter(zoom);
 }
 
-let secondaryPreviewVersion = 0;
-
-/** Shows the second selected page as a live, synced preview next to the
- *  primary interactive artboard (see .mockup-canvas-artboard-secondary in
- *  app.css) -- called whenever selectedPagePair reaches 2, so both selected
- *  pages are visible in the editing area at once instead of only one. */
-export function showSecondaryPagePreview(pageId, deviceRowId, pageLabel) {
-  const wrap = document.getElementById("mockup-canvas-artboard-2");
-  const frame = document.getElementById("mockup-secondary-preview-frame");
-  const label = document.getElementById("mockup-secondary-label");
-  if (!wrap || !frame || !mockupId || !pageId) return;
-  secondaryPreviewVersion += 1;
-  const rowId = deviceRowId || "__base";
-  frame.src = `/api/mockups/${mockupId}/cell-preview/${encodeURIComponent(rowId)}/${encodeURIComponent(pageId)}?v=${secondaryPreviewVersion}`;
-  if (label) label.textContent = pageLabel ? `Paired: ${pageLabel}` : "Paired page";
-  wrap.style.display = "";
-  // Re-fit now that the stage is ~2x wider with the secondary artboard
-  // showing -- otherwise it stays zoomed/centered for the old single-page
-  // width and the second page ends up mostly off-screen.
-  try { centerArtboardInViewport(); } catch (_) {}
-}
-
-export function hideSecondaryPagePreview() {
-  const wrap = document.getElementById("mockup-canvas-artboard-2");
-  const frame = document.getElementById("mockup-secondary-preview-frame");
-  const wasVisible = wrap && wrap.style.display !== "none";
-  if (wrap) wrap.style.display = "none";
-  if (frame) frame.src = "";
-  if (wasVisible) { try { centerArtboardInViewport(); } catch (_) {} }
-}
-
-/** Reloads the secondary preview's iframe (cache-busted) if it's currently
- *  shown, so an edit on the primary page's canvas -- or a save -- keeps the
- *  paired preview in sync instead of it going stale. */
-export function refreshSecondaryPagePreviewIfVisible() {
-  const wrap = document.getElementById("mockup-canvas-artboard-2");
-  const frame = document.getElementById("mockup-secondary-preview-frame");
-  if (!wrap || !frame || wrap.style.display === "none" || !frame.src) return;
-  secondaryPreviewVersion += 1;
-  const base = frame.src.split("?")[0];
-  frame.src = `${base}?v=${secondaryPreviewVersion}`;
-}
-
 /** Zoom step anchored at the viewport's own center (not the artboard's),
  *  so a manual +/- click preserves wherever the user was already looking
  *  instead of re-centering on the artboard like Fit/50%/100% do. */
@@ -927,9 +1240,12 @@ export function setHandToolActive(active) {
   isHandToolActive = active;
   const viewport = document.getElementById("mockup-canvas-viewport");
   if (viewport) viewport.classList.toggle("hand-tool-active", active);
-  if (mockupFabricCanvas) {
-    mockupFabricCanvas.selection = !active;
-    mockupFabricCanvas.skipTargetFind = active;
+  // All open canvases, not just the active one -- panorama-tagged objects
+  // stay interactive on inert pages too, so hand-tool panning needs to
+  // suspend object interaction everywhere, not only on the active canvas.
+  for (const canvas of pageCanvases.values()) {
+    canvas.selection = !active;
+    canvas.skipTargetFind = active;
   }
 }
 

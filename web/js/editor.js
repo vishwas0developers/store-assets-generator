@@ -11,10 +11,10 @@ import {
   setMockupProject,
   saveCurrentMockupProject,
   mockupFabricCanvas,
-  selectedPagePair
+  selectedPages
 } from './state.js';
 import { escapeHtml, api, uploadFile, showAlert, showToast } from './utils.js';
-import { loadColumnIntoFabric, renderMockupCanvas } from './canvas.js';
+import { loadColumnIntoFabric, renderMockupCanvas, setActivePage } from './canvas.js';
 import { renderMockupMatrix, getSelectedCellStyle } from './matrix.js';
 
 export function switchInspectorTab(tabId) {
@@ -109,6 +109,27 @@ export function buildScreenLayersModel(column) {
         visible: ast.visible !== false,
         locked: !!ast.locked,
         zIndex: ast.zIndex ?? (15 + idx),
+      });
+    });
+  }
+  // Cross-page panorama assets that intersect this page -- same
+  // order-sorted column-index math as canvas.js/render.ts's projection, so
+  // "does this asset appear on this page" always agrees everywhere.
+  if (mockupProject?.panoramaAssets?.length) {
+    const orderedCols = [...mockupProject.columns].sort((a, b) => a.order - b.order);
+    const colIdx = orderedCols.findIndex((c) => c.id === column.id);
+    mockupProject.panoramaAssets.forEach((pa) => {
+      const localXPx = pa.xPx - colIdx * 1080;
+      const intersects = localXPx + pa.widthPx > 0 && localXPx < 1080;
+      if (!intersects) return;
+      layers.push({
+        id: `panorama:${pa.id}`,
+        type: "panorama",
+        icon: "↔️",
+        name: pa.name || "Panorama Asset (spans pages)",
+        visible: pa.visible !== false,
+        locked: !!pa.locked,
+        zIndex: pa.zIndex ?? 15,
       });
     });
   }
@@ -213,7 +234,10 @@ export function renderMockupLayersPanel(column) {
         toggleLayerLockInModel(column, lid);
         setMockupDirty(true);
         renderMockupLayersPanel(column);
-        loadColumnIntoFabric(column);
+        // A panorama asset can appear on more than one open canvas --
+        // rebuild all of them (setActivePage), not just this one.
+        if (lid.startsWith("panorama:")) setActivePage(column.id);
+        else loadColumnIntoFabric(column);
       };
     }
 
@@ -224,7 +248,8 @@ export function renderMockupLayersPanel(column) {
         toggleLayerVisibilityInModel(column, lid);
         setMockupDirty(true);
         renderMockupLayersPanel(column);
-        loadColumnIntoFabric(column);
+        if (lid.startsWith("panorama:")) setActivePage(column.id);
+        else loadColumnIntoFabric(column);
       };
     }
   });
@@ -291,7 +316,19 @@ export function syncLinkedDeviceLayer(project, pageId, layerKey) {
   partnerLayer.frameless = layer.frameless;
 }
 
+/** A panorama-tagged layer id ("panorama:<id>") lives in
+ *  mockupProject.panoramaAssets, not any column's style -- resolve it there
+ *  instead of the getSelectedCellStyle()-based lookups every other layer
+ *  type uses. */
+function resolvePanoramaAsset(layerId) {
+  if (!layerId?.startsWith("panorama:")) return null;
+  const id = layerId.slice("panorama:".length);
+  return mockupProject?.panoramaAssets?.find((p) => p.id === id) ?? null;
+}
+
 export function setCustomLayerName(column, layerId, name) {
+  const pa = resolvePanoramaAsset(layerId);
+  if (pa) { pa.name = name; return; }
   const style = getSelectedCellStyle() || column.style;
   if (!style) return;
   if (layerId === "title" && style.title) style.title.customName = name;
@@ -307,6 +344,8 @@ export function setCustomLayerName(column, layerId, name) {
 }
 
 export function toggleLayerVisibilityInModel(column, layerId) {
+  const pa = resolvePanoramaAsset(layerId);
+  if (pa) { pa.visible = pa.visible === false; return; }
   const style = getSelectedCellStyle() || column.style;
   if (!style) return;
   if (layerId === "title" && style.title) style.title.visible = style.title.visible === false;
@@ -322,6 +361,8 @@ export function toggleLayerVisibilityInModel(column, layerId) {
 }
 
 export function toggleLayerLockInModel(column, layerId) {
+  const pa = resolvePanoramaAsset(layerId);
+  if (pa) { pa.locked = !pa.locked; return; }
   const style = getSelectedCellStyle() || column.style;
   if (!style) return;
   if (layerId === "title" && style.title) style.title.locked = !style.title.locked;
@@ -406,6 +447,8 @@ export function reorderLayersInModel(column, fromId, toId, insertBefore) {
 }
 
 export function setLayerZIndex(column, layerId, zIndex) {
+  const pa = resolvePanoramaAsset(layerId);
+  if (pa) { pa.zIndex = zIndex; return; }
   const style = getSelectedCellStyle() || column.style;
   if (!style) return;
   if (layerId === "title" && style.title) style.title.zIndex = zIndex;
@@ -978,6 +1021,19 @@ export function duplicateSelectedLayer() {
  *  structural singletons the schema always expects to exist). */
 export function deleteSelectedLayer() {
   if (!selectedColumn) return;
+  const pa = resolvePanoramaAsset(selectedLayerId);
+  if (pa) {
+    const idx = mockupProject.panoramaAssets.indexOf(pa);
+    if (idx !== -1) mockupProject.panoramaAssets.splice(idx, 1);
+    setMockupDirty(true);
+    setSelectedLayerId("deviceOne");
+    renderMockupLayersPanel(selectedColumn);
+    syncSection2Inputs(selectedColumn);
+    // A panorama asset can show on more than one open canvas -- rebuild all
+    // of them (setActivePage does this), not just the active page.
+    setActivePage(selectedColumn.id);
+    return;
+  }
   const style = getSelectedCellStyle() || selectedColumn.style;
   if (!style) return;
   if (selectedLayerId.startsWith("asset:")) {
@@ -1070,11 +1126,11 @@ export function setupTransformPanelEvents() {
   const linkPageBtn = $id("mk-link-paired-page");
   if (linkPageBtn) {
     linkPageBtn.onclick = () => {
-      if (!selectedColumn || selectedPagePair.length !== 2) return;
+      if (!selectedColumn || selectedPages.length !== 2) return;
       const style = getSelectedCellStyle() || selectedColumn.style;
       const dev = style && resolveDeviceLayer(style, selectedLayerId);
       if (!dev) return;
-      const otherPageId = selectedPagePair.find((id) => id !== selectedColumn.id);
+      const otherPageId = selectedPages.find((id) => id !== selectedColumn.id);
       if (!otherPageId) return;
       if (dev.linkedTo) {
         unlinkDeviceLayer(mockupProject, selectedColumn.id, selectedLayerId);
@@ -1117,7 +1173,7 @@ function syncTransformPanelInputs(style, layerId) {
   const linkBtn = document.getElementById("mk-link-paired-page");
   if (linkRow && linkBtn) {
     const dev = resolveDeviceLayer(style, layerId);
-    const showLink = !!dev && selectedColumn && selectedPagePair.length === 2 && selectedPagePair.includes(selectedColumn.id);
+    const showLink = !!dev && selectedColumn && selectedPages.length === 2 && selectedPages.includes(selectedColumn.id);
     linkRow.style.display = showLink ? "block" : "none";
     if (showLink) {
       linkBtn.textContent = dev.linkedTo ? "🔗 Unlink from Paired Page" : "🔗 Link to Paired Page";

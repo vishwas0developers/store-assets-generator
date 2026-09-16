@@ -280,6 +280,31 @@ export interface MockupColumn {
  *  names, UI labels) first. New code should prefer `MockupPage`. */
 export type MockupPage = MockupColumn;
 
+/** An asset that can span more than one page, positioned once in a shared
+ *  "panorama space" (column 0's left edge, by `order`, is x=0) rather than
+ *  inside any single column's local 1080-wide box. Separate from
+ *  `ColumnStyle.assetLayers` (page-local, untouched) rather than a migration
+ *  of it -- additive, same pattern as `extraDevices`/`linkedTo`/`cells`.
+ *  Only X is absolute px: every page is the same 1920 tall, so Y/height stay
+ *  pct-of-1920 (unambiguous); X spans an open-ended multi-page width, where
+ *  "%" has no single fixed denominator, so it must be absolute pixels. */
+export interface PanoramaAssetLayer {
+  id: string;
+  assetId: string; // same convention as MockupAssetLayer.assetId
+  name?: string;
+  xPx: number;
+  widthPx: number;
+  yPct: number;
+  heightPct?: number;
+  rotation: number;
+  opacity: number;
+  flipH?: boolean;
+  flipV?: boolean;
+  visible?: boolean;
+  locked?: boolean;
+  zIndex: number;
+}
+
 export interface MockupProject {
   id: string;
   createdAt: string;
@@ -291,6 +316,9 @@ export interface MockupProject {
   /** key = `${deviceId}:${columnId}` */
   cells: Record<string, Partial<ColumnStyle>>;
   globalPanoramic: { file?: string; flip: boolean };
+  /** Assets that span across page boundaries -- additive/optional, old
+   *  projects without any simply have none. See PanoramaAssetLayer. */
+  panoramaAssets?: PanoramaAssetLayer[];
   settings: { inspectorPosition: "left" | "right"; screenshotSizeLabel: string; palette: string[] };
 }
 
