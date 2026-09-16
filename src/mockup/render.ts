@@ -121,6 +121,16 @@ export function cellHtml(project: MockupProject, deviceRowId: string, columnId: 
     deviceLayers += `<div class="layer" style="transform:${d2Transform}">${layerMarkup(deviceRow.deviceId, uri2, d2, deviceRow.variant)}</div>`;
   }
 
+  // Free-form devices beyond the two preset-driven slots: no presentation-recipe
+  // offset (there isn't one defined past two devices), positioned purely by
+  // their own x/y/size/rotation, same as deviceOne/deviceTwo's own sliders.
+  for (const extra of style.extraDevices ?? []) {
+    const extraSource = project.sources.find((s) => s.id === extra.sourceId) ?? source;
+    const extraUri = extraSource ? ctx.resolveUri(extraSource.file) : screenshotUri;
+    const extraTransform = `translate(${extra.x}%, ${extra.y}%) scale(${extra.size / 90}) rotate(${extra.rotation}deg)`;
+    deviceLayers += `<div class="layer" style="transform:${extraTransform}">${layerMarkup(deviceRow.deviceId, extraUri, extra, deviceRow.variant)}</div>`;
+  }
+
   const textAbove = preset.textPosition.endsWith("above");
   const decorations = decorationsMarkup(style.decorations, canvas);
   const assets = assetLayersMarkup(style.assetLayers, ctx.resolveUri);

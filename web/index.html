@@ -375,7 +375,7 @@
               <button id="mockup-undo-btn" class="secondary small icon-btn" title="Undo (Ctrl+Z)" disabled>&#8617; Undo</button>
               <button id="mockup-redo-btn" class="secondary small icon-btn" title="Redo (Ctrl+Y)" disabled>&#8618; Redo</button>
               <div class="divider"></div>
-              <button id="mockup-add-column" class="secondary small" type="button">+ Add Screen</button>
+              <button id="mockup-add-page" class="secondary small" type="button">+ Add Page</button>
               <button id="mockup-add-asset-btn" class="secondary small" type="button">+ Add Asset Layer</button>
               <input type="file" id="mockup-asset-upload-input" accept="image/*" style="display:none;" />
               <button id="mockup-reset-template-btn" class="secondary small" type="button" title="Reset active screen to base template style">Reset to Template</button>
@@ -389,9 +389,9 @@
               <span style="font-size:0.75rem; color:#60a5fa; background:rgba(59,130,246,0.12); padding:2px 6px; border-radius:4px; font-family:monospace;">Fit</span>
               <div class="divider"></div>
               <button id="mk-save" class="primary small" type="button">Save Changes</button>
-              <button id="mk-copy-style" class="secondary small" type="button" title="Propagate active screen style across all device rows">Apply to All Rows</button>
+              <button id="mk-copy-style" class="secondary small" type="button" title="Propagate active page style across all device rows">Apply to All Rows</button>
               <div class="divider"></div>
-              <button id="mockup-export-single-btn" class="primary small" type="button" style="margin-left: auto;">Export Screen (PNG)</button>
+              <button id="mockup-export-single-btn" class="primary small" type="button" style="margin-left: auto;">Export Page (PNG)</button>
             </div>
 
             <!-- Workspace: Studio Canvas Container (fixed-height viewport) -->
@@ -410,11 +410,11 @@
               </div>
             </div>
 
-            <!-- Matrix Grid View (Devices × Screens) - Open by Default -->
+            <!-- Matrix Grid View (Devices × Pages) - Open by Default -->
             <div class="mockup-matrix-container">
               <div style="font-size: 0.85rem; color: #f1f5f9; font-weight: 600; margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: space-between;">
-                <span>Matrix Grid View (Devices &times; Screens)</span>
-                <span style="font-size: 0.75rem; color: #94a3b8; background: rgba(59,130,246,0.15); padding: 2px 8px; border-radius: 4px;">Active screen highlighted</span>
+                <span>Matrix Grid View (Devices &times; Pages)</span>
+                <span style="font-size: 0.75rem; color: #94a3b8; background: rgba(59,130,246,0.15); padding: 2px 8px; border-radius: 4px;">Active page highlighted</span>
               </div>
               <div class="matrix-scroll">
                 <table class="matrix" id="mockup-matrix"></table>
@@ -508,6 +508,7 @@
             <button id="mk-layer-send-bwd" class="secondary xsmall" style="width:auto;" type="button">Bwd</button>
             <button id="mk-layer-send-back" class="secondary xsmall" style="width:auto;" type="button">Back</button>
           </div>
+          <button id="mk-add-device-layer-btn" class="secondary small" type="button" style="width:100%; margin-top:0.5rem;" title="Add another freely-positioned device to this screen">+ Add Device Layer</button>
         </div>
 
         <!-- Section 1: Object Details & Content Card -->
@@ -518,7 +519,7 @@
 
           <!-- Contextual Layer Selector Buttons -->
           <div style="display:flex; gap:0.25rem; margin-bottom:0.85rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.6rem; flex-wrap:wrap;">
-            <button id="mk-tab-col" class="secondary small" style="flex:1;" type="button">Screen</button>
+            <button id="mk-tab-col" class="secondary small" style="flex:1;" type="button">Page</button>
             <button id="mk-tab-dev" class="secondary small" style="flex:1;" type="button">Device</button>
             <button id="mk-tab-text" class="secondary small" style="flex:1;" type="button">Text</button>
             <button id="mk-tab-asset" class="secondary small" style="flex:1;" type="button">Assets</button>
@@ -630,6 +631,10 @@
           <div style="display:flex; gap:0.4rem;">
             <button id="mk-duplicate-layer" class="secondary small" style="flex:1;">Duplicate (Ctrl+D)</button>
             <button id="mk-delete-layer" class="primary small" style="flex:1; color:#ef4444; border-color:rgba(239,68,68,0.3);">Delete</button>
+          </div>
+          <!-- Two-page device linking: visible only for a device layer while exactly two pages are paired (ctrl/shift-click matrix page headers). -->
+          <div id="mk-page-link-row" style="display:none; margin-top:0.5rem;">
+            <button id="mk-link-paired-page" class="secondary small" style="width:100%;" title="Sync this device's position/size/rotation with the same-slot device on the other paired page">🔗 Link to Paired Page</button>
           </div>
         </div>
         <!-- /Section 2 -->

@@ -47,20 +47,36 @@ export function presentationTransformClient(presentation) {
 }
 
 /**
- * Resolves per-device geometry from the inline registry table.
- * Matches the shape used by `src/devices/registry.ts::DeviceGeometry`
- * and `src/render/shared.ts::resolveGeometry` so the client mirrors the server.
- * @param {string} id - device id like "phone", "google-pixel-9", etc.
+ * Resolves per-device geometry. Prefers the real server-side device catalog
+ * (fetched via /api/devices into templates.js's mockupDevicesCatalog -- the
+ * actual data src/devices/registry.ts::resolveGeometry() uses, tens of real
+ * devices, e.g. "apple-iphone-16-pro-max"), falling back to a tiny built-in
+ * stub only when the catalog hasn't loaded yet or the id truly isn't found --
+ * NOT as the everyday path. (Previously this WAS the everyday path: nothing
+ * ever passed a real device id in, and the stub doesn't contain any of the
+ * actual catalog's device ids, so every editor render silently fell back to
+ * a generic "phone" entry regardless of which device the project actually used.)
+ * @param {string} id - real device catalog id (e.g. "apple-iphone-16-pro-max"), or a stub fallback key.
+ * @param {Array<{id:string,geometry:object,variants?:Array<{id:string,geometry:object}>}>} [catalog] - mockupDevicesCatalog from templates.js.
+ * @param {string} [variantId]
  * @returns {{width:number,height:number,screenInset:{top:number,left:number,width:number,height:number},cornerRadius?:number}}
  */
-export function resolveDeviceGeometry(id) {
-  const registry = {
+export function resolveDeviceGeometry(id, catalog, variantId) {
+  const entry = catalog && catalog.find((d) => d.id === id);
+  if (entry) {
+    if (variantId) {
+      const variant = entry.variants?.find((v) => v.id === variantId);
+      if (variant?.geometry) return variant.geometry;
+    }
+    if (entry.geometry) return entry.geometry;
+  }
+  const stub = {
     phone: { width: 1080, height: 2400, screenInset: { top: 30, left: 30, width: 1020, height: 2340 }, cornerRadius: 30 },
     'google-pixel-9': { width: 1080, height: 2424, screenInset: { top: 26, left: 26, width: 1028, height: 2372 }, cornerRadius: 48 },
     'samsung-galaxy-s24': { width: 1080, height: 2340, screenInset: { top: 22, left: 22, width: 1036, height: 2296 }, cornerRadius: 52 },
     'samsung-galaxy-s25': { width: 1080, height: 2340, screenInset: { top: 18, left: 18, width: 1044, height: 2304 }, cornerRadius: 56 },
   };
-  return registry[id] || { width: 1080, height: 1920, screenInset: { top: 0, left: 0, width: 1080, height: 1920 }, cornerRadius: 36 };
+  return stub[id] || { width: 1080, height: 1920, screenInset: { top: 0, left: 0, width: 1080, height: 1920 }, cornerRadius: 36 };
 }
 
 /**
@@ -294,32 +310,35 @@ export async function uploadFile(path, file) {
  * Extract device position/size percentages from a Fabric object.
  * Inverts the placement math in loadColumnIntoFabric so dragging a device
  * writes back the same x/y the renderer would reproduce.
+ *
+ * `stageCenter` ({cx,cy}) and `deviceGeo` ({width,height}, the device's REAL
+ * natural/unscaled dimensions from the device catalog) must be the exact
+ * same values loadColumnIntoFabric used to place this object -- this used
+ * to recompute both internally with its own approximations (a hand-rolled
+ * copy-block-height formula matching canvas.js's now-fixed
+ * measureCopyBlock() bug, and a hardcoded 960 "reference height" instead of
+ * the real device's height), which meant a dragged device would not
+ * land back where it was actually dropped once written back to the model.
+ * Also reads the object's real *rendered* (scaled) size via
+ * getScaledWidth()/getScaledHeight() -- `obj.width`/`obj.height` on a
+ * Fabric Group are its natural pre-scale dimensions, not what's on screen.
  * @param {object} obj
  * @param {object} column
  * @param {string} layerId
+ * @param {{cx:number,cy:number}} stageCenter
+ * @param {{width:number,height:number}} deviceGeo
  * @returns {{xPct:number,yPct:number,size:number}|null}
  */
-export function getDeviceCoordsFromFabricObject(obj, column, layerId) {
-  if (!obj) return null;
+export function getDeviceCoordsFromFabricObject(obj, column, layerId, stageCenter, deviceGeo) {
+  if (!obj || !stageCenter || !deviceGeo) return null;
   const left = obj.left ?? 0;
   const top = obj.top ?? 0;
-  const width = obj.width ?? 480;
-  const height = obj.height ?? 960;
+  const width = typeof obj.getScaledWidth === 'function' ? obj.getScaledWidth() : (obj.width ?? deviceGeo.width);
+  const height = typeof obj.getScaledHeight === 'function' ? obj.getScaledHeight() : (obj.height ?? deviceGeo.height);
 
   const style = column ? column.style : null;
   const preset = getLayoutPresetClient(style ? style.layout : undefined);
   const transform = presentationTransformClient(preset.presentation);
-  const showText = preset.textPosition !== 'no-text';
-  const textBelow = preset.textPosition.endsWith('below');
-  const PAD = 1080 * 0.06;
-  const t = (style && style.title) || { size: 58 };
-  const s = (style && style.subtitle) || { size: 36 };
-  const titleSize = preset.textPosition.startsWith('caption') ? Math.round((t.size || 58) * 0.72) : (t.size || 58);
-  const copyH = showText ? titleSize * 1.6 + (s.size || 36) * 1.2 + 1920 * 0.04 : 0;
-  const stageTop = showText && !textBelow ? PAD + copyH : PAD;
-  const stageBottom = showText && textBelow ? 1920 - PAD - copyH : 1920 - PAD;
-  const stageCx = 540;
-  const stageCy = (stageTop + stageBottom) / 2;
 
   const t1 = layerId === 'deviceTwo' ? transform.d2 : transform.d1;
   const presetXPct = t1 ? t1.xPct : 0;
@@ -327,8 +346,8 @@ export function getDeviceCoordsFromFabricObject(obj, column, layerId) {
 
   const cx = left + width / 2;
   const cy = top + height / 2;
-  const xPct = Math.round(((cx - stageCx) / width) * 100 - presetXPct);
-  const yPct = Math.round(((cy - stageCy) / height) * 100 - presetYPct);
-  const size = Math.round((height / 960) * 90);
+  const xPct = Math.round(((cx - stageCenter.cx) / width) * 100 - presetXPct);
+  const yPct = Math.round(((cy - stageCenter.cy) / height) * 100 - presetYPct);
+  const size = Math.round((height / deviceGeo.height) * 90);
   return { xPct, yPct, size };
 }

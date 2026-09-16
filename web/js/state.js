@@ -9,7 +9,19 @@ export let mockupProject = null;
 export let mockupFabricCanvas = null;
 export let selectedColumn = null;
 export let selectedLayerId = "deviceOne";
+/** Full multi-select set (Fabric shift-click/marquee); selectedLayerId is
+ *  always selectedLayerIds[0] -- the "primary" selection the single-object
+ *  inspector panel edits. Group operations (align/delete/etc.) should use
+ *  this instead of assuming a single selection. */
+export let selectedLayerIds = ["deviceOne"];
 export let mockupIsDirty = false;
+
+/** Two-page pairing (0, 1, or 2 page/column ids; never 3 -- ctrl/shift-click
+ *  a second matrix page to pair it with whichever is currently open; a third
+ *  such click replaces the oldest of the two rather than growing past two).
+ *  Lets a device composition be intentionally split/synchronized across a
+ *  page boundary -- see editor.js's linkDeviceLayers/syncLinkedDeviceLayer. */
+export let selectedPagePair = [];
 
 export let mockupTemplates = [];
 export let mockupTemplateCategory = "all";
@@ -54,8 +66,29 @@ export function setSelectedColumn(col) {
   selectedColumn = col;
 }
 
+/** Toggles a page into/out of the pair-select set. A page already in the
+ *  pair is removed (un-pairing it). Otherwise it's added; if that would
+ *  exceed two, the OLDEST paired page is dropped first -- the set never
+ *  grows past two. */
+export function togglePagePair(pageId) {
+  if (selectedPagePair.includes(pageId)) {
+    selectedPagePair = selectedPagePair.filter((id) => id !== pageId);
+    return;
+  }
+  selectedPagePair = selectedPagePair.length >= 2 ? [selectedPagePair[1], pageId] : [...selectedPagePair, pageId];
+}
+
+export function clearPagePair() {
+  selectedPagePair = [];
+}
+
 export function setSelectedLayerId(layerId) {
   selectedLayerId = layerId;
+  if (!selectedLayerIds.includes(layerId)) selectedLayerIds = [layerId];
+}
+
+export function setSelectedLayerIds(layerIds) {
+  selectedLayerIds = layerIds && layerIds.length ? layerIds : [selectedLayerId];
 }
 
 export function setMockupDirty(dirty = true) {
@@ -77,8 +110,8 @@ export async function undoMockupState() {
   mockupProject = JSON.parse(mockupHistory[mockupHistoryIdx]);
   await saveCurrentMockupProject();
   updateUndoRedoButtons();
-  if (typeof window.selectMockupScreen === "function" && mockupProject.columns?.[0]) {
-    window.selectMockupScreen(mockupProject.columns[0].id);
+  if (typeof window.selectMockupPage === "function" && mockupProject.columns?.[0]) {
+    window.selectMockupPage(mockupProject.columns[0].id);
   }
 }
 
@@ -88,8 +121,8 @@ export async function redoMockupState() {
   mockupProject = JSON.parse(mockupHistory[mockupHistoryIdx]);
   await saveCurrentMockupProject();
   updateUndoRedoButtons();
-  if (typeof window.selectMockupScreen === "function" && mockupProject.columns?.[0]) {
-    window.selectMockupScreen(mockupProject.columns[0].id);
+  if (typeof window.selectMockupPage === "function" && mockupProject.columns?.[0]) {
+    window.selectMockupPage(mockupProject.columns[0].id);
   }
 }
 
