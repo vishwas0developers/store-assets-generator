@@ -56,6 +56,28 @@ const CONTROL_STYLE = {
 };
 
 /**
+ * By default only the top-center handle (mtr) rotates -- the four corner
+ * handles only resize. Rewires tl/tr/bl/br to rotate too (same action Fabric
+ * already uses for mtr: fabric.controlsUtils.rotationWithSnapping, with its
+ * matching cursor handler), so any corner can be dragged to rotate. Applied
+ * per-instance (not via a single prototype patch) for the same reason the
+ * origin-default fix above is: Fabric v7 classes merge their own control
+ * defaults in the constructor, so a `fabric.Object.prototype.controls` patch
+ * doesn't reliably reach already-typed classes (Rect/Textbox/Group/Image).
+ */
+function applyCornerRotationControls(obj) {
+  const fabric = window.fabric;
+  if (!obj?.controls || !fabric?.controlsUtils) return;
+  for (const key of ['tl', 'tr', 'bl', 'br']) {
+    const base = obj.controls[key];
+    if (!base) continue;
+    base.actionName = 'rotate';
+    base.actionHandler = fabric.controlsUtils.rotationWithSnapping;
+    base.cursorStyleHandler = fabric.controlsUtils.rotationStyleHandler;
+  }
+}
+
+/**
  * Position + origin for a rotatable object, given its unrotated top-left box
  * (L, T, W, H) and rotation angle. With origin 'left'/'top' (needed so every
  * upstream anchor formula in this file -- all of which compute L/T as a
@@ -375,7 +397,11 @@ export async function loadColumnIntoFabric(column) {
   // these defaults must match that function's exactly so a layer's position
   // in the panel always matches its stacking on the canvas.
   const pendingObjects = [];
-  const queueObject = (obj, zIndex) => { if (obj) pendingObjects.push({ obj, zIndex }); };
+  const queueObject = (obj, zIndex) => {
+    if (!obj) return;
+    applyCornerRotationControls(obj);
+    pendingObjects.push({ obj, zIndex });
+  };
 
   // Which physical device model (e.g. "apple-iphone-16-pro-max") this
   // composition renders with -- matches render.ts's layerMarkup(), which
