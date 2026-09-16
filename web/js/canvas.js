@@ -34,6 +34,41 @@ import { saveCurrentMockupProject, pushMockupHistory, mockupProject } from './st
 // inside function bodies, never at module-evaluation time.)
 import { mockupDevicesCatalog } from './templates.js';
 
+// Selection-control styling, applied explicitly to every constructed object
+// (not trusted to a `fabric.Object.prototype` patch -- Fabric v7's classes
+// merge their own `ownDefaults` in the constructor rather than reading the
+// prototype chain the old way, the same reason the origin-bug fix above had
+// to be applied per-construction instead of via a single prototype patch;
+// verified the same way here rather than assumed). Fabric's own defaults are
+// a pale, mostly-transparent blue with tiny corners -- near-invisible against
+// this app's light-mode canvas background (#fff). Uses the app's existing
+// accent blue with opaque, larger corners and a visible border so handles
+// read clearly on both light and dark canvases.
+const CONTROL_STYLE = {
+  borderColor: '#3b82f6',
+  cornerColor: '#3b82f6',
+  cornerStrokeColor: '#ffffff',
+  transparentCorners: false,
+  cornerStyle: 'circle',
+  cornerSize: 12,
+  borderScaleFactor: 2,
+  padding: 4,
+};
+
+/**
+ * Position + origin for a rotatable object, given its unrotated top-left box
+ * (L, T, W, H) and rotation angle. With origin 'left'/'top' (needed so every
+ * upstream anchor formula in this file -- all of which compute L/T as a
+ * top-left corner -- keeps working unchanged), Fabric rotates around that
+ * corner, not the object's visual center. Converting to center coordinates
+ * ONLY when actually rotating (angle !== 0) makes Fabric pivot around the
+ * true center instead, without touching any of the L/T/W/H math itself.
+ */
+function positionForRotation(L, T, W, H, angle) {
+  if (!angle) return { left: L, top: T, originX: 'left', originY: 'top' };
+  return { left: L + W / 2, top: T + H / 2, originX: 'center', originY: 'center' };
+}
+
 /**
  * Initializes the primary interactive Fabric.js canvas (1080×1920 reference resolution).
  * Re-disposes old instance if canvas already exists.
@@ -145,6 +180,19 @@ export async function syncFabricObjectToModel(obj, group) {
     const angle = typeof obj.getTotalAngle === 'function' ? obj.getTotalAngle() : (obj.angle || 0) + (group.angle || 0);
     obj = Object.assign(Object.create(Object.getPrototypeOf(obj)), obj, {
       left: rect.left, top: rect.top, width: rect.width, height: rect.height, angle,
+    });
+  } else if (obj.originX === 'center') {
+    // Rotated objects (positionForRotation in loadColumnIntoFabric) are
+    // constructed with center origin so Fabric pivots around their true
+    // center -- obj.left/top are therefore already the CENTER here, not the
+    // top-left corner every branch below assumes. Normalize back to top-left
+    // once, up front, so nothing downstream needs to know which origin
+    // convention was in effect (getBoundingRect(true,true) already does the
+    // equivalent normalization for the multi-select `group` branch above).
+    const w = typeof obj.getScaledWidth === 'function' ? obj.getScaledWidth() : obj.width;
+    const h = typeof obj.getScaledHeight === 'function' ? obj.getScaledHeight() : obj.height;
+    obj = Object.assign(Object.create(Object.getPrototypeOf(obj)), obj, {
+      left: obj.left - w / 2, top: obj.top - h / 2,
     });
   }
 
@@ -317,6 +365,18 @@ export async function loadColumnIntoFabric(column) {
   const preset = getLayoutPresetClient(style.layout);
   const transform = presentationTransformClient(preset.presentation);
 
+  // Real z-order: every layer is built first (not added to the canvas yet),
+  // tagged with its resolved zIndex, then all added in ascending zIndex order
+  // at the end -- Fabric's paint order IS its object add-order, there's no
+  // native z-index concept to lean on instead. Previously this function
+  // added objects in a fixed hardcoded sequence regardless of zIndex, so
+  // bring-forward/send-backward/drag-reorder only ever changed the Layers
+  // panel's own sort (buildScreenLayersModel), never the actual canvas --
+  // these defaults must match that function's exactly so a layer's position
+  // in the panel always matches its stacking on the canvas.
+  const pendingObjects = [];
+  const queueObject = (obj, zIndex) => { if (obj) pendingObjects.push({ obj, zIndex }); };
+
   // Which physical device model (e.g. "apple-iphone-16-pro-max") this
   // composition renders with -- matches render.ts's layerMarkup(), which
   // uses the selected device ROW's deviceId/variant for every device layer
@@ -363,8 +423,7 @@ export async function loadColumnIntoFabric(column) {
       layerId: 'background'
     });
   }
-  mockupFabricCanvas.add(bgObj);
-  mockupFabricCanvas.sendObjectToBack(bgObj);
+  queueObject(bgObj, style.background?.zIndex ?? 0);
 
   const PAD = 1080 * 0.06;
   const showText = preset.textPosition !== 'no-text';
@@ -389,8 +448,9 @@ export async function loadColumnIntoFabric(column) {
   // (render.ts:52), so the subtitle here follows the title's align, not its own.
   const copyAlign = t.align || 'center';
 
+  const titleX = t.x ?? PAD;
   const titleText = new fabric.Textbox(t.text || '', {
-    left: t.x ?? PAD,
+    left: titleX,
     top: titleY,
     originX: 'left',
     originY: 'top',
@@ -399,22 +459,31 @@ export async function loadColumnIntoFabric(column) {
     lineHeight: 1.15,
     fill: t.color || '#ffffff',
     textAlign: copyAlign,
-    angle: t.rotation || 0,
     fontWeight: 'bold',
     name: 'title',
     layerId: 'title',
     visible: showText && t.visible !== false,
     selectable: !t.locked,
-    evented: !t.locked
+    evented: !t.locked,
+    ...CONTROL_STYLE,
   });
-  mockupFabricCanvas.add(titleText);
+  // Textbox height is only known after construction (auto-computed from
+  // wrapped text) -- rotate-around-center needs it, so reposition+rotate as
+  // a second step instead of trying to precompute height like the other
+  // (already-sized) layer types below.
+  if (t.rotation) {
+    titleText.set({ ...positionForRotation(titleX, titleY, titleText.width, titleText.height, t.rotation), angle: t.rotation });
+    titleText.setCoords();
+  }
+  queueObject(titleText, t.zIndex ?? 20);
 
   // Subtitle sits titleHeight + its own 0.5em margin-top below the title,
   // exactly matching render.ts's `.subtitle { margin-top: .5em }` (em is
   // relative to the subtitle's OWN font-size, not the title's).
   const subtitleY = s.y ?? (titleY + copyMeasure.titleHeight + subtitleSize * 0.5);
+  const subtitleX = s.x ?? PAD;
   const subtitleText = new fabric.Textbox(s.text || '', {
-    left: s.x ?? PAD,
+    left: subtitleX,
     top: subtitleY,
     originX: 'left',
     originY: 'top',
@@ -422,16 +491,20 @@ export async function loadColumnIntoFabric(column) {
     fontSize: subtitleSize,
     fill: s.color || '#94a3b8',
     textAlign: copyAlign,
-    angle: s.rotation || 0,
     fontWeight: 'normal',
     opacity: 0.8,
     name: 'subtitle',
     layerId: 'subtitle',
     visible: showText && s.visible !== false,
     selectable: !s.locked,
-    evented: !s.locked
+    evented: !s.locked,
+    ...CONTROL_STYLE,
   });
-  mockupFabricCanvas.add(subtitleText);
+  if (s.rotation) {
+    subtitleText.set({ ...positionForRotation(subtitleX, subtitleY, subtitleText.width, subtitleText.height, s.rotation), angle: s.rotation });
+    subtitleText.setCoords();
+  }
+  queueObject(subtitleText, s.zIndex ?? 19);
 
   // Stage dimensions & centering offsets
   const { cx: stageCx, cy: stageCy } = fabricStageCenter(column);
@@ -455,9 +528,7 @@ export async function loadColumnIntoFabric(column) {
 
   const d1Source = resolveSourceFor(d1.sourceId);
   const deviceOne = await buildDeviceGroup(d1, 'deviceOne', d1Left, d1Top, d1W, d1H, d1Rotation, activeDeviceId, activeDeviceVariant, d1Source);
-  if (deviceOne) {
-    mockupFabricCanvas.add(deviceOne);
-  }
+  queueObject(deviceOne, d1.zIndex ?? 10);
 
   // 5. Device Two (if exists)
   const d2 = style.deviceTwo;
@@ -475,9 +546,7 @@ export async function loadColumnIntoFabric(column) {
     // (not sources[columnIndex+1]) when d2 has no explicit sourceId.
     const d2Source = sources.find((s) => s.id === d2.sourceId) ?? d1Source;
     const deviceTwo = await buildDeviceGroup(d2, 'deviceTwo', d2Left, d2Top, d2W, d2H, d2Rotation, activeDeviceId, activeDeviceVariant, d2Source);
-    if (deviceTwo) {
-      mockupFabricCanvas.add(deviceTwo);
-    }
+    queueObject(deviceTwo, d2.zIndex ?? 9);
   }
 
   // 5b. Extra device layers (free-form, beyond the two preset slots -- no
@@ -492,7 +561,7 @@ export async function loadColumnIntoFabric(column) {
     const dxCy = stageCy + (dx.y / 100) * dxH;
     const dxSource = sources.find((s) => s.id === dx.sourceId) ?? d1Source;
     const extraGroup = await buildDeviceGroup(dx, `extra:${i}`, dxCx - dxW / 2, dxCy - dxH / 2, dxW, dxH, dx.rotation || 0, activeDeviceId, activeDeviceVariant, dxSource);
-    if (extraGroup) mockupFabricCanvas.add(extraGroup);
+    queueObject(extraGroup, dx.zIndex ?? (8 - i));
   }
 
   // 6. Asset Layers
@@ -515,10 +584,7 @@ export async function loadColumnIntoFabric(column) {
       const assetImg = await loadFabricImageAsync(srcUrl);
       if (assetImg) {
         assetImg.set({
-          left,
-          top,
-          originX: 'left',
-          originY: 'top',
+          ...positionForRotation(left, top, w, h, ast.rotation || 0),
           angle: ast.rotation || 0,
           opacity: ast.opacity ?? 1,
           flipX: !!ast.flipH,
@@ -527,15 +593,20 @@ export async function loadColumnIntoFabric(column) {
           layerId: `asset:${i}`,
           zIndex: ast.zIndex || 15,
           selectable: !ast.locked,
-          evented: !ast.locked
+          evented: !ast.locked,
+          ...CONTROL_STYLE,
         });
         assetImg.scaleX = w / assetImg.width;
         assetImg.scaleY = h / assetImg.height;
-        mockupFabricCanvas.add(assetImg);
-        if (ast.zIndex && mockupFabricCanvas.moveObjectTo) mockupFabricCanvas.moveObjectTo(assetImg, ast.zIndex);
+        queueObject(assetImg, ast.zIndex ?? (15 + i));
       }
     }
   }
+
+  // Real z-order: sort ascending (lowest painted first = furthest back) and
+  // add in that order -- see the comment where pendingObjects is declared above.
+  pendingObjects.sort((a, b) => a.zIndex - b.zIndex);
+  for (const { obj } of pendingObjects) mockupFabricCanvas.add(obj);
 
   mockupFabricCanvas.requestRenderAll();
 
@@ -664,10 +735,7 @@ export async function buildDeviceGroup(device, layerId, left, top, width, height
   if (items.length === 0) return null;
 
   const group = new fabric.Group(items, {
-    left,
-    top,
-    originX: 'left',
-    originY: 'top',
+    ...positionForRotation(left, top, width, height, rotation),
     angle: rotation,
     name: layerId,
     layerId,
@@ -679,7 +747,8 @@ export async function buildDeviceGroup(device, layerId, left, top, width, height
       blur: 30,
       offsetX: 0,
       offsetY: 25
-    }) : null
+    }) : null,
+    ...CONTROL_STYLE,
   });
 
   // Scale group so its dimensions match the requested width and height
@@ -738,6 +807,34 @@ export function centerArtboardInViewport() {
   setStageZoomAndCenter(zoom);
 }
 
+/** Zoom step anchored at the viewport's own center (not the artboard's),
+ *  so a manual +/- click preserves wherever the user was already looking
+ *  instead of re-centering on the artboard like Fit/50%/100% do. */
+export function setStageZoomAtViewportCenter(newRatio) {
+  const vp = document.getElementById("mockup-canvas-viewport");
+  if (!vp) return;
+  const cx = vp.clientWidth / 2;
+  const cy = vp.clientHeight / 2;
+  const oldRatio = stageZoomRatio;
+  newRatio = Math.max(0.08, Math.min(3.0, newRatio));
+  if (newRatio === oldRatio) return;
+  canvasPan.x = cx - (cx - canvasPan.x) * (newRatio / oldRatio);
+  canvasPan.y = cy - (cy - canvasPan.y) * (newRatio / oldRatio);
+  stageZoomRatio = newRatio;
+  applyCanvasTransform();
+}
+
+export let isHandToolActive = false;
+export function setHandToolActive(active) {
+  isHandToolActive = active;
+  const viewport = document.getElementById("mockup-canvas-viewport");
+  if (viewport) viewport.classList.toggle("hand-tool-active", active);
+  if (mockupFabricCanvas) {
+    mockupFabricCanvas.selection = !active;
+    mockupFabricCanvas.skipTargetFind = active;
+  }
+}
+
 export function initCanvasPanZoomEvents() {
   const viewport = document.getElementById("mockup-canvas-viewport");
   if (!viewport || viewport._panZoomInitialized) return;
@@ -760,7 +857,7 @@ export function initCanvasPanZoomEvents() {
   });
 
   viewport.addEventListener("mousedown", (e) => {
-    if (e.button === 1 || (e.button === 0 && isSpacePressed)) {
+    if (e.button === 1 || (e.button === 0 && (isSpacePressed || isHandToolActive))) {
       e.preventDefault();
       isPanning = true;
       viewport.classList.add("panning");
@@ -771,7 +868,7 @@ export function initCanvasPanZoomEvents() {
   window.addEventListener("mouseup", () => {
     if (isPanning) {
       isPanning = false;
-      if (!isSpacePressed) viewport.classList.remove("panning");
+      if (!isSpacePressed && !isHandToolActive) viewport.classList.remove("panning");
     }
   });
 
@@ -782,21 +879,33 @@ export function initCanvasPanZoomEvents() {
   });
 
   viewport.addEventListener("wheel", (e) => {
+    // By default the canvas must not intercept scrolling at all -- an
+    // un-prevented wheel event bubbles up and scrolls the outer page
+    // (`.content`) normally, exactly like scrolling anywhere else. Only an
+    // explicit Ctrl/Cmd+wheel (the universal trackpad-pinch-zoom gesture)
+    // zooms outside Hand mode; plain wheel only pans once Hand mode is on.
+    const wantsZoom = e.ctrlKey || e.metaKey;
+    if (!wantsZoom && !isHandToolActive) return;
+
     e.preventDefault();
     const rect = viewport.getBoundingClientRect();
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
 
-    const zoomFactor = e.ctrlKey ? 0.95 : 0.92;
-    const oldRatio = stageZoomRatio;
-    const newRatio = Math.max(0.08, Math.min(3.0, stageZoomRatio * (e.deltaY < 0 ? 1 / zoomFactor : zoomFactor)));
+    if (wantsZoom) {
+      const zoomFactor = 0.95;
+      const oldRatio = stageZoomRatio;
+      const newRatio = Math.max(0.08, Math.min(3.0, stageZoomRatio * (e.deltaY < 0 ? 1 / zoomFactor : zoomFactor)));
+      if (newRatio === oldRatio) return;
+      canvasPan.x = mouseX - (mouseX - canvasPan.x) * (newRatio / oldRatio);
+      canvasPan.y = mouseY - (mouseY - canvasPan.y) * (newRatio / oldRatio);
+      stageZoomRatio = newRatio;
+      applyCanvasTransform();
+      return;
+    }
 
-    if (newRatio === oldRatio) return;
-
-    canvasPan.x = mouseX - (mouseX - canvasPan.x) * (newRatio / oldRatio);
-    canvasPan.y = mouseY - (mouseY - canvasPan.y) * (newRatio / oldRatio);
-    stageZoomRatio = newRatio;
-
+    // Hand mode, plain wheel: pan the viewport instead of zooming.
+    canvasPan = { x: canvasPan.x - e.deltaX, y: canvasPan.y - e.deltaY };
     applyCanvasTransform();
   }, { passive: false });
 }

@@ -11,7 +11,11 @@ import {
   attachGizmoEvents,
   centerArtboardInViewport,
   setStageZoomAndCenter,
-  stageZoomRatio
+  setStageZoomAtViewportCenter,
+  stageZoomRatio,
+  isHandToolActive,
+  setHandToolActive,
+  initCanvasPanZoomEvents
 } from './canvas.js';
 import {
   ensureMockupTemplates,
@@ -203,8 +207,23 @@ function setupMockupToolbar() {
   if ($id("mockup-zoom-fit")) $id("mockup-zoom-fit").onclick = () => centerArtboardInViewport();
   if ($id("mockup-zoom-50")) $id("mockup-zoom-50").onclick = () => setStageZoomAndCenter(0.5);
   if ($id("mockup-zoom-100")) $id("mockup-zoom-100").onclick = () => setStageZoomAndCenter(1.0);
-  if ($id("mockup-zoom-in")) $id("mockup-zoom-in").onclick = () => setStageZoomAndCenter(Math.min(stageZoomRatio * 1.25, 3.0));
-  if ($id("mockup-zoom-out")) $id("mockup-zoom-out").onclick = () => setStageZoomAndCenter(Math.max(stageZoomRatio * 0.8, 0.1));
+  if ($id("mockup-zoom-in")) $id("mockup-zoom-in").onclick = () => setStageZoomAtViewportCenter(Math.min(stageZoomRatio * 1.25, 3.0));
+  if ($id("mockup-zoom-out")) $id("mockup-zoom-out").onclick = () => setStageZoomAtViewportCenter(Math.max(stageZoomRatio * 0.8, 0.1));
+
+  if ($id("mockup-hand-tool-btn")) {
+    $id("mockup-hand-tool-btn").onclick = () => {
+      const btn = $id("mockup-hand-tool-btn");
+      const next = !isHandToolActive;
+      setHandToolActive(next);
+      btn.classList.toggle("active", next);
+    };
+  }
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && isHandToolActive) {
+      setHandToolActive(false);
+      if ($id("mockup-hand-tool-btn")) $id("mockup-hand-tool-btn").classList.remove("active");
+    }
+  });
 
   if ($id("mockup-add-asset-btn")) {
     $id("mockup-add-asset-btn").onclick = () => {
@@ -269,23 +288,6 @@ function setupMockupToolbar() {
       setMockupDirty(false);
       renderMockupMatrix();
       showToast("Changes saved.", "success");
-    };
-  }
-
-  if ($id("mk-copy-style")) {
-    $id("mk-copy-style").onclick = async () => {
-      if (!selectedCell || !mockupProject) return;
-      const col = mockupProject.columns.find((c) => c.id === selectedCell.columnId);
-      if (!col) return;
-      if (mockupProject.cells) {
-        for (const row of mockupProject.devices || []) {
-          delete mockupProject.cells[`${row.id}:${col.id}`];
-        }
-      }
-      await saveCurrentMockupProject();
-      pushMockupHistory();
-      renderMockupMatrix();
-      await showAlert("Style copied across all device rows for this screen.");
     };
   }
 
@@ -482,6 +484,7 @@ function setupMockupToolbar() {
   window.addEventListener("resize", () => {
     if (document.getElementById("mockup-section-editor")?.classList.contains("active")) {
       try { centerArtboardInViewport(); } catch (_) {}
+      try { renderMockupMatrix(); } catch (_) {}
     }
   });
 }
@@ -489,6 +492,7 @@ function setupMockupToolbar() {
 // DOMContentLoaded bootstrapping
 document.addEventListener('DOMContentLoaded', async () => {
   initMockupFabricCanvas();
+  initCanvasPanZoomEvents();
   setupInspectorEvents();
   setupExportHandlers();
   setupProjectsHandlers();

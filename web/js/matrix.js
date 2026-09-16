@@ -18,11 +18,43 @@ import { renderMockupLayersPanel, syncSection2Inputs } from "./editor.js";
 export let selectedCell = null;
 export function setSelectedCell(v) { selectedCell = v; }
 
-// Matrix cell preview thumbnail size -- fixed pixel box (not `%`) so the
-// scale factor applied to the real 1080x1920 iframe document is exact.
-const MATRIX_CELL_HEIGHT = 200;
-const MATRIX_CELL_SCALE = MATRIX_CELL_HEIGHT / 1920;
-const MATRIX_CELL_WIDTH = Math.round(1080 * MATRIX_CELL_SCALE);
+// Matrix cell preview thumbnail size -- computed per render from the actual
+// available space in .mockup-page-previews-scroll (see computeCellDims), not
+// a hardcoded constant, so previews fill the container's real height instead
+// of leaving it looking oversized around small fixed-size thumbnails. There
+// is deliberately no low height cap: the container's own height is never
+// shrunk to fit the content, so previews must grow to fill *it* -- if that
+// makes the table wider than the container, that's fine, the container
+// scrolls horizontally (overflow-x:auto) rather than the cells staying
+// small to avoid a scrollbar.
+const MATRIX_CELL_MIN_HEIGHT = 140;
+const MATRIX_CELL_MAX_HEIGHT = 1600; // sanity ceiling only, not a practical limit on normal screens
+// Measured against the real rendered thead (checkbox + "#N", wraps to two
+// lines -> ~49px) and tfoot (delete button row -> ~33px), plus a few px of
+// safety margin so rounding/font-metric differences across browsers can
+// never push the table taller than the container.
+const MATRIX_HEADER_ROW_H = 54;
+const MATRIX_FOOTER_ROW_H = 38;
+const MATRIX_ROW_OVERHEAD_H = 12; // each body row's own td padding + border-bottom
+
+/** Reads the scroll container's own height (set by flex layout, independent
+ *  of its content -- see app.css's `.mockup-page-previews-scroll { flex:1 1
+ *  auto; height:0; overflow-y:hidden; }`) so it can be measured *before* the
+ *  table is (re)built, and sizes cell previews to fill it exactly -- floored
+ *  (never rounded up) and with header/footer/row chrome budgeted in, so the
+ *  table can never exceed the container's real height and vertically
+ *  overflow. Only horizontal scrolling (for extra pages) is ever allowed. */
+function computeCellDims(scrollEl, rowCount) {
+  const availH = scrollEl?.clientHeight || 0;
+  const usable = availH - MATRIX_HEADER_ROW_H - MATRIX_FOOTER_ROW_H - rowCount * MATRIX_ROW_OVERHEAD_H;
+  const perRow = rowCount > 0 ? usable / rowCount : usable;
+  const height = Math.floor(Math.max(MATRIX_CELL_MIN_HEIGHT, Math.min(MATRIX_CELL_MAX_HEIGHT, perRow || MATRIX_CELL_MIN_HEIGHT)));
+  const scale = height / 1920;
+  const width = Math.round(1080 * scale);
+  return { height, width, scale };
+}
+
+let matrixRenderVersion = 0;
 
 // Mirrors src/mockup/project.ts's effectiveCellStyle(): legacy whole-sub-object
 // override keys apply first, then sparse "__paths" per-field patches on top.
@@ -61,6 +93,13 @@ export function getSelectedCellStyle() {
 }
 
 export function renderMockupMatrix() {
+  // Cache-busting for the cell-preview iframes below: without this, a saved
+  // edit can update the server's rendered HTML while the iframe (same src
+  // string as before) keeps showing a browser-cached response -- the preview
+  // silently goes stale relative to the canvas. Bumped once per render call,
+  // not per cell, so every iframe in this render shares one fresh version.
+  matrixRenderVersion += 1;
+
   // One real id: #mockup-matrix. Keep compat ids as fallbacks.
   const table =
     document.getElementById("mockup-matrix") ||
@@ -76,16 +115,26 @@ export function renderMockupMatrix() {
     return;
   }
 
+  const rowSources = devices.length ? devices : [{ id: "__base", label: "Base screen" }];
+  // The scroll container's own height comes from flex layout (`flex:1 1 auto;
+  // height:0`), independent of its content, so it can be measured now, before
+  // the table is rebuilt, to size previews to fill it instead of leaving a
+  // gap below/beside a fixed small size.
+  const cellDims = computeCellDims(table.parentElement, rowSources.length);
+
   // Header: corner + one th per screen
   let html = "<thead><tr>";
-  html += `<th style="font-size:.75rem; color:#94a3b8; font-weight:600; padding:.35rem .5rem; text-align:left;">Row / Page</th>`;
+  html += `<th style="font-size:.75rem; color:var(--text-secondary); font-weight:600; padding:.35rem .5rem; text-align:left;">Row / Page</th>`;
   for (let j = 0; j < columns.length; j++) {
     const cid = columns[j].id;
     const isSelCol = !!selectedColumn && selectedColumn.id === cid;
     const pairIdx = selectedPagePair.indexOf(cid);
     const pairStyle = pairIdx !== -1 ? `background:rgba(168,85,247,.18); border-bottom:2px solid #a855f7;` : "";
     const pairBadge = pairIdx !== -1 ? ` <span title="Paired for two-page editing" style="color:#c084fc;">🔗${pairIdx + 1}</span>` : "";
-    html += `<th data-col-id="${escapeHtml(cid)}" title="Ctrl/Shift-click to pair with another page for two-page editing" style="font-size:.75rem; padding:.35rem .5rem; text-align:center; ${isSelCol ? "background:rgba(59,130,246,.10); border-bottom:2px solid #3b82f6;" : pairStyle}">#${j + 1}${pairBadge}</th>`;
+    html += `<th data-col-id="${escapeHtml(cid)}" style="font-size:.75rem; padding:.35rem .5rem; text-align:center; ${isSelCol ? "background:rgba(59,130,246,.10); border-bottom:2px solid #3b82f6;" : pairStyle}">
+      <input type="checkbox" class="matrix-pair-checkbox" data-col-id="${escapeHtml(cid)}" title="Pair with another page for two-page editing" ${pairIdx !== -1 ? "checked" : ""} style="vertical-align:middle; margin-right:2px; cursor:pointer;" />
+      #${j + 1}${pairBadge}
+    </th>`;
   }
   html += "</tr></thead>";
 
@@ -93,10 +142,9 @@ export function renderMockupMatrix() {
 
   // Body: one row per device row, one cell per (deviceRowId, columnId). First row also used when devices empty (single synthetic row).
   html += "<tbody>";
-  const rowSources = devices.length ? devices : [{ id: "__base", label: "Base screen" }];
   for (const dev of rowSources) {
     html += `<tr data-device-row="${escapeHtml(dev.id)}">`;
-    html += `<td style="font-size:.78rem; font-weight:600; color:#cbd5e1; padding:.4rem .5rem; white-space:nowrap;">${escapeHtml(dev.label || dev.id)}</td>`;
+    html += `<td style="font-size:.78rem; font-weight:600; color:var(--text-primary); padding:.4rem .5rem; white-space:nowrap;">${escapeHtml(dev.label || dev.id)}</td>`;
     for (const col of columns) {
       const key = `${dev.id}:${col.id}`;
       const isActive =
@@ -112,8 +160,8 @@ export function renderMockupMatrix() {
       // it visually with a CSS transform, exactly like the working template-thumbnail
       // technique in src/mockup/render.ts's templateThumbHtmlSized().
       const cellPreview = useIframe
-        ? `<div style="width:${MATRIX_CELL_WIDTH}px; height:${MATRIX_CELL_HEIGHT}px; margin:0 auto; overflow:hidden; border-radius:6px; background:#0f172a;">
-             <iframe title="${escapeHtml(title)}" loading="lazy" src="/api/mockups/${encodeURIComponent(mockupId)}/cell-preview/${encodeURIComponent(dev.id === "__base" ? (devices[0]?.id || dev.id) : dev.id)}/${encodeURIComponent(col.id)}" style="width:1080px; height:1920px; border:0; display:block; transform:scale(${MATRIX_CELL_SCALE}); transform-origin:top left; pointer-events:none;"></iframe>
+        ? `<div class="matrix-preview-box" style="width:${cellDims.width}px; height:${cellDims.height}px; overflow:hidden; border-radius:6px; background:#0f172a;">
+             <iframe class="matrix-preview-frame" title="${escapeHtml(title)}" loading="lazy" src="/api/mockups/${encodeURIComponent(mockupId)}/cell-preview/${encodeURIComponent(dev.id === "__base" ? (devices[0]?.id || dev.id) : dev.id)}/${encodeURIComponent(col.id)}?v=${matrixRenderVersion}" style="width:1080px; height:1920px; border:0; display:block; transform:scale(${cellDims.scale}); transform-origin:top left; pointer-events:none;"></iframe>
            </div>`
         : `<div style="height:96px; border-radius:6px; background: #0f172a; border:1px solid #334155; display:flex; flex-direction:column; justify-content:space-between; padding:.6rem;">
              <div style="font-size:.7rem; font-weight:700; color:#fff; text-align:center; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(title)}</div>
@@ -136,6 +184,30 @@ export function renderMockupMatrix() {
 
   table.innerHTML = html;
 
+  // Self-correcting safety net: the header/footer/row-overhead constants
+  // above are measured estimates (font metrics, theme, browser can all
+  // shift them slightly). If the real rendered table is still taller than
+  // the scroll container despite the budgeted estimate, shrink every
+  // preview box by the actual overflow amount so the table can never
+  // vertically overflow -- overflow-y is `hidden` on this container (see
+  // app.css), so a mis-sized table would otherwise silently clip content
+  // instead of scrolling to it.
+  const scrollElNow = table.parentElement;
+  const overflowPx = table.offsetHeight - (scrollElNow?.clientHeight || 0);
+  if (overflowPx > 0 && rowSources.length > 0) {
+    const shrinkPerRow = Math.ceil(overflowPx / rowSources.length);
+    const fixedHeight = Math.max(MATRIX_CELL_MIN_HEIGHT, cellDims.height - shrinkPerRow);
+    const fixedScale = fixedHeight / 1920;
+    const fixedWidth = Math.round(1080 * fixedScale);
+    for (const box of table.querySelectorAll(".matrix-preview-box")) {
+      box.style.width = `${fixedWidth}px`;
+      box.style.height = `${fixedHeight}px`;
+    }
+    for (const frame of table.querySelectorAll(".matrix-preview-frame")) {
+      frame.style.transform = `scale(${fixedScale})`;
+    }
+  }
+
   // Cell clicks: select cell + update inspector + canvas
   for (const td of table.querySelectorAll("td[data-cell-key]")) {
     td.onclick = (e) => {
@@ -154,16 +226,25 @@ export function renderMockupMatrix() {
   }
   for (const th of table.querySelectorAll("th[data-col-id]")) {
     th.onclick = (e) => {
+      if (e.target.closest(".matrix-pair-checkbox")) return;
       const cid = th.getAttribute("data-col-id");
-      if (e.ctrlKey || e.metaKey || e.shiftKey) {
-        togglePagePair(cid);
-        if (selectedPagePair.length === 2) showToast("Pages linked for two-page editing -- select a device and use \"Link to Paired Page\" to sync it.", "info");
-        renderMockupMatrix();
-        return;
-      }
       selectMockupPage(cid);
     };
     th.style.cursor = "pointer";
+  }
+  for (const cb of table.querySelectorAll(".matrix-pair-checkbox")) {
+    cb.onclick = (e) => e.stopPropagation();
+    cb.onchange = (e) => {
+      const cid = cb.getAttribute("data-col-id");
+      const ok = togglePagePair(cid);
+      if (!ok) {
+        e.target.checked = false;
+        showToast("Deselect a page first -- only two pages can be paired at once.", "info");
+        return;
+      }
+      if (selectedPagePair.length === 2) showToast("Pages linked for two-page editing -- select a device and use \"Link to Paired Page\" to sync it.", "info");
+      renderMockupMatrix();
+    };
   }
 }
 

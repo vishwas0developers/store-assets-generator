@@ -366,9 +366,10 @@ export function attachLayerDragAndDrop(container, column) {
     });
     item.addEventListener("drop", (e) => {
       e.preventDefault();
+      const insertBefore = item.classList.contains("drag-over-top");
       item.classList.remove("drag-over-top", "drag-over-bottom");
       if (!draggedItem || draggedItem === item) return;
-      reorderLayersInModel(column, draggedItem.dataset.layerId, item.dataset.layerId);
+      reorderLayersInModel(column, draggedItem.dataset.layerId, item.dataset.layerId, insertBefore);
       setSelectedLayerId(draggedItem.dataset.layerId);
       setMockupDirty(true);
       renderMockupLayersPanel(column);
@@ -377,27 +378,31 @@ export function attachLayerDragAndDrop(container, column) {
   });
 }
 
-export function reorderLayersInModel(column, fromId, toId) {
+/** Moves `fromId` to just before/after `toId` in the actual stacking order
+ *  (not a two-value zIndex swap, which ignored where in the list you
+ *  actually dropped it and only ever affected the Layers panel's own sort
+ *  anyway -- see loadColumnIntoFabric/render.ts, which now both really
+ *  consult zIndex). Re-sequences EVERY layer's zIndex from the new order so
+ *  there's exactly one source of truth (position in this list) instead of
+ *  juggling two, and asset-to-asset drags go through the same path as every
+ *  other layer type instead of a separate array-splice that rendering never
+ *  actually read. */
+export function reorderLayersInModel(column, fromId, toId, insertBefore) {
   const style = getSelectedCellStyle() || column.style;
   if (!style) return;
-  if (fromId.startsWith("asset:") && toId.startsWith("asset:")) {
-    const fromIdx = parseInt(fromId.split(":")[1], 10);
-    const toIdx = parseInt(toId.split(":")[1], 10);
-    const assets = style.assetLayers;
-    if (assets && fromIdx >= 0 && toIdx >= 0 && fromIdx < assets.length && toIdx < assets.length) {
-      const [moved] = assets.splice(fromIdx, 1);
-      assets.splice(toIdx, 0, moved);
-      return;
-    }
-  }
+  // buildScreenLayersModel sorts by zIndex DESCENDING (front-most first) --
+  // matches the Layers panel's top-to-bottom = front-to-back convention.
   const layers = buildScreenLayersModel(column);
-  const fromLayer = layers.find((l) => l.id === fromId);
-  const toLayer = layers.find((l) => l.id === toId);
-  if (fromLayer && toLayer) {
-    const tempZ = fromLayer.zIndex || 10;
-    setLayerZIndex(column, fromId, toLayer.zIndex || 10);
-    setLayerZIndex(column, toId, tempZ);
-  }
+  const fromIdx = layers.findIndex((l) => l.id === fromId);
+  let toIdx = layers.findIndex((l) => l.id === toId);
+  if (fromIdx === -1 || toIdx === -1 || fromIdx === toIdx) return;
+  const [moved] = layers.splice(fromIdx, 1);
+  toIdx = layers.findIndex((l) => l.id === toId); // index shifts after removal
+  const insertAt = insertBefore ? toIdx : toIdx + 1;
+  layers.splice(insertAt, 0, moved);
+  // Re-sequence: top of list (front-most) gets the highest zIndex, descending.
+  const n = layers.length;
+  layers.forEach((layer, i) => setLayerZIndex(column, layer.id, (n - i) * 10));
 }
 
 export function setLayerZIndex(column, layerId, zIndex) {

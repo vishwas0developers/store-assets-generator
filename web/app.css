@@ -124,10 +124,32 @@ pre { background: var(--bg-main); border: 1px solid var(--border-subtle); border
 .thumb img { width: 100%; height: auto; max-height: 220px; display: block; aspect-ratio: 9/16; object-fit: contain; background: #000; }
 .thumb .cap { padding: .35rem .5rem; font-size: .75rem; color: #c7cad1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; justify-content: space-between; background: #14171f; border-top: 1px solid #21252f; }
 
-/* ---------- Studio Mockup: devices x columns matrix ---------- */
-.matrix-scroll { overflow-x: auto; overflow-y: hidden; border: 1px solid #21252f; border-radius: 10px; background: #0a0c10; }
+/* ---------- Studio Mockup: devices x pages matrix ----------
+   NOTE: matrix.js (renderMockupMatrix) emits th/td with inline styles only --
+   it never assigns col-head/row-head/cell classes, so th.col-head/th.row-head/
+   td.cell/.mockup-frame-wrapper rules below are dead CSS (kept for now, not
+   touched by this pass). Only .matrix-scroll and the bare `.matrix th, .matrix
+   td` border rule actually apply to the live markup -- previously hardcoded
+   to dark-only colors with no light-mode counterpart, so the grid stayed a
+   dark island inside an otherwise-light UI; now follows the theme like its
+   parent .mockup-matrix-container already does via the same CSS vars. */
+.mockup-page-previews-scroll {
+  overflow-x: auto;
+  overflow-y: hidden; /* rows are height-budgeted to always fit -- never vertically scroll, only horizontally for extra pages */
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  background: var(--bg-card);
+  /* Fill whatever height .mockup-matrix-container (now a column flexbox)
+     actually has, instead of sizing purely to content -- previously this
+     had no height of its own, so it never matched the container's height:
+     shorter-than-min-height content left a visible empty gap below it,
+     taller content just got clipped (overflow-y was hidden, not auto). */
+  flex: 1 1 auto;
+  height: 0;
+  margin-top: 0.5rem;
+}
 .matrix { border-collapse: separate; border-spacing: 0; }
-.matrix th, .matrix td { border-right: 1px solid #1a1d24; border-bottom: 1px solid #1a1d24; vertical-align: top; }
+.matrix th, .matrix td { border-right: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle); vertical-align: top; }
 .matrix th.row-head, .matrix td.row-head {
   position: sticky; left: 0; background: #10121a; z-index: 2; padding: .6rem .8rem; width: 140px; min-width: 140px;
   font-size: .78rem; color: #c7cad1;
@@ -186,7 +208,7 @@ pre { background: var(--bg-main); border: 1px solid var(--border-subtle); border
 #mockup-preview-strip,
 #universal-project-assets-grid,
 #mk-layers-list,
-.matrix-scroll {
+.mockup-page-previews-scroll {
   scrollbar-width: none !important;
   -ms-overflow-style: none !important;
 }
@@ -205,7 +227,7 @@ pre { background: var(--bg-main); border: 1px solid var(--border-subtle); border
 #mockup-preview-strip::-webkit-scrollbar,
 #universal-project-assets-grid::-webkit-scrollbar,
 #mk-layers-list::-webkit-scrollbar,
-.matrix-scroll::-webkit-scrollbar {
+.mockup-page-previews-scroll::-webkit-scrollbar {
   display: none !important;
   width: 0 !important;
   height: 0 !important;
@@ -302,7 +324,7 @@ pre { background: var(--bg-main); border: 1px solid var(--border-subtle); border
   align-items: center;
   box-sizing: border-box;
   outline: none;
-  cursor: grab;
+  cursor: default; /* real system cursor by default -- grab/grabbing only shows for an active pan (space-hold or Hand tool) */
   user-select: none;
 }
 
@@ -318,6 +340,48 @@ html.light .mockup-canvas-viewport {
 
 .mockup-canvas-viewport.panning {
   cursor: grabbing !important;
+}
+
+.mockup-canvas-viewport.hand-tool-active {
+  cursor: grab;
+}
+
+.mockup-canvas-viewport.hand-tool-active.panning {
+  cursor: grabbing;
+}
+
+/* Fabric's own pointerdown handler calls preventDefault(), which suppresses
+   the browser's compatibility mousedown event -- our pan listener (attached
+   to the viewport, below) never fires for a drag that starts on the canvas.
+   Letting pointer events pass through the canvas while the hand tool is
+   active routes the mousedown straight to the viewport instead. */
+.mockup-canvas-viewport.hand-tool-active canvas {
+  pointer-events: none;
+}
+
+.mockup-hand-tool-btn {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  z-index: 20;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+}
+
+.mockup-hand-tool-btn.active {
+  background: #3b82f6;
+  color: #fff;
+  border-color: #3b82f6;
 }
 
 /* Single-Artboard Document Styling */
@@ -356,6 +420,13 @@ html.light .mockup-canvas-viewport {
   border-radius: 8px;
   padding: 0.75rem 1rem;
   box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  /* Column layout so the previews-scroll child below can be told to fill
+     the remaining height ("flex: 1 1 auto; height: 0") -- previously
+     .matrix-scroll had no height of its own and just sized to its content,
+     so it never actually matched this container's height (gap below it
+     when content was shorter than min-height, clipping when taller). */
+  display: flex;
+  flex-direction: column;
 }
 
 .mockup-layers-root {
@@ -431,7 +502,7 @@ html.light .mockup-canvas-viewport {
 }
 
 .mk-layer-vis-btn:hover, .mk-layer-lock-btn:hover {
-  color: #f1f5f9;
+  color: var(--text-primary);
 }
 
 /* Transform Gizmo Controls */
@@ -1414,7 +1485,7 @@ button.xsmall {
 .inspector-card-title {
   font-size: 0.9rem;
   font-weight: 700;
-  color: #f1f5f9;
+  color: var(--text-primary);
   letter-spacing: 0.02em;
 }
 

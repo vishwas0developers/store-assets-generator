@@ -388,10 +388,10 @@
               <button id="mockup-zoom-in" class="secondary small icon-btn" type="button" title="Zoom In">+</button>
               <span style="font-size:0.75rem; color:#60a5fa; background:rgba(59,130,246,0.12); padding:2px 6px; border-radius:4px; font-family:monospace;">Fit</span>
               <div class="divider"></div>
-              <button id="mk-save" class="primary small" type="button">Save Changes</button>
-              <button id="mk-copy-style" class="secondary small" type="button" title="Propagate active page style across all device rows">Apply to All Rows</button>
-              <div class="divider"></div>
-              <button id="mockup-export-single-btn" class="primary small" type="button" style="margin-left: auto;">Export Page (PNG)</button>
+              <div style="margin-left:auto; display:flex; gap:0.4rem;">
+                <button id="mk-save" class="primary small" type="button">Save Changes</button>
+                <button id="mockup-export-single-btn" class="primary small" type="button">Export Page (PNG)</button>
+              </div>
             </div>
 
             <!-- Workspace: Studio Canvas Container (fixed-height viewport) -->
@@ -406,17 +406,18 @@
                       <div class="mockup-layers-root" id="mockup-layers-root" style="display:none;"></div>
                     </div>
                   </div>
+                  <button id="mockup-hand-tool-btn" class="mockup-hand-tool-btn" type="button" title="Hand Tool (pan) — toggle">&#9995;</button>
                 </div>
               </div>
             </div>
 
             <!-- Matrix Grid View (Devices × Pages) - Open by Default -->
             <div class="mockup-matrix-container">
-              <div style="font-size: 0.85rem; color: #f1f5f9; font-weight: 600; margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: space-between;">
+              <div style="font-size: 0.85rem; color: var(--text-primary); font-weight: 600; margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: space-between;">
                 <span>Matrix Grid View (Devices &times; Pages)</span>
-                <span style="font-size: 0.75rem; color: #94a3b8; background: rgba(59,130,246,0.15); padding: 2px 8px; border-radius: 4px;">Active page highlighted</span>
+                <span style="font-size: 0.75rem; color: var(--text-secondary); background: rgba(59,130,246,0.15); padding: 2px 8px; border-radius: 4px;">Active page highlighted</span>
               </div>
-              <div class="matrix-scroll">
+              <div class="mockup-page-previews-scroll">
                 <table class="matrix" id="mockup-matrix"></table>
               </div>
             </div>

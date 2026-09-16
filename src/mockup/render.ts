@@ -105,12 +105,22 @@ export function cellHtml(project: MockupProject, deviceRowId: string, columnId: 
 
   const bg = resolveBackground(style.background, ctx.resolveUri, ctx.columnIndex, ctx.columnCount);
 
+  // Real z-order, mirroring web/js/canvas.js's loadColumnIntoFabric() defaults
+  // exactly (deviceOne 10, deviceTwo 9, extraDevices 8-i, assets 15+i, title
+  // 20, subtitle 19) so a layer's stacking is identical between the editor
+  // canvas and this server-rendered preview/export -- previously every
+  // `.layer` device div had NO z-index at all (relying on DOM order only),
+  // so bring-forward/send-backward here had zero effect regardless of what
+  // the model said.
   const d1 = style.deviceOne;
+  const d1Z = d1.zIndex ?? 10;
   const d1Transform = `translate(${transform.deviceOne.xPct + d1.x}%, ${d1.y}%) scale(${d1.size / 90}) rotate(${transform.deviceOne.rotate + d1.rotation}deg)`;
-  let deviceLayers = `<div class="layer" style="transform:${d1Transform}">${layerMarkup(deviceRow.deviceId, screenshotUri, d1, deviceRow.variant)}</div>`;
+  let deviceLayers = `<div class="layer" style="transform:${d1Transform};z-index:${d1Z}">${layerMarkup(deviceRow.deviceId, screenshotUri, d1, deviceRow.variant)}</div>`;
+  let maxStageZ = d1Z;
 
   if (preset.twoDevices && style.deviceTwo && transform.deviceTwo) {
     const d2 = style.deviceTwo;
+    const d2Z = d2.zIndex ?? 9;
     const source2 = project.sources.find((s) => s.id === d2.sourceId) ?? source;
     const uri2 = source2
       ? ctx.resolveUri(source2.file)
@@ -118,22 +128,38 @@ export function cellHtml(project: MockupProject, deviceRowId: string, columnId: 
       ? ctx.resolveUri("__second_device__")
       : placeholderScreenUri(ctx.columnIndex + 1);
     const d2Transform = `translate(${transform.deviceTwo.xPct + d2.x}%, ${transform.deviceTwo.yPct + d2.y}%) scale(${d2.size / 90}) rotate(${transform.deviceTwo.rotate + d2.rotation}deg)`;
-    deviceLayers += `<div class="layer" style="transform:${d2Transform}">${layerMarkup(deviceRow.deviceId, uri2, d2, deviceRow.variant)}</div>`;
+    deviceLayers += `<div class="layer" style="transform:${d2Transform};z-index:${d2Z}">${layerMarkup(deviceRow.deviceId, uri2, d2, deviceRow.variant)}</div>`;
+    maxStageZ = Math.max(maxStageZ, d2Z);
   }
 
   // Free-form devices beyond the two preset-driven slots: no presentation-recipe
   // offset (there isn't one defined past two devices), positioned purely by
   // their own x/y/size/rotation, same as deviceOne/deviceTwo's own sliders.
-  for (const extra of style.extraDevices ?? []) {
+  (style.extraDevices ?? []).forEach((extra, i) => {
+    const extraZ = extra.zIndex ?? (8 - i);
     const extraSource = project.sources.find((s) => s.id === extra.sourceId) ?? source;
     const extraUri = extraSource ? ctx.resolveUri(extraSource.file) : screenshotUri;
     const extraTransform = `translate(${extra.x}%, ${extra.y}%) scale(${extra.size / 90}) rotate(${extra.rotation}deg)`;
-    deviceLayers += `<div class="layer" style="transform:${extraTransform}">${layerMarkup(deviceRow.deviceId, extraUri, extra, deviceRow.variant)}</div>`;
-  }
+    deviceLayers += `<div class="layer" style="transform:${extraTransform};z-index:${extraZ}">${layerMarkup(deviceRow.deviceId, extraUri, extra, deviceRow.variant)}</div>`;
+    maxStageZ = Math.max(maxStageZ, extraZ);
+  });
 
   const textAbove = preset.textPosition.endsWith("above");
   const decorations = decorationsMarkup(style.decorations, canvas);
   const assets = assetLayersMarkup(style.assetLayers, ctx.resolveUri);
+  for (const a of style.assetLayers ?? []) maxStageZ = Math.max(maxStageZ, a.zIndex ?? 15);
+
+  // .copy (title+subtitle) and .stage (devices+assets) are separate flex
+  // siblings/stacking contexts -- a child's z-index can only win against its
+  // OWN siblings, not reach into another sibling's stacking context, so true
+  // per-layer interleaving between text and stage content isn't achievable
+  // without restructuring the whole flex layout Phase 1's fidelity fix
+  // depends on. This gives correct GROUP-level ordering instead (text as a
+  // whole vs. stage as a whole, using each group's own highest zIndex) --
+  // within .stage, devices/assets now interleave correctly via the per-layer
+  // z-index above, which is the primary case ("move this device behind that
+  // one") the layer-ordering fix is for.
+  const copyZ = Math.max(style.title.zIndex ?? 20, style.subtitle.zIndex ?? 19);
 
   return `<!doctype html>
 <html><head><meta charset="utf-8" /><style>
@@ -149,10 +175,10 @@ export function cellHtml(project: MockupProject, deviceRowId: string, columnId: 
     padding: ${preset.textPosition === "no-text" ? "0" : "6% 6%"};
     font-family: "Segoe UI", Roboto, -apple-system, sans-serif; overflow: hidden;
   }
-  .copy { width: 100%; margin: ${textAbove ? "0 0 4%" : "4% 0 0"}; z-index: 4; }
+  .copy { width: 100%; margin: ${textAbove ? "0 0 4%" : "4% 0 0"}; position: relative; z-index: ${copyZ}; }
   .title { font-weight: 800; line-height: 1.15; }
   .subtitle { opacity: .8; margin-top: .5em; font-weight: 500; }
-  .stage { position: relative; flex: 1; width: 100%; display: flex; align-items: center; justify-content: center; perspective: 2000px; }
+  .stage { position: relative; flex: 1; width: 100%; display: flex; align-items: center; justify-content: center; perspective: 2000px; z-index: ${maxStageZ}; }
   .layer { position: absolute; }
   ${DEVICE_CSS}
 </style></head>
