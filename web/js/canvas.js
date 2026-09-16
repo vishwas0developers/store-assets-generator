@@ -809,6 +809,19 @@ let panStart = { x: 0, y: 0 };
 let isSpacePressed = false;
 let isPanning = false;
 
+const ARTBOARD_GAP = 40; // must match .mockup-canvas-stage's gap in app.css
+
+/** Total content width of the stage: one 1080-wide artboard normally, or
+ *  two side by side (plus the gap between them) when a second selected page
+ *  is being shown -- fit/center math must account for this or it keeps
+ *  treating the stage as 1080px wide and the secondary artboard ends up
+ *  mostly off-screen instead of both pages being visible together. */
+function stageContentWidth() {
+  const secondary = document.getElementById("mockup-canvas-artboard-2");
+  const showingSecondary = secondary && secondary.style.display !== "none";
+  return showingSecondary ? 1080 * 2 + ARTBOARD_GAP : 1080;
+}
+
 export function _fitZoomForViewport() {
   const vp = document.getElementById("mockup-canvas-viewport");
   if (!vp) return 0.2;
@@ -816,7 +829,7 @@ export function _fitZoomForViewport() {
   const availW = vp.clientWidth - pad * 2;
   const availH = vp.clientHeight - pad * 2;
   if (availW <= 0 || availH <= 0) return 0.2;
-  return Math.max(0.08, Math.min(availW / 1080, availH / 1920));
+  return Math.max(0.08, Math.min(availW / stageContentWidth(), availH / 1920));
 }
 
 export function applyCanvasTransform() {
@@ -835,7 +848,7 @@ export function setStageZoomAndCenter(zoom) {
   const availW = vp.clientWidth;
   const availH = vp.clientHeight;
   canvasPan = {
-    x: Math.round((availW - 1080 * zoom) / 2),
+    x: Math.round((availW - stageContentWidth() * zoom) / 2),
     y: Math.max(20, Math.round((availH - 1920 * zoom) / 2))
   };
   applyCanvasTransform();
@@ -847,6 +860,49 @@ export function setStageZoomAndCenter(zoom) {
 export function centerArtboardInViewport() {
   const zoom = _fitZoomForViewport();
   setStageZoomAndCenter(zoom);
+}
+
+let secondaryPreviewVersion = 0;
+
+/** Shows the second selected page as a live, synced preview next to the
+ *  primary interactive artboard (see .mockup-canvas-artboard-secondary in
+ *  app.css) -- called whenever selectedPagePair reaches 2, so both selected
+ *  pages are visible in the editing area at once instead of only one. */
+export function showSecondaryPagePreview(pageId, deviceRowId, pageLabel) {
+  const wrap = document.getElementById("mockup-canvas-artboard-2");
+  const frame = document.getElementById("mockup-secondary-preview-frame");
+  const label = document.getElementById("mockup-secondary-label");
+  if (!wrap || !frame || !mockupId || !pageId) return;
+  secondaryPreviewVersion += 1;
+  const rowId = deviceRowId || "__base";
+  frame.src = `/api/mockups/${mockupId}/cell-preview/${encodeURIComponent(rowId)}/${encodeURIComponent(pageId)}?v=${secondaryPreviewVersion}`;
+  if (label) label.textContent = pageLabel ? `Paired: ${pageLabel}` : "Paired page";
+  wrap.style.display = "";
+  // Re-fit now that the stage is ~2x wider with the secondary artboard
+  // showing -- otherwise it stays zoomed/centered for the old single-page
+  // width and the second page ends up mostly off-screen.
+  try { centerArtboardInViewport(); } catch (_) {}
+}
+
+export function hideSecondaryPagePreview() {
+  const wrap = document.getElementById("mockup-canvas-artboard-2");
+  const frame = document.getElementById("mockup-secondary-preview-frame");
+  const wasVisible = wrap && wrap.style.display !== "none";
+  if (wrap) wrap.style.display = "none";
+  if (frame) frame.src = "";
+  if (wasVisible) { try { centerArtboardInViewport(); } catch (_) {} }
+}
+
+/** Reloads the secondary preview's iframe (cache-busted) if it's currently
+ *  shown, so an edit on the primary page's canvas -- or a save -- keeps the
+ *  paired preview in sync instead of it going stale. */
+export function refreshSecondaryPagePreviewIfVisible() {
+  const wrap = document.getElementById("mockup-canvas-artboard-2");
+  const frame = document.getElementById("mockup-secondary-preview-frame");
+  if (!wrap || !frame || wrap.style.display === "none" || !frame.src) return;
+  secondaryPreviewVersion += 1;
+  const base = frame.src.split("?")[0];
+  frame.src = `${base}?v=${secondaryPreviewVersion}`;
 }
 
 /** Zoom step anchored at the viewport's own center (not the artboard's),
