@@ -67,15 +67,17 @@ export function setSelectedColumn(col) {
 }
 
 /** Toggles a page into/out of the pair-select set. A page already in the
- *  pair is removed (un-pairing it). Otherwise it's added; if that would
- *  exceed two, the OLDEST paired page is dropped first -- the set never
- *  grows past two. */
+ *  pair is removed (un-pairing it). Otherwise it's added, unless two are
+ *  already selected -- the caller must deselect one first (returns false
+ *  in that case so the UI can reject the attempt with a toast). */
 export function togglePagePair(pageId) {
   if (selectedPagePair.includes(pageId)) {
     selectedPagePair = selectedPagePair.filter((id) => id !== pageId);
-    return;
+    return true;
   }
-  selectedPagePair = selectedPagePair.length >= 2 ? [selectedPagePair[1], pageId] : [...selectedPagePair, pageId];
+  if (selectedPagePair.length >= 2) return false;
+  selectedPagePair = [...selectedPagePair, pageId];
+  return true;
 }
 
 export function clearPagePair() {
