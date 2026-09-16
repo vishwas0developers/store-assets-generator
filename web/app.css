@@ -27,7 +27,7 @@ html.light {
 html, body { margin: 0; height: 100%; font-family: -apple-system, Segoe UI, Roboto, sans-serif; background: var(--bg-main); color: var(--text-primary); transition: background-color 0.2s, color 0.2s; }
 
 /* Desktop + large-tablet only -- this is a workstation app, not a phone app. */
-body { min-width: 1180px; overflow-x: auto; }
+body { min-width: 1180px; overflow-x: auto; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
 
 /* ---------- Top bar (always visible, 3 tabs + icon buttons) ---------- */
 .topbar {
@@ -51,7 +51,7 @@ html.light .topbar-tab.active { background: #e2e8f0; color: #0f172a; }
 .icon-btn:hover { background: rgba(128,128,128,0.15); }
 
 /* ---------- App body: [optional 80px rail] [content] [optional 300px inspector] ---------- */
-.app-body { flex: 1; display: flex; min-height: 0; }
+.app-body { flex: 1; display: flex; min-height: 0; height: calc(100vh - 50px); overflow: hidden; }
 
 .rail {
   width: 80px; flex: 0 0 80px; background: var(--bg-rail); border-right: 2px solid var(--border-rail);
@@ -66,12 +66,12 @@ html.light .topbar-tab.active { background: #e2e8f0; color: #0f172a; }
 .rail-btn.active { background: #1b2540; color: #e6e6e6; }
 html.light .rail-btn.active { background: #cbd5e1; color: #0f172a; }
 
-.content { flex: 1; min-width: 0; overflow-y: auto; padding: 1.5rem 2rem; }
+.content { flex: 1; min-width: 0; overflow-y: auto; padding: 1.5rem 2rem; height: 100%; box-sizing: border-box; }
 .content-narrow { max-width: 1000px; }
 
 .inspector {
-  width: 300px; flex: 0 0 300px; background: var(--bg-card); border-left: 1px solid var(--border-subtle);
-  overflow-y: auto; padding: 1.25rem;
+  width: 340px; flex: 0 0 340px; background: var(--bg-card); border-left: 1px solid var(--border-subtle);
+  overflow-y: auto; padding: 1.25rem; height: 100%; box-sizing: border-box; display: flex; flex-direction: column; gap: 0;
 }
 .inspector.left { border-left: none; border-right: 1px solid var(--border-subtle); order: -1; }
 
@@ -139,20 +139,33 @@ pre { background: var(--bg-main); border: 1px solid var(--border-subtle); border
   border: 1px solid var(--border-subtle);
   border-radius: 10px;
   background: var(--bg-card);
-  /* Fill whatever height .mockup-matrix-container (now a column flexbox)
-     actually has, instead of sizing purely to content -- previously this
-     had no height of its own, so it never matched the container's height:
-     shorter-than-min-height content left a visible empty gap below it,
-     taller content just got clipped (overflow-y was hidden, not auto). */
   flex: 1 1 auto;
+  min-height: 0;
   height: 0;
   margin-top: 0.5rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-subtle) transparent;
 }
-.matrix { border-collapse: separate; border-spacing: 0; }
-.matrix th, .matrix td { border-right: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle); vertical-align: top; }
+.mockup-page-previews-scroll::-webkit-scrollbar {
+  height: 6px;
+  display: block !important;
+}
+.mockup-page-previews-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.mockup-page-previews-scroll::-webkit-scrollbar-thumb {
+  background: var(--border-subtle);
+  border-radius: 4px;
+}
+.mockup-page-previews-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
+.matrix { border-collapse: separate; border-spacing: 0; min-width: 100%; width: max-content; }
+.matrix th, .matrix td { border-right: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle); vertical-align: middle; text-align: center; }
+.matrix .matrix-preview-box { margin: 0 auto; }
 .matrix th.row-head, .matrix td.row-head {
   position: sticky; left: 0; background: #10121a; z-index: 2; padding: .6rem .8rem; width: 140px; min-width: 140px;
-  font-size: .78rem; color: #c7cad1;
+  font-size: .78rem; color: #c7cad1; text-align: left;
 }
 .matrix th.col-head {
   padding: .5rem; font-size: .76rem; color: #9aa0a6; text-align: center; min-width: 160px; background: #10121a;
@@ -207,8 +220,7 @@ pre { background: var(--bg-main); border: 1px solid var(--border-subtle); border
 #mockup-panoramic-viewport,
 #mockup-preview-strip,
 #universal-project-assets-grid,
-#mk-layers-list,
-.mockup-page-previews-scroll {
+#mk-layers-list {
   scrollbar-width: none !important;
   -ms-overflow-style: none !important;
 }
@@ -226,8 +238,7 @@ pre { background: var(--bg-main); border: 1px solid var(--border-subtle); border
 #mockup-panoramic-viewport::-webkit-scrollbar,
 #mockup-preview-strip::-webkit-scrollbar,
 #universal-project-assets-grid::-webkit-scrollbar,
-#mk-layers-list::-webkit-scrollbar,
-.mockup-page-previews-scroll::-webkit-scrollbar {
+#mk-layers-list::-webkit-scrollbar {
   display: none !important;
   width: 0 !important;
   height: 0 !important;

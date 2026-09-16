@@ -172,7 +172,12 @@ function sendFile(res: http.ServerResponse, filePath: string, contentType: strin
     sendError(res, 404, "File not found");
     return;
   }
-  res.writeHead(200, { "Content-Type": contentType });
+  // No ETag/Last-Modified was ever sent here, so browsers were free to serve
+  // a stale cached copy of app.css/web/js/*.js on ordinary navigation with
+  // no revalidation at all -- editors kept seeing old bugs "come back" after
+  // a fix that had already landed on disk. These are local dev-server files
+  // (reading from disk is effectively free), so always force revalidation.
+  res.writeHead(200, { "Content-Type": contentType, "Cache-Control": "no-cache" });
   fs.createReadStream(filePath).pipe(res);
 }
 
