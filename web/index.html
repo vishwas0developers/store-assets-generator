@@ -405,6 +405,15 @@
                       <canvas id="mockup-fabric-canvas" width="1080" height="1920" style="width: 1080px; height: 1920px; display: block;"></canvas>
                       <div class="mockup-layers-root" id="mockup-layers-root" style="display:none;"></div>
                     </div>
+                    <!-- Second selected page (only shown when exactly 2 pages are checked in the
+                         Page Previews grid) -- a live, synced preview of the paired page shown
+                         alongside the interactive artboard so both selected pages are visible in
+                         the editing area at once. Click the primary artboard's page in the grid
+                         checkboxes to swap which page is the interactive one. -->
+                    <div class="mockup-canvas-artboard mockup-canvas-artboard-secondary" id="mockup-canvas-artboard-2" style="display:none;">
+                      <div class="mockup-secondary-label" id="mockup-secondary-label">Paired page</div>
+                      <iframe id="mockup-secondary-preview-frame" title="Paired page preview" loading="lazy" style="width:1080px; height:1920px; border:0; display:block; pointer-events:none;"></iframe>
+                    </div>
                   </div>
                   <button id="mockup-hand-tool-btn" class="mockup-hand-tool-btn" type="button" title="Hand Tool (pan) — toggle">&#9995;</button>
                 </div>

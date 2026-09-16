@@ -11,7 +11,7 @@ import {
   togglePagePair,
 } from "./state.js";
 import { escapeHtml, showToast } from "./utils.js";
-import { centerArtboardInViewport, loadColumnIntoFabric } from "./canvas.js";
+import { centerArtboardInViewport, loadColumnIntoFabric, showSecondaryPagePreview, hideSecondaryPagePreview, refreshSecondaryPagePreviewIfVisible } from "./canvas.js";
 import { renderMockupLayersPanel, syncSection2Inputs } from "./editor.js";
 
 // Per spec: selectedCell = { deviceRowId, columnId }. Null until matrix interaction.
@@ -116,6 +116,7 @@ export function renderMockupMatrix() {
   // silently goes stale relative to the canvas. Bumped once per render call,
   // not per cell, so every iframe in this render shares one fresh version.
   matrixRenderVersion += 1;
+  refreshSecondaryPagePreviewIfVisible();
 
   // One real id: #mockup-matrix. Keep compat ids as fallbacks.
   const table =
@@ -156,9 +157,14 @@ export function renderMockupMatrix() {
     const cid = columns[j].id;
     const isSelCol = !!selectedColumn && selectedColumn.id === cid;
     const pairIdx = selectedPagePair.indexOf(cid);
-    const pairStyle = pairIdx !== -1 ? `background:rgba(168,85,247,.18); border-bottom:2px solid #a855f7;` : "";
-    const pairBadge = pairIdx !== -1 ? ` <span title="Paired for two-page editing" style="color:#c084fc;">🔗${pairIdx + 1}</span>` : "";
-    html += `<th data-col-id="${escapeHtml(cid)}" style="font-size:.75rem; padding:.35rem .5rem; text-align:center; ${isSelCol ? "background:rgba(59,130,246,.10); border-bottom:2px solid #3b82f6;" : pairStyle}">
+    // Both pages in a pair are equally "selected" -- one consistent accent
+    // color (the app's existing blue) for any selected page, not a
+    // different color depending on whether it's the primary or the paired
+    // one, which read as if only one selection was actually correct.
+    const isSelectedForPair = isSelCol || pairIdx !== -1;
+    const selStyle = isSelectedForPair ? `background:rgba(59,130,246,.10); border-bottom:2px solid #3b82f6;` : "";
+    const pairBadge = pairIdx !== -1 ? ` <span title="Paired for two-page editing" style="color:#60a5fa;">🔗${pairIdx + 1}</span>` : "";
+    html += `<th data-col-id="${escapeHtml(cid)}" style="font-size:.75rem; padding:.35rem .5rem; text-align:center; ${selStyle}">
       <input type="checkbox" class="matrix-pair-checkbox" data-col-id="${escapeHtml(cid)}" title="Pair with another page for two-page editing" ${pairIdx !== -1 ? "checked" : ""} style="vertical-align:middle; margin-right:2px; cursor:pointer;" />
       #${j + 1}${pairBadge}
     </th>`;
@@ -195,12 +201,13 @@ export function renderMockupMatrix() {
              <div style="width:70%; height:60%; margin:0 auto; background:#1e293b; border-radius:6px; border:1px solid #475569;"></div>
            </div>`;
 
-      const cellSelectStyle = isActive
+      // Same accent color (blue) whether this cell is the exact active one
+      // or the other half of a pair -- both are equally "selected", so they
+      // must never read as two different selection states.
+      const cellSelectStyle = isActive || isPairedCol
         ? "outline:2px solid #3b82f6; outline-offset:-2px; background:rgba(59,130,246,.08);"
-        : isPairedCol
-        ? "outline:2px solid #a855f7; outline-offset:-2px; background:rgba(168,85,247,.08);"
         : "";
-      html += `<td data-device-row="${escapeHtml(dev.id)}" data-col-id="${escapeHtml(col.id)}" data-cell-key="${escapeHtml(key)}" style="padding:.3rem; cursor:pointer; ${cellSelectStyle}">
+      html += `<td data-device-row="${escapeHtml(dev.id)}" data-col-id="${escapeHtml(col.id)}" data-cell-key="${escapeHtml(key)}" style="padding:.3rem; cursor:default; ${cellSelectStyle}">
         ${cellPreview}
       </td>`;
     }
@@ -237,29 +244,13 @@ export function renderMockupMatrix() {
     }
   }
 
-  // Cell clicks: select cell + update inspector + canvas
-  for (const td of table.querySelectorAll("td[data-cell-key]")) {
-    td.onclick = (e) => {
-      // Avoid hijacking iframe nav inside cell.
-      if (e.target.closest("iframe")) return;
-      const d = td.getAttribute("data-device-row");
-      const c = td.getAttribute("data-col-id");
-      selectCell(d, c);
-    };
-  }
+  // Preview cells are display-only -- selection happens exclusively through
+  // the per-page checkbox below, never by clicking a preview (or its header).
   for (const b of table.querySelectorAll(".matrix-del-btn")) {
     b.onclick = (e) => {
       e.stopPropagation();
       deleteMockupPage(b.getAttribute("data-column-id"));
     };
-  }
-  for (const th of table.querySelectorAll("th[data-col-id]")) {
-    th.onclick = (e) => {
-      if (e.target.closest(".matrix-pair-checkbox")) return;
-      const cid = th.getAttribute("data-col-id");
-      selectMockupPage(cid);
-    };
-    th.style.cursor = "pointer";
   }
   for (const cb of table.querySelectorAll(".matrix-pair-checkbox")) {
     cb.onclick = (e) => e.stopPropagation();
@@ -271,10 +262,36 @@ export function renderMockupMatrix() {
         showToast("Deselect a page first -- only two pages can be paired at once.", "info");
         return;
       }
-      if (selectedPagePair.length === 2) showToast("Pages linked for two-page editing -- select a device and use \"Link to Paired Page\" to sync it.", "info");
+      syncEditingAreaToPagePair();
       renderMockupMatrix();
     };
   }
+}
+
+/** Drives the editing area from selectedPagePair (the checkboxes are the
+ *  only way pages get selected now -- see renderMockupMatrix above): 1 page
+ *  checked shows just that page in the interactive canvas; 2 checked keep
+ *  whichever was already the interactive page (if still part of the pair)
+ *  and show the other as a live synced preview alongside it, so both
+ *  selected pages are visible in the editing area at once instead of only
+ *  the interactive one. */
+function syncEditingAreaToPagePair() {
+  const pair = selectedPagePair;
+  if (pair.length === 0) return;
+
+  if (pair.length === 1) {
+    hideSecondaryPagePreview();
+    selectMockupPage(pair[0]);
+    return;
+  }
+
+  const primaryId = selectedColumn && pair.includes(selectedColumn.id) ? selectedColumn.id : pair[0];
+  const secondaryId = pair.find((id) => id !== primaryId);
+  selectMockupPage(primaryId);
+  const secondaryCol = mockupProject?.columns?.find((c) => c.id === secondaryId);
+  const idx = mockupProject?.columns?.findIndex((c) => c.id === secondaryId) ?? -1;
+  const label = secondaryCol?.style?.title?.text || (idx >= 0 ? `Page ${idx + 1}` : "");
+  showSecondaryPagePreview(secondaryId, selectedCell?.deviceRowId, label);
 }
 
 /** Mirrors app.js:4812 selectCell (devices × screens). */

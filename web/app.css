@@ -395,13 +395,20 @@ html.light .mockup-canvas-viewport {
   border-color: #3b82f6;
 }
 
-/* Single-Artboard Document Styling */
+/* Artboard(s) Document Styling -- a flex row so a second selected page
+   (mockup-canvas-artboard-secondary) sits side by side with the primary
+   interactive one instead of stacking/overlapping; single-artboard layout
+   is unaffected since flex row with one child behaves the same as before. */
 .mockup-canvas-stage {
   transform-origin: top left;
   will-change: transform;
   position: absolute;
   top: 0;
   left: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 40px;
 }
 
 .mockup-canvas-artboard {
@@ -411,6 +418,23 @@ html.light .mockup-canvas-viewport {
   background: #0b0d12;
   box-shadow: 0 24px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.1);
   overflow: hidden;
+  flex: 0 0 auto;
+}
+
+.mockup-canvas-artboard-secondary {
+  opacity: 0.92;
+  outline: 2px dashed #a855f7;
+  outline-offset: 6px;
+}
+
+.mockup-secondary-label {
+  position: absolute;
+  top: -34px;
+  left: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #c084fc;
+  white-space: nowrap;
 }
 
 .mockup-canvas-artboard .canvas-container {
