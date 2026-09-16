@@ -1070,6 +1070,7 @@ export async function startWebServer(options: { port?: number; host?: string; op
         if (body.cells !== undefined) project.cells = body.cells;
         if (body.sources !== undefined) project.sources = body.sources;
         if (body.globalPanoramic !== undefined) project.globalPanoramic = body.globalPanoramic;
+        if (body.panoramaAssets !== undefined) project.panoramaAssets = body.panoramaAssets;
         if (body.settings !== undefined) project.settings = body.settings;
         saveMockupProject(project);
         sendJson(res, 200, project);

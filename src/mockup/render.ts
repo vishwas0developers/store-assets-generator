@@ -18,6 +18,7 @@ import {
   type DeviceLayerStyle,
   type MockupAssetLayer,
   type MockupProject,
+  type PanoramaAssetLayer,
 } from "./project.js";
 import { applyMockupTemplate, type MockupStarterTemplate } from "./templates.js";
 
@@ -60,6 +61,39 @@ export interface RenderContext {
   resolveUri: (relativePath: string) => string;
   columnIndex: number;
   columnCount: number;
+}
+
+/** Projects a panorama-space asset (positioned once, spanning any number of
+ *  pages) onto one page's local 1080-wide box, in the same shape
+ *  MockupAssetLayer/assetLayersMarkup already expect -- returns null if it
+ *  doesn't intersect this page at all. xPct/widthPct are deliberately left
+ *  unclamped (can be negative or exceed 100) -- cellHtml's `.canvas`/`body`
+ *  already have `overflow:hidden`, so plain CSS absolute positioning clips
+ *  the off-page portion correctly with no extra work.
+ *  Mirrored in web/js/canvas.js for the client-side Fabric canvas -- no
+ *  shared build step between src/ (TS) and web/js/ (hand-authored JS) in
+ *  this codebase, so this small formula is intentionally duplicated there,
+ *  matching the existing precedent for small cross-referenced constants
+ *  (e.g. ARTBOARD_GAP). Keep both in sync if this formula ever changes. */
+function projectPanoramaAssetToColumn(pa: PanoramaAssetLayer, columnIndex: number): MockupAssetLayer | null {
+  const localXPx = pa.xPx - columnIndex * CANVAS.width;
+  if (localXPx + pa.widthPx <= 0 || localXPx >= CANVAS.width) return null;
+  return {
+    id: `panorama:${pa.id}`,
+    assetId: pa.assetId,
+    name: pa.name ?? "Panorama asset",
+    xPct: (localXPx / CANVAS.width) * 100,
+    yPct: pa.yPct,
+    widthPct: (pa.widthPx / CANVAS.width) * 100,
+    heightPct: pa.heightPct,
+    rotation: pa.rotation,
+    opacity: pa.opacity,
+    flipH: pa.flipH,
+    flipV: pa.flipV,
+    visible: pa.visible,
+    locked: pa.locked,
+    zIndex: pa.zIndex,
+  };
 }
 
 function assetLayersMarkup(layers: MockupAssetLayer[] = [], resolveUri: (rel: string) => string): string {
@@ -146,8 +180,26 @@ export function cellHtml(project: MockupProject, deviceRowId: string, columnId: 
 
   const textAbove = preset.textPosition.endsWith("above");
   const decorations = decorationsMarkup(style.decorations, canvas);
-  const assets = assetLayersMarkup(style.assetLayers, ctx.resolveUri);
-  for (const a of style.assetLayers ?? []) maxStageZ = Math.max(maxStageZ, a.zIndex ?? 15);
+  // Cross-page panorama assets are projected onto this page's local box and
+  // merged in alongside its own page-local assetLayers -- assetLayersMarkup
+  // doesn't need to know the difference, it just renders whatever's given.
+  // Deliberately NOT using ctx.columnIndex here: different cellHtml callers
+  // already disagree on what that represents (some sort project.columns by
+  // `.order` first, some use the raw array position) -- panorama math needs
+  // one single, always-consistent page sequence across every entry point
+  // (editor canvas, cell-preview, every export path) or the same asset would
+  // render at different splits depending on which caller rendered it. The
+  // `.order` field is the actual authoritative page sequence a user sees, so
+  // that's what's used here, independent of whatever ctx.columnIndex means
+  // to this particular caller. Mirrored in web/js/canvas.js.
+  const orderedColumnIds = [...project.columns].sort((a, b) => a.order - b.order).map((c) => c.id);
+  const panoramaColumnIndex = orderedColumnIds.indexOf(columnId);
+  const projectedPanorama = (project.panoramaAssets ?? [])
+    .map((pa) => projectPanoramaAssetToColumn(pa, panoramaColumnIndex))
+    .filter((a): a is MockupAssetLayer => a != null);
+  const allAssets = [...(style.assetLayers ?? []), ...projectedPanorama];
+  const assets = assetLayersMarkup(allAssets, ctx.resolveUri);
+  for (const a of allAssets) maxStageZ = Math.max(maxStageZ, a.zIndex ?? 15);
 
   // .copy (title+subtitle) and .stage (devices+assets) are separate flex
   // siblings/stacking contexts -- a child's z-index can only win against its

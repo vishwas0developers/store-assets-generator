@@ -395,10 +395,12 @@ html.light .mockup-canvas-viewport {
   border-color: #3b82f6;
 }
 
-/* Artboard(s) Document Styling -- a flex row so a second selected page
-   (mockup-canvas-artboard-secondary) sits side by side with the primary
-   interactive one instead of stacking/overlapping; single-artboard layout
-   is unaffected since flex row with one child behaves the same as before. */
+/* Artboard(s) Document Styling -- canvas.js dynamically appends one
+   .mockup-canvas-artboard per currently-selected page into this flex row
+   (see createPageCanvas/destroyPageCanvas), tiled with a small gap so
+   multiple selected pages read as one continuous panorama; single-page
+   selection is unaffected since a flex row with one child behaves the same
+   as a plain block. Gap must match canvas.js's ARTBOARD_GAP constant. */
 .mockup-canvas-stage {
   transform-origin: top left;
   will-change: transform;
@@ -408,7 +410,7 @@ html.light .mockup-canvas-viewport {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
-  gap: 40px;
+  gap: 8px;
 }
 
 .mockup-canvas-artboard {
@@ -421,20 +423,13 @@ html.light .mockup-canvas-viewport {
   flex: 0 0 auto;
 }
 
-.mockup-canvas-artboard-secondary {
-  opacity: 0.92;
-  outline: 2px dashed #a855f7;
-  outline-offset: 6px;
-}
-
-.mockup-secondary-label {
-  position: absolute;
-  top: -34px;
-  left: 0;
-  font-size: 13px;
-  font-weight: 600;
-  color: #c084fc;
-  white-space: nowrap;
+/* The one page currently active/fully editable, when 2+ pages are selected
+   (see canvas.js's setActivePage) -- the rest show real synced content but
+   are locked, except cross-page panorama assets which stay interactive
+   regardless. Click any page's background to make it active instead. */
+.mockup-canvas-artboard.is-active-page {
+  outline: 2px solid #93c5fd;
+  outline-offset: 4px;
 }
 
 .mockup-canvas-artboard .canvas-container {
