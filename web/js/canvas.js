@@ -55,15 +55,30 @@ const CONTROL_STYLE = {
   padding: 4,
 };
 
+// Fabric's built-in rotationStyleHandler just returns `control.cursorStyle`
+// (a plain CSS cursor string) -- there's no actual curved-arrow icon behind
+// it by default, in Fabric or in mtr (its own control default cursorStyle
+// is also just the generic 'crosshair'). A real rotate icon needs an
+// explicit custom cursor image; this is a small curved double-headed arrow
+// (white fill, black outline for contrast against either theme), centered
+// on its own hotspot, with 'crosshair' kept as the CSS fallback.
+const ROTATE_CURSOR = `url("data:image/svg+xml,${encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22">' +
+    '<path d="M11 3.5V1L6.8 4.5 11 8V5.5c3.04 0 5.5 2.46 5.5 5.5 0 2.72-1.98 4.98-4.58 5.42v1.52c3.44-.46 6.08-3.4 6.08-6.94 0-3.87-3.13-7-7-7zM5.5 11c0-1.5.61-2.86 1.6-3.85L6.03 6.08A6.968 6.968 0 0 0 4 11c0 3.54 2.64 6.48 6.08 6.94v-1.52C7.48 15.98 5.5 13.72 5.5 11z" ' +
+    'fill="white" stroke="black" stroke-width="0.6"/></svg>'
+)}") 11 11, crosshair`;
+
 /**
  * By default only the top-center handle (mtr) rotates -- the four corner
  * handles only resize. Rewires tl/tr/bl/br to rotate too (same action Fabric
- * already uses for mtr: fabric.controlsUtils.rotationWithSnapping, with its
- * matching cursor handler), so any corner can be dragged to rotate. Applied
- * per-instance (not via a single prototype patch) for the same reason the
- * origin-default fix above is: Fabric v7 classes merge their own control
- * defaults in the constructor, so a `fabric.Object.prototype.controls` patch
- * doesn't reliably reach already-typed classes (Rect/Textbox/Group/Image).
+ * already uses for mtr: fabric.controlsUtils.rotationWithSnapping), and
+ * gives them an explicit rotate-icon hover cursor (see ROTATE_CURSOR above)
+ * so hovering any corner visibly signals "drag to rotate" the same way mtr
+ * is meant to, instead of the generic crosshair Fabric falls back to.
+ * Applied per-instance (not via a single prototype patch) for the same
+ * reason the origin-default fix above is: Fabric v7 classes merge their own
+ * control defaults in the constructor, so a `fabric.Object.prototype.controls`
+ * patch doesn't reliably reach already-typed classes (Rect/Textbox/Group/Image).
  */
 function applyCornerRotationControls(obj) {
   const fabric = window.fabric;
@@ -74,6 +89,7 @@ function applyCornerRotationControls(obj) {
     base.actionName = 'rotate';
     base.actionHandler = fabric.controlsUtils.rotationWithSnapping;
     base.cursorStyleHandler = fabric.controlsUtils.rotationStyleHandler;
+    base.cursorStyle = ROTATE_CURSOR;
   }
 }
 

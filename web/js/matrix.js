@@ -176,6 +176,12 @@ export function renderMockupMatrix() {
       const key = `${dev.id}:${col.id}`;
       const isActive =
         !!selectedCell && selectedCell.deviceRowId === dev.id && selectedCell.columnId === col.id;
+      // A page paired for two-page editing (selectedPagePair) must show as
+      // selected across every device row for that column, not just the one
+      // exact (deviceRow, column) cell selectedCell points at -- previously
+      // only the single active cell got any highlight, so with two pages
+      // paired only one ever visibly looked selected in the preview grid.
+      const isPairedCol = !isActive && selectedPagePair.includes(col.id);
       const style = resolvedStyleFor(mockupProject, dev.id === "__base" ? null : dev.id, col.id);
       const title = style?.title?.text || col.style?.title?.text || `Page ${columns.indexOf(col) + 1}`;
       // Prefer real server iframe preview; fall back to mini card if unavailable.
@@ -189,7 +195,12 @@ export function renderMockupMatrix() {
              <div style="width:70%; height:60%; margin:0 auto; background:#1e293b; border-radius:6px; border:1px solid #475569;"></div>
            </div>`;
 
-      html += `<td data-device-row="${escapeHtml(dev.id)}" data-col-id="${escapeHtml(col.id)}" data-cell-key="${escapeHtml(key)}" style="padding:.3rem; cursor:pointer; ${isActive ? "outline:2px solid #3b82f6; outline-offset:-2px; background:rgba(59,130,246,.08);" : ""}">
+      const cellSelectStyle = isActive
+        ? "outline:2px solid #3b82f6; outline-offset:-2px; background:rgba(59,130,246,.08);"
+        : isPairedCol
+        ? "outline:2px solid #a855f7; outline-offset:-2px; background:rgba(168,85,247,.08);"
+        : "";
+      html += `<td data-device-row="${escapeHtml(dev.id)}" data-col-id="${escapeHtml(col.id)}" data-cell-key="${escapeHtml(key)}" style="padding:.3rem; cursor:pointer; ${cellSelectStyle}">
         ${cellPreview}
       </td>`;
     }
