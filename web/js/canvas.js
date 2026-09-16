@@ -9,6 +9,7 @@ import {
   mockupId,
   setMockupDirty,
   setSelectedLayerId,
+  setSelectedLayerIds,
   setMockupFabricCanvas,
 } from './state.js';
 import {
@@ -19,9 +20,19 @@ import {
   rgbToHex,
   getDeviceCoordsFromFabricObject,
   loadFabricImageAsync,
+  escapeHtml,
 } from './utils.js';
-import { syncSection2Inputs } from './editor.js';
+import { syncSection2Inputs, syncLinkedDeviceLayer } from './editor.js';
 import { saveCurrentMockupProject, pushMockupHistory, mockupProject } from './state.js';
+// mockupDevicesCatalog: templates.js already fetches the real /api/devices
+// catalog (dozens of real devices) for the "add device row" picker; canvas.js
+// reuses that same live array instead of the tiny 4-entry stub previously
+// baked into resolveDeviceGeometry(), which didn't contain any device this
+// project actually uses. (templates.js also imports from canvas.js --
+// editor.js/matrix.js already have the same mutual-import shape in this
+// codebase and it works fine, since both sides only read the live binding
+// inside function bodies, never at module-evaluation time.)
+import { mockupDevicesCatalog } from './templates.js';
 
 /**
  * Initializes the primary interactive Fabric.js canvas (1080×1920 reference resolution).
@@ -58,31 +69,39 @@ export function initMockupFabricCanvas() {
 
 function onFabricObjectModified(e) {
   const obj = e.target;
-  if (!obj || !obj.layerId) return;
+  if (!obj) return;
+  // A multi-select drag/rotate/scale fires with an ActiveSelection as the
+  // target (no layerId of its own) -- without this, group-transforming
+  // several layers together would silently fail to persist any of them.
+  if (Array.isArray(obj._objects)) {
+    for (const member of obj._objects) {
+      if (member?.layerId) syncFabricObjectToModel(member, obj);
+    }
+    return;
+  }
+  if (!obj.layerId) return;
   syncFabricObjectToModel(obj);
 }
 
-function onFabricSelectionCreated(e) {
-  const obj = e.selected?.[0];
-  if (!obj || !obj.layerId) return;
-  setSelectedLayerId(obj.layerId);
+// Fabric's own multi-select (shift-click / marquee) already produces e.selected
+// with every selected object -- previously only [0] was ever used, silently
+// discarding multi-select. setSelectedLayerIds keeps the full set (for group
+// operations); setSelectedLayerId keeps the first as the "primary" selection
+// the single-object inspector panel edits, same as before for a single pick.
+function handleFabricSelection(e) {
+  const objs = (e.selected || []).filter((o) => o.layerId);
+  if (!objs.length) return;
+  setSelectedLayerIds(objs.map((o) => o.layerId));
+  setSelectedLayerId(objs[0].layerId);
   if (selectedColumn) {
     if (typeof window.renderMockupLayersPanel === 'function') window.renderMockupLayersPanel(selectedColumn);
-    if (typeof window.syncSection2Inputs === 'function') window.syncSection2Inputs(selectedColumn, obj.layerId);
-    if (typeof window.routeInspectorForLayer === 'function') window.routeInspectorForLayer(obj.layerId);
+    if (typeof window.syncSection2Inputs === 'function') window.syncSection2Inputs(selectedColumn, objs[0].layerId);
+    if (typeof window.routeInspectorForLayer === 'function') window.routeInspectorForLayer(objs[0].layerId);
   }
 }
 
-function onFabricSelectionUpdated(e) {
-  const obj = e.selected?.[0];
-  if (!obj || !obj.layerId) return;
-  setSelectedLayerId(obj.layerId);
-  if (selectedColumn) {
-    if (typeof window.renderMockupLayersPanel === 'function') window.renderMockupLayersPanel(selectedColumn);
-    if (typeof window.syncSection2Inputs === 'function') window.syncSection2Inputs(selectedColumn, obj.layerId);
-    if (typeof window.routeInspectorForLayer === 'function') window.routeInspectorForLayer(obj.layerId);
-  }
-}
+function onFabricSelectionCreated(e) { handleFabricSelection(e); }
+function onFabricSelectionUpdated(e) { handleFabricSelection(e); }
 
 function onFabricTextChanged(e) {
   const obj = e.target;
@@ -99,10 +118,35 @@ function onFabricTextChanged(e) {
 /**
  * Synchronizes modifications made directly on Fabric stage objects back into column style data model.
  * @param {object} obj
+ * @param {object} [group] - when `obj` is a member of a multi-select ActiveSelection,
+ *   its left/top/angle are group-local, not canvas-absolute. Pass the group so we can
+ *   resolve absolute canvas coordinates instead (best-effort: uses the axis-aligned
+ *   bounding box for position/size, which is exact for non-rotated members and a
+ *   close approximation once the group itself is also rotated -- ponytail: full
+ *   corner-accurate math for a rotated group of rotated members needs matrix
+ *   decomposition; add if group-rotate-then-edit drift is ever reported).
  */
-export function syncFabricObjectToModel(obj) {
+export async function syncFabricObjectToModel(obj, group) {
   if (!obj || !obj.layerId || !selectedColumn) return;
   const style = selectedColumn.style;
+
+  // Same device-row resolution as loadColumnIntoFabric, needed so the
+  // inverse (drag -> model) math uses the device's real dimensions instead
+  // of a hardcoded 480x960/960 reference the model was never actually built at.
+  const { selectedCell } = await import('./matrix.js');
+  const activeDeviceRow =
+    mockupProject?.devices?.find((d) => d.id === selectedCell?.deviceRowId) ||
+    mockupProject?.devices?.[0];
+  const deviceGeo = resolveDeviceGeometry(activeDeviceRow?.deviceId || 'phone', mockupDevicesCatalog, activeDeviceRow?.variant);
+  const stageCenter = fabricStageCenter(selectedColumn);
+
+  if (group) {
+    const rect = obj.getBoundingRect(true, true);
+    const angle = typeof obj.getTotalAngle === 'function' ? obj.getTotalAngle() : (obj.angle || 0) + (group.angle || 0);
+    obj = Object.assign(Object.create(Object.getPrototypeOf(obj)), obj, {
+      left: rect.left, top: rect.top, width: rect.width, height: rect.height, angle,
+    });
+  }
 
   switch (obj.layerId) {
     case 'title':
@@ -122,7 +166,7 @@ export function syncFabricObjectToModel(obj) {
       break;
 
     case 'deviceOne': {
-      const coords = getDeviceCoordsFromFabricObject(obj, selectedColumn, 'deviceOne');
+      const coords = getDeviceCoordsFromFabricObject(obj, selectedColumn, 'deviceOne', stageCenter, deviceGeo);
       if (coords) {
         const preset = getLayoutPresetClient(style.layout);
         const transform = presentationTransformClient(preset.presentation);
@@ -135,7 +179,7 @@ export function syncFabricObjectToModel(obj) {
     }
 
     case 'deviceTwo': {
-      const coords = getDeviceCoordsFromFabricObject(obj, selectedColumn, 'deviceTwo');
+      const coords = getDeviceCoordsFromFabricObject(obj, selectedColumn, 'deviceTwo', stageCenter, deviceGeo);
       if (coords) {
         const preset = getLayoutPresetClient(style.layout);
         const transform = presentationTransformClient(preset.presentation);
@@ -150,12 +194,29 @@ export function syncFabricObjectToModel(obj) {
     }
 
     default: {
-      if (obj.layerId?.startsWith('asset:')) {
+      if (obj.layerId?.startsWith('extra:')) {
+        // Free-form device layers have no presentation-recipe rotate/offset to
+        // subtract (unlike deviceOne/deviceTwo) -- inline the same stageCx/stageCy
+        // anchor deviceOne uses in loadColumnIntoFabric below, with zero preset offset.
+        const idx = parseInt(obj.layerId.split(':')[1], 10);
+        const dev = style.extraDevices?.[idx];
+        const objW = typeof obj.getScaledWidth === 'function' ? obj.getScaledWidth() : obj.width;
+        const objH = typeof obj.getScaledHeight === 'function' ? obj.getScaledHeight() : obj.height;
+        if (dev && objW && objH) {
+          const cx = obj.left + objW / 2;
+          const cy = obj.top + objH / 2;
+          dev.x = Math.round(((cx - stageCenter.cx) / objW) * 100);
+          dev.y = Math.round(((cy - stageCenter.cy) / objH) * 100);
+          dev.size = Math.round((objH / deviceGeo.height) * 90);
+          dev.rotation = obj.angle ?? 0;
+        }
+      } else if (obj.layerId?.startsWith('asset:')) {
         const idx = parseInt(obj.layerId.split(':')[1], 10);
         const ast = style.assetLayers && style.assetLayers[idx];
         if (ast) {
-          if (obj.left !== undefined) ast.xPct = Math.round(((obj.left + (obj.width || 0) / 2) / 1080) * 100);
-          if (obj.top !== undefined) ast.yPct = Math.round(((obj.top + (obj.height || 0) / 2) / 1920) * 100);
+          // Top-left anchored -- see the matching note in loadColumnIntoFabric's asset loop.
+          if (obj.left !== undefined) ast.xPct = Math.round((obj.left / 1080) * 100);
+          if (obj.top !== undefined) ast.yPct = Math.round((obj.top / 1920) * 100);
           if (obj.width !== undefined) ast.widthPct = Math.round((obj.width / 1080) * 100);
           if (obj.height !== undefined) ast.heightPct = Math.round((obj.height / 1920) * 100);
           if (obj.angle !== undefined) ast.rotation = obj.angle;
@@ -167,9 +228,77 @@ export function syncFabricObjectToModel(obj) {
       break;
     }
   }
+  if (selectedColumn) syncLinkedDeviceLayer(mockupProject, selectedColumn.id, obj.layerId);
   setMockupDirty(true);
   if (typeof window.syncSection2Inputs === 'function') window.syncSection2Inputs(selectedColumn, obj.layerId);
   if (typeof window.renderMockupMatrix === 'function') window.renderMockupMatrix();
+}
+
+// Offscreen element reused across measurements -- real browser flex/text-wrap
+// layout instead of a hand-rolled approximation, so the editor's "copy block"
+// geometry can never drift from src/mockup/render.ts's actual CSS again (that
+// drift -- particularly a width/height axis mix-up in the margin term, and a
+// hardcoded constant that disagreed with itself elsewhere in this file -- was
+// the root cause of the editor canvas not matching a template's real design).
+let _measureEl = null;
+function getMeasureEl() {
+  if (_measureEl && document.body.contains(_measureEl)) return _measureEl;
+  _measureEl = document.createElement('div');
+  _measureEl.style.cssText = 'position:absolute; left:-99999px; top:0; visibility:hidden; pointer-events:none;';
+  document.body.appendChild(_measureEl);
+  return _measureEl;
+}
+
+/** Measures the real rendered height (content + the margin that pushes the
+ *  device stage away from it) of the title+subtitle "copy" block, using the
+ *  *exact* CSS src/mockup/render.ts's textBlock()/.canvas/.copy/.title/
+ *  .subtitle rules use (render.ts:45-56,142-154) -- title line-height 1.15,
+ *  subtitle font-size at half of style.subtitle.size (render.ts's textBlock
+ *  literally halves it -- canvas.js previously rendered it at full size, a
+ *  second real bug), subtitle's own 0.5em margin-top, and the copy block's
+ *  4% margin against the *padded flex container's* width, all resolved by
+ *  the real browser layout engine instead of guessed constants. */
+function measureCopyBlock(style, preset) {
+  const textBelow = preset.textPosition.endsWith('below');
+  const isCaption = preset.textPosition.startsWith('caption');
+  const t = style.title || { text: '', size: 58 };
+  const s = style.subtitle || { text: '', size: 36 };
+  const titleSize = isCaption ? Math.round((t.size || 58) * 0.72) : (t.size || 58);
+  const subtitleSize = Math.round((s.size || 36) * 0.5);
+  const showTitle = t.visible !== false && !!t.text;
+  const showSubtitle = s.visible !== false && !!s.text;
+  if (!showTitle && !showSubtitle) return { height: 0, titleHeight: 0 };
+
+  const PAD = 1080 * 0.06;
+  const el = getMeasureEl();
+  el.innerHTML = `<div style="box-sizing:border-box; width:1080px; display:flex; flex-direction:${textBelow ? 'column-reverse' : 'column'}; align-items:center; padding:${PAD}px;">
+    <div class="mk-measure-copy" style="width:100%; margin:${textBelow ? '4% 0 0' : '0 0 4%'}; font-family:'Segoe UI', Roboto, -apple-system, sans-serif;">
+      ${showTitle ? `<div class="mk-measure-title" style="font-weight:800; line-height:1.15; font-size:${titleSize}px;">${escapeHtml(t.text)}</div>` : ''}
+      ${showSubtitle ? `<div style="opacity:.8; margin-top:.5em; font-weight:500; font-size:${subtitleSize}px;">${escapeHtml(s.text)}</div>` : ''}
+    </div>
+  </div>`;
+  const copyEl = el.firstElementChild.firstElementChild;
+  const titleEl = copyEl.querySelector('.mk-measure-title');
+  const rect = copyEl.getBoundingClientRect();
+  const cs = getComputedStyle(copyEl);
+  const marginPx = parseFloat(textBelow ? cs.marginTop : cs.marginBottom) || 0;
+  return { height: rect.height + marginPx, titleHeight: titleEl ? titleEl.getBoundingClientRect().height : 0 };
+}
+
+/** Stage center (cx, cy) devices are positioned around -- accounts for the
+ *  title/subtitle copy block's real measured height like loadColumnIntoFabric
+ *  does, so extra-device coordinate math (read in syncFabricObjectToModel,
+ *  written here) uses the exact same anchor as deviceOne/deviceTwo. */
+function fabricStageCenter(column) {
+  const style = column.style;
+  const preset = getLayoutPresetClient(style.layout);
+  const PAD = 1080 * 0.06;
+  const showText = preset.textPosition !== 'no-text';
+  const textBelow = preset.textPosition.endsWith('below');
+  const copyH = showText ? measureCopyBlock(style, preset).height : 0;
+  const stageTop = showText && !textBelow ? PAD + copyH : PAD;
+  const stageBottom = showText && textBelow ? 1920 - PAD - copyH : 1920 - PAD;
+  return { cx: 540, cy: (stageTop + stageBottom) / 2 };
 }
 
 /**
@@ -188,6 +317,27 @@ export async function loadColumnIntoFabric(column) {
   const preset = getLayoutPresetClient(style.layout);
   const transform = presentationTransformClient(preset.presentation);
 
+  // Which physical device model (e.g. "apple-iphone-16-pro-max") this
+  // composition renders with -- matches render.ts's layerMarkup(), which
+  // uses the selected device ROW's deviceId/variant for every device layer
+  // on the screen (the model is per-row, not per-layer).
+  const { selectedCell } = await import('./matrix.js');
+  const activeDeviceRow =
+    mockupProject?.devices?.find((d) => d.id === selectedCell?.deviceRowId) ||
+    mockupProject?.devices?.[0];
+  const activeDeviceId = activeDeviceRow?.deviceId || 'phone';
+  const activeDeviceVariant = activeDeviceRow?.variant;
+
+  // Screenshot source fallback -- matches render.ts's cellHtml() exactly:
+  // explicit sourceId, else the source at this column's index, else the
+  // first source. Without this, any column/device that hasn't had a
+  // screenshot manually mapped yet (true for every freshly-applied
+  // template) renders blank in the editor while the real server-rendered
+  // preview/export already shows a screenshot via this same fallback.
+  const columnIndex = Math.max(0, mockupProject?.columns?.findIndex((c) => c.id === column.id) ?? 0);
+  const sources = mockupProject?.sources || [];
+  const resolveSourceFor = (sourceId) => sources.find((s) => s.id === sourceId) ?? sources[columnIndex] ?? sources[0];
+
   // 1. Background Layer -- mirrors src/render/shared.ts resolveBackground()
   const bg = style.background || { type: 'gradient', value: 'ocean' };
   let bgObj = null;
@@ -195,7 +345,7 @@ export async function loadColumnIntoFabric(column) {
     const imgUrl = `/api/mockups/${mockupId}/file?p=${encodeURIComponent(bg.imageFile)}`;
     const img = await loadFabricImageAsync(imgUrl);
     if (img) {
-      img.set({ left: 0, top: 0, selectable: false, evented: false, name: 'background', layerId: 'background' });
+      img.set({ left: 0, top: 0, originX: 'left', originY: 'top', selectable: false, evented: false, name: 'background', layerId: 'background' });
       const scale = Math.max(1080 / img.width, 1920 / img.height);
       img.scaleX = scale;
       img.scaleY = scale;
@@ -204,8 +354,9 @@ export async function loadColumnIntoFabric(column) {
   }
   if (!bgObj) {
     bgObj = new fabric.Rect({
-      left: 0, top: 0, width: 1080, height: 1920,
+      left: 0, top: 0, originX: 'left', originY: 'top', width: 1080, height: 1920,
       fill: resolveFabricBackgroundFill(bg),
+      objectCaching: false,
       selectable: false,
       evented: false,
       name: 'background',
@@ -220,17 +371,34 @@ export async function loadColumnIntoFabric(column) {
   const textBelow = preset.textPosition.endsWith('below');
   const isCaption = preset.textPosition.startsWith('caption');
 
-  // 2. Title Layer
+  // 2. Title + 3. Subtitle Layers -- positioned/sized from a real measured
+  // layout (measureCopyBlock, using render.ts's actual CSS) instead of guessed
+  // constants, so text-below placement and the title/subtitle gap match the
+  // real server-rendered design instead of drifting from it.
   const t = style.title || { text: '', color: '#ffffff', size: 58, align: 'center', rotation: 0 };
+  const s = style.subtitle || { text: '', color: '#94a3b8', size: 36, align: 'center', rotation: 0 };
   const titleSize = isCaption ? Math.round((t.size || 58) * 0.72) : (t.size || 58);
-  const titleY = t.y ?? (showText ? (textBelow ? 1920 - PAD - 160 : PAD) : PAD);
+  // render.ts's textBlock() renders the subtitle at HALF style.subtitle.size
+  // (render.ts:154) -- canvas.js previously used the raw size, rendering
+  // subtitles roughly 2x too large versus the real export/preview.
+  const subtitleSize = Math.round((s.size || 36) * 0.5);
+  const copyMeasure = showText ? measureCopyBlock(style, preset) : { height: 0, titleHeight: 0 };
+  const titleY = t.y ?? (showText ? (textBelow ? 1920 - PAD - copyMeasure.height : PAD) : PAD);
+  // render.ts applies text-align once to the whole .copy block via
+  // style.title.align -- style.subtitle.align is never read for alignment
+  // (render.ts:52), so the subtitle here follows the title's align, not its own.
+  const copyAlign = t.align || 'center';
+
   const titleText = new fabric.Textbox(t.text || '', {
     left: t.x ?? PAD,
     top: titleY,
+    originX: 'left',
+    originY: 'top',
     width: 1080 - PAD * 2,
     fontSize: titleSize,
+    lineHeight: 1.15,
     fill: t.color || '#ffffff',
-    textAlign: t.align || 'center',
+    textAlign: copyAlign,
     angle: t.rotation || 0,
     fontWeight: 'bold',
     name: 'title',
@@ -241,18 +409,22 @@ export async function loadColumnIntoFabric(column) {
   });
   mockupFabricCanvas.add(titleText);
 
-  // 3. Subtitle Layer
-  const s = style.subtitle || { text: '', color: '#94a3b8', size: 36, align: 'center', rotation: 0 };
-  const subtitleY = s.y ?? (titleY + titleSize * 1.6);
+  // Subtitle sits titleHeight + its own 0.5em margin-top below the title,
+  // exactly matching render.ts's `.subtitle { margin-top: .5em }` (em is
+  // relative to the subtitle's OWN font-size, not the title's).
+  const subtitleY = s.y ?? (titleY + copyMeasure.titleHeight + subtitleSize * 0.5);
   const subtitleText = new fabric.Textbox(s.text || '', {
     left: s.x ?? PAD,
     top: subtitleY,
+    originX: 'left',
+    originY: 'top',
     width: 1080 - PAD * 2,
-    fontSize: s.size || 36,
+    fontSize: subtitleSize,
     fill: s.color || '#94a3b8',
-    textAlign: s.align || 'center',
+    textAlign: copyAlign,
     angle: s.rotation || 0,
     fontWeight: 'normal',
+    opacity: 0.8,
     name: 'subtitle',
     layerId: 'subtitle',
     visible: showText && s.visible !== false,
@@ -262,18 +434,14 @@ export async function loadColumnIntoFabric(column) {
   mockupFabricCanvas.add(subtitleText);
 
   // Stage dimensions & centering offsets
-  const copyH = showText ? titleSize * 1.6 + (s.size || 36) * 1.2 + 1920 * 0.04 : 0;
-  const stageTop = showText && !textBelow ? PAD + copyH : PAD;
-  const stageBottom = showText && textBelow ? 1920 - PAD - copyH : 1920 - PAD;
-  const stageCx = 540;
-  const stageCy = (stageTop + stageBottom) / 2;
+  const { cx: stageCx, cy: stageCy } = fabricStageCenter(column);
 
   // 4. Device One
   const d1 = style.deviceOne || { size: 90, x: 0, y: 0, rotation: 0, brightness: 100 };
   // Use the real device aspect ratio from the registry rather than a fixed 480x960
   // so the editor canvas matches the server-rendered template (real corner
   // radius, screen inset, dimensions per device model).
-  const d1Geo = resolveDeviceGeometry(d1.id || 'phone');
+  const d1Geo = resolveDeviceGeometry(activeDeviceId, mockupDevicesCatalog, activeDeviceVariant);
   const d1BaseW = d1Geo.width;
   const d1BaseH = d1Geo.height;
   const d1Scale = d1.size / 90;
@@ -285,7 +453,8 @@ export async function loadColumnIntoFabric(column) {
   const d1Top = d1Cy - d1H / 2;
   const d1Rotation = (transform.d1.rotate || 0) + (d1.rotation || 0);
 
-  const deviceOne = await buildDeviceGroup(d1, 'deviceOne', d1Left, d1Top, d1W, d1H, d1Rotation);
+  const d1Source = resolveSourceFor(d1.sourceId);
+  const deviceOne = await buildDeviceGroup(d1, 'deviceOne', d1Left, d1Top, d1W, d1H, d1Rotation, activeDeviceId, activeDeviceVariant, d1Source);
   if (deviceOne) {
     mockupFabricCanvas.add(deviceOne);
   }
@@ -293,7 +462,7 @@ export async function loadColumnIntoFabric(column) {
   // 5. Device Two (if exists)
   const d2 = style.deviceTwo;
   if (d2 && preset.twoDevices && transform.d2) {
-    const d2Geo = resolveDeviceGeometry(d2.id || 'phone');
+    const d2Geo = resolveDeviceGeometry(activeDeviceId, mockupDevicesCatalog, activeDeviceVariant);
     const d2Scale = d2.size / 90;
     const d2W = d2Geo.width * d2Scale;
     const d2H = d2Geo.height * d2Scale;
@@ -302,10 +471,28 @@ export async function loadColumnIntoFabric(column) {
     const d2Left = d2Cx - d2W / 2;
     const d2Top = d2Cy - d2H / 2;
     const d2Rotation = (transform.d2.rotate || 0) + (d2.rotation || 0);
-    const deviceTwo = await buildDeviceGroup(d2, 'deviceTwo', d2Left, d2Top, d2W, d2H, d2Rotation);
+    // render.ts falls back deviceTwo's source to deviceOne's resolved source
+    // (not sources[columnIndex+1]) when d2 has no explicit sourceId.
+    const d2Source = sources.find((s) => s.id === d2.sourceId) ?? d1Source;
+    const deviceTwo = await buildDeviceGroup(d2, 'deviceTwo', d2Left, d2Top, d2W, d2H, d2Rotation, activeDeviceId, activeDeviceVariant, d2Source);
     if (deviceTwo) {
       mockupFabricCanvas.add(deviceTwo);
     }
+  }
+
+  // 5b. Extra device layers (free-form, beyond the two preset slots -- no
+  //     presentation-recipe offset, positioned purely by their own x/y/size/rotation).
+  for (let i = 0; i < (style.extraDevices || []).length; i++) {
+    const dx = style.extraDevices[i];
+    const dxGeo = resolveDeviceGeometry(activeDeviceId, mockupDevicesCatalog, activeDeviceVariant);
+    const dxScale = dx.size / 90;
+    const dxW = dxGeo.width * dxScale;
+    const dxH = dxGeo.height * dxScale;
+    const dxCx = stageCx + (dx.x / 100) * dxW;
+    const dxCy = stageCy + (dx.y / 100) * dxH;
+    const dxSource = sources.find((s) => s.id === dx.sourceId) ?? d1Source;
+    const extraGroup = await buildDeviceGroup(dx, `extra:${i}`, dxCx - dxW / 2, dxCy - dxH / 2, dxW, dxH, dx.rotation || 0, activeDeviceId, activeDeviceVariant, dxSource);
+    if (extraGroup) mockupFabricCanvas.add(extraGroup);
   }
 
   // 6. Asset Layers
@@ -315,8 +502,12 @@ export async function loadColumnIntoFabric(column) {
       if (ast.visible === false) continue;
       const w = (ast.widthPct / 100) * 1080;
       const h = ast.heightPct ? (ast.heightPct / 100) * 1920 : w * 1.4;
-      const left = (ast.xPct / 100) * 1080 - w / 2;
-      const top = (ast.yPct / 100) * 1920 - h / 2;
+      // Top-left anchored, matching src/render/shared.ts's assetLayersMarkup()
+      // (`left:${xPct}%; top:${yPct}%` on a plain position:absolute div, no
+      // centering transform) -- canvas.js previously treated xPct/yPct as the
+      // asset's CENTER, a real divergence from the actual exported/previewed position.
+      const left = (ast.xPct / 100) * 1080;
+      const top = (ast.yPct / 100) * 1920;
       const srcUrl = ast.assetId.startsWith('sources/')
         ? `/api/mockups/${mockupId}/file?p=${encodeURIComponent(ast.assetId)}`
         : `/api/mockups/${mockupId}/file?p=sources/${ast.assetId}.png`;
@@ -326,6 +517,8 @@ export async function loadColumnIntoFabric(column) {
         assetImg.set({
           left,
           top,
+          originX: 'left',
+          originY: 'top',
           angle: ast.rotation || 0,
           opacity: ast.opacity ?? 1,
           flipX: !!ast.flipH,
@@ -358,18 +551,30 @@ export async function loadColumnIntoFabric(column) {
 
 /**
  * Builds a Fabric Group containing bezel frame and screenshot image.
+ * @param {string} [deviceId] - real device catalog id (the device ROW's
+ *   deviceId, e.g. "apple-iphone-16-pro-max") -- DeviceLayerStyle itself has
+ *   no model id field; the model applies per device ROW, not per layer.
+ * @param {string} [variantId]
+ * @param {{id:string,file:string}} [resolvedSource] - the source image to
+ *   show, already resolved by the caller with the same fallback render.ts's
+ *   cellHtml() uses (explicit device.sourceId, else sources[columnIndex],
+ *   else sources[0]) -- previously this function only used device.sourceId
+ *   with no fallback at all, so a freshly-applied template (which never sets
+ *   sourceId) rendered a blank device here while the real server-rendered
+ *   preview/export correctly showed a screenshot.
  */
-export async function buildDeviceGroup(device, layerId, left, top, width, height, rotation) {
+export async function buildDeviceGroup(device, layerId, left, top, width, height, rotation, deviceId, variantId, resolvedSource) {
   const fabric = window.fabric;
   if (!fabric) return null;
 
   const items = [];
   const isFrameless = device.frameless;
 
-  // Resolve real device geometry from the inline registry instead of
-  // the hardcoded 480×960 aspect ratio. This ensures device frames
-  // match real per-device dimensions (width/height/cornerRadius/screenInset).
-  const geo = resolveDeviceGeometry(device.id || 'phone');
+  // Resolve real device geometry from the actual server-backed catalog
+  // (previously a 4-entry hardcoded stub, keyed off a `device.id` field that
+  // DeviceLayerStyle doesn't even have -- so this always silently fell back
+  // to a generic "phone" stub regardless of the project's real device).
+  const geo = resolveDeviceGeometry(deviceId || 'phone', mockupDevicesCatalog, variantId);
   const devW = geo.width;
   const devH = geo.height;
   const devCorner = geo.cornerRadius ?? 36;
@@ -393,9 +598,12 @@ export async function buildDeviceGroup(device, layerId, left, top, width, height
     items.push(bezel);
   }
 
-  // Screenshot image
-  if (device.sourceId && mockupId) {
-    const imgUrl = `/api/mockups/${mockupId}/file?p=sources/${device.sourceId}.png`;
+  // Screenshot image -- resolvedSource.file is the real project-relative path
+  // (e.g. "captures/1.png"), matching how render.ts resolves it server-side;
+  // previously this guessed a `sources/<id>.png` path that didn't match how
+  // sources are actually stored (e.g. live-capture sources live under captures/).
+  if (resolvedSource?.file && mockupId) {
+    const imgUrl = `/api/mockups/${mockupId}/file?p=${encodeURIComponent(resolvedSource.file)}`;
     const screen = await loadFabricImageAsync(imgUrl);
     if (screen) {
       const sLeft = isFrameless ? 0 : (screenInset?.left ?? 30);
@@ -412,6 +620,26 @@ export async function buildDeviceGroup(device, layerId, left, top, width, height
       });
       screen.scaleX = sWidth / screen.width;
       screen.scaleY = sHeight / screen.height;
+      // Round the screenshot's corners to match the device bezel's screen cutout --
+      // the editor previously scaled the image into the inset with no clipping at
+      // all, so screenshots visibly overflowed the rounded corners (a real fidelity
+      // gap vs. the server-rendered export, which already clips via CSS clip-path).
+      // clipPath geometry is defined in the object's own unscaled local space and
+      // centered on it, so it must be sized to the image's natural (pre-scale)
+      // width/height with the corner radius scaled back up to compensate.
+      // Matches src/render/shared.ts's deviceMarkup(): same cornerRadius, no separate
+      // "screen" radius exists in the device registry.
+      const screenCorner = isFrameless ? 0 : devCorner;
+      if (screenCorner > 0) {
+        screen.clipPath = new fabric.Rect({
+          width: screen.width,
+          height: screen.height,
+          rx: screenCorner / screen.scaleX,
+          ry: screenCorner / screen.scaleY,
+          originX: 'center',
+          originY: 'center',
+        });
+      }
       items.push(screen);
     }
   } else {
@@ -438,6 +666,8 @@ export async function buildDeviceGroup(device, layerId, left, top, width, height
   const group = new fabric.Group(items, {
     left,
     top,
+    originX: 'left',
+    originY: 'top',
     angle: rotation,
     name: layerId,
     layerId,
@@ -671,8 +901,9 @@ export function commitMoveableTransformToModel(col, layerId, el) {
       const ast = col.style.assetLayers[idx];
       ast.widthPct = Math.round((relWidth / 1080) * 100);
       ast.heightPct = Math.round((relHeight / 1920) * 100);
-      ast.xPct = Math.round(((relLeft + relWidth / 2) / 1080) * 100);
-      ast.yPct = Math.round(((relTop + relHeight / 2) / 1920) * 100);
+      // Top-left anchored -- see the matching note in loadColumnIntoFabric's asset loop.
+      ast.xPct = Math.round((relLeft / 1080) * 100);
+      ast.yPct = Math.round((relTop / 1920) * 100);
     }
   }
 
@@ -710,8 +941,9 @@ export function renderTransformGizmoOverlay(frameEl, col, zoomRatio) {
     if (ast) {
       const w = (ast.widthPct / 100) * 1080;
       const h = ast.heightPct ? (ast.heightPct / 100) * 1920 : w * 1.4;
-      const left = (ast.xPct / 100) * 1080 - w / 2;
-      const top = (ast.yPct / 100) * 1920 - h / 2;
+      // Top-left anchored -- see the matching note in loadColumnIntoFabric's asset loop.
+      const left = (ast.xPct / 100) * 1080;
+      const top = (ast.yPct / 100) * 1920;
       box = { left, top, width: w, height: h, rotation: ast.rotation || 0 };
     }
   }

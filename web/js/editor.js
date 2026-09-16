@@ -10,7 +10,8 @@ import {
   mockupProject,
   setMockupProject,
   saveCurrentMockupProject,
-  mockupFabricCanvas
+  mockupFabricCanvas,
+  selectedPagePair
 } from './state.js';
 import { escapeHtml, api, uploadFile, showAlert, showToast } from './utils.js';
 import { loadColumnIntoFabric, renderMockupCanvas } from './canvas.js';
@@ -54,6 +55,17 @@ export function buildScreenLayersModel(column) {
       zIndex: style.deviceOne.zIndex ?? 10,
     });
   }
+  (style.extraDevices || []).forEach((dev, idx) => {
+    layers.push({
+      id: `extra:${idx}`,
+      type: "device",
+      icon: "📱",
+      name: dev.customName || `Device Frame ${idx + 3}`,
+      visible: dev.visible !== false,
+      locked: !!dev.locked,
+      zIndex: dev.zIndex ?? (8 - idx),
+    });
+  });
   if (style.deviceTwo) {
     layers.push({
       id: "deviceTwo",
@@ -220,17 +232,77 @@ export function renderMockupLayersPanel(column) {
   attachLayerDragAndDrop(container, column);
 }
 
+/** Resolves any device layer ("deviceOne" | "deviceTwo" | "extra:<idx>") to its
+ *  DeviceLayerStyle object -- mirrors src/mockup/project.ts's getDeviceLayer(),
+ *  the one place that knows how to reach a device regardless of which slot
+ *  it lives in, so callers don't hand-enumerate deviceOne/deviceTwo/extraDevices. */
+export function resolveDeviceLayer(style, layerId) {
+  if (layerId === "deviceOne") return style.deviceOne;
+  if (layerId === "deviceTwo") return style.deviceTwo;
+  const m = /^extra:(\d+)$/.exec(layerId);
+  if (m) return style.extraDevices?.[Number(m[1])];
+  return undefined;
+}
+
+// Two-page device linking (client mirror of src/mockup/project.ts's
+// linkDeviceLayers/unlinkDeviceLayer/syncLinkedDeviceLayer) -- editing a
+// linked device's transform on either page propagates to its counterpart,
+// for compositions intentionally split/continued across a page boundary.
+
+function findPage(project, pageId) {
+  return project?.columns?.find((c) => c.id === pageId);
+}
+
+export function linkDeviceLayers(project, pageAId, layerAKey, pageBId, layerBKey) {
+  const pageA = findPage(project, pageAId);
+  const pageB = findPage(project, pageBId);
+  const layerA = pageA && resolveDeviceLayer(pageA.style, layerAKey);
+  const layerB = pageB && resolveDeviceLayer(pageB.style, layerBKey);
+  if (!layerA || !layerB) return false;
+  layerA.linkedTo = { pageId: pageBId, layerKey: layerBKey };
+  layerB.linkedTo = { pageId: pageAId, layerKey: layerAKey };
+  return true;
+}
+
+export function unlinkDeviceLayer(project, pageId, layerKey) {
+  const page = findPage(project, pageId);
+  const layer = page && resolveDeviceLayer(page.style, layerKey);
+  if (!layer?.linkedTo) return;
+  const partnerPage = findPage(project, layer.linkedTo.pageId);
+  const partnerLayer = partnerPage && resolveDeviceLayer(partnerPage.style, layer.linkedTo.layerKey);
+  if (partnerLayer) partnerLayer.linkedTo = undefined;
+  layer.linkedTo = undefined;
+}
+
+/** Call after committing a transform change to a device layer -- if it's
+ *  linked, copies its transform onto the linked counterpart. No-op if unlinked. */
+export function syncLinkedDeviceLayer(project, pageId, layerKey) {
+  const page = findPage(project, pageId);
+  const layer = page && resolveDeviceLayer(page.style, layerKey);
+  if (!layer?.linkedTo) return;
+  const partnerPage = findPage(project, layer.linkedTo.pageId);
+  const partnerLayer = partnerPage && resolveDeviceLayer(partnerPage.style, layer.linkedTo.layerKey);
+  if (!partnerLayer) return;
+  partnerLayer.size = layer.size;
+  partnerLayer.x = layer.x;
+  partnerLayer.y = layer.y;
+  partnerLayer.rotation = layer.rotation;
+  partnerLayer.brightness = layer.brightness;
+  partnerLayer.frameless = layer.frameless;
+}
+
 export function setCustomLayerName(column, layerId, name) {
   const style = getSelectedCellStyle() || column.style;
   if (!style) return;
   if (layerId === "title" && style.title) style.title.customName = name;
   else if (layerId === "subtitle" && style.subtitle) style.subtitle.customName = name;
-  else if (layerId === "deviceOne" && style.deviceOne) style.deviceOne.customName = name;
-  else if (layerId === "deviceTwo" && style.deviceTwo) style.deviceTwo.customName = name;
   else if (layerId === "background" && style.background) style.background.customName = name;
   else if (layerId.startsWith("asset:")) {
     const idx = parseInt(layerId.split(":")[1], 10);
     if (style.assetLayers?.[idx]) style.assetLayers[idx].customName = name;
+  } else {
+    const dev = resolveDeviceLayer(style, layerId);
+    if (dev) dev.customName = name;
   }
 }
 
@@ -239,12 +311,13 @@ export function toggleLayerVisibilityInModel(column, layerId) {
   if (!style) return;
   if (layerId === "title" && style.title) style.title.visible = style.title.visible === false;
   else if (layerId === "subtitle" && style.subtitle) style.subtitle.visible = style.subtitle.visible === false;
-  else if (layerId === "deviceOne" && style.deviceOne) style.deviceOne.visible = style.deviceOne.visible === false;
-  else if (layerId === "deviceTwo" && style.deviceTwo) style.deviceTwo.visible = style.deviceTwo.visible === false;
   else if (layerId === "background" && style.background) style.background.visible = style.background.visible === false;
   else if (layerId.startsWith("asset:")) {
     const idx = parseInt(layerId.split(":")[1], 10);
     if (style.assetLayers?.[idx]) style.assetLayers[idx].visible = style.assetLayers[idx].visible === false;
+  } else {
+    const dev = resolveDeviceLayer(style, layerId);
+    if (dev) dev.visible = dev.visible === false;
   }
 }
 
@@ -253,12 +326,13 @@ export function toggleLayerLockInModel(column, layerId) {
   if (!style) return;
   if (layerId === "title" && style.title) style.title.locked = !style.title.locked;
   else if (layerId === "subtitle" && style.subtitle) style.subtitle.locked = !style.subtitle.locked;
-  else if (layerId === "deviceOne" && style.deviceOne) style.deviceOne.locked = !style.deviceOne.locked;
-  else if (layerId === "deviceTwo" && style.deviceTwo) style.deviceTwo.locked = !style.deviceTwo.locked;
   else if (layerId === "background" && style.background) style.background.locked = !style.background.locked;
   else if (layerId.startsWith("asset:")) {
     const idx = parseInt(layerId.split(":")[1], 10);
     if (style.assetLayers?.[idx]) style.assetLayers[idx].locked = !style.assetLayers[idx].locked;
+  } else {
+    const dev = resolveDeviceLayer(style, layerId);
+    if (dev) dev.locked = !dev.locked;
   }
 }
 
@@ -331,12 +405,13 @@ export function setLayerZIndex(column, layerId, zIndex) {
   if (!style) return;
   if (layerId === "title" && style.title) style.title.zIndex = zIndex;
   else if (layerId === "subtitle" && style.subtitle) style.subtitle.zIndex = zIndex;
-  else if (layerId === "deviceOne" && style.deviceOne) style.deviceOne.zIndex = zIndex;
-  else if (layerId === "deviceTwo" && style.deviceTwo) style.deviceTwo.zIndex = zIndex;
   else if (layerId === "background" && style.background) style.background.zIndex = zIndex;
   else if (layerId.startsWith("asset:")) {
     const idx = parseInt(layerId.split(":")[1], 10);
     if (style.assetLayers?.[idx]) style.assetLayers[idx].zIndex = zIndex;
+  } else {
+    const dev = resolveDeviceLayer(style, layerId);
+    if (dev) dev.zIndex = zIndex;
   }
 }
 
@@ -464,31 +539,45 @@ export function syncSection2Inputs(col, layerId) {
     populateBgValueSelect(style.background.type || "gradient", style.background.value);
   }
 
+  // Device Geometry panel edits whichever device layer is actually selected
+  // (deviceOne/deviceTwo/extra:N), not always deviceOne -- falls back to
+  // deviceOne when the selection isn't a device (e.g. Text tab active).
+  const activeDevice = resolveDeviceLayer(style, lid) || style.deviceOne;
+
+  const sourceEl = document.getElementById("mk-source");
+  if (sourceEl && activeDevice) {
+    const sources = mockupProject?.sources || [];
+    sourceEl.innerHTML = sources.map((s) => `<option value="${s.id}">${escapeHtml(s.name)}</option>`).join("");
+    if (activeDevice.sourceId) sourceEl.value = activeDevice.sourceId;
+  }
+
   const d1SizeEl = document.getElementById("mk-d1-size");
   const d1SizeValEl = document.getElementById("mk-d1-size-val");
-  if (d1SizeEl && d1SizeValEl && style.deviceOne) {
-    d1SizeEl.value = style.deviceOne.size ?? 90;
-    d1SizeValEl.textContent = style.deviceOne.size ?? 90;
+  if (d1SizeEl && d1SizeValEl && activeDevice) {
+    d1SizeEl.value = activeDevice.size ?? 90;
+    d1SizeValEl.textContent = activeDevice.size ?? 90;
   }
 
   const d1BrightnessEl = document.getElementById("mk-d1-brightness");
   const d1BrightnessValEl = document.getElementById("mk-d1-brightness-val");
-  if (d1BrightnessEl && d1BrightnessValEl && style.deviceOne) {
-    d1BrightnessEl.value = style.deviceOne.brightness ?? 100;
-    d1BrightnessValEl.textContent = style.deviceOne.brightness ?? 100;
+  if (d1BrightnessEl && d1BrightnessValEl && activeDevice) {
+    d1BrightnessEl.value = activeDevice.brightness ?? 100;
+    d1BrightnessValEl.textContent = activeDevice.brightness ?? 100;
   }
 
   const d1FramelessEl = document.getElementById("mk-d1-frameless");
-  if (d1FramelessEl && style.deviceOne) {
-    d1FramelessEl.checked = !!style.deviceOne.frameless;
+  if (d1FramelessEl && activeDevice) {
+    d1FramelessEl.checked = !!activeDevice.frameless;
   }
 
   renderMkDecorations(style.decorations || []);
   renderMkAssetLayers(style.assetLayers || []);
+  syncTransformPanelInputs(style, lid);
 
   const badge = document.getElementById("mockup-active-layer-badge");
   if (badge) {
-    badge.textContent = lid === "title" ? "Title Text" : lid === "subtitle" ? "Subtitle Text" : lid === "deviceOne" ? "Device Frame 1" : lid === "deviceTwo" ? "Device Frame 2" : lid?.startsWith("asset:") ? "Asset Layer" : lid === "background" ? "Background" : "Screen";
+    const m = lid && /^extra:(\d+)$/.exec(lid);
+    badge.textContent = lid === "title" ? "Title Text" : lid === "subtitle" ? "Subtitle Text" : lid === "deviceOne" ? "Device Frame 1" : lid === "deviceTwo" ? "Device Frame 2" : m ? `Device Frame ${Number(m[1]) + 3}` : lid?.startsWith("asset:") ? "Asset Layer" : lid === "background" ? "Background" : "Page";
   }
 }
 
@@ -513,7 +602,10 @@ export function setupInspectorEvents() {
       const key = `${selectedCell.deviceRowId}:${selectedCell.columnId}`;
       if (!mockupProject.cells) mockupProject.cells = {};
       if (cellOverrideEl.checked) {
-        mockupProject.cells[key] = { ...selectedColumn.style };
+        // Deep clone -- a shallow spread aliases nested sub-objects (deviceOne, title, ...)
+        // with the base column style, so editing the "override" would silently mutate
+        // every other device row's style too.
+        mockupProject.cells[key] = JSON.parse(JSON.stringify(selectedColumn.style));
       } else {
         delete mockupProject.cells[key];
       }
@@ -599,15 +691,31 @@ export function setupInspectorEvents() {
     };
   }
 
-  // Device geometry sliders
+  // Screenshot source mapping -- which uploaded source this device shows.
+  const sourceSelectEl = document.getElementById("mk-source");
+  if (sourceSelectEl) {
+    sourceSelectEl.onchange = () => {
+      const style = getSelectedCellStyle() || selectedColumn?.style;
+      const dev = style && (resolveDeviceLayer(style, selectedLayerId) || style.deviceOne);
+      if (!dev) return;
+      dev.sourceId = sourceSelectEl.value || undefined;
+      setMockupDirty(true);
+      loadColumnIntoFabric(selectedColumn);
+    };
+  }
+
+  // Device geometry sliders -- edit whichever device layer is selected
+  // (deviceOne/deviceTwo/extra:N), falling back to deviceOne otherwise.
   const d1Size = document.getElementById("mk-d1-size");
   const d1SizeVal = document.getElementById("mk-d1-size-val");
   if (d1Size) {
     d1Size.oninput = () => {
       const style = getSelectedCellStyle() || selectedColumn?.style;
-      if (!style?.deviceOne) return;
-      style.deviceOne.size = parseInt(d1Size.value, 10);
+      const dev = style && (resolveDeviceLayer(style, selectedLayerId) || style.deviceOne);
+      if (!dev) return;
+      dev.size = parseInt(d1Size.value, 10);
       if (d1SizeVal) d1SizeVal.textContent = d1Size.value;
+      if (selectedColumn) syncLinkedDeviceLayer(mockupProject, selectedColumn.id, selectedLayerId);
       setMockupDirty(true);
       loadColumnIntoFabric(selectedColumn);
     };
@@ -618,9 +726,11 @@ export function setupInspectorEvents() {
   if (d1Brightness) {
     d1Brightness.oninput = () => {
       const style = getSelectedCellStyle() || selectedColumn?.style;
-      if (!style?.deviceOne) return;
-      style.deviceOne.brightness = parseInt(d1Brightness.value, 10);
+      const dev = style && (resolveDeviceLayer(style, selectedLayerId) || style.deviceOne);
+      if (!dev) return;
+      dev.brightness = parseInt(d1Brightness.value, 10);
       if (d1BrightnessVal) d1BrightnessVal.textContent = d1Brightness.value;
+      if (selectedColumn) syncLinkedDeviceLayer(mockupProject, selectedColumn.id, selectedLayerId);
       setMockupDirty(true);
       loadColumnIntoFabric(selectedColumn);
     };
@@ -630,8 +740,10 @@ export function setupInspectorEvents() {
   if (d1Frameless) {
     d1Frameless.onchange = () => {
       const style = getSelectedCellStyle() || selectedColumn?.style;
-      if (!style?.deviceOne) return;
-      style.deviceOne.frameless = d1Frameless.checked;
+      const dev = style && (resolveDeviceLayer(style, selectedLayerId) || style.deviceOne);
+      if (!dev) return;
+      dev.frameless = d1Frameless.checked;
+      if (selectedColumn) syncLinkedDeviceLayer(mockupProject, selectedColumn.id, selectedLayerId);
       setMockupDirty(true);
       loadColumnIntoFabric(selectedColumn);
     };
@@ -643,18 +755,42 @@ export function setupInspectorEvents() {
   const sendBwd = document.getElementById("mk-layer-send-bwd");
   const sendBack = document.getElementById("mk-layer-send-back");
 
-  if (bringFront && selectedColumn) {
-    bringFront.onclick = () => { setLayerZIndex(selectedColumn, selectedLayerId, 100); renderMockupLayersPanel(selectedColumn); loadColumnIntoFabric(selectedColumn); };
+  // NOTE: these must NOT gate assignment on `selectedColumn` at setup time --
+  // setupInspectorEvents() runs once at page load, before any project/column is
+  // selected, so `selectedColumn` is always null then and the handler would
+  // never be attached at all. `selectedColumn` is a live import from state.js;
+  // read it fresh inside the click handler instead.
+  if (bringFront) {
+    bringFront.onclick = () => { if (!selectedColumn) return; setLayerZIndex(selectedColumn, selectedLayerId, 100); renderMockupLayersPanel(selectedColumn); loadColumnIntoFabric(selectedColumn); };
   }
-  if (bringFwd && selectedColumn) {
-    bringFwd.onclick = () => { const layers = buildScreenLayersModel(selectedColumn); const cur = layers.find(l => l.id === selectedLayerId); if (cur) setLayerZIndex(selectedColumn, selectedLayerId, (cur.zIndex || 10) + 1); renderMockupLayersPanel(selectedColumn); loadColumnIntoFabric(selectedColumn); };
+  if (bringFwd) {
+    bringFwd.onclick = () => { if (!selectedColumn) return; const layers = buildScreenLayersModel(selectedColumn); const cur = layers.find(l => l.id === selectedLayerId); if (cur) setLayerZIndex(selectedColumn, selectedLayerId, (cur.zIndex || 10) + 1); renderMockupLayersPanel(selectedColumn); loadColumnIntoFabric(selectedColumn); };
   }
-  if (sendBwd && selectedColumn) {
-    sendBwd.onclick = () => { const layers = buildScreenLayersModel(selectedColumn); const cur = layers.find(l => l.id === selectedLayerId); if (cur) setLayerZIndex(selectedColumn, selectedLayerId, Math.max(0, (cur.zIndex || 10) - 1)); renderMockupLayersPanel(selectedColumn); loadColumnIntoFabric(selectedColumn); };
+  if (sendBwd) {
+    sendBwd.onclick = () => { if (!selectedColumn) return; const layers = buildScreenLayersModel(selectedColumn); const cur = layers.find(l => l.id === selectedLayerId); if (cur) setLayerZIndex(selectedColumn, selectedLayerId, Math.max(0, (cur.zIndex || 10) - 1)); renderMockupLayersPanel(selectedColumn); loadColumnIntoFabric(selectedColumn); };
   }
-  if (sendBack && selectedColumn) {
-    sendBack.onclick = () => { setLayerZIndex(selectedColumn, selectedLayerId, 0); renderMockupLayersPanel(selectedColumn); loadColumnIntoFabric(selectedColumn); };
+  if (sendBack) {
+    sendBack.onclick = () => { if (!selectedColumn) return; setLayerZIndex(selectedColumn, selectedLayerId, 0); renderMockupLayersPanel(selectedColumn); loadColumnIntoFabric(selectedColumn); };
   }
+
+  // Transform-panel z-order buttons (Section 2) -- same operations, separate button set.
+  const tBringForward = document.getElementById("mk-bring-forward");
+  const tSendBackward = document.getElementById("mk-send-backward");
+  const tBringFront = document.getElementById("mk-bring-front");
+  const tSendBack = document.getElementById("mk-send-back");
+  if (tBringForward) tBringForward.onclick = () => bringFwd?.onclick();
+  if (tSendBackward) tSendBackward.onclick = () => sendBwd?.onclick();
+  if (tBringFront) tBringFront.onclick = () => bringFront?.onclick();
+  if (tSendBack) tSendBack.onclick = () => sendBack?.onclick();
+
+  // Duplicate / Delete layer (Section 2)
+  const duplicateLayerBtn = document.getElementById("mk-duplicate-layer");
+  if (duplicateLayerBtn) duplicateLayerBtn.onclick = () => duplicateSelectedLayer();
+  const deleteLayerBtn = document.getElementById("mk-delete-layer");
+  if (deleteLayerBtn) deleteLayerBtn.onclick = () => deleteSelectedLayer();
+
+  // Position/Transform numeric fields + align buttons (Section 2, universal across layer types)
+  setupTransformPanelEvents();
 
   // Add Asset Layer button & Add Sticker button
   const addAssetBtn = document.getElementById("mk-add-asset-layer-btn");
@@ -705,6 +841,283 @@ export function setupInspectorEvents() {
         showToast("AI assist error: " + (e.message || e), "error");
       }
     };
+  }
+}
+
+/** Artboard reference (matches CANVAS in src/mockup/render.ts and the Fabric
+ *  canvas dimensions in canvas.js -- the one place both agree). */
+const ARTBOARD_W = 1080;
+const ARTBOARD_H = 1920;
+/** Vertical center anchor a device's y% offset is measured from -- mirrors
+ *  canvas.js's commitMoveableTransformToModel/renderTransformGizmoOverlay
+ *  (deviceOne/extra anchor slightly higher than deviceTwo, matching their
+ *  typical two-device layout roles; extra devices reuse deviceOne's anchor
+ *  since they have no layout-preset role of their own). */
+function deviceCenterYBase(layerId) {
+  return layerId === "deviceTwo" ? 1200 : 1100;
+}
+
+/** Reads any layer's transform as a uniform artboard-px box, converting out
+ *  of whatever unit convention that layer type actually stores (device
+ *  layers: % of their own scaled box; assets: % of the artboard; text:
+ *  absolute px). Returns null for layer types with no editable transform
+ *  (background never has a position; decorations aren't wired to the
+ *  gizmo/transform system yet, matching canvas.js's existing scope). */
+export function getLayerBox(style, layerId) {
+  if (layerId === "title" || layerId === "subtitle") {
+    const t = style[layerId];
+    if (!t) return null;
+    return { x: t.x ?? 54, y: t.y ?? (layerId === "title" ? 80 : 200), width: 972, height: layerId === "title" ? 120 : 80, rotation: t.rotation ?? 0, opacity: 1 };
+  }
+  if (layerId.startsWith("asset:")) {
+    const idx = parseInt(layerId.split(":")[1], 10);
+    const ast = style.assetLayers?.[idx];
+    if (!ast) return null;
+    const width = (ast.widthPct / 100) * ARTBOARD_W;
+    const height = ast.heightPct ? (ast.heightPct / 100) * ARTBOARD_H : width * 1.4;
+    // Top-left anchored, matching src/render/shared.ts's assetLayersMarkup()
+    // (`left:${xPct}%; top:${yPct}%`) -- not centered.
+    return {
+      x: (ast.xPct / 100) * ARTBOARD_W,
+      y: (ast.yPct / 100) * ARTBOARD_H,
+      width, height,
+      rotation: ast.rotation || 0,
+      opacity: ast.opacity ?? 1,
+    };
+  }
+  const dev = resolveDeviceLayer(style, layerId);
+  if (dev) {
+    const width = 480 * (dev.size / 90);
+    const height = 960 * (dev.size / 90);
+    const cx = ARTBOARD_W / 2 + (dev.x / 100) * ARTBOARD_W;
+    const cy = deviceCenterYBase(layerId) + (dev.y / 100) * ARTBOARD_H;
+    return { x: cx - width / 2, y: cy - height / 2, width, height, rotation: dev.rotation || 0, opacity: 1 };
+  }
+  return null;
+}
+
+/** Inverse of getLayerBox() -- writes a uniform artboard-px box back into
+ *  whatever unit convention that layer type stores, mutating the style
+ *  object in place (caller is responsible for persisting/re-rendering). */
+export function setLayerBox(style, layerId, box) {
+  if (layerId === "title" || layerId === "subtitle") {
+    const t = style[layerId];
+    if (!t) return;
+    t.x = Math.round(box.x);
+    t.y = Math.round(box.y);
+    t.rotation = Math.round(box.rotation ?? 0);
+    return;
+  }
+  if (layerId.startsWith("asset:")) {
+    const idx = parseInt(layerId.split(":")[1], 10);
+    const ast = style.assetLayers?.[idx];
+    if (!ast) return;
+    ast.widthPct = Math.round((box.width / ARTBOARD_W) * 100);
+    ast.heightPct = Math.round((box.height / ARTBOARD_H) * 100);
+    ast.xPct = Math.round((box.x / ARTBOARD_W) * 100);
+    ast.yPct = Math.round((box.y / ARTBOARD_H) * 100);
+    ast.rotation = Math.round(box.rotation ?? 0);
+    if (box.opacity !== undefined) ast.opacity = Math.max(0, Math.min(1, box.opacity));
+    return;
+  }
+  const dev = resolveDeviceLayer(style, layerId);
+  if (dev) {
+    const cx = box.x + box.width / 2;
+    const cy = box.y + box.height / 2;
+    dev.size = Math.round((box.width / 480) * 90);
+    dev.x = Math.round(((cx - ARTBOARD_W / 2) / ARTBOARD_W) * 100);
+    dev.y = Math.round(((cy - deviceCenterYBase(layerId)) / ARTBOARD_H) * 100);
+    dev.rotation = Math.round(box.rotation ?? 0);
+  }
+}
+
+/** Duplicates the selected layer within its own kind (assets get a sibling
+ *  entry; device layers get appended to extraDevices, since deviceOne is
+ *  mandatory and deviceTwo is layout-preset-controlled). Title/subtitle/
+ *  background are singletons per screen and aren't duplicable. */
+export function duplicateSelectedLayer() {
+  if (!selectedColumn) return;
+  const style = getSelectedCellStyle() || selectedColumn.style;
+  if (!style) return;
+  if (selectedLayerId.startsWith("asset:")) {
+    const idx = parseInt(selectedLayerId.split(":")[1], 10);
+    const ast = style.assetLayers?.[idx];
+    if (!ast) return;
+    const clone = JSON.parse(JSON.stringify(ast));
+    clone.id = `asset_${Date.now()}`;
+    clone.customName = (ast.customName || "Asset") + " Copy";
+    clone.xPct = Math.min(95, (ast.xPct ?? 50) + 4);
+    clone.yPct = Math.min(95, (ast.yPct ?? 50) + 4);
+    style.assetLayers.splice(idx + 1, 0, clone);
+    setMockupDirty(true);
+    setSelectedLayerId(`asset:${idx + 1}`);
+  } else {
+    const dev = resolveDeviceLayer(style, selectedLayerId);
+    if (!dev) { showToast("This layer can't be duplicated.", "error"); return; }
+    const clone = JSON.parse(JSON.stringify(dev));
+    clone.customName = (dev.customName || "Device") + " Copy";
+    clone.x = (dev.x || 0) + 6;
+    clone.y = (dev.y || 0) + 6;
+    if (!style.extraDevices) style.extraDevices = [];
+    style.extraDevices.push(clone);
+    setMockupDirty(true);
+    setSelectedLayerId(`extra:${style.extraDevices.length - 1}`);
+  }
+  renderMockupLayersPanel(selectedColumn);
+  syncSection2Inputs(selectedColumn);
+  loadColumnIntoFabric(selectedColumn);
+}
+
+/** Deletes the selected layer, when its kind supports removal (assets and
+ *  extra device layers; deviceOne/deviceTwo/title/subtitle/background are
+ *  structural singletons the schema always expects to exist). */
+export function deleteSelectedLayer() {
+  if (!selectedColumn) return;
+  const style = getSelectedCellStyle() || selectedColumn.style;
+  if (!style) return;
+  if (selectedLayerId.startsWith("asset:")) {
+    const idx = parseInt(selectedLayerId.split(":")[1], 10);
+    if (!style.assetLayers?.[idx]) return;
+    style.assetLayers.splice(idx, 1);
+  } else {
+    const m = /^extra:(\d+)$/.exec(selectedLayerId);
+    if (!m || !style.extraDevices?.[Number(m[1])]) {
+      showToast("This layer can't be deleted.", "error");
+      return;
+    }
+    style.extraDevices.splice(Number(m[1]), 1);
+  }
+  setMockupDirty(true);
+  setSelectedLayerId("deviceOne");
+  renderMockupLayersPanel(selectedColumn);
+  syncSection2Inputs(selectedColumn);
+  loadColumnIntoFabric(selectedColumn);
+}
+
+/** Wires the universal Position & Transform card (Section 2): numeric
+ *  X/Y/W/H/rotation/opacity fields, flip checkboxes (asset layers only),
+ *  and align-to-artboard buttons. Fields read/write via getLayerBox/
+ *  setLayerBox so one code path covers every transformable layer kind. */
+export function setupTransformPanelEvents() {
+  const $id = (id) => document.getElementById(id);
+  const fields = ["mk-pos-x", "mk-pos-y", "mk-pos-w", "mk-pos-h", "mk-pos-rot", "mk-pos-opacity"];
+
+  function currentBox() {
+    if (!selectedColumn) return null;
+    const style = getSelectedCellStyle() || selectedColumn.style;
+    if (!style) return null;
+    return { style, box: getLayerBox(style, selectedLayerId) };
+  }
+
+  function commit(box) {
+    const ctx = currentBox();
+    if (!ctx || !ctx.box) return;
+    setLayerBox(ctx.style, selectedLayerId, { ...ctx.box, ...box });
+    if (selectedColumn) syncLinkedDeviceLayer(mockupProject, selectedColumn.id, selectedLayerId);
+    setMockupDirty(true);
+    loadColumnIntoFabric(selectedColumn);
+  }
+
+  for (const id of fields) {
+    const el = $id(id);
+    if (!el) continue;
+    el.oninput = () => {
+      const v = Number(el.value);
+      if (Number.isNaN(v)) return;
+      if (id === "mk-pos-x") commit({ x: v });
+      else if (id === "mk-pos-y") commit({ y: v });
+      else if (id === "mk-pos-w") commit({ width: v });
+      else if (id === "mk-pos-h") commit({ height: v });
+      else if (id === "mk-pos-rot") commit({ rotation: v });
+      else if (id === "mk-pos-opacity") commit({ opacity: v / 100 });
+    };
+  }
+
+  const flipH = $id("mk-pos-flip-h");
+  const flipV = $id("mk-pos-flip-v");
+  if (flipH) flipH.onchange = () => { const ctx = currentBox(); const idx = selectedLayerId.startsWith("asset:") ? parseInt(selectedLayerId.split(":")[1], 10) : -1; const ast = ctx?.style.assetLayers?.[idx]; if (!ast) return; ast.flipH = flipH.checked; setMockupDirty(true); loadColumnIntoFabric(selectedColumn); };
+  if (flipV) flipV.onchange = () => { const ctx = currentBox(); const idx = selectedLayerId.startsWith("asset:") ? parseInt(selectedLayerId.split(":")[1], 10) : -1; const ast = ctx?.style.assetLayers?.[idx]; if (!ast) return; ast.flipV = flipV.checked; setMockupDirty(true); loadColumnIntoFabric(selectedColumn); };
+
+  const align = (fn) => () => { const ctx = currentBox(); if (!ctx || !ctx.box) return; commit(fn(ctx.box)); syncSection2Inputs(selectedColumn); };
+  if ($id("mk-align-left")) $id("mk-align-left").onclick = align((b) => ({ x: 0 }));
+  if ($id("mk-align-center")) $id("mk-align-center").onclick = align((b) => ({ x: (ARTBOARD_W - b.width) / 2 }));
+  if ($id("mk-align-right")) $id("mk-align-right").onclick = align((b) => ({ x: ARTBOARD_W - b.width }));
+  if ($id("mk-align-top")) $id("mk-align-top").onclick = align((b) => ({ y: 0 }));
+  if ($id("mk-align-middle")) $id("mk-align-middle").onclick = align((b) => ({ y: (ARTBOARD_H - b.height) / 2 }));
+  if ($id("mk-align-bottom")) $id("mk-align-bottom").onclick = align((b) => ({ y: ARTBOARD_H - b.height }));
+
+  const addDeviceLayerBtn = $id("mk-add-device-layer-btn");
+  if (addDeviceLayerBtn) {
+    addDeviceLayerBtn.onclick = () => {
+      if (!selectedColumn) return;
+      const style = getSelectedCellStyle() || selectedColumn.style;
+      if (!style) return;
+      if (!style.extraDevices) style.extraDevices = [];
+      style.extraDevices.push({ size: 70, x: 0, y: 0, rotation: 0, brightness: 100, frameless: false, customName: `Device Frame ${style.extraDevices.length + 3}` });
+      setMockupDirty(true);
+      setSelectedLayerId(`extra:${style.extraDevices.length - 1}`);
+      renderMockupLayersPanel(selectedColumn);
+      syncSection2Inputs(selectedColumn);
+      loadColumnIntoFabric(selectedColumn);
+    };
+  }
+
+  const linkPageBtn = $id("mk-link-paired-page");
+  if (linkPageBtn) {
+    linkPageBtn.onclick = () => {
+      if (!selectedColumn || selectedPagePair.length !== 2) return;
+      const style = getSelectedCellStyle() || selectedColumn.style;
+      const dev = style && resolveDeviceLayer(style, selectedLayerId);
+      if (!dev) return;
+      const otherPageId = selectedPagePair.find((id) => id !== selectedColumn.id);
+      if (!otherPageId) return;
+      if (dev.linkedTo) {
+        unlinkDeviceLayer(mockupProject, selectedColumn.id, selectedLayerId);
+        showToast("Unlinked.", "info");
+      } else {
+        const ok = linkDeviceLayers(mockupProject, selectedColumn.id, selectedLayerId, otherPageId, selectedLayerId);
+        showToast(ok ? "Linked -- editing this device now syncs to the paired page." : "The paired page doesn't have that device layer.", ok ? "success" : "error");
+      }
+      setMockupDirty(true);
+      syncSection2Inputs(selectedColumn);
+    };
+  }
+}
+
+/** Refreshes the Section 2 Transform panel's fields to reflect the
+ *  currently selected layer -- called from syncSection2Inputs(). */
+function syncTransformPanelInputs(style, layerId) {
+  const box = getLayerBox(style, layerId);
+  const fieldset = document.getElementById("mk-section-transform");
+  if (fieldset) fieldset.style.opacity = box ? "1" : "0.45";
+  const set = (id, v) => { const el = document.getElementById(id); if (el && document.activeElement !== el) el.value = v; };
+  if (!box) return;
+  set("mk-pos-x", Math.round(box.x));
+  set("mk-pos-y", Math.round(box.y));
+  set("mk-pos-w", Math.round(box.width));
+  set("mk-pos-h", Math.round(box.height));
+  set("mk-pos-rot", Math.round(box.rotation));
+  set("mk-pos-opacity", Math.round((box.opacity ?? 1) * 100));
+  if (layerId.startsWith("asset:")) {
+    const idx = parseInt(layerId.split(":")[1], 10);
+    const ast = style.assetLayers?.[idx];
+    const flipH = document.getElementById("mk-pos-flip-h");
+    const flipV = document.getElementById("mk-pos-flip-v");
+    if (flipH) flipH.checked = !!ast?.flipH;
+    if (flipV) flipV.checked = !!ast?.flipV;
+  }
+
+  // Two-page device link row -- only for a device layer while exactly two pages are paired.
+  const linkRow = document.getElementById("mk-page-link-row");
+  const linkBtn = document.getElementById("mk-link-paired-page");
+  if (linkRow && linkBtn) {
+    const dev = resolveDeviceLayer(style, layerId);
+    const showLink = !!dev && selectedColumn && selectedPagePair.length === 2 && selectedPagePair.includes(selectedColumn.id);
+    linkRow.style.display = showLink ? "block" : "none";
+    if (showLink) {
+      linkBtn.textContent = dev.linkedTo ? "🔗 Unlink from Paired Page" : "🔗 Link to Paired Page";
+      linkBtn.className = dev.linkedTo ? "primary small" : "secondary small";
+    }
   }
 }
 

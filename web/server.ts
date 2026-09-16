@@ -88,6 +88,7 @@ import {
   mockupFile,
   saveMockupProject,
   setCellOverride,
+  setCellOverridePath,
   updateColumnStyle,
   type ColumnStyle,
   type MockupDeviceRow,
@@ -1109,7 +1110,15 @@ export async function startWebServer(options: { port?: number; host?: string; op
         const colId = decodeURIComponent(m[3]);
         const body = await readJsonBody(req);
         const project = loadMockupProject(id);
-        setCellOverride(project, rowId, colId, body.style || null);
+        if (body.path !== undefined) {
+          // Sparse per-field override: { path: "deviceOne.rotation", value: 12 }
+          setCellOverridePath(project, rowId, colId, body.path, body.value);
+        } else if (body.paths && typeof body.paths === "object") {
+          for (const [path, value] of Object.entries(body.paths)) setCellOverridePath(project, rowId, colId, path, value);
+        } else {
+          // Legacy whole-sub-object override, e.g. { override: { deviceOne: {...} } } or { override: null } to clear.
+          setCellOverride(project, rowId, colId, body.override ?? body.style ?? null);
+        }
         saveMockupProject(project);
         sendJson(res, 200, { project });
         return;

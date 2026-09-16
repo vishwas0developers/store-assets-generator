@@ -40,9 +40,9 @@ import {
 } from './editor.js';
 import {
   renderMockupMatrix,
-  selectMockupScreen,
-  deleteMockupScreen,
-  addMockupScreen,
+  selectMockupPage,
+  deleteMockupPage,
+  addMockupPage,
   selectedCell,
   defaultColumnStyle
 } from './matrix.js';
@@ -151,9 +151,9 @@ window.toggleLayerLockInModel = toggleLayerLockInModel;
 window.attachLayerDragAndDrop = attachLayerDragAndDrop;
 window.reorderLayersInModel = reorderLayersInModel;
 window.setLayerZIndex = setLayerZIndex;
-window.selectMockupScreen = selectMockupScreen;
-window.deleteMockupScreen = deleteMockupScreen;
-window.addMockupScreen = addMockupScreen;
+window.selectMockupPage = selectMockupPage;
+window.deleteMockupPage = deleteMockupPage;
+window.addMockupPage = addMockupPage;
 window.generateStorePackage = generateStorePackage;
 window.loadCaptureTab = loadCaptureTab;
 window.connectLiveBrowser = connectLiveBrowser;
@@ -198,7 +198,7 @@ function setupMockupToolbar() {
 
   if ($id("mockup-undo-btn")) $id("mockup-undo-btn").onclick = undoMockupState;
   if ($id("mockup-redo-btn")) $id("mockup-redo-btn").onclick = redoMockupState;
-  if ($id("mockup-add-column")) $id("mockup-add-column").onclick = addMockupScreen;
+  if ($id("mockup-add-page")) $id("mockup-add-page").onclick = addMockupPage;
 
   if ($id("mockup-zoom-fit")) $id("mockup-zoom-fit").onclick = () => centerArtboardInViewport();
   if ($id("mockup-zoom-50")) $id("mockup-zoom-50").onclick = () => setStageZoomAndCenter(0.5);
@@ -252,7 +252,7 @@ function setupMockupToolbar() {
       if (!ok) return;
       const col = mockupProject.columns.find((c) => c.id === selectedCell.columnId);
       if (!col) return;
-      col.style = defaultColumnStyle("Screen");
+      col.style = defaultColumnStyle("Page");
       if (mockupProject.cells) delete mockupProject.cells[`${selectedCell.deviceRowId}:${selectedCell.columnId}`];
       await saveCurrentMockupProject();
       pushMockupHistory();
@@ -298,12 +298,12 @@ function setupMockupToolbar() {
       try {
         const colId = selectedCell ? selectedCell.columnId : (mockupProject.columns[0]?.id || "");
         const res = await api(`/api/mockups/${mockupId}/export/single`, { method: "POST", body: { columnId: colId } });
-        await showAlert(`Single Screen exported successfully to:\n${res.path}`);
+        await showAlert(`Page exported successfully to:\n${res.path}`);
       } catch (e) {
-        await showAlert("Single screen export failed: " + e.message);
+        await showAlert("Page export failed: " + e.message);
       } finally {
         btn.disabled = false;
-        btn.textContent = "Export Screen (PNG)";
+        btn.textContent = "Export Page (PNG)";
       }
     };
   }
@@ -434,7 +434,7 @@ function setupMockupToolbar() {
         setMockupProject(updated);
         pushMockupHistory();
         renderMockupMatrix();
-        if (updated.columns?.[0]) selectMockupScreen(updated.columns[0].id);
+        if (updated.columns?.[0]) selectMockupPage(updated.columns[0].id);
         showToast("Template imported.", "success");
       } catch (err) {
         await showAlert("Import failed: " + err.message);

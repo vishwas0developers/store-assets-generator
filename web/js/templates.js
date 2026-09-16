@@ -17,7 +17,7 @@ import {
 } from './state.js';
 import { api, showAlert, showConfirm, showToast } from './utils.js';
 import { renderMockupCanvas } from './canvas.js';
-import { renderMockupMatrix, selectMockupScreen } from './matrix.js';
+import { renderMockupMatrix, selectMockupPage } from './matrix.js';
 
 export let mockupDevicesCatalog = [];
 let mockupLayouts = { presets: [], grouped: [] };
@@ -72,7 +72,7 @@ export async function loadMockupProjectInto(id) {
     renderMockupCanvas();
     renderMockupMatrix();
     if (mockupProject.columns?.length > 0) {
-      selectMockupScreen(mockupProject.columns[0].id);
+      selectMockupPage(mockupProject.columns[0].id);
     }
   } else {
     const table = document.getElementById("mockup-matrix");
@@ -328,7 +328,7 @@ function getClientTemplateScreenHtml(t, screenIdx) {
     bgCss = "radial-gradient(circle at 50% 30%, #1e293b 0%, #0f172a 100%)";
   }
 
-  const title = (t.titles && t.titles[screenIdx]) || `Screen ${screenIdx + 1}`;
+  const title = (t.titles && t.titles[screenIdx]) || `Page ${screenIdx + 1}`;
   const subtitle = (t.subtitles && t.subtitles[screenIdx]) || "";
   const isTitleBelow = (t.layout || "").includes("title-below") || (t.layout || "").includes("caption-below");
   const textColor = t.textColor || "#ffffff";
@@ -579,7 +579,7 @@ export function renderMockupTemplateCards(templates) {
             ? `srcdoc="${escapeHtmlAttr(getClientTemplateScreenHtml(t, screenIdx))}"`
             : `src="/api/mockups/template-screen/${encodeURIComponent(t.id)}/${screenIdx}"`;
           return `
-          <div class="filmstrip-card" data-screen="${screenIdx}" title="${(t.titles && t.titles[screenIdx]) || `Screen ${screenIdx + 1}`}">
+          <div class="filmstrip-card" data-screen="${screenIdx}" title="${(t.titles && t.titles[screenIdx]) || `Page ${screenIdx + 1}`}">
             <iframe ${iframeAttr} loading="lazy" scrolling="no" tabindex="-1"></iframe>
           </div>
         `;
@@ -677,7 +677,7 @@ export function openMockupTemplateDetail(id) {
       ? `srcdoc="${escapeHtmlAttr(getClientTemplateScreenHtml(t, screenIdx))}"`
       : `src="/api/mockups/template-screen/${encodeURIComponent(t.id)}/${screenIdx}"`;
     return `
-    <div class="detail-filmstrip-card" title="${(t.titles && t.titles[screenIdx]) || `Screen ${screenIdx + 1}`}">
+    <div class="detail-filmstrip-card" title="${(t.titles && t.titles[screenIdx]) || `Page ${screenIdx + 1}`}">
       <iframe ${iframeAttr} loading="lazy" scrolling="no" tabindex="-1"></iframe>
     </div>
   `;
@@ -753,7 +753,7 @@ export async function loadMockupTemplateNow(id) {
   }
   renderMockupCanvas();
   renderMockupMatrix();
-  if (updatedProj.columns?.length > 0) selectMockupScreen(updatedProj.columns[0].id);
+  if (updatedProj.columns?.length > 0) selectMockupPage(updatedProj.columns[0].id);
 }
 
 export const applyTemplate = loadMockupTemplateNow;

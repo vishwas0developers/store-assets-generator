@@ -2,16 +2,22 @@ import fs from "fs";
 import path from "path";
 
 /**
- * Studio Mockup tab storage — a devices x columns matrix project, modeled
+ * Studio Mockup tab storage — a devices x pages matrix project, modeled
  * on studio.app-mockup.com's normalized store (verified against its bundle):
  *
- *   - devices[]  = ROWS   (a device/size class the whole project previews at)
- *   - columns[]  = COLUMNS (one logical screen -- content, not a device)
- *   - cells      = optional per (device,column) overrides
+ *   - devices[]  = ROWS  (a device/size class the whole project previews at)
+ *   - columns[]  = PAGES (one logical page -- content, not a device; a page
+ *                  can hold multiple devices/layers -- see MockupPage/
+ *                  ColumnStyle). Field name is still `columns` on the wire
+ *                  and in most of this codebase (see the MockupPage note
+ *                  below) -- "Page" is the preferred term going forward,
+ *                  not "Screen"/"Column"/"Screenshot", which have been used
+ *                  interchangeably and confusingly for this same concept.
+ *   - cells      = optional per (device,page) overrides
  *
- * Editing a column's style applies to that screen across every device row
+ * Editing a page's style applies to that page across every device row
  * by default (reference behaviour: updateDeviceSize(value, column.screenshots)
- * writes every row). A "cell" override lets one row diverge for one column.
+ * writes every row). A "cell" override lets one row diverge for one page.
  *
  * Independent of the Screen Capture and Video tabs -- its own root, its own
  * uploaded source images, no shared state.
@@ -90,6 +96,14 @@ export interface DeviceLayerStyle {
   customName?: string;
   /** Z-index stacking order (higher = on top of other elements) */
   zIndex?: number;
+  /** Two-page pairing: when set, this device's size/x/y/rotation/brightness/
+   *  frameless are kept in sync with the same-named layer on another page --
+   *  editing either side propagates to the other. Used for a device
+   *  composition intentionally split/continued across two pages (e.g. a
+   *  panoramic banner). Additive/optional, same lazy-compat pattern as
+   *  extraDevices -- unset for every existing project until a user links
+   *  two pages together. See syncLinkedDeviceLayer(). */
+  linkedTo?: { pageId: string; layerKey: string };
 }
 
 export interface Decoration {
@@ -136,8 +150,101 @@ export interface ColumnStyle {
   background: MockupBackground;
   deviceOne: DeviceLayerStyle;
   deviceTwo?: DeviceLayerStyle;
+  /** Devices beyond the two preset-driven slots -- free-form, user-added,
+   *  positioned entirely by their own x/y/size/rotation (no presentation-
+   *  recipe offset applied). Lets a screen hold an arbitrary number of
+   *  devices instead of the historical hard cap of two. */
+  extraDevices?: DeviceLayerStyle[];
   decorations: Decoration[];
   assetLayers?: MockupAssetLayer[];
+}
+
+/** A device layer plus a stable key identifying its slot within the column
+ *  style ("deviceOne" | "deviceTwo" | "extra:<index>") -- the one place that
+ *  knows how to iterate all devices on a screen regardless of which slot
+ *  they live in, so callers don't hand-enumerate deviceOne/deviceTwo. */
+export interface DeviceLayerRef {
+  key: string;
+  layer: DeviceLayerStyle;
+}
+
+export function allDeviceLayers(style: ColumnStyle): DeviceLayerRef[] {
+  const refs: DeviceLayerRef[] = [{ key: "deviceOne", layer: style.deviceOne }];
+  if (style.deviceTwo) refs.push({ key: "deviceTwo", layer: style.deviceTwo });
+  (style.extraDevices ?? []).forEach((layer, i) => refs.push({ key: `extra:${i}`, layer }));
+  return refs;
+}
+
+export function getDeviceLayer(style: ColumnStyle, key: string): DeviceLayerStyle | undefined {
+  if (key === "deviceOne") return style.deviceOne;
+  if (key === "deviceTwo") return style.deviceTwo;
+  const m = key.match(/^extra:(\d+)$/);
+  if (m) return style.extraDevices?.[Number(m[1])];
+  return undefined;
+}
+
+export function addExtraDeviceLayer(style: ColumnStyle): DeviceLayerStyle {
+  const layer = defaultDeviceLayerStyle();
+  if (!style.extraDevices) style.extraDevices = [];
+  style.extraDevices.push(layer);
+  return layer;
+}
+
+/** Links two device layers (on possibly-different pages) so editing either
+ *  one's transform propagates to the other -- bidirectional, one partner
+ *  each. Overwrites any prior link either side had (a device can only be
+ *  linked to one counterpart at a time in this v1). */
+export function linkDeviceLayers(
+  project: MockupProject,
+  pageAId: string,
+  layerAKey: string,
+  pageBId: string,
+  layerBKey: string,
+): void {
+  const pageA = project.columns.find((c) => c.id === pageAId);
+  const pageB = project.columns.find((c) => c.id === pageBId);
+  const layerA = pageA && getDeviceLayer(pageA.style, layerAKey);
+  const layerB = pageB && getDeviceLayer(pageB.style, layerBKey);
+  if (!layerA || !layerB) throw new Error("Both linked layers must exist.");
+  layerA.linkedTo = { pageId: pageBId, layerKey: layerBKey };
+  layerB.linkedTo = { pageId: pageAId, layerKey: layerAKey };
+}
+
+export function unlinkDeviceLayer(project: MockupProject, pageId: string, layerKey: string): void {
+  const page = project.columns.find((c) => c.id === pageId);
+  const layer = page && getDeviceLayer(page.style, layerKey);
+  if (!layer?.linkedTo) return;
+  const partnerPage = project.columns.find((c) => c.id === layer.linkedTo!.pageId);
+  const partnerLayer = partnerPage && getDeviceLayer(partnerPage.style, layer.linkedTo!.layerKey);
+  if (partnerLayer) partnerLayer.linkedTo = undefined;
+  layer.linkedTo = undefined;
+}
+
+/** Call after committing a transform change to a device layer -- if it's
+ *  linked, copies its transform fields onto the linked counterpart (on
+ *  whichever page that is) so the two stay in sync. No-op if unlinked. */
+export function syncLinkedDeviceLayer(project: MockupProject, pageId: string, layerKey: string): void {
+  const page = project.columns.find((c) => c.id === pageId);
+  const layer = page && getDeviceLayer(page.style, layerKey);
+  if (!layer?.linkedTo) return;
+  const partnerPage = project.columns.find((c) => c.id === layer.linkedTo!.pageId);
+  const partnerLayer = partnerPage && getDeviceLayer(partnerPage.style, layer.linkedTo!.layerKey);
+  if (!partnerLayer) return;
+  partnerLayer.size = layer.size;
+  partnerLayer.x = layer.x;
+  partnerLayer.y = layer.y;
+  partnerLayer.rotation = layer.rotation;
+  partnerLayer.brightness = layer.brightness;
+  partnerLayer.frameless = layer.frameless;
+}
+
+export function removeDeviceLayer(style: ColumnStyle, key: string): boolean {
+  const m = key.match(/^extra:(\d+)$/);
+  if (!m) return false; // deviceOne/deviceTwo are not removable this way
+  const idx = Number(m[1]);
+  if (!style.extraDevices || idx < 0 || idx >= style.extraDevices.length) return false;
+  style.extraDevices.splice(idx, 1);
+  return true;
 }
 
 export interface EditorObject {
@@ -161,6 +268,17 @@ export interface MockupColumn {
   order: number;
   style: ColumnStyle;
 }
+
+/** Preferred vocabulary going forward: a "Page" (Template -> Page -> Layer),
+ *  not a "Screen" or "Column" -- those names are used interchangeably
+ *  throughout this file/module and the client for the same concept, which
+ *  is exactly the confusion this alias exists to start resolving. The
+ *  underlying field name (`MockupProject.columns`) and `MockupColumn` type
+ *  are NOT renamed yet -- that's a much larger, riskier sweep (400+
+ *  references across server.ts and every client module) deferred until
+ *  the terminology has proven itself at the edges (types, primary function
+ *  names, UI labels) first. New code should prefer `MockupPage`. */
+export type MockupPage = MockupColumn;
 
 export interface MockupProject {
   id: string;
@@ -258,16 +376,63 @@ export function setCellOverride(project: MockupProject, deviceRowId: string, col
   else project.cells[key] = override;
 }
 
+/** Reserved key inside a cell-override object holding sparse per-field
+ *  patches, e.g. `{ "deviceOne.rotation": 12, "title.color": "#fff" }`,
+ *  applied by dotted path onto a clone of the column's base style. This is
+ *  the "Instance Screenshots" pattern (base template + sparse per-instance
+ *  overrides) -- unlike the legacy whole-sub-object override keys below
+ *  (still supported for back-compat), a path patch can change one field of
+ *  deviceOne without resending the rest of deviceOne. */
+const PATCH_KEY = "__paths";
+
+function setPath(obj: any, path: string, value: any): void {
+  const parts = path.split(".");
+  let cur = obj;
+  for (let i = 0; i < parts.length - 1; i++) {
+    const k = parts[i];
+    if (cur[k] == null || typeof cur[k] !== "object") cur[k] = {};
+    cur = cur[k];
+  }
+  cur[parts[parts.length - 1]] = value;
+}
+
+/** Sets (or, with value === undefined, clears) one sparse per-field override
+ *  path for a cell, e.g. setCellOverridePath(p, row, col, "deviceOne.rotation", 12). */
+export function setCellOverridePath(project: MockupProject, deviceRowId: string, columnId: string, path: string, value: unknown): void {
+  const key = cellKey(deviceRowId, columnId);
+  const existing = project.cells[key] ?? {};
+  const paths = { ...((existing as any)[PATCH_KEY] ?? {}) };
+  if (value === undefined) delete paths[path];
+  else paths[path] = value;
+  const nextOverride: any = { ...existing, [PATCH_KEY]: paths };
+  const hasLegacyKeys = Object.keys(nextOverride).some((k) => k !== PATCH_KEY);
+  if (Object.keys(paths).length === 0 && !hasLegacyKeys) delete project.cells[key];
+  else project.cells[key] = nextOverride;
+}
+
+export function clearCellOverridePath(project: MockupProject, deviceRowId: string, columnId: string, path: string): void {
+  setCellOverridePath(project, deviceRowId, columnId, path, undefined);
+}
+
 /** Effective style for one (device row, column) cell = column style with
- *  any cell-level fields shadowing it. Sub-objects (title/background/
- *  deviceOne/etc.) are replaced wholesale by the override when present --
- *  simplest correct semantics for "resize this row's device differently". */
+ *  any cell-level fields shadowing it. Legacy whole-sub-object override
+ *  keys (title/background/deviceOne/etc.) are replaced wholesale, applied
+ *  first; sparse per-field path patches (the reserved `__paths` key) are
+ *  applied on top and can override a single field without resending its
+ *  containing sub-object. */
 export function effectiveCellStyle(project: MockupProject, deviceRowId: string, columnId: string): ColumnStyle {
   const column = project.columns.find((c) => c.id === columnId);
   if (!column) throw new Error(`Column '${columnId}' not found.`);
   const override = project.cells[cellKey(deviceRowId, columnId)];
   if (!override) return column.style;
-  return { ...column.style, ...override };
+  const { [PATCH_KEY]: paths, ...legacy } = override as any;
+  const merged: ColumnStyle = { ...column.style, ...legacy };
+  if (paths) {
+    const cloned: ColumnStyle = JSON.parse(JSON.stringify(merged));
+    for (const [path, value] of Object.entries(paths)) setPath(cloned, path, value);
+    return cloned;
+  }
+  return merged;
 }
 
 /** Adding a device row clones every existing column's style into that row
