@@ -27,7 +27,7 @@ export function setSelectedCell(v) { selectedCell = v; }
 // makes the table wider than the container, that's fine, the container
 // scrolls horizontally (overflow-x:auto) rather than the cells staying
 // small to avoid a scrollbar.
-const MATRIX_CELL_MIN_HEIGHT = 140;
+const MATRIX_CELL_MIN_HEIGHT = 280;
 const MATRIX_CELL_MAX_HEIGHT = 1600; // sanity ceiling only, not a practical limit on normal screens
 // Measured against the real rendered thead (checkbox + "#N", wraps to two
 // lines -> ~49px) and tfoot (delete button row -> ~33px), plus a few px of
@@ -45,13 +45,30 @@ const MATRIX_ROW_OVERHEAD_H = 12; // each body row's own td padding + border-bot
  *  table can never exceed the container's real height and vertically
  *  overflow. Only horizontal scrolling (for extra pages) is ever allowed. */
 function computeCellDims(scrollEl, rowCount) {
-  const availH = scrollEl?.clientHeight || 0;
+  const container = scrollEl?.parentElement || (typeof document !== "undefined" ? document.querySelector(".mockup-matrix-container") : null);
+  const containerH = container?.clientHeight || 440;
+  // If scrollEl.clientHeight is not yet measured (0 or collapsed), fallback to container height budget
+  const availH = Math.max(scrollEl?.clientHeight || 0, containerH - 56, 370);
   const usable = availH - MATRIX_HEADER_ROW_H - MATRIX_FOOTER_ROW_H - rowCount * MATRIX_ROW_OVERHEAD_H;
   const perRow = rowCount > 0 ? usable / rowCount : usable;
   const height = Math.floor(Math.max(MATRIX_CELL_MIN_HEIGHT, Math.min(MATRIX_CELL_MAX_HEIGHT, perRow || MATRIX_CELL_MIN_HEIGHT)));
   const scale = height / 1920;
   const width = Math.round(1080 * scale);
   return { height, width, scale };
+}
+
+let matrixResizeObserver = null;
+function setupMatrixResizeObserver(scrollEl) {
+  if (matrixResizeObserver || !scrollEl || typeof ResizeObserver === "undefined") return;
+  let rafId = null;
+  matrixResizeObserver = new ResizeObserver(() => {
+    if (rafId) cancelAnimationFrame(rafId);
+    rafId = requestAnimationFrame(() => {
+      if (document.getElementById("mockup-matrix")) renderMockupMatrix();
+    });
+  });
+  const container = scrollEl.parentElement || scrollEl;
+  matrixResizeObserver.observe(container);
 }
 
 let matrixRenderVersion = 0;
@@ -116,11 +133,21 @@ export function renderMockupMatrix() {
   }
 
   const rowSources = devices.length ? devices : [{ id: "__base", label: "Base screen" }];
-  // The scroll container's own height comes from flex layout (`flex:1 1 auto;
-  // height:0`), independent of its content, so it can be measured now, before
-  // the table is rebuilt, to size previews to fill it instead of leaving a
-  // gap below/beside a fixed small size.
-  const cellDims = computeCellDims(table.parentElement, rowSources.length);
+  const scrollEl = table.parentElement;
+  if (scrollEl) {
+    setupMatrixResizeObserver(scrollEl);
+    if (!scrollEl.dataset.wheelBound) {
+      scrollEl.dataset.wheelBound = "true";
+      scrollEl.addEventListener("wheel", (e) => {
+        if (Math.abs(e.deltaY) > Math.abs(e.deltaX) && scrollEl.scrollWidth > scrollEl.clientWidth) {
+          scrollEl.scrollLeft += e.deltaY;
+          e.preventDefault();
+        }
+      }, { passive: false });
+    }
+  }
+
+  const cellDims = computeCellDims(scrollEl, rowSources.length);
 
   // Header: corner + one th per screen
   let html = "<thead><tr>";
@@ -153,12 +180,6 @@ export function renderMockupMatrix() {
       const title = style?.title?.text || col.style?.title?.text || `Page ${columns.indexOf(col) + 1}`;
       // Prefer real server iframe preview; fall back to mini card if unavailable.
       const useIframe = !!mockupId && !!mockupProject?.columns?.length;
-      // The iframe's document is a real fixed 1080x1920px page (src/mockup/render.ts's
-      // cellHtml()) -- pointing a small iframe box straight at it with no scaling
-      // just shows an unscaled window onto its top-left corner (usually a solid
-      // background sliver). Fix: keep the iframe at its real full size and shrink
-      // it visually with a CSS transform, exactly like the working template-thumbnail
-      // technique in src/mockup/render.ts's templateThumbHtmlSized().
       const cellPreview = useIframe
         ? `<div class="matrix-preview-box" style="width:${cellDims.width}px; height:${cellDims.height}px; overflow:hidden; border-radius:6px; background:#0f172a;">
              <iframe class="matrix-preview-frame" title="${escapeHtml(title)}" loading="lazy" src="/api/mockups/${encodeURIComponent(mockupId)}/cell-preview/${encodeURIComponent(dev.id === "__base" ? (devices[0]?.id || dev.id) : dev.id)}/${encodeURIComponent(col.id)}?v=${matrixRenderVersion}" style="width:1080px; height:1920px; border:0; display:block; transform:scale(${cellDims.scale}); transform-origin:top left; pointer-events:none;"></iframe>
@@ -184,27 +205,24 @@ export function renderMockupMatrix() {
 
   table.innerHTML = html;
 
-  // Self-correcting safety net: the header/footer/row-overhead constants
-  // above are measured estimates (font metrics, theme, browser can all
-  // shift them slightly). If the real rendered table is still taller than
-  // the scroll container despite the budgeted estimate, shrink every
-  // preview box by the actual overflow amount so the table can never
-  // vertically overflow -- overflow-y is `hidden` on this container (see
-  // app.css), so a mis-sized table would otherwise silently clip content
-  // instead of scrolling to it.
+  // Self-correcting safety net: only trigger shrink if scrollElNow has a real height (>150px)
+  // to avoid shrinking on initial render when height hasn't laid out yet.
   const scrollElNow = table.parentElement;
-  const overflowPx = table.offsetHeight - (scrollElNow?.clientHeight || 0);
-  if (overflowPx > 0 && rowSources.length > 0) {
-    const shrinkPerRow = Math.ceil(overflowPx / rowSources.length);
-    const fixedHeight = Math.max(MATRIX_CELL_MIN_HEIGHT, cellDims.height - shrinkPerRow);
-    const fixedScale = fixedHeight / 1920;
-    const fixedWidth = Math.round(1080 * fixedScale);
-    for (const box of table.querySelectorAll(".matrix-preview-box")) {
-      box.style.width = `${fixedWidth}px`;
-      box.style.height = `${fixedHeight}px`;
-    }
-    for (const frame of table.querySelectorAll(".matrix-preview-frame")) {
-      frame.style.transform = `scale(${fixedScale})`;
+  const realScrollH = scrollElNow?.clientHeight || 0;
+  if (realScrollH > 150) {
+    const overflowPx = table.offsetHeight - realScrollH;
+    if (overflowPx > 5 && rowSources.length > 0) {
+      const shrinkPerRow = Math.ceil(overflowPx / rowSources.length);
+      const fixedHeight = Math.max(MATRIX_CELL_MIN_HEIGHT, cellDims.height - shrinkPerRow);
+      const fixedScale = fixedHeight / 1920;
+      const fixedWidth = Math.round(1080 * fixedScale);
+      for (const box of table.querySelectorAll(".matrix-preview-box")) {
+        box.style.width = `${fixedWidth}px`;
+        box.style.height = `${fixedHeight}px`;
+      }
+      for (const frame of table.querySelectorAll(".matrix-preview-frame")) {
+        frame.style.transform = `scale(${fixedScale})`;
+      }
     }
   }
 
