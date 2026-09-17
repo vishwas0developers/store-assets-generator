@@ -11,9 +11,10 @@ import {
   setMockupProject,
   saveCurrentMockupProject,
   mockupFabricCanvas,
-  selectedPages
+  selectedPages,
+  pushMockupHistory
 } from './state.js';
-import { escapeHtml, api, uploadFile, showAlert, showToast } from './utils.js';
+import { escapeHtml, api, uploadFile, showAlert, showToast, showConfirm } from './utils.js';
 import { loadColumnIntoFabric, renderMockupCanvas, setActivePage } from './canvas.js';
 import { renderMockupMatrix, getSelectedCellStyle } from './matrix.js';
 
@@ -627,6 +628,217 @@ export function syncSection2Inputs(col, layerId) {
     const m = lid && /^extra:(\d+)$/.exec(lid);
     badge.textContent = lid === "title" ? "Title Text" : lid === "subtitle" ? "Subtitle Text" : lid === "deviceOne" ? "Device Frame 1" : lid === "deviceTwo" ? "Device Frame 2" : m ? `Device Frame ${Number(m[1]) + 3}` : lid?.startsWith("asset:") ? "Asset Layer" : lid === "background" ? "Background" : "Page";
   }
+
+  syncTextToolbar(style, lid);
+}
+
+/** Explicit hide, for when the selection is cleared entirely (clicking
+ *  empty canvas) -- syncSection2Inputs(col, null) can't be used for this,
+ *  since it falls back to the module's own `selectedLayerId` (the stale
+ *  PREVIOUS selection) whenever its layerId argument is falsy. */
+export function hideTextToolbar() {
+  const toolbar = document.getElementById("mockup-text-toolbar");
+  if (toolbar) toolbar.style.display = "none";
+  if (mceEditor) mceEditor.getBody().contentEditable = "false";
+}
+
+// render.ts's textBlock()/canvas.js's copyAlign both apply ONE shared
+// text-align to the whole title+subtitle "copy" block, always read from
+// style.title.align specifically (subtitle.align is never read for
+// alignment) -- so alignment commands must always write there too,
+// regardless of whether title or subtitle is the one currently selected, or
+// picking an align while subtitle is selected would visibly do nothing in
+// the real export/preview despite appearing to work in a naive read of
+// "whichever text is selected".
+const TEXT_ALIGN_FIELD_OWNER = "title";
+
+let mceEditor = null;
+let mceReady = null; // Promise, resolves once TinyMCE has initialized
+let mceSuppressSync = false; // true while we're writing model->editor, so the
+                              // resulting input/NodeChange events don't loop back
+
+function currentTextStyle() {
+  const style = getSelectedCellStyle() || selectedColumn?.style;
+  if (!style) return null;
+  if (selectedLayerId === "title") return style.title;
+  if (selectedLayerId === "subtitle") return style.subtitle;
+  return null;
+}
+
+/** One-time TinyMCE bootstrap: an inline editor bound to the off-screen
+ *  #mk-tinymce-target, with its real toolbar (standard icons, not custom
+ *  buttons) rendered into #mk-tinymce-toolbar-host, which sits flush above
+ *  the canvas viewport. TinyMCE's own contenteditable surface is never
+ *  shown to the user -- it exists only so TinyMCE's format commands
+ *  (bold/align/font/color/lists/...) have somewhere to apply, and every
+ *  resulting format/content change is immediately read back and written
+ *  into whichever title/subtitle TextStyle is currently selected, which is
+ *  what the Fabric canvas and server-side export actually render from. */
+export function setupTextToolbarEvents() {
+  if (!window.tinymce || mceReady) return;
+  mceReady = new Promise((resolve) => {
+    window.tinymce.init({
+      target: document.getElementById("mk-tinymce-target"),
+      license_key: "gpl",
+      inline: true,
+      menubar: false,
+      statusbar: false,
+      branding: false,
+      fixed_toolbar_container: "#mk-tinymce-toolbar-host",
+      toolbar_mode: "wrap",
+      toolbar:
+        "bold italic underline strikethrough | forecolor backcolor | " +
+        "alignleft aligncenter alignright alignjustify | fontfamily fontsizeinput | " +
+        "lineheight | bullist numlist outdent indent | removeformat | undo redo",
+      font_family_formats:
+        "Segoe UI='Segoe UI',Roboto,sans-serif; Arial=Arial,sans-serif; Helvetica='Helvetica Neue',Helvetica,sans-serif; " +
+        "Georgia=Georgia,serif; Times New Roman='Times New Roman',Times,serif; Courier New='Courier New',Courier,monospace; " +
+        "Verdana=Verdana,sans-serif; Trebuchet MS='Trebuchet MS',sans-serif",
+      font_size_input_default_unit: "px",
+      setup(editor) {
+        mceEditor = editor;
+        editor.on("init", () => resolve(editor));
+        // Any of these fire for both content edits (typing) and format
+        // toolbar clicks (bold/align/font/...) -- one handler covers every
+        // control TinyMCE provides instead of one listener per button.
+        editor.on("Input NodeChange ExecCommand", () => syncEditorToModel());
+      },
+    });
+  });
+}
+
+let mceRebuildTimer = null;
+let mceHistoryPending = false;
+
+/** Reads TinyMCE's current content + computed formatting and writes it into
+ *  whichever text layer (title/subtitle) is currently selected -- never any
+ *  other layer, since it always resolves the target fresh via
+ *  currentTextStyle(), and no-ops entirely if nothing text-shaped is
+ *  selected or if the change originated from our own model->editor sync.
+ *  NodeChange fires on every caret move/click, not just real edits, and
+ *  Input fires once per keystroke -- rebuilding the whole Fabric canvas
+ *  (loadColumnIntoFabric tears down and recreates every object) on each of
+ *  those was the cause of the canvas visibly flickering while typing.
+ *  Fixed by (a) skipping the rebuild entirely when nothing in the model
+ *  actually changed, and (b) debouncing the rebuild+history-push that does
+ *  happen so a burst of keystrokes collapses into one. */
+function syncEditorToModel() {
+  if (mceSuppressSync || !mceEditor) return;
+  const t = currentTextStyle();
+  if (!t) return;
+  const body = mceEditor.getBody();
+  const before = JSON.stringify(t);
+
+  const text = mceEditor.getContent({ format: "text" }).replace(/\r\n/g, "\n");
+  if (text !== (t.text || "")) t.text = text;
+
+  // Formatting commands (bold/italic/font/color/...) wrap the selection in
+  // a NEW nested element (<strong>, <em>, a span with inline style, ...)
+  // rather than restyling the outer div in place -- reading computed style
+  // off `body` (or even the outer div) would miss every toggle, since that
+  // element's OWN style never changes, only its descendants'. The
+  // selection's actual node (innermost element wrapping the selected text)
+  // is what the cascade has really been applied to, so read from there.
+  const cs = window.getComputedStyle(mceEditor.selection.getNode() || body);
+  const weight = parseInt(cs.fontWeight, 10) || 400;
+  t.fontWeightNum = weight;
+  t.bold = weight >= 600;
+  t.italic = cs.fontStyle === "italic";
+  t.underline = mceEditor.formatter.match("underline");
+  t.strikethrough = mceEditor.formatter.match("strikethrough");
+  t.fontFamily = cs.fontFamily || t.fontFamily;
+  const size = parseInt(cs.fontSize, 10);
+  if (size) t.size = size;
+  const color = rgbToHex(cs.color);
+  if (color) t.color = color;
+  const bg = rgbToHex(cs.backgroundColor);
+  t.highlightColor = bg || undefined;
+  const lh = parseFloat(cs.lineHeight);
+  if (lh && size) t.lineHeightMultiplier = Math.round((lh / size) * 100) / 100;
+  const ls = parseFloat(cs.letterSpacing);
+  if (!Number.isNaN(ls)) t.charSpacing = Math.round(ls * 62.5); // px -> Fabric's 1/1000-em units at this font size
+
+  const style = getSelectedCellStyle() || selectedColumn?.style;
+  const align = ["left", "center", "right", "justify"].find((a) => mceEditor.formatter.match(`align${a}`));
+  if (align && style?.[TEXT_ALIGN_FIELD_OWNER]) style[TEXT_ALIGN_FIELD_OWNER].align = align;
+
+  // NodeChange fires constantly just from moving the caret around with no
+  // actual formatting/content change -- comparing before/after skips the
+  // (expensive) rebuild for those entirely, not just delaying it.
+  if (JSON.stringify(t) === before) return;
+
+  setMockupDirty(true);
+  mceHistoryPending = true;
+  clearTimeout(mceRebuildTimer);
+  mceRebuildTimer = setTimeout(() => {
+    loadColumnIntoFabric(selectedColumn);
+    if (mceHistoryPending) { pushMockupHistory(); mceHistoryPending = false; }
+  }, 200);
+}
+
+/** Shows/hides the toolbar and loads the currently selected text layer's
+ *  content + formatting into TinyMCE's editing surface, so its toolbar
+ *  (bold/italic/align/... button active-states, font-family/size fields)
+ *  reflects that layer, and further edits apply to it. Called every time
+ *  the selection changes (piggybacks on syncSection2Inputs, already wired
+ *  to every selection event). */
+function syncTextToolbar(style, layerId) {
+  const toolbar = document.getElementById("mockup-text-toolbar");
+  if (!toolbar) return;
+  const textStyle = layerId === "title" ? style?.title : layerId === "subtitle" ? style?.subtitle : null;
+  if (!textStyle) {
+    toolbar.style.display = "none";
+    if (mceEditor) mceEditor.getBody().contentEditable = "false";
+    return;
+  }
+  toolbar.style.display = "flex";
+  if (!mceReady) setupTextToolbarEvents();
+  mceReady?.then((editor) => {
+    editor.getBody().contentEditable = "true";
+    mceSuppressSync = true;
+    const weight = textStyle.fontWeightNum ?? (layerId === "title" ? (textStyle.bold === false ? 400 : 700) : (textStyle.bold ? 700 : 400));
+    const align = (style[TEXT_ALIGN_FIELD_OWNER]?.align) || "center";
+    const cssParts = [
+      `font-weight:${weight}`,
+      `font-style:${textStyle.italic ? "italic" : "normal"}`,
+      `text-decoration:${[textStyle.underline && "underline", textStyle.strikethrough && "line-through"].filter(Boolean).join(" ") || "none"}`,
+      // Multi-word family names (Segoe UI, Times New Roman, ...) MUST be
+      // quoted in a style attribute -- an unquoted "font-family: Segoe UI, ..."
+      // is invalid CSS, so the browser silently drops the whole declaration
+      // and the div falls back to TinyMCE's inherited skin font. The
+      // write-back path then reads that inherited font via
+      // getComputedStyle and stores it as if the user had chosen it,
+      // corrupting fontFamily on every sync cycle -- quoting each family
+      // name (already done correctly in font_family_formats above) avoids
+      // that entirely.
+      `font-family:${quoteFontFamily(textStyle.fontFamily || "Segoe UI, Roboto, sans-serif")}`,
+      `font-size:${Math.round(textStyle.size ?? (layerId === "title" ? 58 : 36))}px`,
+      `color:${textStyle.color || "#ffffff"}`,
+      `line-height:${textStyle.lineHeightMultiplier ?? 1.15}`,
+      `letter-spacing:${((textStyle.charSpacing || 0) / 1000) * (textStyle.size ?? 40)}px`,
+      `text-align:${align}`,
+      textStyle.highlightColor ? `background-color:${textStyle.highlightColor}` : "",
+    ].filter(Boolean).join(";");
+    editor.setContent(`<div style="${cssParts}">${escapeHtml(textStyle.text || "")}</div>`);
+    editor.selection.select(editor.getBody(), true);
+    mceSuppressSync = false;
+  });
+}
+
+function quoteFontFamily(stack) {
+  return stack
+    .split(",")
+    .map((name) => {
+      const trimmed = name.trim().replace(/^['"]|['"]$/g, "");
+      return /\s/.test(trimmed) ? `'${trimmed}'` : trimmed;
+    })
+    .join(", ");
+}
+
+function rgbToHex(rgb) {
+  const m = /rgba?\((\d+),\s*(\d+),\s*(\d+)/.exec(rgb || "");
+  if (!m) return null;
+  return "#" + [m[1], m[2], m[3]].map((v) => Number(v).toString(16).padStart(2, "0")).join("");
 }
 
 export function setupInspectorEvents() {
@@ -915,7 +1127,10 @@ export function getLayerBox(style, layerId) {
   if (layerId === "title" || layerId === "subtitle") {
     const t = style[layerId];
     if (!t) return null;
-    return { x: t.x ?? 54, y: t.y ?? (layerId === "title" ? 80 : 200), width: 972, height: layerId === "title" ? 120 : 80, rotation: t.rotation ?? 0, opacity: 1 };
+    // opacity was previously hardcoded to 1 here -- the universal Transform
+    // panel's opacity field silently did nothing for text layers. Now reads
+    // the same TextStyle.opacity field the text toolbar's slider writes.
+    return { x: t.x ?? 54, y: t.y ?? (layerId === "title" ? 80 : 200), width: 972, height: layerId === "title" ? 120 : 80, rotation: t.rotation ?? 0, opacity: t.opacity ?? (layerId === "subtitle" ? 0.8 : 1) };
   }
   if (layerId.startsWith("asset:")) {
     const idx = parseInt(layerId.split(":")[1], 10);
@@ -954,6 +1169,7 @@ export function setLayerBox(style, layerId, box) {
     t.x = Math.round(box.x);
     t.y = Math.round(box.y);
     t.rotation = Math.round(box.rotation ?? 0);
+    if (box.opacity != null) t.opacity = box.opacity;
     return;
   }
   if (layerId.startsWith("asset:")) {
@@ -1018,10 +1234,47 @@ export function duplicateSelectedLayer() {
 
 /** Deletes the selected layer, when its kind supports removal (assets and
  *  extra device layers; deviceOne/deviceTwo/title/subtitle/background are
- *  structural singletons the schema always expects to exist). */
-export function deleteSelectedLayer() {
+ *  structural singletons the schema always expects to exist).
+ *
+ *  Verifies against the LIVE Fabric selection at the exact moment this
+ *  runs, not just the module's selectedLayerId variable -- a real bug:
+ *  selectedLayerId is only ever written when something becomes selected,
+ *  never cleared when the user deselects (clicks empty canvas), so it can
+ *  go stale and still point at a layer that's no longer actually selected.
+ *  Clicking Delete after deselecting would silently delete that stale
+ *  previous layer -- exactly the "deletes something other than what's
+ *  currently selected" failure mode this guards against. */
+export async function deleteSelectedLayer() {
   if (!selectedColumn) return;
+  const activeObj = mockupFabricCanvas?.getActiveObject?.();
+  if (!activeObj || activeObj.layerId !== selectedLayerId) {
+    showToast("No layer is currently selected.", "info");
+    return;
+  }
   const pa = resolvePanoramaAsset(selectedLayerId);
+  const style0 = getSelectedCellStyle() || selectedColumn.style;
+  const isAsset = selectedLayerId.startsWith("asset:");
+  const isExtraDevice = /^extra:\d+$/.test(selectedLayerId);
+  const isText = selectedLayerId === "title" || selectedLayerId === "subtitle";
+  const isDeviceTwo = selectedLayerId === "deviceTwo";
+  // deviceOne and background are the two truly structural, always-required
+  // pieces of a page (ColumnStyle.deviceOne/background aren't optional
+  // fields, and every layout preset assumes both exist) -- there's no
+  // schema-safe meaning of "delete" for them without a much larger data
+  // model change. Everything else genuinely CAN be removed: title/subtitle
+  // via a soft-delete (hidden + cleared, since they're also required
+  // fields, just ones a hidden/empty state can stand in for); assets,
+  // extra devices, deviceTwo, and panorama assets via real removal from
+  // their (optional) arrays/fields.
+  if (!pa && !isAsset && !isExtraDevice && !isText && !isDeviceTwo) {
+    showToast("This is the page's base device or background and can't be removed -- try the visibility toggle in the Layers panel instead.", "error");
+    return;
+  }
+  const layers = buildScreenLayersModel(selectedColumn);
+  const layerName = layers.find((l) => l.id === selectedLayerId)?.name || "this layer";
+  const ok = await showConfirm(`This permanently removes "${layerName}" and cannot be undone.`, "Delete this layer?", true);
+  if (!ok) return;
+
   if (pa) {
     const idx = mockupProject.panoramaAssets.indexOf(pa);
     if (idx !== -1) mockupProject.panoramaAssets.splice(idx, 1);
@@ -1034,25 +1287,35 @@ export function deleteSelectedLayer() {
     setActivePage(selectedColumn.id);
     return;
   }
-  const style = getSelectedCellStyle() || selectedColumn.style;
+  const style = style0;
   if (!style) return;
-  if (selectedLayerId.startsWith("asset:")) {
+  if (isAsset) {
     const idx = parseInt(selectedLayerId.split(":")[1], 10);
     if (!style.assetLayers?.[idx]) return;
     style.assetLayers.splice(idx, 1);
-  } else {
-    const m = /^extra:(\d+)$/.exec(selectedLayerId);
-    if (!m || !style.extraDevices?.[Number(m[1])]) {
-      showToast("This layer can't be deleted.", "error");
-      return;
-    }
-    style.extraDevices.splice(Number(m[1]), 1);
+  } else if (isExtraDevice) {
+    const idx = parseInt(selectedLayerId.split(":")[1], 10);
+    if (!style.extraDevices?.[idx]) return;
+    style.extraDevices.splice(idx, 1);
+  } else if (isDeviceTwo) {
+    style.deviceTwo = undefined;
+  } else if (isText) {
+    // Soft-delete: title/subtitle are required fields (every layout preset
+    // reads style.title/style.subtitle unconditionally), so "removed" means
+    // hidden and cleared rather than the field itself vanishing -- visually
+    // and functionally equivalent to deletion (nothing renders, nothing
+    // exports) without risking every render/canvas code path that assumes
+    // these two always exist.
+    const t = style[selectedLayerId];
+    t.text = "";
+    t.visible = false;
   }
   setMockupDirty(true);
   setSelectedLayerId("deviceOne");
   renderMockupLayersPanel(selectedColumn);
   syncSection2Inputs(selectedColumn);
   loadColumnIntoFabric(selectedColumn);
+  showToast(`"${layerName}" deleted.`, "success");
 }
 
 /** Wires the universal Position & Transform card (Section 2): numeric

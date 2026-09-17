@@ -265,6 +265,7 @@ function attachPageCanvasHandlers(canvas, pageId) {
   canvas.on('object:modified', (e) => onFabricObjectModified(e, pageId));
   canvas.on('selection:created', onFabricSelectionCreated);
   canvas.on('selection:updated', onFabricSelectionUpdated);
+  canvas.on('selection:cleared', onFabricSelectionCleared);
   canvas.on('text:changed', onFabricTextChanged);
   canvas.on('object:moving', (e) => onPanoramaObjectLiveTransform(e, canvas, pageId));
   canvas.on('object:scaling', (e) => onPanoramaObjectLiveTransform(e, canvas, pageId));
@@ -774,6 +775,18 @@ function handleFabricSelection(e) {
 
 function onFabricSelectionCreated(e) { handleFabricSelection(e); }
 function onFabricSelectionUpdated(e) { handleFabricSelection(e); }
+function onFabricSelectionCleared() {
+  // Hides the text-editing toolbar when the user deselects everything --
+  // without this, it stayed visible/stale after clicking away from a text
+  // layer onto empty canvas. BUT: loadColumnIntoFabric's rebuild (e.g. from
+  // the Layers panel's onclick, which syncs the toolbar THEN rebuilds the
+  // canvas) also fires this transiently even while the logical selection is
+  // still a text layer -- only really hide when selectedLayerId itself
+  // isn't a text layer, so that transient clear-during-rebuild doesn't
+  // clobber a sync that already ran correctly.
+  if (selectedLayerId === 'title' || selectedLayerId === 'subtitle') return;
+  if (typeof window.hideTextToolbar === 'function') window.hideTextToolbar();
+}
 
 function onFabricTextChanged(e) {
   const obj = e.target;
@@ -840,6 +853,19 @@ export async function syncFabricObjectToModel(obj, group, originPageId) {
       if (obj.fontSize !== undefined) style.title.size = obj.fontSize;
       if (obj.textAlign !== undefined) style.title.align = obj.textAlign;
       if (obj.angle !== undefined) style.title.rotation = obj.angle;
+      if (obj.fontWeight !== undefined) {
+        const w = typeof obj.fontWeight === 'number' ? obj.fontWeight : (obj.fontWeight === 'bold' ? 700 : 400);
+        style.title.fontWeightNum = w;
+        style.title.bold = w >= 600;
+      }
+      if (obj.fontStyle !== undefined) style.title.italic = obj.fontStyle === 'italic';
+      if (obj.underline !== undefined) style.title.underline = !!obj.underline;
+      if (obj.linethrough !== undefined) style.title.strikethrough = !!obj.linethrough;
+      if (obj.fontFamily !== undefined) style.title.fontFamily = obj.fontFamily;
+      if (obj.textBackgroundColor !== undefined) style.title.highlightColor = obj.textBackgroundColor || undefined;
+      if (obj.opacity !== undefined) style.title.opacity = obj.opacity;
+      if (obj.lineHeight !== undefined) style.title.lineHeightMultiplier = obj.lineHeight;
+      if (obj.charSpacing !== undefined) style.title.charSpacing = obj.charSpacing;
       break;
 
     case 'subtitle':
@@ -848,6 +874,19 @@ export async function syncFabricObjectToModel(obj, group, originPageId) {
       if (obj.fontSize !== undefined) style.subtitle.size = obj.fontSize;
       if (obj.textAlign !== undefined) style.subtitle.align = obj.textAlign;
       if (obj.angle !== undefined) style.subtitle.rotation = obj.angle;
+      if (obj.fontWeight !== undefined) {
+        const w = typeof obj.fontWeight === 'number' ? obj.fontWeight : (obj.fontWeight === 'bold' ? 700 : 400);
+        style.subtitle.fontWeightNum = w;
+        style.subtitle.bold = w >= 600;
+      }
+      if (obj.fontStyle !== undefined) style.subtitle.italic = obj.fontStyle === 'italic';
+      if (obj.underline !== undefined) style.subtitle.underline = !!obj.underline;
+      if (obj.linethrough !== undefined) style.subtitle.strikethrough = !!obj.linethrough;
+      if (obj.fontFamily !== undefined) style.subtitle.fontFamily = obj.fontFamily;
+      if (obj.textBackgroundColor !== undefined) style.subtitle.highlightColor = obj.textBackgroundColor || undefined;
+      if (obj.opacity !== undefined) style.subtitle.opacity = obj.opacity;
+      if (obj.lineHeight !== undefined) style.subtitle.lineHeightMultiplier = obj.lineHeight;
+      if (obj.charSpacing !== undefined) style.subtitle.charSpacing = obj.charSpacing;
       break;
 
     case 'deviceOne': {
@@ -1143,10 +1182,17 @@ export async function loadColumnIntoFabric(column, { interactive = true } = {}) 
     originY: 'top',
     width: 1080 - PAD * 2,
     fontSize: titleSize,
-    lineHeight: 1.15,
+    lineHeight: t.lineHeightMultiplier ?? 1.15,
     fill: t.color || '#ffffff',
     textAlign: copyAlign,
-    fontWeight: 'bold',
+    fontWeight: t.fontWeightNum ?? (t.bold === false ? 'normal' : 'bold'),
+    fontStyle: t.italic ? 'italic' : 'normal',
+    underline: !!t.underline,
+    linethrough: !!t.strikethrough,
+    fontFamily: t.fontFamily || 'Segoe UI, Roboto, -apple-system, sans-serif',
+    textBackgroundColor: t.highlightColor || '',
+    charSpacing: t.charSpacing || 0,
+    opacity: t.opacity ?? 1,
     name: 'title',
     layerId: 'title',
     visible: showText && t.visible !== false,
@@ -1176,10 +1222,17 @@ export async function loadColumnIntoFabric(column, { interactive = true } = {}) 
     originY: 'top',
     width: 1080 - PAD * 2,
     fontSize: subtitleSize,
+    lineHeight: s.lineHeightMultiplier ?? 1.15,
     fill: s.color || '#94a3b8',
     textAlign: copyAlign,
-    fontWeight: 'normal',
-    opacity: 0.8,
+    fontWeight: s.fontWeightNum ?? (s.bold ? 'bold' : 'normal'),
+    fontStyle: s.italic ? 'italic' : 'normal',
+    underline: !!s.underline,
+    linethrough: !!s.strikethrough,
+    fontFamily: s.fontFamily || 'Segoe UI, Roboto, -apple-system, sans-serif',
+    textBackgroundColor: s.highlightColor || '',
+    charSpacing: s.charSpacing || 0,
+    opacity: s.opacity ?? 0.8,
     name: 'subtitle',
     layerId: 'subtitle',
     visible: showText && s.visible !== false,

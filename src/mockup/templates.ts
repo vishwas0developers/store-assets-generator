@@ -514,6 +514,10 @@ export function applyMockupTemplate(project: MockupProject, templateId: string):
     if (preset.twoDevices) {
       style.deviceTwo = { ...style.deviceOne, sourceId: undefined };
     }
-    addColumn(project, style);
+    const col = addColumn(project, style);
+    // Deep clone -- col.templateDefaultStyle must never share references
+    // with col.style, or editing col.style would silently mutate the
+    // "original" snapshot too, defeating the whole point of Reset to Template.
+    col.templateDefaultStyle = JSON.parse(JSON.stringify(style));
   }
 }

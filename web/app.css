@@ -49,6 +49,7 @@ html.light .topbar-tab.active { background: #e2e8f0; color: #0f172a; }
   display: flex; align-items: center; justify-content: center;
 }
 .icon-btn:hover { background: rgba(128,128,128,0.15); }
+.icon-btn.active { background: #3b82f6; color: #fff; border-color: #3b82f6; }
 
 /* ---------- App body: [optional 80px rail] [content] [optional 300px inspector] ---------- */
 .app-body { flex: 1; display: flex; min-height: 0; height: calc(100vh - 50px); overflow: hidden; }
@@ -313,6 +314,23 @@ pre { background: var(--bg-main); border: 1px solid var(--border-subtle); border
   height: 20px;
   background: var(--border-subtle);
   margin: 0 0.25rem;
+}
+
+/* Shown only while a title/subtitle text layer is selected (editor.js's
+   syncTextToolbar) -- sits directly above the canvas viewport with zero
+   gap: both are plain flex children of .studio-canvas-container (a column
+   flex box with no `gap` set), so they sit flush adjacent automatically;
+   the container's own existing border/radius already wraps both as one
+   surface, so this only needs its own bottom edge squared off to meet the
+   viewport cleanly. */
+.mockup-text-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.6rem;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-subtle);
+  flex-shrink: 0;
 }
 
 .mockup-canvas-viewport {

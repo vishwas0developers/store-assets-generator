@@ -19,6 +19,7 @@ import {
   type MockupAssetLayer,
   type MockupProject,
   type PanoramaAssetLayer,
+  type TextStyle,
 } from "./project.js";
 import { applyMockupTemplate, type MockupStarterTemplate } from "./templates.js";
 
@@ -43,6 +44,21 @@ function layerMarkup(deviceEntryId: string, screenshotUri: string, layer: Device
   return layer.frameless ? frameless(device, screenshotUri, layer, variant) : deviceMarkup(device, screenshotUri, variant);
 }
 
+function textFormatCss(t: TextStyle): string {
+  const parts: string[] = [];
+  const weight = t.fontWeightNum ?? (t.bold ? 700 : undefined);
+  if (weight != null) parts.push(`font-weight:${weight}`);
+  if (t.italic) parts.push("font-style:italic");
+  const decorations = [t.underline && "underline", t.strikethrough && "line-through"].filter(Boolean);
+  if (decorations.length) parts.push(`text-decoration:${decorations.join(" ")}`);
+  if (t.fontFamily) parts.push(`font-family:${t.fontFamily}`);
+  if (t.highlightColor) parts.push(`background-color:${t.highlightColor}`);
+  if (t.opacity != null) parts.push(`opacity:${t.opacity}`);
+  if (t.lineHeightMultiplier != null) parts.push(`line-height:${t.lineHeightMultiplier}`);
+  if (t.charSpacing) parts.push(`letter-spacing:${(t.charSpacing / 1000) * 1}em`);
+  return parts.length ? parts.join(";") + ";" : "";
+}
+
 function textBlock(style: ColumnStyle, textPosition: string): string {
   if (textPosition === "no-text") return "";
   const isCaption = textPosition.startsWith("caption");
@@ -51,8 +67,8 @@ function textBlock(style: ColumnStyle, textPosition: string): string {
   const showSubtitle = style.subtitle.visible !== false && Boolean(style.subtitle.text);
   if (!showTitle && !showSubtitle) return "";
   return `<div class="copy" style="text-align:${style.title.align}">
-    ${showTitle ? `<div class="title" style="color:${style.title.color};font-size:${titleSize}px">${escapeHtml(style.title.text)}</div>` : ""}
-    ${showSubtitle ? `<div class="subtitle" style="color:${style.subtitle.color};font-size:${Math.round(style.subtitle.size * 0.5)}px">${escapeHtml(style.subtitle.text)}</div>` : ""}
+    ${showTitle ? `<div class="title" style="color:${style.title.color};font-size:${titleSize}px;${textFormatCss(style.title)}">${escapeHtml(style.title.text)}</div>` : ""}
+    ${showSubtitle ? `<div class="subtitle" style="color:${style.subtitle.color};font-size:${Math.round(style.subtitle.size * 0.5)}px;${textFormatCss(style.subtitle)}">${escapeHtml(style.subtitle.text)}</div>` : ""}
   </div>`;
 }
 
