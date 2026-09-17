@@ -45,7 +45,7 @@ export function buildScreenLayersModel(column) {
   const style = getSelectedCellStyle() || column.style;
   const layers = [];
 
-  if (style.deviceOne) {
+  if (style.deviceOne && !style.deviceOne.deleted) {
     layers.push({
       id: "deviceOne",
       type: "device",
@@ -57,6 +57,7 @@ export function buildScreenLayersModel(column) {
     });
   }
   (style.extraDevices || []).forEach((dev, idx) => {
+    if (dev.deleted) return;
     layers.push({
       id: `extra:${idx}`,
       type: "device",
@@ -67,7 +68,7 @@ export function buildScreenLayersModel(column) {
       zIndex: dev.zIndex ?? (8 - idx),
     });
   });
-  if (style.deviceTwo) {
+  if (style.deviceTwo && !style.deviceTwo.deleted) {
     layers.push({
       id: "deviceTwo",
       type: "device",
@@ -78,7 +79,7 @@ export function buildScreenLayersModel(column) {
       zIndex: style.deviceTwo.zIndex ?? 9,
     });
   }
-  if (style.title) {
+  if (style.title && !style.title.deleted) {
     layers.push({
       id: "title",
       type: "title",
@@ -89,7 +90,7 @@ export function buildScreenLayersModel(column) {
       zIndex: style.title.zIndex ?? 20,
     });
   }
-  if (style.subtitle) {
+  if (style.subtitle && !style.subtitle.deleted) {
     layers.push({
       id: "subtitle",
       type: "subtitle",
@@ -862,65 +863,259 @@ function syncTextToolbar(style, layerId) {
  *  called at bootstrap) to just click/dispatch on the identical Transform-panel
  *  control in the right sidebar -- so this function only needs to mirror
  *  displayed values, never duplicate any actual mutation logic. */
+export function alignSelectedObject(type) {
+  if (!selectedColumn || !selectedLayerId) return;
+  const canvas = mockupFabricCanvas;
+  let activeObj = canvas?.getActiveObject();
+  if (!activeObj || activeObj.layerId !== selectedLayerId) {
+    activeObj = canvas?.getObjects().find((o) => o.layerId === selectedLayerId);
+  }
+
+  const ARTBOARD_W = 1080;
+  const ARTBOARD_H = 1920;
+
+  if (activeObj) {
+    const bbox = activeObj.getBoundingRect(true, true);
+    let dx = 0;
+    let dy = 0;
+
+    switch (type) {
+      case "left":
+        dx = 0 - bbox.left;
+        break;
+      case "center":
+      case "center-x":
+        dx = (ARTBOARD_W - bbox.width) / 2 - bbox.left;
+        break;
+      case "right":
+        dx = (ARTBOARD_W - bbox.width) - bbox.left;
+        break;
+      case "top":
+        dy = 0 - bbox.top;
+        break;
+      case "middle":
+      case "middle-y":
+        dy = (ARTBOARD_H - bbox.height) / 2 - bbox.top;
+        break;
+      case "bottom":
+        dy = (ARTBOARD_H - bbox.height) - bbox.top;
+        break;
+    }
+
+    activeObj.set({ left: activeObj.left + dx, top: activeObj.top + dy });
+    activeObj.setCoords();
+    canvas.requestRenderAll();
+    syncFabricObjectToModel(activeObj);
+    setMockupDirty(true);
+    syncSection2Inputs(selectedColumn, selectedLayerId);
+    return;
+  }
+
+  const style = getSelectedCellStyle() || selectedColumn.style;
+  const box = getLayerBox(style, selectedLayerId);
+  if (!style || !box) return;
+
+  switch (type) {
+    case "left": box.x = 0; break;
+    case "center": case "center-x": box.x = (ARTBOARD_W - box.width) / 2; break;
+    case "right": box.x = ARTBOARD_W - box.width; break;
+    case "top": box.y = 0; break;
+    case "middle": case "middle-y": box.y = (ARTBOARD_H - box.height) / 2; break;
+    case "bottom": box.y = ARTBOARD_H - box.height; break;
+  }
+  setLayerBox(style, selectedLayerId, box);
+  setMockupDirty(true);
+  loadColumnIntoFabric(selectedColumn);
+  syncSection2Inputs(selectedColumn, selectedLayerId);
+}
+
+export function rotateSelectedObject(targetAngle, isDelta = false) {
+  if (!selectedColumn || !selectedLayerId) return;
+  const canvas = mockupFabricCanvas;
+  let activeObj = canvas?.getActiveObject();
+  if (!activeObj || activeObj.layerId !== selectedLayerId) {
+    activeObj = canvas?.getObjects().find((o) => o.layerId === selectedLayerId);
+  }
+
+  const currentAngle = activeObj ? (activeObj.angle || 0) : (getLayerBox(getSelectedCellStyle() || selectedColumn.style, selectedLayerId)?.rotation || 0);
+  let newAngle = isDelta ? currentAngle + targetAngle : targetAngle;
+  newAngle = Math.round(((newAngle % 360) + 360) % 360);
+  if (newAngle > 180) newAngle -= 360;
+
+  if (activeObj) {
+    activeObj.set({ angle: newAngle });
+    activeObj.setCoords();
+    canvas.requestRenderAll();
+    syncFabricObjectToModel(activeObj);
+  } else {
+    const style = getSelectedCellStyle() || selectedColumn.style;
+    const box = getLayerBox(style, selectedLayerId);
+    if (box) {
+      box.rotation = newAngle;
+      setLayerBox(style, selectedLayerId, box);
+      loadColumnIntoFabric(selectedColumn);
+    }
+  }
+
+  setMockupDirty(true);
+  syncSection2Inputs(selectedColumn, selectedLayerId);
+}
+
+export function flipSelectedObject(direction) {
+  if (!selectedColumn || !selectedLayerId) return;
+  const canvas = mockupFabricCanvas;
+  let activeObj = canvas?.getActiveObject();
+  if (!activeObj || activeObj.layerId !== selectedLayerId) {
+    activeObj = canvas?.getObjects().find((o) => o.layerId === selectedLayerId);
+  }
+
+  if (activeObj) {
+    if (direction === "horizontal" || direction === "h") {
+      activeObj.set("flipX", !activeObj.flipX);
+    } else if (direction === "vertical" || direction === "v") {
+      activeObj.set("flipY", !activeObj.flipY);
+    }
+    activeObj.setCoords();
+    canvas.requestRenderAll();
+    syncFabricObjectToModel(activeObj);
+  } else {
+    const style = getSelectedCellStyle() || selectedColumn.style;
+    const box = getLayerBox(style, selectedLayerId);
+    if (box) {
+      if (direction === "horizontal" || direction === "h") box.flipH = !box.flipH;
+      if (direction === "vertical" || direction === "v") box.flipV = !box.flipV;
+      setLayerBox(style, selectedLayerId, box);
+      loadColumnIntoFabric(selectedColumn);
+    }
+  }
+
+  setMockupDirty(true);
+  syncSection2Inputs(selectedColumn, selectedLayerId);
+}
+
+export function handleOpacityInput(pctVal) {
+  const pct = Math.max(0, Math.min(100, Number(pctVal) || 0));
+  const alpha = pct / 100;
+
+  const canvas = mockupFabricCanvas;
+  let activeObj = canvas?.getActiveObject();
+  if (!activeObj || activeObj.layerId !== selectedLayerId) {
+    activeObj = canvas?.getObjects().find((o) => o.layerId === selectedLayerId);
+  }
+  if (activeObj) {
+    activeObj.set({ opacity: alpha });
+    canvas.requestRenderAll();
+  }
+
+  const objSlider = document.getElementById("mk-obj-opacity-slider");
+  if (objSlider && document.activeElement !== objSlider) objSlider.value = pct;
+  const posSlider = document.getElementById("mk-pos-opacity-slider");
+  if (posSlider && document.activeElement !== posSlider) posSlider.value = pct;
+
+  const objVal = document.getElementById("mk-obj-opacity-val");
+  if (objVal) objVal.textContent = `${pct}%`;
+  const posInput = document.getElementById("mk-pos-opacity");
+  if (posInput && document.activeElement !== posInput) posInput.value = pct;
+}
+
+export function commitOpacityChange(pctVal) {
+  const pct = Math.max(0, Math.min(100, Number(pctVal) || 0));
+  const alpha = pct / 100;
+  handleOpacityInput(pct);
+
+  if (!selectedColumn || !selectedLayerId) return;
+  const style = getSelectedCellStyle() || selectedColumn.style;
+  const box = getLayerBox(style, selectedLayerId);
+  if (box) {
+    box.opacity = alpha;
+    setLayerBox(style, selectedLayerId, box);
+    if (selectedColumn) syncLinkedDeviceLayer(mockupProject, selectedColumn.id, selectedLayerId);
+    setMockupDirty(true);
+  }
+}
+
 function syncObjectToolbar(style, layerId) {
   const hasSelection = !!layerId;
   const box = hasSelection ? getLayerBox(style, layerId) : null;
   const rot = document.getElementById("mk-obj-rotation");
-  if (rot) rot.value = box ? Math.round(box.rotation ?? 0) : "";
-  const op = document.getElementById("mk-obj-opacity");
-  if (op) op.value = box ? Math.round((box.opacity ?? 1) * 100) : "";
+  if (rot && document.activeElement !== rot) rot.value = box ? Math.round(box.rotation ?? 0) : "";
+
+  const pct = box ? Math.round((box.opacity ?? 1) * 100) : 100;
+  const objSlider = document.getElementById("mk-obj-opacity-slider");
+  if (objSlider && document.activeElement !== objSlider) objSlider.value = pct;
+  const objVal = document.getElementById("mk-obj-opacity-val");
+  if (objVal) objVal.textContent = `${pct}%`;
+
+  const flipHBtn = document.getElementById("mk-obj-flip-h");
+  const flipVBtn = document.getElementById("mk-obj-flip-v");
+  if (flipHBtn) flipHBtn.classList.toggle("is-active", !!box?.flipH);
+  if (flipVBtn) flipVBtn.classList.toggle("is-active", !!box?.flipV);
+
   ["mk-obj-bring-front", "mk-obj-bring-fwd", "mk-obj-send-bwd", "mk-obj-send-back",
    "mk-obj-align-left", "mk-obj-align-center", "mk-obj-align-right",
    "mk-obj-align-top", "mk-obj-align-middle", "mk-obj-align-bottom",
-   "mk-obj-flip-h", "mk-obj-flip-v", "mk-obj-rotation", "mk-obj-opacity",
-   "mk-obj-duplicate", "mk-obj-delete"].forEach((id) => {
+   "mk-obj-flip-h", "mk-obj-flip-v", "mk-obj-rotate-btn", "mk-obj-rotation",
+   "mk-obj-opacity-slider", "mk-obj-duplicate", "mk-obj-delete"].forEach((id) => {
     const el = document.getElementById(id);
     if (el) el.disabled = !hasSelection;
   });
 }
 
-/** Wires the icon-only object toolbar -- every button proxies straight to
- *  its already-wired Transform-panel twin (setupInspectorEvents/
- *  setupTransformPanelEvents, both called at the same bootstrap point) via a
- *  plain .click()/change-event forward, so this is the exact same action
- *  and underlying function as the right sidebar, never a second
- *  implementation of the same behavior. Called once at bootstrap, same as
- *  setupTextToolbarEvents. */
 export function setupObjectToolbarEvents() {
-  const proxyClick = (fromId, toId) => {
-    const from = document.getElementById(fromId);
-    const to = document.getElementById(toId);
-    if (from && to) from.onclick = () => to.click();
-  };
-  proxyClick("mk-obj-bring-front", "mk-bring-front");
-  proxyClick("mk-obj-bring-fwd", "mk-bring-forward");
-  proxyClick("mk-obj-send-bwd", "mk-send-backward");
-  proxyClick("mk-obj-send-back", "mk-send-back");
-  proxyClick("mk-obj-align-left", "mk-align-left");
-  proxyClick("mk-obj-align-center", "mk-align-center");
-  proxyClick("mk-obj-align-right", "mk-align-right");
-  proxyClick("mk-obj-align-top", "mk-align-top");
-  proxyClick("mk-obj-align-middle", "mk-align-middle");
-  proxyClick("mk-obj-align-bottom", "mk-align-bottom");
-  proxyClick("mk-obj-duplicate", "mk-duplicate-layer");
-  proxyClick("mk-obj-delete", "mk-delete-layer");
+  const objBringFront = document.getElementById("mk-obj-bring-front");
+  if (objBringFront) objBringFront.onclick = () => moveSelectedLayerOrder("front");
+  const objBringFwd = document.getElementById("mk-obj-bring-fwd");
+  if (objBringFwd) objBringFwd.onclick = () => moveSelectedLayerOrder("forward");
+  const objSendBwd = document.getElementById("mk-obj-send-bwd");
+  if (objSendBwd) objSendBwd.onclick = () => moveSelectedLayerOrder("backward");
+  const objSendBack = document.getElementById("mk-obj-send-back");
+  if (objSendBack) objSendBack.onclick = () => moveSelectedLayerOrder("back");
 
-  const proxyCheckbox = (fromId, toId) => {
-    const from = document.getElementById(fromId);
-    const to = document.getElementById(toId);
-    if (from && to) from.onclick = () => { to.checked = !to.checked; to.dispatchEvent(new Event("change", { bubbles: true })); };
+  const wireAlign = (fromId, type) => {
+    const btn = document.getElementById(fromId);
+    if (btn) btn.onclick = () => alignSelectedObject(type);
   };
-  proxyCheckbox("mk-obj-flip-h", "mk-pos-flip-h");
-  proxyCheckbox("mk-obj-flip-v", "mk-pos-flip-v");
+  wireAlign("mk-obj-align-left", "left");
+  wireAlign("mk-obj-align-center", "center-x");
+  wireAlign("mk-obj-align-right", "right");
+  wireAlign("mk-obj-align-top", "top");
+  wireAlign("mk-obj-align-middle", "middle-y");
+  wireAlign("mk-obj-align-bottom", "bottom");
 
-  const proxyNumber = (fromId, toId) => {
-    const from = document.getElementById(fromId);
-    const to = document.getElementById(toId);
-    if (!from || !to) return;
-    from.addEventListener("change", () => { to.value = from.value; to.dispatchEvent(new Event("change", { bubbles: true })); });
-  };
-  proxyNumber("mk-obj-rotation", "mk-pos-rot");
-  proxyNumber("mk-obj-opacity", "mk-pos-opacity");
+  const flipHBtn = document.getElementById("mk-obj-flip-h");
+  if (flipHBtn) flipHBtn.onclick = () => flipSelectedObject("horizontal");
+  const flipVBtn = document.getElementById("mk-obj-flip-v");
+  if (flipVBtn) flipVBtn.onclick = () => flipSelectedObject("vertical");
+
+  const dupBtn = document.getElementById("mk-obj-duplicate");
+  if (dupBtn) dupBtn.onclick = () => duplicateSelectedLayer();
+  const delBtn = document.getElementById("mk-obj-delete");
+  if (delBtn) delBtn.onclick = () => deleteSelectedLayer();
+
+  const rotBtn = document.getElementById("mk-obj-rotate-btn");
+  if (rotBtn) {
+    rotBtn.onclick = () => {
+      const inputVal = Number(document.getElementById("mk-obj-rotation")?.value);
+      if (!Number.isNaN(inputVal) && inputVal !== 0) {
+        rotateSelectedObject(inputVal, false);
+      } else {
+        rotateSelectedObject(90, true);
+      }
+    };
+  }
+
+  const rotInput = document.getElementById("mk-obj-rotation");
+  if (rotInput) {
+    const applyRot = () => rotateSelectedObject(Number(rotInput.value) || 0, false);
+    rotInput.onchange = applyRot;
+    rotInput.onkeydown = (e) => { if (e.key === "Enter") applyRot(); };
+  }
+
+  const opSlider = document.getElementById("mk-obj-opacity-slider");
+  if (opSlider) {
+    opSlider.oninput = () => handleOpacityInput(opSlider.value);
+    opSlider.onchange = () => commitOpacityChange(opSlider.value);
+  }
 
   syncObjectToolbar(null, null);
 }
@@ -1127,28 +1322,20 @@ export function setupInspectorEvents() {
   // selected, so `selectedColumn` is always null then and the handler would
   // never be attached at all. `selectedColumn` is a live import from state.js;
   // read it fresh inside the click handler instead.
-  if (bringFront) {
-    bringFront.onclick = () => { if (!selectedColumn) return; setLayerZIndex(selectedColumn, selectedLayerId, 100); renderMockupLayersPanel(selectedColumn); loadColumnIntoFabric(selectedColumn); };
-  }
-  if (bringFwd) {
-    bringFwd.onclick = () => { if (!selectedColumn) return; const layers = buildScreenLayersModel(selectedColumn); const cur = layers.find(l => l.id === selectedLayerId); if (cur) setLayerZIndex(selectedColumn, selectedLayerId, (cur.zIndex || 10) + 1); renderMockupLayersPanel(selectedColumn); loadColumnIntoFabric(selectedColumn); };
-  }
-  if (sendBwd) {
-    sendBwd.onclick = () => { if (!selectedColumn) return; const layers = buildScreenLayersModel(selectedColumn); const cur = layers.find(l => l.id === selectedLayerId); if (cur) setLayerZIndex(selectedColumn, selectedLayerId, Math.max(0, (cur.zIndex || 10) - 1)); renderMockupLayersPanel(selectedColumn); loadColumnIntoFabric(selectedColumn); };
-  }
-  if (sendBack) {
-    sendBack.onclick = () => { if (!selectedColumn) return; setLayerZIndex(selectedColumn, selectedLayerId, 0); renderMockupLayersPanel(selectedColumn); loadColumnIntoFabric(selectedColumn); };
-  }
+  if (bringFront) bringFront.onclick = () => moveSelectedLayerOrder("front");
+  if (bringFwd) bringFwd.onclick = () => moveSelectedLayerOrder("forward");
+  if (sendBwd) sendBwd.onclick = () => moveSelectedLayerOrder("backward");
+  if (sendBack) sendBack.onclick = () => moveSelectedLayerOrder("back");
 
   // Transform-panel z-order buttons (Section 2) -- same operations, separate button set.
   const tBringForward = document.getElementById("mk-bring-forward");
   const tSendBackward = document.getElementById("mk-send-backward");
   const tBringFront = document.getElementById("mk-bring-front");
   const tSendBack = document.getElementById("mk-send-back");
-  if (tBringForward) tBringForward.onclick = () => bringFwd?.onclick();
-  if (tSendBackward) tSendBackward.onclick = () => sendBwd?.onclick();
-  if (tBringFront) tBringFront.onclick = () => bringFront?.onclick();
-  if (tSendBack) tSendBack.onclick = () => sendBack?.onclick();
+  if (tBringForward) tBringForward.onclick = () => moveSelectedLayerOrder("forward");
+  if (tSendBackward) tSendBackward.onclick = () => moveSelectedLayerOrder("backward");
+  if (tBringFront) tBringFront.onclick = () => moveSelectedLayerOrder("front");
+  if (tSendBack) tSendBack.onclick = () => moveSelectedLayerOrder("back");
 
   // Duplicate / Delete layer (Section 2)
   const duplicateLayerBtn = document.getElementById("mk-duplicate-layer");
@@ -1230,14 +1417,55 @@ function deviceCenterYBase(layerId) {
  *  absolute px). Returns null for layer types with no editable transform
  *  (background never has a position; decorations aren't wired to the
  *  gizmo/transform system yet, matching canvas.js's existing scope). */
+export function moveSelectedLayerOrder(direction) {
+  if (!selectedColumn || !selectedLayerId) return;
+  const layers = buildScreenLayersModel(selectedColumn);
+  const curIdx = layers.findIndex((l) => l.id === selectedLayerId);
+  if (curIdx === -1) return;
+
+  if (direction === "forward" || direction === "fwd") {
+    if (curIdx === 0) return;
+    const targetIdx = curIdx - 1;
+    const temp = layers[curIdx];
+    layers[curIdx] = layers[targetIdx];
+    layers[targetIdx] = temp;
+  } else if (direction === "backward" || direction === "bwd") {
+    if (curIdx === layers.length - 1) return;
+    if (layers[curIdx + 1]?.id === "background") return;
+    const targetIdx = curIdx + 1;
+    const temp = layers[curIdx];
+    layers[curIdx] = layers[targetIdx];
+    layers[targetIdx] = temp;
+  } else if (direction === "front") {
+    if (curIdx === 0) return;
+    const [item] = layers.splice(curIdx, 1);
+    layers.unshift(item);
+  } else if (direction === "back") {
+    const [item] = layers.splice(curIdx, 1);
+    const bgIdx = layers.findIndex((l) => l.id === "background");
+    if (bgIdx !== -1) layers.splice(bgIdx, 0, item);
+    else layers.push(item);
+  }
+
+  const n = layers.length;
+  layers.forEach((layer, i) => {
+    if (layer.id === "background") {
+      setLayerZIndex(selectedColumn, layer.id, 0);
+    } else {
+      setLayerZIndex(selectedColumn, layer.id, (n - i) * 10);
+    }
+  });
+
+  setMockupDirty(true);
+  renderMockupLayersPanel(selectedColumn);
+  loadColumnIntoFabric(selectedColumn);
+}
+
 export function getLayerBox(style, layerId) {
   if (layerId === "title" || layerId === "subtitle") {
     const t = style[layerId];
     if (!t) return null;
-    // opacity was previously hardcoded to 1 here -- the universal Transform
-    // panel's opacity field silently did nothing for text layers. Now reads
-    // the same TextStyle.opacity field the text toolbar's slider writes.
-    return { x: t.x ?? 54, y: t.y ?? (layerId === "title" ? 80 : 200), width: 972, height: layerId === "title" ? 120 : 80, rotation: t.rotation ?? 0, opacity: t.opacity ?? (layerId === "subtitle" ? 0.8 : 1) };
+    return { x: t.x ?? 54, y: t.y ?? (layerId === "title" ? 80 : 200), width: 972, height: layerId === "title" ? 120 : 80, rotation: t.rotation ?? 0, opacity: t.opacity ?? (layerId === "subtitle" ? 0.8 : 1), flipH: !!t.flipH, flipV: !!t.flipV };
   }
   if (layerId.startsWith("asset:")) {
     const idx = parseInt(layerId.split(":")[1], 10);
@@ -1245,14 +1473,27 @@ export function getLayerBox(style, layerId) {
     if (!ast) return null;
     const width = (ast.widthPct / 100) * ARTBOARD_W;
     const height = ast.heightPct ? (ast.heightPct / 100) * ARTBOARD_H : width * 1.4;
-    // Top-left anchored, matching src/render/shared.ts's assetLayersMarkup()
-    // (`left:${xPct}%; top:${yPct}%`) -- not centered.
     return {
       x: (ast.xPct / 100) * ARTBOARD_W,
       y: (ast.yPct / 100) * ARTBOARD_H,
       width, height,
       rotation: ast.rotation || 0,
       opacity: ast.opacity ?? 1,
+      flipH: !!ast.flipH,
+      flipV: !!ast.flipV,
+    };
+  }
+  const pa = resolvePanoramaAsset(layerId);
+  if (pa) {
+    return {
+      x: pa.xPx ?? 0,
+      y: (pa.yPct / 100) * ARTBOARD_H,
+      width: pa.widthPx ?? 300,
+      height: (pa.heightPct / 100) * ARTBOARD_H,
+      rotation: pa.rotation || 0,
+      opacity: pa.opacity ?? 1,
+      flipH: !!pa.flipH,
+      flipV: !!pa.flipV,
     };
   }
   const dev = resolveDeviceLayer(style, layerId);
@@ -1261,14 +1502,11 @@ export function getLayerBox(style, layerId) {
     const height = 960 * (dev.size / 90);
     const cx = ARTBOARD_W / 2 + (dev.x / 100) * ARTBOARD_W;
     const cy = deviceCenterYBase(layerId) + (dev.y / 100) * ARTBOARD_H;
-    return { x: cx - width / 2, y: cy - height / 2, width, height, rotation: dev.rotation || 0, opacity: 1 };
+    return { x: cx - width / 2, y: cy - height / 2, width, height, rotation: dev.rotation || 0, opacity: 1, flipH: !!dev.flipH, flipV: !!dev.flipV };
   }
   return null;
 }
 
-/** Inverse of getLayerBox() -- writes a uniform artboard-px box back into
- *  whatever unit convention that layer type stores, mutating the style
- *  object in place (caller is responsible for persisting/re-rendering). */
 export function setLayerBox(style, layerId, box) {
   if (layerId === "title" || layerId === "subtitle") {
     const t = style[layerId];
@@ -1277,6 +1515,8 @@ export function setLayerBox(style, layerId, box) {
     t.y = Math.round(box.y);
     t.rotation = Math.round(box.rotation ?? 0);
     if (box.opacity != null) t.opacity = box.opacity;
+    if (box.flipH !== undefined) t.flipH = !!box.flipH;
+    if (box.flipV !== undefined) t.flipV = !!box.flipV;
     return;
   }
   if (layerId.startsWith("asset:")) {
@@ -1289,6 +1529,15 @@ export function setLayerBox(style, layerId, box) {
     ast.yPct = Math.round((box.y / ARTBOARD_H) * 100);
     ast.rotation = Math.round(box.rotation ?? 0);
     if (box.opacity !== undefined) ast.opacity = Math.max(0, Math.min(1, box.opacity));
+    if (box.flipH !== undefined) ast.flipH = !!box.flipH;
+    if (box.flipV !== undefined) ast.flipV = !!box.flipV;
+    return;
+  }
+  const pa = resolvePanoramaAsset(layerId);
+  if (pa) {
+    if (box.flipH !== undefined) pa.flipH = !!box.flipH;
+    if (box.flipV !== undefined) pa.flipV = !!box.flipV;
+    if (box.opacity !== undefined) pa.opacity = Math.max(0, Math.min(1, box.opacity));
     return;
   }
   const dev = resolveDeviceLayer(style, layerId);
@@ -1299,13 +1548,11 @@ export function setLayerBox(style, layerId, box) {
     dev.x = Math.round(((cx - ARTBOARD_W / 2) / ARTBOARD_W) * 100);
     dev.y = Math.round(((cy - deviceCenterYBase(layerId)) / ARTBOARD_H) * 100);
     dev.rotation = Math.round(box.rotation ?? 0);
+    if (box.flipH !== undefined) dev.flipH = !!box.flipH;
+    if (box.flipV !== undefined) dev.flipV = !!box.flipV;
   }
 }
 
-/** Duplicates the selected layer within its own kind (assets get a sibling
- *  entry; device layers get appended to extraDevices, since deviceOne is
- *  mandatory and deviceTwo is layout-preset-controlled). Title/subtitle/
- *  background are singletons per screen and aren't duplicable. */
 export function duplicateSelectedLayer() {
   if (!selectedColumn) return;
   const style = getSelectedCellStyle() || selectedColumn.style;
@@ -1339,42 +1586,13 @@ export function duplicateSelectedLayer() {
   loadColumnIntoFabric(selectedColumn);
 }
 
-/** Deletes the selected layer, when its kind supports removal (assets and
- *  extra device layers; deviceOne/deviceTwo/title/subtitle/background are
- *  structural singletons the schema always expects to exist).
- *
- *  Verifies against the LIVE Fabric selection at the exact moment this
- *  runs, not just the module's selectedLayerId variable -- a real bug:
- *  selectedLayerId is only ever written when something becomes selected,
- *  never cleared when the user deselects (clicks empty canvas), so it can
- *  go stale and still point at a layer that's no longer actually selected.
- *  Clicking Delete after deselecting would silently delete that stale
- *  previous layer -- exactly the "deletes something other than what's
- *  currently selected" failure mode this guards against. */
 export async function deleteSelectedLayer() {
-  if (!selectedColumn) return;
-  const activeObj = mockupFabricCanvas?.getActiveObject?.();
-  if (!activeObj || activeObj.layerId !== selectedLayerId) {
+  if (!selectedColumn || !selectedLayerId) {
     showToast("No layer is currently selected.", "info");
     return;
   }
-  const pa = resolvePanoramaAsset(selectedLayerId);
-  const style0 = getSelectedCellStyle() || selectedColumn.style;
-  const isAsset = selectedLayerId.startsWith("asset:");
-  const isExtraDevice = /^extra:\d+$/.test(selectedLayerId);
-  const isText = selectedLayerId === "title" || selectedLayerId === "subtitle";
-  const isDeviceTwo = selectedLayerId === "deviceTwo";
-  // deviceOne and background are the two truly structural, always-required
-  // pieces of a page (ColumnStyle.deviceOne/background aren't optional
-  // fields, and every layout preset assumes both exist) -- there's no
-  // schema-safe meaning of "delete" for them without a much larger data
-  // model change. Everything else genuinely CAN be removed: title/subtitle
-  // via a soft-delete (hidden + cleared, since they're also required
-  // fields, just ones a hidden/empty state can stand in for); assets,
-  // extra devices, deviceTwo, and panorama assets via real removal from
-  // their (optional) arrays/fields.
-  if (!pa && !isAsset && !isExtraDevice && !isText && !isDeviceTwo) {
-    showToast("This is the page's base device or background and can't be removed -- try the visibility toggle in the Layers panel instead.", "error");
+  if (selectedLayerId === "background") {
+    showToast("The page background cannot be deleted.", "error");
     return;
   }
   const layers = buildScreenLayersModel(selectedColumn);
@@ -1382,43 +1600,58 @@ export async function deleteSelectedLayer() {
   const ok = await showConfirm(`This permanently removes "${layerName}" and cannot be undone.`, "Delete this layer?", true);
   if (!ok) return;
 
+  const style = getSelectedCellStyle() || selectedColumn.style;
+  const pa = resolvePanoramaAsset(selectedLayerId);
+
   if (pa) {
     const idx = mockupProject.panoramaAssets.indexOf(pa);
     if (idx !== -1) mockupProject.panoramaAssets.splice(idx, 1);
+    setSelectedLayerId(null);
     setMockupDirty(true);
-    setSelectedLayerId("deviceOne");
     renderMockupLayersPanel(selectedColumn);
     syncSection2Inputs(selectedColumn);
-    // A panorama asset can show on more than one open canvas -- rebuild all
-    // of them (setActivePage does this), not just the active page.
     setActivePage(selectedColumn.id);
+    showToast(`"${layerName}" deleted.`, "success");
     return;
   }
-  const style = style0;
+
   if (!style) return;
-  if (isAsset) {
+  if (selectedLayerId === "deviceOne") {
+    if (style.deviceOne) {
+      style.deviceOne.deleted = true;
+      style.deviceOne.visible = false;
+    }
+  } else if (selectedLayerId === "deviceTwo") {
+    if (style.deviceTwo) {
+      style.deviceTwo.deleted = true;
+      style.deviceTwo.visible = false;
+    }
+  } else if (/^extra:\d+$/.test(selectedLayerId)) {
     const idx = parseInt(selectedLayerId.split(":")[1], 10);
-    if (!style.assetLayers?.[idx]) return;
-    style.assetLayers.splice(idx, 1);
-  } else if (isExtraDevice) {
+    if (style.extraDevices?.[idx]) {
+      style.extraDevices.splice(idx, 1);
+    }
+  } else if (selectedLayerId.startsWith("asset:")) {
     const idx = parseInt(selectedLayerId.split(":")[1], 10);
-    if (!style.extraDevices?.[idx]) return;
-    style.extraDevices.splice(idx, 1);
-  } else if (isDeviceTwo) {
-    style.deviceTwo = undefined;
-  } else if (isText) {
-    // Soft-delete: title/subtitle are required fields (every layout preset
-    // reads style.title/style.subtitle unconditionally), so "removed" means
-    // hidden and cleared rather than the field itself vanishing -- visually
-    // and functionally equivalent to deletion (nothing renders, nothing
-    // exports) without risking every render/canvas code path that assumes
-    // these two always exist.
+    if (style.assetLayers?.[idx]) {
+      style.assetLayers.splice(idx, 1);
+    }
+  } else if (selectedLayerId.startsWith("decoration:")) {
+    const idx = parseInt(selectedLayerId.split(":")[1], 10);
+    if (style.decorations?.[idx]) {
+      style.decorations.splice(idx, 1);
+    }
+  } else if (selectedLayerId === "title" || selectedLayerId === "subtitle") {
     const t = style[selectedLayerId];
-    t.text = "";
-    t.visible = false;
+    if (t) {
+      t.deleted = true;
+      t.text = "";
+      t.visible = false;
+    }
   }
+
+  setSelectedLayerId(null);
   setMockupDirty(true);
-  setSelectedLayerId("deviceOne");
   renderMockupLayersPanel(selectedColumn);
   syncSection2Inputs(selectedColumn);
   loadColumnIntoFabric(selectedColumn);
@@ -1459,23 +1692,40 @@ export function setupTransformPanelEvents() {
       else if (id === "mk-pos-y") commit({ y: v });
       else if (id === "mk-pos-w") commit({ width: v });
       else if (id === "mk-pos-h") commit({ height: v });
-      else if (id === "mk-pos-rot") commit({ rotation: v });
-      else if (id === "mk-pos-opacity") commit({ opacity: v / 100 });
+      else if (id === "mk-pos-rot") rotateSelectedObject(v, false);
+      else if (id === "mk-pos-opacity") commitOpacityChange(v);
     };
+  }
+
+  const rotApplyBtn = $id("mk-rot-apply-btn");
+  if (rotApplyBtn) {
+    rotApplyBtn.onclick = () => {
+      const curVal = Number($id("mk-pos-rot")?.value);
+      if (!Number.isNaN(curVal) && curVal !== 0) {
+        rotateSelectedObject(curVal, false);
+      } else {
+        rotateSelectedObject(90, true);
+      }
+    };
+  }
+
+  const posOpSlider = $id("mk-pos-opacity-slider");
+  if (posOpSlider) {
+    posOpSlider.oninput = () => handleOpacityInput(posOpSlider.value);
+    posOpSlider.onchange = () => commitOpacityChange(posOpSlider.value);
   }
 
   const flipH = $id("mk-pos-flip-h");
   const flipV = $id("mk-pos-flip-v");
-  if (flipH) flipH.onchange = () => { const ctx = currentBox(); const idx = selectedLayerId.startsWith("asset:") ? parseInt(selectedLayerId.split(":")[1], 10) : -1; const ast = ctx?.style.assetLayers?.[idx]; if (!ast) return; ast.flipH = flipH.checked; setMockupDirty(true); loadColumnIntoFabric(selectedColumn); };
-  if (flipV) flipV.onchange = () => { const ctx = currentBox(); const idx = selectedLayerId.startsWith("asset:") ? parseInt(selectedLayerId.split(":")[1], 10) : -1; const ast = ctx?.style.assetLayers?.[idx]; if (!ast) return; ast.flipV = flipV.checked; setMockupDirty(true); loadColumnIntoFabric(selectedColumn); };
+  if (flipH) flipH.onclick = () => flipSelectedObject("horizontal");
+  if (flipV) flipV.onclick = () => flipSelectedObject("vertical");
 
-  const align = (fn) => () => { const ctx = currentBox(); if (!ctx || !ctx.box) return; commit(fn(ctx.box)); syncSection2Inputs(selectedColumn); };
-  if ($id("mk-align-left")) $id("mk-align-left").onclick = align((b) => ({ x: 0 }));
-  if ($id("mk-align-center")) $id("mk-align-center").onclick = align((b) => ({ x: (ARTBOARD_W - b.width) / 2 }));
-  if ($id("mk-align-right")) $id("mk-align-right").onclick = align((b) => ({ x: ARTBOARD_W - b.width }));
-  if ($id("mk-align-top")) $id("mk-align-top").onclick = align((b) => ({ y: 0 }));
-  if ($id("mk-align-middle")) $id("mk-align-middle").onclick = align((b) => ({ y: (ARTBOARD_H - b.height) / 2 }));
-  if ($id("mk-align-bottom")) $id("mk-align-bottom").onclick = align((b) => ({ y: ARTBOARD_H - b.height }));
+  if ($id("mk-align-left")) $id("mk-align-left").onclick = () => alignSelectedObject("left");
+  if ($id("mk-align-center")) $id("mk-align-center").onclick = () => alignSelectedObject("center-x");
+  if ($id("mk-align-right")) $id("mk-align-right").onclick = () => alignSelectedObject("right");
+  if ($id("mk-align-top")) $id("mk-align-top").onclick = () => alignSelectedObject("top");
+  if ($id("mk-align-middle")) $id("mk-align-middle").onclick = () => alignSelectedObject("middle-y");
+  if ($id("mk-align-bottom")) $id("mk-align-bottom").onclick = () => alignSelectedObject("bottom");
 
   const addDeviceLayerBtn = $id("mk-add-device-layer-btn");
   if (addDeviceLayerBtn) {
@@ -1483,10 +1733,16 @@ export function setupTransformPanelEvents() {
       if (!selectedColumn) return;
       const style = getSelectedCellStyle() || selectedColumn.style;
       if (!style) return;
-      if (!style.extraDevices) style.extraDevices = [];
-      style.extraDevices.push({ size: 70, x: 0, y: 0, rotation: 0, brightness: 100, frameless: false, customName: `Device Frame ${style.extraDevices.length + 3}` });
+      if (style.deviceOne?.deleted) {
+        style.deviceOne.deleted = false;
+        style.deviceOne.visible = true;
+        setSelectedLayerId("deviceOne");
+      } else {
+        if (!style.extraDevices) style.extraDevices = [];
+        style.extraDevices.push({ size: 70, x: 0, y: 0, rotation: 0, brightness: 100, frameless: false, customName: `Device Frame ${style.extraDevices.length + 3}` });
+        setSelectedLayerId(`extra:${style.extraDevices.length - 1}`);
+      }
       setMockupDirty(true);
-      setSelectedLayerId(`extra:${style.extraDevices.length - 1}`);
       renderMockupLayersPanel(selectedColumn);
       syncSection2Inputs(selectedColumn);
       loadColumnIntoFabric(selectedColumn);
@@ -1528,15 +1784,14 @@ function syncTransformPanelInputs(style, layerId) {
   set("mk-pos-w", Math.round(box.width));
   set("mk-pos-h", Math.round(box.height));
   set("mk-pos-rot", Math.round(box.rotation));
-  set("mk-pos-opacity", Math.round((box.opacity ?? 1) * 100));
-  if (layerId.startsWith("asset:")) {
-    const idx = parseInt(layerId.split(":")[1], 10);
-    const ast = style.assetLayers?.[idx];
-    const flipH = document.getElementById("mk-pos-flip-h");
-    const flipV = document.getElementById("mk-pos-flip-v");
-    if (flipH) flipH.checked = !!ast?.flipH;
-    if (flipV) flipV.checked = !!ast?.flipV;
-  }
+  const pct = Math.round((box.opacity ?? 1) * 100);
+  set("mk-pos-opacity", pct);
+  set("mk-pos-opacity-slider", pct);
+
+  const flipH = document.getElementById("mk-pos-flip-h");
+  const flipV = document.getElementById("mk-pos-flip-v");
+  if (flipH) flipH.classList.toggle("is-active", !!box.flipH);
+  if (flipV) flipV.classList.toggle("is-active", !!box.flipV);
 
   // Two-page device link row -- only for a device layer while exactly two pages are paired.
   const linkRow = document.getElementById("mk-page-link-row");

@@ -430,12 +430,16 @@
                     <button id="mk-obj-flip-h" class="secondary small icon-btn" type="button" title="Flip Horizontal">⬌</button>
                     <button id="mk-obj-flip-v" class="secondary small icon-btn" type="button" title="Flip Vertical">⬍</button>
                     <div class="divider"></div>
-                    <label style="font-size:0.78rem; color:var(--text-secondary); display:flex; align-items:center; gap:0.25rem;" title="Rotation">
-                      🔄<input id="mk-obj-rotation" type="number" step="1" style="width:56px;" />
-                    </label>
-                    <label style="font-size:0.78rem; color:var(--text-secondary); display:flex; align-items:center; gap:0.25rem;" title="Opacity">
-                      ◐<input id="mk-obj-opacity" type="number" min="0" max="100" step="1" style="width:52px;" />%
-                    </label>
+                    <div style="display:flex; align-items:center; gap:0.2rem;" title="Rotate object by entering degrees or clicking rotate">
+                      <button id="mk-obj-rotate-btn" class="secondary small icon-btn" type="button" title="Rotate (+90° or specified degree)"></button>
+                      <input id="mk-obj-rotation" type="number" step="1" value="0" style="width:48px;" title="Rotation Angle (°)" />
+                    </div>
+                    <div class="divider"></div>
+                    <div style="display:flex; align-items:center; gap:0.35rem;" title="Adjust Opacity">
+                      <span id="mk-obj-opacity-icon" style="display:inline-flex; align-items:center;"></span>
+                      <input id="mk-obj-opacity-slider" type="range" min="0" max="100" step="1" value="100" style="width:70px; cursor:ew-resize;" title="Opacity Slider" />
+                      <span id="mk-obj-opacity-val" style="font-size:0.75rem; min-width:32px; font-variant-numeric:tabular-nums; color:var(--text-secondary);">100%</span>
+                    </div>
                     <div class="divider"></div>
                     <button id="mk-obj-duplicate" class="secondary small icon-btn" type="button" title="Duplicate (Ctrl+D)">⧉</button>
                     <button id="mk-obj-delete" class="secondary small icon-btn" type="button" title="Delete" style="color:#ef4444;">🗑</button>
@@ -653,18 +657,24 @@
           </div>
           <div class="grid-2-col" style="margin-bottom:0.75rem;">
             <div>
-              <label>Rotation (&deg;)</label>
+              <label style="display:flex; justify-content:space-between; align-items:center;">
+                <span>Rotation (&deg;)</span>
+                <button id="mk-rot-apply-btn" class="secondary small icon-btn" type="button" style="padding:0 4px; height:18px; font-size:0.7rem;" title="Rotate (+90°)">🔄 Rotate</button>
+              </label>
               <input id="mk-pos-rot" type="number" min="-360" max="360" step="1" value="0" style="width:100%;" />
             </div>
             <div>
               <label>Opacity (%)</label>
-              <input id="mk-pos-opacity" type="number" min="0" max="100" step="1" value="100" style="width:100%;" />
+              <div style="display:flex; align-items:center; gap:0.4rem; margin-top:0.2rem;">
+                <input id="mk-pos-opacity-slider" type="range" min="0" max="100" step="1" value="100" style="flex:1; cursor:ew-resize;" title="Opacity Slider" />
+                <input id="mk-pos-opacity" type="number" min="0" max="100" step="1" value="100" style="width:48px; text-align:right;" title="Opacity Percentage" />
+              </div>
             </div>
           </div>
-          <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.75rem;">
+          <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.75rem; align-items:center;">
             <label class="checkbox-row" style="flex:1;"><input id="mk-pos-aspect-lock" type="checkbox" /> 🔒 Lock aspect</label>
-            <label class="checkbox-row" style="flex:1;"><input id="mk-pos-flip-h" type="checkbox" /> ⬌ Flip H</label>
-            <label class="checkbox-row" style="flex:1;"><input id="mk-pos-flip-v" type="checkbox" /> ⬍ Flip V</label>
+            <button id="mk-pos-flip-h" class="secondary small" type="button" style="flex:1;" title="Flip Horizontal">⬌ Flip H</button>
+            <button id="mk-pos-flip-v" class="secondary small" type="button" style="flex:1;" title="Flip Vertical">⬍ Flip V</button>
           </div>
           <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:0.4rem; margin-bottom:0.75rem;">
             <button id="mk-align-left" class="secondary small" title="Align Left">⇤ Left</button>

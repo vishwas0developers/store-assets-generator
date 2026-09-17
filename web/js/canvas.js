@@ -882,6 +882,8 @@ export async function syncFabricObjectToModel(obj, group, originPageId) {
       if (obj.opacity !== undefined) style.title.opacity = obj.opacity;
       if (obj.lineHeight !== undefined) style.title.lineHeightMultiplier = obj.lineHeight;
       if (obj.charSpacing !== undefined) style.title.charSpacing = obj.charSpacing;
+      if (obj.flipX !== undefined) style.title.flipH = !!obj.flipX;
+      if (obj.flipY !== undefined) style.title.flipV = !!obj.flipY;
       break;
 
     case 'subtitle':
@@ -903,29 +905,14 @@ export async function syncFabricObjectToModel(obj, group, originPageId) {
       if (obj.opacity !== undefined) style.subtitle.opacity = obj.opacity;
       if (obj.lineHeight !== undefined) style.subtitle.lineHeightMultiplier = obj.lineHeight;
       if (obj.charSpacing !== undefined) style.subtitle.charSpacing = obj.charSpacing;
+      if (obj.flipX !== undefined) style.subtitle.flipH = !!obj.flipX;
+      if (obj.flipY !== undefined) style.subtitle.flipV = !!obj.flipY;
       break;
 
     case 'deviceOne': {
-      // Cross-page: has this drag pushed Device Frame 1's center outside
-      // its own page's [0,1080] box? If so, it's now a panorama-space
-      // object -- store its absolute panorama X (panoramaXPx) instead of
-      // the normal preset-relative x, and skip the preset-offset xPct
-      // write below (which would be meaningless once panoramaXPx governs
-      // X instead). Dragging it back fully onto its own page clears
-      // panoramaXPx, reverting to normal single-page positioning -- a
-      // clean round-trip in both directions.
       const w = typeof obj.getScaledWidth === 'function' ? obj.getScaledWidth() : obj.width;
       const originIndex = originPageId != null ? orderedColumnIndex(originPageId) : orderedColumnIndex(selectedColumn.id);
       const centerXOnOwnPage = obj.left + w / 2;
-      // "Spanning" means any part of the device's box sticks out past its
-      // own page's edge -- NOT just "has the center itself crossed," which
-      // misses the (very common) case of a wide device whose center is
-      // still within [0,1080] while its edge already visibly overflows
-      // onto the next page (a real bug found in testing: a drag that
-      // clearly pushed the device half onto the next page was never
-      // detected as spanning at all, because 1080/2 = 540 is exactly this
-      // device's own half-width away from the boundary, and centers close
-      // to it never leave [0,1080] before the edge already has).
       const isSpanning = (centerXOnOwnPage - w / 2) < 0 || (centerXOnOwnPage + w / 2) > 1080;
       const wasSpanning = style.deviceOne.panoramaXPx != null;
       if (isSpanning && originIndex >= 0) {
@@ -941,13 +928,9 @@ export async function syncFabricObjectToModel(obj, group, originPageId) {
         style.deviceOne.y = coords.yPct;
         style.deviceOne.size = coords.size;
         style.deviceOne.rotation = (obj.angle ?? 0) - (transform.d1.rotate || 0);
+        if (obj.flipX !== undefined) style.deviceOne.flipH = !!obj.flipX;
+        if (obj.flipY !== undefined) style.deviceOne.flipV = !!obj.flipY;
       }
-      // Entering or leaving panorama mode changes what every OTHER open
-      // canvas should show (a new projected mirror appears/disappears) --
-      // deferred to a fresh tick for the same reason syncPanoramaObjectToModel
-      // defers its rebuild: this runs from inside Fabric's own
-      // object:modified handler, and a synchronous full rebuild here would
-      // clear() the canvas Fabric is still mid-finalizing the transform on.
       if (isSpanning || wasSpanning) {
         setTimeout(async () => {
           if (selectedColumn) await setActivePage(selectedColumn.id);
@@ -967,6 +950,8 @@ export async function syncFabricObjectToModel(obj, group, originPageId) {
           style.deviceTwo.y = coords.yPct;
           style.deviceTwo.size = coords.size;
           style.deviceTwo.rotation = (obj.angle ?? 0) - (transform.d2 ? transform.d2.rotate || 0 : 0);
+          if (obj.flipX !== undefined) style.deviceTwo.flipH = !!obj.flipX;
+          if (obj.flipY !== undefined) style.deviceTwo.flipV = !!obj.flipY;
         }
       }
       break;
@@ -974,9 +959,6 @@ export async function syncFabricObjectToModel(obj, group, originPageId) {
 
     default: {
       if (obj.layerId?.startsWith('extra:')) {
-        // Free-form device layers have no presentation-recipe rotate/offset to
-        // subtract (unlike deviceOne/deviceTwo) -- inline the same stageCx/stageCy
-        // anchor deviceOne uses in loadColumnIntoFabric below, with zero preset offset.
         const idx = parseInt(obj.layerId.split(':')[1], 10);
         const dev = style.extraDevices?.[idx];
         const objW = typeof obj.getScaledWidth === 'function' ? obj.getScaledWidth() : obj.width;
@@ -988,12 +970,13 @@ export async function syncFabricObjectToModel(obj, group, originPageId) {
           dev.y = Math.round(((cy - stageCenter.cy) / objH) * 100);
           dev.size = Math.round((objH / deviceGeo.height) * 90);
           dev.rotation = obj.angle ?? 0;
+          if (obj.flipX !== undefined) dev.flipH = !!obj.flipX;
+          if (obj.flipY !== undefined) dev.flipV = !!obj.flipY;
         }
       } else if (obj.layerId?.startsWith('asset:')) {
         const idx = parseInt(obj.layerId.split(':')[1], 10);
         const ast = style.assetLayers && style.assetLayers[idx];
         if (ast) {
-          // Top-left anchored -- see the matching note in loadColumnIntoFabric's asset loop.
           if (obj.left !== undefined) ast.xPct = Math.round((obj.left / 1080) * 100);
           if (obj.top !== undefined) ast.yPct = Math.round((obj.top / 1920) * 100);
           if (obj.width !== undefined) ast.widthPct = Math.round((obj.width / 1080) * 100);
@@ -1209,9 +1192,11 @@ export async function loadColumnIntoFabric(column, { interactive = true } = {}) 
     textBackgroundColor: t.highlightColor || '',
     charSpacing: t.charSpacing || 0,
     opacity: t.opacity ?? 1,
+    flipX: !!t.flipH,
+    flipY: !!t.flipV,
     name: 'title',
     layerId: 'title',
-    visible: showText && t.visible !== false,
+    visible: showText && t.visible !== false && !t.deleted,
     selectable: !t.locked && interactive,
     evented: !t.locked && interactive,
     ...CONTROL_STYLE,
@@ -1224,7 +1209,7 @@ export async function loadColumnIntoFabric(column, { interactive = true } = {}) 
     titleText.set({ ...positionForRotation(titleX, titleY, titleText.width, titleText.height, t.rotation), angle: t.rotation });
     titleText.setCoords();
   }
-  queueObject(titleText, t.zIndex ?? 20);
+  if (!t.deleted) queueObject(titleText, t.zIndex ?? 20);
 
   // Subtitle sits titleHeight + its own 0.5em margin-top below the title,
   // exactly matching render.ts's `.subtitle { margin-top: .5em }` (em is
@@ -1249,9 +1234,11 @@ export async function loadColumnIntoFabric(column, { interactive = true } = {}) 
     textBackgroundColor: s.highlightColor || '',
     charSpacing: s.charSpacing || 0,
     opacity: s.opacity ?? 0.8,
+    flipX: !!s.flipH,
+    flipY: !!s.flipV,
     name: 'subtitle',
     layerId: 'subtitle',
-    visible: showText && s.visible !== false,
+    visible: showText && s.visible !== false && !s.deleted,
     selectable: !s.locked && interactive,
     evented: !s.locked && interactive,
     ...CONTROL_STYLE,
@@ -1260,7 +1247,7 @@ export async function loadColumnIntoFabric(column, { interactive = true } = {}) 
     subtitleText.set({ ...positionForRotation(subtitleX, subtitleY, subtitleText.width, subtitleText.height, s.rotation), angle: s.rotation });
     subtitleText.setCoords();
   }
-  queueObject(subtitleText, s.zIndex ?? 19);
+  if (!s.deleted) queueObject(subtitleText, s.zIndex ?? 19);
 
   // Stage dimensions & centering offsets
   const { cx: stageCx, cy: stageCy } = fabricStageCenter(column);
@@ -1298,7 +1285,7 @@ export async function loadColumnIntoFabric(column, { interactive = true } = {}) 
   const d1Rotation = (transform.d1.rotate || 0) + (d1.rotation || 0);
 
   const d1Source = resolveSourceFor(d1.sourceId);
-  if (!skipOwnDeviceOne) {
+  if (!skipOwnDeviceOne && d1.visible !== false && !d1.deleted) {
     const deviceOne = await buildDeviceGroup(d1, 'deviceOne', d1Left, d1Top, d1W, d1H, d1Rotation, activeDeviceId, activeDeviceVariant, d1Source, interactive);
     queueObject(deviceOne, d1.zIndex ?? 10);
   }
@@ -1529,6 +1516,8 @@ export async function buildDeviceGroup(device, layerId, left, top, width, height
   const group = new fabric.Group(items, {
     ...positionForRotation(left, top, width, height, rotation),
     angle: rotation,
+    flipX: !!device.flipH,
+    flipY: !!device.flipV,
     name: layerId,
     layerId,
     visible: device.visible !== false,

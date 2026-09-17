@@ -193,9 +193,11 @@ export function cellHtml(project: MockupProject, deviceRowId: string, columnId: 
       d1XPct = ((localCenterXPx - 540) / d1WidthPx) * 100;
     }
   }
-  const d1Transform = `translate(${d1XPct}%, ${d1.y}%) scale(${d1.size / 90}) rotate(${transform.deviceOne.rotate + d1.rotation}deg)`;
-  let deviceLayers = skipOwnDeviceOne ? "" : `<div class="layer" style="transform:${d1Transform};z-index:${d1Z}">${layerMarkup(deviceRow.deviceId, screenshotUri, d1, deviceRow.variant)}</div>`;
-  let maxStageZ = skipOwnDeviceOne ? 0 : d1Z;
+  const d1Flip = `${d1.flipH ? " scaleX(-1)" : ""}${d1.flipV ? " scaleY(-1)" : ""}`;
+  const d1Transform = `translate(${d1XPct}%, ${d1.y}%) scale(${d1.size / 90}) rotate(${transform.deviceOne.rotate + d1.rotation}deg)${d1Flip}`;
+  const isD1Hidden = skipOwnDeviceOne || d1.visible === false || (d1 as any).deleted;
+  let deviceLayers = isD1Hidden ? "" : `<div class="layer" style="transform:${d1Transform};z-index:${d1Z}">${layerMarkup(deviceRow.deviceId, screenshotUri, d1, deviceRow.variant)}</div>`;
+  let maxStageZ = isD1Hidden ? 0 : d1Z;
 
   // Cross-page: any OTHER column's Device Frame 1 that's spanning
   // (panoramaXPx set) and whose box intersects THIS page gets projected in
@@ -207,7 +209,7 @@ export function cellHtml(project: MockupProject, deviceRowId: string, columnId: 
   for (const otherCol of project.columns) {
     if (otherCol.id === columnId) continue;
     const otherD1 = otherCol.style.deviceOne;
-    if (otherD1?.panoramaXPx == null) continue;
+    if (!otherD1 || otherD1.panoramaXPx == null || otherD1.visible === false || (otherD1 as any).deleted) continue;
     const otherIndex = orderedColumnIds.indexOf(otherCol.id);
     if (otherIndex < 0) continue;
     const otherGeo = resolveGeometry(DEVICE_REGISTRY[deviceRow.deviceId] ?? DEVICE_REGISTRY["phone"], deviceRow.variant);
@@ -218,12 +220,13 @@ export function cellHtml(project: MockupProject, deviceRowId: string, columnId: 
     const otherSource = project.sources.find((s) => s.id === otherD1.sourceId) ?? source;
     const otherUri = otherSource ? ctx.resolveUri(otherSource.file) : screenshotUri;
     const otherZ = otherD1.zIndex ?? 10;
-    const otherTransform = `translate(${otherXPct}%, ${otherD1.y}%) scale(${otherD1.size / 90}) rotate(${transform.deviceOne.rotate + otherD1.rotation}deg)`;
+    const otherFlip = `${otherD1.flipH ? " scaleX(-1)" : ""}${otherD1.flipV ? " scaleY(-1)" : ""}`;
+    const otherTransform = `translate(${otherXPct}%, ${otherD1.y}%) scale(${otherD1.size / 90}) rotate(${transform.deviceOne.rotate + otherD1.rotation}deg)${otherFlip}`;
     deviceLayers += `<div class="layer" style="transform:${otherTransform};z-index:${otherZ}">${layerMarkup(deviceRow.deviceId, otherUri, otherD1, deviceRow.variant)}</div>`;
     maxStageZ = Math.max(maxStageZ, otherZ);
   }
 
-  if (preset.twoDevices && style.deviceTwo && transform.deviceTwo) {
+  if (preset.twoDevices && style.deviceTwo && transform.deviceTwo && style.deviceTwo.visible !== false && !(style.deviceTwo as any).deleted) {
     const d2 = style.deviceTwo;
     const d2Z = d2.zIndex ?? 9;
     const source2 = project.sources.find((s) => s.id === d2.sourceId) ?? source;
@@ -232,7 +235,8 @@ export function cellHtml(project: MockupProject, deviceRowId: string, columnId: 
       : ctx.resolveUri
       ? ctx.resolveUri("__second_device__")
       : placeholderScreenUri(ctx.columnIndex + 1);
-    const d2Transform = `translate(${transform.deviceTwo.xPct + d2.x}%, ${transform.deviceTwo.yPct + d2.y}%) scale(${d2.size / 90}) rotate(${transform.deviceTwo.rotate + d2.rotation}deg)`;
+    const d2Flip = `${d2.flipH ? " scaleX(-1)" : ""}${d2.flipV ? " scaleY(-1)" : ""}`;
+    const d2Transform = `translate(${transform.deviceTwo.xPct + d2.x}%, ${transform.deviceTwo.yPct + d2.y}%) scale(${d2.size / 90}) rotate(${transform.deviceTwo.rotate + d2.rotation}deg)${d2Flip}`;
     deviceLayers += `<div class="layer" style="transform:${d2Transform};z-index:${d2Z}">${layerMarkup(deviceRow.deviceId, uri2, d2, deviceRow.variant)}</div>`;
     maxStageZ = Math.max(maxStageZ, d2Z);
   }
@@ -241,10 +245,12 @@ export function cellHtml(project: MockupProject, deviceRowId: string, columnId: 
   // offset (there isn't one defined past two devices), positioned purely by
   // their own x/y/size/rotation, same as deviceOne/deviceTwo's own sliders.
   (style.extraDevices ?? []).forEach((extra, i) => {
+    if (extra.visible === false || (extra as any).deleted) return;
     const extraZ = extra.zIndex ?? (8 - i);
     const extraSource = project.sources.find((s) => s.id === extra.sourceId) ?? source;
     const extraUri = extraSource ? ctx.resolveUri(extraSource.file) : screenshotUri;
-    const extraTransform = `translate(${extra.x}%, ${extra.y}%) scale(${extra.size / 90}) rotate(${extra.rotation}deg)`;
+    const extraFlip = `${extra.flipH ? " scaleX(-1)" : ""}${extra.flipV ? " scaleY(-1)" : ""}`;
+    const extraTransform = `translate(${extra.x}%, ${extra.y}%) scale(${extra.size / 90}) rotate(${extra.rotation}deg)${extraFlip}`;
     deviceLayers += `<div class="layer" style="transform:${extraTransform};z-index:${extraZ}">${layerMarkup(deviceRow.deviceId, extraUri, extra, deviceRow.variant)}</div>`;
     maxStageZ = Math.max(maxStageZ, extraZ);
   });
