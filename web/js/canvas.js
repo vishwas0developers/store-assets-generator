@@ -279,7 +279,22 @@ function attachPageCanvasHandlers(canvas, pageId) {
   // interaction, so a cross-page asset can be grabbed from an inactive page
   // without needing to activate that page first.
   canvas.on('mouse:down', (e) => {
-    if (!e.target && pageId !== selectedColumn?.id) setActivePage(pageId);
+    console.log('[TOOLBAR-TRACE] canvas mouse:down target=', e.target?.layerId, 'pageId=', pageId, 'currentSelected=', selectedLayerId);
+    if (e.target?.layerId === 'title' || e.target?.layerId === 'subtitle') {
+      setSelectedLayerId(e.target.layerId);
+      if (selectedColumn && typeof window.syncSection2Inputs === 'function') {
+        window.syncSection2Inputs(selectedColumn, e.target.layerId);
+      }
+    } else if (!e.target) {
+      if (pageId !== selectedColumn?.id) {
+        setActivePage(pageId);
+      }
+      if (selectedLayerId === 'title' || selectedLayerId === 'subtitle') {
+        console.log('[TOOLBAR-TRACE] Empty canvas clicked while text selected, clearing text selection');
+        setSelectedLayerId(null);
+        if (typeof window.hideTextToolbar === 'function') window.hideTextToolbar();
+      }
+    }
   });
 }
 
@@ -763,6 +778,7 @@ async function syncPanoramaDeviceObjectToModel(obj, originPageId) {
 // the single-object inspector panel edits, same as before for a single pick.
 function handleFabricSelection(e) {
   const objs = (e.selected || []).filter((o) => o.layerId);
+  console.log('[TOOLBAR-TRACE] handleFabricSelection objs=', objs.map(o => o.layerId));
   if (!objs.length) return;
   setSelectedLayerIds(objs.map((o) => o.layerId));
   setSelectedLayerId(objs[0].layerId);
@@ -775,16 +791,16 @@ function handleFabricSelection(e) {
 
 function onFabricSelectionCreated(e) { handleFabricSelection(e); }
 function onFabricSelectionUpdated(e) { handleFabricSelection(e); }
-function onFabricSelectionCleared() {
+function onFabricSelectionCleared(e) {
+  console.log('[TOOLBAR-TRACE] selection:cleared. selectedLayerId=', selectedLayerId, 'activeObj=', mockupFabricCanvas?.getActiveObject()?.layerId);
   // Hides the text-editing toolbar when the user deselects everything --
   // without this, it stayed visible/stale after clicking away from a text
-  // layer onto empty canvas. BUT: loadColumnIntoFabric's rebuild (e.g. from
-  // the Layers panel's onclick, which syncs the toolbar THEN rebuilds the
-  // canvas) also fires this transiently even while the logical selection is
-  // still a text layer -- only really hide when selectedLayerId itself
-  // isn't a text layer, so that transient clear-during-rebuild doesn't
-  // clobber a sync that already ran correctly.
+  // layer onto empty canvas. BUT: clicking an already selected text object
+  // or loadColumnIntoFabric's rebuild can fire selection:cleared transiently.
+  // Never hide if the current selection or the event target is a text layer.
   if (selectedLayerId === 'title' || selectedLayerId === 'subtitle') return;
+  const activeObj = mockupFabricCanvas?.getActiveObject();
+  if (activeObj?.layerId === 'title' || activeObj?.layerId === 'subtitle') return;
   if (typeof window.hideTextToolbar === 'function') window.hideTextToolbar();
 }
 

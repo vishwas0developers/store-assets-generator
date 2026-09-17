@@ -1,6 +1,7 @@
 // Main module — app bootstrapping, event wiring, and module initialization.
 // Binds all core workflows and attaches window helpers for compatibility.
 
+import { applyStandardIcons } from './icons.js';
 import {
   initMockupFabricCanvas,
   loadColumnIntoFabric,
@@ -44,6 +45,7 @@ import {
   renderMockupDevicesSection,
   deleteSelectedLayer,
   setupTextToolbarEvents,
+  setupObjectToolbarEvents,
   hideTextToolbar
 } from './editor.js';
 import {
@@ -556,6 +558,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   initCanvasPanZoomEvents();
   setupInspectorEvents();
   setupTextToolbarEvents();
+  setupObjectToolbarEvents();
+  applyStandardIcons();
   setupExportHandlers();
   setupProjectsHandlers();
   setupSettingsAndModals();

@@ -391,18 +391,55 @@
             <!-- Workspace: Studio Canvas Container (fixed-height viewport) -->
             <div class="studio-editor-workspace">
               <div class="studio-canvas-container">
-                <!-- Text-editing toolbar -- shown only while a title/subtitle text
-                     layer is selected (see canvas.js's handleFabricSelection ->
-                     editor.js's syncTextToolbar). Sits directly above the canvas
-                     viewport with zero gap (mockup-text-toolbar/mockup-canvas-viewport
-                     share a border and touch flush -- see app.css). -->
-                <div class="mockup-text-toolbar" id="mockup-text-toolbar" style="display:none;">
-                  <!-- TinyMCE renders its real toolbar (standard icons/patterns)
-                       into this host div -- see editor.js's initTextToolbar().
-                       The actual editable surface is the hidden #mk-tinymce-target
-                       below; edits there are the source of truth, synced into the
-                       currently selected title/subtitle TextStyle only. -->
-                  <div id="mk-tinymce-toolbar-host" style="display:flex; flex:1; min-width:0;"></div>
+                <!-- Contextual object toolbar -- ALWAYS visible (never hidden/
+                     re-rendered on selection change, only its two inner groups
+                     are swapped -- see editor.js's syncObjectToolbar). Sits
+                     directly above the canvas viewport with zero gap (shares a
+                     border and touches flush -- see app.css). -->
+                <div class="mockup-text-toolbar" id="mockup-text-toolbar">
+                  <!-- Text-editing group: TinyMCE renders its real toolbar
+                       (standard icons/patterns) into this host div -- see
+                       editor.js's setupTextToolbarEvents(). The actual editable
+                       surface is the hidden #mk-tinymce-target below; edits
+                       there are the source of truth, synced into the currently
+                       selected title/subtitle TextStyle only. Shown only when
+                       a text layer is selected. -->
+                  <div id="mk-tinymce-toolbar-host" style="display:none; flex:1; min-width:0;"></div>
+
+                  <!-- Object-editing group: icon-only buttons for any
+                       non-text selection (device/asset/image/background).
+                       Every button proxies to the exact same handler already
+                       wired to its Transform-panel twin in the right sidebar
+                       (see editor.js's setupObjectToolbarEvents) -- same
+                       action, same underlying function, only the presentation
+                       (icon-only here vs icon+label there) differs. Shown by
+                       default (including when nothing is selected, disabled). -->
+                  <div id="mk-object-toolbar" style="display:flex; flex:1; min-width:0; align-items:center; gap:0.3rem; flex-wrap:wrap;">
+                    <button id="mk-obj-bring-front" class="secondary small icon-btn" type="button" title="Bring to Front">⏫</button>
+                    <button id="mk-obj-bring-fwd" class="secondary small icon-btn" type="button" title="Bring Forward">🔼</button>
+                    <button id="mk-obj-send-bwd" class="secondary small icon-btn" type="button" title="Send Backward">🔽</button>
+                    <button id="mk-obj-send-back" class="secondary small icon-btn" type="button" title="Send to Back">⏬</button>
+                    <div class="divider"></div>
+                    <button id="mk-obj-align-left" class="secondary small icon-btn" type="button" title="Align Left">⇤</button>
+                    <button id="mk-obj-align-center" class="secondary small icon-btn" type="button" title="Align Center (X)">⇔</button>
+                    <button id="mk-obj-align-right" class="secondary small icon-btn" type="button" title="Align Right">⇥</button>
+                    <button id="mk-obj-align-top" class="secondary small icon-btn" type="button" title="Align Top">⤒</button>
+                    <button id="mk-obj-align-middle" class="secondary small icon-btn" type="button" title="Align Middle (Y)">⇕</button>
+                    <button id="mk-obj-align-bottom" class="secondary small icon-btn" type="button" title="Align Bottom">⤓</button>
+                    <div class="divider"></div>
+                    <button id="mk-obj-flip-h" class="secondary small icon-btn" type="button" title="Flip Horizontal">⬌</button>
+                    <button id="mk-obj-flip-v" class="secondary small icon-btn" type="button" title="Flip Vertical">⬍</button>
+                    <div class="divider"></div>
+                    <label style="font-size:0.78rem; color:var(--text-secondary); display:flex; align-items:center; gap:0.25rem;" title="Rotation">
+                      🔄<input id="mk-obj-rotation" type="number" step="1" style="width:56px;" />
+                    </label>
+                    <label style="font-size:0.78rem; color:var(--text-secondary); display:flex; align-items:center; gap:0.25rem;" title="Opacity">
+                      ◐<input id="mk-obj-opacity" type="number" min="0" max="100" step="1" style="width:52px;" />%
+                    </label>
+                    <div class="divider"></div>
+                    <button id="mk-obj-duplicate" class="secondary small icon-btn" type="button" title="Duplicate (Ctrl+D)">⧉</button>
+                    <button id="mk-obj-delete" class="secondary small icon-btn" type="button" title="Delete" style="color:#ef4444;">🗑</button>
+                  </div>
                 </div>
                 <!-- Off-screen (not display:none -- contenteditable needs real
                      layout to accept focus/selection) editing surface TinyMCE
@@ -518,10 +555,10 @@
             <!-- Layer items rendered by app.js -->
           </div>
           <div style="margin-top: 0.5rem; display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.3rem;">
-            <button id="mk-layer-bring-front" class="secondary xsmall" style="width:auto;" type="button">Front</button>
-            <button id="mk-layer-bring-fwd" class="secondary xsmall" style="width:auto;" type="button">Fwd</button>
-            <button id="mk-layer-send-bwd" class="secondary xsmall" style="width:auto;" type="button">Bwd</button>
-            <button id="mk-layer-send-back" class="secondary xsmall" style="width:auto;" type="button">Back</button>
+            <button id="mk-layer-bring-front" class="secondary xsmall" style="width:auto;" type="button" title="Bring to Front">⏫ Front</button>
+            <button id="mk-layer-bring-fwd" class="secondary xsmall" style="width:auto;" type="button" title="Bring Forward">🔼 Fwd</button>
+            <button id="mk-layer-send-bwd" class="secondary xsmall" style="width:auto;" type="button" title="Send Backward">🔽 Bwd</button>
+            <button id="mk-layer-send-back" class="secondary xsmall" style="width:auto;" type="button" title="Send to Back">⏬ Back</button>
           </div>
           <button id="mk-add-device-layer-btn" class="secondary small" type="button" style="width:100%; margin-top:0.5rem;" title="Add another freely-positioned device to this screen">+ Add Device Layer</button>
         </div>
@@ -625,27 +662,27 @@
             </div>
           </div>
           <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.75rem;">
-            <label class="checkbox-row" style="flex:1;"><input id="mk-pos-aspect-lock" type="checkbox" /> Lock aspect</label>
-            <label class="checkbox-row" style="flex:1;"><input id="mk-pos-flip-h" type="checkbox" /> Flip H</label>
-            <label class="checkbox-row" style="flex:1;"><input id="mk-pos-flip-v" type="checkbox" /> Flip V</label>
+            <label class="checkbox-row" style="flex:1;"><input id="mk-pos-aspect-lock" type="checkbox" /> 🔒 Lock aspect</label>
+            <label class="checkbox-row" style="flex:1;"><input id="mk-pos-flip-h" type="checkbox" /> ⬌ Flip H</label>
+            <label class="checkbox-row" style="flex:1;"><input id="mk-pos-flip-v" type="checkbox" /> ⬍ Flip V</label>
           </div>
           <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:0.4rem; margin-bottom:0.75rem;">
-            <button id="mk-align-left" class="secondary small" title="Align Left">⇤</button>
-            <button id="mk-align-center" class="secondary small" title="Align Center (X)">⇔</button>
-            <button id="mk-align-right" class="secondary small" title="Align Right">⇥</button>
-            <button id="mk-align-top" class="secondary small" title="Align Top">⤒</button>
-            <button id="mk-align-middle" class="secondary small" title="Align Middle (Y)">⇕</button>
-            <button id="mk-align-bottom" class="secondary small" title="Align Bottom">⤓</button>
+            <button id="mk-align-left" class="secondary small" title="Align Left">⇤ Left</button>
+            <button id="mk-align-center" class="secondary small" title="Align Center (X)">⇔ Center</button>
+            <button id="mk-align-right" class="secondary small" title="Align Right">⇥ Right</button>
+            <button id="mk-align-top" class="secondary small" title="Align Top">⤒ Top</button>
+            <button id="mk-align-middle" class="secondary small" title="Align Middle (Y)">⇕ Middle</button>
+            <button id="mk-align-bottom" class="secondary small" title="Align Bottom">⤓ Bottom</button>
           </div>
           <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:0.4rem; margin-bottom:0.75rem;">
-            <button id="mk-bring-forward" class="secondary small">Bring Forward</button>
-            <button id="mk-send-backward" class="secondary small">Send Backward</button>
-            <button id="mk-bring-front" class="primary small">Bring to Front</button>
-            <button id="mk-send-back" class="secondary small">Send to Back</button>
+            <button id="mk-bring-forward" class="secondary small">🔼 Bring Forward</button>
+            <button id="mk-send-backward" class="secondary small">🔽 Send Backward</button>
+            <button id="mk-bring-front" class="primary small">⏫ Bring to Front</button>
+            <button id="mk-send-back" class="secondary small">⏬ Send to Back</button>
           </div>
           <div style="display:flex; gap:0.4rem;">
-            <button id="mk-duplicate-layer" class="secondary small" style="flex:1;">Duplicate (Ctrl+D)</button>
-            <button id="mk-delete-layer" class="primary small" style="flex:1; color:#ef4444; border-color:rgba(239,68,68,0.3);">Delete</button>
+            <button id="mk-duplicate-layer" class="secondary small" style="flex:1;">⧉ Duplicate (Ctrl+D)</button>
+            <button id="mk-delete-layer" class="primary small" style="flex:1; color:#ef4444; border-color:rgba(239,68,68,0.3);">🗑 Delete</button>
           </div>
           <!-- Two-page device linking: visible only for a device layer while exactly two pages are paired (ctrl/shift-click matrix page headers). -->
           <div id="mk-page-link-row" style="display:none; margin-top:0.5rem;">

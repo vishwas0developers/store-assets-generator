@@ -632,14 +632,34 @@ export function syncSection2Inputs(col, layerId) {
   syncTextToolbar(style, lid);
 }
 
-/** Explicit hide, for when the selection is cleared entirely (clicking
- *  empty canvas) -- syncSection2Inputs(col, null) can't be used for this,
- *  since it falls back to the module's own `selectedLayerId` (the stale
- *  PREVIOUS selection) whenever its layerId argument is falsy. */
+/** Explicit switch back to the object-tools group, for when the selection is
+ *  cleared entirely (clicking empty canvas) -- syncSection2Inputs(col, null)
+ *  can't be used for this, since it falls back to the module's own
+ *  `selectedLayerId` (the stale PREVIOUS selection) whenever its layerId
+ *  argument is falsy. The outer toolbar bar itself is never hidden -- only
+ *  which inner group is visible changes, per the "always visible, only swap
+ *  controls" requirement. */
 export function hideTextToolbar() {
-  const toolbar = document.getElementById("mockup-text-toolbar");
-  if (toolbar) toolbar.style.display = "none";
+  console.log("[TOOLBAR-TRACE] hideTextToolbar called from:", new Error().stack);
+  showObjectToolbarGroup();
   if (mceEditor) mceEditor.getBody().contentEditable = "false";
+  syncObjectToolbar(null, null);
+}
+
+function showTextToolbarGroup() {
+  console.log("[TOOLBAR-TRACE] showTextToolbarGroup called");
+  const textGroup = document.getElementById("mk-tinymce-toolbar-host");
+  const objGroup = document.getElementById("mk-object-toolbar");
+  if (textGroup) textGroup.style.display = "flex";
+  if (objGroup) objGroup.style.display = "none";
+}
+
+function showObjectToolbarGroup() {
+  console.log("[TOOLBAR-TRACE] showObjectToolbarGroup called from:", new Error().stack);
+  const textGroup = document.getElementById("mk-tinymce-toolbar-host");
+  const objGroup = document.getElementById("mk-object-toolbar");
+  if (textGroup) textGroup.style.display = "none";
+  if (objGroup) objGroup.style.display = "flex";
 }
 
 // render.ts's textBlock()/canvas.js's copyAlign both apply ONE shared
@@ -681,6 +701,7 @@ export function setupTextToolbarEvents() {
       target: document.getElementById("mk-tinymce-target"),
       license_key: "gpl",
       inline: true,
+      toolbar_persist: true,
       menubar: false,
       statusbar: false,
       branding: false,
@@ -698,6 +719,8 @@ export function setupTextToolbarEvents() {
       setup(editor) {
         mceEditor = editor;
         editor.on("init", () => resolve(editor));
+        editor.on("focus", () => console.log("[TOOLBAR-TRACE] TinyMCE focus"));
+        editor.on("blur", () => console.log("[TOOLBAR-TRACE] TinyMCE blur"));
         // Any of these fire for both content edits (typing) and format
         // toolbar clicks (bold/align/font/...) -- one handler covers every
         // control TinyMCE provides instead of one listener per button.
@@ -785,18 +808,26 @@ function syncEditorToModel() {
 function syncTextToolbar(style, layerId) {
   const toolbar = document.getElementById("mockup-text-toolbar");
   if (!toolbar) return;
-  const textStyle = layerId === "title" ? style?.title : layerId === "subtitle" ? style?.subtitle : null;
-  if (!textStyle) {
-    toolbar.style.display = "none";
+  const targetLayerId = (layerId === "title" || layerId === "subtitle")
+    ? layerId
+    : (layerId && layerId !== "title" && layerId !== "subtitle")
+    ? layerId
+    : selectedLayerId;
+  const isTextLayer = targetLayerId === "title" || targetLayerId === "subtitle";
+  const textStyle = targetLayerId === "title" ? style?.title : targetLayerId === "subtitle" ? style?.subtitle : null;
+
+  if (!isTextLayer || !textStyle) {
+    showObjectToolbarGroup();
     if (mceEditor) mceEditor.getBody().contentEditable = "false";
+    syncObjectToolbar(style, layerId);
     return;
   }
-  toolbar.style.display = "flex";
+  showTextToolbarGroup();
   if (!mceReady) setupTextToolbarEvents();
   mceReady?.then((editor) => {
     editor.getBody().contentEditable = "true";
     mceSuppressSync = true;
-    const weight = textStyle.fontWeightNum ?? (layerId === "title" ? (textStyle.bold === false ? 400 : 700) : (textStyle.bold ? 700 : 400));
+    const weight = textStyle.fontWeightNum ?? (targetLayerId === "title" ? (textStyle.bold === false ? 400 : 700) : (textStyle.bold ? 700 : 400));
     const align = (style[TEXT_ALIGN_FIELD_OWNER]?.align) || "center";
     const cssParts = [
       `font-weight:${weight}`,
@@ -812,7 +843,7 @@ function syncTextToolbar(style, layerId) {
       // name (already done correctly in font_family_formats above) avoids
       // that entirely.
       `font-family:${quoteFontFamily(textStyle.fontFamily || "Segoe UI, Roboto, sans-serif")}`,
-      `font-size:${Math.round(textStyle.size ?? (layerId === "title" ? 58 : 36))}px`,
+      `font-size:${Math.round(textStyle.size ?? (targetLayerId === "title" ? 58 : 36))}px`,
       `color:${textStyle.color || "#ffffff"}`,
       `line-height:${textStyle.lineHeightMultiplier ?? 1.15}`,
       `letter-spacing:${((textStyle.charSpacing || 0) / 1000) * (textStyle.size ?? 40)}px`,
@@ -823,6 +854,75 @@ function syncTextToolbar(style, layerId) {
     editor.selection.select(editor.getBody(), true);
     mceSuppressSync = false;
   });
+}
+
+/** Populates the icon-only object toolbar's rotation/opacity readouts and
+ *  enables/disables its buttons based on whether anything is actually
+ *  selected. Every button in this group is wired once (setupObjectToolbarEvents,
+ *  called at bootstrap) to just click/dispatch on the identical Transform-panel
+ *  control in the right sidebar -- so this function only needs to mirror
+ *  displayed values, never duplicate any actual mutation logic. */
+function syncObjectToolbar(style, layerId) {
+  const hasSelection = !!layerId;
+  const box = hasSelection ? getLayerBox(style, layerId) : null;
+  const rot = document.getElementById("mk-obj-rotation");
+  if (rot) rot.value = box ? Math.round(box.rotation ?? 0) : "";
+  const op = document.getElementById("mk-obj-opacity");
+  if (op) op.value = box ? Math.round((box.opacity ?? 1) * 100) : "";
+  ["mk-obj-bring-front", "mk-obj-bring-fwd", "mk-obj-send-bwd", "mk-obj-send-back",
+   "mk-obj-align-left", "mk-obj-align-center", "mk-obj-align-right",
+   "mk-obj-align-top", "mk-obj-align-middle", "mk-obj-align-bottom",
+   "mk-obj-flip-h", "mk-obj-flip-v", "mk-obj-rotation", "mk-obj-opacity",
+   "mk-obj-duplicate", "mk-obj-delete"].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.disabled = !hasSelection;
+  });
+}
+
+/** Wires the icon-only object toolbar -- every button proxies straight to
+ *  its already-wired Transform-panel twin (setupInspectorEvents/
+ *  setupTransformPanelEvents, both called at the same bootstrap point) via a
+ *  plain .click()/change-event forward, so this is the exact same action
+ *  and underlying function as the right sidebar, never a second
+ *  implementation of the same behavior. Called once at bootstrap, same as
+ *  setupTextToolbarEvents. */
+export function setupObjectToolbarEvents() {
+  const proxyClick = (fromId, toId) => {
+    const from = document.getElementById(fromId);
+    const to = document.getElementById(toId);
+    if (from && to) from.onclick = () => to.click();
+  };
+  proxyClick("mk-obj-bring-front", "mk-bring-front");
+  proxyClick("mk-obj-bring-fwd", "mk-bring-forward");
+  proxyClick("mk-obj-send-bwd", "mk-send-backward");
+  proxyClick("mk-obj-send-back", "mk-send-back");
+  proxyClick("mk-obj-align-left", "mk-align-left");
+  proxyClick("mk-obj-align-center", "mk-align-center");
+  proxyClick("mk-obj-align-right", "mk-align-right");
+  proxyClick("mk-obj-align-top", "mk-align-top");
+  proxyClick("mk-obj-align-middle", "mk-align-middle");
+  proxyClick("mk-obj-align-bottom", "mk-align-bottom");
+  proxyClick("mk-obj-duplicate", "mk-duplicate-layer");
+  proxyClick("mk-obj-delete", "mk-delete-layer");
+
+  const proxyCheckbox = (fromId, toId) => {
+    const from = document.getElementById(fromId);
+    const to = document.getElementById(toId);
+    if (from && to) from.onclick = () => { to.checked = !to.checked; to.dispatchEvent(new Event("change", { bubbles: true })); };
+  };
+  proxyCheckbox("mk-obj-flip-h", "mk-pos-flip-h");
+  proxyCheckbox("mk-obj-flip-v", "mk-pos-flip-v");
+
+  const proxyNumber = (fromId, toId) => {
+    const from = document.getElementById(fromId);
+    const to = document.getElementById(toId);
+    if (!from || !to) return;
+    from.addEventListener("change", () => { to.value = from.value; to.dispatchEvent(new Event("change", { bubbles: true })); });
+  };
+  proxyNumber("mk-obj-rotation", "mk-pos-rot");
+  proxyNumber("mk-obj-opacity", "mk-pos-opacity");
+
+  syncObjectToolbar(null, null);
 }
 
 function quoteFontFamily(stack) {
@@ -836,8 +936,15 @@ function quoteFontFamily(stack) {
 }
 
 function rgbToHex(rgb) {
-  const m = /rgba?\((\d+),\s*(\d+),\s*(\d+)/.exec(rgb || "");
+  // A transparent/unset background computes to "rgba(0, 0, 0, 0)" (alpha 0)
+  // -- matching only r/g/b and ignoring alpha turned "no background at all"
+  // into literal black on every read, which is what made merely SELECTING
+  // a title/subtitle (selection alone triggers a NodeChange readback, see
+  // syncEditorToModel) silently paint a black highlight nobody asked for.
+  const m = /rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/.exec(rgb || "");
   if (!m) return null;
+  const alpha = m[4] === undefined ? 1 : Number(m[4]);
+  if (alpha === 0) return null;
   return "#" + [m[1], m[2], m[3]].map((v) => Number(v).toString(16).padStart(2, "0")).join("");
 }
 
