@@ -12,7 +12,7 @@ import {
   clearPageSelection,
 } from "./state.js";
 import { escapeHtml, showToast } from "./utils.js";
-import { centerArtboardInViewport, loadColumnIntoFabric, createPageCanvas, destroyPageCanvas, setActivePage, pageCanvases } from "./canvas.js";
+import { centerArtboardInViewport, loadColumnIntoFabric, createPageCanvas, destroyPageCanvas, setActivePage, pageCanvases, reorderStageArtboards } from "./canvas.js";
 import { renderMockupLayersPanel, syncSection2Inputs } from "./editor.js";
 
 // Per spec: selectedCell = { deviceRowId, columnId }. Null until matrix interaction.
@@ -279,6 +279,12 @@ export async function syncEditingAreaToSelectedPages() {
   for (const pageId of selectedPages) {
     if (!pageCanvases.has(pageId)) createPageCanvas(pageId);
   }
+  // Must run regardless of selection order: createPageCanvas appends new
+  // artboards in whatever order this loop iterated selectedPages
+  // (selection order), but the panorama must always display in document
+  // order (Page 1 -> 2 -> 3 -> ...) -- see reorderStageArtboards's doc
+  // comment for the bug this fixes.
+  reorderStageArtboards();
   if (selectedPages.length === 0) return;
   const activeId = selectedColumn && selectedPages.includes(selectedColumn.id) ? selectedColumn.id : selectedPages[0];
   await setActivePage(activeId);

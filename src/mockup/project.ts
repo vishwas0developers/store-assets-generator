@@ -104,6 +104,19 @@ export interface DeviceLayerStyle {
    *  extraDevices -- unset for every existing project until a user links
    *  two pages together. See syncLinkedDeviceLayer(). */
   linkedTo?: { pageId: string; layerKey: string };
+  /** True cross-page panorama positioning (distinct from `linkedTo`'s
+   *  mirror-two-copies mechanic): when set, this is the device's absolute
+   *  horizontal center in project-wide panorama space (column 0's left edge,
+   *  by `order`, is x=0), and it REPLACES the normal x/preset-offset
+   *  positioning for the X axis only -- Y/size/rotation/brightness/frameless
+   *  stay exactly as governed by this column's own fields, unaffected. The
+   *  device then renders (and is projected onto) every page its box
+   *  intersects, exactly like PanoramaAssetLayer, as ONE continuous object
+   *  rather than a duplicated copy per page. Unset (the default) means
+   *  "normal single-page device, positioned as always" -- additive/optional,
+   *  zero behavior change for any existing project until a user drags a
+   *  device far enough to cross a page boundary. */
+  panoramaXPx?: number;
 }
 
 export interface Decoration {
