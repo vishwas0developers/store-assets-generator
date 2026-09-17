@@ -53,6 +53,8 @@ export function applyStandardIcons() {
     "mk-obj-align-bottom": ICONS.alignBottom,
     "mk-obj-flip-h": ICONS.flipH,
     "mk-obj-flip-v": ICONS.flipV,
+    "mk-obj-rotate-btn": ICONS.rotate,
+    "mk-obj-opacity-icon": ICONS.opacity,
     "mk-obj-duplicate": ICONS.duplicate,
     "mk-obj-delete": ICONS.delete,
   };
@@ -60,12 +62,6 @@ export function applyStandardIcons() {
     const el = document.getElementById(id);
     if (el) el.innerHTML = icon;
   }
-  // Rotation/opacity are <label> wrappers around a number input -- icon
-  // goes in a leading span, input/suffix left untouched.
-  const rotLabel = document.getElementById("mk-obj-rotation")?.closest("label");
-  if (rotLabel) rotLabel.insertAdjacentHTML("afterbegin", ICONS.rotate);
-  const opLabel = document.getElementById("mk-obj-opacity")?.closest("label");
-  if (opLabel) opLabel.insertAdjacentHTML("afterbegin", ICONS.opacity);
 
   // Right sidebar: icon + kept text label.
   const iconPlusLabel = {
@@ -85,18 +81,14 @@ export function applyStandardIcons() {
     "mk-send-back": [ICONS.sendToBack, "Send to Back"],
     "mk-duplicate-layer": [ICONS.duplicate, "Duplicate (Ctrl+D)"],
     "mk-delete-layer": [ICONS.delete, "Delete"],
+    "mk-pos-flip-h": [ICONS.flipH, "Flip H"],
+    "mk-pos-flip-v": [ICONS.flipV, "Flip V"],
   };
   for (const [id, [icon, label]] of Object.entries(iconPlusLabel)) {
     const el = document.getElementById(id);
     if (el) el.innerHTML = `${icon} ${label}`;
   }
 
-  // Flip H/V and Lock aspect checkboxes: icon replaces the emoji inside
-  // their <label>, checkbox + remaining label text untouched.
-  const flipHLabel = document.getElementById("mk-pos-flip-h")?.closest("label");
-  if (flipHLabel) flipHLabel.innerHTML = flipHLabel.innerHTML.replace(/⬌\s*/, ICONS.flipH + " ");
-  const flipVLabel = document.getElementById("mk-pos-flip-v")?.closest("label");
-  if (flipVLabel) flipVLabel.innerHTML = flipVLabel.innerHTML.replace(/⬍\s*/, ICONS.flipV + " ");
   const lockLabel = document.getElementById("mk-pos-aspect-lock")?.closest("label");
   if (lockLabel) lockLabel.innerHTML = lockLabel.innerHTML.replace(/🔒\s*/, ICONS.lock + " ");
 }

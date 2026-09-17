@@ -93,6 +93,9 @@ export interface TextStyle {
   lineHeightMultiplier?: number;
   /** Fabric's charSpacing units (1/1000 em) -- unset = 0 (no extra tracking). */
   charSpacing?: number;
+  flipH?: boolean;
+  flipV?: boolean;
+  deleted?: boolean;
 }
 
 export type MockupBackgroundType = "solid" | "gradient" | "pattern" | "image" | "panoramic";
@@ -117,6 +120,9 @@ export interface DeviceLayerStyle {
   rotation: number;
   brightness: number; // 0-200, 100 = unchanged
   frameless: boolean; // "snapshot-" layouts skip the device frame
+  flipH?: boolean;
+  flipV?: boolean;
+  deleted?: boolean;
   /** True = layer visible on canvas and export; False = hidden */
   visible?: boolean;
   locked?: boolean;
