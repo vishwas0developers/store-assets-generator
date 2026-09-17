@@ -129,6 +129,33 @@ function orderedColumnIndex(pageId) {
   return (mockupProject?.columns ?? []).slice().sort((a, b) => a.order - b.order).findIndex((c) => c.id === pageId);
 }
 
+/** The panorama's visual left-to-right order must always follow the
+ *  document's page order (`.order`), never the order pages happened to be
+ *  checked in -- a real bug found in testing: createPageCanvas() appends
+ *  each new artboard div to the end of #mockup-canvas-stage as it's
+ *  created, so checking Page 4 before Page 2 previously left them
+ *  displayed "4, 2" (selection order) instead of "2, 4" (document order).
+ *  The underlying xPx/projection math (orderedColumnIndex, used throughout
+ *  this file) was already correctly keyed to `.order` -- only the actual
+ *  DOM placement of the artboards was never explicitly controlled, so it
+ *  silently fell out of insertion order by accident. Re-appending an
+ *  already-attached child moves it to the end, so one pass in sorted order
+ *  is enough to fix the whole row -- called after every
+ *  create/destroy cycle (see matrix.js's syncEditingAreaToSelectedPages). */
+export function reorderStageArtboards() {
+  const stage = document.getElementById("mockup-canvas-stage");
+  if (!stage) return;
+  const orderedIds = (mockupProject?.columns ?? [])
+    .slice()
+    .sort((a, b) => a.order - b.order)
+    .map((c) => c.id)
+    .filter((id) => pageCanvases.has(id));
+  for (const pageId of orderedIds) {
+    const artboard = document.getElementById(`mockup-canvas-artboard-${pageId}`);
+    if (artboard) stage.appendChild(artboard);
+  }
+}
+
 /** Builds one Fabric asset Image from an asset-layer-shaped object (a real
  *  MockupAssetLayer, or a panorama-asset projection from
  *  projectPanoramaAssetToColumn -- both have the same xPct/yPct/widthPct/
@@ -301,13 +328,35 @@ export function destroyPageCanvas(pageId) {
   if (mockupFabricCanvas === canvas) setMockupFabricCanvas(null);
 }
 
+// setActivePage rebuilds every open canvas by clearing and re-adding all of
+// its objects (loadColumnIntoFabric), one canvas at a time, awaiting each
+// object's image load along the way. If two calls to setActivePage overlap
+// (e.g. checking two page checkboxes in quick succession, each triggering
+// its own call before the first has finished awaiting all its image
+// loads), their iterations interleave: call A's loop can still be mid-way
+// through rebuilding canvas X (with A's `interactive` flags) when call B's
+// loop reaches canvas X too and rebuilds it again with B's own flags,
+// racing over which one actually wins -- a real bug found in testing,
+// where the page marked as `selectedColumn`/active ended up with its
+// Device Frame 1 stuck `selectable:false, evented:false` (an earlier,
+// overlapping call's "inert" pass overwrote a later call's "active" one).
+// Chaining every call onto one promise makes them always run fully one at
+// a time, in call order -- never interleaved.
+let activePageChain = Promise.resolve();
+
 /** Makes one currently-open page the active/fully-editable one -- the core
  *  of the "one primary + inert others" interaction model. Rebuilds every
  *  currently-open canvas (creating the target one first if it isn't open
  *  yet): the target page unlocked, every other open page locked (except
  *  cross-page panorama assets, always interactive regardless), and moves
- *  the light-blue .is-active-page border to match. */
-export async function setActivePage(pageId) {
+ *  the light-blue .is-active-page border to match. Serialized -- see
+ *  activePageChain above -- so overlapping calls can never interleave. */
+export function setActivePage(pageId) {
+  activePageChain = activePageChain.then(() => setActivePageInner(pageId), () => setActivePageInner(pageId));
+  return activePageChain;
+}
+
+async function setActivePageInner(pageId) {
   const targetCanvas = pageCanvases.get(pageId) || createPageCanvas(pageId);
   if (!targetCanvas) return;
 
@@ -345,7 +394,20 @@ function onFabricObjectModified(e, originPageId) {
   // A multi-select drag/rotate/scale fires with an ActiveSelection as the
   // target (no layerId of its own) -- without this, group-transforming
   // several layers together would silently fail to persist any of them.
-  if (Array.isArray(obj._objects)) {
+  // MUST check obj.type === 'activeselection' specifically, not just
+  // "has an _objects array": a real bug found in testing -- every device
+  // layer (deviceOne/deviceTwo/extraDevices) is ALSO a plain fabric.Group
+  // (bezel + screenshot children), which structurally has the exact same
+  // _objects array a multi-select ActiveSelection does. The old check
+  // treated every device-layer drag as if it were a multi-select, iterated
+  // its anonymous bezel/screenshot children (neither of which has a
+  // layerId -- only the Group itself does), found no layerId on either,
+  // and silently did nothing -- meaning dragging a device layer via a real
+  // mouse gesture never actually wrote its new position back to the model
+  // at all, on any page, the entire time this app has used Fabric Groups
+  // for devices. This is very likely the actual root cause behind "layers
+  // are not staying synchronized correctly when moved between pages."
+  if (obj.type === 'activeselection' && Array.isArray(obj._objects)) {
     for (const member of obj._objects) {
       if (member?.layerId) dispatchObjectSync(member, obj, originPageId);
     }
@@ -364,8 +426,10 @@ function onFabricObjectModified(e, originPageId) {
 function dispatchObjectSync(obj, group, originPageId) {
   if (obj.layerId?.startsWith('panorama:')) {
     syncPanoramaObjectToModel(obj, originPageId);
+  } else if (obj.layerId?.startsWith('panoramaDevice:')) {
+    syncPanoramaDeviceObjectToModel(obj, originPageId);
   } else {
-    syncFabricObjectToModel(obj, group);
+    syncFabricObjectToModel(obj, group, originPageId);
   }
 }
 
@@ -379,8 +443,114 @@ function dispatchObjectSync(obj, group, originPageId) {
  *  write-back happens once, on release, in syncPanoramaObjectToModel. */
 function onPanoramaObjectLiveTransform(e, canvas, originPageId) {
   const obj = e.target;
-  if (!obj?.layerId?.startsWith('panorama:')) return;
-  syncPanoramaAssetAcrossCanvasesSync(obj.panoramaAssetId, originPageId, obj);
+  if (!obj?.layerId) return;
+  if (obj.layerId.startsWith('panorama:')) {
+    syncPanoramaAssetAcrossCanvasesSync(obj.panoramaAssetId, originPageId, obj);
+  } else if (obj.layerId.startsWith('panoramaDevice:')) {
+    syncPanoramaDeviceAcrossCanvasesSync(obj.panoramaDeviceOwnerId, originPageId, obj);
+  } else if (obj.layerId === 'deviceOne') {
+    // Home device, possibly mid-crossing into panorama territory for the
+    // first time this drag -- live-sync unconditionally; the sync function
+    // itself is a no-op on every other open canvas while the device is
+    // still fully within its own page (nothing projects anywhere yet). A
+    // real (non-mirror) 'deviceOne' object is only ever interactive (thus
+    // draggable) on its own home page, so originPageId IS its owner here.
+    syncPanoramaDeviceAcrossCanvasesSync(originPageId, originPageId, obj);
+  }
+}
+
+/** Synchronous clone of a device Group for a live cross-canvas mirror --
+ *  same rationale as cloneAssetImageSync (no image re-decoding, so no
+ *  `await` anywhere in the live per-tick path, which is what makes it
+ *  race-free). Reconstructs each already-loaded child (bezel Rect,
+ *  screenshot Image with its clipPath, or the no-screenshot placeholder
+ *  Textbox) from its own already-resolved state via toObject(), reusing
+ *  the Image's already-decoded element via getElement() exactly like
+ *  cloneAssetImageSync does. */
+function cloneDeviceGroupSync(originGroup, layerId, interactive) {
+  const fabric = window.fabric;
+  if (!fabric || !Array.isArray(originGroup?._objects)) return null;
+  // `type` is implicit in the constructor being called -- passing it back
+  // in as an option is a harmless no-op, but Fabric logs a console warning
+  // every time, purely noise (the shape itself is copied fine regardless).
+  const withoutType = (o) => { const { type, ...rest } = o; return rest; };
+  const clonedItems = originGroup._objects.map((child) => {
+    if (child.type === 'image') {
+      const el = typeof child.getElement === 'function' ? child.getElement() : null;
+      const img = el ? new fabric.Image(el, withoutType(child.toObject())) : null;
+      if (img && child.clipPath) img.clipPath = new fabric.Rect(withoutType(child.clipPath.toObject()));
+      return img;
+    }
+    if (child.type === 'textbox') return new fabric.Textbox(child.text, withoutType(child.toObject()));
+    return new fabric.Rect(withoutType(child.toObject()));
+  }).filter(Boolean);
+  if (!clonedItems.length) return null;
+  return new fabric.Group(clonedItems, {
+    name: layerId,
+    layerId,
+    angle: originGroup.angle,
+    selectable: interactive,
+    evented: interactive,
+    shadow: originGroup.shadow ? new fabric.Shadow(originGroup.shadow.toObject ? originGroup.shadow.toObject() : originGroup.shadow) : null,
+    ...CONTROL_STYLE,
+  });
+}
+
+/** Live per-tick cross-canvas mirror sync for Device Frame 1, mirroring
+ *  syncPanoramaAssetAcrossCanvasesSync's structure exactly but for a Group
+ *  instead of an Image, and reading position from the OWNER column's own
+ *  DeviceLayerStyle (there's no project-level array for devices -- each
+ *  column's ColumnStyle.deviceOne is the one authoritative record, whether
+ *  or not it's currently spanning) rather than a panoramaAssets entry. */
+function syncPanoramaDeviceAcrossCanvasesSync(ownerId, originPageId, liveObject) {
+  const originCanvas = pageCanvases.get(originPageId);
+  const originObj = liveObject
+    || originCanvas?.getObjects().find((o) => o.layerId === 'deviceOne' || (o.panoramaDeviceOwnerId === ownerId && o.panoramaDeviceKey === 'deviceOne'));
+  if (!originCanvas || !originObj || !ownerId) return;
+  const originIndex = orderedColumnIndex(originPageId);
+  const ownerCol = mockupProject?.columns?.find((c) => c.id === ownerId);
+  if (originIndex < 0 || !ownerCol) return;
+
+  const w = typeof originObj.getScaledWidth === 'function' ? originObj.getScaledWidth() : originObj.width;
+  const h = typeof originObj.getScaledHeight === 'function' ? originObj.getScaledHeight() : originObj.height;
+  let left = originObj.left, top = originObj.top;
+  if (originObj.originX === 'center') { left -= w / 2; top -= h / 2; }
+  const centerXAbs = originIndex * 1080 + left + w / 2;
+
+  for (const [pid, canvas] of pageCanvases) {
+    if (pid === originPageId) continue;
+    const idx = orderedColumnIndex(pid);
+    if (idx < 0) continue;
+    const localCenterX = centerXAbs - idx * 1080;
+    const intersects = localCenterX + w / 2 > 0 && localCenterX - w / 2 < 1080;
+    const isOwnPage = pid === ownerId;
+    const existing = canvas.getObjects().find((o) =>
+      isOwnPage ? o.layerId === 'deviceOne' : (o.panoramaDeviceOwnerId === ownerId && o.panoramaDeviceKey === 'deviceOne'));
+    if (!intersects) {
+      // Never remove a page's own real deviceOne object outright here --
+      // only foreign mirrors. Its "not shown" state is handled by the
+      // deferred full rebuild on release (skipOwnDeviceOne in loadColumnIntoFabric).
+      if (existing && !isOwnPage) { canvas.remove(existing); canvas.requestRenderAll(); }
+      continue;
+    }
+    if (existing) {
+      existing.set({
+        ...positionForRotation(localCenterX - w / 2, top, w, h, originObj.angle || 0),
+        angle: originObj.angle || 0,
+      });
+      existing.setCoords();
+      canvas.requestRenderAll();
+    } else {
+      const mirror = cloneDeviceGroupSync(originObj, isOwnPage ? 'deviceOne' : `panoramaDevice:${ownerId}:deviceOne`, true);
+      if (mirror) {
+        mirror.set(positionForRotation(localCenterX - w / 2, top, w, h, originObj.angle || 0));
+        if (!isOwnPage) { mirror.panoramaDeviceOwnerId = ownerId; mirror.panoramaDeviceKey = 'deviceOne'; }
+        applyCornerRotationControls(mirror);
+        canvas.add(mirror);
+        canvas.requestRenderAll();
+      }
+    }
+  }
 }
 
 /** Computes a live PanoramaAssetLayer-shaped snapshot straight off the
@@ -516,6 +686,55 @@ async function syncPanoramaObjectToModel(obj, originPageId) {
   }, 0);
 }
 
+/** Write-back for dragging a PROJECTED foreign device (a `panoramaDevice:`
+ *  tagged mirror -- Device Frame 1 shown on a page other than its own,
+ *  because it's already spanning) from wherever it's currently grabbed.
+ *  Writes into the OWNING column's deviceOne, not selectedColumn's -- the
+ *  device this mirror represents may not even be on the currently active
+ *  page at all. Symmetric with the home-page case in
+ *  syncFabricObjectToModel's 'deviceOne' branch: dragging a spanning device
+ *  fully back onto its own home page clears panoramaXPx there too. */
+async function syncPanoramaDeviceObjectToModel(obj, originPageId) {
+  const ownerId = obj.panoramaDeviceOwnerId;
+  const layerKey = obj.panoramaDeviceKey;
+  if (!ownerId || layerKey !== 'deviceOne') return;
+  const ownerCol = mockupProject?.columns?.find((c) => c.id === ownerId);
+  const originIndex = orderedColumnIndex(originPageId);
+  if (!ownerCol || originIndex < 0) return;
+
+  const w = typeof obj.getScaledWidth === 'function' ? obj.getScaledWidth() : obj.width;
+  const h = typeof obj.getScaledHeight === 'function' ? obj.getScaledHeight() : obj.height;
+  let left = obj.left, top = obj.top;
+  if (obj.originX === 'center') { left -= w / 2; top -= h / 2; }
+  const centerXAbs = originIndex * 1080 + left + w / 2;
+
+  const homeIndex = orderedColumnIndex(ownerId);
+  const centerXOnHomePage = centerXAbs - homeIndex * 1080;
+  const stillSpanning = centerXOnHomePage - w / 2 < 0 || centerXOnHomePage + w / 2 > 1080;
+
+  const d1 = ownerCol.style.deviceOne;
+  if (stillSpanning) {
+    d1.panoramaXPx = Math.round(centerXAbs);
+  } else {
+    delete d1.panoramaXPx;
+    // Back within its own page fully -- recompute the normal preset-relative
+    // x the same way the home-page drag case does, so it lands exactly
+    // where this drag left it instead of snapping to whatever x it had
+    // before it started spanning.
+    const deviceGeo = resolveDeviceGeometry(mockupProject?.devices?.[0]?.deviceId || 'phone', mockupDevicesCatalog, mockupProject?.devices?.[0]?.variant);
+    const ownerStageCenter = fabricStageCenter(ownerCol);
+    const coords = getDeviceCoordsFromFabricObject({ left: centerXOnHomePage - w / 2, top, getScaledWidth: () => w, getScaledHeight: () => h }, ownerCol, 'deviceOne', ownerStageCenter, deviceGeo);
+    if (coords) d1.x = coords.xPct;
+  }
+  d1.rotation = obj.angle ?? d1.rotation;
+
+  setMockupDirty(true);
+  setTimeout(async () => {
+    if (selectedColumn) await setActivePage(selectedColumn.id);
+    if (typeof window.renderMockupMatrix === 'function') window.renderMockupMatrix();
+  }, 0);
+}
+
 // Fabric's own multi-select (shift-click / marquee) already produces e.selected
 // with every selected object -- previously only [0] was ever used, silently
 // discarding multi-select. setSelectedLayerIds keeps the full set (for group
@@ -559,7 +778,7 @@ function onFabricTextChanged(e) {
  *   corner-accurate math for a rotated group of rotated members needs matrix
  *   decomposition; add if group-rotate-then-edit drift is ever reported).
  */
-export async function syncFabricObjectToModel(obj, group) {
+export async function syncFabricObjectToModel(obj, group, originPageId) {
   if (!obj || !obj.layerId || !selectedColumn) return;
   const style = selectedColumn.style;
 
@@ -612,14 +831,53 @@ export async function syncFabricObjectToModel(obj, group) {
       break;
 
     case 'deviceOne': {
+      // Cross-page: has this drag pushed Device Frame 1's center outside
+      // its own page's [0,1080] box? If so, it's now a panorama-space
+      // object -- store its absolute panorama X (panoramaXPx) instead of
+      // the normal preset-relative x, and skip the preset-offset xPct
+      // write below (which would be meaningless once panoramaXPx governs
+      // X instead). Dragging it back fully onto its own page clears
+      // panoramaXPx, reverting to normal single-page positioning -- a
+      // clean round-trip in both directions.
+      const w = typeof obj.getScaledWidth === 'function' ? obj.getScaledWidth() : obj.width;
+      const originIndex = originPageId != null ? orderedColumnIndex(originPageId) : orderedColumnIndex(selectedColumn.id);
+      const centerXOnOwnPage = obj.left + w / 2;
+      // "Spanning" means any part of the device's box sticks out past its
+      // own page's edge -- NOT just "has the center itself crossed," which
+      // misses the (very common) case of a wide device whose center is
+      // still within [0,1080] while its edge already visibly overflows
+      // onto the next page (a real bug found in testing: a drag that
+      // clearly pushed the device half onto the next page was never
+      // detected as spanning at all, because 1080/2 = 540 is exactly this
+      // device's own half-width away from the boundary, and centers close
+      // to it never leave [0,1080] before the edge already has).
+      const isSpanning = (centerXOnOwnPage - w / 2) < 0 || (centerXOnOwnPage + w / 2) > 1080;
+      const wasSpanning = style.deviceOne.panoramaXPx != null;
+      if (isSpanning && originIndex >= 0) {
+        style.deviceOne.panoramaXPx = Math.round(originIndex * 1080 + centerXOnOwnPage);
+      } else if (wasSpanning) {
+        delete style.deviceOne.panoramaXPx;
+      }
       const coords = getDeviceCoordsFromFabricObject(obj, selectedColumn, 'deviceOne', stageCenter, deviceGeo);
       if (coords) {
         const preset = getLayoutPresetClient(style.layout);
         const transform = presentationTransformClient(preset.presentation);
-        style.deviceOne.x = coords.xPct;
+        if (!isSpanning) style.deviceOne.x = coords.xPct;
         style.deviceOne.y = coords.yPct;
         style.deviceOne.size = coords.size;
         style.deviceOne.rotation = (obj.angle ?? 0) - (transform.d1.rotate || 0);
+      }
+      // Entering or leaving panorama mode changes what every OTHER open
+      // canvas should show (a new projected mirror appears/disappears) --
+      // deferred to a fresh tick for the same reason syncPanoramaObjectToModel
+      // defers its rebuild: this runs from inside Fabric's own
+      // object:modified handler, and a synchronous full rebuild here would
+      // clear() the canvas Fabric is still mid-finalizing the transform on.
+      if (isSpanning || wasSpanning) {
+        setTimeout(async () => {
+          if (selectedColumn) await setActivePage(selectedColumn.id);
+          if (typeof window.renderMockupMatrix === 'function') window.renderMockupMatrix();
+        }, 0);
       }
       break;
     }
@@ -918,6 +1176,10 @@ export async function loadColumnIntoFabric(column, { interactive = true } = {}) 
   // Stage dimensions & centering offsets
   const { cx: stageCx, cy: stageCy } = fabricStageCenter(column);
 
+  // The one authoritative page sequence panorama math uses everywhere on
+  // the client (mirrors render.ts's identical `panoramaColumnIndex`).
+  const columnOrderIndex = orderedColumnIndex(column.id);
+
   // 4. Device One
   const d1 = style.deviceOne || { size: 90, x: 0, y: 0, rotation: 0, brightness: 100 };
   // Use the real device aspect ratio from the registry rather than a fixed 480x960
@@ -929,15 +1191,58 @@ export async function loadColumnIntoFabric(column, { interactive = true } = {}) 
   const d1Scale = d1.size / 90;
   const d1W = d1BaseW * d1Scale;
   const d1H = d1BaseH * d1Scale;
-  const d1Cx = stageCx + ((transform.d1.xPct + d1.x) / 100) * d1W;
+  // Device Frame 1 spanning a page boundary (d1.panoramaXPx set): X becomes
+  // an absolute panorama-space pixel center instead of the normal
+  // preset-offset formula -- Y/rotation/size stay exactly as governed by
+  // this column's own fields below, unaffected. Mirrors render.ts's
+  // identical branch in cellHtml.
+  let d1Cx = stageCx + ((transform.d1.xPct + d1.x) / 100) * d1W;
+  let skipOwnDeviceOne = false;
+  if (d1.panoramaXPx != null) {
+    const localCenterX = d1.panoramaXPx - columnOrderIndex * 1080;
+    if (localCenterX + d1W / 2 <= 0 || localCenterX - d1W / 2 >= 1080) skipOwnDeviceOne = true;
+    else d1Cx = localCenterX;
+  }
   const d1Cy = stageCy + (d1.y / 100) * d1H;
   const d1Left = d1Cx - d1W / 2;
   const d1Top = d1Cy - d1H / 2;
   const d1Rotation = (transform.d1.rotate || 0) + (d1.rotation || 0);
 
   const d1Source = resolveSourceFor(d1.sourceId);
-  const deviceOne = await buildDeviceGroup(d1, 'deviceOne', d1Left, d1Top, d1W, d1H, d1Rotation, activeDeviceId, activeDeviceVariant, d1Source, interactive);
-  queueObject(deviceOne, d1.zIndex ?? 10);
+  if (!skipOwnDeviceOne) {
+    const deviceOne = await buildDeviceGroup(d1, 'deviceOne', d1Left, d1Top, d1W, d1H, d1Rotation, activeDeviceId, activeDeviceVariant, d1Source, interactive);
+    queueObject(deviceOne, d1.zIndex ?? 10);
+  }
+
+  // Cross-page: any OTHER column's Device Frame 1 that's spanning
+  // (panoramaXPx set) and whose box intersects THIS page gets projected in
+  // too, as an additional device group -- same physical device row/model,
+  // just carrying that other column's own position/rotation/size/source.
+  // Always interactive regardless of this page's `interactive` flag, same
+  // as panorama assets -- a cross-page device must stay draggable from any
+  // page it overlaps.
+  for (const otherCol of mockupProject?.columns ?? []) {
+    if (otherCol.id === column.id) continue;
+    const otherD1 = otherCol.style?.deviceOne;
+    if (otherD1?.panoramaXPx == null) continue;
+    const otherLocalCenterX = otherD1.panoramaXPx - columnOrderIndex * 1080;
+    if (otherLocalCenterX + d1W / 2 <= 0 || otherLocalCenterX - d1W / 2 >= 1080) continue;
+    const otherW = d1BaseW * (otherD1.size / 90);
+    const otherH = d1BaseH * (otherD1.size / 90);
+    const otherCy = stageCy + (otherD1.y / 100) * otherH;
+    const otherRotation = (transform.d1.rotate || 0) + (otherD1.rotation || 0);
+    const otherSource = resolveSourceFor(otherD1.sourceId);
+    const otherGroup = await buildDeviceGroup(
+      otherD1, `panoramaDevice:${otherCol.id}:deviceOne`,
+      otherLocalCenterX - otherW / 2, otherCy - otherH / 2, otherW, otherH, otherRotation,
+      activeDeviceId, activeDeviceVariant, otherSource, true
+    );
+    if (otherGroup) {
+      otherGroup.panoramaDeviceOwnerId = otherCol.id;
+      otherGroup.panoramaDeviceKey = 'deviceOne';
+      queueObject(otherGroup, otherD1.zIndex ?? 10);
+    }
+  }
 
   // 5. Device Two (if exists)
   const d2 = style.deviceTwo;
@@ -990,7 +1295,6 @@ export async function loadColumnIntoFabric(column, { interactive = true } = {}) 
   // overflow:hidden / the <canvas> element's own pixel bounds). Always
   // interactive regardless of this page's `interactive` flag -- a cross-page
   // asset must stay draggable from any page it overlaps, active or not.
-  const columnOrderIndex = orderedColumnIndex(column.id);
   for (const pa of mockupProject?.panoramaAssets ?? []) {
     if (pa.visible === false) continue;
     const projected = projectPanoramaAssetToColumn(pa, columnOrderIndex);

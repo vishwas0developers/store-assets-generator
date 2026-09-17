@@ -146,11 +146,66 @@ export function cellHtml(project: MockupProject, deviceRowId: string, columnId: 
   // `.layer` device div had NO z-index at all (relying on DOM order only),
   // so bring-forward/send-backward here had zero effect regardless of what
   // the model said.
+  // The one authoritative page sequence panorama math uses everywhere
+  // (editor canvas, cell-preview, every export path) -- see the longer
+  // comment lower down (where this was previously computed, now moved up
+  // so deviceOne's cross-page projection can use it too) for why this must
+  // NOT reuse ctx.columnIndex, which different callers define differently.
+  const orderedColumnIds = [...project.columns].sort((a, b) => a.order - b.order).map((c) => c.id);
+  const panoramaColumnIndex = orderedColumnIds.indexOf(columnId);
+
   const d1 = style.deviceOne;
   const d1Z = d1.zIndex ?? 10;
-  const d1Transform = `translate(${transform.deviceOne.xPct + d1.x}%, ${d1.y}%) scale(${d1.size / 90}) rotate(${transform.deviceOne.rotate + d1.rotation}deg)`;
-  let deviceLayers = `<div class="layer" style="transform:${d1Transform};z-index:${d1Z}">${layerMarkup(deviceRow.deviceId, screenshotUri, d1, deviceRow.variant)}</div>`;
-  let maxStageZ = d1Z;
+  // Device Frame 1 spanning a page boundary (d1.panoramaXPx set): its X
+  // position becomes an absolute panorama-space pixel coordinate instead of
+  // the normal %-of-own-width preset offset -- Y/size/rotation are
+  // completely unaffected, still the plain preset recipe below. The
+  // conversion back to a CSS translate(%) works because flexbox always
+  // horizontally centers an untransformed device at exactly page-x=540
+  // (`.stage` is always the full 1080-wide page, `justify-content:center`),
+  // regardless of the title block's height -- unlike Y, X needs no
+  // per-page flex-layout replication, just this one constant.
+  let d1XPct = transform.deviceOne.xPct + d1.x;
+  let skipOwnDeviceOne = false;
+  if (d1.panoramaXPx != null) {
+    const d1Geo = resolveGeometry(DEVICE_REGISTRY[deviceRow.deviceId] ?? DEVICE_REGISTRY["phone"], deviceRow.variant);
+    const d1WidthPx = d1Geo.width * (d1.size / 90);
+    const localCenterXPx = d1.panoramaXPx - panoramaColumnIndex * 1080;
+    if (localCenterXPx + d1WidthPx / 2 <= 0 || localCenterXPx - d1WidthPx / 2 >= 1080) {
+      skipOwnDeviceOne = true; // dragged fully off this page -- don't render it here at all
+    } else {
+      d1XPct = ((localCenterXPx - 540) / d1WidthPx) * 100;
+    }
+  }
+  const d1Transform = `translate(${d1XPct}%, ${d1.y}%) scale(${d1.size / 90}) rotate(${transform.deviceOne.rotate + d1.rotation}deg)`;
+  let deviceLayers = skipOwnDeviceOne ? "" : `<div class="layer" style="transform:${d1Transform};z-index:${d1Z}">${layerMarkup(deviceRow.deviceId, screenshotUri, d1, deviceRow.variant)}</div>`;
+  let maxStageZ = skipOwnDeviceOne ? 0 : d1Z;
+
+  // Cross-page: any OTHER column's Device Frame 1 that's spanning
+  // (panoramaXPx set) and whose box intersects THIS page gets projected in
+  // too, as one more device layer -- same physical device row/model
+  // (deviceRow.deviceId/variant), just carrying that other column's own
+  // position/rotation/size/screenshot. This is what makes a device one
+  // continuous object across pages instead of a duplicated copy: nothing
+  // is stored per-page except the one owning column's DeviceLayerStyle.
+  for (const otherCol of project.columns) {
+    if (otherCol.id === columnId) continue;
+    const otherD1 = otherCol.style.deviceOne;
+    if (otherD1?.panoramaXPx == null) continue;
+    const otherIndex = orderedColumnIds.indexOf(otherCol.id);
+    if (otherIndex < 0) continue;
+    const otherGeo = resolveGeometry(DEVICE_REGISTRY[deviceRow.deviceId] ?? DEVICE_REGISTRY["phone"], deviceRow.variant);
+    const otherWidthPx = otherGeo.width * (otherD1.size / 90);
+    const otherLocalCenterX = otherD1.panoramaXPx - panoramaColumnIndex * 1080;
+    if (otherLocalCenterX + otherWidthPx / 2 <= 0 || otherLocalCenterX - otherWidthPx / 2 >= 1080) continue;
+    const otherXPct = ((otherLocalCenterX - 540) / otherWidthPx) * 100;
+    const otherSource = project.sources.find((s) => s.id === otherD1.sourceId) ?? source;
+    const otherUri = otherSource ? ctx.resolveUri(otherSource.file) : screenshotUri;
+    const otherZ = otherD1.zIndex ?? 10;
+    const otherTransform = `translate(${otherXPct}%, ${otherD1.y}%) scale(${otherD1.size / 90}) rotate(${transform.deviceOne.rotate + otherD1.rotation}deg)`;
+    deviceLayers += `<div class="layer" style="transform:${otherTransform};z-index:${otherZ}">${layerMarkup(deviceRow.deviceId, otherUri, otherD1, deviceRow.variant)}</div>`;
+    maxStageZ = Math.max(maxStageZ, otherZ);
+  }
 
   if (preset.twoDevices && style.deviceTwo && transform.deviceTwo) {
     const d2 = style.deviceTwo;
@@ -183,17 +238,9 @@ export function cellHtml(project: MockupProject, deviceRowId: string, columnId: 
   // Cross-page panorama assets are projected onto this page's local box and
   // merged in alongside its own page-local assetLayers -- assetLayersMarkup
   // doesn't need to know the difference, it just renders whatever's given.
-  // Deliberately NOT using ctx.columnIndex here: different cellHtml callers
-  // already disagree on what that represents (some sort project.columns by
-  // `.order` first, some use the raw array position) -- panorama math needs
-  // one single, always-consistent page sequence across every entry point
-  // (editor canvas, cell-preview, every export path) or the same asset would
-  // render at different splits depending on which caller rendered it. The
-  // `.order` field is the actual authoritative page sequence a user sees, so
-  // that's what's used here, independent of whatever ctx.columnIndex means
-  // to this particular caller. Mirrored in web/js/canvas.js.
-  const orderedColumnIds = [...project.columns].sort((a, b) => a.order - b.order).map((c) => c.id);
-  const panoramaColumnIndex = orderedColumnIds.indexOf(columnId);
+  // orderedColumnIds/panoramaColumnIndex computed near the top of this
+  // function now (deviceOne's cross-page projection needs them earlier) --
+  // deliberately NOT ctx.columnIndex, see the comment up there for why.
   const projectedPanorama = (project.panoramaAssets ?? [])
     .map((pa) => projectPanoramaAssetToColumn(pa, panoramaColumnIndex))
     .filter((a): a is MockupAssetLayer => a != null);
