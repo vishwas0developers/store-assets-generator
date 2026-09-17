@@ -9,6 +9,7 @@
 <script src="vendor/sweetalert2/sweetalert2.min.js" defer></script>
 <script src="vendor/fabric/fabric.min.js"></script>
 <script src="vendor/moveable/moveable.min.js"></script>
+<script src="vendor/tinymce/tinymce.min.js"></script>
 <!-- three.js addon modules (GLTFLoader etc.) import the bare specifier
      "three" internally -- this import map resolves it for the device
      catalogue's 3D preview (app.js's init3dDeviceViewport). -->
@@ -336,18 +337,6 @@
         <div class="rail-btn" data-section="devices"><span class="ico">&#128241;</span>Devices</div>
       </div>
       <div class="content">
-        <div class="row" style="margin-bottom:1rem; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; background:var(--bg-topbar); padding:0.5rem 1rem; border-radius:8px; border:1px solid var(--border-subtle);">
-          <div style="display:flex; align-items:center; gap:0.75rem;">
-            <span id="mockup-project-label" style="font-weight:600; font-size:0.95rem;">No mockup project</span>
-            <span id="mockup-dirty-badge" class="badge" style="display:none; background:#eab308; color:#000; font-weight:600; font-size:0.7rem; padding:2px 6px; border-radius:4px;">Unsaved Changes</span>
-          </div>
-          <div style="display:flex; align-items:center; gap:0.75rem;">
-            <label style="margin:0; font-size:0.8rem; color:#94a3b8;">Name:</label>
-            <input id="mockup-header-name" type="text" style="width:140px; font-size:0.8rem; padding:0.25rem 0.5rem;" placeholder="Project Name" />
-            <label style="margin:0; font-size:0.8rem; color:#94a3b8;">Category:</label>
-            <input id="mockup-header-category" type="text" style="width:120px; font-size:0.8rem; padding:0.25rem 0.5rem;" placeholder="e.g. Finance" />
-          </div>
-        </div>
 
         <div class="section-page active" id="mockup-section-templates">
           <div class="card" id="mockup-template-browse">
@@ -372,6 +361,8 @@
           <div class="studio-editor-container">
             <!-- Real-Time Stage Controls Toolbar -->
             <div class="mockup-toolbar">
+              <span id="mockup-project-label" style="font-weight:600; font-size:0.9rem; white-space:nowrap;">No mockup project</span>
+              <div class="divider"></div>
               <button id="mockup-undo-btn" class="secondary small icon-btn" title="Undo (Ctrl+Z)" disabled>&#8617; Undo</button>
               <button id="mockup-redo-btn" class="secondary small icon-btn" title="Redo (Ctrl+Y)" disabled>&#8618; Redo</button>
               <div class="divider"></div>
@@ -390,7 +381,8 @@
               <button id="mockup-zoom-in" class="secondary small icon-btn" type="button" title="Zoom In">+</button>
               <span style="font-size:0.75rem; color:#60a5fa; background:rgba(59,130,246,0.12); padding:2px 6px; border-radius:4px; font-family:monospace;">Fit</span>
               <div class="divider"></div>
-              <div style="margin-left:auto; display:flex; gap:0.4rem;">
+              <div style="margin-left:auto; display:flex; align-items:center; gap:0.5rem;">
+                <span id="mockup-dirty-badge" class="badge" style="display:none; background:#eab308; color:#000; font-weight:600; font-size:0.7rem; padding:2px 8px; border-radius:4px;">Unsaved Changes</span>
                 <button id="mk-save" class="primary small" type="button">Save Changes</button>
                 <button id="mockup-export-single-btn" class="primary small" type="button">Export Page (PNG)</button>
               </div>
@@ -399,6 +391,25 @@
             <!-- Workspace: Studio Canvas Container (fixed-height viewport) -->
             <div class="studio-editor-workspace">
               <div class="studio-canvas-container">
+                <!-- Text-editing toolbar -- shown only while a title/subtitle text
+                     layer is selected (see canvas.js's handleFabricSelection ->
+                     editor.js's syncTextToolbar). Sits directly above the canvas
+                     viewport with zero gap (mockup-text-toolbar/mockup-canvas-viewport
+                     share a border and touch flush -- see app.css). -->
+                <div class="mockup-text-toolbar" id="mockup-text-toolbar" style="display:none;">
+                  <!-- TinyMCE renders its real toolbar (standard icons/patterns)
+                       into this host div -- see editor.js's initTextToolbar().
+                       The actual editable surface is the hidden #mk-tinymce-target
+                       below; edits there are the source of truth, synced into the
+                       currently selected title/subtitle TextStyle only. -->
+                  <div id="mk-tinymce-toolbar-host" style="display:flex; flex:1; min-width:0;"></div>
+                </div>
+                <!-- Off-screen (not display:none -- contenteditable needs real
+                     layout to accept focus/selection) editing surface TinyMCE
+                     binds to. Never shown to the user directly; its content is
+                     synced into the selected title/subtitle TextStyle, which is
+                     what actually renders on the canvas/export. -->
+                <div id="mk-tinymce-target" contenteditable="true" style="position:fixed; left:-9999px; top:0; width:972px;"></div>
                 <!-- Multi-Page Panorama Editing Canvas Viewport -- #mockup-canvas-stage is
                      left empty; canvas.js dynamically creates one real, interactive Fabric
                      canvas artboard per currently-selected page (see createPageCanvas/

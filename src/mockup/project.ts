@@ -52,7 +52,7 @@ export interface TextStyle {
   text: string;
   color: string;
   size: number; // px at a 1080-wide reference canvas
-  align: "left" | "center" | "right";
+  align: "left" | "center" | "right" | "justify";
   /** True = text visible on canvas and export; False = hidden */
   visible?: boolean;
   /** True = layer locked from canvas movement/editing */
@@ -65,6 +65,34 @@ export interface TextStyle {
   x?: number;
   y?: number;
   rotation?: number;
+  /** Additive formatting fields for the text-editing toolbar -- unset means
+   *  the existing defaults (normal weight/style, no underline). */
+  bold?: boolean;
+  italic?: boolean;
+  underline?: boolean;
+  strikethrough?: boolean;
+  /** CSS font-family stack, e.g. "Georgia, serif". Unset = the app default
+   *  (Segoe UI/Roboto/system stack already used everywhere). */
+  fontFamily?: string;
+  /** Numeric weight (400-900) from the toolbar's weight dropdown -- takes
+   *  precedence over `bold` when set (bold just toggles this between
+   *  400/700); read as `fontWeightNum ?? (bold ? 700 : 400)` so older
+   *  projects that only ever set `bold` keep rendering correctly. */
+  fontWeightNum?: number;
+  /** Solid highlight/background color drawn behind the text (Fabric's
+   *  textBackgroundColor / CSS background-color on the text element) --
+   *  unset = no highlight. */
+  highlightColor?: string;
+  /** 0-1, same convention as MockupAssetLayer.opacity. Unset = 1 (opaque) --
+   *  previously hardcoded to 1 for text layers everywhere (getLayerBox),
+   *  a real gap this field closes. */
+  opacity?: number;
+  /** Multiplier, e.g. 1.15 -- unset = the built-in per-layer default
+   *  (1.15 for title, matching render.ts's CSS; subtitle has no explicit
+   *  line-height today, effectively browser default ~1.2). */
+  lineHeightMultiplier?: number;
+  /** Fabric's charSpacing units (1/1000 em) -- unset = 0 (no extra tracking). */
+  charSpacing?: number;
 }
 
 export type MockupBackgroundType = "solid" | "gradient" | "pattern" | "image" | "panoramic";
@@ -280,6 +308,13 @@ export interface MockupColumn {
   id: string;
   order: number;
   style: ColumnStyle;
+  /** A snapshot of this page's style exactly as the template generated it,
+   *  taken once at template-apply time -- lets "Reset to Template" restore
+   *  THIS page's original state precisely, without guessing at generic
+   *  defaults and without touching any other page. Additive/optional: a
+   *  project created before this field existed simply has none, and the
+   *  reset falls back to the old generic-defaults behavior for it. */
+  templateDefaultStyle?: ColumnStyle;
 }
 
 /** Preferred vocabulary going forward: a "Page" (Template -> Page -> Layer),

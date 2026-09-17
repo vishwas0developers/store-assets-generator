@@ -15,7 +15,8 @@ import {
   stageZoomRatio,
   isHandToolActive,
   setHandToolActive,
-  initCanvasPanZoomEvents
+  initCanvasPanZoomEvents,
+  setActivePage
 } from './canvas.js';
 import {
   ensureMockupTemplates,
@@ -40,7 +41,10 @@ import {
   reorderLayersInModel,
   setLayerZIndex,
   setupInspectorEvents,
-  renderMockupDevicesSection
+  renderMockupDevicesSection,
+  deleteSelectedLayer,
+  setupTextToolbarEvents,
+  hideTextToolbar
 } from './editor.js';
 import {
   renderMockupMatrix,
@@ -142,6 +146,7 @@ window.switchInspectorTab = switchInspectorTab;
 window.routeInspectorForLayer = routeInspectorForLayer;
 window.renderMockupLayersPanel = renderMockupLayersPanel;
 window.syncSection2Inputs = syncSection2Inputs;
+window.hideTextToolbar = hideTextToolbar;
 window.renderMockupCanvas = renderMockupCanvas;
 
 // Editor internals — Moveable gizmo + layers panel
@@ -196,6 +201,9 @@ document.addEventListener("keydown", (e) => {
   } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "y") {
     e.preventDefault();
     redoMockupState();
+  } else if ((e.key === "Delete" || e.key === "Backspace") && document.getElementById("mockup-section-editor")?.classList.contains("active")) {
+    e.preventDefault();
+    deleteSelectedLayer();
   }
 });
 
@@ -320,16 +328,35 @@ function setupMockupToolbar() {
   if ($id("mockup-reset-template-btn")) {
     $id("mockup-reset-template-btn").onclick = async () => {
       if (!selectedCell || !mockupProject) return;
-      const ok = await showConfirm("Reset active screen style to defaults?");
-      if (!ok) return;
       const col = mockupProject.columns.find((c) => c.id === selectedCell.columnId);
       if (!col) return;
-      col.style = defaultColumnStyle("Page");
-      if (mockupProject.cells) delete mockupProject.cells[`${selectedCell.deviceRowId}:${selectedCell.columnId}`];
+      const pageLabel = col.style?.title?.text || "this page";
+      const ok = await showConfirm(`This discards every change made to "${pageLabel}" and cannot be undone. Other pages are not affected.`, "Reset this page to the original template?", true);
+      if (!ok) return;
+      // Restore the EXACT style the template generated for this page (a
+      // snapshot taken once at template-apply time, see
+      // applyMockupTemplate's templateDefaultStyle) -- not a generic blank
+      // default, which was the previous (wrong) behavior: it discarded the
+      // template's real layout/background/title/device recipe entirely
+      // instead of returning to it. Deep-cloned so re-editing after a reset
+      // can't mutate the stored snapshot itself. Falls back to the old
+      // generic-defaults behavior only for a project saved before this
+      // snapshot existed.
+      col.style = col.templateDefaultStyle
+        ? JSON.parse(JSON.stringify(col.templateDefaultStyle))
+        : defaultColumnStyle("Page");
+      // Only THIS page's cell overrides, for THIS page's own device rows --
+      // never touches any other column's overrides.
+      if (mockupProject.cells) {
+        for (const key of Object.keys(mockupProject.cells)) {
+          if (key.endsWith(`:${col.id}`)) delete mockupProject.cells[key];
+        }
+      }
       await saveCurrentMockupProject();
       pushMockupHistory();
-      loadColumnIntoFabric(col);
+      await setActivePage(col.id);
       renderMockupMatrix();
+      showToast(`"${pageLabel}" reset to the original template design.`, "success");
     };
   }
 
@@ -442,25 +469,6 @@ function setupMockupToolbar() {
     };
   }
 
-  if ($id("mockup-header-name")) {
-    $id("mockup-header-name").addEventListener("change", async () => {
-      if (!mockupProject) return;
-      mockupProject.name = $id("mockup-header-name").value.trim() || mockupProject.name;
-      await saveCurrentMockupProject();
-      const label = $id("mockup-project-label");
-      if (label) label.textContent = mockupProject.name;
-      setMockupDirty(false);
-    });
-  }
-  if ($id("mockup-header-category")) {
-    $id("mockup-header-category").addEventListener("change", async () => {
-      if (!mockupProject) return;
-      mockupProject.appCategory = $id("mockup-header-category").value.trim();
-      await saveCurrentMockupProject();
-      setMockupDirty(false);
-    });
-  }
-
   if ($id("mockup-export-template-btn")) {
     $id("mockup-export-template-btn").onclick = () => {
       if (!mockupProject) return showAlert("No active mockup project loaded.");
@@ -547,6 +555,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   initMockupFabricCanvas();
   initCanvasPanZoomEvents();
   setupInspectorEvents();
+  setupTextToolbarEvents();
   setupExportHandlers();
   setupProjectsHandlers();
   setupSettingsAndModals();

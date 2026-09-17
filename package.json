@@ -42,6 +42,7 @@
     "qrcode-generator": "^2.0.4",
     "sweetalert2": "^11.26.25",
     "three": "^0.185.1",
+    "tinymce": "^8.9.1",
     "unzipper": "^0.12.3",
     "ws": "^8.21.3",
     "yaml": "^2.5.0",
