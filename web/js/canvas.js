@@ -485,7 +485,7 @@ function cloneDeviceGroupSync(originGroup, layerId, interactive) {
     return new fabric.Rect(withoutType(child.toObject()));
   }).filter(Boolean);
   if (!clonedItems.length) return null;
-  return new fabric.Group(clonedItems, {
+  const group = new fabric.Group(clonedItems, {
     name: layerId,
     layerId,
     angle: originGroup.angle,
@@ -494,6 +494,22 @@ function cloneDeviceGroupSync(originGroup, layerId, interactive) {
     shadow: originGroup.shadow ? new fabric.Shadow(originGroup.shadow.toObject ? originGroup.shadow.toObject() : originGroup.shadow) : null,
     ...CONTROL_STYLE,
   });
+  // buildDeviceGroup scales the WHOLE group (not just its children) as a
+  // separate step after construction -- group.scaleX/Y = width/devW,
+  // height/devH -- to shrink the device's full natural pixel size (e.g.
+  // ~1080x2400 from the registry) down to its actual displayed size. This
+  // clone rebuilds each CHILD from its own already-scaled local state via
+  // toObject(), but a fresh `new fabric.Group(...)` still defaults its own
+  // top-level scaleX/scaleY to 1 regardless -- missing this line was a real
+  // bug found in testing: the live mirror rendered at the device's full
+  // natural size (looking dramatically oversized) for the entire drag,
+  // only snapping to its correct size once release triggered a full
+  // rebuild through the normal buildDeviceGroup path. Copying the origin's
+  // already-correct scale directly is simpler and more robust than
+  // recomputing it from geometry.
+  group.scaleX = originGroup.scaleX;
+  group.scaleY = originGroup.scaleY;
+  return group;
 }
 
 /** Live per-tick cross-canvas mirror sync for Device Frame 1, mirroring
@@ -538,6 +554,10 @@ function syncPanoramaDeviceAcrossCanvasesSync(ownerId, originPageId, liveObject)
         ...positionForRotation(localCenterX - w / 2, top, w, h, originObj.angle || 0),
         angle: originObj.angle || 0,
       });
+      // Keep scale in sync too, not just position -- covers a resize
+      // (not just a move) happening while the device is already spanning.
+      existing.scaleX = originObj.scaleX;
+      existing.scaleY = originObj.scaleY;
       existing.setCoords();
       canvas.requestRenderAll();
     } else {
