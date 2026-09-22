@@ -637,13 +637,13 @@
             <div id="mk-source-dims" class="hint" style="margin-top:.25rem;"></div>
             <button id="mk-source-upload" class="secondary small" type="button" style="margin-top:.4rem; width:100%;">Upload New Source</button>
 
-            <h4 style="margin-top:1rem; font-size:.82rem; color:#c7cad1;">Device Geometry</h4>
+            <h4 style="margin-top:1rem; font-size:.82rem; color:var(--text-secondary);">Device Geometry</h4>
             <div class="range-label"><span>Scale (%)</span><span id="mk-d1-size-val">90</span></div>
             <input id="mk-d1-size" type="range" min="0" max="200" value="90" />
             <div class="range-label"><span>Brightness</span><span id="mk-d1-brightness-val">100</span></div>
             <input id="mk-d1-brightness" type="range" min="40" max="160" value="100" />
             
-            <h4 style="margin-top:1rem; font-size:.82rem; color:#c7cad1;">Device Colors</h4>
+            <h4 style="margin-top:1rem; font-size:.82rem; color:var(--text-secondary);">Device Colors</h4>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; margin-bottom:0.5rem;">
               <div>
                 <label style="font-size:0.75rem;">Border / Rim</label>
@@ -659,11 +659,11 @@
           </div>
 
           <div id="mk-panel-asset" style="margin-top:0.5rem;">
-            <h4 style="font-size:.82rem; color:#c7cad1; margin-bottom:0.5rem;">Custom Asset Layers</h4>
+            <h4 style="font-size:.82rem; color:var(--text-secondary); margin-bottom:0.5rem;">Custom Asset Layers</h4>
             <div id="mk-asset-layers-list"></div>
             <button id="mk-add-asset-layer-btn" class="secondary small" type="button" style="width:100%; margin-top:0.5rem;">+ Add Asset Layer</button>
 
-            <h4 style="margin-top:1rem; font-size:.82rem; color:#c7cad1;">Stickers &amp; Badges</h4>
+            <h4 style="margin-top:1rem; font-size:.82rem; color:var(--text-secondary);">Stickers &amp; Badges</h4>
             <div id="mk-decorations"></div>
             <button id="mk-decoration-add" class="secondary small" type="button" style="width:100%; margin-top:0.5rem;">+ Add Sticker / Badge</button>
           </div>
@@ -845,18 +845,18 @@
               <div class="editor-col editor-col-center">
                 <div class="preview-frame"><div class="studio-preview-box"><iframe id="sc-preview"></iframe></div></div>
 
-                <div class="player-transport" id="sc-transport" style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; background: rgba(0,0,0,0.2); padding: 8px 12px; border-radius: 6px;">
+                <div class="player-transport" id="sc-transport">
                   <button type="button" class="secondary small" id="sc-tr-prev-frame" title="Previous frame">&#9198;</button>
                   <button type="button" class="secondary small" id="sc-tr-back" title="Back 1s">&#9664;&#9664;</button>
                   <button type="button" id="sc-tr-play" title="Play / Pause" style="min-width: 44px; font-weight: bold; background: #3b82f6; border: none; border-radius: 4px; color: white; cursor: pointer; padding: 4px 8px;">&#9654;</button>
                   <button type="button" class="secondary small" id="sc-tr-fwd" title="Forward 1s">&#9654;&#9654;</button>
                   <button type="button" class="secondary small" id="sc-tr-next-frame" title="Next frame">&#9197;</button>
                   
-                  <div class="nav-divider" style="width: 1px; height: 16px; background: rgba(255,255,255,0.15); margin: 0 4px;"></div>
+                  <div class="nav-divider"></div>
                   
                   <button type="button" class="secondary small" id="sc-tr-loop" title="Toggle Loop" style="padding: 4px 8px;">🔁</button>
                   <button type="button" class="secondary small" id="sc-tr-mute" title="Mute/Unmute" style="padding: 4px 8px;">🔊</button>
-                  <select id="sc-tr-speed" style="width: 65px; margin: 0; padding: 2px; font-size: 0.8rem; background: #262a33; border: 1px solid rgba(255,255,255,0.15); color: white; border-radius: 4px;">
+                  <select id="sc-tr-speed" class="transport-speed-select">
                     <option value="0.5">0.5x</option>
                     <option value="1.0" selected>1.0x</option>
                     <option value="2.0">2.0x</option>
@@ -868,8 +868,8 @@
                 <!-- Animation Containers (dual split: text/UI vs device motion) -->
                 <div class="scene-animation-container" id="sc-animation-panel" style="margin-top: 1.25rem; display:grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                   <!-- Container 1: Text & UI Elements Animation -->
-                  <div id="sc-anim-text-panel" style="padding: 1rem; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px;">
-                    <h3 style="margin: 0 0 1rem 0; font-size: 0.9rem; font-weight: 600; color: #38bdf8;">&#128221; Text &amp; UI Animation</h3>
+                  <div id="sc-anim-text-panel" class="scene-anim-panel">
+                    <h3 style="margin: 0 0 1rem 0; font-size: 0.9rem; font-weight: 600;">&#128221; Text &amp; UI Animation</h3>
 
                     <label>Text Transition</label>
                     <select id="sc-text-preset" style="width: 100%; margin-bottom: .8rem;">
@@ -896,7 +896,7 @@
                     <input id="sc-text-scale" type="range" min="0.5" max="1.5" step="0.05" value="1" style="width: 100%;" />
 
                     <!-- Dynamic Flow Labels Container (Landscape Flow) -->
-                    <div id="sc-flow-panel" style="display:none; margin-top:1.2rem; padding:0.8rem; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:8px;">
+                    <div id="sc-flow-panel" class="scene-flow-box" style="display:none;">
                       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
                         <label style="margin:0; font-weight:600;">Flow Step Subtitles (16:9)</label>
                         <button id="sc-flow-add-btn" class="secondary small" type="button">+ Add Step</button>
@@ -906,15 +906,15 @@
                     </div>
 
                     <!-- Portrait Flow Note -->
-                    <div id="sc-portrait-flow-note" style="display:none; margin-top:1.2rem; padding:0.8rem; background:rgba(56,189,248,0.06); border:1px solid rgba(56,189,248,0.2); border-radius:8px;">
-                      <strong style="color:#38bdf8; display:block; margin-bottom:0.2rem;">&#128241; Cinematic App Flow Scene</strong>
+                    <div id="sc-portrait-flow-note" class="scene-portrait-flow-note" style="display:none;">
+                      <strong style="color:var(--accent-primary); display:block; margin-bottom:0.2rem;">&#128241; Cinematic App Flow Scene</strong>
                       <p class="hint" style="margin:0;">The 3D phone smoothly zooms forward until the screen fills the viewport, seamlessly transitioning into your full screen recording.</p>
                     </div>
                   </div>
 
                   <!-- Container 2: Device Motion & 3D Camera -->
-                  <div id="sc-anim-device-panel" style="padding: 1rem; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px;">
-                    <h3 style="margin: 0 0 1rem 0; font-size: 0.9rem; font-weight: 600; color: #38bdf8;">&#127909; Device Motion &amp; 3D Camera</h3>
+                  <div id="sc-anim-device-panel" class="scene-anim-panel">
+                    <h3 style="margin: 0 0 1rem 0; font-size: 0.9rem; font-weight: 600;">&#127909; Device Motion &amp; 3D Camera</h3>
 
                     <label>Motion Pattern</label>
                     <select id="sc-template" style="width: 100%; margin-bottom: 1rem;"></select>
