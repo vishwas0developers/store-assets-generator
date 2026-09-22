@@ -620,6 +620,16 @@ export function syncSection2Inputs(col, layerId) {
     d1FramelessEl.checked = !!activeDevice.frameless;
   }
 
+  const d1BorderColorEl = document.getElementById("mk-d1-border-color");
+  if (d1BorderColorEl && activeDevice) {
+    d1BorderColorEl.value = activeDevice.borderColor || "#334155";
+  }
+
+  const d1BezelColorEl = document.getElementById("mk-d1-bezel-color");
+  if (d1BezelColorEl && activeDevice) {
+    d1BezelColorEl.value = activeDevice.bezelColor || "#1e293b";
+  }
+
   renderMkDecorations(style.decorations || []);
   renderMkAssetLayers(style.assetLayers || []);
   syncTransformPanelInputs(style, lid);
@@ -1051,6 +1061,24 @@ function syncObjectToolbar(style, layerId) {
   if (flipHBtn) flipHBtn.classList.toggle("is-active", !!box?.flipH);
   if (flipVBtn) flipVBtn.classList.toggle("is-active", !!box?.flipV);
 
+  // Device Frame 1 / device layer color controls in the toolbar
+  const isDeviceLayer = layerId && (layerId === "deviceOne" || layerId === "deviceTwo" || layerId.startsWith("extra:"));
+  const devColorsGroup = document.getElementById("mk-obj-dev-colors-group");
+  if (devColorsGroup) {
+    devColorsGroup.style.display = isDeviceLayer ? "flex" : "none";
+    if (isDeviceLayer) {
+      const dev = resolveDeviceLayer(style, layerId) || style?.deviceOne;
+      const rimPicker = document.getElementById("mk-obj-dev-border-color");
+      const bezelPicker = document.getElementById("mk-obj-dev-bezel-color");
+      if (rimPicker && document.activeElement !== rimPicker) {
+        rimPicker.value = dev?.borderColor || "#334155";
+      }
+      if (bezelPicker && document.activeElement !== bezelPicker) {
+        bezelPicker.value = dev?.bezelColor || "#1e293b";
+      }
+    }
+  }
+
   ["mk-obj-bring-front", "mk-obj-bring-fwd", "mk-obj-send-bwd", "mk-obj-send-back",
    "mk-obj-align-left", "mk-obj-align-center", "mk-obj-align-right",
    "mk-obj-align-top", "mk-obj-align-middle", "mk-obj-align-bottom",
@@ -1115,6 +1143,37 @@ export function setupObjectToolbarEvents() {
   if (opSlider) {
     opSlider.oninput = () => handleOpacityInput(opSlider.value);
     opSlider.onchange = () => commitOpacityChange(opSlider.value);
+  }
+
+  // Device color controls in toolbar
+  const tbRimPicker = document.getElementById("mk-obj-dev-border-color");
+  if (tbRimPicker) {
+    tbRimPicker.oninput = () => {
+      const style = getSelectedCellStyle() || selectedColumn?.style;
+      const dev = style && (resolveDeviceLayer(style, selectedLayerId) || style.deviceOne);
+      if (!dev) return;
+      dev.borderColor = tbRimPicker.value;
+      const sideInput = document.getElementById("mk-d1-border-color");
+      if (sideInput) sideInput.value = tbRimPicker.value;
+      if (selectedColumn) syncLinkedDeviceLayer(mockupProject, selectedColumn.id, selectedLayerId);
+      setMockupDirty(true);
+      loadColumnIntoFabric(selectedColumn);
+    };
+  }
+
+  const tbBezelPicker = document.getElementById("mk-obj-dev-bezel-color");
+  if (tbBezelPicker) {
+    tbBezelPicker.oninput = () => {
+      const style = getSelectedCellStyle() || selectedColumn?.style;
+      const dev = style && (resolveDeviceLayer(style, selectedLayerId) || style.deviceOne);
+      if (!dev) return;
+      dev.bezelColor = tbBezelPicker.value;
+      const sideInput = document.getElementById("mk-d1-bezel-color");
+      if (sideInput) sideInput.value = tbBezelPicker.value;
+      if (selectedColumn) syncLinkedDeviceLayer(mockupProject, selectedColumn.id, selectedLayerId);
+      setMockupDirty(true);
+      loadColumnIntoFabric(selectedColumn);
+    };
   }
 
   syncObjectToolbar(null, null);
@@ -1305,6 +1364,36 @@ export function setupInspectorEvents() {
       const dev = style && (resolveDeviceLayer(style, selectedLayerId) || style.deviceOne);
       if (!dev) return;
       dev.frameless = d1Frameless.checked;
+      if (selectedColumn) syncLinkedDeviceLayer(mockupProject, selectedColumn.id, selectedLayerId);
+      setMockupDirty(true);
+      loadColumnIntoFabric(selectedColumn);
+    };
+  }
+
+  const d1BorderColor = document.getElementById("mk-d1-border-color");
+  if (d1BorderColor) {
+    d1BorderColor.oninput = () => {
+      const style = getSelectedCellStyle() || selectedColumn?.style;
+      const dev = style && (resolveDeviceLayer(style, selectedLayerId) || style.deviceOne);
+      if (!dev) return;
+      dev.borderColor = d1BorderColor.value;
+      const tbInput = document.getElementById("mk-obj-dev-border-color");
+      if (tbInput) tbInput.value = d1BorderColor.value;
+      if (selectedColumn) syncLinkedDeviceLayer(mockupProject, selectedColumn.id, selectedLayerId);
+      setMockupDirty(true);
+      loadColumnIntoFabric(selectedColumn);
+    };
+  }
+
+  const d1BezelColor = document.getElementById("mk-d1-bezel-color");
+  if (d1BezelColor) {
+    d1BezelColor.oninput = () => {
+      const style = getSelectedCellStyle() || selectedColumn?.style;
+      const dev = style && (resolveDeviceLayer(style, selectedLayerId) || style.deviceOne);
+      if (!dev) return;
+      dev.bezelColor = d1BezelColor.value;
+      const tbInput = document.getElementById("mk-obj-dev-bezel-color");
+      if (tbInput) tbInput.value = d1BezelColor.value;
       if (selectedColumn) syncLinkedDeviceLayer(mockupProject, selectedColumn.id, selectedLayerId);
       setMockupDirty(true);
       loadColumnIntoFabric(selectedColumn);

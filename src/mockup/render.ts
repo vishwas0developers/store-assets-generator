@@ -41,7 +41,8 @@ function frameless(device: (typeof DEVICE_REGISTRY)[string], screenshotUri: stri
 function layerMarkup(deviceEntryId: string, screenshotUri: string, layer: DeviceLayerStyle, variant?: string): string {
   const device = DEVICE_REGISTRY[deviceEntryId] ?? DEVICE_REGISTRY["phone"];
   if (!device) throw new Error(`Device '${deviceEntryId}' not found in registry`);
-  return layer.frameless ? frameless(device, screenshotUri, layer, variant) : deviceMarkup(device, screenshotUri, variant);
+  const overrides = { borderColor: layer.borderColor, bezelColor: layer.bezelColor };
+  return layer.frameless ? frameless(device, screenshotUri, layer, variant) : deviceMarkup(device, screenshotUri, variant, "image", overrides);
 }
 
 function textFormatCss(t: TextStyle): string {

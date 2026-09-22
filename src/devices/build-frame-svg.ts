@@ -78,16 +78,17 @@ export function buildFrameSvg(
   def: DeviceDefinition,
   colorway: "light" | "dark" = "dark",
   geometry: DeviceGeometry = def.geometry,
+  overrides?: { borderColor?: string; bezelColor?: string },
 ): string {
   const { width, height } = geometry;
   const bezelWidth = def.bezelWidth;
   const outerRadius = geometry.cornerRadius;
-  const bodyFill = colorway === "light" ? "#e8e8e8" : def.body;
-  const strokeColor = colorway === "light" ? "#c9c9c9" : def.accent;
+  const bodyFill = overrides?.bezelColor || (colorway === "light" ? "#e8e8e8" : def.body);
+  const strokeColor = overrides?.borderColor || (colorway === "light" ? "#c9c9c9" : def.accent);
 
   return `<svg viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
     <rect x="${bezelWidth / 2}" y="${bezelWidth / 2}" width="${width - bezelWidth}" height="${height - bezelWidth}"
-          rx="${outerRadius}" fill="none" stroke="${bodyFill}" stroke-width="${bezelWidth}" />
+          rx="${outerRadius}" fill="${bodyFill}" stroke="${strokeColor}" stroke-width="${bezelWidth}" />
     ${cutoutMarkup(def, geometry)}
     ${buttonsMarkup(def, geometry, bezelWidth)}
     ${foldSeamMarkup(def, geometry)}

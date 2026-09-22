@@ -1432,6 +1432,8 @@ export async function buildDeviceGroup(device, layerId, left, top, width, height
 
   // Bezel frame (rounded rect) using real device dimensions
   if (!isFrameless) {
+    const bezelFill = device.bezelColor || '#1e293b';
+    const borderStroke = device.borderColor || '#334155';
     const bezel = new fabric.Rect({
       left: 0,
       top: 0,
@@ -1439,7 +1441,9 @@ export async function buildDeviceGroup(device, layerId, left, top, width, height
       height: devH,
       rx: devCorner,
       ry: devCorner,
-      fill: '#1e293b',
+      fill: bezelFill,
+      stroke: borderStroke,
+      strokeWidth: 3,
       originX: 'left',
       originY: 'top',
       selectable: false,
