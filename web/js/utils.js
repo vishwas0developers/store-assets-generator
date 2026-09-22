@@ -173,8 +173,17 @@ export function escapeHtml(str) {
     .replace(/>/g, "&gt;");
 }
 
+function getSwalColors() {
+  const isLight = typeof document !== "undefined" && document.documentElement.classList.contains("light");
+  return {
+    background: isLight ? "#ffffff" : "#14161c",
+    color: isLight ? "#0f172a" : "#e6e6e6",
+    cancelButtonColor: isLight ? "#cbd5e1" : "#374151"
+  };
+}
+
 /**
- * SweetAlert helpers — wrap Swal with the app's dark theme defaults.
+ * SweetAlert helpers — wrap Swal with theme-aware defaults.
  */
 export function showAlert(message, type = "warning", title = "Alert") {
   if (typeof window === "undefined" || !window.Swal) {
@@ -185,13 +194,14 @@ export function showAlert(message, type = "warning", title = "Alert") {
   if (type === "error") icon = "error";
   if (type === "success") icon = "success";
   if (type === "info") icon = "info";
+  const colors = getSwalColors();
   return window.Swal.fire({
     title,
     text: message,
     icon,
     confirmButtonText: "OK",
-    background: "#14161c",
-    color: "#e6e6e6",
+    background: colors.background,
+    color: colors.color,
     confirmButtonColor: "#3b82f6",
   });
 }
@@ -200,6 +210,7 @@ export function showConfirm(message, title = "Confirm Action", danger = false) {
   if (typeof window === "undefined" || !window.Swal) {
     return Promise.resolve(window.confirm(message));
   }
+  const colors = getSwalColors();
   return window.Swal.fire({
     title,
     text: message,
@@ -207,10 +218,10 @@ export function showConfirm(message, title = "Confirm Action", danger = false) {
     showCancelButton: true,
     confirmButtonText: danger ? "Delete" : "Confirm",
     cancelButtonText: "Cancel",
-    background: "#14161c",
-    color: "#e6e6e6",
+    background: colors.background,
+    color: colors.color,
     confirmButtonColor: danger ? "#dc2626" : "#3b82f6",
-    cancelButtonColor: "#374151",
+    cancelButtonColor: colors.cancelButtonColor,
   }).then((result) => !!result.isConfirmed);
 }
 
@@ -218,6 +229,7 @@ export function showPrompt(message, defaultValue = "", title = "Input Required")
   if (typeof window === "undefined" || !window.Swal) {
     return Promise.resolve(window.prompt(message, defaultValue));
   }
+  const colors = getSwalColors();
   return window.Swal.fire({
     title,
     text: message,
@@ -226,10 +238,10 @@ export function showPrompt(message, defaultValue = "", title = "Input Required")
     showCancelButton: true,
     confirmButtonText: "Submit",
     cancelButtonText: "Cancel",
-    background: "#14161c",
-    color: "#e6e6e6",
+    background: colors.background,
+    color: colors.color,
     confirmButtonColor: "#3b82f6",
-    cancelButtonColor: "#374151",
+    cancelButtonColor: colors.cancelButtonColor,
   }).then((result) => (result.value !== undefined ? result.value : null));
 }
 
