@@ -188,7 +188,12 @@ export function resolveVariantDefinition(device: DeviceModel, variantId?: string
 /** Frame SVG for a device at a specific variant's geometry -- `device.svgFrame`
  *  is built once from the *base* geometry, so a foldable's folded/unfolded
  *  variant needs its own frame or the bezel stretches to fit the wrong shape. */
-export function frameSvgFor(device: DeviceModel, variantId?: string): string {
+export function frameSvgFor(device: DeviceModel, variantId?: string, overrides?: { borderColor?: string; bezelColor?: string }): string {
+  if (overrides?.borderColor || overrides?.bezelColor) {
+    const geometry = resolveGeometry(device, variantId);
+    const geom = { width: geometry.width, height: geometry.height, thickness: device.definition.geometry.thickness, cornerRadius: geometry.cornerRadius ?? 0 };
+    return buildFrameSvg(device.definition, "dark", geom, overrides);
+  }
   if (!variantId) return device.svgFrame;
   const geometry = resolveGeometry(device, variantId);
   if (geometry === device.geometry) return device.svgFrame;

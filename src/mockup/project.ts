@@ -120,6 +120,8 @@ export interface DeviceLayerStyle {
   rotation: number;
   brightness: number; // 0-200, 100 = unchanged
   frameless: boolean; // "snapshot-" layouts skip the device frame
+  borderColor?: string; // Device frame outer rim / stroke color
+  bezelColor?: string; // Device frame body / bezel fill color
   flipH?: boolean;
   flipV?: boolean;
   deleted?: boolean;

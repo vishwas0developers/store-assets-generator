@@ -34,7 +34,13 @@ export function escapeHtml(value: string): string {
  *  an `<img>` (default) or an autoplaying, muted `<video>` for a real screen
  *  recording -- see window.seek's <video> handling in video/render.ts for
  *  how the render pipeline keeps that deterministic under frame-stepping. */
-export function deviceMarkup(device: DeviceModel, screenshotUri: string, variantId?: string, kind: "image" | "video" = "image"): string {
+export function deviceMarkup(
+  device: DeviceModel,
+  screenshotUri: string,
+  variantId?: string,
+  kind: "image" | "video" = "image",
+  overrides?: { borderColor?: string; bezelColor?: string },
+): string {
   const g = resolveGeometry(device, variantId);
   const r = g.cornerRadius ?? 0;
   const screenStyle = `top:${g.screenInset.top - 1}px;left:${g.screenInset.left - 1}px;width:${g.screenInset.width + 2}px;height:${g.screenInset.height + 2}px;border-radius:${r}px;clip-path:inset(0 round ${r}px);object-fit:cover;object-position:top center;`;
@@ -44,7 +50,7 @@ export function deviceMarkup(device: DeviceModel, screenshotUri: string, variant
       : `<img class="device-screen" src="${screenshotUri}" style="${screenStyle}" />`;
   return `<div class="device" style="width:${g.width}px;height:${g.height}px">
       ${screenEl}
-      <div class="device-frame">${frameSvgFor(device, variantId)}</div>
+      <div class="device-frame">${frameSvgFor(device, variantId, overrides)}</div>
     </div>`;
 }
 
