@@ -3,6 +3,7 @@ import fs from "fs";
 import path from "path";
 import { resolveTool } from "../toolchain/binaries.js";
 import { loadProject, saveProject, projectFile } from "../project/projectStore.js";
+import { classifyDeviceCategory } from "./deviceCategories.js";
 
 // Both live views (Android via scrcpy, Web via Chrome DevTools screencast)
 // already produce a stream of JPEG frames for their previews. Recording just
@@ -143,6 +144,7 @@ export function registerRecording(opts: {
 }): { id: number; file: string; durationSec: number } {
   const project = loadProject(opts.projectId);
   const resolution = `${opts.width}x${opts.height}`;
+  const deviceCategory = classifyDeviceCategory(opts.width, opts.height);
 
   project.captures.push({
     id: opts.id,
@@ -151,6 +153,7 @@ export function registerRecording(opts: {
     capturedAt: new Date().toISOString(),
     width: opts.width,
     height: opts.height,
+    deviceCategory,
     resolution,
     deviceLabel: opts.deviceLabel,
     kind: "video",
@@ -161,10 +164,14 @@ export function registerRecording(opts: {
   // recording has nothing to contribute there.
   project.video.sources.push({
     id: `src_${Date.now()}`,
+    // Name stays free of pixel dimensions -- the UI appends the device-size
+    // label at display time (see web/js/editor.js's populateSourceSelect).
+    // Duration is not a resolution/pixel metric, so it's kept here.
     name: `Recording ${opts.id} (${opts.durationSec}s)`,
     file: opts.rel,
     width: opts.width,
     height: opts.height,
+    deviceCategory,
     resolution,
     deviceLabel: opts.deviceLabel,
     kind: "video",

@@ -148,12 +148,10 @@
               <input id="browser-url-input" type="text" placeholder="Enter starting URL (e.g. https://example.com)" style="flex: 1; border: none; background: transparent; padding: 0.5rem 0; outline: none; color: var(--text-primary);" />
             </div>
 
-            <select id="browser-resolution-select" style="width: 18rem;">
-              <option value="1242x2688">Phone – 6.5" Display (1242 × 2688)</option>
-              <option value="1290x2796">Phone – 6.7" / Standard (1290 × 2796)</option>
-              <option value="1200x1920">Tablet – 7" Display (1200 × 1920)</option>
-              <option value="2048x2732">Tablet – 10" / 12.9" Pro (2048 × 2732)</option>
-            </select>
+            <!-- Options populated from GET /api/device-categories (src/capture/deviceCategories.ts
+                 is the single source of truth) -- values are device-size category ids
+                 ("phone" | "tablet7" | "tablet10"), not resolutions. -->
+            <select id="browser-resolution-select" style="width: 14rem;" title="Device size to connect as"></select>
             <button id="browser-connect-btn">Connect</button>
             <button id="browser-disconnect-btn" class="secondary" style="display: none;">✕ Disconnect</button>
           </div>
@@ -197,8 +195,16 @@
             <!-- Right: Gallery List Card -->
             <div class="card" style="flex: 1; margin-top: 0 !important; display: flex; flex-direction: column; min-height: 0; border: 1px solid var(--border-subtle);">
               <h3 id="session-captures-title">Session Captures</h3>
-              <div class="hint" style="margin-bottom: 1rem;">
+              <div class="hint" style="margin-bottom: 0.6rem;">
                 Navigate to the target screen in the device view, then click the red capture button or press <kbd>Alt + C</kbd> to save.
+              </div>
+              <div style="display: flex; gap: 0.5rem; margin-bottom: 0.8rem;">
+                <select id="browser-capture-filter-device" style="flex: 1; font-size: 0.78rem;" title="Filter by device size (Phone / 7-inch Tablet / 10-inch Tablet)">
+                  <option value="">All device sizes</option>
+                </select>
+                <select id="browser-capture-filter-resolution" style="flex: 1; font-size: 0.78rem;" title="Refine by exact pixel resolution (technical detail)">
+                  <option value="">All resolutions</option>
+                </select>
               </div>
               <div id="live-captures-gallery" class="thumb-grid" style="grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 0.8rem; align-items: start; align-content: start; overflow-y: auto; flex: 1; min-height: 0;">
                 <div class="hint" style="grid-column: span 2; text-align: center; padding: 2rem 0;">No screenshots captured yet.</div>
@@ -311,9 +317,17 @@
 
             <!-- Right: Android Capture Gallery -->
             <div class="card" style="flex: 1; margin-top: 0 !important; display: flex; flex-direction: column; min-height: 0; border: 1px solid var(--border-subtle);">
-              <h3>Session Captures</h3>
-              <div class="hint" style="margin-bottom: 1rem;">
+              <h3 id="android-captures-title">Session Captures</h3>
+              <div class="hint" style="margin-bottom: 0.6rem;">
                 Click the capture button or press <kbd>Alt + C</kbd> to save a full-resolution screenshot from the connected device.
+              </div>
+              <div style="display: flex; gap: 0.5rem; margin-bottom: 0.8rem;">
+                <select id="android-capture-filter-device" style="flex: 1; font-size: 0.78rem;" title="Filter by device size (Phone / 7-inch Tablet / 10-inch Tablet)">
+                  <option value="">All device sizes</option>
+                </select>
+                <select id="android-capture-filter-resolution" style="flex: 1; font-size: 0.78rem;" title="Refine by exact pixel resolution (technical detail)">
+                  <option value="">All resolutions</option>
+                </select>
               </div>
               <div id="android-captures-gallery" class="thumb-grid" style="grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 0.8rem; align-items: start; align-content: start; overflow-y: auto; flex: 1; min-height: 0;">
                 <div class="hint" style="grid-column: span 2; text-align: center; padding: 2rem 0;">No screenshots captured yet.</div>
@@ -620,6 +634,7 @@
           <div id="mk-panel-dev" style="margin-top:0.5rem;">
             <label>Screenshot Source Mapping</label>
             <select id="mk-source"></select>
+            <div id="mk-source-dims" class="hint" style="margin-top:.25rem;"></div>
             <button id="mk-source-upload" class="secondary small" type="button" style="margin-top:.4rem; width:100%;">Upload New Source</button>
 
             <h4 style="margin-top:1rem; font-size:.82rem; color:#c7cad1;">Device Geometry</h4>

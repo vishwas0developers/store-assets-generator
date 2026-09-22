@@ -29,6 +29,7 @@ import {
 } from "./androidStream.js";
 
 import { nextRecordingPath, registerRecording } from "./frameRecorder.js";
+import { classifyDeviceCategory, type DeviceCategory } from "./deviceCategories.js";
 
 export {
   subscribeAndroidFrames,
@@ -47,6 +48,12 @@ const execFileAsync = promisify(execFile);
 const backend = new AndroidCaptureBackend();
 let currentDeviceId: string | null = null;
 let currentScreenSize: { width: number; height: number } | null = null;
+// Android devices are real hardware with no fixed preset list, so their
+// device-size category is derived from the reported native screen size
+// (queryScreenSize below) rather than picked by the user -- keeps the same
+// {device size -> resolution -> screenshot} model as Live Web without asking
+// the user to guess a diagonal size for a screen ADB already told us.
+let currentDeviceCategory: DeviceCategory = "phone";
 
 export async function listAndroidDevices(): Promise<string[]> {
   return backend.listDevices();
@@ -67,7 +74,7 @@ export async function startAndroidSession(
   projectId: string,
   deviceId?: string,
   options?: { screenOff?: boolean; nativePreview?: boolean; autoRotate?: boolean }
-): Promise<{ deviceId: string; width: number; height: number; screenOff: boolean; autoRotate: boolean }> {
+): Promise<{ deviceId: string; width: number; height: number; deviceCategory: DeviceCategory; screenOff: boolean; autoRotate: boolean }> {
   const devices = await backend.listDevices();
   if (devices.length === 0) {
     throw new Error("No Android devices found via ADB. Connect a device/emulator and enable USB debugging.");
@@ -77,6 +84,7 @@ export async function startAndroidSession(
 
   const size = await queryScreenSize(chosen);
   currentScreenSize = size;
+  currentDeviceCategory = classifyDeviceCategory(size.width, size.height);
 
   // Launch background stream for real-time WebCodecs H.264 GPU decoding
   // Default screenOff to true so physical display remains off while mirroring
@@ -93,7 +101,7 @@ export async function startAndroidSession(
     await setAutoRotate(false);
   }
 
-  return { deviceId: chosen, ...currentScreenSize, screenOff: isScreenOff(), autoRotate: isAutoRotate() };
+  return { deviceId: chosen, ...currentScreenSize, deviceCategory: currentDeviceCategory, screenOff: isScreenOff(), autoRotate: isAutoRotate() };
 }
 
 export function stopAndroidSession(): void {
@@ -453,6 +461,10 @@ export async function captureAndroidScreen(
   const { width, height } = pngSize(buffer);
   const resolutionKey = `${width}x${height}`;
   const deviceLabel = `Android (${currentDeviceId})`;
+  // Classified from THIS capture's actual pixels, not the cached
+  // currentDeviceCategory -- a device rotated between connect and capture
+  // would otherwise get a stale category.
+  const deviceCategory = classifyDeviceCategory(width, height);
 
   const captureInfo = {
     id: nextId,
@@ -461,18 +473,23 @@ export async function captureAndroidScreen(
     capturedAt: new Date().toISOString(),
     width,
     height,
+    deviceCategory,
     resolution: resolutionKey,
     deviceLabel,
   };
   project.captures.push(captureInfo);
 
   const srcId = `src_${Date.now()}`;
+  // Name stays free of pixel dimensions -- device size and resolution are
+  // separate metadata fields; the UI appends the device-size label at
+  // display time (see web/js/editor.js's populateSourceSelect).
   const source = {
     id: srcId,
-    name: `Screenshot ${nextId} (${resolutionKey})`,
+    name: `Screenshot ${nextId}`,
     file: `captures/${filename}`,
     width,
     height,
+    deviceCategory,
     resolution: resolutionKey,
     deviceLabel,
   };

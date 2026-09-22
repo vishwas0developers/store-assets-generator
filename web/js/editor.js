@@ -17,6 +17,9 @@ import {
 import { escapeHtml, api, uploadFile, showAlert, showToast, showConfirm } from './utils.js';
 import { loadColumnIntoFabric, renderMockupCanvas, setActivePage } from './canvas.js';
 import { renderMockupMatrix, getSelectedCellStyle } from './matrix.js';
+import { loadDeviceCategories, getDeviceCategoriesSync, deviceCategoryLabel } from './deviceCategories.js';
+
+loadDeviceCategories();
 
 export function switchInspectorTab(tabId) {
   const tabs = document.querySelectorAll("#mockup-inspector .tab, #mk-section-object [id^='mk-tab-']");
@@ -38,6 +41,55 @@ export function routeInspectorForLayer(layerId) {
   else if (layerId === 'deviceOne' || layerId === 'deviceTwo') switchInspectorTab('dev');
   else if (layerId?.startsWith('asset:') || layerId?.startsWith('decoration:')) switchInspectorTab('asset');
   else switchInspectorTab('col');
+}
+
+// Screenshot Source Mapping select -- shared shape across Studio Mockup and
+// Video Studio (project.mockup.sources / project.video.sources both carry
+// {id, name, file, width, height, deviceCategory, resolution, deviceLabel},
+// written once at capture time in src/capture/liveBrowser.ts and
+// androidLive.ts, or backfilled server-side for legacy sources -- see
+// projectStore.ts's loadProject). Device size (deviceCategory: "phone" |
+// "tablet7" | "tablet10") is the ONLY thing shown next to a screenshot's
+// name here -- resolution/pixel dimensions stay in the data as technical
+// metadata but are never rendered in the UI (see updateSourceDimsReadout).
+export function populateSourceSelect(selectEl, sources, selectedId, options) {
+  selectEl.innerHTML = "";
+  if (options?.blankLabel) {
+    const blankOpt = document.createElement("option");
+    blankOpt.value = "";
+    blankOpt.textContent = options.blankLabel;
+    selectEl.appendChild(blankOpt);
+  }
+  const categories = getDeviceCategoriesSync();
+  const orderedIds = categories.length ? categories.map((c) => c.id) : [...new Set(sources.map((s) => s.deviceCategory))];
+  const groups = new Map();
+  for (const s of sources) {
+    const key = s.deviceCategory || "other";
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(s);
+  }
+  const orderedKeys = [...orderedIds.filter((id) => groups.has(id)), ...[...groups.keys()].filter((k) => !orderedIds.includes(k))];
+  for (const key of orderedKeys) {
+    const group = groups.get(key);
+    const parent = groups.size > 1 ? document.createElement("optgroup") : selectEl;
+    if (parent !== selectEl) parent.label = deviceCategoryLabel(key);
+    for (const s of group) {
+      const opt = document.createElement("option");
+      opt.value = s.id;
+      // "Screenshot Name — Device Size" -- never a resolution/pixel suffix.
+      opt.textContent = `${s.name} — ${deviceCategoryLabel(s.deviceCategory)}`;
+      parent.appendChild(opt);
+    }
+    if (parent !== selectEl) selectEl.appendChild(parent);
+  }
+  if (selectedId) selectEl.value = selectedId;
+}
+
+export function updateSourceDimsReadout(sources, sourceId) {
+  const el = document.getElementById("mk-source-dims");
+  if (!el) return;
+  const source = sourceId ? sources.find((s) => s.id === sourceId) : null;
+  el.textContent = source ? deviceCategoryLabel(source.deviceCategory) : "";
 }
 
 export function buildScreenLayersModel(column) {
@@ -596,10 +648,9 @@ export function syncSection2Inputs(col, layerId) {
 
   const sourceEl = document.getElementById("mk-source");
   if (sourceEl && activeDevice) {
-    const sources = mockupProject?.sources || [];
-    sourceEl.innerHTML = sources.map((s) => `<option value="${s.id}">${escapeHtml(s.name)}</option>`).join("");
-    if (activeDevice.sourceId) sourceEl.value = activeDevice.sourceId;
+    populateSourceSelect(sourceEl, mockupProject?.sources || [], activeDevice.sourceId);
   }
+  updateSourceDimsReadout(mockupProject?.sources || [], activeDevice?.sourceId);
 
   const d1SizeEl = document.getElementById("mk-d1-size");
   const d1SizeValEl = document.getElementById("mk-d1-size-val");
@@ -1320,6 +1371,7 @@ export function setupInspectorEvents() {
       const dev = style && (resolveDeviceLayer(style, selectedLayerId) || style.deviceOne);
       if (!dev) return;
       dev.sourceId = sourceSelectEl.value || undefined;
+      updateSourceDimsReadout(mockupProject?.sources || [], dev.sourceId);
       setMockupDirty(true);
       loadColumnIntoFabric(selectedColumn);
     };

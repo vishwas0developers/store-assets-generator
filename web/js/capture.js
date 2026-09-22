@@ -1,7 +1,8 @@
 // Capture module — Live browser (Playwright) stream + Android (ADB/scrcpy) capture,
 // screenshots, H.264/WebCodecs demuxer, and stream recorder.
 import { activeProjectId, activeProject } from './state.js';
-import { api, uploadFile, showAlert, showToast } from './utils.js';
+import { api, uploadFile, showAlert, showToast, showConfirm } from './utils.js';
+import { loadDeviceCategories, getDeviceCategoriesSync, deviceCategoryLabel } from './deviceCategories.js';
 
 // Browser live state
 let browserConnected = false;
@@ -16,7 +17,6 @@ let moveHistory = [];
 let inertiaRafId = null;
 let accumDeltaX = 0, accumDeltaY = 0, lastCursorXPct = 50, lastCursorYPct = 50, rafScheduled = false;
 let browserInteractionBound = false;
-let renderLiveBrowserCapturesRef = null;
 
 // Android live state
 let androidConnected = false;
@@ -38,9 +38,214 @@ export function loadCaptureTab() {
     const urlEl = document.getElementById("browser-url-input");
     if (urlEl && !urlEl.value) urlEl.value = activeProject.targetUrl;
   }
-  if (typeof renderLiveBrowserCapturesRef === 'function') renderLiveBrowserCapturesRef();
-  if (typeof loadAndroidDevices === 'function') loadAndroidDevices();
-  if (typeof renderAndroidCaptures === 'function') renderAndroidCaptures();
+  renderLiveBrowserCaptures();
+  loadAndroidDevices();
+  renderAndroidCaptures();
+}
+
+// Shared by both the Live Web and Android galleries — same card markup/delete/
+// lightbox behavior, differing only in which captures to show and what to say
+// when there are none. Always scoped to the current activeProjectId (#state.js),
+// so switching projects never shows another project's screenshots.
+async function renderCaptureGallery(galleryId, filterFn, emptyMessage) {
+  const gallery = document.getElementById(galleryId);
+  if (!gallery) return;
+  gallery.innerHTML = "";
+
+  if (!activeProjectId) return;
+
+  const showEmpty = () => {
+    gallery.innerHTML = `<div class="hint" style="grid-column: span 2; text-align: center; padding: 2rem 0;">${emptyMessage}</div>`;
+  };
+
+  try {
+    const proj = await api(`/api/projects/${activeProjectId}`);
+    const filtered = (proj.captures || []).filter(filterFn);
+
+    if (filtered.length === 0) {
+      showEmpty();
+      return;
+    }
+
+    for (const c of filtered) {
+      const isVideo = c.kind === "video" || /\.mp4$/i.test(c.file);
+      const item = document.createElement("div");
+      item.className = "thumb";
+      item.style = "height: fit-content; align-self: start; position: relative;";
+      const fileUrl = `/api/projects/${activeProjectId}/file?p=${encodeURIComponent(c.file)}`;
+
+      const img = document.createElement(isVideo ? "video" : "img");
+      img.src = fileUrl;
+      img.style.cssText = "cursor:pointer; width:100%; height:auto; max-height:220px; display:block; aspect-ratio:9/16; object-fit:contain; background:#000;";
+      if (isVideo) {
+        img.preload = "metadata";
+        img.muted = true;
+        const badge = document.createElement("span");
+        badge.className = "video-badge";
+        badge.textContent = "VIDEO";
+        item.appendChild(badge);
+      }
+
+      const cap = document.createElement("div");
+      cap.style.cssText = "display:flex; justify-content:space-between; align-items:center; padding:0.35rem 0.5rem; background:#14171f; border-top:1px solid #21252f;";
+
+      const label = document.createElement("span");
+      label.style.cssText = "font-weight:600; color:#e5e7eb; font-size:0.75rem; display:flex; flex-direction:column; gap:1px;";
+      const labelTop = document.createElement("span");
+      labelTop.textContent = isVideo ? `Video ${c.id} (${c.durationSec ?? "?"}s)` : `Screen ${c.id}`;
+      label.appendChild(labelTop);
+      {
+        // Device size only -- resolution/pixel dimensions stay in the data
+        // as technical metadata but are never shown in the UI.
+        const labelDims = document.createElement("span");
+        labelDims.style.cssText = "font-weight:400; color:#8b93a3; font-size:0.68rem;";
+        labelDims.textContent = deviceCategoryLabel(c.deviceCategory);
+        label.appendChild(labelDims);
+      }
+
+      const delBtn = document.createElement("button");
+      delBtn.type = "button";
+      delBtn.style.cssText = "padding:0.25rem 0.35rem; border-radius:4px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; color:#fff; background:#dc2626; border:none; transition:background 0.2s;";
+      delBtn.title = isVideo ? "Delete recording" : "Delete screenshot";
+      delBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>`;
+
+      delBtn.addEventListener("click", async (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+
+        const noun = isVideo ? "Recording" : "Screenshot";
+        const confirmed = await showConfirm(`Delete ${noun} ${c.id}? This cannot be undone.`, `Delete ${noun}`, true);
+        if (!confirmed) return;
+
+        item.remove();
+        if (gallery.children.length === 0) showEmpty();
+
+        try {
+          await api(`/api/projects/${activeProjectId}/captures/${c.id}`, { method: "DELETE" });
+        } catch (_) {
+          try {
+            await api(`/api/projects/${activeProjectId}/file?p=${encodeURIComponent(c.file)}`, { method: "DELETE" });
+          } catch (err2) {
+            showToast("Delete failed: " + err2.message, "error");
+            renderCaptureGallery(galleryId, filterFn, emptyMessage);
+            return;
+          }
+        }
+
+        showToast(`${noun} ${c.id} deleted`, "info");
+        if (typeof window.refreshFileExplorer === "function") window.refreshFileExplorer();
+      });
+
+      img.addEventListener("click", () => {
+        const box = document.createElement("div");
+        box.style.cssText = "position:fixed; inset:0; background:rgba(0,0,0,0.85); display:flex; align-items:center; justify-content:center; z-index:200; cursor:pointer;";
+        const media = document.createElement(isVideo ? "video" : "img");
+        media.src = fileUrl;
+        media.style.cssText = "max-width:90%; max-height:90%; border-radius:8px;";
+        if (isVideo) {
+          media.controls = true;
+          media.autoplay = true;
+          media.addEventListener("click", (ev) => ev.stopPropagation());
+        }
+        box.appendChild(media);
+        box.addEventListener("click", () => box.remove());
+        document.body.appendChild(box);
+      });
+
+      cap.appendChild(label);
+      cap.appendChild(delBtn);
+      item.appendChild(img);
+      item.appendChild(cap);
+      gallery.appendChild(item);
+    }
+  } catch (e) {
+    gallery.innerHTML = `<div class="hint">Failed to load captures: ${e.message}</div>`;
+  }
+}
+
+// Device size (Phone / 7-inch Tablet / 10-inch Tablet) is the PRIMARY,
+// user-facing categorization for every screenshot and video -- not
+// resolution. Every capture carries a `deviceCategory` written at capture
+// time (src/capture/liveBrowser.ts, androidLive.ts) or backfilled from its
+// pixel dimensions for legacy records (projectStore.ts's loadProject), so it
+// is always present. `resolution`/`deviceLabel` remain as secondary,
+// technical metadata only -- shown, never used as the primary grouping key.
+
+function isLiveWebCapture(c) {
+  return c.kind !== "video" && !(typeof c.url === "string" && c.url.startsWith("android:"));
+}
+
+function isAndroidCapture(c) {
+  return typeof c.url === "string" && c.url.startsWith("android:");
+}
+
+// Repopulate a device-size + resolution filter pair from the project's
+// actual captures (not a hardcoded list), so a filter option only ever
+// exists if a matching screenshot does. Preserves the user's current
+// selection where still valid. Shared by both the Live Web and Android
+// sections so their filtering behaves identically.
+async function populateCaptureFilters(deviceSelId, resSelId, sectionFilterFn) {
+  const deviceSel = document.getElementById(deviceSelId);
+  const resSel = document.getElementById(resSelId);
+  if (!deviceSel || !resSel || !activeProjectId) return;
+
+  await loadDeviceCategories();
+
+  let captures = [];
+  try {
+    const proj = await api(`/api/projects/${activeProjectId}`);
+    captures = (proj.captures || []).filter(sectionFilterFn);
+  } catch (_) {
+    return;
+  }
+
+  const categoryIds = [...new Set(captures.map((c) => c.deviceCategory).filter(Boolean))];
+  // Order by the canonical Phone / 7-inch / 10-inch ordering, not alphabetically.
+  const orderedIds = (getDeviceCategoriesSync() || []).map((c) => c.id).filter((id) => categoryIds.includes(id));
+  const resolutions = [...new Set(captures.map((c) => c.resolution).filter(Boolean))].sort();
+
+  const fillSelect = (sel, values, labelFn, allLabel) => {
+    const prev = sel.value;
+    sel.innerHTML = "";
+    const allOpt = document.createElement("option");
+    allOpt.value = "";
+    allOpt.textContent = allLabel;
+    sel.appendChild(allOpt);
+    for (const v of values) {
+      const opt = document.createElement("option");
+      opt.value = v;
+      opt.textContent = labelFn ? labelFn(v) : v;
+      sel.appendChild(opt);
+    }
+    if (values.includes(prev)) sel.value = prev;
+  };
+
+  fillSelect(deviceSel, orderedIds, deviceCategoryLabel, "All device sizes");
+  fillSelect(resSel, resolutions, null, "All resolutions");
+}
+
+async function renderLiveBrowserCaptures() {
+  await populateCaptureFilters("browser-capture-filter-device", "browser-capture-filter-resolution", isLiveWebCapture);
+
+  const deviceFilter = document.getElementById("browser-capture-filter-device")?.value || "";
+  const resFilter = document.getElementById("browser-capture-filter-resolution")?.value || "";
+
+  const titleEl = document.getElementById("session-captures-title");
+  if (titleEl) {
+    // Device size only in the heading -- the resolution filter still narrows
+    // results (see filter below) but never appears as displayed text.
+    titleEl.textContent = deviceFilter ? `Session Captures (${deviceCategoryLabel(deviceFilter)})` : "Session Captures";
+  }
+
+  await renderCaptureGallery(
+    "live-captures-gallery",
+    (c) => isLiveWebCapture(c)
+      && (!deviceFilter || c.deviceCategory === deviceFilter)
+      && (!resFilter || c.resolution === resFilter),
+    (deviceFilter || resFilter)
+      ? `No screenshots match the selected filters.<br><br><span style="font-size:0.8rem; color:#888;">Try "All device sizes" / "All resolutions".</span>`
+      : `No screenshots captured yet.<br><br><span style="font-size:0.8rem; color:#888;">Connect and capture a screenshot to see it here.</span>`
+  );
 }
 
 function loadNextFrame() {
@@ -217,8 +422,11 @@ export async function connectLiveBrowser() {
   const url = (urlEl?.value || "").trim();
   if (!url) return showAlert("Please enter a starting URL.");
 
-  const resolutionKey = document.getElementById("browser-resolution-select")?.value || "375x812";
-  const [width, height] = resolutionKey.split("x").map(Number);
+  await loadDeviceCategories();
+  const deviceCategory = document.getElementById("browser-resolution-select")?.value || "phone";
+  const categoryInfo = getDeviceCategoriesSync()?.find((c) => c.id === deviceCategory);
+  const width = categoryInfo?.width || 1290;
+  const height = categoryInfo?.height || 2796;
   const connectBtn = document.getElementById("browser-connect-btn");
   const disconnectBtn = document.getElementById("browser-disconnect-btn");
   const statusEl = document.getElementById("live-browser-status");
@@ -226,7 +434,7 @@ export async function connectLiveBrowser() {
   if (statusEl) statusEl.textContent = "Launching Playwright mobile Chromium browser...";
 
   try {
-    await api("/api/browser/start", { method: "POST", body: { projectId: activeProjectId, url, resolution: resolutionKey, width, height } });
+    await api("/api/browser/start", { method: "POST", body: { projectId: activeProjectId, url, deviceCategory } });
 
     browserConnected = true;
     if (connectBtn) { connectBtn.style.display = "none"; connectBtn.disabled = false; connectBtn.textContent = "Connect"; }
@@ -237,7 +445,7 @@ export async function connectLiveBrowser() {
     const bottomControls = document.getElementById("browser-bottom-controls");
     if (bottomControls) bottomControls.style.display = "flex";
 
-    const isTablet = resolutionKey === "2048x2732" || resolutionKey === "1200x1920";
+    const isTablet = deviceCategory === "tablet7" || deviceCategory === "tablet10";
     const aspect = height / width;
     const maxAvailableHeight = Math.max(400, window.innerHeight - 300);
     const standardWidth = isTablet ? 420 : 360;
@@ -297,20 +505,54 @@ export async function triggerScreenshotCapture() {
   try {
     const capture = await api("/api/browser/capture", { method: "POST", body: { projectId: activeProjectId } });
     showToast(`Captured Screen ${capture.id} (${capture.file})`, "success");
-    if (typeof renderLiveBrowserCapturesRef === "function") await renderLiveBrowserCapturesRef();
+    await renderLiveBrowserCaptures();
   } catch (e) {
     await showAlert("Capture failed: " + e.message);
   }
+}
+
+async function populateConnectDeviceSelect() {
+  const sel = document.getElementById("browser-resolution-select");
+  if (!sel) return;
+  await loadDeviceCategories();
+  const prev = sel.value;
+  sel.innerHTML = (getDeviceCategoriesSync() || [])
+    .map((c) => `<option value="${c.id}">${c.label}</option>`)
+    .join("");
+  if (getDeviceCategoriesSync()?.some((c) => c.id === prev)) sel.value = prev;
 }
 
 export function setupCaptureHandlers() {
   const $id = (id) => document.getElementById(id);
   if ($id("browser-connect-btn")) $id("browser-connect-btn").onclick = connectLiveBrowser;
   if ($id("browser-disconnect-btn")) $id("browser-disconnect-btn").onclick = disconnectLiveBrowser;
+  populateConnectDeviceSelect();
   if ($id("browser-resolution-select")) {
     $id("browser-resolution-select").addEventListener("change", async () => {
+      // The connect-session device size IS the primary gallery filter -- keep
+      // it in sync so switching device size here also switches which
+      // screenshots are shown (the resolution filter is secondary/technical
+      // and gets cleared so it doesn't hide results from the new device size).
+      const deviceFilterSel = $id("browser-capture-filter-device");
+      const newCategory = $id("browser-resolution-select").value;
+      if (deviceFilterSel) deviceFilterSel.value = newCategory;
+      const resFilterSel = $id("browser-capture-filter-resolution");
+      if (resFilterSel) resFilterSel.value = "";
+      await renderLiveBrowserCaptures();
       if (browserConnected) { await disconnectLiveBrowser(); await connectLiveBrowser(); }
     });
+  }
+  if ($id("browser-capture-filter-device")) {
+    $id("browser-capture-filter-device").addEventListener("change", renderLiveBrowserCaptures);
+  }
+  if ($id("browser-capture-filter-resolution")) {
+    $id("browser-capture-filter-resolution").addEventListener("change", renderLiveBrowserCaptures);
+  }
+  if ($id("android-capture-filter-device")) {
+    $id("android-capture-filter-device").addEventListener("change", renderAndroidCaptures);
+  }
+  if ($id("android-capture-filter-resolution")) {
+    $id("android-capture-filter-resolution").addEventListener("change", renderAndroidCaptures);
   }
   if ($id("browser-back")) $id("browser-back").onclick = () => browserNavAction("back");
   if ($id("browser-forward")) $id("browser-forward").onclick = () => browserNavAction("forward");
@@ -321,10 +563,6 @@ export function setupCaptureHandlers() {
   if ($id("browser-top-capture-btn")) $id("browser-top-capture-btn").onclick = triggerScreenshotCapture;
   if ($id("browser-bottom-capture")) $id("browser-bottom-capture").onclick = triggerScreenshotCapture;
   if ($id("android-refresh-devices-btn")) $id("android-refresh-devices-btn").onclick = () => loadAndroidDevices();
-}
-
-export function registerLiveBrowserCapturesRenderer(fn) {
-  renderLiveBrowserCapturesRef = fn;
 }
 
 // Android device functions
@@ -400,7 +638,11 @@ export async function connectAndroidDevice() {
     const deviceFrame = document.getElementById("android-device-frame");
     if (deviceFrame) deviceFrame.style.display = "block";
     setAndroidBottomControlsEnabled(true);
-    if (statusEl) statusEl.textContent = "Live mirror active -- interact directly using your mouse or controls below.";
+    await loadDeviceCategories();
+    const categoryLabel = startRes.deviceCategory ? deviceCategoryLabel(startRes.deviceCategory) : "";
+    if (statusEl) statusEl.textContent = categoryLabel
+      ? `Live mirror active (detected as ${categoryLabel}) -- interact directly using your mouse or controls below.`
+      : "Live mirror active -- interact directly using your mouse or controls below.";
 
     const searchInput = document.getElementById("android-app-search-input");
     const refreshAppsBtn = document.getElementById("android-refresh-apps-btn");
@@ -715,5 +957,25 @@ export async function triggerAndroidCapture() {
 }
 
 export async function renderAndroidCaptures() {
-  // handled via projects file explorer or gallery refresh
+  await populateCaptureFilters("android-capture-filter-device", "android-capture-filter-resolution", isAndroidCapture);
+
+  const deviceFilter = document.getElementById("android-capture-filter-device")?.value || "";
+  const resFilter = document.getElementById("android-capture-filter-resolution")?.value || "";
+
+  const titleEl = document.getElementById("android-captures-title");
+  if (titleEl) {
+    // Device size only in the heading -- the resolution filter still narrows
+    // results (see filter below) but never appears as displayed text.
+    titleEl.textContent = deviceFilter ? `Session Captures (${deviceCategoryLabel(deviceFilter)})` : "Session Captures";
+  }
+
+  await renderCaptureGallery(
+    "android-captures-gallery",
+    (c) => isAndroidCapture(c)
+      && (!deviceFilter || c.deviceCategory === deviceFilter)
+      && (!resFilter || c.resolution === resFilter),
+    (deviceFilter || resFilter)
+      ? `No screenshots match the selected filters.<br><br><span style="font-size:0.8rem; color:#888;">Try "All device sizes" / "All resolutions".</span>`
+      : "No screenshots captured yet."
+  );
 }
