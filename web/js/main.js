@@ -260,7 +260,10 @@ function setupMockupToolbar() {
           col.style.assetLayers = col.style.assetLayers || [];
           col.style.assetLayers.push({
             id: `asset_${Date.now()}`,
-            assetId: source.id,
+            // assetId must be the file's relative path (what canvas.js and
+            // src/mockup/render.ts's resolveUri() both expect) -- not the
+            // source's id, which doesn't map to any real file on disk.
+            assetId: source.file,
             name: source.name,
             xPct: 50, yPct: 50, widthPct: 35, rotation: 0, opacity: 1, zIndex: 10
           });
@@ -308,7 +311,8 @@ function setupMockupToolbar() {
           mockupProject.panoramaAssets = mockupProject.panoramaAssets || [];
           mockupProject.panoramaAssets.push({
             id: `panorama_${Date.now()}`,
-            assetId: source.id,
+            // See the asset-layer handler above -- assetId is a file path.
+            assetId: source.file,
             name: source.name,
             xPx, widthPx: width,
             yPct: 40, heightPct: 20,

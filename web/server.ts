@@ -1183,16 +1183,20 @@ export async function startWebServer(options: { port?: number; host?: string; op
         const abs = mockupFile(id, rel);
         fs.mkdirSync(path.dirname(abs), { recursive: true });
         fs.writeFileSync(abs, Buffer.from(base64Data, "base64"));
+        // This endpoint is for decorative Asset Layers (stickers, badges,
+        // panorama assets) -- a completely different concept from a
+        // project's screenshot sources. It must NOT push into
+        // project.sources: that array is exactly what populates the
+        // Screenshot Source Mapping dropdown (mk-source, see
+        // web/js/editor.js's populateSourceSelect), so doing so previously
+        // let every asset-layer upload masquerade as a selectable screenshot.
         const sourceObj = {
-          id: `source_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
+          id: `asset_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
           name: filename,
           file: rel,
           width: body.width || 1080,
           height: body.height || 1920,
         };
-        project.sources = project.sources || [];
-        project.sources.push(sourceObj);
-        saveMockupProject(project);
         sendJson(res, 200, { project, source: sourceObj });
         return;
       }
