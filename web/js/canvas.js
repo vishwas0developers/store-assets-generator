@@ -1818,7 +1818,10 @@ export function commitMoveableTransformToModel(col, layerId, el) {
 
   setMockupDirty(true);
   syncSection2Inputs(col, layerId);
-  saveCurrentMockupProject();
+  // Persisting here (autosave-on-drag) was removed: the Save button
+  // (main.js) is the only place allowed to write to disk -- see this
+  // project's CLAUDE.md / the sync-fix plan for why. pushMockupHistory is
+  // purely in-memory (local undo stack), so it's fine to keep.
   pushMockupHistory();
 }
 
