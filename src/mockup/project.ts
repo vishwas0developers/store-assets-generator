@@ -33,7 +33,9 @@ export interface MockupSourceImage {
   file: string; // relative to project dir, e.g. "sources/img_1.png"
   width: number;
   height: number;
-  resolution?: string;   // e.g. "1242x2688"
+  /** Primary, user-facing categorization -- "phone" | "tablet7" | "tablet10". */
+  deviceCategory?: import("../capture/deviceCategories.js").DeviceCategory;
+  resolution?: string;   // secondary technical metadata, e.g. "1242x2688"
   deviceLabel?: string;  // e.g. "Phone – 6.5\" Display"
 }
 

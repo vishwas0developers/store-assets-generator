@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import { classifyDeviceCategory, isDeviceCategory, type DeviceCategory } from "../capture/deviceCategories.js";
 
 export interface ProjectCapture {
   id: number;
@@ -8,7 +9,9 @@ export interface ProjectCapture {
   capturedAt: string;
   width: number;
   height: number;
-  resolution?: string;   // e.g. "1242x2688"
+  /** Primary, user-facing categorization -- "phone" | "tablet7" | "tablet10". */
+  deviceCategory?: DeviceCategory;
+  resolution?: string;   // secondary technical metadata, e.g. "1242x2688"
   deviceLabel?: string;  // e.g. "Phone – 6.5\" Display"
   /** "video" = an .mp4 screen recording. Absent/"image" = a PNG screenshot. */
   kind?: "image" | "video";
@@ -110,12 +113,42 @@ export function saveProject(project: ProjectState): void {
   fs.writeFileSync(path.join(dir, "project.json"), JSON.stringify(project, null, 2), "utf-8");
 }
 
+// Matches the "(1242x2688)" suffix that source names carried before device
+// size became the primary label (see src/capture/liveBrowser.ts and
+// androidLive.ts) -- e.g. "Screenshot 3 (1290x2796)". Stripped from legacy
+// names on load so old projects don't keep showing pixel dimensions baked
+// into the name itself once the UI stops appending its own resolution text.
+const LEGACY_RESOLUTION_SUFFIX = /\s*\(\d+x\d+\)\s*$/i;
+
+/** Backfills deviceCategory on records saved before it existed, from their
+ *  stored pixel dimensions -- so every consumer (API responses, UI) can rely
+ *  on deviceCategory being present without each having to know the fallback.
+ *  Also strips any legacy resolution suffix baked into a source's `name`. */
+function withDeviceCategory<T extends { width?: number; height?: number; deviceCategory?: unknown; name?: string }>(item: T): T {
+  let next = item;
+  if (!isDeviceCategory(next.deviceCategory) && typeof next.width === "number" && typeof next.height === "number") {
+    next = { ...next, deviceCategory: classifyDeviceCategory(next.width, next.height) };
+  }
+  if (typeof next.name === "string" && LEGACY_RESOLUTION_SUFFIX.test(next.name)) {
+    next = { ...next, name: next.name.replace(LEGACY_RESOLUTION_SUFFIX, "") };
+  }
+  return next;
+}
+
 export function loadProject(id: string): ProjectState {
   const file = path.join(projectDir(id), "project.json");
   if (!fs.existsSync(file)) {
     throw new Error(`Project '${id}' not found.`);
   }
-  return JSON.parse(fs.readFileSync(file, "utf-8"));
+  const project: ProjectState = JSON.parse(fs.readFileSync(file, "utf-8"));
+  project.captures = (project.captures || []).map(withDeviceCategory);
+  if (project.mockup && Array.isArray(project.mockup.sources)) {
+    project.mockup.sources = project.mockup.sources.map(withDeviceCategory);
+  }
+  if (project.video && Array.isArray(project.video.sources)) {
+    project.video.sources = project.video.sources.map(withDeviceCategory);
+  }
+  return project;
 }
 
 export function listProjects(): Array<ProjectState> {

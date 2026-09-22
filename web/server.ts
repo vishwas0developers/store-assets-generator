@@ -46,7 +46,9 @@ import {
   startBrowserRecording,
   stopBrowserRecording,
   isBrowserRecording,
+  resolveResolutionKeyForCategory,
 } from "../src/capture/liveBrowser.js";
+import { isDeviceCategory, DEVICE_CATEGORIES_LIST } from "../src/capture/deviceCategories.js";
 import archiver from "archiver";
 import { invalidateDataUri } from "../src/render/shared.js";
 
@@ -696,6 +698,13 @@ export async function startWebServer(options: { port?: number; host?: string; op
       return;
     }
 
+    // Device-size taxonomy (Phone / 7-inch Tablet / 10-inch Tablet) -- single
+    // source of truth the client reads instead of hardcoding its own copy.
+    if (method === "GET" && p === "/api/device-categories") {
+      sendJson(res, 200, { categories: DEVICE_CATEGORIES_LIST });
+      return;
+    }
+
     // Live Web Browser endpoints
     if (method === "POST" && p === "/api/browser/start") {
       const body = await readJsonBody(req);
@@ -703,8 +712,10 @@ export async function startWebServer(options: { port?: number; host?: string; op
         return sendError(res, 400, "projectId and url are required");
       }
       try {
-        const result = await startBrowserSession(body.projectId, body.url);
-        sendJson(res, 200, { ok: true, ...result });
+        const deviceCategory = isDeviceCategory(body.deviceCategory) ? body.deviceCategory : "phone";
+        const resolutionKey = resolveResolutionKeyForCategory(deviceCategory);
+        const result = await startBrowserSession(body.projectId, body.url, resolutionKey);
+        sendJson(res, 200, { ok: true, deviceCategory, ...result });
       } catch (err: any) {
         sendError(res, 500, err.message || "Failed to start browser session");
       }

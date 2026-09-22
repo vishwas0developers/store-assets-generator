@@ -11,6 +11,10 @@ import {
   setVideoTemplates
 } from './state.js';
 import { api, uploadFile, showAlert, showConfirm, showToast } from './utils.js';
+import { populateSourceSelect } from './editor.js';
+import { loadDeviceCategories, deviceCategoryLabel } from './deviceCategories.js';
+
+loadDeviceCategories();
 
 let videoTemplateDetailId = null;
 let videoDetailSceneIndex = 0;
@@ -532,22 +536,11 @@ export function renderVideoScenes() {
     scLayout.innerHTML = layouts.map((l) => `<option value="${l.id}">${l.name}</option>`).join("");
   }
 
-  const videoGroups = {};
-  for (const s of videoProject.sources || []) {
-    const res = s.resolution || "Uploads / General";
-    if (!videoGroups[res]) videoGroups[res] = [];
-    videoGroups[res].push(s);
-  }
-  let videoSourceHtml = '<option value="">(None)</option>';
-  for (const [res, items] of Object.entries(videoGroups)) {
-    videoSourceHtml += `<optgroup label="${res}">`;
-    for (const s of items) {
-      videoSourceHtml += `<option value="${s.id}">${s.name}</option>`;
-    }
-    videoSourceHtml += `</optgroup>`;
-  }
+  // Grouped and labeled by device size (Phone / 7-inch Tablet / 10-inch
+  // Tablet), matching Screen Capture / Screenshot Source Mapping -- never by
+  // resolution/pixel dimensions.
   const scSource = $("sc-source");
-  if (scSource) scSource.innerHTML = videoSourceHtml;
+  if (scSource) populateSourceSelect(scSource, videoProject.sources || [], null, { blankLabel: "(None)" });
 
   const templateLabel = $("video-selected-template-label");
   if (templateLabel) {
@@ -1068,8 +1061,46 @@ function imageField(spec, sourceId, sceneId, index) {
   }
   wrap.appendChild(thumb);
 
+  if (source) {
+    // Device size only -- resolution/pixel dimensions stay in the data as
+    // technical metadata but are never shown in the UI.
+    const dims = document.createElement("div");
+    dims.className = "hint";
+    dims.style.cssText = "font-size:0.68rem; margin-top:2px;";
+    dims.textContent = deviceCategoryLabel(source.deviceCategory);
+    wrap.appendChild(dims);
+  }
+
   const controls = document.createElement("div");
   controls.className = "content-slot-image-controls";
+
+  // Reuse a screenshot already captured for this project -- same {device size
+  // -> resolution -> screenshot} data (project.video.sources) the Screen
+  // Capture tab writes and Studio Mockup's Screenshot Source Mapping reads
+  // (see editor.js's populateSourceSelect), so picking here is consistent
+  // with both other tabs instead of forcing a fresh upload every time.
+  const sources = videoProject.sources || [];
+  if (sources.length > 0) {
+    const existingSelect = document.createElement("select");
+    existingSelect.style.cssText = "width:100%; font-size:0.78rem; margin-bottom:0.35rem;";
+    populateSourceSelect(existingSelect, sources, sourceId || "", { blankLabel: "Reuse existing screenshot…" });
+    existingSelect.onchange = async () => {
+      const chosenId = existingSelect.value || null;
+      if (spec.kind === "imageList") {
+        const scene = videoProject.scenes.find((s) => s.id === sceneId);
+        const existing = scene?.slotValues?.[spec.key];
+        const ids = existing?.kind === "imageList" ? [...existing.sourceIds] : [];
+        ids[index] = chosenId;
+        await saveSlotValue(sceneId, spec.key, { kind: "imageList", sourceIds: ids });
+      } else {
+        await saveSlotValue(sceneId, spec.key, { kind: "image", sourceId: chosenId });
+      }
+      loadSceneContentPanel(sceneId);
+      refreshSceneCompleteness();
+      showScenePreview();
+    };
+    controls.appendChild(existingSelect);
+  }
 
   const fileInput = document.createElement("input");
   fileInput.type = "file";

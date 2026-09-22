@@ -5,9 +5,11 @@ import { projectDir, projectFile, loadProject, saveProject } from "../project/pr
 import { resolveAuthConfig, slugify } from "../auth/appConfig.js";
 import { defaultSessionStatePath, authenticate } from "./auth.js";
 import { startFrameRecorder, nextRecordingPath, registerRecording, type FrameRecorder } from "./frameRecorder.js";
+import { type DeviceCategory, CATEGORY_RESOLUTION } from "./deviceCategories.js";
 
 export interface MobileDevicePreset {
   name: string;
+  category: DeviceCategory;
   cssWidth: number;
   cssHeight: number;
   scaleFactor: number;
@@ -18,9 +20,16 @@ export interface MobileDevicePreset {
   hasTouch: boolean;
 }
 
+// Keyed by resolutionKey (technical detail) but every preset carries the
+// device-size `category` it belongs to -- that category, not this key, is
+// what the UI shows and filters by. "1242x2688" is kept only so older
+// projects that reference it still resolve; the user-facing "connect"
+// dropdown offers just the one canonical preset per category (see
+// CATEGORY_RESOLUTION / resolveResolutionKeyForCategory below).
 export const STORE_DEVICE_PRESETS: Record<string, MobileDevicePreset> = {
   "1290x2796": {
     name: "Phone – 6.7\" / Standard (1290 × 2796)",
+    category: "phone",
     cssWidth: 430,
     cssHeight: 932,
     scaleFactor: 3,
@@ -32,6 +41,7 @@ export const STORE_DEVICE_PRESETS: Record<string, MobileDevicePreset> = {
   },
   "1242x2688": {
     name: "Phone – 6.5\" Display (1242 × 2688)",
+    category: "phone",
     cssWidth: 414,
     cssHeight: 896,
     scaleFactor: 3,
@@ -43,6 +53,7 @@ export const STORE_DEVICE_PRESETS: Record<string, MobileDevicePreset> = {
   },
   "2048x2732": {
     name: "Tablet – 10\" / 12.9\" Pro (2048 × 2732)",
+    category: "tablet10",
     cssWidth: 1024,
     cssHeight: 1366,
     scaleFactor: 2,
@@ -54,6 +65,7 @@ export const STORE_DEVICE_PRESETS: Record<string, MobileDevicePreset> = {
   },
   "1200x1920": {
     name: "Tablet – 7\" Display (1200 × 1920)",
+    category: "tablet7",
     cssWidth: 600,
     cssHeight: 960,
     scaleFactor: 2,
@@ -64,6 +76,12 @@ export const STORE_DEVICE_PRESETS: Record<string, MobileDevicePreset> = {
     hasTouch: true,
   },
 };
+
+/** The one canonical resolutionKey used to connect a Live Web session "as" a
+ *  given device-size category -- the primary, user-facing selector. */
+export function resolveResolutionKeyForCategory(category: DeviceCategory): string {
+  return CATEGORY_RESOLUTION[category].resolutionKey;
+}
 
 let activeBrowser: Browser | null = null;
 let activeContext: BrowserContext | null = null;
@@ -419,30 +437,39 @@ export async function captureBrowserScreen(projectId: string): Promise<{ id: num
     capturedAt: new Date().toISOString(),
     width: currentPreset.outputWidth,
     height: currentPreset.outputHeight,
+    deviceCategory: currentPreset.category,
     resolution: resolutionKey,
     deviceLabel: deviceLabelClean,
   };
 
   project.captures.push(captureInfo);
-  
+
   const srcId = `src_${Date.now()}`;
-  
+
+  // Name stays free of pixel dimensions -- device size (deviceCategory) and
+  // resolution are separate metadata fields; the UI appends the device-size
+  // label at display time (see web/js/editor.js's populateSourceSelect)
+  // rather than baking it into the name here.
+  const sourceName = `Screenshot ${nextId}`;
+
   project.mockup.sources.push({
     id: srcId,
-    name: `Screenshot ${nextId} (${resolutionKey})`,
+    name: sourceName,
     file: `captures/${filename}`,
     width: currentPreset.outputWidth,
     height: currentPreset.outputHeight,
+    deviceCategory: currentPreset.category,
     resolution: resolutionKey,
     deviceLabel: deviceLabelClean,
   });
 
   project.video.sources.push({
     id: srcId,
-    name: `Screenshot ${nextId} (${resolutionKey})`,
+    name: sourceName,
     file: `captures/${filename}`,
     width: currentPreset.outputWidth,
     height: currentPreset.outputHeight,
+    deviceCategory: currentPreset.category,
     resolution: resolutionKey,
     deviceLabel: deviceLabelClean,
   });
