@@ -137,14 +137,11 @@ export interface DeviceLayerStyle {
    *  in config/devices.json) -- zero behavior change until a user adjusts
    *  the "Border Thickness" slider. */
   borderThickness?: number;
-  /** Per-page override for how much solid "body" material surrounds the
-   *  screen -- adjusts the device's real screen-inset/mask-hole geometry
-   *  (see build-frame-svg.ts's `effectiveScreenInset`), NOT a separately
-   *  drawn element. Positive values widen the body band (shrinking the
-   *  screen hole, screenshot placed further inward); negative values
-   *  narrow it (more screen visible). Undefined = use the device's real,
-   *  unmodified `screenInset` -- zero behavior change until a user adjusts
-   *  the "Bezel / Body Thickness" slider. */
+  /** Per-page ABSOLUTE bezel width (px, device units) between the border
+   *  and the screen, uniform on all four sides: screen inset = border +
+   *  bezelThickness (0 = screen fills everything inside the border).
+   *  Undefined = the device's native `screenInset`. See layerLayout.ts's
+   *  `resolveDeviceFrameGeometry`, shared by server render and canvas. */
   bezelThickness?: number;
   /** Undefined/true = camera cutout (notch/dynamic-island/punch-hole/pill)
    *  renders as normal per the device's real geometry; false = hide it.

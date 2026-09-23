@@ -14,7 +14,8 @@ import {
   selectedPages,
   pushMockupHistory
 } from './state.js';
-import { escapeHtml, api, uploadFile, showAlert, showToast, showConfirm, resolveDeviceFrame } from './utils.js';
+import { escapeHtml, api, uploadFile, showAlert, showToast, showConfirm, resolveDeviceFrame, resolveDeviceGeometry } from './utils.js';
+import { resolveDeviceFrameGeometry } from '/dist/mockup/layerLayout.js';
 import { mockupDevicesCatalog } from './templates.js';
 import { loadColumnIntoFabric, renderMockupCanvas, setActivePage } from './canvas.js';
 import { renderMockupMatrix, getSelectedCellStyle } from './matrix.js';
@@ -775,7 +776,11 @@ export function syncSection2Inputs(col, layerId) {
   const d1BezelThicknessEl = document.getElementById("mk-d1-bezel-thickness");
   const d1BezelThicknessValEl = document.getElementById("mk-d1-bezel-thickness-val");
   if (d1BezelThicknessEl && d1BezelThicknessValEl && activeDevice) {
-    const val = activeDevice.bezelThickness ?? 0;
+    // Absolute bezel width; unset = the device's native bezel (derived from
+    // its real screenInset by the same helper canvas + server render use).
+    const g = resolveDeviceGeometry(activeDeviceRowForColor?.deviceId || "phone", mockupDevicesCatalog, activeDeviceRowForColor?.variantId);
+    const nativeBezel = resolveDeviceFrameGeometry({ width: g.width, height: g.height, cornerRadius: g.cornerRadius, screenInset: g.screenInset, catalogBorderWidth: colorFrame?.bezelWidth ?? 0 }).nativeBezelThickness;
+    const val = activeDevice.bezelThickness ?? nativeBezel;
     d1BezelThicknessEl.value = val;
     d1BezelThicknessValEl.textContent = val;
   }

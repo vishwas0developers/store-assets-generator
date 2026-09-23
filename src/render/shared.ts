@@ -1,6 +1,6 @@
 import fs from "fs";
 import { frameSvgFor, resolveGeometry, type DeviceModel } from "../devices/registry.js";
-import { effectiveScreenInset } from "../devices/build-frame-svg.js";
+import { resolveDeviceFrameGeometry } from "../mockup/layerLayout.js";
 
 // A render pass (multi-scene video, multi-cell mockup grid) commonly reuses the same
 // source screenshot many times; cache its base64 encoding instead of re-reading per use.
@@ -43,12 +43,14 @@ export function deviceMarkup(
   overrides?: { borderColor?: string; bezelColor?: string; showCamera?: boolean; borderThickness?: number; bezelThickness?: number },
 ): string {
   const g = resolveGeometry(device, variantId);
-  const r = g.cornerRadius ?? 0;
-  // "Bezel / Body Thickness" adjusts the real screen inset -- the
-  // screenshot's own position/size/clip must shrink/grow with it so it
-  // still fills exactly the (possibly resized) screen hole, matching
-  // build-frame-svg.ts's mask hole for the same override.
-  const inset = effectiveScreenInset(g.screenInset, overrides?.bezelThickness);
+  // Same geometry helper as build-frame-svg.ts's mask hole and the editor
+  // canvas (web/js/canvas.js) -- screenshot box + clip radius stay identical.
+  const fg = resolveDeviceFrameGeometry({
+    width: g.width, height: g.height, cornerRadius: g.cornerRadius, screenInset: g.screenInset,
+    catalogBorderWidth: device.definition.bezelWidth, borderThickness: overrides?.borderThickness, bezelThickness: overrides?.bezelThickness,
+  });
+  const inset = fg.screen;
+  const r = fg.screenRadius;
   const screenStyle = `top:${inset.top - 1}px;left:${inset.left - 1}px;width:${inset.width + 2}px;height:${inset.height + 2}px;border-radius:${r}px;clip-path:inset(0 round ${r}px);object-fit:cover;object-position:top center;`;
   const screenEl =
     kind === "video"
