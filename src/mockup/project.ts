@@ -131,6 +131,21 @@ export interface DeviceLayerStyle {
   framelessCornerRadius?: number;
   borderColor?: string; // Device frame outer rim / stroke color
   bezelColor?: string; // Device frame body / bezel fill color
+  /** Per-page override for the outer border/rim stroke width (px, in the
+   *  device's own geometry units) drawn by build-frame-svg.ts's main bezel
+   *  rect. Undefined = use the device's fixed catalog default (`bezelWidth`
+   *  in config/devices.json) -- zero behavior change until a user adjusts
+   *  the "Border Thickness" slider. */
+  borderThickness?: number;
+  /** Per-page override for how much solid "body" material surrounds the
+   *  screen -- adjusts the device's real screen-inset/mask-hole geometry
+   *  (see build-frame-svg.ts's `effectiveScreenInset`), NOT a separately
+   *  drawn element. Positive values widen the body band (shrinking the
+   *  screen hole, screenshot placed further inward); negative values
+   *  narrow it (more screen visible). Undefined = use the device's real,
+   *  unmodified `screenInset` -- zero behavior change until a user adjusts
+   *  the "Bezel / Body Thickness" slider. */
+  bezelThickness?: number;
   /** Undefined/true = camera cutout (notch/dynamic-island/punch-hole/pill)
    *  renders as normal per the device's real geometry; false = hide it.
    *  No effect on devices whose `cutout.type` is "none". */

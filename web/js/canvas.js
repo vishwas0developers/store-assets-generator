@@ -1468,6 +1468,10 @@ export async function buildDeviceGroup(device, layerId, left, top, width, height
     // Preview/export for every device layer with no explicit color override.
     const bezelFill = device.bezelColor || frameTraits?.body || '#1e293b';
     const borderStroke = device.borderColor || frameTraits?.accent || '#334155';
+    // "Border Thickness" panel control -- mirrors build-frame-svg.ts's
+    // bezelWidth override: undefined falls back to this device's real
+    // catalog bezelWidth (not a generic hardcoded 3), matching server render.
+    const borderThickness = device.borderThickness ?? frameTraits?.bezelWidth ?? 3;
     const bezel = new fabric.Rect({
       left: 0,
       top: 0,
@@ -1477,7 +1481,7 @@ export async function buildDeviceGroup(device, layerId, left, top, width, height
       ry: devCorner,
       fill: bezelFill,
       stroke: borderStroke,
-      strokeWidth: 3,
+      strokeWidth: borderThickness,
       originX: 'left',
       originY: 'top',
       selectable: false,
@@ -1485,6 +1489,14 @@ export async function buildDeviceGroup(device, layerId, left, top, width, height
     });
     items.push(bezel);
   }
+
+  // "Bezel Thickness" -- client-side twin of build-frame-svg.ts's
+  // effectiveScreenInset(): adjusts the REAL screen-inset geometry the
+  // screenshot is placed/sized into (further down), not a separate drawn
+  // element. Positive values grow the solid body band (screen hole shrinks,
+  // screenshot placed further inward); undefined/0 = the device's real,
+  // unmodified screenInset, matching the server's default appearance.
+  const bezelThicknessAdjust = device.bezelThickness ?? 0;
 
   // Screenshot image -- resolvedSource.file is the real project-relative path
   // (e.g. "captures/1.png"), matching how render.ts resolves it server-side;
@@ -1494,10 +1506,10 @@ export async function buildDeviceGroup(device, layerId, left, top, width, height
     const imgUrl = `/api/mockups/${mockupId}/file?p=${encodeURIComponent(resolvedSource.file)}`;
     const screen = await loadFabricImageAsync(imgUrl);
     if (screen) {
-      const sLeft = isFrameless ? 0 : (screenInset?.left ?? 30);
-      const sTop = isFrameless ? 0 : (screenInset?.top ?? 30);
-      const sWidth = isFrameless ? devW : (screenInset?.width ?? (devW - 60));
-      const sHeight = isFrameless ? devH : (screenInset?.height ?? (devH - 60));
+      const sLeft = isFrameless ? 0 : (screenInset?.left ?? 30) + bezelThicknessAdjust;
+      const sTop = isFrameless ? 0 : (screenInset?.top ?? 30) + bezelThicknessAdjust;
+      const sWidth = isFrameless ? devW : Math.max(0, (screenInset?.width ?? (devW - 60)) - bezelThicknessAdjust * 2);
+      const sHeight = isFrameless ? devH : Math.max(0, (screenInset?.height ?? (devH - 60)) - bezelThicknessAdjust * 2);
       screen.set({
         left: sLeft,
         top: sTop,

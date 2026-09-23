@@ -77,18 +77,18 @@ export function applyStandardIcons() {
     "mk-align-top": [ICONS.alignTop, "Top"],
     "mk-align-middle": [ICONS.alignMiddleY, "Middle"],
     "mk-align-bottom": [ICONS.alignBottom, "Bottom"],
-    "mk-bring-forward": [ICONS.bringForward, "Bring Forward"],
-    "mk-send-backward": [ICONS.sendBackward, "Send Backward"],
-    "mk-bring-front": [ICONS.bringFront, "Bring to Front"],
-    "mk-send-back": [ICONS.sendToBack, "Send to Back"],
-    "mk-duplicate-layer": [ICONS.duplicate, "Duplicate (Ctrl+D)"],
+    "mk-bring-forward": [ICONS.bringForward, "Fwd"],
+    "mk-send-backward": [ICONS.sendBackward, "Bwd"],
+    "mk-bring-front": [ICONS.bringFront, "Front"],
+    "mk-send-back": [ICONS.sendToBack, "Back"],
+    "mk-duplicate-layer": [ICONS.duplicate, "Duplicate"],
     "mk-delete-layer": [ICONS.delete, "Delete"],
     "mk-pos-flip-h": [ICONS.flipH, "Flip H"],
     "mk-pos-flip-v": [ICONS.flipV, "Flip V"],
   };
   for (const [id, [icon, label]] of Object.entries(iconPlusLabel)) {
     const el = document.getElementById(id);
-    if (el) el.innerHTML = `${icon} ${label}`;
+    if (el) el.innerHTML = `${icon} <span>${label}</span>`;
   }
 
   const lockLabel = document.getElementById("mk-pos-aspect-lock")?.closest("label");
