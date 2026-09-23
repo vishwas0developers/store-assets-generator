@@ -2617,25 +2617,40 @@ html.light .custom-app-select option {
 .pro-aspect-toggle {
   display: inline-flex !important;
   align-items: center !important;
-  gap: 0.4rem !important;
-  padding: 0.3rem 0.6rem !important;
-  background: var(--bg-panel-subtle) !important;
+  gap: 0.45rem !important;
+  padding: 0.25rem 0.5rem !important;
+  background: var(--bg-surface-secondary) !important;
   border: 1px solid var(--border-subtle) !important;
   border-radius: 6px !important;
   cursor: pointer !important;
-  transition: background 0.15s ease;
+  transition: all 0.15s ease;
   width: 100%;
   box-sizing: border-box;
 }
 
 .pro-aspect-toggle:hover {
-  background: var(--bg-hover) !important;
+  background: var(--bg-card-hover) !important;
+  border-color: var(--border-medium) !important;
+}
+
+.pro-aspect-toggle input[type="checkbox"] {
+  margin: 0 !important;
+  cursor: pointer;
 }
 
 .pro-aspect-label {
-  font-size: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.76rem;
   font-weight: 600;
   color: var(--text-primary);
+  user-select: none;
+}
+
+.pro-aspect-label svg {
+  width: 14px;
+  height: 14px;
 }
 
 /* Orientation Tool Row (Dedicated Line 1) */
@@ -2729,17 +2744,36 @@ html.light .custom-app-select option {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  height: 28px !important;
-  padding: 0 0.4rem !important;
-  font-size: 0.74rem !important;
+  height: 30px !important;
+  padding: 0 0.25rem !important;
+  font-size: 0.72rem !important;
   font-weight: 600 !important;
+  gap: 0.25rem !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  line-height: 1 !important;
   border: none !important;
   border-radius: 0 !important;
   background: var(--bg-card) !important;
   color: var(--text-primary) !important;
   cursor: pointer !important;
   flex: 1;
+  min-width: 0 !important;
   transition: background 0.12s ease;
+}
+
+.pro-seg-btn svg {
+  width: 13px !important;
+  height: 13px !important;
+  flex-shrink: 0 !important;
+  vertical-align: middle !important;
+}
+
+.pro-seg-btn span {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
 }
 
 .pro-seg-btn:hover {
@@ -2759,10 +2793,18 @@ html.light .custom-app-select option {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
+  gap: 0.35rem !important;
   font-size: 0.78rem !important;
   font-weight: 600 !important;
   border-radius: 6px !important;
+  white-space: nowrap !important;
   transition: all 0.12s ease !important;
+}
+
+.pro-action-btn svg {
+  width: 14px !important;
+  height: 14px !important;
+  flex-shrink: 0 !important;
 }
 
 button.danger-ghost {

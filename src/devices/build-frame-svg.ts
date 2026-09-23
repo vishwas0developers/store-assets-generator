@@ -71,6 +71,29 @@ function foldSeamMarkup(def: DeviceDefinition, geometry: DeviceGeometry): string
   return `<line x1="${x}" y1="0" x2="${x}" y2="${height}" stroke="${def.accent}" stroke-width="3" stroke-dasharray="10 8" opacity="0.6" />`;
 }
 
+/** Adjusts a device's real screen-inset rect by `bezelThickness` (the
+ *  "Bezel / Body Thickness" override) -- positive values grow the solid
+ *  body band (shrinking the screen hole, pushing it further inward),
+ *  negative values shrink the band (more screen visible). Undefined/0 =
+ *  the device's real, unmodified `screenInset`, so this is a no-op for
+ *  every existing project until a user actually adjusts the control.
+ *  Shared by build-frame-svg.ts (the mask hole) and src/render/shared.ts's
+ *  deviceMarkup (the screenshot's own position/size/clip) so both stay in
+ *  lockstep -- see web/js/canvas.js's buildDeviceGroup for the client-side
+ *  twin of this same formula. */
+export function effectiveScreenInset(
+  base: { top: number; left: number; width: number; height: number },
+  bezelThickness?: number,
+): { top: number; left: number; width: number; height: number } {
+  const adjust = bezelThickness ?? 0;
+  return {
+    top: base.top + adjust,
+    left: base.left + adjust,
+    width: Math.max(0, base.width - adjust * 2),
+    height: Math.max(0, base.height - adjust * 2),
+  };
+}
+
 /** Renders the full flat frame SVG for a device at the given geometry —
  *  same call shape as the pre-GLB `buildFrameSvg(device, colorway,
  *  geometry)` so `still.ts`/`deviceMarkup` need no signature changes. */
@@ -78,14 +101,21 @@ export function buildFrameSvg(
   def: DeviceDefinition,
   colorway: "light" | "dark" = "dark",
   geometry: DeviceGeometry = def.geometry,
-  overrides?: { borderColor?: string; bezelColor?: string; showCamera?: boolean },
+  overrides?: { borderColor?: string; bezelColor?: string; showCamera?: boolean; borderThickness?: number; bezelThickness?: number },
 ): string {
   const { width, height } = geometry;
-  const bezelWidth = def.bezelWidth;
+  // "Border Thickness" (panel) = the outer screen-edge stroke -- previously
+  // hardcoded to the device's fixed catalog `bezelWidth`, now a per-page
+  // override (undefined = unchanged default behavior).
+  const bezelWidth = overrides?.borderThickness ?? def.bezelWidth;
   const outerRadius = geometry.cornerRadius;
   const bodyFill = overrides?.bezelColor || (colorway === "light" ? "#e8e8e8" : def.body);
   const strokeColor = overrides?.borderColor || (colorway === "light" ? "#c9c9c9" : def.accent);
-  const inset = def.screenInset;
+  // "Bezel / Body Thickness" (panel) = how much solid body material
+  // surrounds the screen -- adjusts the real screenInset used for the mask
+  // hole below (NOT a second drawn element), growing/shrinking the visible
+  // screen area within the same outer device dimensions.
+  const inset = effectiveScreenInset(def.screenInset, overrides?.bezelThickness);
   // The bezel rect's own fill must not cover the screen -- its inner edge
   // (inset by half the bezel stroke) sits well inside the actual screen
   // area (inset.*), so an opaque `fill` here would paint straight over the

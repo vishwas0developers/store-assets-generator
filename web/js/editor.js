@@ -395,12 +395,14 @@ async function applyDeviceColorToAllPages() {
   const style = getSelectedCellStyle() || selectedColumn?.style;
   const sourceDev = style && resolveDeviceLayer(style, selectedLayerId);
   if (!sourceDev) return;
-  const { borderColor, bezelColor } = sourceDev;
+  const { borderColor, bezelColor, borderThickness, bezelThickness } = sourceDev;
   for (const col of mockupProject.columns) {
     for (const { layer: dev } of allDeviceLayers(col.style)) {
       if (dev) {
         dev.borderColor = borderColor;
         dev.bezelColor = bezelColor;
+        dev.borderThickness = borderThickness;
+        dev.bezelThickness = bezelThickness;
       }
     }
   }
@@ -758,6 +760,26 @@ export function syncSection2Inputs(col, layerId) {
   // override has been set.
   const activeDeviceRowForColor = mockupProject?.devices?.[0];
   const colorFrame = resolveDeviceFrame(activeDeviceRowForColor?.deviceId || "phone", mockupDevicesCatalog);
+
+  // Border/Bezel Thickness sliders -- undefined means "use the device's own
+  // catalog bezelWidth"/real screenInset, so the readout falls back to that
+  // real per-device default (like the color pickers above) rather than
+  // always showing 0.
+  const d1BorderThicknessEl = document.getElementById("mk-d1-border-thickness");
+  const d1BorderThicknessValEl = document.getElementById("mk-d1-border-thickness-val");
+  if (d1BorderThicknessEl && d1BorderThicknessValEl && activeDevice) {
+    const val = activeDevice.borderThickness ?? colorFrame?.bezelWidth ?? 0;
+    d1BorderThicknessEl.value = val;
+    d1BorderThicknessValEl.textContent = val;
+  }
+  const d1BezelThicknessEl = document.getElementById("mk-d1-bezel-thickness");
+  const d1BezelThicknessValEl = document.getElementById("mk-d1-bezel-thickness-val");
+  if (d1BezelThicknessEl && d1BezelThicknessValEl && activeDevice) {
+    const val = activeDevice.bezelThickness ?? 0;
+    d1BezelThicknessEl.value = val;
+    d1BezelThicknessValEl.textContent = val;
+  }
+
   const d1BorderColorEl = document.getElementById("mk-d1-border-color");
   if (d1BorderColorEl && activeDevice) {
     d1BorderColorEl.value = activeDevice.borderColor || colorFrame?.accent || "#334155";
@@ -1535,6 +1557,36 @@ export function setupInspectorEvents() {
       // per-page/per-layer only (see DeviceLayerStyle.cameraEnabled), so
       // toggling it on one page must never affect a linked page.
       dev.cameraEnabled = d1CameraEnabled.checked;
+      setMockupDirty(true);
+      loadColumnIntoFabric(selectedColumn);
+    };
+  }
+
+  const d1BorderThickness = document.getElementById("mk-d1-border-thickness");
+  const d1BorderThicknessVal = document.getElementById("mk-d1-border-thickness-val");
+  if (d1BorderThickness) {
+    d1BorderThickness.oninput = () => {
+      const style = getSelectedCellStyle() || selectedColumn?.style;
+      const dev = style && (resolveDeviceLayer(style, selectedLayerId) || style.deviceOne);
+      if (!dev) return;
+      dev.borderThickness = parseInt(d1BorderThickness.value, 10);
+      if (d1BorderThicknessVal) d1BorderThicknessVal.textContent = d1BorderThickness.value;
+      if (selectedColumn) syncLinkedDeviceLayer(mockupProject, selectedColumn.id, selectedLayerId);
+      setMockupDirty(true);
+      loadColumnIntoFabric(selectedColumn);
+    };
+  }
+
+  const d1BezelThickness = document.getElementById("mk-d1-bezel-thickness");
+  const d1BezelThicknessVal = document.getElementById("mk-d1-bezel-thickness-val");
+  if (d1BezelThickness) {
+    d1BezelThickness.oninput = () => {
+      const style = getSelectedCellStyle() || selectedColumn?.style;
+      const dev = style && (resolveDeviceLayer(style, selectedLayerId) || style.deviceOne);
+      if (!dev) return;
+      dev.bezelThickness = parseInt(d1BezelThickness.value, 10);
+      if (d1BezelThicknessVal) d1BezelThicknessVal.textContent = d1BezelThickness.value;
+      if (selectedColumn) syncLinkedDeviceLayer(mockupProject, selectedColumn.id, selectedLayerId);
       setMockupDirty(true);
       loadColumnIntoFabric(selectedColumn);
     };

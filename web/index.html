@@ -456,13 +456,13 @@
                     </div>
                     <div id="mk-obj-dev-colors-group" style="display:none; align-items:center; gap:0.4rem;">
                       <div class="divider"></div>
-                      <div style="display:flex; align-items:center; gap:0.25rem;" title="Device Frame 1 Outer Rim / Border Color">
-                        <span style="font-size:0.75rem; color:var(--text-secondary);">Rim:</span>
-                        <input id="mk-obj-dev-border-color" type="color" value="#334155" style="width:28px; height:24px; padding:1px; cursor:pointer; border-radius:4px; border:1px solid var(--border-subtle); background:transparent;" title="Device Frame Border / Rim Color" />
+                      <div style="display:flex; align-items:center; gap:0.25rem;" title="Device Frame 1 Border Color">
+                        <span style="font-size:0.75rem; color:var(--text-secondary);">Border:</span>
+                        <input id="mk-obj-dev-border-color" type="color" value="#334155" style="width:28px; height:24px; padding:1px; cursor:pointer; border-radius:4px; border:1px solid var(--border-subtle); background:transparent;" title="Device Frame Border Color" />
                       </div>
-                      <div style="display:flex; align-items:center; gap:0.25rem;" title="Device Frame 1 Body / Bezel Background Color">
+                      <div style="display:flex; align-items:center; gap:0.25rem;" title="Device Frame 1 Bezel Background Color">
                         <span style="font-size:0.75rem; color:var(--text-secondary);">Bezel:</span>
-                        <input id="mk-obj-dev-bezel-color" type="color" value="#1e293b" style="width:28px; height:24px; padding:1px; cursor:pointer; border-radius:4px; border:1px solid var(--border-subtle); background:transparent;" title="Device Frame Body / Bezel Color" />
+                        <input id="mk-obj-dev-bezel-color" type="color" value="#1e293b" style="width:28px; height:24px; padding:1px; cursor:pointer; border-radius:4px; border:1px solid var(--border-subtle); background:transparent;" title="Device Frame Bezel Color" />
                       </div>
                     </div>
                     <div class="divider"></div>
@@ -575,21 +575,24 @@
           <div class="inspector-card-header">
             <span class="inspector-card-title">Layers</span>
           </div>
-          <div style="display:flex; gap:0.25rem; margin-bottom:0.6rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.4rem; flex-wrap:wrap;">
-            <button id="mk-tab-layers" class="secondary small" style="flex:1;" type="button">Layers</button>
-            <button id="mk-tab-objects" class="secondary small" style="flex:1;" type="button">Objects</button>
-            <button id="mk-tab-transform" class="secondary small" style="flex:1;" type="button">Transform</button>
-          </div>
           <div id="mk-layers-list" style="max-height: 280px; overflow-y: auto; margin-top: 0.5rem;">
             <!-- Layer items rendered by app.js -->
           </div>
-          <div style="margin-top: 0.5rem; display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.3rem;">
-            <button id="mk-layer-bring-front" class="secondary xsmall" style="width:auto;" type="button" title="Bring to Front">⏫ Front</button>
-            <button id="mk-layer-bring-fwd" class="secondary xsmall" style="width:auto;" type="button" title="Bring Forward">🔼 Fwd</button>
-            <button id="mk-layer-send-bwd" class="secondary xsmall" style="width:auto;" type="button" title="Send Backward">🔽 Bwd</button>
-            <button id="mk-layer-send-back" class="secondary xsmall" style="width:auto;" type="button" title="Send to Back">⏬ Back</button>
+          <!-- Layer Ordering & Actions Shelf -->
+          <div class="pro-transform-shelf" style="margin-top: 0.75rem;">
+            <label class="pro-label">Layer Ordering &amp; Actions</label>
+            <div class="pro-segmented-row" style="margin-bottom: 0.45rem;">
+              <button id="mk-layer-bring-front" class="secondary small pro-seg-btn" type="button" title="Bring to Front">⏫ Front</button>
+              <button id="mk-layer-bring-fwd" class="secondary small pro-seg-btn" type="button" title="Bring Forward">🔼 Forward</button>
+              <button id="mk-layer-send-bwd" class="secondary small pro-seg-btn" type="button" title="Send Backward">🔽 Backward</button>
+              <button id="mk-layer-send-back" class="secondary small pro-seg-btn" type="button" title="Send to Back">⏬ Back</button>
+            </div>
+            <div style="display:flex; gap:0.4rem; margin-bottom: 0.5rem;">
+              <button id="mk-duplicate-layer" class="secondary small pro-action-btn" type="button" style="flex:1;" title="Duplicate Layer (Ctrl+D)">⧉ Duplicate</button>
+              <button id="mk-delete-layer" class="danger-ghost small pro-action-btn" type="button" style="flex:1;" title="Delete Layer (Del)">🗑 Delete Layer</button>
+            </div>
           </div>
-          <button id="mk-add-device-layer-btn" class="secondary small" type="button" style="width:100%; margin-top:0.5rem;" title="Add another freely-positioned device to this screen">+ Add Device Layer</button>
+          <button id="mk-add-device-layer-btn" class="secondary small" type="button" style="width:100%; margin-top:0.25rem;" title="Add another freely-positioned device to this screen">+ Add Device Layer</button>
         </div>
 
         <!-- Section 1: Object Details & Content Card -->
@@ -643,14 +646,28 @@
             <div class="range-label"><span>Brightness</span><span id="mk-d1-brightness-val">100</span></div>
             <input id="mk-d1-brightness" type="range" min="40" max="160" value="100" />
             
-            <h4 style="margin-top:1rem; font-size:.82rem; color:var(--text-secondary);">Device Colors</h4>
+            <h4 style="margin-top:1rem; font-size:.85rem; color:var(--text-primary, #fff);">Device Section</h4>
+
+            <h5 style="margin-top:.5rem; font-size:.75rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:.04em;">Sizes</h5>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem;">
+              <div>
+                <div class="range-label"><span>Border Thickness</span><span id="mk-d1-border-thickness-val">0</span></div>
+                <input id="mk-d1-border-thickness" type="range" min="0" max="40" value="0" />
+              </div>
+              <div>
+                <div class="range-label"><span>Bezel Thickness</span><span id="mk-d1-bezel-thickness-val">0</span></div>
+                <input id="mk-d1-bezel-thickness" type="range" min="-20" max="40" value="0" />
+              </div>
+            </div>
+
+            <h5 style="margin-top:.85rem; font-size:.75rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:.04em;">Color</h5>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; margin-bottom:0.5rem;">
               <div>
-                <label style="font-size:0.75rem;">Border / Rim</label>
+                <label style="font-size:0.75rem;">Border</label>
                 <input id="mk-d1-border-color" type="color" value="#334155" style="width:100%; height:32px; padding:2px; cursor:pointer;" />
               </div>
               <div>
-                <label style="font-size:0.75rem;">Bezel / Body</label>
+                <label style="font-size:0.75rem;">Bezel</label>
                 <input id="mk-d1-bezel-color" type="color" value="#1e293b" style="width:100%; height:32px; padding:2px; cursor:pointer;" />
               </div>
             </div>
@@ -742,8 +759,8 @@
           <div class="pro-transform-shelf" style="margin-bottom: 0.75rem;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.35rem;">
               <label for="mk-pos-opacity" class="pro-label" style="margin:0;">Opacity</label>
-              <div class="pro-input-wrapper" style="width: 65px;">
-                <input id="mk-pos-opacity" class="inspector-num-input pro-field" type="number" min="0" max="100" step="1" value="100" style="text-align:right; padding-right: 1.1rem;" title="Opacity Percentage" />
+              <div class="pro-input-wrapper" style="width: 76px;">
+                <input id="mk-pos-opacity" class="inspector-num-input pro-field" type="number" min="0" max="100" step="1" value="100" style="text-align:right; padding-right: 1.35rem; padding-left: 0.5rem;" title="Opacity Percentage" />
                 <span class="pro-input-suffix">%</span>
               </div>
             </div>
@@ -762,21 +779,6 @@
               <button id="mk-align-top" class="secondary small pro-seg-btn" title="Align Top">⤒ Top</button>
               <button id="mk-align-middle" class="secondary small pro-seg-btn" title="Align Middle (Y)">⇕ Middle</button>
               <button id="mk-align-bottom" class="secondary small pro-seg-btn" title="Align Bottom">⤓ Bottom</button>
-            </div>
-          </div>
-
-          <!-- 5. Arrange & Actions Shelf -->
-          <div class="pro-transform-shelf">
-            <label class="pro-label">Layer Ordering &amp; Actions</label>
-            <div class="pro-segmented-row" style="margin-bottom: 0.5rem;">
-              <button id="mk-bring-front" class="secondary small pro-seg-btn" title="Bring to Front">⏫ Front</button>
-              <button id="mk-bring-forward" class="secondary small pro-seg-btn" title="Bring Forward">🔼 Forward</button>
-              <button id="mk-send-backward" class="secondary small pro-seg-btn" title="Send Backward">🔽 Backward</button>
-              <button id="mk-send-back" class="secondary small pro-seg-btn" title="Send to Back">⏬ Back</button>
-            </div>
-            <div style="display:flex; gap:0.4rem;">
-              <button id="mk-duplicate-layer" class="secondary small pro-action-btn" type="button" style="flex:1;">⧉ Duplicate</button>
-              <button id="mk-delete-layer" class="danger-ghost small pro-action-btn" type="button" style="flex:1;">🗑 Delete Layer</button>
             </div>
           </div>
 
