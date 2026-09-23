@@ -602,7 +602,7 @@
           </div>
 
           <!-- Contextual Layer Selector Buttons -->
-          <div style="display:flex; gap:0.25rem; margin-bottom:0.85rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.6rem; flex-wrap:wrap;">
+          <div style="display:flex; gap:0.25rem; margin-bottom:0.5rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.45rem; flex-wrap:wrap;">
             <button id="mk-tab-col" class="secondary small" style="flex:1;" type="button">Page</button>
             <button id="mk-tab-dev" class="secondary small" style="flex:1;" type="button">Device</button>
             <button id="mk-tab-text" class="secondary small" style="flex:1;" type="button">Text</button>
@@ -634,51 +634,51 @@
             <button id="mk-ai-text" class="secondary small" type="button" style="margin-top:.5rem;">&#10024; AI Assist</button>
           </div>
 
-          <div id="mk-panel-dev" style="margin-top:0.5rem;">
-            <label>Screenshot Source Mapping</label>
+          <div id="mk-panel-dev" style="margin-top:0.4rem;">
+            <label style="margin-top:0.2rem;">Screenshot Source Mapping</label>
             <select id="mk-source"></select>
-            <div id="mk-source-dims" class="hint" style="margin-top:.25rem;"></div>
-            <button id="mk-source-upload" class="secondary small" type="button" style="margin-top:.4rem; width:100%;">Upload New Source</button>
+            <div id="mk-source-dims" class="hint" style="margin-top:.2rem;"></div>
+            <button id="mk-source-upload" class="secondary small" type="button" style="margin-top:.35rem; width:100%;">Upload New Source</button>
 
-            <h4 style="margin-top:1rem; font-size:.82rem; color:var(--text-secondary);">Device Geometry</h4>
-            <div class="range-label"><span>Scale (%)</span><span id="mk-d1-size-val">90</span></div>
+            <h4 style="margin-top:0.65rem; margin-bottom:0.2rem; font-size:.82rem; color:var(--text-secondary);">Device Geometry</h4>
+            <div class="range-label" style="margin-top:0.2rem;"><span>Scale (%)</span><span id="mk-d1-size-val">90</span></div>
             <input id="mk-d1-size" type="range" min="0" max="200" value="90" />
-            <div class="range-label"><span>Brightness</span><span id="mk-d1-brightness-val">100</span></div>
+            <div class="range-label" style="margin-top:0.25rem;"><span>Brightness</span><span id="mk-d1-brightness-val">100</span></div>
             <input id="mk-d1-brightness" type="range" min="40" max="160" value="100" />
             
-            <h4 style="margin-top:1rem; font-size:.85rem; color:var(--text-primary, #fff);">Device Section</h4>
+            <h4 style="margin-top:0.65rem; margin-bottom:0.35rem; font-size:.84rem; color:var(--text-primary, #fff);">Device Section</h4>
 
-            <h5 style="margin-top:.5rem; font-size:.75rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:.04em;">Sizes</h5>
+            <h5 style="margin-top:0.25rem; margin-bottom:0.25rem; font-size:.73rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:.04em;">Sizes</h5>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem;">
               <div>
-                <div class="range-label"><span>Border Thickness</span><span id="mk-d1-border-thickness-val">0</span></div>
+                <div class="range-label" style="margin-top:0.15rem;"><span>Border Thickness</span><span id="mk-d1-border-thickness-val">0</span></div>
                 <input id="mk-d1-border-thickness" type="range" min="0" max="40" value="0" />
               </div>
               <div>
-                <div class="range-label"><span>Bezel Thickness</span><span id="mk-d1-bezel-thickness-val">0</span></div>
-                <input id="mk-d1-bezel-thickness" type="range" min="-20" max="40" value="0" />
+                <div class="range-label" style="margin-top:0.15rem;"><span>Bezel Thickness</span><span id="mk-d1-bezel-thickness-val">0</span></div>
+                <input id="mk-d1-bezel-thickness" type="range" min="0" max="120" value="0" />
               </div>
             </div>
 
-            <h5 style="margin-top:.85rem; font-size:.75rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:.04em;">Color</h5>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; margin-bottom:0.5rem;">
+            <h5 style="margin-top:0.45rem; margin-bottom:0.25rem; font-size:.73rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:.04em;">Color</h5>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; margin-bottom:0.4rem;">
               <div>
-                <label style="font-size:0.75rem;">Border</label>
-                <input id="mk-d1-border-color" type="color" value="#334155" style="width:100%; height:32px; padding:2px; cursor:pointer;" />
+                <label style="font-size:0.75rem; margin:0 0 0.2rem 0;">Border</label>
+                <input id="mk-d1-border-color" type="color" value="#334155" style="width:100%; height:30px; padding:2px; cursor:pointer;" />
               </div>
               <div>
-                <label style="font-size:0.75rem;">Bezel</label>
-                <input id="mk-d1-bezel-color" type="color" value="#1e293b" style="width:100%; height:32px; padding:2px; cursor:pointer;" />
+                <label style="font-size:0.75rem; margin:0 0 0.2rem 0;">Bezel</label>
+                <input id="mk-d1-bezel-color" type="color" value="#1e293b" style="width:100%; height:30px; padding:2px; cursor:pointer;" />
               </div>
             </div>
-            <button id="mk-d1-apply-all-colors-btn" class="secondary small" type="button" style="width:100%; margin-bottom:0.5rem;">Apply to All Frames</button>
+            <button id="mk-d1-apply-all-colors-btn" class="secondary small" type="button" style="width:100%; margin-bottom:0.4rem;">Apply to All Frames</button>
 
-            <div style="display:flex; gap:1rem;">
-              <label class="checkbox-row" id="mk-d1-camera-row"><input id="mk-d1-camera-enabled" type="checkbox" /> Camera</label>
-              <label class="checkbox-row"><input id="mk-d1-frameless" type="checkbox" /> Frameless</label>
+            <div style="display:flex; gap:1rem; margin-top:0.1rem;">
+              <label class="checkbox-row" id="mk-d1-camera-row" style="padding:0.15rem 0;"><input id="mk-d1-camera-enabled" type="checkbox" /> Camera</label>
+              <label class="checkbox-row" style="padding:0.15rem 0;"><input id="mk-d1-frameless" type="checkbox" /> Frameless</label>
             </div>
-            <div id="mk-d1-frameless-radius-row" style="display:none;">
-              <div class="range-label"><span>Corner Radius</span><span id="mk-d1-frameless-radius-val">0</span></div>
+            <div id="mk-d1-frameless-radius-row" style="display:none; margin-top:0.25rem;">
+              <div class="range-label" style="margin-top:0.15rem;"><span>Corner Radius</span><span id="mk-d1-frameless-radius-val">0</span></div>
               <input id="mk-d1-frameless-radius" type="range" min="0" max="120" value="0" />
             </div>
           </div>

@@ -57,6 +57,7 @@ import {
   resolveDeviceTwoTransform,
   resolveExtraDeviceTransform,
   resolveAssetLayerBox,
+  resolveDeviceFrameGeometry,
 } from '/dist/mockup/layerLayout.js';
 
 // Selection-control styling, applied explicitly to every constructed object
@@ -1458,30 +1459,41 @@ export async function buildDeviceGroup(device, layerId, left, top, width, height
   // generic navy placeholder, and reused for the camera cutout further down.
   const frameTraits = resolveDeviceFrame(deviceId || 'phone', mockupDevicesCatalog);
 
+  // Shared frame geometry -- the SAME pure helper the server uses for the
+  // SVG mask hole (build-frame-svg.ts) and the screenshot box
+  // (render/shared.ts), so canvas and Preview can't drift. bezelThickness is
+  // ABSOLUTE and symmetric (inset = border + bezel on all four sides).
+  const fg = resolveDeviceFrameGeometry({
+    width: devW, height: devH, cornerRadius: devCorner,
+    screenInset: screenInset || { top: 30, left: 30, width: devW - 60, height: devH - 60 },
+    catalogBorderWidth: frameTraits?.bezelWidth ?? 3,
+    borderThickness: device.borderThickness,
+    bezelThickness: device.bezelThickness,
+  });
+
   // Bezel frame (rounded rect) using real device dimensions
   if (!isFrameless) {
     // Matches src/devices/build-frame-svg.ts's buildFrameSvg() default
     // (colorway "dark"): bodyFill/strokeColor fall back to the device's own
-    // def.body/def.accent, not a hardcoded generic color -- previously this
-    // always fell back to '#1e293b'/'#334155' regardless of device, so the
-    // editor canvas showed a different bezel color than the server-rendered
-    // Preview/export for every device layer with no explicit color override.
+    // def.body/def.accent.
     const bezelFill = device.bezelColor || frameTraits?.body || '#1e293b';
     const borderStroke = device.borderColor || frameTraits?.accent || '#334155';
-    // "Border Thickness" panel control -- mirrors build-frame-svg.ts's
-    // bezelWidth override: undefined falls back to this device's real
-    // catalog bezelWidth (not a generic hardcoded 3), matching server render.
-    const borderThickness = device.borderThickness ?? frameTraits?.bezelWidth ?? 3;
+    // Like the SVG, the stroke is centered on a rect inset by border/2, so the
+    // stroke's outer edge sits exactly on 0..devW/devH. (Previously the rect
+    // was drawn at 0,0 at full size: the stroke overflowed by border/2 on every
+    // side, making the group's bounds devW+border wide and throwing off the
+    // group's scale/offset vs. the server Preview.) Fabric's `width` excludes
+    // the stroke and origin 'left'/'top' positions the stroke-inclusive box.
     const bezel = new fabric.Rect({
       left: 0,
       top: 0,
-      width: devW,
-      height: devH,
-      rx: devCorner,
-      ry: devCorner,
+      width: fg.bodyRect.width,
+      height: fg.bodyRect.height,
+      rx: fg.bodyRect.rx,
+      ry: fg.bodyRect.rx,
       fill: bezelFill,
       stroke: borderStroke,
-      strokeWidth: borderThickness,
+      strokeWidth: fg.borderWidth,
       originX: 'left',
       originY: 'top',
       selectable: false,
@@ -1490,36 +1502,33 @@ export async function buildDeviceGroup(device, layerId, left, top, width, height
     items.push(bezel);
   }
 
-  // "Bezel Thickness" -- client-side twin of build-frame-svg.ts's
-  // effectiveScreenInset(): adjusts the REAL screen-inset geometry the
-  // screenshot is placed/sized into (further down), not a separate drawn
-  // element. Positive values grow the solid body band (screen hole shrinks,
-  // screenshot placed further inward); undefined/0 = the device's real,
-  // unmodified screenInset, matching the server's default appearance.
-  const bezelThicknessAdjust = device.bezelThickness ?? 0;
-
   // Screenshot image -- resolvedSource.file is the real project-relative path
-  // (e.g. "captures/1.png"), matching how render.ts resolves it server-side;
-  // previously this guessed a `sources/<id>.png` path that didn't match how
-  // sources are actually stored (e.g. live-capture sources live under captures/).
+  // (e.g. "captures/1.png"), matching how render.ts resolves it server-side.
   if (resolvedSource?.file && mockupId) {
     const imgUrl = `/api/mockups/${mockupId}/file?p=${encodeURIComponent(resolvedSource.file)}`;
     const screen = await loadFabricImageAsync(imgUrl);
     if (screen) {
-      const sLeft = isFrameless ? 0 : (screenInset?.left ?? 30) + bezelThicknessAdjust;
-      const sTop = isFrameless ? 0 : (screenInset?.top ?? 30) + bezelThicknessAdjust;
-      const sWidth = isFrameless ? devW : Math.max(0, (screenInset?.width ?? (devW - 60)) - bezelThicknessAdjust * 2);
-      const sHeight = isFrameless ? devH : Math.max(0, (screenInset?.height ?? (devH - 60)) - bezelThicknessAdjust * 2);
+      const box = isFrameless ? { left: 0, top: 0, width: devW, height: devH } : fg.screen;
+      // object-fit: cover + object-position: top center, like the server's
+      // <img class="device-screen"> -- uniform scale, crop horizontally
+      // centered / vertically from the top (previously stretched non-uniformly).
+      const natW = screen.width, natH = screen.height;
+      const coverScale = Math.max(box.width / natW, box.height / natH);
+      const visW = box.width / coverScale, visH = box.height / coverScale;
       screen.set({
-        left: sLeft,
-        top: sTop,
+        cropX: (natW - visW) / 2,
+        cropY: 0,
+        width: visW,
+        height: visH,
+        left: box.left,
+        top: box.top,
         originX: 'left',
         originY: 'top',
         selectable: false,
         evented: false
       });
-      screen.scaleX = sWidth / screen.width;
-      screen.scaleY = sHeight / screen.height;
+      screen.scaleX = coverScale;
+      screen.scaleY = coverScale;
       // Round the screenshot's corners to match the device bezel's screen cutout --
       // the editor previously scaled the image into the inset with no clipping at
       // all, so screenshots visibly overflowed the rounded corners (a real fidelity
@@ -1534,7 +1543,7 @@ export async function buildDeviceGroup(device, layerId, left, top, width, height
       // Radius slider) instead of the device's own bezel-cutout radius --
       // undefined/0 means no rounding, matching frameless()'s server-side twin
       // in src/mockup/render.ts.
-      const screenCorner = isFrameless ? (device.framelessCornerRadius || 0) : devCorner;
+      const screenCorner = isFrameless ? (device.framelessCornerRadius || 0) : fg.screenRadius;
       if (screenCorner > 0) {
         screen.clipPath = new fabric.Rect({
           width: screen.width,

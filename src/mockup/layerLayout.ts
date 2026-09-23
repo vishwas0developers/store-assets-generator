@@ -249,3 +249,55 @@ export function resolveAssetLayerZIndex(zIndex: number | undefined, index: numbe
 export function resolvePanoramaAssetZIndex(zIndex: number | undefined): number {
   return zIndex ?? LAYER_Z_INDEX_DEFAULTS.panoramaAsset;
 }
+
+export interface DeviceFrameGeometryInput {
+  width: number;
+  height: number;
+  cornerRadius?: number;
+  /** The device's native screen-inset rect (catalog). */
+  screenInset: { top: number; left: number; width: number; height: number };
+  /** Catalog border (outer stroke) width. */
+  catalogBorderWidth: number;
+  /** Per-layer "Border Thickness" override (undefined = catalog). */
+  borderThickness?: number;
+  /** Per-layer ABSOLUTE "Bezel Thickness" (undefined = device's native inset). */
+  bezelThickness?: number;
+}
+
+export interface DeviceFrameGeometry {
+  borderWidth: number;
+  /** Bezel width derived from the native inset -- the slider's default readout. */
+  nativeBezelThickness: number;
+  /** Rect the border stroke is centered on (stroke spans exactly 0..width/height). */
+  bodyRect: { x: number; y: number; width: number; height: number; rx: number };
+  /** The screen hole / screenshot box, in device px. */
+  screen: { top: number; left: number; width: number; height: number };
+  /** Corner radius of the screen hole and the screenshot clip. */
+  screenRadius: number;
+}
+
+/** Single source of truth for device-frame geometry, shared by the server
+ *  (build-frame-svg.ts mask hole, render/shared.ts screenshot box) and the
+ *  editor canvas (web/js/canvas.js buildDeviceGroup, via /dist/mockup/). An
+ *  explicit bezelThickness is ABSOLUTE and symmetric: inset = border + bezel
+ *  on all four sides, so 0 = the screen fills everything inside the border.
+ *  Outer device dimensions never change. */
+export function resolveDeviceFrameGeometry(input: DeviceFrameGeometryInput): DeviceFrameGeometry {
+  const { width, height, screenInset: si } = input;
+  const outerRadius = input.cornerRadius ?? 0;
+  const borderWidth = Math.max(0, input.borderThickness ?? input.catalogBorderWidth);
+  const nativeInset = Math.min(si.left, si.top, width - si.left - si.width, height - si.top - si.height);
+  const nativeBezelThickness = Math.max(0, nativeInset - input.catalogBorderWidth);
+  let screen = { ...si };
+  if (input.bezelThickness != null) {
+    const inset = Math.min(borderWidth + Math.max(0, input.bezelThickness), width / 2, height / 2);
+    screen = { top: inset, left: inset, width: width - inset * 2, height: height - inset * 2 };
+  }
+  return {
+    borderWidth,
+    nativeBezelThickness,
+    bodyRect: { x: borderWidth / 2, y: borderWidth / 2, width: width - borderWidth, height: height - borderWidth, rx: outerRadius },
+    screen,
+    screenRadius: Math.max(0, outerRadius - borderWidth / 2 - Math.max(0, input.bezelThickness ?? 0)),
+  };
+}
