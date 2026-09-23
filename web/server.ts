@@ -352,6 +352,23 @@ export async function startWebServer(options: { port?: number; host?: string; op
       }
     }
 
+    // Serves compiled shared TS modules (currently just layerLayout.ts) that
+    // browser code (web/js/canvas.js) imports directly as plain ES modules --
+    // see src/mockup/layerLayout.ts's doc comment for why this exists (the
+    // single source of truth for z-order/font-size formulas previously
+    // hand-duplicated between render.ts and canvas.js). tsc's outDir is
+    // "./dist" with rootDir "./", so src/mockup/*.ts lands at
+    // dist/src/mockup/*.js -- this route maps the shorter /dist/mockup/...
+    // URL browser code uses onto that real compiled path.
+    if (method === "GET" && p.startsWith("/dist/mockup/")) {
+      const rel = p.replace("/dist/mockup/", "");
+      const jsPath = path.join(process.cwd(), "dist", "src", "mockup", rel);
+      if (fs.existsSync(jsPath)) {
+        sendFile(res, jsPath, "application/javascript");
+        return;
+      }
+    }
+
     if (p === "/favicon.ico") {
       res.writeHead(204);
       res.end();

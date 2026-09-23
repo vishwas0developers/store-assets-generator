@@ -122,8 +122,19 @@ export interface DeviceLayerStyle {
   rotation: number;
   brightness: number; // 0-200, 100 = unchanged
   frameless: boolean; // "snapshot-" layouts skip the device frame
+  /** Corner radius (px, screenshot-image space) applied to the screenshot's
+   *  own rounded corners when `frameless` is true -- frameless mode has no
+   *  device bezel to clip the screenshot to, so this lets a frameless
+   *  screenshot still read as a rounded phone screen. Additive/optional;
+   *  undefined/0 = no rounding (unchanged behavior for every existing
+   *  project). No effect when `frameless` is false. */
+  framelessCornerRadius?: number;
   borderColor?: string; // Device frame outer rim / stroke color
   bezelColor?: string; // Device frame body / bezel fill color
+  /** Undefined/true = camera cutout (notch/dynamic-island/punch-hole/pill)
+   *  renders as normal per the device's real geometry; false = hide it.
+   *  No effect on devices whose `cutout.type` is "none". */
+  cameraEnabled?: boolean;
   flipH?: boolean;
   flipV?: boolean;
   deleted?: boolean;

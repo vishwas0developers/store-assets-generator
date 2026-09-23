@@ -2541,4 +2541,239 @@ html.light .custom-app-select option {
   color: var(--text-primary);
 }
 
+/* Position & Transform (Section 2) Professional Design Tool Redesign */
+.pro-transform-shelf {
+  position: relative;
+}
+
+.pro-label {
+  display: flex !important;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.73rem !important;
+  font-weight: 600 !important;
+  color: var(--text-secondary) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0 0 0.35rem 0 !important;
+}
+
+.pro-label-unit {
+  font-size: 0.68rem;
+  font-weight: 400;
+  text-transform: none;
+  opacity: 0.7;
+}
+
+/* Input Wrappers with Embedded Prefix / Suffix Badges */
+.pro-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.pro-input-prefix {
+  position: absolute;
+  left: 0.45rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  pointer-events: none;
+  user-select: none;
+}
+
+.pro-input-suffix {
+  position: absolute;
+  right: 0.45rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  pointer-events: none;
+  user-select: none;
+}
+
+.pro-field {
+  width: 100% !important;
+  height: 30px !important;
+  padding: 0.2rem 0.45rem 0.2rem 1.4rem !important;
+  background: var(--bg-main) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: 6px !important;
+  color: var(--text-primary) !important;
+  font-size: 0.82rem !important;
+  font-weight: 600 !important;
+  font-variant-numeric: tabular-nums;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.pro-field:focus {
+  outline: none !important;
+  border-color: var(--accent-primary) !important;
+  box-shadow: 0 0 0 2px var(--accent-subtle) !important;
+}
+
+/* Aspect Ratio Checkbox / Toggle */
+.pro-aspect-toggle {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.4rem !important;
+  padding: 0.3rem 0.6rem !important;
+  background: var(--bg-panel-subtle) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: 6px !important;
+  cursor: pointer !important;
+  transition: background 0.15s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.pro-aspect-toggle:hover {
+  background: var(--bg-hover) !important;
+}
+
+.pro-aspect-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Orientation Tool Row (Dedicated Line 1) */
+.pro-orientation-row {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.pro-tool-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 30px !important;
+  padding: 0 0.55rem !important;
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+  border-radius: 6px !important;
+  border: 1px solid var(--border-subtle) !important;
+  background: var(--bg-surface-secondary) !important;
+  color: var(--text-primary) !important;
+  cursor: pointer !important;
+  flex-shrink: 0;
+  transition: all 0.12s ease;
+}
+
+.pro-tool-btn:hover {
+  background: var(--bg-card-hover) !important;
+  border-color: var(--border-medium) !important;
+}
+
+.pro-tool-btn.is-active {
+  background: var(--accent-primary) !important;
+  color: #ffffff !important;
+  border-color: var(--accent-primary) !important;
+  box-shadow: 0 1px 4px rgba(59, 130, 246, 0.4);
+}
+
+/* Range Slider Styling (Dedicated Line 2) */
+.pro-range-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100% !important;
+  height: 6px !important;
+  border-radius: 3px !important;
+  background: var(--border-medium) !important;
+  outline: none !important;
+  margin: 0.2rem 0 !important;
+  cursor: pointer;
+}
+
+.pro-range-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent-primary);
+  border: 2px solid #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+  transition: transform 0.1s ease, background 0.1s ease;
+}
+
+.pro-range-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  background: var(--accent-hover);
+}
+
+/* Segmented Control Grids & Rows */
+.pro-segmented-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--border-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: 7px;
+  overflow: hidden;
+}
+
+.pro-segmented-row {
+  display: flex;
+  gap: 1px;
+  background: var(--border-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: 7px;
+  overflow: hidden;
+}
+
+.pro-seg-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 28px !important;
+  padding: 0 0.4rem !important;
+  font-size: 0.74rem !important;
+  font-weight: 600 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  background: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+  cursor: pointer !important;
+  flex: 1;
+  transition: background 0.12s ease;
+}
+
+.pro-seg-btn:hover {
+  background: var(--bg-card-hover) !important;
+  color: var(--text-primary) !important;
+}
+
+.pro-seg-btn.is-active {
+  background: var(--accent-active-bg) !important;
+  color: var(--accent-active-text) !important;
+  font-weight: 700 !important;
+}
+
+/* Action Buttons */
+.pro-action-btn {
+  height: 32px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 0.78rem !important;
+  font-weight: 600 !important;
+  border-radius: 6px !important;
+  transition: all 0.12s ease !important;
+}
+
+button.danger-ghost {
+  background: transparent !important;
+  color: #ef4444 !important;
+  border: 1px solid rgba(239, 68, 68, 0.35) !important;
+}
+
+button.danger-ghost:hover {
+  background: rgba(239, 68, 68, 0.12) !important;
+  border-color: #ef4444 !important;
+}
+
 

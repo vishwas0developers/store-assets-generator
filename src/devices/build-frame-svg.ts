@@ -78,18 +78,30 @@ export function buildFrameSvg(
   def: DeviceDefinition,
   colorway: "light" | "dark" = "dark",
   geometry: DeviceGeometry = def.geometry,
-  overrides?: { borderColor?: string; bezelColor?: string },
+  overrides?: { borderColor?: string; bezelColor?: string; showCamera?: boolean },
 ): string {
   const { width, height } = geometry;
   const bezelWidth = def.bezelWidth;
   const outerRadius = geometry.cornerRadius;
   const bodyFill = overrides?.bezelColor || (colorway === "light" ? "#e8e8e8" : def.body);
   const strokeColor = overrides?.borderColor || (colorway === "light" ? "#c9c9c9" : def.accent);
+  const inset = def.screenInset;
+  // The bezel rect's own fill must not cover the screen -- its inner edge
+  // (inset by half the bezel stroke) sits well inside the actual screen
+  // area (inset.*), so an opaque `fill` here would paint straight over the
+  // screenshot underneath (regression fixed 2026-09-22: `fill` used to be
+  // "none" -- this mask restores that hole while still letting `bezelColor`
+  // tint the visible bezel ring instead of the whole rect).
+  const maskId = `bezel-hole-${def.id}`;
 
   return `<svg viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
+    <mask id="${maskId}">
+      <rect x="0" y="0" width="${width}" height="${height}" fill="#fff" />
+      <rect x="${inset.left}" y="${inset.top}" width="${inset.width}" height="${inset.height}" rx="${Math.max(0, outerRadius - bezelWidth / 2)}" fill="#000" />
+    </mask>
     <rect x="${bezelWidth / 2}" y="${bezelWidth / 2}" width="${width - bezelWidth}" height="${height - bezelWidth}"
-          rx="${outerRadius}" fill="${bodyFill}" stroke="${strokeColor}" stroke-width="${bezelWidth}" />
-    ${cutoutMarkup(def, geometry)}
+          rx="${outerRadius}" fill="${bodyFill}" stroke="${strokeColor}" stroke-width="${bezelWidth}" mask="url(#${maskId})" />
+    ${overrides?.showCamera === false ? "" : `<g id="camera-cutout">${cutoutMarkup(def, geometry)}</g>`}
     ${buttonsMarkup(def, geometry, bezelWidth)}
     ${foldSeamMarkup(def, geometry)}
   </svg>`;
