@@ -39,7 +39,7 @@ export function deviceMarkup(
   screenshotUri: string,
   variantId?: string,
   kind: "image" | "video" = "image",
-  overrides?: { borderColor?: string; bezelColor?: string },
+  overrides?: { borderColor?: string; bezelColor?: string; showCamera?: boolean },
 ): string {
   const g = resolveGeometry(device, variantId);
   const r = g.cornerRadius ?? 0;

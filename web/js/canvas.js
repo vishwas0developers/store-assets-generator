@@ -16,6 +16,7 @@ import {
 import {
   resolveFabricBackgroundFill,
   resolveDeviceGeometry,
+  resolveDeviceFrame,
   getLayoutPresetClient,
   presentationTransformClient,
   rgbToHex,
@@ -34,6 +35,29 @@ import { saveCurrentMockupProject, pushMockupHistory, mockupProject } from './st
 // codebase and it works fine, since both sides only read the live binding
 // inside function bodies, never at module-evaluation time.)
 import { mockupDevicesCatalog } from './templates.js';
+// Shared, dependency-free layout math also used server-side by
+// src/mockup/render.ts (compiled by `npm run build` to dist/src/mockup/
+// layerLayout.js, served at this URL by web/server.ts) -- the single source
+// of truth for z-order defaults and title/subtitle resolved font sizes, so
+// this file and render.ts can no longer drift out of sync on those (see
+// layerLayout.ts's doc comment for the historical subtitle-2x-too-large bug
+// this replaces).
+import {
+  resolveTitleTextLayout,
+  resolveSubtitleTextLayout,
+  resolveBackgroundZIndex,
+  resolveTitleZIndex,
+  resolveSubtitleZIndex,
+  resolveDeviceOneZIndex,
+  resolveDeviceTwoZIndex,
+  resolveExtraDeviceZIndex,
+  resolveAssetLayerZIndex,
+  resolvePanoramaAssetZIndex,
+  resolveDeviceOneTransform,
+  resolveDeviceTwoTransform,
+  resolveExtraDeviceTransform,
+  resolveAssetLayerBox,
+} from '/dist/mockup/layerLayout.js';
 
 // Selection-control styling, applied explicitly to every constructed object
 // (not trusted to a `fabric.Object.prototype` patch -- Fabric v7's classes
@@ -176,16 +200,21 @@ export function reorderStageArtboards() {
 // anything Fabric can load as an Image) -- nothing here is specific to any
 // particular asset.
 function applyAssetLayerTransform(img, ast, layerId, interactive) {
-  const w = (ast.widthPct / 100) * 1080;
-  const h = ast.heightPct ? (ast.heightPct / 100) * 1920 : w * 1.4;
-  const left = (ast.xPct / 100) * 1080;
-  const top = (ast.yPct / 100) * 1920;
+  const box = resolveAssetLayerBox(ast);
+  const w = (box.widthPct / 100) * 1080;
+  // heightPct unset: Fabric has no CSS `auto`-height equivalent, so this
+  // file keeps its own w*1.4 placeholder fallback -- see resolveAssetLayerBox's
+  // doc comment for why that divergence from render.ts's `height:auto` is
+  // intentional and not unified.
+  const h = box.heightPct != null ? (box.heightPct / 100) * 1920 : w * 1.4;
+  const left = (box.xPct / 100) * 1080;
+  const top = (box.yPct / 100) * 1920;
   img.set({
-    ...positionForRotation(left, top, w, h, ast.rotation || 0),
-    angle: ast.rotation || 0,
-    opacity: ast.opacity ?? 1,
-    flipX: !!ast.flipH,
-    flipY: !!ast.flipV,
+    ...positionForRotation(left, top, w, h, box.rotationDeg),
+    angle: box.rotationDeg,
+    opacity: box.opacity,
+    flipX: box.flipH,
+    flipY: box.flipV,
     name: layerId,
     layerId,
     zIndex: ast.zIndex || 15,
@@ -1022,11 +1051,10 @@ function getMeasureEl() {
  *  the real browser layout engine instead of guessed constants. */
 function measureCopyBlock(style, preset) {
   const textBelow = preset.textPosition.endsWith('below');
-  const isCaption = preset.textPosition.startsWith('caption');
   const t = style.title || { text: '', size: 58 };
   const s = style.subtitle || { text: '', size: 36 };
-  const titleSize = isCaption ? Math.round((t.size || 58) * 0.72) : (t.size || 58);
-  const subtitleSize = Math.round((s.size || 36) * 0.5);
+  const titleSize = resolveTitleTextLayout({ title: t }, preset.textPosition).fontSizePx;
+  const subtitleSize = resolveSubtitleTextLayout({ title: t, subtitle: s }).fontSizePx;
   const showTitle = t.visible !== false && !!t.text;
   const showSubtitle = s.visible !== false && !!s.text;
   if (!showTitle && !showSubtitle) return { height: 0, titleHeight: 0 };
@@ -1148,12 +1176,11 @@ export async function loadColumnIntoFabric(column, { interactive = true } = {}) 
       layerId: 'background'
     });
   }
-  queueObject(bgObj, style.background?.zIndex ?? 0);
+  queueObject(bgObj, resolveBackgroundZIndex(style));
 
   const PAD = 1080 * 0.06;
   const showText = preset.textPosition !== 'no-text';
   const textBelow = preset.textPosition.endsWith('below');
-  const isCaption = preset.textPosition.startsWith('caption');
 
   // 2. Title + 3. Subtitle Layers -- positioned/sized from a real measured
   // layout (measureCopyBlock, using render.ts's actual CSS) instead of guessed
@@ -1161,11 +1188,8 @@ export async function loadColumnIntoFabric(column, { interactive = true } = {}) 
   // real server-rendered design instead of drifting from it.
   const t = style.title || { text: '', color: '#ffffff', size: 58, align: 'center', rotation: 0 };
   const s = style.subtitle || { text: '', color: '#94a3b8', size: 36, align: 'center', rotation: 0 };
-  const titleSize = isCaption ? Math.round((t.size || 58) * 0.72) : (t.size || 58);
-  // render.ts's textBlock() renders the subtitle at HALF style.subtitle.size
-  // (render.ts:154) -- canvas.js previously used the raw size, rendering
-  // subtitles roughly 2x too large versus the real export/preview.
-  const subtitleSize = Math.round((s.size || 36) * 0.5);
+  const titleSize = resolveTitleTextLayout({ title: t }, preset.textPosition).fontSizePx;
+  const subtitleSize = resolveSubtitleTextLayout({ title: t, subtitle: s }).fontSizePx;
   const copyMeasure = showText ? measureCopyBlock(style, preset) : { height: 0, titleHeight: 0 };
   const titleY = t.y ?? (showText ? (textBelow ? 1920 - PAD - copyMeasure.height : PAD) : PAD);
   // render.ts applies text-align once to the whole .copy block via
@@ -1209,7 +1233,7 @@ export async function loadColumnIntoFabric(column, { interactive = true } = {}) 
     titleText.set({ ...positionForRotation(titleX, titleY, titleText.width, titleText.height, t.rotation), angle: t.rotation });
     titleText.setCoords();
   }
-  if (!t.deleted) queueObject(titleText, t.zIndex ?? 20);
+  if (!t.deleted) queueObject(titleText, resolveTitleZIndex(style));
 
   // Subtitle sits titleHeight + its own 0.5em margin-top below the title,
   // exactly matching render.ts's `.subtitle { margin-top: .5em }` (em is
@@ -1247,7 +1271,7 @@ export async function loadColumnIntoFabric(column, { interactive = true } = {}) 
     subtitleText.set({ ...positionForRotation(subtitleX, subtitleY, subtitleText.width, subtitleText.height, s.rotation), angle: s.rotation });
     subtitleText.setCoords();
   }
-  if (!s.deleted) queueObject(subtitleText, s.zIndex ?? 19);
+  if (!s.deleted) queueObject(subtitleText, resolveSubtitleZIndex(style));
 
   // Stage dimensions & centering offsets
   const { cx: stageCx, cy: stageCy } = fabricStageCenter(column);
@@ -1264,30 +1288,28 @@ export async function loadColumnIntoFabric(column, { interactive = true } = {}) 
   const d1Geo = resolveDeviceGeometry(activeDeviceId, mockupDevicesCatalog, activeDeviceVariant);
   const d1BaseW = d1Geo.width;
   const d1BaseH = d1Geo.height;
-  const d1Scale = d1.size / 90;
-  const d1W = d1BaseW * d1Scale;
-  const d1H = d1BaseH * d1Scale;
   // Device Frame 1 spanning a page boundary (d1.panoramaXPx set): X becomes
   // an absolute panorama-space pixel center instead of the normal
   // preset-offset formula -- Y/rotation/size stay exactly as governed by
-  // this column's own fields below, unaffected. Mirrors render.ts's
-  // identical branch in cellHtml.
-  let d1Cx = stageCx + ((transform.d1.xPct + d1.x) / 100) * d1W;
-  let skipOwnDeviceOne = false;
-  if (d1.panoramaXPx != null) {
-    const localCenterX = d1.panoramaXPx - columnOrderIndex * 1080;
-    if (localCenterX + d1W / 2 <= 0 || localCenterX - d1W / 2 >= 1080) skipOwnDeviceOne = true;
-    else d1Cx = localCenterX;
-  }
-  const d1Cy = stageCy + (d1.y / 100) * d1H;
+  // this column's own fields below, unaffected. Shared with render.ts's
+  // identical branch in cellHtml via resolveDeviceOneTransform().
+  const d1Resolved = resolveDeviceOneTransform(d1, transform.d1.xPct, transform.d1.rotate, d1BaseW, columnOrderIndex);
+  const d1W = d1BaseW * d1Resolved.scale;
+  const d1H = d1BaseH * d1Resolved.scale;
+  // resolveDeviceOneTransform() already folds the panorama-crossing pixel
+  // math (when d1.panoramaXPx is set) into this same xPct-of-own-width unit,
+  // so no separate branch is needed here -- see its doc comment.
+  const d1Cx = stageCx + (d1Resolved.xPct / 100) * d1W;
+  const skipOwnDeviceOne = d1Resolved.skip;
+  const d1Cy = stageCy + (d1Resolved.yPct / 100) * d1H;
   const d1Left = d1Cx - d1W / 2;
   const d1Top = d1Cy - d1H / 2;
-  const d1Rotation = (transform.d1.rotate || 0) + (d1.rotation || 0);
+  const d1Rotation = d1Resolved.rotationDeg;
 
   const d1Source = resolveSourceFor(d1.sourceId);
   if (!skipOwnDeviceOne && d1.visible !== false && !d1.deleted) {
     const deviceOne = await buildDeviceGroup(d1, 'deviceOne', d1Left, d1Top, d1W, d1H, d1Rotation, activeDeviceId, activeDeviceVariant, d1Source, interactive);
-    queueObject(deviceOne, d1.zIndex ?? 10);
+    queueObject(deviceOne, resolveDeviceOneZIndex(style));
   }
 
   // Cross-page: any OTHER column's Device Frame 1 that's spanning
@@ -1316,7 +1338,7 @@ export async function loadColumnIntoFabric(column, { interactive = true } = {}) 
     if (otherGroup) {
       otherGroup.panoramaDeviceOwnerId = otherCol.id;
       otherGroup.panoramaDeviceKey = 'deviceOne';
-      queueObject(otherGroup, otherD1.zIndex ?? 10);
+      queueObject(otherGroup, resolveDeviceOneZIndex(otherCol.style));
     }
   }
 
@@ -1324,19 +1346,19 @@ export async function loadColumnIntoFabric(column, { interactive = true } = {}) 
   const d2 = style.deviceTwo;
   if (d2 && preset.twoDevices && transform.d2) {
     const d2Geo = resolveDeviceGeometry(activeDeviceId, mockupDevicesCatalog, activeDeviceVariant);
-    const d2Scale = d2.size / 90;
-    const d2W = d2Geo.width * d2Scale;
-    const d2H = d2Geo.height * d2Scale;
-    const d2Cx = stageCx + ((transform.d2.xPct + d2.x) / 100) * d2W;
-    const d2Cy = stageCy + ((transform.d2.yPct + d2.y) / 100) * d2H;
+    const d2Resolved = resolveDeviceTwoTransform(d2, transform.d2.xPct, transform.d2.yPct, transform.d2.rotate);
+    const d2W = d2Geo.width * d2Resolved.scale;
+    const d2H = d2Geo.height * d2Resolved.scale;
+    const d2Cx = stageCx + (d2Resolved.xPct / 100) * d2W;
+    const d2Cy = stageCy + (d2Resolved.yPct / 100) * d2H;
     const d2Left = d2Cx - d2W / 2;
     const d2Top = d2Cy - d2H / 2;
-    const d2Rotation = (transform.d2.rotate || 0) + (d2.rotation || 0);
+    const d2Rotation = d2Resolved.rotationDeg;
     // render.ts falls back deviceTwo's source to deviceOne's resolved source
     // (not sources[columnIndex+1]) when d2 has no explicit sourceId.
     const d2Source = sources.find((s) => s.id === d2.sourceId) ?? d1Source;
     const deviceTwo = await buildDeviceGroup(d2, 'deviceTwo', d2Left, d2Top, d2W, d2H, d2Rotation, activeDeviceId, activeDeviceVariant, d2Source, interactive);
-    queueObject(deviceTwo, d2.zIndex ?? 9);
+    queueObject(deviceTwo, resolveDeviceTwoZIndex(style));
   }
 
   // 5b. Extra device layers (free-form, beyond the two preset slots -- no
@@ -1344,14 +1366,14 @@ export async function loadColumnIntoFabric(column, { interactive = true } = {}) 
   for (let i = 0; i < (style.extraDevices || []).length; i++) {
     const dx = style.extraDevices[i];
     const dxGeo = resolveDeviceGeometry(activeDeviceId, mockupDevicesCatalog, activeDeviceVariant);
-    const dxScale = dx.size / 90;
-    const dxW = dxGeo.width * dxScale;
-    const dxH = dxGeo.height * dxScale;
-    const dxCx = stageCx + (dx.x / 100) * dxW;
-    const dxCy = stageCy + (dx.y / 100) * dxH;
+    const dxResolved = resolveExtraDeviceTransform(dx);
+    const dxW = dxGeo.width * dxResolved.scale;
+    const dxH = dxGeo.height * dxResolved.scale;
+    const dxCx = stageCx + (dxResolved.xPct / 100) * dxW;
+    const dxCy = stageCy + (dxResolved.yPct / 100) * dxH;
     const dxSource = sources.find((s) => s.id === dx.sourceId) ?? d1Source;
-    const extraGroup = await buildDeviceGroup(dx, `extra:${i}`, dxCx - dxW / 2, dxCy - dxH / 2, dxW, dxH, dx.rotation || 0, activeDeviceId, activeDeviceVariant, dxSource, interactive);
-    queueObject(extraGroup, dx.zIndex ?? (8 - i));
+    const extraGroup = await buildDeviceGroup(dx, `extra:${i}`, dxCx - dxW / 2, dxCy - dxH / 2, dxW, dxH, dxResolved.rotationDeg, activeDeviceId, activeDeviceVariant, dxSource, interactive);
+    queueObject(extraGroup, resolveExtraDeviceZIndex(dx.zIndex, i));
   }
 
   // 6. Asset Layers
@@ -1359,7 +1381,7 @@ export async function loadColumnIntoFabric(column, { interactive = true } = {}) 
     for (let i = 0; i < style.assetLayers.length; i++) {
       const ast = style.assetLayers[i];
       const assetImg = await buildAssetImage(ast, `asset:${i}`, { interactive: !ast.locked && interactive });
-      if (assetImg) queueObject(assetImg, ast.zIndex ?? (15 + i));
+      if (assetImg) queueObject(assetImg, resolveAssetLayerZIndex(ast.zIndex, i));
     }
   }
 
@@ -1378,7 +1400,7 @@ export async function loadColumnIntoFabric(column, { interactive = true } = {}) 
     const panoramaImg = await buildAssetImage(projected, `panorama:${pa.id}`, { interactive: true });
     if (panoramaImg) {
       panoramaImg.panoramaAssetId = pa.id;
-      queueObject(panoramaImg, pa.zIndex ?? 15);
+      queueObject(panoramaImg, resolvePanoramaAssetZIndex(pa.zIndex));
     }
   }
 
@@ -1429,11 +1451,23 @@ export async function buildDeviceGroup(device, layerId, left, top, width, height
   const devH = geo.height;
   const devCorner = geo.cornerRadius ?? 36;
   const screenInset = geo.screenInset;
+  // Real per-model frame traits (body/accent colors, cutout) from the same
+  // /api/devices catalog the server's registry.ts reads -- used below as the
+  // no-override bezel/border fallback so an unstyled device layer matches
+  // its real brand color (e.g. rose-gold on this iPhone) instead of a
+  // generic navy placeholder, and reused for the camera cutout further down.
+  const frameTraits = resolveDeviceFrame(deviceId || 'phone', mockupDevicesCatalog);
 
   // Bezel frame (rounded rect) using real device dimensions
   if (!isFrameless) {
-    const bezelFill = device.bezelColor || '#1e293b';
-    const borderStroke = device.borderColor || '#334155';
+    // Matches src/devices/build-frame-svg.ts's buildFrameSvg() default
+    // (colorway "dark"): bodyFill/strokeColor fall back to the device's own
+    // def.body/def.accent, not a hardcoded generic color -- previously this
+    // always fell back to '#1e293b'/'#334155' regardless of device, so the
+    // editor canvas showed a different bezel color than the server-rendered
+    // Preview/export for every device layer with no explicit color override.
+    const bezelFill = device.bezelColor || frameTraits?.body || '#1e293b';
+    const borderStroke = device.borderColor || frameTraits?.accent || '#334155';
     const bezel = new fabric.Rect({
       left: 0,
       top: 0,
@@ -1483,7 +1517,12 @@ export async function buildDeviceGroup(device, layerId, left, top, width, height
       // width/height with the corner radius scaled back up to compensate.
       // Matches src/render/shared.ts's deviceMarkup(): same cornerRadius, no separate
       // "screen" radius exists in the device registry.
-      const screenCorner = isFrameless ? 0 : devCorner;
+      // Frameless mode has no device bezel to clip the screenshot to, so it
+      // uses the per-layer, user-controlled framelessCornerRadius (Corner
+      // Radius slider) instead of the device's own bezel-cutout radius --
+      // undefined/0 means no rounding, matching frameless()'s server-side twin
+      // in src/mockup/render.ts.
+      const screenCorner = isFrameless ? (device.framelessCornerRadius || 0) : devCorner;
       if (screenCorner > 0) {
         screen.clipPath = new fabric.Rect({
           width: screen.width,
@@ -1495,6 +1534,41 @@ export async function buildDeviceGroup(device, layerId, left, top, width, height
         });
       }
       items.push(screen);
+    }
+    // Camera cutout (notch/dynamic-island/pill/punch-hole) -- drawn on top of
+    // the screenshot, ported 1:1 from src/devices/build-frame-svg.ts's
+    // cutoutMarkup() so editor and export agree pixel-for-pixel. Skipped for
+    // frameless devices (matches how frameless already skips the whole
+    // frame), devices with no cutout, and when the layer's cameraEnabled
+    // override is explicitly false (see DeviceLayerStyle.cameraEnabled).
+    if (!isFrameless && device.cameraEnabled !== false) {
+      const frame = frameTraits;
+      const cutoutType = frame?.cutout;
+      if (cutoutType && cutoutType !== 'none') {
+        const cx = devW / 2;
+        const size = frame.cutoutSize || { width: 120, height: 36 };
+        const offsetX = 0;
+        const offsetY = 0;
+        const ox = cx + offsetX;
+        let cutoutShape = null;
+        if (cutoutType === 'notch') {
+          const w = size.width, h = size.height;
+          cutoutShape = new fabric.Rect({ left: ox - w / 2, top: offsetY, width: w, height: h, rx: h / 2, ry: h / 2, fill: '#000', originX: 'left', originY: 'top' });
+        } else if (cutoutType === 'punch-hole') {
+          const r = size.width / 2;
+          cutoutShape = new fabric.Circle({ left: ox - r, top: r + 26 + offsetY - r, radius: r, fill: '#000', stroke: frame.accent, strokeWidth: 2, originX: 'left', originY: 'top' });
+        } else if (cutoutType === 'dynamic-island') {
+          const w = size.width, h = size.height;
+          cutoutShape = new fabric.Rect({ left: ox - w / 2, top: 30 + offsetY, width: w, height: h, rx: h / 2, ry: h / 2, fill: '#000', originX: 'left', originY: 'top' });
+        } else if (cutoutType === 'pill') {
+          const w = size.width, h = size.height;
+          cutoutShape = new fabric.Rect({ left: ox - w / 2, top: 16 + offsetY, width: w, height: h, rx: h / 2, ry: h / 2, fill: '#000', originX: 'left', originY: 'top' });
+        }
+        if (cutoutShape) {
+          cutoutShape.set({ selectable: false, evented: false, name: 'camera-cutout' });
+          items.push(cutoutShape);
+        }
+      }
     }
   } else {
     // Placeholder text box
@@ -1969,7 +2043,10 @@ export function attachGizmoEvents(gizmoEl, col, zoomRatio) {
       gizmoEl.releasePointerCapture(upEv.pointerId);
       gizmoEl.onpointermove = null;
       gizmoEl.onpointerup = null;
-      import('./state.js').then(m => { m.saveCurrentMockupProject?.(); m.pushMockupHistory?.(); });
+      // Autosave-on-release removed (Save button is the only writer to disk
+      // -- see commitMoveableTransformToModel above for the same fix and
+      // rationale). pushMockupHistory is local-only, kept.
+      import('./state.js').then(m => { m.pushMockupHistory?.(); });
     };
 
     gizmoEl.onpointermove = onPointerMove;

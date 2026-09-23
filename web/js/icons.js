@@ -54,6 +54,8 @@ export function applyStandardIcons() {
     "mk-obj-flip-h": ICONS.flipH,
     "mk-obj-flip-v": ICONS.flipV,
     "mk-obj-rotate-btn": ICONS.rotate,
+    "mk-rot-apply-btn": ICONS.rotate,
+    "android-rotate-btn": ICONS.rotate,
     "mk-obj-opacity-icon": ICONS.opacity,
     "mk-obj-duplicate": ICONS.duplicate,
     "mk-obj-delete": ICONS.delete,

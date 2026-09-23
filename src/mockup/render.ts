@@ -22,6 +22,22 @@ import {
   type TextStyle,
 } from "./project.js";
 import { applyMockupTemplate, type MockupStarterTemplate } from "./templates.js";
+import {
+  resolveTitleTextLayout,
+  resolveSubtitleTextLayout,
+  resolveBackgroundZIndex,
+  resolveTitleZIndex,
+  resolveSubtitleZIndex,
+  resolveDeviceOneZIndex,
+  resolveDeviceTwoZIndex,
+  resolveExtraDeviceZIndex,
+  resolveAssetLayerZIndex,
+  resolvePanoramaAssetZIndex,
+  resolveDeviceOneTransform,
+  resolveDeviceTwoTransform,
+  resolveExtraDeviceTransform,
+  resolveAssetLayerBox,
+} from "./layerLayout.js";
 
 /**
  * Studio Mockup renderer -- the single HTML generator used by both the
@@ -33,15 +49,21 @@ const CANVAS = { width: 1080, height: 1920 };
 
 function frameless(device: (typeof DEVICE_REGISTRY)[string], screenshotUri: string, layer: DeviceLayerStyle, variant?: string): string {
   const g = resolveGeometry(device, variant);
+  // Frameless mode has no device bezel to clip the screenshot to, so the
+  // screenshot's own corners are rounded directly via CSS border-radius --
+  // layer.framelessCornerRadius (user-controlled, per-page) takes over here
+  // instead of the device geometry's own cornerRadius (which describes the
+  // physical bezel's screen cutout, not relevant once there's no bezel).
+  const cornerRadius = layer.framelessCornerRadius ?? 0;
   return `<div class="device" style="width:${g.width}px;height:${g.height}px">
-    <img src="${screenshotUri}" style="width:100%;height:100%;object-fit:cover;border-radius:${g.cornerRadius ?? 0}px;filter:brightness(${layer.brightness}%)" />
+    <img src="${screenshotUri}" style="width:100%;height:100%;object-fit:cover;border-radius:${cornerRadius}px;filter:brightness(${layer.brightness}%)" />
   </div>`;
 }
 
 function layerMarkup(deviceEntryId: string, screenshotUri: string, layer: DeviceLayerStyle, variant?: string): string {
   const device = DEVICE_REGISTRY[deviceEntryId] ?? DEVICE_REGISTRY["phone"];
   if (!device) throw new Error(`Device '${deviceEntryId}' not found in registry`);
-  const overrides = { borderColor: layer.borderColor, bezelColor: layer.bezelColor };
+  const overrides = { borderColor: layer.borderColor, bezelColor: layer.bezelColor, showCamera: layer.cameraEnabled !== false };
   return layer.frameless ? frameless(device, screenshotUri, layer, variant) : deviceMarkup(device, screenshotUri, variant, "image", overrides);
 }
 
@@ -62,14 +84,14 @@ function textFormatCss(t: TextStyle): string {
 
 function textBlock(style: ColumnStyle, textPosition: string): string {
   if (textPosition === "no-text") return "";
-  const isCaption = textPosition.startsWith("caption");
-  const titleSize = isCaption ? Math.round(style.title.size * 0.72) : style.title.size;
+  const titleLayout = resolveTitleTextLayout(style, textPosition);
+  const subtitleLayout = resolveSubtitleTextLayout(style);
   const showTitle = style.title.visible !== false && Boolean(style.title.text);
   const showSubtitle = style.subtitle.visible !== false && Boolean(style.subtitle.text);
   if (!showTitle && !showSubtitle) return "";
   return `<div class="copy" style="text-align:${style.title.align}">
-    ${showTitle ? `<div class="title" style="color:${style.title.color};font-size:${titleSize}px;${textFormatCss(style.title)}">${escapeHtml(style.title.text)}</div>` : ""}
-    ${showSubtitle ? `<div class="subtitle" style="color:${style.subtitle.color};font-size:${Math.round(style.subtitle.size * 0.5)}px;${textFormatCss(style.subtitle)}">${escapeHtml(style.subtitle.text)}</div>` : ""}
+    ${showTitle ? `<div class="title" style="color:${style.title.color};font-size:${titleLayout.fontSizePx}px;${textFormatCss(style.title)}">${escapeHtml(style.title.text)}</div>` : ""}
+    ${showSubtitle ? `<div class="subtitle" style="color:${style.subtitle.color};font-size:${subtitleLayout.fontSizePx}px;${textFormatCss(style.subtitle)}">${escapeHtml(style.subtitle.text)}</div>` : ""}
   </div>`;
 }
 
@@ -123,13 +145,14 @@ function assetLayersMarkup(layers: MockupAssetLayer[] = [], resolveUri: (rel: st
   return sorted
     .map((layer) => {
       const src = layer.assetId ? resolveUri(layer.assetId) : placeholderScreenUri(0);
-      const left = layer.xPct;
-      const top = layer.yPct;
-      const width = layer.widthPct;
-      const height = layer.heightPct ? `${layer.heightPct}%` : "auto";
-      const transform = `rotate(${layer.rotation || 0}deg) scaleX(${layer.flipH ? -1 : 1}) scaleY(${layer.flipV ? -1 : 1})`;
+      const box = resolveAssetLayerBox(layer);
+      const left = box.xPct;
+      const top = box.yPct;
+      const width = box.widthPct;
+      const height = box.heightPct != null ? `${box.heightPct}%` : "auto";
+      const transform = `rotate(${box.rotationDeg}deg) scaleX(${box.flipH ? -1 : 1}) scaleY(${box.flipV ? -1 : 1})`;
       const shadow = layer.shadow ? `box-shadow: ${layer.shadow.x || 0}px ${layer.shadow.y || 0}px ${layer.shadow.blur || 10}px ${layer.shadow.color || 'rgba(0,0,0,0.3)'};` : "";
-      return `<div class="asset-layer" style="position:absolute;left:${left}%;top:${top}%;width:${width}%;height:${height};transform:${transform};opacity:${layer.opacity ?? 1};z-index:${layer.zIndex ?? 10};${shadow}pointer-events:none;">
+      return `<div class="asset-layer" style="position:absolute;left:${left}%;top:${top}%;width:${width}%;height:${height};transform:${transform};opacity:${box.opacity};z-index:${layer.zIndex ?? 10};${shadow}pointer-events:none;">
         <img src="${src}" style="width:100%;height:100%;object-fit:${layer.cropFit || 'contain'};display:block;" />
       </div>`;
     })
@@ -156,13 +179,12 @@ export function cellHtml(project: MockupProject, deviceRowId: string, columnId: 
 
   const bg = resolveBackground(style.background, ctx.resolveUri, ctx.columnIndex, ctx.columnCount);
 
-  // Real z-order, mirroring web/js/canvas.js's loadColumnIntoFabric() defaults
-  // exactly (deviceOne 10, deviceTwo 9, extraDevices 8-i, assets 15+i, title
-  // 20, subtitle 19) so a layer's stacking is identical between the editor
-  // canvas and this server-rendered preview/export -- previously every
-  // `.layer` device div had NO z-index at all (relying on DOM order only),
-  // so bring-forward/send-backward here had zero effect regardless of what
-  // the model said.
+  // Real z-order, resolved via the shared layerLayout.ts defaults (also used
+  // by web/js/canvas.js's loadColumnIntoFabric()) so a layer's stacking is
+  // guaranteed identical between the editor canvas and this server-rendered
+  // preview/export -- previously every `.layer` device div had NO z-index at
+  // all (relying on DOM order only), so bring-forward/send-backward here had
+  // zero effect regardless of what the model said.
   // The one authoritative page sequence panorama math uses everywhere
   // (editor canvas, cell-preview, every export path) -- see the longer
   // comment lower down (where this was previously computed, now moved up
@@ -172,7 +194,7 @@ export function cellHtml(project: MockupProject, deviceRowId: string, columnId: 
   const panoramaColumnIndex = orderedColumnIds.indexOf(columnId);
 
   const d1 = style.deviceOne;
-  const d1Z = d1.zIndex ?? 10;
+  const d1Z = resolveDeviceOneZIndex(style);
   // Device Frame 1 spanning a page boundary (d1.panoramaXPx set): its X
   // position becomes an absolute panorama-space pixel coordinate instead of
   // the normal %-of-own-width preset offset -- Y/size/rotation are
@@ -182,20 +204,24 @@ export function cellHtml(project: MockupProject, deviceRowId: string, columnId: 
   // (`.stage` is always the full 1080-wide page, `justify-content:center`),
   // regardless of the title block's height -- unlike Y, X needs no
   // per-page flex-layout replication, just this one constant.
-  let d1XPct = transform.deviceOne.xPct + d1.x;
-  let skipOwnDeviceOne = false;
-  if (d1.panoramaXPx != null) {
-    const d1Geo = resolveGeometry(DEVICE_REGISTRY[deviceRow.deviceId] ?? DEVICE_REGISTRY["phone"], deviceRow.variant);
-    const d1WidthPx = d1Geo.width * (d1.size / 90);
-    const localCenterXPx = d1.panoramaXPx - panoramaColumnIndex * 1080;
-    if (localCenterXPx + d1WidthPx / 2 <= 0 || localCenterXPx - d1WidthPx / 2 >= 1080) {
-      skipOwnDeviceOne = true; // dragged fully off this page -- don't render it here at all
-    } else {
-      d1XPct = ((localCenterXPx - 540) / d1WidthPx) * 100;
-    }
-  }
-  const d1Flip = `${d1.flipH ? " scaleX(-1)" : ""}${d1.flipV ? " scaleY(-1)" : ""}`;
-  const d1Transform = `translate(${d1XPct}%, ${d1.y}%) scale(${d1.size / 90}) rotate(${transform.deviceOne.rotate + d1.rotation}deg)${d1Flip}`;
+  const d1Geo = resolveGeometry(DEVICE_REGISTRY[deviceRow.deviceId] ?? DEVICE_REGISTRY["phone"], deviceRow.variant);
+  const d1Resolved = resolveDeviceOneTransform(d1, transform.deviceOne.xPct, transform.deviceOne.rotate, d1Geo.width, panoramaColumnIndex);
+  const skipOwnDeviceOne = d1Resolved.skip; // dragged fully off this page -- don't render it here at all
+  const d1Flip = `${d1Resolved.flipH ? " scaleX(-1)" : ""}${d1Resolved.flipV ? " scaleY(-1)" : ""}`;
+  // CSS `%` inside translate() is always relative to the element's own
+  // UNSCALED layout box, regardless of the scale() further down the same
+  // transform list -- but xPct/yPct are defined (see layerLayout.ts's
+  // ResolvedDeviceTransform doc comment) as a percentage of the device's
+  // RENDERED (i.e. already-scaled) width/height, matching how canvas.js's
+  // Fabric editor computes the same offset in absolute pixels
+  // (`stageCx + (xPct/100) * scaledWidth`). Pre-multiplying by `scale` here
+  // compensates for that CSS reference-box difference so both renderers move
+  // the device by the same number of pixels -- previously this used the raw
+  // percentage directly, so any non-default size (scale != 1) made the
+  // server-rendered Preview/export translate the device by up to ~1/scale
+  // times too far, pushing it out past the page edge (clipped by `.canvas`'s
+  // overflow:hidden) even though the editor canvas kept it fully in bounds.
+  const d1Transform = `translate(${d1Resolved.xPct * d1Resolved.scale}%, ${d1Resolved.yPct * d1Resolved.scale}%) scale(${d1Resolved.scale}) rotate(${d1Resolved.rotationDeg}deg)${d1Flip}`;
   const isD1Hidden = skipOwnDeviceOne || d1.visible === false || (d1 as any).deleted;
   let deviceLayers = isD1Hidden ? "" : `<div class="layer" style="transform:${d1Transform};z-index:${d1Z}">${layerMarkup(deviceRow.deviceId, screenshotUri, d1, deviceRow.variant)}</div>`;
   let maxStageZ = isD1Hidden ? 0 : d1Z;
@@ -214,30 +240,31 @@ export function cellHtml(project: MockupProject, deviceRowId: string, columnId: 
     const otherIndex = orderedColumnIds.indexOf(otherCol.id);
     if (otherIndex < 0) continue;
     const otherGeo = resolveGeometry(DEVICE_REGISTRY[deviceRow.deviceId] ?? DEVICE_REGISTRY["phone"], deviceRow.variant);
-    const otherWidthPx = otherGeo.width * (otherD1.size / 90);
-    const otherLocalCenterX = otherD1.panoramaXPx - panoramaColumnIndex * 1080;
-    if (otherLocalCenterX + otherWidthPx / 2 <= 0 || otherLocalCenterX - otherWidthPx / 2 >= 1080) continue;
-    const otherXPct = ((otherLocalCenterX - 540) / otherWidthPx) * 100;
+    const otherResolved = resolveDeviceOneTransform(otherD1, transform.deviceOne.xPct, transform.deviceOne.rotate, otherGeo.width, panoramaColumnIndex);
+    if (otherResolved.skip) continue;
     const otherSource = project.sources.find((s) => s.id === otherD1.sourceId) ?? source;
     const otherUri = otherSource ? ctx.resolveUri(otherSource.file) : screenshotUri;
-    const otherZ = otherD1.zIndex ?? 10;
-    const otherFlip = `${otherD1.flipH ? " scaleX(-1)" : ""}${otherD1.flipV ? " scaleY(-1)" : ""}`;
-    const otherTransform = `translate(${otherXPct}%, ${otherD1.y}%) scale(${otherD1.size / 90}) rotate(${transform.deviceOne.rotate + otherD1.rotation}deg)${otherFlip}`;
+    const otherZ = resolveDeviceOneZIndex(otherCol.style);
+    const otherFlip = `${otherResolved.flipH ? " scaleX(-1)" : ""}${otherResolved.flipV ? " scaleY(-1)" : ""}`;
+    // See d1Transform's comment above -- same CSS-%-vs-scale correction.
+    const otherTransform = `translate(${otherResolved.xPct * otherResolved.scale}%, ${otherResolved.yPct * otherResolved.scale}%) scale(${otherResolved.scale}) rotate(${otherResolved.rotationDeg}deg)${otherFlip}`;
     deviceLayers += `<div class="layer" style="transform:${otherTransform};z-index:${otherZ}">${layerMarkup(deviceRow.deviceId, otherUri, otherD1, deviceRow.variant)}</div>`;
     maxStageZ = Math.max(maxStageZ, otherZ);
   }
 
   if (preset.twoDevices && style.deviceTwo && transform.deviceTwo && style.deviceTwo.visible !== false && !(style.deviceTwo as any).deleted) {
     const d2 = style.deviceTwo;
-    const d2Z = d2.zIndex ?? 9;
+    const d2Z = resolveDeviceTwoZIndex(style);
     const source2 = project.sources.find((s) => s.id === d2.sourceId) ?? source;
     const uri2 = source2
       ? ctx.resolveUri(source2.file)
       : ctx.resolveUri
       ? ctx.resolveUri("__second_device__")
       : placeholderScreenUri(ctx.columnIndex + 1);
-    const d2Flip = `${d2.flipH ? " scaleX(-1)" : ""}${d2.flipV ? " scaleY(-1)" : ""}`;
-    const d2Transform = `translate(${transform.deviceTwo.xPct + d2.x}%, ${transform.deviceTwo.yPct + d2.y}%) scale(${d2.size / 90}) rotate(${transform.deviceTwo.rotate + d2.rotation}deg)${d2Flip}`;
+    const d2Resolved = resolveDeviceTwoTransform(d2, transform.deviceTwo.xPct, transform.deviceTwo.yPct, transform.deviceTwo.rotate);
+    const d2Flip = `${d2Resolved.flipH ? " scaleX(-1)" : ""}${d2Resolved.flipV ? " scaleY(-1)" : ""}`;
+    // See d1Transform's comment above -- same CSS-%-vs-scale correction.
+    const d2Transform = `translate(${d2Resolved.xPct * d2Resolved.scale}%, ${d2Resolved.yPct * d2Resolved.scale}%) scale(${d2Resolved.scale}) rotate(${d2Resolved.rotationDeg}deg)${d2Flip}`;
     deviceLayers += `<div class="layer" style="transform:${d2Transform};z-index:${d2Z}">${layerMarkup(deviceRow.deviceId, uri2, d2, deviceRow.variant)}</div>`;
     maxStageZ = Math.max(maxStageZ, d2Z);
   }
@@ -247,11 +274,13 @@ export function cellHtml(project: MockupProject, deviceRowId: string, columnId: 
   // their own x/y/size/rotation, same as deviceOne/deviceTwo's own sliders.
   (style.extraDevices ?? []).forEach((extra, i) => {
     if (extra.visible === false || (extra as any).deleted) return;
-    const extraZ = extra.zIndex ?? (8 - i);
+    const extraZ = resolveExtraDeviceZIndex(extra.zIndex, i);
     const extraSource = project.sources.find((s) => s.id === extra.sourceId) ?? source;
     const extraUri = extraSource ? ctx.resolveUri(extraSource.file) : screenshotUri;
-    const extraFlip = `${extra.flipH ? " scaleX(-1)" : ""}${extra.flipV ? " scaleY(-1)" : ""}`;
-    const extraTransform = `translate(${extra.x}%, ${extra.y}%) scale(${extra.size / 90}) rotate(${extra.rotation}deg)${extraFlip}`;
+    const extraResolved = resolveExtraDeviceTransform(extra);
+    const extraFlip = `${extraResolved.flipH ? " scaleX(-1)" : ""}${extraResolved.flipV ? " scaleY(-1)" : ""}`;
+    // See d1Transform's comment above -- same CSS-%-vs-scale correction.
+    const extraTransform = `translate(${extraResolved.xPct * extraResolved.scale}%, ${extraResolved.yPct * extraResolved.scale}%) scale(${extraResolved.scale}) rotate(${extraResolved.rotationDeg}deg)${extraFlip}`;
     deviceLayers += `<div class="layer" style="transform:${extraTransform};z-index:${extraZ}">${layerMarkup(deviceRow.deviceId, extraUri, extra, deviceRow.variant)}</div>`;
     maxStageZ = Math.max(maxStageZ, extraZ);
   });
@@ -269,7 +298,7 @@ export function cellHtml(project: MockupProject, deviceRowId: string, columnId: 
     .filter((a): a is MockupAssetLayer => a != null);
   const allAssets = [...(style.assetLayers ?? []), ...projectedPanorama];
   const assets = assetLayersMarkup(allAssets, ctx.resolveUri);
-  for (const a of allAssets) maxStageZ = Math.max(maxStageZ, a.zIndex ?? 15);
+  for (const a of allAssets) maxStageZ = Math.max(maxStageZ, resolvePanoramaAssetZIndex(a.zIndex));
 
   // .copy (title+subtitle) and .stage (devices+assets) are separate flex
   // siblings/stacking contexts -- a child's z-index can only win against its
@@ -281,7 +310,7 @@ export function cellHtml(project: MockupProject, deviceRowId: string, columnId: 
   // within .stage, devices/assets now interleave correctly via the per-layer
   // z-index above, which is the primary case ("move this device behind that
   // one") the layer-ordering fix is for.
-  const copyZ = Math.max(style.title.zIndex ?? 20, style.subtitle.zIndex ?? 19);
+  const copyZ = Math.max(resolveTitleZIndex(style), resolveSubtitleZIndex(style));
 
   return `<!doctype html>
 <html><head><meta charset="utf-8" /><style>

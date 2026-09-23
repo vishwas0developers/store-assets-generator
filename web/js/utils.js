@@ -80,6 +80,19 @@ export function resolveDeviceGeometry(id, catalog, variantId) {
 }
 
 /**
+ * Returns the device's `frame` traits (cutout/bezelWidth/body/accent) from
+ * the same `/api/devices` catalog entries `resolveDeviceGeometry` already
+ * reads -- used by `buildDeviceGroup` to draw the real camera cutout on the
+ * live editor canvas instead of a bare rounded rect. Returns null when the
+ * device isn't in the catalog (e.g. the generic "phone" stub, which has no
+ * cutout data) -- callers must treat that as "no cutout to draw".
+ */
+export function resolveDeviceFrame(id, catalog) {
+  const entry = catalog && catalog.find((d) => d.id === id);
+  return entry?.frame || null;
+}
+
+/**
  * Returns a Fabric fill (hex string or fabric.Gradient) for a ColumnStyle.background.
  * @param {{type:string,value:string}|undefined} bg
  * @returns {string|fabric.Gradient}

@@ -14,7 +14,8 @@ import {
   selectedPages,
   pushMockupHistory
 } from './state.js';
-import { escapeHtml, api, uploadFile, showAlert, showToast, showConfirm } from './utils.js';
+import { escapeHtml, api, uploadFile, showAlert, showToast, showConfirm, resolveDeviceFrame } from './utils.js';
+import { mockupDevicesCatalog } from './templates.js';
 import { loadColumnIntoFabric, renderMockupCanvas, setActivePage } from './canvas.js';
 import { renderMockupMatrix, getSelectedCellStyle } from './matrix.js';
 import { loadDeviceCategories, getDeviceCategoriesSync, deviceCategoryLabel } from './deviceCategories.js';
@@ -323,6 +324,17 @@ export function resolveDeviceLayer(style, layerId) {
   return undefined;
 }
 
+/** Client mirror of src/mockup/project.ts's allDeviceLayers() -- the one place
+ *  that knows how to iterate every device layer on a page (deviceOne,
+ *  deviceTwo, all extraDevices[]) regardless of slot, so callers don't
+ *  hand-enumerate them (and silently miss deviceTwo/extraDevices as a result). */
+export function allDeviceLayers(style) {
+  const refs = [{ key: "deviceOne", layer: style.deviceOne }];
+  if (style.deviceTwo) refs.push({ key: "deviceTwo", layer: style.deviceTwo });
+  (style.extraDevices ?? []).forEach((layer, i) => refs.push({ key: `extra:${i}`, layer }));
+  return refs;
+}
+
 // Two-page device linking (client mirror of src/mockup/project.ts's
 // linkDeviceLayers/unlinkDeviceLayer/syncLinkedDeviceLayer) -- editing a
 // linked device's transform on either page propagates to its counterpart,
@@ -368,6 +380,49 @@ export function syncLinkedDeviceLayer(project, pageId, layerKey) {
   partnerLayer.rotation = layer.rotation;
   partnerLayer.brightness = layer.brightness;
   partnerLayer.frameless = layer.frameless;
+}
+
+/** "Apply Same Color to All Pages" button action -- a distinct, explicit
+ *  mechanism from syncLinkedDeviceLayer's two-page link feature above:
+ *  invoked directly on click, not gated by any toggle, and propagates the
+ *  currently selected device layer's borderColor/bezelColor to EVERY column
+ *  of the current mockup project (matched by device-layer slot key, e.g.
+ *  "deviceOne"/"deviceTwo"/"extra:0", not by page-specific id), not just
+ *  one explicitly linked counterpart. Deliberately does not touch `linkedTo`
+ *  or call syncLinkedDeviceLayer -- the two features are independent. */
+async function applyDeviceColorToAllPages() {
+  if (!mockupProject?.columns || !selectedLayerId) return;
+  const style = getSelectedCellStyle() || selectedColumn?.style;
+  const sourceDev = style && resolveDeviceLayer(style, selectedLayerId);
+  if (!sourceDev) return;
+  const { borderColor, bezelColor } = sourceDev;
+  for (const col of mockupProject.columns) {
+    for (const { layer: dev } of allDeviceLayers(col.style)) {
+      if (dev) {
+        dev.borderColor = borderColor;
+        dev.bezelColor = bezelColor;
+      }
+    }
+  }
+  setMockupDirty(true);
+  loadColumnIntoFabric(selectedColumn);
+  // Root cause of the "it doesn't work" report: the Preview Page matrix grid's
+  // cells are server-rendered <svg> fetched via GET /api/mockups/.../cell-preview/...,
+  // and that route always reads the project back off disk (loadMockupProject) --
+  // it has no way to see this in-memory, unsaved mutation. Re-fetching the iframe
+  // src via renderMockupMatrix() alone therefore kept showing the last-SAVED colors,
+  // even though the mutation above was real and correct. Other explicit
+  // propagating actions in this file already establish the fix pattern (see
+  // "Reset to Template" / asset-add handlers in main.js): persist first, then
+  // refresh the matrix, so the server has the new data before it's re-rendered.
+  await saveCurrentMockupProject();
+  pushMockupHistory();
+  setMockupDirty(false);
+  // Other pages' Preview Page cells aren't touched by loadColumnIntoFabric
+  // (that only reloads the currently-active editing canvas) -- refresh the
+  // matrix grid too so the propagated color is visible everywhere at once.
+  renderMockupMatrix();
+  showToast("Color applied to all frames.", "success");
 }
 
 /** A panorama-tagged layer id ("panorama:<id>") lives in
@@ -671,14 +726,46 @@ export function syncSection2Inputs(col, layerId) {
     d1FramelessEl.checked = !!activeDevice.frameless;
   }
 
+  // Corner Radius control (rounds the screenshot's own corners in frameless
+  // mode, since there's no device bezel to clip to) -- only ever shown while
+  // Frameless is checked, mirroring the mk-d1-camera-row gating pattern above.
+  const d1FramelessRadiusRowEl = document.getElementById("mk-d1-frameless-radius-row");
+  const d1FramelessRadiusEl = document.getElementById("mk-d1-frameless-radius");
+  const d1FramelessRadiusValEl = document.getElementById("mk-d1-frameless-radius-val");
+  if (d1FramelessRadiusRowEl) {
+    d1FramelessRadiusRowEl.style.display = activeDevice?.frameless ? "" : "none";
+  }
+  if (d1FramelessRadiusEl && d1FramelessRadiusValEl && activeDevice) {
+    d1FramelessRadiusEl.value = activeDevice.framelessCornerRadius ?? 0;
+    d1FramelessRadiusValEl.textContent = activeDevice.framelessCornerRadius ?? 0;
+  }
+
+  const d1CameraEnabledEl = document.getElementById("mk-d1-camera-enabled");
+  const d1CameraRowEl = document.getElementById("mk-d1-camera-row");
+  if (d1CameraEnabledEl && activeDevice) {
+    d1CameraEnabledEl.checked = activeDevice.cameraEnabled !== false;
+    // Only offer the toggle when the project's active device row actually
+    // has a camera cutout to show/hide (mirrors buildDeviceGroup's gating).
+    const activeDeviceRow = mockupProject?.devices?.[0];
+    const frame = resolveDeviceFrame(activeDeviceRow?.deviceId || "phone", mockupDevicesCatalog);
+    if (d1CameraRowEl) d1CameraRowEl.style.display = frame && frame.cutout && frame.cutout !== "none" ? "" : "none";
+  }
+
+  // Falls back to the real device's catalog default (frame.accent/frame.body,
+  // the same source buildDeviceGroup() in canvas.js and buildFrameSvg() on the
+  // server use) instead of a generic hardcoded slate color, so the picker
+  // shows what the device will actually render with when no per-layer
+  // override has been set.
+  const activeDeviceRowForColor = mockupProject?.devices?.[0];
+  const colorFrame = resolveDeviceFrame(activeDeviceRowForColor?.deviceId || "phone", mockupDevicesCatalog);
   const d1BorderColorEl = document.getElementById("mk-d1-border-color");
   if (d1BorderColorEl && activeDevice) {
-    d1BorderColorEl.value = activeDevice.borderColor || "#334155";
+    d1BorderColorEl.value = activeDevice.borderColor || colorFrame?.accent || "#334155";
   }
 
   const d1BezelColorEl = document.getElementById("mk-d1-bezel-color");
   if (d1BezelColorEl && activeDevice) {
-    d1BezelColorEl.value = activeDevice.bezelColor || "#1e293b";
+    d1BezelColorEl.value = activeDevice.bezelColor || colorFrame?.body || "#1e293b";
   }
 
   renderMkDecorations(style.decorations || []);
@@ -1416,7 +1503,38 @@ export function setupInspectorEvents() {
       const dev = style && (resolveDeviceLayer(style, selectedLayerId) || style.deviceOne);
       if (!dev) return;
       dev.frameless = d1Frameless.checked;
+      const radiusRow = document.getElementById("mk-d1-frameless-radius-row");
+      if (radiusRow) radiusRow.style.display = d1Frameless.checked ? "" : "none";
       if (selectedColumn) syncLinkedDeviceLayer(mockupProject, selectedColumn.id, selectedLayerId);
+      setMockupDirty(true);
+      loadColumnIntoFabric(selectedColumn);
+    };
+  }
+
+  const d1FramelessRadius = document.getElementById("mk-d1-frameless-radius");
+  const d1FramelessRadiusVal = document.getElementById("mk-d1-frameless-radius-val");
+  if (d1FramelessRadius) {
+    d1FramelessRadius.oninput = () => {
+      const style = getSelectedCellStyle() || selectedColumn?.style;
+      const dev = style && (resolveDeviceLayer(style, selectedLayerId) || style.deviceOne);
+      if (!dev) return;
+      dev.framelessCornerRadius = parseInt(d1FramelessRadius.value, 10);
+      if (d1FramelessRadiusVal) d1FramelessRadiusVal.textContent = d1FramelessRadius.value;
+      setMockupDirty(true);
+      loadColumnIntoFabric(selectedColumn);
+    };
+  }
+
+  const d1CameraEnabled = document.getElementById("mk-d1-camera-enabled");
+  if (d1CameraEnabled) {
+    d1CameraEnabled.onchange = () => {
+      const style = getSelectedCellStyle() || selectedColumn?.style;
+      const dev = style && (resolveDeviceLayer(style, selectedLayerId) || style.deviceOne);
+      if (!dev) return;
+      // Deliberately NOT synced via syncLinkedDeviceLayer -- cameraEnabled is
+      // per-page/per-layer only (see DeviceLayerStyle.cameraEnabled), so
+      // toggling it on one page must never affect a linked page.
+      dev.cameraEnabled = d1CameraEnabled.checked;
       setMockupDirty(true);
       loadColumnIntoFabric(selectedColumn);
     };
@@ -1450,6 +1568,11 @@ export function setupInspectorEvents() {
       setMockupDirty(true);
       loadColumnIntoFabric(selectedColumn);
     };
+  }
+
+  const d1ApplyAllColorsBtn = document.getElementById("mk-d1-apply-all-colors-btn");
+  if (d1ApplyAllColorsBtn) {
+    d1ApplyAllColorsBtn.onclick = () => applyDeviceColorToAllPages();
   }
 
   // Z-index layer order buttons
