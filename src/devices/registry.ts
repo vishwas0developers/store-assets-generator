@@ -129,7 +129,7 @@ function resolveModel(def: DeviceDefinition): DeviceModel {
     variants: def.variants?.map(compatVariant),
     styles: ["default"],
     colorways: ["light", "dark"],
-    svgFrame: buildFrameSvg(def, "dark"),
+    svgFrame: def.customSvg || buildFrameSvg(def, "dark"),
     definition: def,
   };
 }

@@ -18,7 +18,7 @@ import {
   type DeviceLayerStyle,
   type MockupAssetLayer,
   type MockupProject,
-  type PanoramaAssetLayer,
+  type TextLayer,
   type TextStyle,
 } from "./project.js";
 import { applyMockupTemplate, type MockupStarterTemplate } from "./templates.js";
@@ -32,12 +32,15 @@ import {
   resolveDeviceTwoZIndex,
   resolveExtraDeviceZIndex,
   resolveAssetLayerZIndex,
-  resolvePanoramaAssetZIndex,
   resolveDeviceOneTransform,
   resolveDeviceTwoTransform,
   resolveExtraDeviceTransform,
   resolveAssetLayerBox,
+  resolveTextLayerZIndex,
+  resolveTextLayerBox,
+  resolveRowDeviceSize,
 } from "./layerLayout.js";
+import { designSizeFor, findSizeTarget, primaryTargetFor } from "./sizeTargets.js";
 
 /**
  * Studio Mockup renderer -- the single HTML generator used by both the
@@ -102,39 +105,6 @@ export interface RenderContext {
   columnCount: number;
 }
 
-/** Projects a panorama-space asset (positioned once, spanning any number of
- *  pages) onto one page's local 1080-wide box, in the same shape
- *  MockupAssetLayer/assetLayersMarkup already expect -- returns null if it
- *  doesn't intersect this page at all. xPct/widthPct are deliberately left
- *  unclamped (can be negative or exceed 100) -- cellHtml's `.canvas`/`body`
- *  already have `overflow:hidden`, so plain CSS absolute positioning clips
- *  the off-page portion correctly with no extra work.
- *  Mirrored in web/js/canvas.js for the client-side Fabric canvas -- no
- *  shared build step between src/ (TS) and web/js/ (hand-authored JS) in
- *  this codebase, so this small formula is intentionally duplicated there,
- *  matching the existing precedent for small cross-referenced constants
- *  (e.g. ARTBOARD_GAP). Keep both in sync if this formula ever changes. */
-function projectPanoramaAssetToColumn(pa: PanoramaAssetLayer, columnIndex: number): MockupAssetLayer | null {
-  const localXPx = pa.xPx - columnIndex * CANVAS.width;
-  if (localXPx + pa.widthPx <= 0 || localXPx >= CANVAS.width) return null;
-  return {
-    id: `panorama:${pa.id}`,
-    assetId: pa.assetId,
-    name: pa.name ?? "Panorama asset",
-    xPct: (localXPx / CANVAS.width) * 100,
-    yPct: pa.yPct,
-    widthPct: (pa.widthPx / CANVAS.width) * 100,
-    heightPct: pa.heightPct,
-    rotation: pa.rotation,
-    opacity: pa.opacity,
-    flipH: pa.flipH,
-    flipV: pa.flipV,
-    visible: pa.visible,
-    locked: pa.locked,
-    zIndex: pa.zIndex,
-  };
-}
-
 function assetLayersMarkup(layers: MockupAssetLayer[] = [], resolveUri: (rel: string) => string): string {
   if (!layers || !layers.length) return "";
   // Hidden layers are stripped entirely (no DOM cost, no phantom PNG data in export).
@@ -159,6 +129,27 @@ function assetLayersMarkup(layers: MockupAssetLayer[] = [], resolveUri: (rel: st
     .join("\n");
 }
 
+function textLayersMarkup(layers: TextLayer[] = [], resolveUri: (rel: string) => string): string {
+  if (!layers || !layers.length) return "";
+  const visible = layers.filter((l) => l.visible !== false);
+  if (!visible.length) return "";
+  // Same bottom-first DOM-order convention as assetLayersMarkup, so a higher
+  // zIndex text layer paints above lower ones.
+  const sorted = [...visible].sort((a, b) => (a.zIndex ?? 30) - (b.zIndex ?? 30));
+  return sorted
+    .map((layer) => {
+      const t = layer.style;
+      const box = resolveTextLayerBox(layer);
+      const left = box.xPct;
+      const top = box.yPct;
+      const width = box.widthPct;
+      const height = box.heightPct != null ? `${box.heightPct}%` : "auto";
+      const transform = `rotate(${box.rotationDeg}deg)`;
+      return `<div class="text-layer" style="position:absolute;left:${left}%;top:${top}%;width:${width}%;height:${height};transform:${transform};transform-origin:top left;opacity:${box.opacity};z-index:${layer.zIndex ?? 30};color:${t.color};font-size:${t.size}px;text-align:${t.align};${textFormatCss(t)}pointer-events:none;">${escapeHtml(t.text || "")}</div>`;
+    })
+    .join("\n");
+}
+
 /** Renders one cell (a device row x a column) to a full HTML document. */
 export function cellHtml(project: MockupProject, deviceRowId: string, columnId: string, canvas: { width: number; height: number }, ctx: RenderContext): string {
   const deviceRow = project.devices.find((d) => d.id === deviceRowId);
@@ -167,7 +158,26 @@ export function cellHtml(project: MockupProject, deviceRowId: string, columnId: 
   const preset = getLayoutPreset(style.layout);
   const transform = presentationTransform(preset.presentation);
 
-  const source = project.sources.find((s) => s.id === style.deviceOne.sourceId) ?? project.sources[ctx.columnIndex] ?? project.sources[0];
+  // Size row: non-primary rows adapt the single page design (proportional fit) and pick a same-category screenshot.
+  const rowInfo = findSizeTarget(deviceRow.sizeKey);
+  const primaryRow = rowInfo ? project.devices.find((r) => r.sizeKey === primaryTargetFor(rowInfo.platform).key) : undefined;
+  const nonPrimary = !!rowInfo && !!primaryRow && primaryRow.id !== deviceRow.id;
+  const primarySource = project.sources.find((s) => s.id === style.deviceOne.sourceId) ?? project.sources[ctx.columnIndex] ?? project.sources[0];
+  const primaryCat = primarySource?.deviceCategory;
+  const pickRowSource = <T extends (typeof project.sources)[number] | undefined>(src: T): T => {
+    if (!nonPrimary || !src || !primaryCat) return src;
+    const idx = project.sources.filter((s) => s.deviceCategory === primaryCat).indexOf(primarySource!);
+    const pick = project.sources.filter((s) => s.deviceCategory === rowInfo!.target.captureCategory)[idx];
+    return (pick ?? src) as T;
+  };
+  const source = pickRowSource(primarySource);
+  let rowK = 1;
+  if (nonPrimary) {
+    const geomOf = (r: typeof deviceRow) => resolveGeometry(DEVICE_REGISTRY[r.deviceId] ?? DEVICE_REGISTRY["phone"], r.variant);
+    const pt = primaryTargetFor(rowInfo!.platform);
+    rowK = resolveRowDeviceSize(1, geomOf(primaryRow!), geomOf(deviceRow), designSizeFor(pt).height, designSizeFor(rowInfo!.target).height);
+  }
+  const rk = <T extends { scale: number }>(r: T): T => (rowK === 1 ? r : { ...r, scale: r.scale * rowK });
   // If a source exists, resolve it via ctx.resolveUri; otherwise, if ctx.resolveUri
   // is provided (such as for templates), call ctx.resolveUri("") to get the placeholder,
   // falling back to placeholderScreenUri.
@@ -205,7 +215,7 @@ export function cellHtml(project: MockupProject, deviceRowId: string, columnId: 
   // regardless of the title block's height -- unlike Y, X needs no
   // per-page flex-layout replication, just this one constant.
   const d1Geo = resolveGeometry(DEVICE_REGISTRY[deviceRow.deviceId] ?? DEVICE_REGISTRY["phone"], deviceRow.variant);
-  const d1Resolved = resolveDeviceOneTransform(d1, transform.deviceOne.xPct, transform.deviceOne.rotate, d1Geo.width, panoramaColumnIndex);
+  const d1Resolved = rk(resolveDeviceOneTransform(d1, transform.deviceOne.xPct, transform.deviceOne.rotate, d1Geo.width, panoramaColumnIndex));
   const skipOwnDeviceOne = d1Resolved.skip; // dragged fully off this page -- don't render it here at all
   const d1Flip = `${d1Resolved.flipH ? " scaleX(-1)" : ""}${d1Resolved.flipV ? " scaleY(-1)" : ""}`;
   // CSS `%` inside translate() is always relative to the element's own
@@ -240,9 +250,9 @@ export function cellHtml(project: MockupProject, deviceRowId: string, columnId: 
     const otherIndex = orderedColumnIds.indexOf(otherCol.id);
     if (otherIndex < 0) continue;
     const otherGeo = resolveGeometry(DEVICE_REGISTRY[deviceRow.deviceId] ?? DEVICE_REGISTRY["phone"], deviceRow.variant);
-    const otherResolved = resolveDeviceOneTransform(otherD1, transform.deviceOne.xPct, transform.deviceOne.rotate, otherGeo.width, panoramaColumnIndex);
+    const otherResolved = rk(resolveDeviceOneTransform(otherD1, transform.deviceOne.xPct, transform.deviceOne.rotate, otherGeo.width, panoramaColumnIndex));
     if (otherResolved.skip) continue;
-    const otherSource = project.sources.find((s) => s.id === otherD1.sourceId) ?? source;
+    const otherSource = pickRowSource(project.sources.find((s) => s.id === otherD1.sourceId)) ?? source;
     const otherUri = otherSource ? ctx.resolveUri(otherSource.file) : screenshotUri;
     const otherZ = resolveDeviceOneZIndex(otherCol.style);
     const otherFlip = `${otherResolved.flipH ? " scaleX(-1)" : ""}${otherResolved.flipV ? " scaleY(-1)" : ""}`;
@@ -255,13 +265,13 @@ export function cellHtml(project: MockupProject, deviceRowId: string, columnId: 
   if (preset.twoDevices && style.deviceTwo && transform.deviceTwo && style.deviceTwo.visible !== false && !(style.deviceTwo as any).deleted) {
     const d2 = style.deviceTwo;
     const d2Z = resolveDeviceTwoZIndex(style);
-    const source2 = project.sources.find((s) => s.id === d2.sourceId) ?? source;
+    const source2 = pickRowSource(project.sources.find((s) => s.id === d2.sourceId)) ?? source;
     const uri2 = source2
       ? ctx.resolveUri(source2.file)
       : ctx.resolveUri
       ? ctx.resolveUri("__second_device__")
       : placeholderScreenUri(ctx.columnIndex + 1);
-    const d2Resolved = resolveDeviceTwoTransform(d2, transform.deviceTwo.xPct, transform.deviceTwo.yPct, transform.deviceTwo.rotate);
+    const d2Resolved = rk(resolveDeviceTwoTransform(d2, transform.deviceTwo.xPct, transform.deviceTwo.yPct, transform.deviceTwo.rotate));
     const d2Flip = `${d2Resolved.flipH ? " scaleX(-1)" : ""}${d2Resolved.flipV ? " scaleY(-1)" : ""}`;
     // See d1Transform's comment above -- same CSS-%-vs-scale correction.
     const d2Transform = `translate(${d2Resolved.xPct * d2Resolved.scale}%, ${d2Resolved.yPct * d2Resolved.scale}%) scale(${d2Resolved.scale}) rotate(${d2Resolved.rotationDeg}deg)${d2Flip}`;
@@ -275,9 +285,9 @@ export function cellHtml(project: MockupProject, deviceRowId: string, columnId: 
   (style.extraDevices ?? []).forEach((extra, i) => {
     if (extra.visible === false || (extra as any).deleted) return;
     const extraZ = resolveExtraDeviceZIndex(extra.zIndex, i);
-    const extraSource = project.sources.find((s) => s.id === extra.sourceId) ?? source;
+    const extraSource = pickRowSource(project.sources.find((s) => s.id === extra.sourceId)) ?? source;
     const extraUri = extraSource ? ctx.resolveUri(extraSource.file) : screenshotUri;
-    const extraResolved = resolveExtraDeviceTransform(extra);
+    const extraResolved = rk(resolveExtraDeviceTransform(extra));
     const extraFlip = `${extraResolved.flipH ? " scaleX(-1)" : ""}${extraResolved.flipV ? " scaleY(-1)" : ""}`;
     // See d1Transform's comment above -- same CSS-%-vs-scale correction.
     const extraTransform = `translate(${extraResolved.xPct * extraResolved.scale}%, ${extraResolved.yPct * extraResolved.scale}%) scale(${extraResolved.scale}) rotate(${extraResolved.rotationDeg}deg)${extraFlip}`;
@@ -287,18 +297,13 @@ export function cellHtml(project: MockupProject, deviceRowId: string, columnId: 
 
   const textAbove = preset.textPosition.endsWith("above");
   const decorations = decorationsMarkup(style.decorations, canvas);
-  // Cross-page panorama assets are projected onto this page's local box and
-  // merged in alongside its own page-local assetLayers -- assetLayersMarkup
-  // doesn't need to know the difference, it just renders whatever's given.
-  // orderedColumnIds/panoramaColumnIndex computed near the top of this
-  // function now (deviceOne's cross-page projection needs them earlier) --
-  // deliberately NOT ctx.columnIndex, see the comment up there for why.
-  const projectedPanorama = (project.panoramaAssets ?? [])
-    .map((pa) => projectPanoramaAssetToColumn(pa, panoramaColumnIndex))
-    .filter((a): a is MockupAssetLayer => a != null);
-  const allAssets = [...(style.assetLayers ?? []), ...projectedPanorama];
+  const allAssets = style.assetLayers ?? [];
   const assets = assetLayersMarkup(allAssets, ctx.resolveUri);
-  for (const a of allAssets) maxStageZ = Math.max(maxStageZ, resolvePanoramaAssetZIndex(a.zIndex));
+  for (const a of allAssets) maxStageZ = Math.max(maxStageZ, a.zIndex ?? 15);
+
+  const allTextLayers = style.textLayers ?? [];
+  const textLayers = textLayersMarkup(allTextLayers, ctx.resolveUri);
+  for (const tl of allTextLayers) maxStageZ = Math.max(maxStageZ, tl.zIndex ?? 30);
 
   // .copy (title+subtitle) and .stage (devices+assets) are separate flex
   // siblings/stacking contexts -- a child's z-index can only win against its
@@ -333,7 +338,7 @@ export function cellHtml(project: MockupProject, deviceRowId: string, columnId: 
   .layer { position: absolute; }
   ${DEVICE_CSS}
 </style></head>
-<body><div class="canvas">${textBlock(style, preset.textPosition)}<div class="stage">${deviceLayers}${assets}</div>${decorations}</div></body></html>`;
+<body><div class="canvas">${textBlock(style, preset.textPosition)}<div class="stage">${deviceLayers}${assets}${textLayers}</div>${decorations}</div></body></html>`;
 }
 
 function projectResolveUri(projectId: string) {
@@ -345,7 +350,13 @@ function projectResolveUri(projectId: string) {
   };
 }
 
-export function cellPreviewHtml(project: MockupProject, deviceRowId: string, columnId: string, canvas: { width: number; height: number }): string {
+/** A row's design canvas: 1080 x (1080*H/W of its size target); legacy rows without a sizeKey keep 1080x1920. */
+export function rowDesignCanvas(project: MockupProject, deviceRowId: string): { width: number; height: number } {
+  const info = findSizeTarget(project.devices.find((d) => d.id === deviceRowId)?.sizeKey);
+  return info ? designSizeFor(info.target) : CANVAS;
+}
+
+export function cellPreviewHtml(project: MockupProject, deviceRowId: string, columnId: string, canvas: { width: number; height: number } = rowDesignCanvas(project, deviceRowId)): string {
   const columnIndex = project.columns.findIndex((c) => c.id === columnId);
   return cellHtml(project, deviceRowId, columnId, canvas, {
     resolveUri: projectResolveUri(project.id),
@@ -360,7 +371,7 @@ function dataUri(absPath: string): string {
 
 /** Renders every column for one device row at that row's real export
  *  dimensions -- used by the Export section. Reads files from disk. */
-export async function renderDeviceRowExport(project: MockupProject, deviceRowId: string, outputDir: string, canvas: { width: number; height: number }): Promise<string[]> {
+export async function renderDeviceRowExport(project: MockupProject, deviceRowId: string, outputDir: string, canvas: { width: number; height: number }, scale = 1): Promise<string[]> {
   fs.mkdirSync(outputDir, { recursive: true });
   const { chromium } = await import("playwright");
   const browser = await chromium.launch({ headless: true });
@@ -372,7 +383,7 @@ export async function renderDeviceRowExport(project: MockupProject, deviceRowId:
     return dataUri(fs.existsSync(abs) ? abs : projectFile(project.id, relativePath));
   };
   try {
-    const page = await browser.newPage({ viewport: canvas });
+    const page = await browser.newPage({ viewport: canvas, deviceScaleFactor: scale });
     const columns = [...project.columns].sort((a, b) => a.order - b.order);
     for (let i = 0; i < columns.length; i++) {
       const html = cellHtml(project, deviceRowId, columns[i].id, canvas, { resolveUri, columnIndex: i, columnCount: columns.length });
@@ -387,7 +398,7 @@ export async function renderDeviceRowExport(project: MockupProject, deviceRowId:
   return written;
 }
 
-export async function renderSingleScreenExport(project: MockupProject, deviceRowId: string, columnId: string, canvas: { width: number; height: number }): Promise<string> {
+export async function renderSingleScreenExport(project: MockupProject, deviceRowId: string, columnId: string, canvas: { width: number; height: number }, scale = 1): Promise<string> {
   const exportsRoot = path.join(mockupDir(project.id), "exports");
   fs.mkdirSync(exportsRoot, { recursive: true });
   const outPath = path.join(exportsRoot, `single_${columnId}.png`);
@@ -398,7 +409,7 @@ export async function renderSingleScreenExport(project: MockupProject, deviceRow
     return dataUri(fs.existsSync(abs) ? abs : projectFile(project.id, relativePath));
   };
   try {
-    const page = await browser.newPage({ viewport: canvas });
+    const page = await browser.newPage({ viewport: canvas, deviceScaleFactor: scale });
     const colIdx = project.columns.findIndex((c) => c.id === columnId);
     const html = cellHtml(project, deviceRowId, columnId, canvas, { resolveUri, columnIndex: Math.max(0, colIdx), columnCount: project.columns.length });
     await page.setContent(html, { waitUntil: "load" });
@@ -409,10 +420,10 @@ export async function renderSingleScreenExport(project: MockupProject, deviceRow
   return outPath;
 }
 
-export async function renderPanoramicBannerExport(project: MockupProject, deviceRowId: string, singleCanvas: { width: number; height: number }): Promise<string> {
+export async function renderPanoramicBannerExport(project: MockupProject, deviceRowId: string, singleCanvas: { width: number; height: number }, scale = 1, fileName = "panoramic_banner.png"): Promise<string> {
   const exportsRoot = path.join(mockupDir(project.id), "exports");
   fs.mkdirSync(exportsRoot, { recursive: true });
-  const outPath = path.join(exportsRoot, "panoramic_banner.png");
+  const outPath = path.join(exportsRoot, fileName);
   const columns = [...project.columns].sort((a, b) => a.order - b.order);
   const totalWidth = singleCanvas.width * Math.max(1, columns.length);
   const totalHeight = singleCanvas.height;
@@ -425,7 +436,7 @@ export async function renderPanoramicBannerExport(project: MockupProject, device
   };
 
   try {
-    const page = await browser.newPage({ viewport: { width: totalWidth, height: totalHeight } });
+    const page = await browser.newPage({ viewport: { width: totalWidth, height: totalHeight }, deviceScaleFactor: scale });
     const cellHtmls = columns.map((col, idx) => {
       const singleHtml = cellHtml(project, deviceRowId, col.id, singleCanvas, { resolveUri, columnIndex: idx, columnCount: columns.length });
       return `<div style="width:${singleCanvas.width}px;height:${singleCanvas.height}px;flex:0 0 ${singleCanvas.width}px;position:relative;overflow:hidden;">

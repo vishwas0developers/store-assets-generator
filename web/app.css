@@ -188,6 +188,11 @@ button.secondary { background: var(--bg-surface-secondary); color: var(--text-pr
 button.secondary:hover { background: var(--bg-card-hover); }
 button.danger { background: #7f1d1d; color: #fff; }
 button.small { padding: .35rem .65rem; font-size: .78rem; }
+/* "+ Page/Asset/Device/Text" buttons -- icon injected into this span by
+   icons.js's applyStandardIcons(); tightened gap since the shortened
+   labels ("+ Page" etc, down from "+ Add Page Layer") leave less text to
+   balance the icon against. */
+.mk-btn-icon { display: inline-flex; align-items: center; margin-right: .2rem; vertical-align: -2px; }
 .status { display: inline-block; padding: .15rem .5rem; border-radius: 999px; font-size: .72rem; font-weight: 600; }
 .status.ok { background: var(--status-ok-bg); color: var(--status-ok-text); }
 .status.bad { background: var(--status-bad-bg); color: var(--status-bad-text); }
@@ -523,8 +528,7 @@ html.light .mockup-canvas-viewport {
 }
 
 .mockup-canvas-artboard {
-  width: 1080px;
-  height: 1920px;
+  /* width/height set inline by canvas.js createPageCanvas: (1080 + 2*M) x (page height + 2*M) */
   position: relative;
   background: #0b0d12;
   box-shadow: 0 24px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.1);
@@ -545,8 +549,6 @@ html.light .mockup-canvas-viewport {
   position: absolute !important;
   top: 0 !important;
   left: 0 !important;
-  width: 1080px !important;
-  height: 1920px !important;
 }
 
 .mockup-matrix-container {
@@ -1677,8 +1679,6 @@ button.xsmall {
 /* NEW: Single-Artboard Canvas Editor - 9-Point Transform Gizmo & Smart Guides */
 .mockup-canvas-artboard {
   position: relative;
-  width: 1080px;
-  height: 1920px;
   transform-origin: top left;
 }
 
@@ -3067,18 +3067,79 @@ button.danger-ghost:hover {
   border-color: #3b82f6 !important;
 }
 
-/* Active Rows Section */
-.device-active-section {
-  margin-top: 1.5rem !important;
-  border-top: 1px solid var(--border-color, rgba(255, 255, 255, 0.1)) !important;
-  padding-top: 1.25rem !important;
+/* Device Library Actions (Add & Remove Buttons) */
+.device-lib-actions {
+  display: flex !important;
+  gap: 0.6rem !important;
+  align-items: center !important;
 }
 
-.device-active-header h4 {
-  margin: 0 0 0.2rem 0 !important;
-  font-size: 1.05rem !important;
+.btn-device-action {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.4rem !important;
+  padding: 0.45rem 0.9rem !important;
+  border-radius: 8px !important;
+  font-size: 0.85rem !important;
   font-weight: 700 !important;
-  color: var(--text-primary, #f3f4f6) !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.btn-device-action.btn-device-add {
+  border: 2px solid #22c55e !important;
+  background: rgba(34, 197, 94, 0.12) !important;
+  color: #4ade80 !important;
+}
+
+.btn-device-action.btn-device-add:hover {
+  background: #22c55e !important;
+  color: #052e16 !important;
+  box-shadow: 0 4px 14px rgba(34, 197, 94, 0.4) !important;
+}
+
+.btn-device-action.btn-device-remove {
+  border: 2px solid #ef4444 !important;
+  background: rgba(239, 68, 68, 0.12) !important;
+  color: #f87171 !important;
+}
+
+.btn-device-action.btn-device-remove:hover {
+  background: #ef4444 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4) !important;
+}
+
+.device-lib-card.is-selected {
+  border-color: #3b82f6 !important;
+  background: rgba(59, 130, 246, 0.1) !important;
+  box-shadow: 0 0 0 2px #3b82f6, 0 8px 24px rgba(59, 130, 246, 0.25) !important;
+}
+
+.device-lib-card-delete-btn {
+  position: absolute !important;
+  top: 8px !important;
+  right: 8px !important;
+  background: #ef4444 !important;
+  color: #ffffff !important;
+  border: none !important;
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 50% !important;
+  font-size: 14px !important;
+  font-weight: bold !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.5) !important;
+  z-index: 10 !important;
+  transition: transform 0.15s ease !important;
+}
+
+.device-lib-card-delete-btn:hover {
+  transform: scale(1.15) !important;
 }
 
 

@@ -255,6 +255,31 @@
       "schemaVersion": 2
     },
     {
+      "id": "android-tablet-7",
+      "name": "Generic 7-inch Android Tablet",
+      "vendor": "Generic",
+      "platforms": ["google-play"],
+      "formFactor": "tablet",
+      "geometry": { "width": 1200, "height": 1920, "thickness": 56, "cornerRadius": 32 },
+      "screenInset": { "top": 28, "left": 28, "width": 1144, "height": 1864 },
+      "bezelWidth": 18,
+      "edgeProfile": "flat",
+      "cutout": { "type": "punch-hole", "size": { "width": 18, "height": 18 } },
+      "cameraIsland": {
+        "style": "square-island", "position": { "xPct": 0.06, "yPct": 0.015 },
+        "size": { "widthPct": 0.13, "heightPct": 0.07 }, "cornerRadius": 18,
+        "lenses": [{ "xPct": 0.125, "yPct": 0.05, "diameterPct": 0.05 }]
+      },
+      "buttons": [
+        { "face": "top", "kind": "power", "offsetPct": 0.5, "lengthPct": 0.05 },
+        { "face": "right", "kind": "volume-up", "offsetPct": 0.1, "lengthPct": 0.04 },
+        { "face": "right", "kind": "volume-down", "offsetPct": 0.15, "lengthPct": 0.04 }
+      ],
+      "ports": [{ "face": "bottom", "kind": "usb-c", "offsetPct": 0.5 }],
+      "body": "#202020", "accent": "#454545", "railMaterial": "aluminum",
+      "schemaVersion": 2
+    },
+    {
       "id": "ipad-pro-12-9",
       "name": "iPad Pro 12.9-inch Tablet",
       "vendor": "Apple",

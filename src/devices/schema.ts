@@ -111,5 +111,7 @@ export interface DeviceDefinition {
    *  results but stays resolvable by id so existing projects don't break.
    *  See plan "Device lifecycle (CRUD)". */
   archived?: boolean;
+  /** Optional custom SVG string for uploaded SVG device templates */
+  customSvg?: string;
   schemaVersion: number;
 }
