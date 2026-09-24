@@ -129,170 +129,17 @@ function categoryLabel(cat) {
   return CATEGORY_LABELS[cat] || cat;
 }
 
-const EXTRA_STARTER_TEMPLATES = [
-  {
-    id: "modern-minimalist-1",
-    name: "Modern Glass Minimalist",
-    category: "modern",
-    description: "Sleek obsidian dark mode with glassmorphism glow and floating iPhone 16 Pro Max.",
-    devices: [{ deviceId: "apple-iphone-16-pro-max", label: "6.7 Inch Phone" }],
-    columnCount: 5,
-    layout: "rotated-left-1-title-above",
-    background: { type: "pattern", value: "mesh" },
-    titles: ["Next-Gen Experience", "Fluid Interface", "Dark Mode First", "Instant Sync", "Pure Focus"],
-    subtitles: [
-      "Engineered for seamless productivity",
-      "Intuitive gestures and smooth motion",
-      "Designed to reduce eye strain",
-      "Realtime cloud updates across devices",
-      "Distraction-free environment"
-    ]
-  },
-  {
-    id: "modern-studio-neon",
-    name: "Modern Neon Studio",
-    category: "modern",
-    description: "Vibrant neon ring dark background with continuous overlapping screen cards.",
-    devices: [{ deviceId: "apple-iphone-17-pro-max", label: "6.9 Inch Phone" }],
-    columnCount: 5,
-    layout: "two-devices-title-below",
-    background: { type: "pattern", value: "neon-rings" },
-    titles: ["Vibrant Workflows", "Smart Insights", "Automated Action", "Custom Views", "Instant Sharing"],
-    subtitles: [
-      "Bring your ideas to life with speed",
-      "AI-powered analytics at a glance",
-      "Set up triggers in seconds",
-      "Tailor dashboard to your workflow",
-      "Export and share with your team"
-    ]
-  },
-  {
-    id: "professional-corporate-suite",
-    name: "Professional Corporate Suite",
-    category: "professional",
-    description: "Clean grid pattern layout with tablet & phone for enterprise SaaS.",
-    devices: [
-      { deviceId: "ipad-pro-12-9", label: "12.9 Inch Tablet" },
-      { deviceId: "apple-iphone-15-pro", label: "6.5 Inch Phone" }
-    ],
-    columnCount: 5,
-    layout: "two-devices-connected-left-title-above",
-    background: { type: "pattern", value: "grid" },
-    titles: ["Enterprise Command", "Team Workspaces", "Advanced Security", "Custom Reports", "24/7 Priority"],
-    subtitles: [
-      "Manage operations from one hub",
-      "Collaborate seamlessly across units",
-      "Bank-grade encryption & compliance",
-      "Automated PDF and Excel exports",
-      "Dedicated account management"
-    ]
-  },
-  {
-    id: "professional-executive-dark",
-    name: "Executive Dark Edition",
-    category: "professional",
-    description: "Subtle matte sphere radial gradient for executive analytics.",
-    devices: [{ deviceId: "samsung-galaxy-s24", label: "Galaxy Phone" }],
-    columnCount: 5,
-    layout: "left-side-title-above",
-    background: { type: "pattern", value: "matte-spheres" },
-    titles: ["Executive Metrics", "Live Revenue", "Global Operations", "Risk Radar", "Board Reports"],
-    subtitles: [
-      "High-level KPIs on a single screen",
-      "Track cashflow across currencies",
-      "Monitor regional performance",
-      "Early warnings and anomaly detection",
-      "Generate presentation-ready slides"
-    ]
-  },
-  {
-    id: "fintech-crypto-pro",
-    name: "Fintech & Crypto Portfolio",
-    category: "fintech",
-    description: "Cyberpunk blueprint HUD pattern layout for trading and crypto wallets.",
-    devices: [{ deviceId: "apple-iphone-18-pro-max", label: "6.9 Inch Phone" }],
-    columnCount: 5,
-    layout: "tilted-right-title-above",
-    background: { type: "pattern", value: "blueprint-hud" },
-    titles: ["Trade Instantly", "Live Markets", "DeFi Staking", "Cold Vault", "Zero Slippage"],
-    subtitles: [
-      "Buy and sell 200+ crypto assets",
-      "Realtime order book & candlestick charts",
-      "Earn up to 12% APY on stablecoins",
-      "Hardware key protection for funds",
-      "Institutional grade execution speed"
-    ]
-  },
-  {
-    id: "health-fitness-trainer",
-    name: "Health & Fitness Trainer",
-    category: "health-and-fitness",
-    description: "Energetic sunset gradient layout with dual overlapping devices for workout apps.",
-    devices: [
-      { deviceId: "samsung-galaxy-s24", label: "Galaxy Phone" },
-      { deviceId: "apple-iphone-15-pro", label: "6.5 Inch Phone" }
-    ],
-    columnCount: 5,
-    layout: "two-devices-connected-right-title-below",
-    background: { type: "gradient", value: "sunset" },
-    titles: ["Track Workouts", "Heart Rate Monitor", "Custom Routines", "Meal Planner", "Achieve Goals"],
-    subtitles: [
-      "Log sets, reps, and personal bests",
-      "Sync with smartwatch sensors",
-      "AI generated training programs",
-      "Macro-counted delicious recipes",
-      "Stay motivated with daily streaks"
-    ]
-  },
-  {
-    id: "shopping-luxury-boutique",
-    name: "Shopping & E-Commerce Boutique",
-    category: "shopping-and-e-commerce",
-    description: "Warm cream solid layout with staggered luxury product showcase.",
-    devices: [{ deviceId: "apple-iphone-16-pro-max", label: "6.7 Inch Phone" }],
-    columnCount: 5,
-    layout: "single-title-above",
-    background: { type: "solid", value: "solid-cream" },
-    textColor: "#1c1c1c",
-    titles: ["Curated Fashion", "AR Try-On", "Express Checkout", "Track Delivery", "VIP Lounge"],
-    subtitles: [
-      "Discover exclusive designer drops",
-      "See products in 3D before buying",
-      "Pay securely with Apple Pay",
-      "Live GPS tracking to your door",
-      "Unlock rewards and early access"
-    ]
-  },
-  {
-    id: "ai-assistant-cyber",
-    name: "AI Copilot & Assistant",
-    category: "modern",
-    description: "Aurora cyan-blue gradient with single rotated device.",
-    devices: [{ deviceId: "google-pixel-9", label: "Pixel Phone" }],
-    columnCount: 5,
-    layout: "tilted-left-title-above",
-    background: { type: "gradient", value: "aurora" },
-    titles: ["AI Copilot", "Smart Voice", "Document Search", "Auto Workflow", "Infinite Possibilities"],
-    subtitles: [
-      "Ask questions and generate answers",
-      "Natural speech-to-action engine",
-      "Extract insights from any PDF",
-      "Automate tedious daily tasks",
-      "Powered by state-of-the-art LLMs"
-    ]
-  }
-];
+const EXTRA_STARTER_TEMPLATES = [];
 
 export async function ensureMockupTemplates() {
   if (mockupTemplates.length === 0) {
     try {
       const res = await api("/api/mockups/templates");
       const raw = res.templates || [];
-      const ids = new Set(raw.map((t) => t.id));
-      const merged = raw.concat(EXTRA_STARTER_TEMPLATES.filter((t) => !ids.has(t.id)));
-      setMockupTemplates(merged);
+      setMockupTemplates(raw);
     } catch (e) {
-      setMockupTemplates(EXTRA_STARTER_TEMPLATES);
+      console.error("Failed to load mockup templates from server API:", e);
+      setMockupTemplates([]);
     }
   }
   return mockupTemplates;

@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "id": "fintech-crypto-pro",
+  "name": "Fintech & Crypto Portfolio",
+  "category": "fintech",
+  "description": "Cyberpunk blueprint HUD pattern layout for trading and crypto wallets.",
+  "devices": [
+    {
+      "deviceId": "apple-iphone-16-pro-max",
+      "label": "6.9 Inch Phone"
+    }
+  ],
+  "layout": "tilted-right-title-above",
+  "background": {
+    "type": "pattern",
+    "value": "blueprint-hud"
+  },
+  "pages": [
+    {
+      "title": "Trade Instantly",
+      "subtitle": "Buy and sell 200+ crypto assets",
+      "layout": "tilted-right-title-above",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Live Markets",
+      "subtitle": "Realtime order book & candlestick charts",
+      "layout": "tilted-right-title-above",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "DeFi Staking",
+      "subtitle": "Earn up to 12% APY on stablecoins",
+      "layout": "tilted-right-title-above",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Cold Vault",
+      "subtitle": "Hardware key protection for funds",
+      "layout": "tilted-right-title-above",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Zero Slippage",
+      "subtitle": "Institutional grade execution speed",
+      "layout": "tilted-right-title-above",
+      "background": null,
+      "devices": null
+    }
+  ]
+}

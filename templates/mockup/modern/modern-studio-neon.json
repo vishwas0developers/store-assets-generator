@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "id": "modern-studio-neon",
+  "name": "Modern Neon Studio",
+  "category": "modern",
+  "description": "Vibrant neon ring dark background with continuous overlapping screen cards.",
+  "devices": [
+    {
+      "deviceId": "apple-iphone-16-pro-max",
+      "label": "6.9 Inch Phone"
+    }
+  ],
+  "layout": "two-devices-title-below",
+  "background": {
+    "type": "pattern",
+    "value": "neon-rings"
+  },
+  "pages": [
+    {
+      "title": "Vibrant Workflows",
+      "subtitle": "Bring your ideas to life with speed",
+      "layout": "two-devices-title-below",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Smart Insights",
+      "subtitle": "AI-powered analytics at a glance",
+      "layout": "two-devices-title-below",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Automated Action",
+      "subtitle": "Set up triggers in seconds",
+      "layout": "two-devices-title-below",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Custom Views",
+      "subtitle": "Tailor dashboard to your workflow",
+      "layout": "two-devices-title-below",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Instant Sharing",
+      "subtitle": "Export and share with your team",
+      "layout": "two-devices-title-below",
+      "background": null,
+      "devices": null
+    }
+  ]
+}

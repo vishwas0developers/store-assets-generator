@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "id": "shopping-luxury-boutique",
+  "name": "Shopping & E-Commerce Boutique",
+  "category": "shopping-and-e-commerce",
+  "description": "Warm cream solid layout with staggered luxury product showcase.",
+  "devices": [
+    {
+      "deviceId": "apple-iphone-16-pro-max",
+      "label": "6.7 Inch Phone"
+    }
+  ],
+  "layout": "single-title-above",
+  "background": {
+    "type": "solid",
+    "value": "solid-cream"
+  },
+  "textColor": "#1c1c1c",
+  "pages": [
+    {
+      "title": "Curated Fashion",
+      "subtitle": "Discover exclusive designer drops",
+      "layout": "single-title-above",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "AR Try-On",
+      "subtitle": "See products in 3D before buying",
+      "layout": "single-title-above",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Express Checkout",
+      "subtitle": "Pay securely with Apple Pay",
+      "layout": "single-title-above",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Track Delivery",
+      "subtitle": "Live GPS tracking to your door",
+      "layout": "single-title-above",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "VIP Lounge",
+      "subtitle": "Unlock rewards and early access",
+      "layout": "single-title-above",
+      "background": null,
+      "devices": null
+    }
+  ]
+}

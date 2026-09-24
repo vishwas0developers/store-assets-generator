@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "id": "books-app-template-1",
+  "name": "Books App Template 1",
+  "category": "books",
+  "description": "Rotated framed screens for a reading and e-book app.",
+  "devices": [
+    {
+      "deviceId": "ipad-pro-12-9",
+      "label": "12.9 Inch Tablet"
+    }
+  ],
+  "layout": "rotated-left-1-caption-above",
+  "background": {
+    "type": "solid",
+    "value": "solid-cream"
+  },
+  "textColor": "#1c1c1c",
+  "pages": [
+    {
+      "title": "Read Books",
+      "subtitle": "Your library in your pocket",
+      "layout": "rotated-left-1-caption-above",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Offline Mode",
+      "subtitle": "Download stories to read anywhere",
+      "layout": "rotated-left-1-caption-above",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Audiobooks",
+      "subtitle": "Listen to high-quality audio",
+      "layout": "rotated-left-1-caption-above",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Bookmark",
+      "subtitle": "Never lose your place",
+      "layout": "rotated-left-1-caption-above",
+      "background": null,
+      "devices": null
+    }
+  ]
+}

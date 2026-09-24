@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "id": "business-app-template-1",
+  "name": "Business App Template 1",
+  "category": "business",
+  "description": "Left-aligned title layout for a fintech / business app.",
+  "devices": [
+    {
+      "deviceId": "apple-iphone-16-pro-max",
+      "label": "6.9 Inch Phone"
+    }
+  ],
+  "layout": "left-side-title-above",
+  "background": {
+    "type": "solid",
+    "value": "solid-indigo"
+  },
+  "pages": [
+    {
+      "title": "Send Money",
+      "subtitle": "Zero transfer fees worldwide",
+      "layout": "left-side-title-above",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Realtime Rates",
+      "subtitle": "Track live currency markets",
+      "layout": "left-side-title-above",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Smart Budget",
+      "subtitle": "Analyze monthly expenses",
+      "layout": "left-side-title-above",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Crypto Wallet",
+      "subtitle": "Buy, sell and hold tokens",
+      "layout": "left-side-title-above",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Premium Care",
+      "subtitle": "24/7 priority support team",
+      "layout": "left-side-title-above",
+      "background": null,
+      "devices": null
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "id": "food-template-3",
+  "name": "Food Template 3",
+  "category": "food-and-drink",
+  "description": "Warm tilted layout for a restaurant discovery app.",
+  "devices": [
+    {
+      "deviceId": "samsung-galaxy-s25",
+      "label": "Galaxy S25 Phone"
+    }
+  ],
+  "layout": "tilted-left-caption-below",
+  "background": {
+    "type": "gradient",
+    "value": "sunset"
+  },
+  "pages": [
+    {
+      "title": "Order Food",
+      "subtitle": "Get dishes from top chefs",
+      "layout": "tilted-left-caption-below",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Fresh Ingredients",
+      "subtitle": "Sourced from local farms",
+      "layout": "tilted-left-caption-below",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Fast Delivery",
+      "subtitle": "Delivered hot in 20 minutes",
+      "layout": "tilted-left-caption-below",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Enjoy Meal",
+      "subtitle": "Delicious food at your door",
+      "layout": "tilted-left-caption-below",
+      "background": null,
+      "devices": null
+    }
+  ]
+}
