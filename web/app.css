@@ -2818,4 +2818,267 @@ button.danger-ghost:hover {
   border-color: #ef4444 !important;
 }
 
+/* =========================================================
+   Studio Mockup - 2D Vector Device Library UI
+   ========================================================= */
+.device-lib-container {
+  padding: 1.5rem !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 1.25rem !important;
+}
+
+.device-lib-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: flex-start !important;
+  border-bottom: 1px solid var(--border-color, rgba(255, 255, 255, 0.1)) !important;
+  padding-bottom: 1rem !important;
+}
+
+.device-lib-main-title {
+  margin: 0 0 0.35rem 0 !important;
+  font-size: 1.35rem !important;
+  font-weight: 700 !important;
+  color: var(--text-primary, #f3f4f6) !important;
+  letter-spacing: -0.01em !important;
+}
+
+.device-lib-subtitle {
+  margin: 0 !important;
+  font-size: 0.88rem !important;
+  color: var(--text-secondary, #9ca3af) !important;
+}
+
+/* Filter Pills */
+.device-lib-filters {
+  display: flex !important;
+  gap: 0.5rem !important;
+  flex-wrap: wrap !important;
+}
+
+.device-filter-pill {
+  background: var(--bg-card, rgba(255, 255, 255, 0.05)) !important;
+  color: var(--text-secondary, #9ca3af) !important;
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.12)) !important;
+  padding: 0.4rem 0.85rem !important;
+  border-radius: 20px !important;
+  font-size: 0.82rem !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.4rem !important;
+}
+
+.device-filter-pill:hover {
+  background: var(--bg-card-hover, rgba(255, 255, 255, 0.1)) !important;
+  color: var(--text-primary, #ffffff) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+}
+
+.device-filter-pill.active {
+  background: #3b82f6 !important;
+  color: #ffffff !important;
+  border-color: #3b82f6 !important;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.35) !important;
+}
+
+.pill-count {
+  background: rgba(0, 0, 0, 0.25) !important;
+  padding: 0.15rem 0.45rem !important;
+  border-radius: 10px !important;
+  font-size: 0.72rem !important;
+  font-weight: 700 !important;
+}
+
+.device-filter-pill.active .pill-count {
+  background: rgba(255, 255, 255, 0.25) !important;
+}
+
+/* Quick Add Toolbar */
+.device-lib-toolbar {
+  background: var(--card-inner-bg, rgba(255, 255, 255, 0.03)) !important;
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.08)) !important;
+  border-radius: 10px !important;
+  padding: 0.75rem 1rem !important;
+}
+
+.device-toolbar-group {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.75rem !important;
+  flex-wrap: wrap !important;
+}
+
+.device-toolbar-label {
+  font-size: 0.85rem !important;
+  font-weight: 600 !important;
+  color: var(--text-secondary, #9ca3af) !important;
+  white-space: nowrap !important;
+}
+
+.device-select-input, .device-text-input {
+  background: var(--bg-input, #111827) !important;
+  color: var(--text-primary, #f9fafb) !important;
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.15)) !important;
+  border-radius: 6px !important;
+  padding: 0.45rem 0.75rem !important;
+  font-size: 0.85rem !important;
+}
+
+.device-select-input:focus, .device-text-input:focus {
+  border-color: #3b82f6 !important;
+  outline: none !important;
+}
+
+.btn-primary-glow {
+  background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 6px !important;
+  padding: 0.45rem 1rem !important;
+  font-size: 0.85rem !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  box-shadow: 0 2px 10px rgba(59, 130, 246, 0.3) !important;
+  transition: all 0.15s ease !important;
+}
+
+.btn-primary-glow:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.45) !important;
+}
+
+/* Device Library Grid */
+.device-lib-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)) !important;
+  gap: 1.25rem !important;
+  margin-top: 0.5rem !important;
+}
+
+.device-lib-card {
+  background: var(--bg-card, rgba(17, 24, 39, 0.7)) !important;
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1)) !important;
+  border-radius: 12px !important;
+  padding: 1rem !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  text-align: center !important;
+  position: relative !important;
+  overflow: hidden !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.device-lib-card:hover {
+  transform: translateY(-3px) !important;
+  border-color: rgba(59, 130, 246, 0.5) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), 0 0 12px rgba(59, 130, 246, 0.15) !important;
+}
+
+.device-lib-card.is-active-base {
+  border-color: #3b82f6 !important;
+  background: rgba(59, 130, 246, 0.08) !important;
+  box-shadow: 0 0 0 1px #3b82f6 !important;
+}
+
+.device-lib-preview-box {
+  width: 100% !important;
+  height: 190px !important;
+  background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.05) 0%, transparent 70%) !important;
+  border-radius: 8px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0.75rem !important;
+  margin-bottom: 0.75rem !important;
+  transition: transform 0.2s ease !important;
+}
+
+.device-lib-card:hover .device-lib-preview-box {
+  transform: scale(1.04) !important;
+}
+
+.device-lib-preview-box svg {
+  max-width: 100% !important;
+  max-height: 100% !important;
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.4)) !important;
+}
+
+.device-lib-card-info {
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 0.35rem !important;
+}
+
+.device-lib-card-title {
+  font-size: 0.92rem !important;
+  font-weight: 700 !important;
+  color: var(--text-primary, #ffffff) !important;
+  margin: 0 !important;
+  line-height: 1.25 !important;
+}
+
+.device-lib-spec-badges {
+  display: flex !important;
+  gap: 0.35rem !important;
+  flex-wrap: wrap !important;
+  justify-content: center !important;
+}
+
+.device-lib-badge {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: var(--text-tertiary, #9ca3af) !important;
+  font-size: 0.7rem !important;
+  font-weight: 600 !important;
+  padding: 0.15rem 0.45rem !important;
+  border-radius: 4px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.03em !important;
+}
+
+.device-lib-badge.brand-badge {
+  background: rgba(59, 130, 246, 0.15) !important;
+  color: #60a5fa !important;
+}
+
+.device-lib-card-btn {
+  width: 100% !important;
+  margin-top: 0.75rem !important;
+  padding: 0.45rem 0.75rem !important;
+  border-radius: 6px !important;
+  font-size: 0.8rem !important;
+  font-weight: 600 !important;
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.15)) !important;
+  background: var(--bg-card, rgba(255, 255, 255, 0.05)) !important;
+  color: var(--text-primary, #ffffff) !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+}
+
+.device-lib-card-btn:hover {
+  background: #3b82f6 !important;
+  color: #ffffff !important;
+  border-color: #3b82f6 !important;
+}
+
+/* Active Rows Section */
+.device-active-section {
+  margin-top: 1.5rem !important;
+  border-top: 1px solid var(--border-color, rgba(255, 255, 255, 0.1)) !important;
+  padding-top: 1.25rem !important;
+}
+
+.device-active-header h4 {
+  margin: 0 0 0.2rem 0 !important;
+  font-size: 1.05rem !important;
+  font-weight: 700 !important;
+  color: var(--text-primary, #f3f4f6) !important;
+}
+
 

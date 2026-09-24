@@ -24,6 +24,7 @@ import { setProviderKey, clearProviderKey } from "../src/ai/keystore.js";
 import { fetchModelsForProvider, testProvider, isDiscoveryError } from "../src/ai/adapters.js";
 import { chat, extractJsonArray } from "../src/ai/chat.js";
 import { DEVICE_REGISTRY, listDevices, reloadRegistry } from "../src/devices/registry.js";
+import { buildFrameSvg } from "../src/devices/build-frame-svg.js";
 import { getDeviceGlbPath } from "../src/devices/device-manager.js";
 import { loadPlatformSpec } from "../src/platform/index.js";
 
@@ -1074,6 +1075,7 @@ export async function startWebServer(options: { port?: number; host?: string; op
         width: d.geometry?.width || 1080,
         height: d.geometry?.height || 1920,
         aspectRatio: `${d.geometry?.width || 1080}:${d.geometry?.height || 1920}`,
+        svgFrame: d.svgFrame || buildFrameSvg(d.definition, "dark"),
       }));
       sendJson(res, 200, { devices: list });
       return;
