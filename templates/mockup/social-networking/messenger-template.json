@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "id": "messenger-template",
+  "name": "Direct Messages",
+  "category": "social-networking",
+  "description": "Two-device chat showcase with rounded speech-forward copy.",
+  "devices": [
+    {
+      "deviceId": "samsung-galaxy-s24",
+      "label": "Galaxy Phone"
+    },
+    {
+      "deviceId": "apple-iphone-15-pro",
+      "label": "6.5 Inch Phone"
+    }
+  ],
+  "layout": "two-devices-connected-left-title-below",
+  "background": {
+    "type": "gradient",
+    "value": "royal"
+  },
+  "pages": [
+    {
+      "title": "Chat Instantly",
+      "subtitle": "Message friends in real time",
+      "layout": "two-devices-connected-left-title-below",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Group Threads",
+      "subtitle": "Keep everyone in one thread",
+      "layout": "two-devices-connected-left-title-below",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Voice & Video",
+      "subtitle": "Call without leaving the app",
+      "layout": "two-devices-connected-left-title-below",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Stay in Sync",
+      "subtitle": "Read receipts and typing status",
+      "layout": "two-devices-connected-left-title-below",
+      "background": null,
+      "devices": null
+    }
+  ]
+}

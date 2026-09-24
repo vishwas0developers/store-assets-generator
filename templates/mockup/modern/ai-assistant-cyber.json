@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "id": "ai-assistant-cyber",
+  "name": "AI Copilot & Assistant",
+  "category": "modern",
+  "description": "Aurora cyan-blue gradient with single rotated device.",
+  "devices": [
+    {
+      "deviceId": "google-pixel-9",
+      "label": "Pixel Phone"
+    }
+  ],
+  "layout": "tilted-left-title-above",
+  "background": {
+    "type": "gradient",
+    "value": "aurora"
+  },
+  "pages": [
+    {
+      "title": "AI Copilot",
+      "subtitle": "Ask questions and generate answers",
+      "layout": "tilted-left-title-above",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Smart Voice",
+      "subtitle": "Natural speech-to-action engine",
+      "layout": "tilted-left-title-above",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Document Search",
+      "subtitle": "Extract insights from any PDF",
+      "layout": "tilted-left-title-above",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Auto Workflow",
+      "subtitle": "Automate tedious daily tasks",
+      "layout": "tilted-left-title-above",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Infinite Possibilities",
+      "subtitle": "Powered by state-of-the-art LLMs",
+      "layout": "tilted-left-title-above",
+      "background": null,
+      "devices": null
+    }
+  ]
+}

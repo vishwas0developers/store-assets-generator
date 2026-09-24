@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "id": "dropbox-template",
+  "name": "Cloud Storage",
+  "category": "productivity",
+  "description": "Clean single-device layout for a file sync and storage app.",
+  "devices": [
+    {
+      "deviceId": "google-pixel-9",
+      "label": "Pixel Phone"
+    }
+  ],
+  "layout": "left-side-title-above",
+  "background": {
+    "type": "gradient",
+    "value": "royal"
+  },
+  "pages": [
+    {
+      "title": "Store Files",
+      "subtitle": "Keep everything in the cloud",
+      "layout": "left-side-title-above",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Auto Backup",
+      "subtitle": "Never lose a document again",
+      "layout": "left-side-title-above",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Share Links",
+      "subtitle": "Send large files instantly",
+      "layout": "left-side-title-above",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Access Anywhere",
+      "subtitle": "Sync across every device",
+      "layout": "left-side-title-above",
+      "background": null,
+      "devices": null
+    }
+  ]
+}

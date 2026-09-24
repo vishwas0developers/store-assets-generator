@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "id": "apple-music-template",
+  "name": "Music Streaming",
+  "category": "music",
+  "description": "Two-device showcase for a music streaming and playlist app.",
+  "devices": [
+    {
+      "deviceId": "apple-iphone-15-pro",
+      "label": "6.5 Inch Phone"
+    },
+    {
+      "deviceId": "google-pixel-9",
+      "label": "Pixel Phone"
+    }
+  ],
+  "layout": "two-devices-title-below",
+  "background": {
+    "type": "gradient",
+    "value": "violet"
+  },
+  "pages": [
+    {
+      "title": "Stream Beats",
+      "subtitle": "Access millions of songs",
+      "layout": "two-devices-title-below",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Create Playlists",
+      "subtitle": "Curate for any mood",
+      "layout": "two-devices-title-below",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Offline Mode",
+      "subtitle": "Listen without connection",
+      "layout": "two-devices-title-below",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Hi-Fi Sound",
+      "subtitle": "Lossless audio quality",
+      "layout": "two-devices-title-below",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Join Live",
+      "subtitle": "Interact with your favorite artists",
+      "layout": "two-devices-title-below",
+      "background": null,
+      "devices": null
+    }
+  ]
+}

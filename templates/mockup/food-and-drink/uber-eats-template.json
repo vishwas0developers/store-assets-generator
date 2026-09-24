@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "id": "uber-eats-template",
+  "name": "Food Delivery",
+  "category": "food-and-drink",
+  "description": "Cream retail-style layout for a food delivery app.",
+  "devices": [
+    {
+      "deviceId": "apple-iphone-15-pro",
+      "label": "6.5 Inch Phone"
+    }
+  ],
+  "layout": "two-devices-title-below",
+  "background": {
+    "type": "solid",
+    "value": "solid-cream"
+  },
+  "textColor": "#1c1c1c",
+  "pages": [
+    {
+      "title": "New Arrivals",
+      "subtitle": "Curated items every week",
+      "layout": "two-devices-title-below",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Easy Cart",
+      "subtitle": "One-tap addition to cart",
+      "layout": "two-devices-title-below",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Secure Checkout",
+      "subtitle": "All major cards accepted",
+      "layout": "two-devices-title-below",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Track Order",
+      "subtitle": "Realtime delivery routing",
+      "layout": "two-devices-title-below",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Get Rewards",
+      "subtitle": "Earn points on every purchase",
+      "layout": "two-devices-title-below",
+      "background": null,
+      "devices": null
+    }
+  ]
+}

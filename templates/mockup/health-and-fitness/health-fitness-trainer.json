@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "id": "health-fitness-trainer",
+  "name": "Health & Fitness Trainer",
+  "category": "health-and-fitness",
+  "description": "Energetic sunset gradient layout with dual overlapping devices for workout apps.",
+  "devices": [
+    {
+      "deviceId": "samsung-galaxy-s24",
+      "label": "Galaxy Phone"
+    },
+    {
+      "deviceId": "apple-iphone-15-pro",
+      "label": "6.5 Inch Phone"
+    }
+  ],
+  "layout": "two-devices-connected-right-title-below",
+  "background": {
+    "type": "gradient",
+    "value": "sunset"
+  },
+  "pages": [
+    {
+      "title": "Track Workouts",
+      "subtitle": "Log sets, reps, and personal bests",
+      "layout": "two-devices-connected-right-title-below",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Heart Rate Monitor",
+      "subtitle": "Sync with smartwatch sensors",
+      "layout": "two-devices-connected-right-title-below",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Custom Routines",
+      "subtitle": "AI generated training programs",
+      "layout": "two-devices-connected-right-title-below",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Meal Planner",
+      "subtitle": "Macro-counted delicious recipes",
+      "layout": "two-devices-connected-right-title-below",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Achieve Goals",
+      "subtitle": "Stay motivated with daily streaks",
+      "layout": "two-devices-connected-right-title-below",
+      "background": null,
+      "devices": null
+    }
+  ]
+}

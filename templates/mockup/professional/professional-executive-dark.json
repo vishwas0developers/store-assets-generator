@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "id": "professional-executive-dark",
+  "name": "Executive Dark Edition",
+  "category": "professional",
+  "description": "Subtle matte sphere radial gradient for executive analytics.",
+  "devices": [
+    {
+      "deviceId": "samsung-galaxy-s24",
+      "label": "Galaxy Phone"
+    }
+  ],
+  "layout": "left-side-title-above",
+  "background": {
+    "type": "pattern",
+    "value": "matte-spheres"
+  },
+  "pages": [
+    {
+      "title": "Executive Metrics",
+      "subtitle": "High-level KPIs on a single screen",
+      "layout": "left-side-title-above",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Live Revenue",
+      "subtitle": "Track cashflow across currencies",
+      "layout": "left-side-title-above",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Global Operations",
+      "subtitle": "Monitor regional performance",
+      "layout": "left-side-title-above",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Risk Radar",
+      "subtitle": "Early warnings and anomaly detection",
+      "layout": "left-side-title-above",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Board Reports",
+      "subtitle": "Generate presentation-ready slides",
+      "layout": "left-side-title-above",
+      "background": null,
+      "devices": null
+    }
+  ]
+}

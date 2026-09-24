@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "id": "medium-template",
+  "name": "Reading & Blogging",
+  "category": "entertainment",
+  "description": "Editorial single-column layout for a long-form reading app.",
+  "devices": [
+    {
+      "deviceId": "apple-iphone-16-pro-max",
+      "label": "6.7 Inch Phone"
+    }
+  ],
+  "layout": "single-caption-below",
+  "background": {
+    "type": "solid",
+    "value": "solid-white"
+  },
+  "textColor": "#1c1c1c",
+  "pages": [
+    {
+      "title": "Read Stories",
+      "subtitle": "Long-form articles worth your time",
+      "layout": "single-caption-below",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Follow Writers",
+      "subtitle": "Get updates from favorite authors",
+      "layout": "single-caption-below",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Save for Later",
+      "subtitle": "Build your own reading list",
+      "layout": "single-caption-below",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Curated Feed",
+      "subtitle": "Personalized to your interests",
+      "layout": "single-caption-below",
+      "background": null,
+      "devices": null
+    }
+  ]
+}

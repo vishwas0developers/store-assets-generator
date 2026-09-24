@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "id": "utility-app-template-1",
+  "name": "Utility App Template 1",
+  "category": "utilities",
+  "description": "Bold gradient layout for a converter/calculator utility.",
+  "devices": [
+    {
+      "deviceId": "samsung-galaxy-s24",
+      "label": "Galaxy Phone"
+    }
+  ],
+  "layout": "single-caption-above",
+  "background": {
+    "type": "gradient",
+    "value": "graphite"
+  },
+  "pages": [
+    {
+      "title": "Quick Convert",
+      "subtitle": "Convert units in one tap",
+      "layout": "single-caption-above",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Smart History",
+      "subtitle": "Access past calculations",
+      "layout": "single-caption-above",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Widget Support",
+      "subtitle": "Add tools to your home screen",
+      "layout": "single-caption-above",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Pro Mode",
+      "subtitle": "Unlock advanced math features",
+      "layout": "single-caption-above",
+      "background": null,
+      "devices": null
+    }
+  ]
+}

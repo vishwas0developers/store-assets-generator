@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "id": "professional-corporate-suite",
+  "name": "Professional Corporate Suite",
+  "category": "professional",
+  "description": "Clean grid pattern layout with tablet & phone for enterprise SaaS.",
+  "devices": [
+    {
+      "deviceId": "ipad-pro-12-9",
+      "label": "12.9 Inch Tablet"
+    },
+    {
+      "deviceId": "apple-iphone-15-pro",
+      "label": "6.5 Inch Phone"
+    }
+  ],
+  "layout": "two-devices-connected-left-title-above",
+  "background": {
+    "type": "pattern",
+    "value": "grid"
+  },
+  "pages": [
+    {
+      "title": "Enterprise Command",
+      "subtitle": "Manage operations from one hub",
+      "layout": "two-devices-connected-left-title-above",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Team Workspaces",
+      "subtitle": "Collaborate seamlessly across units",
+      "layout": "two-devices-connected-left-title-above",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Advanced Security",
+      "subtitle": "Bank-grade encryption & compliance",
+      "layout": "two-devices-connected-left-title-above",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "Custom Reports",
+      "subtitle": "Automated PDF and Excel exports",
+      "layout": "two-devices-connected-left-title-above",
+      "background": null,
+      "devices": null
+    },
+    {
+      "title": "24/7 Priority",
+      "subtitle": "Dedicated account management",
+      "layout": "two-devices-connected-left-title-above",
+      "background": null,
+      "devices": null
+    }
+  ]
+}
