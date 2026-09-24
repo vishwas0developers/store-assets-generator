@@ -5628,6 +5628,8 @@ $("mk-ai-text").onclick = async () => {
 };
 
 /* ---- Devices & Device Library section ---- */
+let appActiveDeviceFilter = "all";
+
 async function renderMockupDevicesSection() {
   const list = $("mockup-device-list");
   if (list) list.innerHTML = "";
@@ -5659,39 +5661,82 @@ async function renderMockupDevicesSection() {
     }
   }
 
+  // Filter Pills setup
+  const pillsContainer = $("mockup-device-filter-pills");
+  if (pillsContainer && !pillsContainer.dataset.initialized) {
+    pillsContainer.dataset.initialized = "true";
+    pillsContainer.addEventListener("click", (e) => {
+      const btn = e.target.closest(".device-filter-pill");
+      if (!btn) return;
+      pillsContainer.querySelectorAll(".device-filter-pill").forEach((p) => p.classList.remove("active"));
+      btn.classList.add("active");
+      appActiveDeviceFilter = btn.dataset.filter || "all";
+      renderMockupDevicesSection();
+    });
+  }
+
   // Populate 2D SVG Device Frame Library Grid
   const grid = $("mockup-device-library-grid");
   if (grid) {
-    grid.innerHTML = '<div style="color:var(--text-secondary)">Loading device frame catalog…</div>';
+    grid.innerHTML = '<div style="color:var(--text-secondary); grid-column: 1/-1; padding: 2rem; text-align: center;">Loading 2D device frame catalog…</div>';
     try {
       const { devices } = await api("/api/mockups/devices-library");
       grid.innerHTML = "";
-      for (const dev of devices) {
+
+      const baseDevice = mockupProject.devices.find((d) => d.isBase) || mockupProject.devices[0];
+
+      const filteredDevices = devices.filter((dev) => {
+        if (appActiveDeviceFilter === "all") return true;
+        if (appActiveDeviceFilter === "apple") return dev.id.startsWith("apple") || dev.id.startsWith("ipad");
+        if (appActiveDeviceFilter === "google") return dev.id.startsWith("google");
+        if (appActiveDeviceFilter === "samsung") return dev.id.startsWith("samsung");
+        if (appActiveDeviceFilter === "generic") return !dev.id.startsWith("apple") && !dev.id.startsWith("google") && !dev.id.startsWith("samsung");
+        return true;
+      });
+
+      for (const dev of filteredDevices) {
+        const isCurrentBase = baseDevice?.deviceId === dev.id;
+        const brandLabel = dev.id.startsWith("apple") || dev.id.startsWith("ipad") ? "Apple"
+          : dev.id.startsWith("google") ? "Google"
+          : dev.id.startsWith("samsung") ? "Samsung" : "Generic";
+
         const card = document.createElement("div");
-        card.className = "device-lib-card";
+        card.className = `device-lib-card ${isCurrentBase ? "is-active-base" : ""}`;
         card.innerHTML = `
-          <div class="device-lib-title">${dev.name}</div>
-          <div class="device-lib-meta">${dev.category.toUpperCase()} &bull; ${dev.aspectRatio}</div>
-          <div style="font-size:12px; color:var(--text-tertiary); margin-top:4px;">${dev.width} &times; ${dev.height} px</div>
-          <button class="small secondary" type="button" style="margin-top:12px; width:100%">Replace Base Frame</button>
+          <div class="device-lib-preview-box">${dev.svgFrame || '<div style="color:#6b7280; font-size:12px;">Frame Preview</div>'}</div>
+          <div class="device-lib-card-info">
+            <h5 class="device-lib-card-title">${dev.name}</h5>
+            <div class="device-lib-spec-badges">
+              <span class="device-lib-badge brand-badge">${brandLabel}</span>
+              <span class="device-lib-badge">${dev.width} &times; ${dev.height}</span>
+            </div>
+          </div>
+          <button class="device-lib-card-btn" type="button" ${isCurrentBase ? "disabled" : ""}>
+            ${isCurrentBase ? "✓ Active Base Device" : "Use as Base Device"}
+          </button>
         `;
-        card.querySelector("button").onclick = async () => {
-          if (!mockupProject) return;
-          const baseDevice = mockupProject.devices.find((d) => d.isBase) || mockupProject.devices[0];
-          if (baseDevice) {
-            baseDevice.deviceId = dev.id;
-            baseDevice.label = dev.name;
-            await saveCurrentMockupProject();
-            renderMockupStage();
-            renderMockupMatrix();
-            renderMockupDevicesSection();
-            await alert(`Updated base device frame to ${dev.name}.`);
-          }
-        };
+
+        if (!isCurrentBase) {
+          card.querySelector("button").onclick = async () => {
+            if (!mockupProject) return;
+            const targetBase = mockupProject.devices.find((d) => d.isBase) || mockupProject.devices[0];
+            if (targetBase) {
+              targetBase.deviceId = dev.id;
+              targetBase.label = dev.name;
+              await saveCurrentMockupProject();
+              if (typeof renderMockupStage === "function") renderMockupStage();
+              if (typeof renderMockupCanvas === "function") renderMockupCanvas();
+              renderMockupMatrix();
+              renderMockupDevicesSection();
+              await alert(`Updated base device frame to ${dev.name}.`);
+            }
+          };
+        }
+
         grid.appendChild(card);
       }
     } catch (err) {
-      grid.innerHTML = `<div style="color:var(--danger)">Failed to load device library: ${err.message}</div>`;
+      grid.innerHTML = `<div style="color:var(--danger); grid-column: 1/-1;">Failed to load device library: ${err.message}</div>`;
     }
   }
 }

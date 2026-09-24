@@ -1,228 +1,36 @@
 {
   "devices": [
     {
-      "id": "phone",
-      "name": "Generic Android Phone",
-      "vendor": "Generic",
-      "platforms": ["google-play"],
-      "formFactor": "phone",
-      "geometry": { "width": 1080, "height": 2400, "thickness": 85, "cornerRadius": 30 },
-      "screenInset": { "top": 30, "left": 30, "width": 1020, "height": 2340 },
-      "bezelWidth": 16,
-      "edgeProfile": "flat",
-      "cutout": { "type": "punch-hole", "size": { "width": 36, "height": 36 } },
-      "cameraIsland": {
-        "style": "square-island", "position": { "xPct": 0.05, "yPct": 0.03 },
-        "size": { "widthPct": 0.24, "heightPct": 0.11 }, "cornerRadius": 20,
-        "lenses": [{ "xPct": 0.17, "yPct": 0.085, "diameterPct": 0.09 }]
-      },
-      "buttons": [
-        { "face": "right", "kind": "power", "offsetPct": 0.22, "lengthPct": 0.06 },
-        { "face": "left", "kind": "volume-up", "offsetPct": 0.24, "lengthPct": 0.05 },
-        { "face": "left", "kind": "volume-down", "offsetPct": 0.30, "lengthPct": 0.05 }
-      ],
-      "ports": [{ "face": "bottom", "kind": "usb-c", "offsetPct": 0.5 }],
-      "body": "#222222", "accent": "#444444", "railMaterial": "aluminum",
-      "schemaVersion": 2
-    },
-    {
-      "id": "google-pixel-9",
-      "name": "Google Pixel 9",
-      "vendor": "Google",
-      "platforms": ["google-play"],
-      "formFactor": "phone",
-      "geometry": { "width": 1080, "height": 2424, "thickness": 88, "cornerRadius": 48 },
-      "screenInset": { "top": 26, "left": 26, "width": 1028, "height": 2372 },
-      "bezelWidth": 14,
-      "edgeProfile": "curved",
-      "cutout": { "type": "punch-hole", "size": { "width": 32, "height": 32 } },
-      "cameraIsland": {
-        "style": "vertical-bar", "position": { "xPct": 0.0, "yPct": 0.045 },
-        "size": { "widthPct": 1.0, "heightPct": 0.09 }, "cornerRadius": 40,
-        "lenses": [
-          { "xPct": 0.32, "yPct": 0.09, "diameterPct": 0.085 },
-          { "xPct": 0.5, "yPct": 0.09, "diameterPct": 0.085 }
-        ]
-      },
-      "buttons": [
-        { "face": "right", "kind": "power", "offsetPct": 0.22, "lengthPct": 0.05 },
-        { "face": "right", "kind": "volume-up", "offsetPct": 0.29, "lengthPct": 0.06 }
-      ],
-      "ports": [{ "face": "bottom", "kind": "usb-c", "offsetPct": 0.5 }],
-      "body": "#4a5d4f", "accent": "#6b8570", "railMaterial": "aluminum",
-      "schemaVersion": 2
-    },
-    {
-      "id": "samsung-galaxy-s24",
-      "name": "Samsung Galaxy S24",
-      "vendor": "Samsung",
-      "platforms": ["google-play"],
-      "formFactor": "phone",
-      "geometry": { "width": 1080, "height": 2340, "thickness": 76, "cornerRadius": 52 },
-      "screenInset": { "top": 22, "left": 22, "width": 1036, "height": 2296 },
-      "bezelWidth": 12,
-      "edgeProfile": "curved",
-      "cutout": { "type": "punch-hole", "size": { "width": 28, "height": 28 } },
-      "cameraIsland": {
-        "style": "circle-ring", "position": { "xPct": 0.04, "yPct": 0.025 },
-        "size": { "widthPct": 0.1, "heightPct": 0.3 }, "cornerRadius": 100,
-        "lenses": [
-          { "xPct": 0.09, "yPct": 0.075, "diameterPct": 0.085, "ring": true },
-          { "xPct": 0.09, "yPct": 0.16, "diameterPct": 0.085, "ring": true },
-          { "xPct": 0.09, "yPct": 0.245, "diameterPct": 0.085, "ring": true }
-        ]
-      },
-      "buttons": [
-        { "face": "right", "kind": "power", "offsetPct": 0.2, "lengthPct": 0.05 },
-        { "face": "right", "kind": "volume-up", "offsetPct": 0.27, "lengthPct": 0.07 }
-      ],
-      "ports": [{ "face": "bottom", "kind": "usb-c", "offsetPct": 0.5 }],
-      "body": "#1c1c1e", "accent": "#3a3a3d", "railMaterial": "aluminum",
-      "schemaVersion": 2
-    },
-    {
-      "id": "samsung-galaxy-s25",
-      "name": "Samsung Galaxy S25",
-      "vendor": "Samsung",
-      "releaseYear": 2025,
-      "platforms": ["google-play"],
-      "formFactor": "phone",
-      "geometry": { "width": 1080, "height": 2340, "thickness": 72, "cornerRadius": 56 },
-      "screenInset": { "top": 18, "left": 18, "width": 1044, "height": 2304 },
-      "bezelWidth": 10,
-      "edgeProfile": "curved",
-      "cutout": { "type": "punch-hole", "size": { "width": 26, "height": 26 } },
-      "cameraIsland": {
-        "style": "circle-ring", "position": { "xPct": 0.04, "yPct": 0.022 },
-        "size": { "widthPct": 0.1, "heightPct": 0.3 }, "cornerRadius": 100,
-        "lenses": [
-          { "xPct": 0.09, "yPct": 0.07, "diameterPct": 0.08, "ring": true },
-          { "xPct": 0.09, "yPct": 0.15, "diameterPct": 0.08, "ring": true },
-          { "xPct": 0.09, "yPct": 0.23, "diameterPct": 0.08, "ring": true }
-        ]
-      },
-      "buttons": [
-        { "face": "right", "kind": "power", "offsetPct": 0.19, "lengthPct": 0.05 },
-        { "face": "right", "kind": "volume-up", "offsetPct": 0.26, "lengthPct": 0.07 }
-      ],
-      "ports": [{ "face": "bottom", "kind": "usb-c", "offsetPct": 0.5 }],
-      "body": "#1a2744", "accent": "#33456e", "railMaterial": "titanium",
-      "schemaVersion": 2
-    },
-    {
-      "id": "google-pixel-9-pro",
-      "name": "Google Pixel 9 Pro",
-      "vendor": "Google",
+      "id": "apple-iphone-16-pro-max",
+      "name": "iPhone 16 Pro Max",
+      "vendor": "Apple",
       "releaseYear": 2024,
-      "platforms": ["google-play"],
+      "platforms": ["apple-app-store"],
       "formFactor": "phone",
-      "geometry": { "width": 1280, "height": 2856, "thickness": 92, "cornerRadius": 60 },
-      "screenInset": { "top": 28, "left": 28, "width": 1224, "height": 2800 },
-      "bezelWidth": 14,
-      "edgeProfile": "curved",
-      "cutout": { "type": "punch-hole", "size": { "width": 32, "height": 32 } },
-      "cameraIsland": {
-        "style": "vertical-bar", "position": { "xPct": 0.0, "yPct": 0.04 },
-        "size": { "widthPct": 1.0, "heightPct": 0.1 }, "cornerRadius": 40,
-        "lenses": [
-          { "xPct": 0.26, "yPct": 0.09, "diameterPct": 0.075 },
-          { "xPct": 0.44, "yPct": 0.09, "diameterPct": 0.075 },
-          { "xPct": 0.62, "yPct": 0.09, "diameterPct": 0.075 }
-        ]
-      },
-      "buttons": [
-        { "face": "right", "kind": "power", "offsetPct": 0.21, "lengthPct": 0.045 },
-        { "face": "right", "kind": "volume-up", "offsetPct": 0.27, "lengthPct": 0.06 }
-      ],
-      "ports": [{ "face": "bottom", "kind": "usb-c", "offsetPct": 0.5 }],
-      "body": "#e8e2d8", "accent": "#c9c0b0", "railMaterial": "aluminum",
-      "schemaVersion": 2
-    },
-    {
-      "id": "samsung-galaxy-z-fold",
-      "name": "Samsung Galaxy Z Fold",
-      "vendor": "Samsung",
-      "platforms": ["google-play"],
-      "formFactor": "foldable",
-      "geometry": { "width": 904, "height": 2316, "thickness": 128, "cornerRadius": 40 },
-      "screenInset": { "top": 20, "left": 20, "width": 864, "height": 2276 },
-      "bezelWidth": 14,
+      "geometry": { "width": 1320, "height": 2868, "thickness": 84, "cornerRadius": 100 },
+      "screenInset": { "top": 40, "left": 40, "width": 1240, "height": 2788 },
+      "bezelWidth": 18,
       "edgeProfile": "chamfered",
-      "cutout": { "type": "punch-hole", "size": { "width": 24, "height": 24 } },
+      "cutout": { "type": "dynamic-island", "size": { "width": 310, "height": 72 } },
       "cameraIsland": {
-        "style": "circle-ring", "position": { "xPct": 0.05, "yPct": 0.02 },
-        "size": { "widthPct": 0.12, "heightPct": 0.28 }, "cornerRadius": 100,
+        "style": "square-island", "position": { "xPct": 0.06, "yPct": 0.022 },
+        "size": { "widthPct": 0.27, "heightPct": 0.12 }, "cornerRadius": 44,
         "lenses": [
-          { "xPct": 0.11, "yPct": 0.06, "diameterPct": 0.09, "ring": true },
-          { "xPct": 0.11, "yPct": 0.14, "diameterPct": 0.09, "ring": true },
-          { "xPct": 0.11, "yPct": 0.22, "diameterPct": 0.09, "ring": true }
+          { "xPct": 0.13, "yPct": 0.05, "diameterPct": 0.08 },
+          { "xPct": 0.26, "yPct": 0.05, "diameterPct": 0.08 },
+          { "xPct": 0.195, "yPct": 0.1, "diameterPct": 0.08 }
         ]
       },
       "buttons": [
-        { "face": "right", "kind": "power", "offsetPct": 0.2, "lengthPct": 0.05 },
-        { "face": "right", "kind": "volume-up", "offsetPct": 0.27, "lengthPct": 0.06 }
-      ],
-      "ports": [
-        { "face": "bottom", "kind": "usb-c", "offsetPct": 0.5 },
-        { "face": "bottom", "kind": "s-pen-slot", "offsetPct": 0.15 }
-      ],
-      "body": "#141414", "accent": "#333333", "railMaterial": "titanium",
-      "schemaVersion": 2,
-      "variants": [
-        {
-          "id": "folded", "name": "Folded (cover screen)",
-          "geometry": { "width": 904, "height": 2316, "thickness": 128, "cornerRadius": 40 },
-          "screenInset": { "top": 20, "left": 20, "width": 864, "height": 2276 },
-          "fold": { "axis": "vertical", "state": "folded", "hingeAngleDeg": 0 }
-        },
-        {
-          "id": "unfolded", "name": "Unfolded (main screen)",
-          "geometry": { "width": 1812, "height": 2176, "thickness": 58, "cornerRadius": 24 },
-          "screenInset": { "top": 20, "left": 20, "width": 1772, "height": 2136 },
-          "fold": { "axis": "vertical", "state": "unfolded", "hingeAngleDeg": 180 }
-        }
-      ]
-    },
-    {
-      "id": "samsung-galaxy-z-flip",
-      "name": "Samsung Galaxy Z Flip",
-      "vendor": "Samsung",
-      "platforms": ["google-play"],
-      "formFactor": "foldable",
-      "geometry": { "width": 1080, "height": 2640, "thickness": 152, "cornerRadius": 48 },
-      "screenInset": { "top": 20, "left": 20, "width": 1040, "height": 2600 },
-      "bezelWidth": 14,
-      "edgeProfile": "curved",
-      "cutout": { "type": "punch-hole", "size": { "width": 28, "height": 28 } },
-      "cameraIsland": {
-        "style": "pill-bar", "position": { "xPct": 0.06, "yPct": 0.02 },
-        "size": { "widthPct": 0.34, "heightPct": 0.09 }, "cornerRadius": 60,
-        "lenses": [
-          { "xPct": 0.14, "yPct": 0.055, "diameterPct": 0.075 },
-          { "xPct": 0.26, "yPct": 0.055, "diameterPct": 0.075 }
-        ]
-      },
-      "buttons": [
-        { "face": "right", "kind": "power", "offsetPct": 0.4, "lengthPct": 0.05 },
-        { "face": "right", "kind": "volume-up", "offsetPct": 0.46, "lengthPct": 0.06 }
+        { "face": "left", "kind": "action", "offsetPct": 0.15, "lengthPct": 0.03 },
+        { "face": "left", "kind": "volume-up", "offsetPct": 0.23, "lengthPct": 0.04 },
+        { "face": "left", "kind": "volume-down", "offsetPct": 0.29, "lengthPct": 0.04 },
+        { "face": "right", "kind": "power", "offsetPct": 0.21, "lengthPct": 0.055 },
+        { "face": "right", "kind": "camera-shutter", "offsetPct": 0.29, "lengthPct": 0.035 }
       ],
       "ports": [{ "face": "bottom", "kind": "usb-c", "offsetPct": 0.5 }],
-      "body": "#181818", "accent": "#3a3a3a", "railMaterial": "aluminum",
-      "schemaVersion": 2,
-      "variants": [
-        {
-          "id": "folded", "name": "Folded (cover screen)",
-          "geometry": { "width": 720, "height": 748, "thickness": 152, "cornerRadius": 32 },
-          "screenInset": { "top": 16, "left": 16, "width": 688, "height": 716 },
-          "fold": { "axis": "horizontal", "state": "folded", "hingeAngleDeg": 0 }
-        },
-        {
-          "id": "unfolded", "name": "Unfolded",
-          "geometry": { "width": 1080, "height": 2640, "thickness": 68, "cornerRadius": 48 },
-          "screenInset": { "top": 20, "left": 20, "width": 1040, "height": 2600 },
-          "fold": { "axis": "horizontal", "state": "unfolded", "hingeAngleDeg": 180 }
-        }
-      ]
+      "body": "#a1876a", "accent": "#8a6f52", "railMaterial": "titanium",
+      "schemaVersion": 2
     },
     {
       "id": "apple-iphone-15-pro",
@@ -256,124 +64,169 @@
       "schemaVersion": 2
     },
     {
-      "id": "apple-iphone-16-pro-max",
-      "name": "iPhone 16 Pro Max",
-      "vendor": "Apple",
+      "id": "google-pixel-9-pro",
+      "name": "Google Pixel 9 Pro",
+      "vendor": "Google",
       "releaseYear": 2024,
-      "platforms": ["apple-app-store"],
+      "platforms": ["google-play"],
       "formFactor": "phone",
-      "geometry": { "width": 1320, "height": 2868, "thickness": 84, "cornerRadius": 100 },
-      "screenInset": { "top": 40, "left": 40, "width": 1240, "height": 2788 },
-      "bezelWidth": 18,
-      "edgeProfile": "chamfered",
-      "cutout": { "type": "dynamic-island", "size": { "width": 310, "height": 72 } },
-      "cameraIsland": {
-        "style": "square-island", "position": { "xPct": 0.06, "yPct": 0.022 },
-        "size": { "widthPct": 0.27, "heightPct": 0.12 }, "cornerRadius": 44,
-        "lenses": [
-          { "xPct": 0.13, "yPct": 0.05, "diameterPct": 0.08 },
-          { "xPct": 0.26, "yPct": 0.05, "diameterPct": 0.08 },
-          { "xPct": 0.195, "yPct": 0.1, "diameterPct": 0.08 }
-        ]
-      },
-      "buttons": [
-        { "face": "left", "kind": "action", "offsetPct": 0.15, "lengthPct": 0.03 },
-        { "face": "left", "kind": "volume-up", "offsetPct": 0.23, "lengthPct": 0.04 },
-        { "face": "left", "kind": "volume-down", "offsetPct": 0.29, "lengthPct": 0.04 },
-        { "face": "right", "kind": "power", "offsetPct": 0.21, "lengthPct": 0.055 },
-        { "face": "right", "kind": "camera-shutter", "offsetPct": 0.29, "lengthPct": 0.035 }
-      ],
-      "ports": [{ "face": "bottom", "kind": "usb-c", "offsetPct": 0.5 }],
-      "body": "#a1876a", "accent": "#8a6f52", "railMaterial": "titanium",
-      "schemaVersion": 2
-    },
-    {
-      "id": "apple-iphone-17-pro-max",
-      "name": "iPhone 17 Pro Max",
-      "vendor": "Apple",
-      "releaseYear": 2025,
-      "platforms": ["apple-app-store"],
-      "formFactor": "phone",
-      "geometry": { "width": 1320, "height": 2868, "thickness": 80, "cornerRadius": 104 },
-      "screenInset": { "top": 38, "left": 38, "width": 1244, "height": 2792 },
-      "bezelWidth": 16,
-      "edgeProfile": "chamfered",
-      "cutout": { "type": "dynamic-island", "size": { "width": 300, "height": 68 } },
-      "cameraIsland": {
-        "style": "square-island", "position": { "xPct": 0.0, "yPct": 0.0 },
-        "size": { "widthPct": 1.0, "heightPct": 0.16 }, "cornerRadius": 20,
-        "lenses": [
-          { "xPct": 0.15, "yPct": 0.06, "diameterPct": 0.08 },
-          { "xPct": 0.29, "yPct": 0.06, "diameterPct": 0.08 },
-          { "xPct": 0.22, "yPct": 0.12, "diameterPct": 0.08 }
-        ]
-      },
-      "buttons": [
-        { "face": "left", "kind": "action", "offsetPct": 0.15, "lengthPct": 0.03 },
-        { "face": "left", "kind": "volume-up", "offsetPct": 0.23, "lengthPct": 0.04 },
-        { "face": "left", "kind": "volume-down", "offsetPct": 0.29, "lengthPct": 0.04 },
-        { "face": "right", "kind": "power", "offsetPct": 0.21, "lengthPct": 0.055 },
-        { "face": "right", "kind": "camera-shutter", "offsetPct": 0.29, "lengthPct": 0.035 }
-      ],
-      "ports": [{ "face": "bottom", "kind": "usb-c", "offsetPct": 0.5 }],
-      "body": "#262626", "accent": "#4f4f4f", "railMaterial": "titanium",
-      "schemaVersion": 2
-    },
-    {
-      "id": "apple-iphone-18-pro-max",
-      "name": "iPhone 18 Pro Max",
-      "vendor": "Apple",
-      "releaseYear": 2026,
-      "platforms": ["apple-app-store"],
-      "formFactor": "phone",
-      "geometry": { "width": 1320, "height": 2868, "thickness": 78, "cornerRadius": 108 },
-      "screenInset": { "top": 36, "left": 36, "width": 1248, "height": 2796 },
+      "geometry": { "width": 1280, "height": 2856, "thickness": 92, "cornerRadius": 60 },
+      "screenInset": { "top": 28, "left": 28, "width": 1224, "height": 2800 },
       "bezelWidth": 14,
-      "edgeProfile": "chamfered",
-      "cutout": { "type": "dynamic-island", "size": { "width": 290, "height": 64 } },
+      "edgeProfile": "curved",
+      "cutout": { "type": "punch-hole", "size": { "width": 32, "height": 32 } },
       "cameraIsland": {
-        "style": "square-island", "position": { "xPct": 0.0, "yPct": 0.0 },
-        "size": { "widthPct": 1.0, "heightPct": 0.16 }, "cornerRadius": 20,
+        "style": "vertical-bar", "position": { "xPct": 0.0, "yPct": 0.04 },
+        "size": { "widthPct": 1.0, "heightPct": 0.1 }, "cornerRadius": 40,
         "lenses": [
-          { "xPct": 0.15, "yPct": 0.06, "diameterPct": 0.08 },
-          { "xPct": 0.29, "yPct": 0.06, "diameterPct": 0.08 },
-          { "xPct": 0.22, "yPct": 0.12, "diameterPct": 0.08 }
+          { "xPct": 0.26, "yPct": 0.09, "diameterPct": 0.075 },
+          { "xPct": 0.44, "yPct": 0.09, "diameterPct": 0.075 },
+          { "xPct": 0.62, "yPct": 0.09, "diameterPct": 0.075 }
         ]
       },
       "buttons": [
-        { "face": "left", "kind": "action", "offsetPct": 0.15, "lengthPct": 0.03 },
-        { "face": "left", "kind": "volume-up", "offsetPct": 0.23, "lengthPct": 0.04 },
-        { "face": "left", "kind": "volume-down", "offsetPct": 0.29, "lengthPct": 0.04 },
-        { "face": "right", "kind": "power", "offsetPct": 0.21, "lengthPct": 0.055 },
-        { "face": "right", "kind": "camera-shutter", "offsetPct": 0.29, "lengthPct": 0.035 }
+        { "face": "right", "kind": "power", "offsetPct": 0.21, "lengthPct": 0.045 },
+        { "face": "right", "kind": "volume-up", "offsetPct": 0.27, "lengthPct": 0.06 }
       ],
       "ports": [{ "face": "bottom", "kind": "usb-c", "offsetPct": 0.5 }],
-      "body": "#282828", "accent": "#565656", "railMaterial": "titanium",
+      "body": "#e8e2d8", "accent": "#c9c0b0", "railMaterial": "aluminum",
       "schemaVersion": 2
     },
     {
-      "id": "ipad-pro-12-9",
-      "name": "iPad Pro 12.9-inch",
-      "vendor": "Apple",
-      "platforms": ["apple-app-store"],
-      "formFactor": "tablet",
-      "geometry": { "width": 2048, "height": 2732, "thickness": 62, "cornerRadius": 60 },
-      "screenInset": { "top": 44, "left": 44, "width": 1960, "height": 2644 },
-      "bezelWidth": 24,
-      "edgeProfile": "flat",
-      "cutout": { "type": "punch-hole", "size": { "width": 24, "height": 24 } },
+      "id": "google-pixel-9",
+      "name": "Google Pixel 9",
+      "vendor": "Google",
+      "platforms": ["google-play"],
+      "formFactor": "phone",
+      "geometry": { "width": 1080, "height": 2424, "thickness": 88, "cornerRadius": 48 },
+      "screenInset": { "top": 26, "left": 26, "width": 1028, "height": 2372 },
+      "bezelWidth": 14,
+      "edgeProfile": "curved",
+      "cutout": { "type": "punch-hole", "size": { "width": 32, "height": 32 } },
       "cameraIsland": {
-        "style": "square-island", "position": { "xPct": 0.06, "yPct": 0.015 },
-        "size": { "widthPct": 0.12, "heightPct": 0.06 }, "cornerRadius": 24,
-        "lenses": [{ "xPct": 0.12, "yPct": 0.045, "diameterPct": 0.045 }]
+        "style": "vertical-bar", "position": { "xPct": 0.0, "yPct": 0.045 },
+        "size": { "widthPct": 1.0, "heightPct": 0.09 }, "cornerRadius": 40,
+        "lenses": [
+          { "xPct": 0.32, "yPct": 0.09, "diameterPct": 0.085 },
+          { "xPct": 0.5, "yPct": 0.09, "diameterPct": 0.085 }
+        ]
       },
       "buttons": [
-        { "face": "top", "kind": "power", "offsetPct": 0.5, "lengthPct": 0.05 },
-        { "face": "right", "kind": "volume-up", "offsetPct": 0.1, "lengthPct": 0.04 },
-        { "face": "right", "kind": "volume-down", "offsetPct": 0.15, "lengthPct": 0.04 }
+        { "face": "right", "kind": "power", "offsetPct": 0.22, "lengthPct": 0.05 },
+        { "face": "right", "kind": "volume-up", "offsetPct": 0.29, "lengthPct": 0.06 }
       ],
       "ports": [{ "face": "bottom", "kind": "usb-c", "offsetPct": 0.5 }],
-      "body": "#1c1c1c", "accent": "#404040", "railMaterial": "aluminum",
+      "body": "#4a5d4f", "accent": "#6b8570", "railMaterial": "aluminum",
+      "schemaVersion": 2
+    },
+    {
+      "id": "samsung-galaxy-s25",
+      "name": "Samsung Galaxy S25",
+      "vendor": "Samsung",
+      "releaseYear": 2025,
+      "platforms": ["google-play"],
+      "formFactor": "phone",
+      "geometry": { "width": 1080, "height": 2340, "thickness": 72, "cornerRadius": 56 },
+      "screenInset": { "top": 18, "left": 18, "width": 1044, "height": 2304 },
+      "bezelWidth": 10,
+      "edgeProfile": "curved",
+      "cutout": { "type": "punch-hole", "size": { "width": 26, "height": 26 } },
+      "cameraIsland": {
+        "style": "circle-ring", "position": { "xPct": 0.04, "yPct": 0.022 },
+        "size": { "widthPct": 0.1, "heightPct": 0.3 }, "cornerRadius": 100,
+        "lenses": [
+          { "xPct": 0.09, "yPct": 0.07, "diameterPct": 0.08, "ring": true },
+          { "xPct": 0.09, "yPct": 0.15, "diameterPct": 0.08, "ring": true },
+          { "xPct": 0.09, "yPct": 0.23, "diameterPct": 0.08, "ring": true }
+        ]
+      },
+      "buttons": [
+        { "face": "right", "kind": "power", "offsetPct": 0.19, "lengthPct": 0.05 },
+        { "face": "right", "kind": "volume-up", "offsetPct": 0.26, "lengthPct": 0.07 }
+      ],
+      "ports": [{ "face": "bottom", "kind": "usb-c", "offsetPct": 0.5 }],
+      "body": "#1a2744", "accent": "#33456e", "railMaterial": "titanium",
+      "schemaVersion": 2
+    },
+    {
+      "id": "samsung-galaxy-s24",
+      "name": "Samsung Galaxy S24",
+      "vendor": "Samsung",
+      "platforms": ["google-play"],
+      "formFactor": "phone",
+      "geometry": { "width": 1080, "height": 2340, "thickness": 76, "cornerRadius": 52 },
+      "screenInset": { "top": 22, "left": 22, "width": 1036, "height": 2296 },
+      "bezelWidth": 12,
+      "edgeProfile": "curved",
+      "cutout": { "type": "punch-hole", "size": { "width": 28, "height": 28 } },
+      "cameraIsland": {
+        "style": "circle-ring", "position": { "xPct": 0.04, "yPct": 0.025 },
+        "size": { "widthPct": 0.1, "heightPct": 0.3 }, "cornerRadius": 100,
+        "lenses": [
+          { "xPct": 0.09, "yPct": 0.075, "diameterPct": 0.085, "ring": true },
+          { "xPct": 0.09, "yPct": 0.16, "diameterPct": 0.085, "ring": true },
+          { "xPct": 0.09, "yPct": 0.245, "diameterPct": 0.085, "ring": true }
+        ]
+      },
+      "buttons": [
+        { "face": "right", "kind": "power", "offsetPct": 0.2, "lengthPct": 0.05 },
+        { "face": "right", "kind": "volume-up", "offsetPct": 0.27, "lengthPct": 0.07 }
+      ],
+      "ports": [{ "face": "bottom", "kind": "usb-c", "offsetPct": 0.5 }],
+      "body": "#1c1c1e", "accent": "#3a3a3d", "railMaterial": "aluminum",
+      "schemaVersion": 2
+    },
+    {
+      "id": "phone",
+      "name": "Generic Android Phone",
+      "vendor": "Generic",
+      "platforms": ["google-play"],
+      "formFactor": "phone",
+      "geometry": { "width": 1080, "height": 2400, "thickness": 85, "cornerRadius": 30 },
+      "screenInset": { "top": 30, "left": 30, "width": 1020, "height": 2340 },
+      "bezelWidth": 16,
+      "edgeProfile": "flat",
+      "cutout": { "type": "punch-hole", "size": { "width": 36, "height": 36 } },
+      "cameraIsland": {
+        "style": "square-island", "position": { "xPct": 0.05, "yPct": 0.03 },
+        "size": { "widthPct": 0.24, "heightPct": 0.11 }, "cornerRadius": 20,
+        "lenses": [{ "xPct": 0.17, "yPct": 0.085, "diameterPct": 0.09 }]
+      },
+      "buttons": [
+        { "face": "right", "kind": "power", "offsetPct": 0.22, "lengthPct": 0.06 },
+        { "face": "left", "kind": "volume-up", "offsetPct": 0.24, "lengthPct": 0.05 },
+        { "face": "left", "kind": "volume-down", "offsetPct": 0.30, "lengthPct": 0.05 }
+      ],
+      "ports": [{ "face": "bottom", "kind": "usb-c", "offsetPct": 0.5 }],
+      "body": "#222222", "accent": "#444444", "railMaterial": "aluminum",
+      "schemaVersion": 2
+    },
+    {
+      "id": "flat-edge-slim",
+      "name": "Flat-Edge Slim Phone",
+      "vendor": "Generic",
+      "platforms": ["google-play", "apple-app-store"],
+      "formFactor": "phone",
+      "geometry": { "width": 1080, "height": 2340, "thickness": 68, "cornerRadius": 34 },
+      "screenInset": { "top": 24, "left": 24, "width": 1032, "height": 2292 },
+      "bezelWidth": 16,
+      "edgeProfile": "flat",
+      "cutout": { "type": "notch", "size": { "width": 220, "height": 34 } },
+      "cameraIsland": {
+        "style": "square-island", "position": { "xPct": 0.06, "yPct": 0.02 },
+        "size": { "widthPct": 0.2, "heightPct": 0.1 }, "cornerRadius": 18,
+        "lenses": [
+          { "xPct": 0.11, "yPct": 0.05, "diameterPct": 0.075 },
+          { "xPct": 0.21, "yPct": 0.05, "diameterPct": 0.075 }
+        ]
+      },
+      "buttons": [
+        { "face": "right", "kind": "power", "offsetPct": 0.22, "lengthPct": 0.055 },
+        { "face": "left", "kind": "volume-up", "offsetPct": 0.26, "lengthPct": 0.05 },
+        { "face": "left", "kind": "volume-down", "offsetPct": 0.32, "lengthPct": 0.05 }
+      ],
+      "ports": [{ "face": "bottom", "kind": "usb-c", "offsetPct": 0.5 }],
+      "body": "#1a1a1a", "accent": "#4a4a4a", "railMaterial": "matte-glass",
       "schemaVersion": 2
     },
     {
@@ -402,140 +255,28 @@
       "schemaVersion": 2
     },
     {
-      "id": "android-modern-flagship",
-      "name": "Modern Android Flagship",
-      "vendor": "Generic",
-      "platforms": ["google-play"],
-      "formFactor": "phone",
-      "geometry": { "width": 1080, "height": 2412, "thickness": 88, "cornerRadius": 56 },
-      "screenInset": { "top": 18, "left": 18, "width": 1044, "height": 2376 },
-      "bezelWidth": 10,
-      "edgeProfile": "curved",
-      "cutout": { "type": "punch-hole", "size": { "width": 26, "height": 26 } },
-      "cameraIsland": {
-        "style": "vertical-bar", "position": { "xPct": 0.0, "yPct": 0.04 },
-        "size": { "widthPct": 1.0, "heightPct": 0.09 }, "cornerRadius": 36,
-        "lenses": [
-          { "xPct": 0.28, "yPct": 0.085, "diameterPct": 0.08 },
-          { "xPct": 0.46, "yPct": 0.085, "diameterPct": 0.08 },
-          { "xPct": 0.64, "yPct": 0.085, "diameterPct": 0.08 }
-        ]
-      },
-      "buttons": [
-        { "face": "right", "kind": "power", "offsetPct": 0.21, "lengthPct": 0.05 },
-        { "face": "right", "kind": "volume-up", "offsetPct": 0.28, "lengthPct": 0.06 }
-      ],
-      "ports": [{ "face": "bottom", "kind": "usb-c", "offsetPct": 0.5 }],
-      "body": "#151821", "accent": "#3d4459", "railMaterial": "aluminum",
-      "schemaVersion": 2
-    },
-    {
-      "id": "premium-edge-to-edge",
-      "name": "Premium Edge-to-Edge",
-      "vendor": "Generic",
-      "platforms": ["google-play", "apple-app-store"],
-      "formFactor": "phone",
-      "geometry": { "width": 1080, "height": 2400, "thickness": 78, "cornerRadius": 64 },
-      "screenInset": { "top": 6, "left": 6, "width": 1068, "height": 2388 },
-      "bezelWidth": 5,
-      "edgeProfile": "curved",
-      "cutout": { "type": "punch-hole", "size": { "width": 22, "height": 22 } },
-      "cameraIsland": {
-        "style": "pill-bar", "position": { "xPct": 0.06, "yPct": 0.02 },
-        "size": { "widthPct": 0.34, "heightPct": 0.08 }, "cornerRadius": 50,
-        "lenses": [
-          { "xPct": 0.13, "yPct": 0.05, "diameterPct": 0.07 },
-          { "xPct": 0.24, "yPct": 0.05, "diameterPct": 0.07 },
-          { "xPct": 0.35, "yPct": 0.05, "diameterPct": 0.07 }
-        ]
-      },
-      "buttons": [
-        { "face": "right", "kind": "power", "offsetPct": 0.22, "lengthPct": 0.05 },
-        { "face": "right", "kind": "volume-up", "offsetPct": 0.29, "lengthPct": 0.06 }
-      ],
-      "ports": [{ "face": "bottom", "kind": "usb-c", "offsetPct": 0.5 }],
-      "body": "#0a0a0c", "accent": "#2a2a30", "railMaterial": "polished-steel",
-      "schemaVersion": 2
-    },
-    {
-      "id": "flat-edge-slim",
-      "name": "Flat-Edge Slim",
-      "vendor": "Generic",
-      "platforms": ["google-play", "apple-app-store"],
-      "formFactor": "phone",
-      "geometry": { "width": 1080, "height": 2340, "thickness": 68, "cornerRadius": 14 },
-      "screenInset": { "top": 24, "left": 24, "width": 1032, "height": 2292 },
-      "bezelWidth": 16,
+      "id": "ipad-pro-12-9",
+      "name": "iPad Pro 12.9-inch Tablet",
+      "vendor": "Apple",
+      "platforms": ["apple-app-store"],
+      "formFactor": "tablet",
+      "geometry": { "width": 2048, "height": 2732, "thickness": 62, "cornerRadius": 60 },
+      "screenInset": { "top": 44, "left": 44, "width": 1960, "height": 2644 },
+      "bezelWidth": 24,
       "edgeProfile": "flat",
-      "cutout": { "type": "notch", "size": { "width": 220, "height": 34 } },
+      "cutout": { "type": "punch-hole", "size": { "width": 24, "height": 24 } },
       "cameraIsland": {
-        "style": "square-island", "position": { "xPct": 0.06, "yPct": 0.02 },
-        "size": { "widthPct": 0.2, "heightPct": 0.1 }, "cornerRadius": 18,
-        "lenses": [
-          { "xPct": 0.11, "yPct": 0.05, "diameterPct": 0.075 },
-          { "xPct": 0.21, "yPct": 0.05, "diameterPct": 0.075 }
-        ]
+        "style": "square-island", "position": { "xPct": 0.06, "yPct": 0.015 },
+        "size": { "widthPct": 0.12, "heightPct": 0.06 }, "cornerRadius": 24,
+        "lenses": [{ "xPct": 0.12, "yPct": 0.045, "diameterPct": 0.045 }]
       },
       "buttons": [
-        { "face": "right", "kind": "power", "offsetPct": 0.22, "lengthPct": 0.055 },
-        { "face": "left", "kind": "volume-up", "offsetPct": 0.26, "lengthPct": 0.05 },
-        { "face": "left", "kind": "volume-down", "offsetPct": 0.32, "lengthPct": 0.05 }
+        { "face": "top", "kind": "power", "offsetPct": 0.5, "lengthPct": 0.05 },
+        { "face": "right", "kind": "volume-up", "offsetPct": 0.1, "lengthPct": 0.04 },
+        { "face": "right", "kind": "volume-down", "offsetPct": 0.15, "lengthPct": 0.04 }
       ],
       "ports": [{ "face": "bottom", "kind": "usb-c", "offsetPct": 0.5 }],
-      "body": "#1a1a1a", "accent": "#4a4a4a", "railMaterial": "matte-glass",
-      "schemaVersion": 2
-    },
-    {
-      "id": "curved-edge-display",
-      "name": "Curved-Edge Display",
-      "vendor": "Generic",
-      "platforms": ["google-play"],
-      "formFactor": "phone",
-      "geometry": { "width": 1080, "height": 2376, "thickness": 80, "cornerRadius": 110 },
-      "screenInset": { "top": 16, "left": 16, "width": 1048, "height": 2344 },
-      "bezelWidth": 8,
-      "edgeProfile": "curved",
-      "cutout": { "type": "pill", "size": { "width": 140, "height": 32 } },
-      "cameraIsland": {
-        "style": "circle-ring", "position": { "xPct": 0.05, "yPct": 0.02 },
-        "size": { "widthPct": 0.1, "heightPct": 0.28 }, "cornerRadius": 100,
-        "lenses": [
-          { "xPct": 0.11, "yPct": 0.06, "diameterPct": 0.085, "ring": true },
-          { "xPct": 0.11, "yPct": 0.14, "diameterPct": 0.085, "ring": true },
-          { "xPct": 0.11, "yPct": 0.22, "diameterPct": 0.085, "ring": true }
-        ]
-      },
-      "buttons": [
-        { "face": "right", "kind": "power", "offsetPct": 0.2, "lengthPct": 0.05 },
-        { "face": "right", "kind": "volume-up", "offsetPct": 0.27, "lengthPct": 0.06 }
-      ],
-      "ports": [{ "face": "bottom", "kind": "usb-c", "offsetPct": 0.5 }],
-      "body": "#101014", "accent": "#31313a", "railMaterial": "polished-steel",
-      "schemaVersion": 2
-    },
-    {
-      "id": "budget-wide-bezel",
-      "name": "Budget Wide-Bezel",
-      "vendor": "Generic",
-      "platforms": ["google-play"],
-      "formFactor": "phone",
-      "geometry": { "width": 1080, "height": 2280, "thickness": 92, "cornerRadius": 16 },
-      "screenInset": { "top": 44, "left": 44, "width": 992, "height": 2192 },
-      "bezelWidth": 30,
-      "edgeProfile": "flat",
-      "cutout": { "type": "notch", "size": { "width": 200, "height": 40 } },
-      "cameraIsland": {
-        "style": "square-island", "position": { "xPct": 0.06, "yPct": 0.03 },
-        "size": { "widthPct": 0.22, "heightPct": 0.1 }, "cornerRadius": 14,
-        "lenses": [{ "xPct": 0.17, "yPct": 0.08, "diameterPct": 0.09 }]
-      },
-      "buttons": [
-        { "face": "right", "kind": "power", "offsetPct": 0.22, "lengthPct": 0.06 },
-        { "face": "left", "kind": "volume-up", "offsetPct": 0.24, "lengthPct": 0.05 },
-        { "face": "left", "kind": "volume-down", "offsetPct": 0.3, "lengthPct": 0.05 }
-      ],
-      "ports": [{ "face": "bottom", "kind": "usb-c", "offsetPct": 0.5 }],
-      "body": "#2a2a2a", "accent": "#565656", "railMaterial": "matte-glass",
+      "body": "#1c1c1c", "accent": "#404040", "railMaterial": "aluminum",
       "schemaVersion": 2
     }
   ]

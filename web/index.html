@@ -547,17 +547,41 @@
         </div>
 
         <div class="section-page" id="mockup-section-devices">
-          <div class="card">
-            <h3>2D SVG Device Frame Library</h3>
-            <div class="hint" style="margin-bottom:1rem;">Select a reusable 2D SVG vector device frame to apply to your project or active screen.</div>
-            <div class="row" style="margin-bottom:1rem;">
-              <select id="mockup-add-device-select" style="flex:1"></select>
-              <select id="mockup-add-device-variant"><option value="">default</option></select>
-              <input id="mockup-add-device-label" type="text" placeholder="Row label, e.g. 6.5 Inch" style="flex:1" />
-              <button id="mockup-add-device-btn" type="button">Add Device Row</button>
+          <div class="card device-lib-container">
+            <div class="device-lib-header">
+              <div>
+                <h3 class="device-lib-main-title">2D Vector Device Library</h3>
+                <p class="device-lib-subtitle">Curated collection of 10 high-precision 2D SVG device frames for Store Screenshots & Presentation mockups.</p>
+              </div>
             </div>
-            <div id="mockup-device-library-grid" class="thumb-grid" style="grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; margin-top:1.25rem;"></div>
-            <div id="mockup-device-list" style="margin-top:1.5rem;"></div>
+
+            <div class="device-lib-filters" id="mockup-device-filter-pills">
+              <button class="device-filter-pill active" data-filter="all">All Devices <span class="pill-count">10</span></button>
+              <button class="device-filter-pill" data-filter="apple">Apple iPhone &amp; iPad <span class="pill-count">3</span></button>
+              <button class="device-filter-pill" data-filter="google">Google Pixel <span class="pill-count">2</span></button>
+              <button class="device-filter-pill" data-filter="samsung">Samsung Galaxy <span class="pill-count">2</span></button>
+              <button class="device-filter-pill" data-filter="generic">Generic &amp; Tablets <span class="pill-count">3</span></button>
+            </div>
+
+            <div class="device-lib-toolbar">
+              <div class="device-toolbar-group">
+                <label class="device-toolbar-label">Quick Add Row:</label>
+                <select id="mockup-add-device-select" class="device-select-input"></select>
+                <select id="mockup-add-device-variant" class="device-select-input" style="max-width:130px;"><option value="">default</option></select>
+                <input id="mockup-add-device-label" type="text" placeholder="Row label (e.g. 6.7 Inch)" class="device-text-input" />
+                <button id="mockup-add-device-btn" type="button" class="btn-primary-glow">+ Add Device Row</button>
+              </div>
+            </div>
+
+            <div id="mockup-device-library-grid" class="device-lib-grid"></div>
+
+            <div class="device-active-section">
+              <div class="device-active-header">
+                <h4>Active Project Device Rows</h4>
+                <p class="hint">Device frames configured in your current mockup project setup.</p>
+              </div>
+              <div id="mockup-device-list"></div>
+            </div>
           </div>
         </div>
       </div>
