@@ -18,12 +18,16 @@ export interface ProjectCapture {
   durationSec?: number;  // videos only
 }
 
+export type ProjectPlatform = "play-store" | "app-store";
+
 export interface ProjectState {
   id: string;
   name: string;
   createdAt: string;
   appCategory: string;
   targetUrl: string;
+  /** Store the project targets; decides the mockup size rows. Old files lack it -> "play-store". */
+  platform: ProjectPlatform;
   captures: ProjectCapture[];
   mockup: any; // Nested MockupProject state
   video: any;  // Nested VideoProject state
@@ -58,7 +62,7 @@ export function projectFile(id: string, relative: string): string {
   return full;
 }
 
-export function createProject(name: string, appCategory = "Utility", targetUrl = ""): ProjectState {
+export function createProject(name: string, appCategory = "Utility", targetUrl = "", platform: ProjectPlatform = "play-store"): ProjectState {
   const id = `project-${Date.now()}`;
   const dir = projectDir(id);
 
@@ -78,6 +82,7 @@ export function createProject(name: string, appCategory = "Utility", targetUrl =
     createdAt: new Date().toISOString(),
     appCategory,
     targetUrl,
+    platform,
     captures: [],
     mockup: {
       id,
@@ -141,6 +146,7 @@ export function loadProject(id: string): ProjectState {
     throw new Error(`Project '${id}' not found.`);
   }
   const project: ProjectState = JSON.parse(fs.readFileSync(file, "utf-8"));
+  if (project.platform !== "app-store") project.platform = "play-store";
   project.captures = (project.captures || []).map(withDeviceCategory);
   if (project.mockup && Array.isArray(project.mockup.sources)) {
     project.mockup.sources = project.mockup.sources.map(withDeviceCategory);

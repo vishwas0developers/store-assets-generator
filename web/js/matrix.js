@@ -14,6 +14,7 @@ import {
 import { escapeHtml, showToast } from "./utils.js";
 import { centerArtboardInViewport, loadColumnIntoFabric, createPageCanvas, destroyPageCanvas, setActivePage, pageCanvases, reorderStageArtboards } from "./canvas.js";
 import { renderMockupLayersPanel, syncSection2Inputs } from "./editor.js";
+import { designSizeFor, findSizeTarget, sizeTargetsFor } from "/dist/mockup/sizeTargets.js";
 
 // Per spec: selectedCell = { deviceRowId, columnId }. Null until matrix interaction.
 export let selectedCell = null;
@@ -45,7 +46,7 @@ const MATRIX_ROW_OVERHEAD_H = 12; // each body row's own td padding + border-bot
  *  (never rounded up) and with header/footer/row chrome budgeted in, so the
  *  table can never exceed the container's real height and vertically
  *  overflow. Only horizontal scrolling (for extra pages) is ever allowed. */
-function computeCellDims(scrollEl, rowCount) {
+function computeCellDims(scrollEl, rowCount, designH = 1920) {
   const container = scrollEl?.parentElement || (typeof document !== "undefined" ? document.querySelector(".mockup-matrix-container") : null);
   const containerH = container?.clientHeight || 440;
   // If scrollEl.clientHeight is not yet measured (0 or collapsed), fallback to container height budget
@@ -53,7 +54,7 @@ function computeCellDims(scrollEl, rowCount) {
   const usable = availH - MATRIX_HEADER_ROW_H - MATRIX_FOOTER_ROW_H - rowCount * MATRIX_ROW_OVERHEAD_H;
   const perRow = rowCount > 0 ? usable / rowCount : usable;
   const height = Math.floor(Math.max(MATRIX_CELL_MIN_HEIGHT, Math.min(MATRIX_CELL_MAX_HEIGHT, perRow || MATRIX_CELL_MIN_HEIGHT)));
-  const scale = height / 1920;
+  const scale = height / designH;
   const width = Math.round(1080 * scale);
   return { height, width, scale };
 }
@@ -93,21 +94,11 @@ function setPath(obj, path, value) {
 function resolvedStyleFor(project, deviceRowId, columnId) {
   const col = project?.columns?.find((c) => c.id === columnId);
   if (!col) return null;
-  const override = deviceRowId ? project.cells?.[`${deviceRowId}:${columnId}`] : null;
-  if (!override) return col.style;
-  const { [PATCH_KEY]: paths, ...legacy } = override;
-  const merged = { ...col.style, ...legacy };
-  if (paths) {
-    const cloned = JSON.parse(JSON.stringify(merged));
-    for (const [path, value] of Object.entries(paths)) setPath(cloned, path, value);
-    return cloned;
-  }
-  return merged;
+  return col.style; // page style is the only editable style; cell overrides ignored (matches server)
 }
 
 export function getSelectedCellStyle() {
-  if (!selectedCell || !mockupProject) return selectedColumn?.style ?? null;
-  return resolvedStyleFor(mockupProject, selectedCell.deviceRowId, selectedCell.columnId);
+  return selectedColumn?.style ?? null;
 }
 
 export function renderMockupMatrix() {
@@ -148,7 +139,9 @@ export function renderMockupMatrix() {
     }
   }
 
-  const cellDims = computeCellDims(scrollEl, rowSources.length);
+  // Saved-only grid: each row renders at its size target's design height (legacy rows without a sizeKey: 1920).
+  const rowDesignH = (dev) => { const t = findSizeTarget(dev.sizeKey)?.target; return t ? designSizeFor(t).height : 1920; };
+  const cellDimsByRow = new Map(rowSources.map((d) => [d.id, computeCellDims(scrollEl, rowSources.length, rowDesignH(d))]));
 
   // Header: corner + one th per screen
   let html = "<thead><tr>";
@@ -175,6 +168,8 @@ export function renderMockupMatrix() {
   // Body: one row per device row, one cell per (deviceRowId, columnId). First row also used when devices empty (single synthetic row).
   html += "<tbody>";
   for (const dev of rowSources) {
+    const cellDims = cellDimsByRow.get(dev.id);
+    const dh = rowDesignH(dev);
     html += `<tr data-device-row="${escapeHtml(dev.id)}">`;
     html += `<td style="font-size:.78rem; font-weight:600; color:var(--text-primary); padding:.4rem .5rem; white-space:nowrap;">${escapeHtml(dev.label || dev.id)}</td>`;
     for (const col of columns) {
@@ -192,8 +187,8 @@ export function renderMockupMatrix() {
       // Prefer real server iframe preview; fall back to mini card if unavailable.
       const useIframe = !!mockupId && !!mockupProject?.columns?.length;
       const cellPreview = useIframe
-        ? `<div class="matrix-preview-box" style="width:${cellDims.width}px; height:${cellDims.height}px; overflow:hidden; border-radius:6px; background:#0f172a;">
-             <iframe class="matrix-preview-frame" title="${escapeHtml(title)}" loading="lazy" src="/api/mockups/${encodeURIComponent(mockupId)}/cell-preview/${encodeURIComponent(dev.id === "__base" ? (devices[0]?.id || dev.id) : dev.id)}/${encodeURIComponent(col.id)}?v=${matrixRenderVersion}" style="width:1080px; height:1920px; border:0; display:block; transform:scale(${cellDims.scale}); transform-origin:top left; pointer-events:none;"></iframe>
+        ? `<div class="matrix-preview-box" data-design-h="${dh}" style="width:${cellDims.width}px; height:${cellDims.height}px; overflow:hidden; border-radius:6px; background:#0f172a;">
+             <iframe class="matrix-preview-frame" title="${escapeHtml(title)}" loading="lazy" src="/api/mockups/${encodeURIComponent(mockupId)}/cell-preview/${encodeURIComponent(dev.id === "__base" ? (devices[0]?.id || dev.id) : dev.id)}/${encodeURIComponent(col.id)}?v=${matrixRenderVersion}" style="width:1080px; height:${dh}px; border:0; display:block; transform:scale(${cellDims.scale}); transform-origin:top left; pointer-events:none;"></iframe>
            </div>`
         : `<div style="height:96px; border-radius:6px; background: #0f172a; border:1px solid #334155; display:flex; flex-direction:column; justify-content:space-between; padding:.6rem;">
              <div style="font-size:.7rem; font-weight:700; color:#fff; text-align:center; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(title)}</div>
@@ -230,15 +225,13 @@ export function renderMockupMatrix() {
     const overflowPx = table.offsetHeight - realScrollH;
     if (overflowPx > 5 && rowSources.length > 0) {
       const shrinkPerRow = Math.ceil(overflowPx / rowSources.length);
-      const fixedHeight = Math.max(MATRIX_CELL_MIN_HEIGHT, cellDims.height - shrinkPerRow);
-      const fixedScale = fixedHeight / 1920;
-      const fixedWidth = Math.round(1080 * fixedScale);
       for (const box of table.querySelectorAll(".matrix-preview-box")) {
-        box.style.width = `${fixedWidth}px`;
+        const fixedHeight = Math.max(MATRIX_CELL_MIN_HEIGHT, parseFloat(box.style.height) - shrinkPerRow);
+        const fixedScale = fixedHeight / Number(box.dataset.designH || 1920);
+        box.style.width = `${Math.round(1080 * fixedScale)}px`;
         box.style.height = `${fixedHeight}px`;
-      }
-      for (const frame of table.querySelectorAll(".matrix-preview-frame")) {
-        frame.style.transform = `scale(${fixedScale})`;
+        const frame = box.querySelector(".matrix-preview-frame");
+        if (frame) frame.style.transform = `scale(${fixedScale})`;
       }
     }
   }
@@ -258,7 +251,6 @@ export function renderMockupMatrix() {
       togglePageSelection(cid); // unbounded now -- always succeeds
       syncEditingAreaToSelectedPages();
       renderMockupMatrix();
-      syncPanoramaAssetButton();
     };
   }
 }
@@ -297,19 +289,6 @@ export async function syncEditingAreaToSelectedPages() {
   }
 }
 
-/** Enables the "+ Add Panorama Asset" button only when there's a boundary
- *  to span (2+ pages selected) -- a cross-page asset needs at least two
- *  pages to straddle. */
-export function syncPanoramaAssetButton() {
-  const btn = document.getElementById("mockup-add-panorama-asset-btn");
-  if (!btn) return;
-  const enabled = selectedPages.length >= 2;
-  btn.disabled = !enabled;
-  btn.title = enabled
-    ? "Add an asset that spans across the selected pages"
-    : "Select 2 or more pages to add an asset that spans across them";
-}
-
 /** Mirrors app.js:4812 selectCell (devices × screens). */
 export function selectCell(deviceRowId, columnId) {
   if (!mockupProject) return;
@@ -327,9 +306,6 @@ export function selectCell(deviceRowId, columnId) {
   const colIndex = mockupProject.columns.findIndex((c) => c.id === columnId) + 1;
   const targetEl = document.getElementById("mockup-inspector-target");
   if (targetEl) targetEl.textContent = `${row ? row.label : "Device"} — Page ${colIndex}`;
-  const hasOverride = !!(deviceRowId && mockupProject.cells?.[`${deviceRowId}:${columnId}`]);
-  const overrideEl = document.getElementById("mk-cell-override");
-  if (overrideEl) overrideEl.checked = hasOverride;
   renderMockupLayersPanel(col);
   syncSection2Inputs(col, null);
 }
@@ -351,7 +327,6 @@ export async function selectMockupPage(columnId) {
   const isEditorActive2 = document.getElementById("mockup-section-editor")?.classList.contains("active");
   const insp = document.getElementById("mockup-inspector");
   if (insp) insp.style.display = isEditorActive2 ? "block" : "none";
-  syncPanoramaAssetButton();
 }
 
 export async function deleteMockupPage(columnId) {
@@ -364,11 +339,6 @@ export async function deleteMockupPage(columnId) {
 
   mockupProject.columns.splice(idx, 1);
   mockupProject.columns.forEach((c, i) => (c.order = i));
-  // ponytail: panoramaAssets are positioned in absolute panorama-space px
-  // keyed to column `.order`, which just shifted for every column after the
-  // deleted one -- any panorama asset spanning past this point will render
-  // one page-width off until manually redragged. Not reflowed here; add a
-  // dedicated pass if this is reported as an actual problem in practice.
 
   if (typeof saveCurrentMockupProject === "function") await saveCurrentMockupProject();
   if (typeof pushMockupHistory === "function") pushMockupHistory();
@@ -376,6 +346,7 @@ export async function deleteMockupPage(columnId) {
   const next = mockupProject.columns[Math.min(idx, mockupProject.columns.length - 1)];
   if (next) selectMockupPage(next.id);
   else renderMockupMatrix();
+  refreshLiveIfVisible();
 }
 
 export function defaultColumnStyle(title) {
@@ -401,4 +372,103 @@ export async function addMockupPage() {
   if (typeof saveCurrentMockupProject === "function") await saveCurrentMockupProject();
   if (typeof pushMockupHistory === "function") pushMockupHistory();
   selectMockupPage(newCol.id);
+  refreshLiveIfVisible();
 }
+
+// ---------------------------------------------------------------------------
+// Live Preview / Panoramic sections: render the CURRENT in-memory project via
+// POST /cell-preview-live (render-only, never saves). Editor's grid stays saved-only.
+// ---------------------------------------------------------------------------
+
+let liveVersion = 0;
+let panoramicSizeKey = null; // null = primary
+
+/** Re-renders whichever live section (Preview or Panoramic) is currently visible. */
+export function refreshLiveIfVisible() {
+  if (document.getElementById("mockup-section-preview")?.classList.contains("active")) renderLivePreviews();
+  if (document.getElementById("mockup-section-panoramic")?.classList.contains("active")) renderLivePanoramic();
+}
+
+async function fetchLiveHtml(rowId, colId) {
+  const p = mockupProject;
+  const res = await fetch(`/api/mockups/${encodeURIComponent(mockupId)}/cell-preview-live`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      project: { columns: p.columns, devices: p.devices, sources: p.sources, settings: p.settings, globalPanoramic: p.globalPanoramic },
+      deviceRowId: rowId,
+      columnId: colId,
+    }),
+  });
+  if (!res.ok) throw new Error(`live preview failed (${res.status})`);
+  return res.text();
+}
+
+/** Fills each `iframe[data-row][data-col]` under `root` with live srcdoc; drops results if a newer render started. */
+async function fillLiveFrames(root, version) {
+  await Promise.all([...root.querySelectorAll("iframe[data-row]")].map(async (f) => {
+    try {
+      const html = await fetchLiveHtml(f.dataset.row, f.dataset.col);
+      if (version === liveVersion) f.srcdoc = html;
+    } catch (e) { console.warn(e); }
+  }));
+}
+
+function sortedColumns() {
+  return [...(mockupProject?.columns || [])].sort((a, b) => a.order - b.order);
+}
+
+function rowsByTarget() {
+  return (mockupProject?.devices || []).filter((d) => findSizeTarget(d.sizeKey));
+}
+
+export async function renderLivePreviews() {
+  const host = document.getElementById("mockup-preview-table");
+  if (!host || !mockupProject || !mockupId) return;
+  const version = ++liveVersion;
+  const rows = rowsByTarget();
+  const cols = sortedColumns();
+  if (!rows.length || !cols.length) { host.innerHTML = `<div class="hint">No pages yet.</div>`; return; }
+  // Shared cell height (computeCellDims); each row's width follows its own design aspect.
+  const h = computeCellDims(host, rows.length).height;
+  let html = "<table class='matrix'><thead><tr><th></th>" + cols.map((_, i) => `<th style="font-size:.75rem;text-align:center;">#${i + 1}</th>`).join("") + "</tr></thead><tbody>";
+  for (const r of rows) {
+    const dh = designSizeFor(findSizeTarget(r.sizeKey).target).height;
+    const scale = h / dh;
+    html += `<tr><td style="font-size:.78rem;font-weight:600;white-space:nowrap;padding:.4rem .5rem;">${escapeHtml(r.label)}</td>`;
+    for (const c of cols) {
+      html += `<td style="padding:.3rem;"><div style="width:${Math.round(1080 * scale)}px;height:${h}px;overflow:hidden;border-radius:6px;background:#0f172a;">` +
+        `<iframe data-row="${escapeHtml(r.id)}" data-col="${escapeHtml(c.id)}" style="width:1080px;height:${dh}px;border:0;display:block;transform:scale(${scale});transform-origin:top left;pointer-events:none;"></iframe></div></td>`;
+    }
+    html += "</tr>";
+  }
+  host.innerHTML = html + "</tbody></table>";
+  await fillLiveFrames(host, version);
+}
+
+export async function renderLivePanoramic() {
+  const host = document.getElementById("mockup-panoramic-banner");
+  const sel = document.getElementById("mockup-panoramic-size");
+  if (!host || !sel || !mockupProject || !mockupId) return;
+  const version = ++liveVersion;
+  const rows = rowsByTarget();
+  const cols = sortedColumns();
+  if (!rows.length || !cols.length) { host.innerHTML = ""; return; }
+  const targets = sizeTargetsFor(mockupProject.platform);
+  sel.innerHTML = targets.map((t) => `<option value="${t.key}">${escapeHtml(t.label)} (${t.width}&times;${t.height})</option>`).join("");
+  if (!targets.some((t) => t.key === panoramicSizeKey)) panoramicSizeKey = targets[0].key;
+  sel.value = panoramicSizeKey;
+  const row = rows.find((r) => r.sizeKey === panoramicSizeKey) || rows[0];
+  const dh = designSizeFor(findSizeTarget(row.sizeKey).target).height;
+  // One flush strip of all pages, scaled together to fit the section width.
+  const availW = Math.max(300, (document.getElementById("mockup-panoramic-viewport")?.clientWidth || 900) - 48);
+  const scale = Math.min(availW / (1080 * cols.length), 640 / dh);
+  host.style.cssText = `position:relative;display:flex;gap:0;overflow:hidden;width:${Math.round(1080 * cols.length * scale)}px;height:${Math.round(dh * scale)}px;`;
+  host.innerHTML = cols.map((c) =>
+    `<div style="flex:0 0 ${1080 * scale}px;height:${dh * scale}px;overflow:hidden;"><iframe data-row="${escapeHtml(row.id)}" data-col="${escapeHtml(c.id)}" style="width:1080px;height:${dh}px;border:0;display:block;transform:scale(${scale});transform-origin:top left;pointer-events:none;"></iframe></div>`
+  ).join("");
+  await fillLiveFrames(host, version);
+}
+
+export function getPanoramicSizeKey() { return panoramicSizeKey; }
+export function setPanoramicSizeKey(k) { panoramicSizeKey = k; }

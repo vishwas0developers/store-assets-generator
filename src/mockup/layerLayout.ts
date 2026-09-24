@@ -28,7 +28,7 @@
  * drifted once in production, as the first slice of that larger migration.
  */
 
-import type { ColumnStyle, DeviceLayerStyle, MockupAssetLayer, TextStyle } from "./project.js";
+import type { ColumnStyle, DeviceLayerStyle, MockupAssetLayer, TextLayer, TextStyle } from "./project.js";
 
 /** Resolved device transform, in the abstract percent/degree units both
  *  callers already agreed on before this module existed:
@@ -163,6 +163,31 @@ export function resolveAssetLayerBox(
   };
 }
 
+/** Resolved free-form text-layer box -- same shape/convention as
+ *  ResolvedAssetBox (top-left percentage of the 1080x1920 stage), minus
+ *  flipH/flipV (TextLayer has none). */
+export interface ResolvedTextLayerBox {
+  xPct: number;
+  yPct: number;
+  widthPct: number;
+  heightPct: number | null;
+  rotationDeg: number;
+  opacity: number;
+}
+
+export function resolveTextLayerBox(
+  layer: Pick<TextLayer, "xPct" | "yPct" | "widthPct" | "heightPct" | "rotation" | "opacity">
+): ResolvedTextLayerBox {
+  return {
+    xPct: layer.xPct,
+    yPct: layer.yPct,
+    widthPct: layer.widthPct,
+    heightPct: layer.heightPct ?? null,
+    rotationDeg: layer.rotation || 0,
+    opacity: layer.opacity ?? 1,
+  };
+}
+
 export interface ResolvedTextLayout {
   /** Final, already-resolved font-size in px -- NOT style.title/subtitle.size
    *  itself; callers must use this instead of re-deriving it. */
@@ -213,9 +238,10 @@ export const LAYER_Z_INDEX_DEFAULTS = {
   /** Regular page-local asset layers, ascending by index (later-added asset
    *  layers paint above earlier ones by default, before any manual reorder). */
   assetLayer: (index: number): number => 15 + index,
-  /** Cross-page panorama assets share the first asset layer's default slot
-   *  unless given an explicit zIndex. */
-  panoramaAsset: 15,
+  /** Free-form text layers, ascending by index, stacked above regular asset
+   *  layers by default (own namespace/base, same "ascending by index, no
+   *  manual reorder yet" convention as assetLayer). */
+  textLayer: (index: number): number => 30 + index,
 } as const;
 
 export function resolveBackgroundZIndex(style: Pick<ColumnStyle, "background">): number {
@@ -246,8 +272,8 @@ export function resolveAssetLayerZIndex(zIndex: number | undefined, index: numbe
   return zIndex ?? LAYER_Z_INDEX_DEFAULTS.assetLayer(index);
 }
 
-export function resolvePanoramaAssetZIndex(zIndex: number | undefined): number {
-  return zIndex ?? LAYER_Z_INDEX_DEFAULTS.panoramaAsset;
+export function resolveTextLayerZIndex(zIndex: number | undefined, index: number): number {
+  return zIndex ?? LAYER_Z_INDEX_DEFAULTS.textLayer(index);
 }
 
 export interface DeviceFrameGeometryInput {
@@ -300,4 +326,17 @@ export function resolveDeviceFrameGeometry(input: DeviceFrameGeometryInput): Dev
     screen,
     screenRadius: Math.max(0, outerRadius - borderWidth / 2 - Math.max(0, input.bezelThickness ?? 0)),
   };
+}
+
+/** Shrinks a stored device `size` so a non-primary row's frame fills the same box the primary frame did:
+ *  size * min(primaryW/rowW, (primaryH/rowH) * (rowDesignH/primaryDesignH)).
+ *  ponytail: proportional fit, not a per-size layout -- add per-size tweaks only if a real design needs them. */
+export function resolveRowDeviceSize(
+  size: number,
+  primaryGeom: { width: number; height: number },
+  rowGeom: { width: number; height: number },
+  primaryDesignH: number,
+  rowDesignH: number,
+): number {
+  return size * Math.min(primaryGeom.width / rowGeom.width, (primaryGeom.height / rowGeom.height) * (rowDesignH / primaryDesignH));
 }

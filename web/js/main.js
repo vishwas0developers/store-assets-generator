@@ -46,7 +46,10 @@ import {
   deleteSelectedLayer,
   setupTextToolbarEvents,
   setupObjectToolbarEvents,
-  hideTextToolbar
+  hideTextToolbar,
+  addDeviceLayer,
+  addTextLayer,
+  openAssetUpload
 } from './editor.js';
 import {
   renderMockupMatrix,
@@ -56,7 +59,11 @@ import {
   selectedCell,
   defaultColumnStyle,
   syncEditingAreaToSelectedPages,
-  syncPanoramaAssetButton
+  renderLivePreviews,
+  renderLivePanoramic,
+  refreshLiveIfVisible,
+  getPanoramicSizeKey,
+  setPanoramicSizeKey
 } from './matrix.js';
 import {
   generateStorePackage,
@@ -99,15 +106,19 @@ import {
   mockupProject,
   setMockupId,
   setMockupProject,
+  rebindSelectedColumn,
   selectedColumn,
   setSelectedColumn,
   selectedPages,
   mockupIsDirty,
   setMockupDirty,
+  setLiveRefreshHook,
   pushMockupHistory,
   undoMockupState,
   redoMockupState,
   saveCurrentMockupProject,
+  snapshotOfMockupProject,
+  setSavedSnapshot,
   mockupHistory,
   mockupHistoryIdx
 } from './state.js';
@@ -189,9 +200,14 @@ window.undoMockupState = undoMockupState;
 window.redoMockupState = redoMockupState;
 window.saveCurrentMockupProject = saveCurrentMockupProject;
 
-// Keyboard shortcuts (Undo / Redo)
+// Keyboard shortcuts (Undo / Redo / Delete) -- must ignore contenteditable
+// (covers inline TinyMCE, which has no tagName of INPUT/TEXTAREA/SELECT but
+// still needs its own native undo/typing keys), and Ctrl+Z/Y only fire while
+// the Studio Mockup editor section is actually the active one on screen.
 document.addEventListener("keydown", (e) => {
-  if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA" || e.target.tagName === "SELECT")) return;
+  if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA" || e.target.tagName === "SELECT" || e.target.isContentEditable)) return;
+  const editorActive = document.getElementById("mockup-section-editor")?.classList.contains("active");
+  if (!editorActive) return;
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") {
     if (e.shiftKey) {
       e.preventDefault();
@@ -203,7 +219,7 @@ document.addEventListener("keydown", (e) => {
   } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "y") {
     e.preventDefault();
     redoMockupState();
-  } else if ((e.key === "Delete" || e.key === "Backspace") && document.getElementById("mockup-section-editor")?.classList.contains("active")) {
+  } else if (e.key === "Delete" || e.key === "Backspace") {
     e.preventDefault();
     deleteSelectedLayer();
   }
@@ -238,11 +254,9 @@ function setupMockupToolbar() {
     }
   });
 
-  if ($id("mockup-add-asset-btn")) {
-    $id("mockup-add-asset-btn").onclick = () => {
-      if ($id("mockup-asset-upload-input")) $id("mockup-asset-upload-input").click();
-    };
-  }
+  if ($id("mockup-add-asset-btn")) $id("mockup-add-asset-btn").onclick = () => openAssetUpload();
+  if ($id("mockup-add-device-layer-btn")) $id("mockup-add-device-layer-btn").onclick = () => addDeviceLayer();
+  if ($id("mockup-add-text-btn")) $id("mockup-add-text-btn").onclick = () => addTextLayer();
   if ($id("mockup-asset-upload-input")) {
     $id("mockup-asset-upload-input").onchange = async (e) => {
       const file = e.target.files && e.target.files[0];
@@ -267,64 +281,16 @@ function setupMockupToolbar() {
             name: source.name,
             xPct: 50, yPct: 50, widthPct: 35, rotation: 0, opacity: 1, zIndex: 10
           });
-          await saveCurrentMockupProject();
-          pushMockupHistory();
+          // The image file itself is uploaded to disk right away above; the
+          // layer that points to it is just an in-memory edit like any
+          // other, recorded via the same debounced setMockupDirty->history
+          // hook as everything else -- only Save actually writes it to disk.
+          setMockupDirty(true);
           loadColumnIntoFabric(col);
           renderMockupMatrix();
           showToast(`Asset "${file.name}" added to screen layer.`, "success");
         } catch (err) {
           await showAlert("Asset upload failed: " + err.message);
-        }
-      };
-      reader.readAsDataURL(file);
-    };
-  }
-
-  if ($id("mockup-add-panorama-asset-btn")) {
-    $id("mockup-add-panorama-asset-btn").onclick = () => {
-      if (selectedPages.length < 2) return;
-      if ($id("mockup-panorama-asset-upload-input")) $id("mockup-panorama-asset-upload-input").click();
-    };
-  }
-  if ($id("mockup-panorama-asset-upload-input")) {
-    $id("mockup-panorama-asset-upload-input").onchange = async (e) => {
-      const file = e.target.files && e.target.files[0];
-      e.target.value = "";
-      if (!file || !mockupId || selectedPages.length < 2) return;
-      const reader = new FileReader();
-      reader.onload = async (evt) => {
-        try {
-          const { source } = await api(`/api/mockups/${mockupId}/upload-asset`, {
-            method: "POST",
-            body: { name: file.name, data: evt.target.result }
-          });
-          // Default placement: straddle the boundary right after the active
-          // page in the current selection (order-sorted), or right before it
-          // if there's no next selected page -- a sensible starting point
-          // the user can then drag to fine-tune.
-          const ordered = [...mockupProject.columns].sort((a, b) => a.order - b.order);
-          const activeIdx = ordered.findIndex((c) => c.id === selectedColumn?.id);
-          const selectedOrderedIdx = ordered.map((c, i) => (selectedPages.includes(c.id) ? i : -1)).filter((i) => i >= 0);
-          const boundaryIdx = selectedOrderedIdx.find((i) => i > activeIdx) ?? selectedOrderedIdx[selectedOrderedIdx.length - 1];
-          const width = 300;
-          const xPx = Math.max(0, boundaryIdx) * 1080 - width / 2;
-          mockupProject.panoramaAssets = mockupProject.panoramaAssets || [];
-          mockupProject.panoramaAssets.push({
-            id: `panorama_${Date.now()}`,
-            // See the asset-layer handler above -- assetId is a file path.
-            assetId: source.file,
-            name: source.name,
-            xPx, widthPx: width,
-            yPct: 40, heightPct: 20,
-            rotation: 0, opacity: 1, zIndex: 15
-          });
-          await saveCurrentMockupProject();
-          pushMockupHistory();
-          await syncEditingAreaToSelectedPages();
-          renderMockupMatrix();
-          showToast(`Panorama asset "${file.name}" added, spanning the selected pages.`, "success");
-        } catch (err) {
-          await showAlert("Panorama asset upload failed: " + err.message);
         }
       };
       reader.readAsDataURL(file);
@@ -368,14 +334,16 @@ function setupMockupToolbar() {
 
   if ($id("mk-save")) {
     $id("mk-save").onclick = async () => {
-      if (!selectedCell) return;
+      if (!mockupId || !mockupProject) return;
       await saveCurrentMockupProject();
-      pushMockupHistory();
+      setSavedSnapshot(snapshotOfMockupProject(mockupProject));
       setMockupDirty(false);
       renderMockupMatrix();
       showToast("Changes saved.", "success");
     };
   }
+
+  const downloadFrom = (url) => { if (!url) return; const a = document.createElement("a"); a.href = url; a.download = ""; document.body.appendChild(a); a.click(); a.remove(); };
 
   if ($id("mockup-export-single-btn")) {
     $id("mockup-export-single-btn").onclick = async () => {
@@ -386,7 +354,8 @@ function setupMockupToolbar() {
       try {
         const colId = selectedCell ? selectedCell.columnId : (mockupProject.columns[0]?.id || "");
         const res = await api(`/api/mockups/${mockupId}/export/single`, { method: "POST", body: { columnId: colId } });
-        await showAlert(`Page exported successfully to:\n${res.path}`);
+        downloadFrom(res.downloadUrl);
+        showToast("Page exported (PNG download started).", "success");
       } catch (e) {
         await showAlert("Page export failed: " + e.message);
       } finally {
@@ -403,8 +372,9 @@ function setupMockupToolbar() {
       btn.disabled = true;
       btn.textContent = "Exporting Banner…";
       try {
-        const res = await api(`/api/mockups/${mockupId}/export/panoramic`, { method: "POST" });
-        await showAlert(`Panoramic Banner exported successfully to:\n${res.path}`);
+        const res = await api(`/api/mockups/${mockupId}/export/panoramic`, { method: "POST", body: { sizeKey: getPanoramicSizeKey() || undefined } });
+        downloadFrom(res.downloadUrl);
+        showToast("Panoramic banner exported (PNG download started).", "success");
       } catch (e) {
         await showAlert("Panoramic banner export failed: " + e.message);
       } finally {
@@ -421,14 +391,11 @@ function setupMockupToolbar() {
       btn.disabled = true;
       btn.textContent = "Generating ZIP Package…";
       try {
-        const result = await api(`/api/mockups/${mockupId}/export`, { method: "POST" });
+        // Server shape: { ok, result: { zipPath, bytes, entries }, downloadUrl }.
+        const { result, downloadUrl } = await api(`/api/mockups/${mockupId}/export`, { method: "POST" });
         const kb = (result.bytes / 1024).toFixed(1);
-        const resContainer = $id("mockup-export-result");
-        if (resContainer) {
-          resContainer.innerHTML = `<div>ZIP ready — ${kb} KB. <a href="/api/mockups/${mockupId}/download/zip" target="_blank"><button type="button" class="secondary small">Download ZIP</button></a></div>` +
-            "<ul>" + result.entries.map((e) => `<li>${e.label}: ${e.files} files (${e.width}&times;${e.height})</li>`).join("") + "</ul>";
-        }
-        await showAlert(`Store Package ZIP generated successfully (${kb} KB).`);
+        downloadFrom(downloadUrl);
+        showToast(`Store package ready (${kb} KB): ` + result.entries.map((e) => `${e.label} ${e.width}x${e.height} (${e.files})`).join(", "), "success");
       } catch (e) {
         await showAlert("Store Package export failed: " + e.message);
       } finally {
@@ -454,26 +421,22 @@ function setupMockupToolbar() {
       const label = $id("mockup-add-device-label")?.value.trim() || deviceId;
       const { project } = await api(`/api/mockups/${mockupId}/devices`, { method: "POST", body: { deviceId, variant: $id("mockup-add-device-variant")?.value || undefined, label } });
       setMockupProject(project);
+      rebindSelectedColumn();
       if ($id("mockup-add-device-label")) $id("mockup-add-device-label").value = "";
       renderMockupDevicesSection();
       renderMockupMatrix();
+      await syncEditingAreaToSelectedPages();
     };
   }
 
-  if ($id("mockup-panorama-upload")) {
-    $id("mockup-panorama-upload").onclick = async () => {
-      const file = $id("mockup-panorama-file")?.files[0];
-      if (!file || !mockupId) return showAlert("Choose an image first.");
-      await uploadFile(`/api/mockups/${mockupId}/panoramic`, file);
-      await showAlert("Panorama uploaded. Set a column's background type to Panoramic in the Editor to use it.");
+  if ($id("mockup-panoramic-size")) {
+    $id("mockup-panoramic-size").onchange = () => {
+      setPanoramicSizeKey($id("mockup-panoramic-size").value);
+      renderLivePanoramic();
     };
   }
-  if ($id("mockup-panorama-flip")) {
-    $id("mockup-panorama-flip").onchange = async () => {
-      if (!mockupId) return;
-      await api(`/api/mockups/${mockupId}/panoramic`, { method: "PATCH", body: { flip: $id("mockup-panorama-flip").checked } });
-    };
-  }
+  // Live Preview/Panoramic refresh 400 ms after any edit while one of those sections is visible.
+  setLiveRefreshHook(refreshLiveIfVisible);
 
   if ($id("mockup-export-template-btn")) {
     $id("mockup-export-template-btn").onclick = () => {
@@ -501,6 +464,7 @@ function setupMockupToolbar() {
         const data = JSON.parse(await file.text());
         const updated = await api(`/api/mockups/${mockupId}`, { method: "PUT", body: { devices: data.devices, columns: data.columns, cells: data.cells } });
         setMockupProject(updated);
+        rebindSelectedColumn();
         pushMockupHistory();
         renderMockupMatrix();
         if (updated.columns?.[0]) selectMockupPage(updated.columns[0].id);
@@ -518,6 +482,8 @@ function setupMockupToolbar() {
         setTimeout(async () => {
           const updated = await api(`/api/mockups/${activeProjectId}`);
           setMockupProject(updated);
+          rebindSelectedColumn();
+          await syncEditingAreaToSelectedPages();
           const sourceEl = $id("mk-source");
           if (!sourceEl) return;
           sourceEl.innerHTML = (updated.sources || []).map((s) => `<option value="${s.id}">${s.name}</option>`).join("");
@@ -538,9 +504,11 @@ function setupMockupToolbar() {
   if ($id("mockup-unsaved-discard")) {
     $id("mockup-unsaved-discard").onclick = async () => {
       if (mockupHistoryIdx >= 0) setMockupProject(JSON.parse(mockupHistory[mockupHistoryIdx]));
+      rebindSelectedColumn();
       setMockupDirty(false);
       $id("mockup-unsaved-modal").style.display = "none";
       renderMockupMatrix();
+      await syncEditingAreaToSelectedPages();
     };
   }
   if ($id("mockup-unsaved-cancel")) {
@@ -608,6 +576,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         const inspector = document.getElementById("mockup-inspector");
         if (inspector) inspector.style.display = railBtn.dataset.section === "editor" ? "block" : "none";
         if (railBtn.dataset.section === "devices") renderMockupDevicesSection();
+        if (railBtn.dataset.section === "preview") renderLivePreviews();
+        if (railBtn.dataset.section === "panoramic") renderLivePanoramic();
         // Viewport was hidden (0 width) while off-screen — re-center now that it's visible.
         if (railBtn.dataset.section === "editor") { try { centerArtboardInViewport(); } catch (_) {} }
       }

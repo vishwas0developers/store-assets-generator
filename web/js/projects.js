@@ -4,8 +4,10 @@ import {
   activeProjectId,
   activeProject,
   setActiveProjectId,
-  setActiveProject
+  setActiveProject,
+  mockupId
 } from './state.js';
+import { loadMockupProjectInto } from './templates.js';
 import { api, showAlert, showConfirm } from './utils.js';
 
 let projectSettingsTargetId = null;
@@ -158,6 +160,7 @@ export function openProjectSettingsModal(p) {
   if (nameEl) nameEl.value = p.name || '';
   if (catEl) catEl.value = p.appCategory || '';
   if (urlEl) urlEl.value = p.targetUrl || '';
+  for (const r of document.querySelectorAll('input[name="proj-settings-platform"]')) r.checked = r.value === (p.platform || 'play-store');
   if (modalEl) modalEl.style.display = 'flex';
 }
 
@@ -276,11 +279,16 @@ export function setupProjectsHandlers() {
         await showAlert('Project Name is required.');
         return;
       }
+      const platform = document.querySelector('input[name="proj-new-platform"]:checked')?.value;
+      if (!platform) {
+        await showAlert('Choose Play Store or App Store.');
+        return;
+      }
 
       try {
         const project = await api('/api/projects', {
           method: 'POST',
-          body: { name, appCategory: category, targetUrl }
+          body: { name, appCategory: category, targetUrl, platform }
         });
 
         const nameEl = document.getElementById('proj-new-name');
@@ -289,6 +297,7 @@ export function setupProjectsHandlers() {
         if (nameEl) nameEl.value = '';
         if (catEl) catEl.value = 'Education';
         if (urlEl) urlEl.value = '';
+        for (const r of document.querySelectorAll('input[name="proj-new-platform"]')) r.checked = false;
 
         await selectProject(project.id);
       } catch (e) {
@@ -315,11 +324,15 @@ export function setupProjectsHandlers() {
         name: document.getElementById('proj-settings-name')?.value.trim(),
         appCategory: document.getElementById('proj-settings-category')?.value.trim(),
         targetUrl: document.getElementById('proj-settings-url')?.value.trim(),
+        platform: document.querySelector('input[name="proj-settings-platform"]:checked')?.value,
       };
+      const previousPlatform = (activeProjectId === projectSettingsTargetId ? activeProject?.platform : null) || 'play-store';
       const updated = await api(`/api/projects/${projectSettingsTargetId}`, { method: 'PUT', body });
       if (activeProjectId === projectSettingsTargetId) {
         setActiveProject(updated);
         updateTabGating();
+        // Platform decides the size rows: if the mockup for this project is loaded, force a reload so they reconcile.
+        if (updated.platform !== previousPlatform && mockupId === updated.id) await loadMockupProjectInto(updated.id, true);
       }
       closeProjectSettingsModal();
       await refreshProjectsList();

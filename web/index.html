@@ -59,6 +59,12 @@
             </select>
             <label>Starting URL</label>
             <input id="proj-new-url" type="text" placeholder="https://example.com" />
+            <!-- "Two options, only one at a time" = native radios (same name), so picking one clears the other. -->
+            <label>Target Platform</label>
+            <div style="display:flex; gap:1.25rem; margin-bottom:0.5rem;">
+              <label class="checkbox-row" style="margin:0;"><input type="radio" name="proj-new-platform" value="play-store" /> Play Store</label>
+              <label class="checkbox-row" style="margin:0;"><input type="radio" name="proj-new-platform" value="app-store" /> App Store</label>
+            </div>
             <button id="proj-create-btn" style="margin-top: 1rem; width: 100%;">Create Project</button>
           </div>
           
@@ -380,11 +386,11 @@
               <button id="mockup-undo-btn" class="secondary small icon-btn" title="Undo (Ctrl+Z)" disabled>&#8617; Undo</button>
               <button id="mockup-redo-btn" class="secondary small icon-btn" title="Redo (Ctrl+Y)" disabled>&#8618; Redo</button>
               <div class="divider"></div>
-              <button id="mockup-add-page" class="secondary small" type="button">+ Add Page</button>
-              <button id="mockup-add-asset-btn" class="secondary small" type="button">+ Add Asset Layer</button>
+              <button id="mockup-add-page" class="secondary small" type="button"><span class="mk-btn-icon"></span>+ Page</button>
+              <button id="mockup-add-device-layer-btn" class="secondary small" type="button"><span class="mk-btn-icon"></span>+ Device</button>
+              <button id="mockup-add-asset-btn" class="secondary small" type="button"><span class="mk-btn-icon"></span>+ Asset</button>
               <input type="file" id="mockup-asset-upload-input" accept="image/*" style="display:none;" />
-              <button id="mockup-add-panorama-asset-btn" class="secondary small" type="button" title="Select 2 or more pages to add an asset that spans across them" disabled>+ Add Panorama Asset</button>
-              <input type="file" id="mockup-panorama-asset-upload-input" accept="image/*" style="display:none;" />
+              <button id="mockup-add-text-btn" class="secondary small" type="button"><span class="mk-btn-icon"></span>+ Text</button>
               <button id="mockup-reset-template-btn" class="secondary small" type="button" title="Reset active screen to base template style">Reset to Template</button>
               <div class="divider"></div>
               <span style="font-size: 0.8rem; color: #94a3b8; font-weight: 500;">Zoom:</span>
@@ -449,8 +455,8 @@
                       <input id="mk-obj-rotation" type="number" step="1" value="0" style="width:72px; text-align:center; padding:0 4px; box-sizing:border-box;" title="Rotation Angle (°)" />
                     </div>
                     <div class="divider"></div>
-                    <div style="display:flex; align-items:center; gap:0.35rem;" title="Adjust Opacity">
-                      <span id="mk-obj-opacity-icon" style="display:inline-flex; align-items:center;"></span>
+                    <div style="display:flex; align-items:center; gap:0.2rem;" title="Adjust Opacity">
+                      <button id="mk-obj-opacity-btn" class="secondary small icon-btn" type="button" title="Adjust Opacity"></button>
                       <input id="mk-obj-opacity-slider" type="range" min="0" max="100" step="1" value="100" style="width:70px; cursor:ew-resize;" title="Opacity Slider" />
                       <span id="mk-obj-opacity-val" style="font-size:0.75rem; min-width:32px; font-variant-numeric:tabular-nums; color:var(--text-secondary);">100%</span>
                     </div>
@@ -514,16 +520,14 @@
               <button id="mockup-export-panoramic-btn" class="primary small" type="button">Export Panoramic Banner (PNG)</button>
             </div>
 
-            <div style="display:flex; gap:1rem; align-items:center; margin-top:1rem; flex-wrap:wrap; background:var(--bg-topbar); padding:0.75rem; border-radius:8px; border:1px solid var(--border-subtle);">
-              <label style="margin:0; font-size:0.85rem; font-weight:600;">Panoramic Image:</label>
-              <input id="mockup-panorama-file" type="file" accept="image/*" />
-              <button id="mockup-panorama-upload" class="secondary small" type="button">Upload Image</button>
-              <label class="checkbox-row" style="margin:0;"><input id="mockup-panorama-flip" type="checkbox" /> Flip Image</label>
+            <div style="display:flex; gap:0.75rem; align-items:center; margin-top:1rem;">
+              <label for="mockup-panoramic-size" style="margin:0; font-size:0.85rem; font-weight:600;">Size:</label>
+              <select id="mockup-panoramic-size" style="max-width:280px;"></select>
             </div>
 
             <!-- Live Continuous Panoramic Composition Preview Viewport -->
             <div id="mockup-panoramic-viewport" style="margin-top:1.25rem; background:#0b0d12; border:1px solid var(--border-subtle); border-radius:12px; padding:1.5rem; overflow-x:auto; display:flex; justify-content:center;">
-              <div id="mockup-panoramic-banner" style="position:relative; display:flex; gap:0; box-shadow:0 12px 36px rgba(0,0,0,0.6); border-radius:8px; overflow:hidden;"></div>
+              <div id="mockup-panoramic-banner" style="position:relative; display:flex; gap:0; overflow:hidden;"></div>
             </div>
           </div>
         </div>
@@ -537,21 +541,26 @@
               </div>
               <button id="mockup-export-store-btn" class="primary small" type="button">Export Store Package (ZIP)</button>
             </div>
-            <div class="row" style="margin-top:1rem; align-items:center;">
-              <label style="margin:0; font-weight:600;">Target Device Row:</label>
-              <select id="mockup-preview-device" style="max-width:250px;"></select>
-              <button id="mockup-preview-refresh" class="secondary small" type="button">Refresh Preview</button>
-            </div>
-            <div id="mockup-preview-strip" style="margin-top:1.25rem; display:flex; gap:1rem; overflow-x:auto; padding-bottom:1rem;"></div>
+            <div id="mockup-preview-table" style="margin-top:1.25rem; overflow:auto;"></div>
           </div>
         </div>
 
         <div class="section-page" id="mockup-section-devices">
           <div class="card device-lib-container">
-            <div class="device-lib-header">
+            <div class="device-lib-header" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem;">
               <div>
                 <h3 class="device-lib-main-title">2D Vector Device Library</h3>
-                <p class="device-lib-subtitle">Curated collection of 10 high-precision 2D SVG device frames for Store Screenshots & Presentation mockups.</p>
+                <p class="device-lib-subtitle">Curated collection of 10 high-precision 2D SVG device frames for Store Screenshots &amp; Presentation mockups.</p>
+              </div>
+              <div class="device-lib-actions" style="display: flex; gap: 0.6rem; align-items: center;">
+                <button id="mockup-device-add-svg-btn" type="button" class="btn-device-action btn-device-add" title="Add SVG Device">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                  <span>Add Device</span>
+                </button>
+                <button id="mockup-device-remove-mode-btn" type="button" class="btn-device-action btn-device-remove" title="Remove Device">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                  <span>Remove Device</span>
+                </button>
               </div>
             </div>
 
@@ -563,25 +572,7 @@
               <button class="device-filter-pill" data-filter="generic">Generic &amp; Tablets <span class="pill-count">3</span></button>
             </div>
 
-            <div class="device-lib-toolbar">
-              <div class="device-toolbar-group">
-                <label class="device-toolbar-label">Quick Add Row:</label>
-                <select id="mockup-add-device-select" class="device-select-input"></select>
-                <select id="mockup-add-device-variant" class="device-select-input" style="max-width:130px;"><option value="">default</option></select>
-                <input id="mockup-add-device-label" type="text" placeholder="Row label (e.g. 6.7 Inch)" class="device-text-input" />
-                <button id="mockup-add-device-btn" type="button" class="btn-primary-glow">+ Add Device Row</button>
-              </div>
-            </div>
-
             <div id="mockup-device-library-grid" class="device-lib-grid"></div>
-
-            <div class="device-active-section">
-              <div class="device-active-header">
-                <h4>Active Project Device Rows</h4>
-                <p class="hint">Device frames configured in your current mockup project setup.</p>
-              </div>
-              <div id="mockup-device-list"></div>
-            </div>
           </div>
         </div>
       </div>
@@ -592,7 +583,6 @@
           <span id="mockup-active-layer-badge" class="badge" style="font-size:0.7rem; background:#3b82f6; color:#fff; padding:2px 8px; border-radius:4px; font-weight:600;">Column</span>
         </div>
         <div id="mockup-inspector-target" class="hint" style="margin-bottom:0.75rem; font-weight:500;"></div>
-        <label class="checkbox-row" style="margin-bottom:0.75rem;"><input id="mk-cell-override" type="checkbox" /> Override this cell only</label>
 
         <!-- Layers Panel -->
         <div id="mk-section-layers" class="inspector-card" style="margin-bottom: 0.75rem;">
@@ -611,12 +601,17 @@
               <button id="mk-layer-send-bwd" class="secondary small pro-seg-btn" type="button" title="Send Backward">🔽 Backward</button>
               <button id="mk-layer-send-back" class="secondary small pro-seg-btn" type="button" title="Send to Back">⏬ Back</button>
             </div>
-            <div style="display:flex; gap:0.4rem; margin-bottom: 0.5rem;">
-              <button id="mk-duplicate-layer" class="secondary small pro-action-btn" type="button" style="flex:1;" title="Duplicate Layer (Ctrl+D)">⧉ Duplicate</button>
-              <button id="mk-delete-layer" class="danger-ghost small pro-action-btn" type="button" style="flex:1;" title="Delete Layer (Del)">🗑 Delete Layer</button>
-            </div>
           </div>
-          <button id="mk-add-device-layer-btn" class="secondary small" type="button" style="width:100%; margin-top:0.25rem;" title="Add another freely-positioned device to this screen">+ Add Device Layer</button>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.4rem; margin-top:0.25rem;">
+            <button id="mk-layers-add-page-btn" class="secondary small" type="button"><span class="mk-btn-icon"></span>+ Page</button>
+            <button id="mk-add-device-layer-btn" class="secondary small" type="button" title="Add another freely-positioned device to this screen"><span class="mk-btn-icon"></span>+ Device</button>
+            <button id="mk-layers-add-asset-btn" class="secondary small" type="button"><span class="mk-btn-icon"></span>+ Asset</button>
+            <button id="mk-layers-add-text-btn" class="secondary small" type="button"><span class="mk-btn-icon"></span>+ Text</button>
+          </div>
+          <div style="display:flex; gap:0.4rem; margin-top: 0.5rem;">
+            <button id="mk-duplicate-layer" class="secondary small pro-action-btn" type="button" style="flex:1;" title="Duplicate Layer (Ctrl+D)">⧉ Duplicate</button>
+            <button id="mk-delete-layer" class="danger-ghost small pro-action-btn" type="button" style="flex:1;" title="Delete Layer (Del)">🗑 Delete Layer</button>
+          </div>
         </div>
 
         <!-- Section 1: Object Details & Content Card -->
@@ -711,6 +706,31 @@
             <h4 style="font-size:.82rem; color:var(--text-secondary); margin-bottom:0.5rem;">Custom Asset Layers</h4>
             <div id="mk-asset-layers-list"></div>
             <button id="mk-add-asset-layer-btn" class="secondary small" type="button" style="width:100%; margin-top:0.5rem;">+ Add Asset Layer</button>
+
+            <h4 style="margin-top:1rem; font-size:.82rem; color:var(--text-secondary);">Text Layers</h4>
+            <div id="mk-text-layers-list"></div>
+            <div id="mk-textlayer-edit" style="display:none; margin-top:0.5rem;">
+              <label>Text Content</label>
+              <textarea id="mk-textlayer-content" rows="2" style="width:100%;"></textarea>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; margin-top:0.4rem;">
+                <div>
+                  <label style="font-size:0.75rem; margin:0 0 0.2rem 0;">Color</label>
+                  <input id="mk-textlayer-color" type="color" value="#ffffff" style="width:100%; height:30px; padding:2px; cursor:pointer;" />
+                </div>
+                <div>
+                  <label style="font-size:0.75rem; margin:0 0 0.2rem 0;">Size</label>
+                  <input id="mk-textlayer-size" type="number" min="8" max="300" value="48" style="width:100%;" />
+                </div>
+              </div>
+              <label style="margin-top:0.4rem;">Align</label>
+              <select id="mk-textlayer-align">
+                <option value="left">Left</option>
+                <option value="center">Center</option>
+                <option value="right">Right</option>
+                <option value="justify">Justify</option>
+              </select>
+            </div>
+            <button id="mk-add-text-layer-btn" class="secondary small" type="button" style="width:100%; margin-top:0.5rem;">+ Text</button>
 
             <h4 style="margin-top:1rem; font-size:.82rem; color:var(--text-secondary);">Stickers &amp; Badges</h4>
             <div id="mk-decorations"></div>
@@ -830,6 +850,12 @@
         <label style="font-size:0.8rem; color:#94a3b8;">Starting URL / Domain
           <input id="proj-settings-url" type="text" style="width:100%; margin-top:0.25rem;" placeholder="https://example.com" />
         </label>
+        <div style="font-size:0.8rem; color:#94a3b8;">Target Platform
+          <div style="display:flex; gap:1.25rem; margin-top:0.35rem;">
+            <label class="checkbox-row" style="margin:0;"><input type="radio" name="proj-settings-platform" value="play-store" /> Play Store</label>
+            <label class="checkbox-row" style="margin:0;"><input type="radio" name="proj-settings-platform" value="app-store" /> App Store</label>
+          </div>
+        </div>
       </div>
       <div style="display:flex; justify-content:flex-end; gap:0.5rem; margin-top:1.5rem;">
         <button id="proj-settings-cancel" class="secondary" type="button">Cancel</button>
@@ -1290,6 +1316,59 @@
   </div>
 </div>
 <!-- SweetAlert2 renders all dialogs dynamically -->
+
+<!-- Modal for Adding SVG Device -->
+<div id="modal-add-svg-device" class="modal-backdrop" style="display: none;">
+  <div class="modal" style="max-width: 520px; width: 90%;">
+    <div class="modal-header">
+      <h3 style="margin:0; font-size: 1.2rem; display: flex; align-items: center; gap: 0.5rem;">
+        <span>Add New SVG Device Frame</span>
+      </h3>
+      <button class="modal-close" id="modal-add-svg-close" type="button">&times;</button>
+    </div>
+    <div class="modal-body" style="display: flex; flex-direction: column; gap: 1rem; padding: 1.25rem 0;">
+      <div>
+        <label style="font-weight: 600; display: block; margin-bottom: 0.35rem;">SVG Title / Device Name *</label>
+        <input type="text" id="svg-device-title-input" class="device-text-input" placeholder="e.g. iPhone 16 Pro Max, Pixel Fold" style="width: 100%; box-sizing: border-box;" />
+      </div>
+      <div style="display: flex; gap: 1rem;">
+        <div style="flex: 1;">
+          <label style="font-weight: 600; display: block; margin-bottom: 0.35rem;">Vendor / Category</label>
+          <select id="svg-device-vendor-input" class="device-select-input" style="width: 100%; box-sizing: border-box;">
+            <option value="apple">Apple</option>
+            <option value="google">Google</option>
+            <option value="samsung">Samsung</option>
+            <option value="generic" selected>Generic / Other</option>
+          </select>
+        </div>
+        <div style="flex: 1;">
+          <label style="font-weight: 600; display: block; margin-bottom: 0.35rem;">Form Factor</label>
+          <select id="svg-device-form-factor-input" class="device-select-input" style="width: 100%; box-sizing: border-box;">
+            <option value="phone" selected>Phone</option>
+            <option value="tablet">Tablet</option>
+            <option value="foldable">Foldable</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label style="font-weight: 600; display: block; margin-bottom: 0.35rem;">SVG File (Template / Device File) *</label>
+        <div id="svg-device-file-dropzone" style="border: 2px dashed rgba(255,255,255,0.2); border-radius: 8px; padding: 1.5rem; text-align: center; background: rgba(0,0,0,0.15); cursor: pointer; transition: border-color 0.2s;">
+          <div id="svg-device-file-prompt">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-bottom: 0.5rem; opacity: 0.7;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+            <div style="font-weight: 500; margin-bottom: 0.25rem;">Click or drag &amp; drop SVG file here</div>
+            <div class="hint" style="font-size: 0.8rem;">Supports SVG vector frame files (.svg)</div>
+          </div>
+          <div id="svg-device-file-info" style="display: none; font-weight: 600; color: #10b981;"></div>
+          <input type="file" id="svg-device-file-input" accept=".svg,image/svg+xml" style="display: none;" />
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 0.5rem;">
+      <button class="secondary" id="modal-add-svg-cancel" type="button">Cancel</button>
+      <button class="btn-primary-glow" id="modal-add-svg-submit" type="button">Save &amp; Add Device</button>
+    </div>
+  </div>
+</div>
 
 <!-- Custom Toasts Container -->
 <div id="custom-toast-container" style="position: fixed; top: 1.5rem; right: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; z-index: 100; pointer-events: none;"></div>

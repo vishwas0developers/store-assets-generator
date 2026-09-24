@@ -25,7 +25,7 @@ import { fetchModelsForProvider, testProvider, isDiscoveryError } from "../src/a
 import { chat, extractJsonArray } from "../src/ai/chat.js";
 import { DEVICE_REGISTRY, listDevices, reloadRegistry } from "../src/devices/registry.js";
 import { buildFrameSvg } from "../src/devices/build-frame-svg.js";
-import { getDeviceGlbPath } from "../src/devices/device-manager.js";
+import { getDeviceGlbPath, createDevice, deleteDevice, archiveDevice } from "../src/devices/device-manager.js";
 import { loadPlatformSpec } from "../src/platform/index.js";
 
 import {
@@ -100,6 +100,7 @@ import { groupedLayoutPresets, listLayoutPresets } from "../src/mockup/layouts.j
 import { cellPreviewHtml, renderTemplateDetailThumbs, renderTemplateThumbs, templateThumbHtml, templateDetailThumbHtml, templateScreenHtml } from "../src/mockup/render.js";
 import { exportMockupProject, exportSingleScreen, exportPanoramicBanner } from "../src/mockup/export.js";
 import { MOCKUP_TEMPLATES, applyMockupTemplate } from "../src/mockup/templates.js";
+import { sizeTargetsFor } from "../src/mockup/sizeTargets.js";
 
 import {
   listVideoProjects,
@@ -603,7 +604,9 @@ export async function startWebServer(options: { port?: number; host?: string; op
     if (method === "POST" && p === "/api/projects") {
       const body = await readJsonBody(req);
       if (!body.name) return sendError(res, 400, "name is required");
-      const project = createProject(body.name, body.appCategory || "Utility", body.targetUrl || "");
+      // Trust boundary: the client must state the store explicitly.
+      if (body.platform !== "play-store" && body.platform !== "app-store") return sendError(res, 400, "platform must be 'play-store' or 'app-store'");
+      const project = createProject(body.name, body.appCategory || "Utility", body.targetUrl || "", body.platform);
       sendJson(res, 200, project);
       return;
     }
@@ -617,6 +620,10 @@ export async function startWebServer(options: { port?: number; host?: string; op
         if (body.name !== undefined) project.name = body.name;
         if (body.appCategory !== undefined) project.appCategory = body.appCategory;
         if (body.targetUrl !== undefined) project.targetUrl = body.targetUrl;
+        if (body.platform !== undefined) {
+          if (body.platform !== "play-store" && body.platform !== "app-store") return sendError(res, 400, "platform must be 'play-store' or 'app-store'");
+          project.platform = body.platform;
+        }
         saveProject(project);
         sendJson(res, 200, project);
         return;
@@ -1018,6 +1025,7 @@ export async function startWebServer(options: { port?: number; host?: string; op
 
     if (method === "POST" && p === "/api/captures") {
       const body = await readJsonBody(req);
+      // ponytail: API path with no platform picker -> createProject default (play-store).
       const project = createProject(body.name || body.url || "Untitled Project", "Utility", body.url);
       sendJson(res, 200, {
         id: project.id,
@@ -1081,6 +1089,70 @@ export async function startWebServer(options: { port?: number; host?: string; op
       return;
     }
 
+    if (method === "POST" && p === "/api/mockups/devices-library/add-svg") {
+      const body = await readJsonBody(req);
+      if (!body.name || !body.svgContent) {
+        return sendError(res, 400, "Device title and SVG content are required");
+      }
+      const svg = String(body.svgContent);
+      let width = 1080;
+      let height = 1920;
+      const vbMatch = svg.match(/viewBox=["']\s*0\s+0\s+(\d+(?:\.\d+)?)\s+(\d+(?:\.\d+)?)\s*["']/i);
+      if (vbMatch) {
+        width = Math.round(parseFloat(vbMatch[1])) || 1080;
+        height = Math.round(parseFloat(vbMatch[2])) || 1920;
+      } else {
+        const wMatch = svg.match(/width=["'](\d+(?:\.\d+)?)(?:px)?["']/i);
+        const hMatch = svg.match(/height=["'](\d+(?:\.\d+)?)(?:px)?["']/i);
+        if (wMatch) width = Math.round(parseFloat(wMatch[1])) || 1080;
+        if (hMatch) height = Math.round(parseFloat(hMatch[2])) || 1920;
+      }
+
+      const slug = body.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") || "device";
+      const id = `custom-${slug}-${Date.now().toString(36)}`;
+
+      const def: any = {
+        id,
+        name: body.name.trim(),
+        vendor: body.vendor || "generic",
+        platforms: ["google-play", "apple-app-store"],
+        formFactor: body.formFactor || "phone",
+        geometry: { width, height, thickness: 80, cornerRadius: 40 },
+        screenInset: { top: 0, left: 0, width, height },
+        bezelWidth: 16,
+        edgeProfile: "flat",
+        cutout: { type: "none" },
+        cameraIsland: { style: "none", position: { xPct: 0, yPct: 0 }, size: { widthPct: 0, heightPct: 0 }, cornerRadius: 0, lenses: [] },
+        buttons: [],
+        ports: [],
+        body: "#1a1a1a",
+        accent: "#3a3a3a",
+        railMaterial: "aluminum",
+        customSvg: svg,
+        schemaVersion: 2,
+      };
+
+      createDevice(def);
+      reloadRegistry();
+      sendJson(res, 200, { ok: true, deviceId: id, name: def.name });
+      return;
+    }
+
+    {
+      const delMatch = p.match(/^\/api\/mockups\/devices-library\/([^/]+)$/);
+      if (delMatch && method === "DELETE") {
+        const devId = decodeURIComponent(delMatch[1]);
+        try {
+          deleteDevice(devId);
+        } catch {
+          archiveDevice(devId);
+        }
+        reloadRegistry();
+        sendJson(res, 200, { ok: true, deleted: devId });
+        return;
+      }
+    }
+
     if (method === "POST" && p === "/api/mockups") {
       const body = await readJsonBody(req);
       if (!body.name) return sendError(res, 400, "name is required");
@@ -1091,7 +1163,8 @@ export async function startWebServer(options: { port?: number; host?: string; op
 
     {
       const m = p.match(/^\/api\/mockups\/(?!templates$|layouts$|export$)([^/]+)$/);
-      if (m && method === "GET") return sendJson(res, 200, loadMockupProject(decodeURIComponent(m[1])));
+      // platform is exposed (not stored on the mockup) so the client can pick size targets without a second fetch.
+      if (m && method === "GET") { const id = decodeURIComponent(m[1]); return sendJson(res, 200, { ...loadMockupProject(id), platform: loadProject(id).platform }); }
       if (m && method === "PUT") {
         const body = await readJsonBody(req);
         const project = loadMockupProject(decodeURIComponent(m[1]));
@@ -1100,7 +1173,6 @@ export async function startWebServer(options: { port?: number; host?: string; op
         if (body.cells !== undefined) project.cells = body.cells;
         if (body.sources !== undefined) project.sources = body.sources;
         if (body.globalPanoramic !== undefined) project.globalPanoramic = body.globalPanoramic;
-        if (body.panoramaAssets !== undefined) project.panoramaAssets = body.panoramaAssets;
         if (body.settings !== undefined) project.settings = body.settings;
         saveMockupProject(project);
         sendJson(res, 200, project);
@@ -1258,8 +1330,11 @@ export async function startWebServer(options: { port?: number; host?: string; op
       if (m && method === "POST") {
         const id = decodeURIComponent(m[1]);
         const project = loadMockupProject(id);
+        const body = await readJsonBody(req).catch(() => ({}));
+        const sizeKey = body?.sizeKey ?? url.searchParams.get("sizeKey") ?? undefined;
+        if (sizeKey !== undefined && !sizeTargetsFor(loadProject(id).platform).some((t) => t.key === sizeKey)) return sendError(res, 400, "unknown sizeKey for this project's platform");
         try {
-          const file = await exportPanoramicBanner(project);
+          const file = await exportPanoramicBanner(project, sizeKey);
           const rel = path.relative(mockupDir(id), file).replace(/\\/g, "/");
           sendJson(res, 200, { ok: true, downloadUrl: `/api/mockups/${id}/file?p=${encodeURIComponent(rel)}` });
         } catch (err: any) {
@@ -1390,9 +1465,10 @@ export async function startWebServer(options: { port?: number; host?: string; op
         if (!body.templateId) return sendError(res, 400, "templateId is required");
         const id = decodeURIComponent(m[1]);
         const project = loadMockupProject(id);
-        applyMockupTemplate(project, body.templateId);
+        const platform = loadProject(id).platform;
+        applyMockupTemplate(project, body.templateId, platform);
         saveMockupProject(project);
-        sendJson(res, 200, project);
+        sendJson(res, 200, { ...project, platform });
         return;
       }
     }
@@ -1404,7 +1480,26 @@ export async function startWebServer(options: { port?: number; host?: string; op
         const deviceRowId = decodeURIComponent(m[2]);
         const columnId = decodeURIComponent(m[3]);
         const project = loadMockupProject(id);
-        const html = cellPreviewHtml(project, deviceRowId, columnId, { width: 1080, height: 1920 });
+        const html = cellPreviewHtml(project, deviceRowId, columnId);
+        res.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-cache" });
+        res.end(html);
+        return;
+      }
+      // Live variant: renders the posted in-memory state merged over the saved project. Render-only, never writes.
+      const ml = p.match(/^\/api\/mockups\/([^/]+)\/cell-preview-live$/);
+      if (ml && method === "POST") {
+        const body = await readJsonBody(req);
+        const posted = body?.project ?? {};
+        const project: any = loadMockupProject(decodeURIComponent(ml[1]));
+        for (const k of ["columns", "devices", "sources"]) {
+          if (posted[k] !== undefined) { if (!Array.isArray(posted[k])) return sendError(res, 400, `project.${k} must be an array`); project[k] = posted[k]; }
+        }
+        for (const k of ["settings", "globalPanoramic"]) {
+          if (posted[k] !== undefined) { if (typeof posted[k] !== "object" || posted[k] === null) return sendError(res, 400, `project.${k} must be an object`); project[k] = posted[k]; }
+        }
+        if (typeof body.deviceRowId !== "string" || typeof body.columnId !== "string") return sendError(res, 400, "deviceRowId and columnId are required");
+        if (!project.devices.some((d: any) => d.id === body.deviceRowId) || !project.columns.some((c: any) => c.id === body.columnId)) return sendError(res, 404, "row or page not found");
+        const html = cellPreviewHtml(project, body.deviceRowId, body.columnId);
         res.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-cache" });
         res.end(html);
         return;

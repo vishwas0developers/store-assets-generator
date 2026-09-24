@@ -13,10 +13,14 @@ import {
   setMockupId,
   setMockupProject,
   setMockupHistory,
-  pushMockupHistory
+  pushMockupHistory,
+  snapshotOfMockupProject,
+  setSavedSnapshot,
+  setMockupDirty,
+  updateUndoRedoButtons
 } from './state.js';
 import { api, showAlert, showConfirm, showToast } from './utils.js';
-import { renderMockupCanvas } from './canvas.js';
+import { renderMockupCanvas, syncArtboardHeightFromProject } from './canvas.js';
 import { renderMockupMatrix, selectMockupPage } from './matrix.js';
 
 export let mockupDevicesCatalog = [];
@@ -46,23 +50,44 @@ export async function ensureMockupReferenceData() {
 }
 
 /** Loads (or clears) the mockup project for a given project id — the entry point when switching into the Studio Mockup tab. */
-export async function loadMockupProjectInto(id) {
+export async function loadMockupProjectInto(id, force = false) {
+  // Switching to the Mockup tab while the SAME project is already loaded
+  // (e.g. clicking away and back) must not reload from disk -- that would
+  // silently wipe any unsaved in-memory edits and their undo history. Just
+  // re-render what's already there instead.
+  if (!force && id && id === mockupId && mockupProject) {
+    await ensureMockupReferenceData();
+    await renderMockupTemplateGrid();
+    renderMockupCanvas();
+    renderMockupMatrix();
+    return;
+  }
   setMockupId(id);
   const label = document.getElementById("mockup-project-label");
   if (id) {
     try {
       const proj = await api(`/api/mockups/${id}`);
       setMockupProject(proj);
+      // Server already ran ensureSizeRows; size the page canvases (before any is created) from the primary target.
+      syncArtboardHeightFromProject(proj);
       if (label) label.textContent = proj.name || "Mockup Project";
-      setMockupHistory([JSON.stringify(proj)], 0);
+      const snap = snapshotOfMockupProject(proj);
+      setMockupHistory([snap], 0);
+      setSavedSnapshot(snap);
+      updateUndoRedoButtons();
+      setMockupDirty(false);
     } catch (e) {
       console.error("Failed to load mockup project:", e);
       setMockupProject(null);
       if (label) label.textContent = "No mockup project loaded";
+      setMockupHistory([], -1);
+      updateUndoRedoButtons();
     }
   } else {
     setMockupProject(null);
     if (label) label.textContent = "No mockup project selected";
+    setMockupHistory([], -1);
+    updateUndoRedoButtons();
   }
 
   await ensureMockupReferenceData();

@@ -32,6 +32,12 @@ export const ICONS = {
 
   lock: svg('<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>'),
   unlock: svg('<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/>'),
+
+  // "+ Page/Asset/Device/Text" toolbar & Layers-panel buttons.
+  page: svg('<rect x="4" y="3" width="16" height="18" rx="2"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="12" y2="16"/>'),
+  image: svg('<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5.5-5.5L4 21"/>'),
+  device: svg('<rect x="6" y="2" width="12" height="20" rx="2"/><line x1="10" y1="19" x2="14" y2="19"/>'),
+  text: svg('<polyline points="4 6 4 4 20 4 20 6"/><line x1="12" y1="4" x2="12" y2="20"/><line x1="9" y1="20" x2="15" y2="20"/>'),
 };
 
 /** Applies the standard icon set to the object toolbar (icon-only) and the
@@ -56,7 +62,7 @@ export function applyStandardIcons() {
     "mk-obj-rotate-btn": ICONS.rotate,
     "mk-rot-apply-btn": ICONS.rotate,
     "android-rotate-btn": ICONS.rotate,
-    "mk-obj-opacity-icon": ICONS.opacity,
+    "mk-obj-opacity-btn": ICONS.opacity,
     "mk-obj-duplicate": ICONS.duplicate,
     "mk-obj-delete": ICONS.delete,
   };
@@ -93,4 +99,23 @@ export function applyStandardIcons() {
 
   const lockLabel = document.getElementById("mk-pos-aspect-lock")?.closest("label");
   if (lockLabel) lockLabel.innerHTML = lockLabel.innerHTML.replace(/🔒\s*/, ICONS.lock + " ");
+
+  // "+ Page/Asset/Device/Text" buttons -- toolbar and Layers-panel copies --
+  // each has a leading <span class="mk-btn-icon"></span> filled in here,
+  // same "swap innerHTML once at bootstrap" pattern as the icon sets above.
+  const addButtonIcons = {
+    "mockup-add-page": ICONS.page,
+    "mk-layers-add-page-btn": ICONS.page,
+    "mockup-add-asset-btn": ICONS.image,
+    "mk-layers-add-asset-btn": ICONS.image,
+    "mockup-add-device-layer-btn": ICONS.device,
+    "mk-add-device-layer-btn": ICONS.device,
+    "mockup-add-text-btn": ICONS.text,
+    "mk-layers-add-text-btn": ICONS.text,
+  };
+  for (const [id, icon] of Object.entries(addButtonIcons)) {
+    const el = document.getElementById(id);
+    const iconSpan = el?.querySelector(".mk-btn-icon");
+    if (iconSpan) iconSpan.innerHTML = icon;
+  }
 }

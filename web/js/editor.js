@@ -14,11 +14,11 @@ import {
   selectedPages,
   pushMockupHistory
 } from './state.js';
-import { escapeHtml, api, uploadFile, showAlert, showToast, showConfirm, resolveDeviceFrame, resolveDeviceGeometry } from './utils.js';
+import { escapeHtml, api, uploadFile, showAlert, showToast, showConfirm, resolveDeviceFrame, resolveDeviceGeometry, getLayoutPresetClient, presentationTransformClient } from './utils.js';
 import { resolveDeviceFrameGeometry } from '/dist/mockup/layerLayout.js';
 import { mockupDevicesCatalog } from './templates.js';
-import { loadColumnIntoFabric, renderMockupCanvas, setActivePage } from './canvas.js';
-import { renderMockupMatrix, getSelectedCellStyle } from './matrix.js';
+import { ARTBOARD_H, loadColumnIntoFabric, renderMockupCanvas, setActivePage, syncFabricObjectToModel } from './canvas.js';
+import { renderMockupMatrix, getSelectedCellStyle, addMockupPage, syncEditingAreaToSelectedPages } from './matrix.js';
 import { loadDeviceCategories, getDeviceCategoriesSync, deviceCategoryLabel } from './deviceCategories.js';
 
 loadDeviceCategories();
@@ -41,7 +41,7 @@ export function switchInspectorTab(tabId) {
 export function routeInspectorForLayer(layerId) {
   if (layerId === 'title' || layerId === 'subtitle') switchInspectorTab('text');
   else if (layerId === 'deviceOne' || layerId === 'deviceTwo') switchInspectorTab('dev');
-  else if (layerId?.startsWith('asset:') || layerId?.startsWith('decoration:')) switchInspectorTab('asset');
+  else if (layerId?.startsWith('asset:') || layerId?.startsWith('decoration:') || layerId?.startsWith('text:')) switchInspectorTab('asset');
   else switchInspectorTab('col');
 }
 
@@ -168,24 +168,16 @@ export function buildScreenLayersModel(column) {
       });
     });
   }
-  // Cross-page panorama assets that intersect this page -- same
-  // order-sorted column-index math as canvas.js/render.ts's projection, so
-  // "does this asset appear on this page" always agrees everywhere.
-  if (mockupProject?.panoramaAssets?.length) {
-    const orderedCols = [...mockupProject.columns].sort((a, b) => a.order - b.order);
-    const colIdx = orderedCols.findIndex((c) => c.id === column.id);
-    mockupProject.panoramaAssets.forEach((pa) => {
-      const localXPx = pa.xPx - colIdx * 1080;
-      const intersects = localXPx + pa.widthPx > 0 && localXPx < 1080;
-      if (!intersects) return;
+  if (style.textLayers) {
+    style.textLayers.forEach((txt, idx) => {
       layers.push({
-        id: `panorama:${pa.id}`,
-        type: "panorama",
-        icon: "↔️",
-        name: pa.name || "Panorama Asset (spans pages)",
-        visible: pa.visible !== false,
-        locked: !!pa.locked,
-        zIndex: pa.zIndex ?? 15,
+        id: `text:${idx}`,
+        type: "text",
+        icon: "🅣",
+        name: txt.customName || `Text Layer ${idx + 1}`,
+        visible: txt.visible !== false,
+        locked: !!txt.locked,
+        zIndex: txt.zIndex ?? (30 + idx),
       });
     });
   }
@@ -290,10 +282,7 @@ export function renderMockupLayersPanel(column) {
         toggleLayerLockInModel(column, lid);
         setMockupDirty(true);
         renderMockupLayersPanel(column);
-        // A panorama asset can appear on more than one open canvas --
-        // rebuild all of them (setActivePage), not just this one.
-        if (lid.startsWith("panorama:")) setActivePage(column.id);
-        else loadColumnIntoFabric(column);
+        loadColumnIntoFabric(column);
       };
     }
 
@@ -304,8 +293,7 @@ export function renderMockupLayersPanel(column) {
         toggleLayerVisibilityInModel(column, lid);
         setMockupDirty(true);
         renderMockupLayersPanel(column);
-        if (lid.startsWith("panorama:")) setActivePage(column.id);
-        else loadColumnIntoFabric(column);
+        loadColumnIntoFabric(column);
       };
     }
   });
@@ -428,19 +416,7 @@ async function applyDeviceColorToAllPages() {
   showToast("Color applied to all frames.", "success");
 }
 
-/** A panorama-tagged layer id ("panorama:<id>") lives in
- *  mockupProject.panoramaAssets, not any column's style -- resolve it there
- *  instead of the getSelectedCellStyle()-based lookups every other layer
- *  type uses. */
-function resolvePanoramaAsset(layerId) {
-  if (!layerId?.startsWith("panorama:")) return null;
-  const id = layerId.slice("panorama:".length);
-  return mockupProject?.panoramaAssets?.find((p) => p.id === id) ?? null;
-}
-
 export function setCustomLayerName(column, layerId, name) {
-  const pa = resolvePanoramaAsset(layerId);
-  if (pa) { pa.name = name; return; }
   const style = getSelectedCellStyle() || column.style;
   if (!style) return;
   if (layerId === "title" && style.title) style.title.customName = name;
@@ -449,6 +425,9 @@ export function setCustomLayerName(column, layerId, name) {
   else if (layerId.startsWith("asset:")) {
     const idx = parseInt(layerId.split(":")[1], 10);
     if (style.assetLayers?.[idx]) style.assetLayers[idx].customName = name;
+  } else if (layerId.startsWith("text:")) {
+    const idx = parseInt(layerId.split(":")[1], 10);
+    if (style.textLayers?.[idx]) style.textLayers[idx].customName = name;
   } else {
     const dev = resolveDeviceLayer(style, layerId);
     if (dev) dev.customName = name;
@@ -456,8 +435,6 @@ export function setCustomLayerName(column, layerId, name) {
 }
 
 export function toggleLayerVisibilityInModel(column, layerId) {
-  const pa = resolvePanoramaAsset(layerId);
-  if (pa) { pa.visible = pa.visible === false; return; }
   const style = getSelectedCellStyle() || column.style;
   if (!style) return;
   if (layerId === "title" && style.title) style.title.visible = style.title.visible === false;
@@ -466,6 +443,9 @@ export function toggleLayerVisibilityInModel(column, layerId) {
   else if (layerId.startsWith("asset:")) {
     const idx = parseInt(layerId.split(":")[1], 10);
     if (style.assetLayers?.[idx]) style.assetLayers[idx].visible = style.assetLayers[idx].visible === false;
+  } else if (layerId.startsWith("text:")) {
+    const idx = parseInt(layerId.split(":")[1], 10);
+    if (style.textLayers?.[idx]) style.textLayers[idx].visible = style.textLayers[idx].visible === false;
   } else {
     const dev = resolveDeviceLayer(style, layerId);
     if (dev) dev.visible = dev.visible === false;
@@ -473,8 +453,6 @@ export function toggleLayerVisibilityInModel(column, layerId) {
 }
 
 export function toggleLayerLockInModel(column, layerId) {
-  const pa = resolvePanoramaAsset(layerId);
-  if (pa) { pa.locked = !pa.locked; return; }
   const style = getSelectedCellStyle() || column.style;
   if (!style) return;
   if (layerId === "title" && style.title) style.title.locked = !style.title.locked;
@@ -483,6 +461,9 @@ export function toggleLayerLockInModel(column, layerId) {
   else if (layerId.startsWith("asset:")) {
     const idx = parseInt(layerId.split(":")[1], 10);
     if (style.assetLayers?.[idx]) style.assetLayers[idx].locked = !style.assetLayers[idx].locked;
+  } else if (layerId.startsWith("text:")) {
+    const idx = parseInt(layerId.split(":")[1], 10);
+    if (style.textLayers?.[idx]) style.textLayers[idx].locked = !style.textLayers[idx].locked;
   } else {
     const dev = resolveDeviceLayer(style, layerId);
     if (dev) dev.locked = !dev.locked;
@@ -559,8 +540,6 @@ export function reorderLayersInModel(column, fromId, toId, insertBefore) {
 }
 
 export function setLayerZIndex(column, layerId, zIndex) {
-  const pa = resolvePanoramaAsset(layerId);
-  if (pa) { pa.zIndex = zIndex; return; }
   const style = getSelectedCellStyle() || column.style;
   if (!style) return;
   if (layerId === "title" && style.title) style.title.zIndex = zIndex;
@@ -569,6 +548,9 @@ export function setLayerZIndex(column, layerId, zIndex) {
   else if (layerId.startsWith("asset:")) {
     const idx = parseInt(layerId.split(":")[1], 10);
     if (style.assetLayers?.[idx]) style.assetLayers[idx].zIndex = zIndex;
+  } else if (layerId.startsWith("text:")) {
+    const idx = parseInt(layerId.split(":")[1], 10);
+    if (style.textLayers?.[idx]) style.textLayers[idx].zIndex = zIndex;
   } else {
     const dev = resolveDeviceLayer(style, layerId);
     if (dev) dev.zIndex = zIndex;
@@ -673,6 +655,70 @@ export function renderMkAssetLayers(assetLayers = []) {
       }
     };
   });
+}
+
+export function renderMkTextLayers(textLayers = []) {
+  const container = document.getElementById("mk-text-layers-list");
+  if (!container) return;
+  container.innerHTML = textLayers.map((txt, idx) => `
+    <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.03); padding:0.4rem 0.6rem; border-radius:6px; margin-bottom:0.4rem; font-size:0.8rem;">
+      <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:140px;" title="${escapeHtml(txt.customName || txt.style?.text || '')}">${escapeHtml(txt.customName || txt.style?.text || 'Text ' + (idx + 1))}</span>
+      <button class="small danger mk-txt-del" data-txt-idx="${idx}" type="button">Remove</button>
+    </div>
+  `).join("");
+
+  container.querySelectorAll(".mk-txt-del").forEach(btn => {
+    btn.onclick = () => {
+      const idx = parseInt(btn.dataset.txtIdx, 10);
+      const style = getSelectedCellStyle() || selectedColumn?.style;
+      if (style?.textLayers) {
+        style.textLayers.splice(idx, 1);
+        setMockupDirty(true);
+        renderMkTextLayers(style.textLayers);
+        renderMockupLayersPanel(selectedColumn);
+        loadColumnIntoFabric(selectedColumn);
+      }
+    };
+  });
+}
+
+/** Simple content/color/size/align editing for the currently selected
+ *  free-form text layer -- deliberately NOT the TinyMCE rich-text editor
+ *  used for title/subtitle (that would be over-building this); a plain
+ *  textarea + basic font controls is sufficient per the task's own scope. */
+function syncTextLayerEditFields(style, layerId) {
+  const wrap = document.getElementById("mk-textlayer-edit");
+  if (!wrap) return;
+  const m = layerId && /^text:(\d+)$/.exec(layerId);
+  const txt = m ? style.textLayers?.[Number(m[1])] : null;
+  if (!txt) { wrap.style.display = "none"; return; }
+  wrap.style.display = "block";
+  const idx = Number(m[1]);
+
+  const contentEl = document.getElementById("mk-textlayer-content");
+  const colorEl = document.getElementById("mk-textlayer-color");
+  const sizeEl = document.getElementById("mk-textlayer-size");
+  const alignEl = document.getElementById("mk-textlayer-align");
+  if (contentEl) contentEl.value = txt.style?.text || "";
+  if (colorEl) colorEl.value = txt.style?.color || "#ffffff";
+  if (sizeEl) sizeEl.value = txt.style?.size ?? 48;
+  if (alignEl) alignEl.value = txt.style?.align || "center";
+
+  const commit = (mutate) => {
+    const s = getSelectedCellStyle() || selectedColumn?.style;
+    const t = s?.textLayers?.[idx];
+    if (!t) return;
+    if (!t.style) t.style = {};
+    mutate(t.style);
+    setMockupDirty(true);
+    renderMkTextLayers(s.textLayers);
+    renderMockupLayersPanel(selectedColumn);
+    loadColumnIntoFabric(selectedColumn);
+  };
+  if (contentEl) contentEl.oninput = () => commit((st) => { st.text = contentEl.value; });
+  if (colorEl) colorEl.oninput = () => commit((st) => { st.color = colorEl.value; });
+  if (sizeEl) sizeEl.oninput = () => commit((st) => { st.size = Number(sizeEl.value) || 48; });
+  if (alignEl) alignEl.onchange = () => commit((st) => { st.align = alignEl.value; });
 }
 
 export function syncSection2Inputs(col, layerId) {
@@ -797,12 +843,14 @@ export function syncSection2Inputs(col, layerId) {
 
   renderMkDecorations(style.decorations || []);
   renderMkAssetLayers(style.assetLayers || []);
+  renderMkTextLayers(style.textLayers || []);
+  syncTextLayerEditFields(style, lid);
   syncTransformPanelInputs(style, lid);
 
   const badge = document.getElementById("mockup-active-layer-badge");
   if (badge) {
     const m = lid && /^extra:(\d+)$/.exec(lid);
-    badge.textContent = lid === "title" ? "Title Text" : lid === "subtitle" ? "Subtitle Text" : lid === "deviceOne" ? "Device Frame 1" : lid === "deviceTwo" ? "Device Frame 2" : m ? `Device Frame ${Number(m[1]) + 3}` : lid?.startsWith("asset:") ? "Asset Layer" : lid === "background" ? "Background" : "Page";
+    badge.textContent = lid === "title" ? "Title Text" : lid === "subtitle" ? "Subtitle Text" : lid === "deviceOne" ? "Device Frame 1" : lid === "deviceTwo" ? "Device Frame 2" : m ? `Device Frame ${Number(m[1]) + 3}` : lid?.startsWith("asset:") ? "Asset Layer" : lid?.startsWith("text:") ? "Text Layer" : lid === "background" ? "Background" : "Page";
   }
 
   syncTextToolbar(style, lid);
@@ -1047,7 +1095,6 @@ export function alignSelectedObject(type) {
   }
 
   const ARTBOARD_W = 1080;
-  const ARTBOARD_H = 1920;
 
   if (activeObj) {
     const bbox = activeObj.getBoundingRect(true, true);
@@ -1213,7 +1260,7 @@ function syncObjectToolbar(style, layerId) {
   const hasSelection = !!layerId;
   const box = hasSelection ? getLayerBox(style, layerId) : null;
   const rot = document.getElementById("mk-obj-rotation");
-  if (rot && document.activeElement !== rot) rot.value = box ? Math.round(box.rotation ?? 0) : "";
+  if (rot && document.activeElement !== rot) rot.value = box ? normalizeRotationDeg(box.rotation ?? 0) : "";
 
   const pct = box ? Math.round((box.opacity ?? 1) * 100) : 100;
   const objSlider = document.getElementById("mk-obj-opacity-slider");
@@ -1248,7 +1295,7 @@ function syncObjectToolbar(style, layerId) {
    "mk-obj-align-left", "mk-obj-align-center", "mk-obj-align-right",
    "mk-obj-align-top", "mk-obj-align-middle", "mk-obj-align-bottom",
    "mk-obj-flip-h", "mk-obj-flip-v", "mk-obj-rotate-btn", "mk-obj-rotation",
-   "mk-obj-opacity-slider", "mk-obj-duplicate", "mk-obj-delete"].forEach((id) => {
+   "mk-obj-opacity-slider", "mk-obj-opacity-btn", "mk-obj-duplicate", "mk-obj-delete"].forEach((id) => {
     const el = document.getElementById(id);
     if (el) el.disabled = !hasSelection;
   });
@@ -1309,6 +1356,8 @@ export function setupObjectToolbarEvents() {
     opSlider.oninput = () => handleOpacityInput(opSlider.value);
     opSlider.onchange = () => commitOpacityChange(opSlider.value);
   }
+  const opBtn = document.getElementById("mk-obj-opacity-btn");
+  if (opBtn) opBtn.onclick = () => opSlider?.focus();
 
   // Device color controls in toolbar
   const tbRimPicker = document.getElementById("mk-obj-dev-border-color");
@@ -1377,29 +1426,6 @@ export function setupInspectorEvents() {
     const btn = document.getElementById(`mk-tab-${t}`);
     if (btn) btn.onclick = () => switchInspectorTab(t);
   });
-
-  // Cell override checkbox
-  const cellOverrideEl = document.getElementById("mk-cell-override");
-  if (cellOverrideEl) {
-    cellOverrideEl.onchange = async () => {
-      if (!mockupProject || !selectedColumn) return;
-      const { selectedCell } = await import('./matrix.js');
-      if (!selectedCell || !selectedCell.deviceRowId) return;
-      const key = `${selectedCell.deviceRowId}:${selectedCell.columnId}`;
-      if (!mockupProject.cells) mockupProject.cells = {};
-      if (cellOverrideEl.checked) {
-        // Deep clone -- a shallow spread aliases nested sub-objects (deviceOne, title, ...)
-        // with the base column style, so editing the "override" would silently mutate
-        // every other device row's style too.
-        mockupProject.cells[key] = JSON.parse(JSON.stringify(selectedColumn.style));
-      } else {
-        delete mockupProject.cells[key];
-      }
-      setMockupDirty(true);
-      renderMockupMatrix();
-      loadColumnIntoFabric(selectedColumn);
-    };
-  }
 
   // Layout preset change
   const layoutEl = document.getElementById("mk-layout");
@@ -1667,20 +1693,13 @@ export function setupInspectorEvents() {
   // Position/Transform numeric fields + align buttons (Section 2, universal across layer types)
   setupTransformPanelEvents();
 
-  // Add Asset Layer button & Add Sticker button
+  // Add Asset Layer button & Add Sticker button -- same real-image-upload
+  // behavior as every other "+ Add Asset Layer" button (toolbar, Layers card).
   const addAssetBtn = document.getElementById("mk-add-asset-layer-btn");
-  if (addAssetBtn) {
-    addAssetBtn.onclick = () => {
-      const style = getSelectedCellStyle() || selectedColumn?.style;
-      if (!style) return;
-      if (!style.assetLayers) style.assetLayers = [];
-      style.assetLayers.push({ xPct: 50, yPct: 50, widthPct: 30, heightPct: 40, rotation: 0, opacity: 1, customName: `Asset ${style.assetLayers.length + 1}` });
-      setMockupDirty(true);
-      renderMkAssetLayers(style.assetLayers);
-      renderMockupLayersPanel(selectedColumn);
-      loadColumnIntoFabric(selectedColumn);
-    };
-  }
+  if (addAssetBtn) addAssetBtn.onclick = () => openAssetUpload();
+
+  const addTextLayerBtn = document.getElementById("mk-add-text-layer-btn");
+  if (addTextLayerBtn) addTextLayerBtn.onclick = () => addTextLayer();
 
   const addDecBtn = document.getElementById("mk-decoration-add");
   if (addDecBtn) {
@@ -1722,7 +1741,6 @@ export function setupInspectorEvents() {
 /** Artboard reference (matches CANVAS in src/mockup/render.ts and the Fabric
  *  canvas dimensions in canvas.js -- the one place both agree). */
 const ARTBOARD_W = 1080;
-const ARTBOARD_H = 1920;
 /** Vertical center anchor a device's y% offset is measured from -- mirrors
  *  canvas.js's commitMoveableTransformToModel/renderTransformGizmoOverlay
  *  (deviceOne/extra anchor slightly higher than deviceTwo, matching their
@@ -1782,6 +1800,32 @@ export function moveSelectedLayerOrder(direction) {
   loadColumnIntoFabric(selectedColumn);
 }
 
+/** The layout preset's own built-in tilt for a device layer (e.g. the
+ *  airbnb-template two-device preset's -4deg/+4deg) -- 0 for every
+ *  non-device layer and for device layers the preset doesn't tilt. Matches
+ *  exactly what syncFabricObjectToModel already stores (canvas.js's
+ *  'deviceOne'/'deviceTwo' branches: `(obj.angle ?? 0) - transform.d1/d2.rotate`),
+ *  so getLayerBox/setLayerBox round-trip the SAME rotation value the canvas
+ *  itself uses -- without this, a visibly tilted device (from the preset
+ *  alone, `dev.rotation` itself still 0) read as 0 in both rotation inputs. */
+/** Normalizes a rotation degree value to (-180, 180], matching
+ *  rotateSelectedObject's own normalization -- so a displayed rotation
+ *  (which can be a preset tilt + stored rotation sum outside that range)
+ *  always reads the same short way the toolbar's commit path would store it. */
+function normalizeRotationDeg(deg) {
+  let n = Math.round(((deg % 360) + 360) % 360);
+  if (n > 180) n -= 360;
+  return n;
+}
+
+export function presetRotate(style, layerId) {
+  if (layerId !== "deviceOne" && layerId !== "deviceTwo") return 0;
+  const preset = getLayoutPresetClient(style.layout);
+  const transform = presentationTransformClient(preset.presentation);
+  if (layerId === "deviceOne") return transform.d1?.rotate || 0;
+  return transform.d2?.rotate || 0;
+}
+
 export function getLayerBox(style, layerId) {
   if (layerId === "title" || layerId === "subtitle") {
     const t = style[layerId];
@@ -1804,17 +1848,20 @@ export function getLayerBox(style, layerId) {
       flipV: !!ast.flipV,
     };
   }
-  const pa = resolvePanoramaAsset(layerId);
-  if (pa) {
+  if (layerId.startsWith("text:")) {
+    const idx = parseInt(layerId.split(":")[1], 10);
+    const txt = style.textLayers?.[idx];
+    if (!txt) return null;
+    const width = (txt.widthPct / 100) * ARTBOARD_W;
+    const height = txt.heightPct ? (txt.heightPct / 100) * ARTBOARD_H : width * 0.5;
     return {
-      x: pa.xPx ?? 0,
-      y: (pa.yPct / 100) * ARTBOARD_H,
-      width: pa.widthPx ?? 300,
-      height: (pa.heightPct / 100) * ARTBOARD_H,
-      rotation: pa.rotation || 0,
-      opacity: pa.opacity ?? 1,
-      flipH: !!pa.flipH,
-      flipV: !!pa.flipV,
+      x: (txt.xPct / 100) * ARTBOARD_W,
+      y: (txt.yPct / 100) * ARTBOARD_H,
+      width, height,
+      rotation: txt.rotation || 0,
+      opacity: txt.opacity ?? 1,
+      flipH: false,
+      flipV: false,
     };
   }
   const dev = resolveDeviceLayer(style, layerId);
@@ -1823,7 +1870,7 @@ export function getLayerBox(style, layerId) {
     const height = 960 * (dev.size / 90);
     const cx = ARTBOARD_W / 2 + (dev.x / 100) * ARTBOARD_W;
     const cy = deviceCenterYBase(layerId) + (dev.y / 100) * ARTBOARD_H;
-    return { x: cx - width / 2, y: cy - height / 2, width, height, rotation: dev.rotation || 0, opacity: 1, flipH: !!dev.flipH, flipV: !!dev.flipV };
+    return { x: cx - width / 2, y: cy - height / 2, width, height, rotation: presetRotate(style, layerId) + (dev.rotation || 0), opacity: 1, flipH: !!dev.flipH, flipV: !!dev.flipV };
   }
   return null;
 }
@@ -1854,11 +1901,16 @@ export function setLayerBox(style, layerId, box) {
     if (box.flipV !== undefined) ast.flipV = !!box.flipV;
     return;
   }
-  const pa = resolvePanoramaAsset(layerId);
-  if (pa) {
-    if (box.flipH !== undefined) pa.flipH = !!box.flipH;
-    if (box.flipV !== undefined) pa.flipV = !!box.flipV;
-    if (box.opacity !== undefined) pa.opacity = Math.max(0, Math.min(1, box.opacity));
+  if (layerId.startsWith("text:")) {
+    const idx = parseInt(layerId.split(":")[1], 10);
+    const txt = style.textLayers?.[idx];
+    if (!txt) return;
+    txt.widthPct = Math.round((box.width / ARTBOARD_W) * 100);
+    txt.heightPct = Math.round((box.height / ARTBOARD_H) * 100);
+    txt.xPct = Math.round((box.x / ARTBOARD_W) * 100);
+    txt.yPct = Math.round((box.y / ARTBOARD_H) * 100);
+    txt.rotation = Math.round(box.rotation ?? 0);
+    if (box.opacity !== undefined) txt.opacity = Math.max(0, Math.min(1, box.opacity));
     return;
   }
   const dev = resolveDeviceLayer(style, layerId);
@@ -1868,13 +1920,13 @@ export function setLayerBox(style, layerId, box) {
     dev.size = Math.round((box.width / 480) * 90);
     dev.x = Math.round(((cx - ARTBOARD_W / 2) / ARTBOARD_W) * 100);
     dev.y = Math.round(((cy - deviceCenterYBase(layerId)) / ARTBOARD_H) * 100);
-    dev.rotation = Math.round(box.rotation ?? 0);
+    dev.rotation = Math.round((box.rotation ?? 0) - presetRotate(style, layerId));
     if (box.flipH !== undefined) dev.flipH = !!box.flipH;
     if (box.flipV !== undefined) dev.flipV = !!box.flipV;
   }
 }
 
-export function duplicateSelectedLayer() {
+export async function duplicateSelectedLayer() {
   if (!selectedColumn) return;
   const style = getSelectedCellStyle() || selectedColumn.style;
   if (!style) return;
@@ -1890,6 +1942,18 @@ export function duplicateSelectedLayer() {
     style.assetLayers.splice(idx + 1, 0, clone);
     setMockupDirty(true);
     setSelectedLayerId(`asset:${idx + 1}`);
+  } else if (selectedLayerId.startsWith("text:")) {
+    const idx = parseInt(selectedLayerId.split(":")[1], 10);
+    const txt = style.textLayers?.[idx];
+    if (!txt) return;
+    const clone = JSON.parse(JSON.stringify(txt));
+    clone.id = `text_${Date.now()}`;
+    clone.customName = (txt.customName || "Text") + " Copy";
+    clone.xPct = Math.min(95, (txt.xPct ?? 50) + 4);
+    clone.yPct = Math.min(95, (txt.yPct ?? 50) + 4);
+    style.textLayers.splice(idx + 1, 0, clone);
+    setMockupDirty(true);
+    setSelectedLayerId(`text:${idx + 1}`);
   } else {
     const dev = resolveDeviceLayer(style, selectedLayerId);
     if (!dev) { showToast("This layer can't be duplicated.", "error"); return; }
@@ -1904,7 +1968,7 @@ export function duplicateSelectedLayer() {
   }
   renderMockupLayersPanel(selectedColumn);
   syncSection2Inputs(selectedColumn);
-  loadColumnIntoFabric(selectedColumn);
+  await syncEditingAreaToSelectedPages();
 }
 
 export async function deleteSelectedLayer() {
@@ -1922,45 +1986,53 @@ export async function deleteSelectedLayer() {
   if (!ok) return;
 
   const style = getSelectedCellStyle() || selectedColumn.style;
-  const pa = resolvePanoramaAsset(selectedLayerId);
-
-  if (pa) {
-    const idx = mockupProject.panoramaAssets.indexOf(pa);
-    if (idx !== -1) mockupProject.panoramaAssets.splice(idx, 1);
-    setSelectedLayerId(null);
-    setMockupDirty(true);
-    renderMockupLayersPanel(selectedColumn);
-    syncSection2Inputs(selectedColumn);
-    setActivePage(selectedColumn.id);
-    showToast(`"${layerName}" deleted.`, "success");
-    return;
-  }
 
   if (!style) return;
+  let removed = false;
   if (selectedLayerId === "deviceOne") {
     if (style.deviceOne) {
       style.deviceOne.deleted = true;
       style.deviceOne.visible = false;
+      removed = true;
+    }
+  } else if (selectedLayerId.startsWith("panoramaDevice:")) {
+    // panoramaDevice:<ownerColId>:<key> -- a spanning device mirrored onto this page; delete the owner's device.
+    const [, ownerId, key] = selectedLayerId.split(":");
+    const ownerDev = mockupProject?.columns?.find((c) => c.id === ownerId)?.style?.[key];
+    if (ownerDev) {
+      ownerDev.deleted = true;
+      ownerDev.visible = false;
+      removed = true;
     }
   } else if (selectedLayerId === "deviceTwo") {
     if (style.deviceTwo) {
       style.deviceTwo.deleted = true;
       style.deviceTwo.visible = false;
+      removed = true;
     }
   } else if (/^extra:\d+$/.test(selectedLayerId)) {
     const idx = parseInt(selectedLayerId.split(":")[1], 10);
     if (style.extraDevices?.[idx]) {
       style.extraDevices.splice(idx, 1);
+      removed = true;
     }
   } else if (selectedLayerId.startsWith("asset:")) {
     const idx = parseInt(selectedLayerId.split(":")[1], 10);
     if (style.assetLayers?.[idx]) {
       style.assetLayers.splice(idx, 1);
+      removed = true;
     }
   } else if (selectedLayerId.startsWith("decoration:")) {
     const idx = parseInt(selectedLayerId.split(":")[1], 10);
     if (style.decorations?.[idx]) {
       style.decorations.splice(idx, 1);
+      removed = true;
+    }
+  } else if (selectedLayerId.startsWith("text:")) {
+    const idx = parseInt(selectedLayerId.split(":")[1], 10);
+    if (style.textLayers?.[idx]) {
+      style.textLayers.splice(idx, 1);
+      removed = true;
     }
   } else if (selectedLayerId === "title" || selectedLayerId === "subtitle") {
     const t = style[selectedLayerId];
@@ -1968,15 +2040,79 @@ export async function deleteSelectedLayer() {
       t.deleted = true;
       t.text = "";
       t.visible = false;
+      removed = true;
     }
   }
 
+  if (!removed) {
+    showToast("This layer can't be deleted.", "error");
+    return;
+  }
   setSelectedLayerId(null);
   setMockupDirty(true);
   renderMockupLayersPanel(selectedColumn);
   syncSection2Inputs(selectedColumn);
-  loadColumnIntoFabric(selectedColumn);
+  await syncEditingAreaToSelectedPages();
   showToast(`"${layerName}" deleted.`, "success");
+}
+
+/** Opens the shared native file picker for adding a real-image asset layer --
+ *  the one behavior every "+ Add Asset Layer" button (toolbar, Layers card,
+ *  Assets tab) now triggers, via #mockup-asset-upload-input's onchange
+ *  handler in main.js (which uploads the file and appends the resulting
+ *  asset layer to the selected page). */
+export function openAssetUpload() {
+  document.getElementById("mockup-asset-upload-input")?.click();
+}
+
+/** Adds a device layer to the current page: un-deletes Device Frame 1 if it
+ *  was removed, otherwise appends a new free-form extra device layer. Shared
+ *  by the toolbar's "+ Add Device Layer" button and the Layers card's own
+ *  button of the same name -- one function, one behavior everywhere. */
+export function addDeviceLayer() {
+  if (!selectedColumn) return;
+  const style = getSelectedCellStyle() || selectedColumn.style;
+  if (!style) return;
+  if (style.deviceOne?.deleted) {
+    style.deviceOne.deleted = false;
+    style.deviceOne.visible = true;
+    setSelectedLayerId("deviceOne");
+  } else {
+    if (!style.extraDevices) style.extraDevices = [];
+    style.extraDevices.push({ size: 70, x: 0, y: 0, rotation: 0, brightness: 100, frameless: false, customName: `Device Frame ${style.extraDevices.length + 3}` });
+    setSelectedLayerId(`extra:${style.extraDevices.length - 1}`);
+  }
+  setMockupDirty(true);
+  renderMockupLayersPanel(selectedColumn);
+  syncSection2Inputs(selectedColumn);
+  loadColumnIntoFabric(selectedColumn);
+}
+
+/** Adds a new free-form text layer to the current page -- shared by the
+ *  toolbar's "+ Text" button and the Layers card's own button of the same
+ *  name, mirroring addDeviceLayer()'s shape exactly. */
+export function addTextLayer() {
+  if (!selectedColumn) return;
+  const style = getSelectedCellStyle() || selectedColumn.style;
+  if (!style) return;
+  if (!style.textLayers) style.textLayers = [];
+  const idx = style.textLayers.length;
+  style.textLayers.push({
+    id: `text_${Date.now()}`,
+    xPct: 50 - 20,
+    yPct: 45,
+    widthPct: 40,
+    rotation: 0,
+    opacity: 1,
+    customName: `Text Layer ${idx + 1}`,
+    style: { text: "New Text", color: "#ffffff", size: 48, align: "center" },
+  });
+  setSelectedLayerId(`text:${idx}`);
+  setMockupDirty(true);
+  renderMockupLayersPanel(selectedColumn);
+  syncSection2Inputs(selectedColumn);
+  routeInspectorForLayer(`text:${idx}`);
+  loadColumnIntoFabric(selectedColumn);
 }
 
 /** Wires the universal Position & Transform card (Section 2): numeric
@@ -1985,7 +2121,10 @@ export async function deleteSelectedLayer() {
  *  setLayerBox so one code path covers every transformable layer kind. */
 export function setupTransformPanelEvents() {
   const $id = (id) => document.getElementById(id);
-  const fields = ["mk-pos-x", "mk-pos-y", "mk-pos-w", "mk-pos-h", "mk-pos-rot", "mk-pos-opacity"];
+  // mk-pos-rot is deliberately excluded here -- it commits on change/Enter
+  // (see below), matching the toolbar's mk-obj-rotation, not on every
+  // keystroke like the other fields.
+  const fields = ["mk-pos-x", "mk-pos-y", "mk-pos-w", "mk-pos-h", "mk-pos-opacity"];
 
   function currentBox() {
     if (!selectedColumn) return null;
@@ -2013,9 +2152,15 @@ export function setupTransformPanelEvents() {
       else if (id === "mk-pos-y") commit({ y: v });
       else if (id === "mk-pos-w") commit({ width: v });
       else if (id === "mk-pos-h") commit({ height: v });
-      else if (id === "mk-pos-rot") rotateSelectedObject(v, false);
       else if (id === "mk-pos-opacity") commitOpacityChange(v);
     };
+  }
+
+  const posRotEl = $id("mk-pos-rot");
+  if (posRotEl) {
+    const applyPosRot = () => rotateSelectedObject(Number(posRotEl.value) || 0, false);
+    posRotEl.onchange = applyPosRot;
+    posRotEl.onkeydown = (e) => { if (e.key === "Enter") applyPosRot(); };
   }
 
   const rotApplyBtn = $id("mk-rot-apply-btn");
@@ -2049,26 +2194,14 @@ export function setupTransformPanelEvents() {
   if ($id("mk-align-bottom")) $id("mk-align-bottom").onclick = () => alignSelectedObject("bottom");
 
   const addDeviceLayerBtn = $id("mk-add-device-layer-btn");
-  if (addDeviceLayerBtn) {
-    addDeviceLayerBtn.onclick = () => {
-      if (!selectedColumn) return;
-      const style = getSelectedCellStyle() || selectedColumn.style;
-      if (!style) return;
-      if (style.deviceOne?.deleted) {
-        style.deviceOne.deleted = false;
-        style.deviceOne.visible = true;
-        setSelectedLayerId("deviceOne");
-      } else {
-        if (!style.extraDevices) style.extraDevices = [];
-        style.extraDevices.push({ size: 70, x: 0, y: 0, rotation: 0, brightness: 100, frameless: false, customName: `Device Frame ${style.extraDevices.length + 3}` });
-        setSelectedLayerId(`extra:${style.extraDevices.length - 1}`);
-      }
-      setMockupDirty(true);
-      renderMockupLayersPanel(selectedColumn);
-      syncSection2Inputs(selectedColumn);
-      loadColumnIntoFabric(selectedColumn);
-    };
-  }
+  if (addDeviceLayerBtn) addDeviceLayerBtn.onclick = addDeviceLayer;
+
+  const layersAddPageBtn = $id("mk-layers-add-page-btn");
+  if (layersAddPageBtn) layersAddPageBtn.onclick = () => addMockupPage();
+  const layersAddAssetBtn = $id("mk-layers-add-asset-btn");
+  if (layersAddAssetBtn) layersAddAssetBtn.onclick = () => openAssetUpload();
+  const layersAddTextBtn = $id("mk-layers-add-text-btn");
+  if (layersAddTextBtn) layersAddTextBtn.onclick = () => addTextLayer();
 
   const linkPageBtn = $id("mk-link-paired-page");
   if (linkPageBtn) {
@@ -2104,7 +2237,7 @@ function syncTransformPanelInputs(style, layerId) {
   set("mk-pos-y", Math.round(box.y));
   set("mk-pos-w", Math.round(box.width));
   set("mk-pos-h", Math.round(box.height));
-  set("mk-pos-rot", Math.round(box.rotation));
+  set("mk-pos-rot", normalizeRotationDeg(box.rotation ?? 0));
   const pct = Math.round((box.opacity ?? 1) * 100);
   set("mk-pos-opacity", pct);
   set("mk-pos-opacity-slider", pct);
@@ -2129,38 +2262,162 @@ function syncTransformPanelInputs(style, layerId) {
 }
 
 let activeDeviceFilter = "all";
+let selectedLibraryDeviceId = null;
+let uploadedSvgContent = null;
+
+export function setupDeviceLibraryHandlers() {
+  const addBtn = document.getElementById("mockup-device-add-svg-btn");
+  const removeBtn = document.getElementById("mockup-device-remove-mode-btn");
+  const modal = document.getElementById("modal-add-svg-device");
+  const closeBtn = document.getElementById("modal-add-svg-close");
+  const cancelBtn = document.getElementById("modal-add-svg-cancel");
+  const submitBtn = document.getElementById("modal-add-svg-submit");
+  const dropzone = document.getElementById("svg-device-file-dropzone");
+  const fileInput = document.getElementById("svg-device-file-input");
+  const filePrompt = document.getElementById("svg-device-file-prompt");
+  const fileInfo = document.getElementById("svg-device-file-info");
+
+  if (addBtn && !addBtn.dataset.initialized) {
+    addBtn.dataset.initialized = "true";
+    addBtn.onclick = () => {
+      if (modal) {
+        modal.style.display = "flex";
+        uploadedSvgContent = null;
+        if (fileInput) fileInput.value = "";
+        const titleInput = document.getElementById("svg-device-title-input");
+        if (titleInput) titleInput.value = "";
+        if (filePrompt) filePrompt.style.display = "block";
+        if (fileInfo) { fileInfo.style.display = "none"; fileInfo.textContent = ""; }
+      }
+    };
+  }
+
+  if (removeBtn && !removeBtn.dataset.initialized) {
+    removeBtn.dataset.initialized = "true";
+    removeBtn.onclick = async () => {
+      if (!selectedLibraryDeviceId) {
+        showToast("Please click a device card to select it first before removing.", "warning");
+        return;
+      }
+
+      try {
+        const { devices } = await api("/api/mockups/devices-library");
+        const dev = devices.find((d) => d.id === selectedLibraryDeviceId);
+        const devName = dev?.name || selectedLibraryDeviceId;
+
+        const confirmed = await showConfirm(`Are you sure you want to remove "${devName}" from the central device library?`);
+        if (!confirmed) return;
+
+        await api(`/api/mockups/devices-library/${encodeURIComponent(selectedLibraryDeviceId)}`, { method: "DELETE" });
+        showToast(`Removed device "${devName}" from library.`, "success");
+        selectedLibraryDeviceId = null;
+        renderMockupDevicesSection();
+      } catch (err) {
+        showAlert("Failed to delete device: " + err.message, "error");
+      }
+    };
+  }
+
+  const closeModal = () => {
+    if (modal) modal.style.display = "none";
+  };
+
+  if (closeBtn) closeBtn.onclick = closeModal;
+  if (cancelBtn) cancelBtn.onclick = closeModal;
+
+  if (dropzone && fileInput && !dropzone.dataset.initialized) {
+    dropzone.dataset.initialized = "true";
+    dropzone.onclick = () => fileInput.click();
+
+    dropzone.ondragover = (e) => {
+      e.preventDefault();
+      dropzone.style.borderColor = "#10b981";
+    };
+
+    dropzone.ondragleave = () => {
+      dropzone.style.borderColor = "rgba(255,255,255,0.2)";
+    };
+
+    dropzone.ondrop = (e) => {
+      e.preventDefault();
+      dropzone.style.borderColor = "rgba(255,255,255,0.2)";
+      if (e.dataTransfer.files?.length > 0) {
+        fileInput.files = e.dataTransfer.files;
+        handleSvgFileSelect(e.dataTransfer.files[0]);
+      }
+    };
+
+    fileInput.onchange = (e) => {
+      if (e.target.files?.length > 0) {
+        handleSvgFileSelect(e.target.files[0]);
+      }
+    };
+  }
+
+  function handleSvgFileSelect(file) {
+    if (!file || (!file.name.endsWith(".svg") && file.type !== "image/svg+xml")) {
+      showAlert("Please select a valid .svg file.");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      uploadedSvgContent = evt.target.result;
+      if (filePrompt) filePrompt.style.display = "none";
+      if (fileInfo) {
+        fileInfo.style.display = "block";
+        fileInfo.textContent = `✓ ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+      }
+      const titleInput = document.getElementById("svg-device-title-input");
+      if (titleInput && !titleInput.value.trim()) {
+        const cleanName = file.name.replace(/\.svg$/i, "").replace(/[-_]+/g, " ");
+        titleInput.value = cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  if (submitBtn && !submitBtn.dataset.initialized) {
+    submitBtn.dataset.initialized = "true";
+    submitBtn.onclick = async () => {
+      const titleInput = document.getElementById("svg-device-title-input");
+      const vendorInput = document.getElementById("svg-device-vendor-input");
+      const formFactorInput = document.getElementById("svg-device-form-factor-input");
+
+      const name = titleInput?.value.trim();
+      if (!name) return showAlert("Please enter a device title.");
+      if (!uploadedSvgContent) return showAlert("Please upload an SVG file.");
+
+      try {
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Saving...";
+        await api("/api/mockups/devices-library/add-svg", {
+          method: "POST",
+          body: {
+            name,
+            vendor: vendorInput?.value || "generic",
+            formFactor: formFactorInput?.value || "phone",
+            svgContent: uploadedSvgContent
+          }
+        });
+        showToast(`Successfully added device "${name}" to central library!`, "success");
+        closeModal();
+        renderMockupDevicesSection();
+      } catch (err) {
+        showAlert("Failed to add SVG device: " + err.message, "error");
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Save & Add Device";
+      }
+    };
+  }
+}
 
 export async function renderMockupDevicesSection() {
-  const list = document.getElementById("mockup-device-list");
-  if (list) list.innerHTML = "";
-  if (!mockupProject) return;
-  const selectEl = document.getElementById("mockup-preview-device");
-  if (selectEl) selectEl.innerHTML = (mockupProject.devices || []).map((d) => `<option value="${d.id}">${d.label}</option>`).join("");
+  setupDeviceLibraryHandlers();
 
-  if (list && Array.isArray(mockupProject.devices)) {
-    for (const row of mockupProject.devices) {
-      const el = document.createElement("div");
-      el.className = "provider-row";
-      el.innerHTML = `
-        <span class="provider-name">${row.label}</span>
-        <span class="provider-meta">${row.deviceId}${row.isBase ? " (base)" : ""}</span>
-        <label class="checkbox-row" style="margin:0"><input type="checkbox" ${row.previewsVisible ? "checked" : ""} class="row-visible" /> Visible</label>
-        <button class="small danger" type="button">Remove</button>
-      `;
-      el.querySelector(".row-visible").onchange = async (e) => {
-        await api(`/api/mockups/${mockupId}/devices/${row.id}`, { method: "PATCH", body: { previewsVisible: e.target.checked } });
-        const updated = await api(`/api/mockups/${mockupId}`);
-        setMockupProject(updated);
-      };
-      el.querySelector("button.danger").onclick = async () => {
-        await api(`/api/mockups/${mockupId}/devices/${row.id}`, { method: "DELETE" });
-        const updated = await api(`/api/mockups/${mockupId}`);
-        setMockupProject(updated);
-        renderMockupDevicesSection();
-        renderMockupMatrix();
-      };
-      list.appendChild(el);
-    }
+  const selectEl = document.getElementById("mockup-preview-device");
+  if (selectEl && mockupProject) {
+    selectEl.innerHTML = (mockupProject.devices || []).map((d) => `<option value="${d.id}">${d.label}</option>`).join("");
   }
 
   // Filter Pills setup
@@ -2185,8 +2442,6 @@ export async function renderMockupDevicesSection() {
       const { devices } = await api("/api/mockups/devices-library");
       grid.innerHTML = "";
 
-      const baseDevice = (mockupProject.devices || []).find((d) => d.isBase) || mockupProject.devices?.[0];
-
       const filteredDevices = devices.filter((dev) => {
         if (activeDeviceFilter === "all") return true;
         if (activeDeviceFilter === "apple") return dev.id.startsWith("apple") || dev.id.startsWith("ipad");
@@ -2197,13 +2452,13 @@ export async function renderMockupDevicesSection() {
       });
 
       for (const dev of filteredDevices) {
-        const isCurrentBase = baseDevice?.deviceId === dev.id;
+        const isSelected = selectedLibraryDeviceId === dev.id;
         const brandLabel = dev.id.startsWith("apple") || dev.id.startsWith("ipad") ? "Apple"
           : dev.id.startsWith("google") ? "Google"
           : dev.id.startsWith("samsung") ? "Samsung" : "Generic";
 
         const card = document.createElement("div");
-        card.className = `device-lib-card ${isCurrentBase ? "is-active-base" : ""}`;
+        card.className = `device-lib-card ${isSelected ? "is-selected" : ""}`;
         card.innerHTML = `
           <div class="device-lib-preview-box">${dev.svgFrame || '<div style="color:#6b7280; font-size:12px;">Frame Preview</div>'}</div>
           <div class="device-lib-card-info">
@@ -2213,24 +2468,62 @@ export async function renderMockupDevicesSection() {
               <span class="device-lib-badge">${dev.width} &times; ${dev.height}</span>
             </div>
           </div>
-          <button class="device-lib-card-btn" type="button" ${isCurrentBase ? "disabled" : ""}>
-            ${isCurrentBase ? "✓ Active Base Device" : "Use as Base Device"}
-          </button>
+          <button class="device-lib-card-btn" type="button">Use Device</button>
         `;
 
-        if (!isCurrentBase) {
-          card.querySelector("button").onclick = async () => {
-            if (!mockupProject) return;
-            const targetBase = (mockupProject.devices || []).find((d) => d.isBase) || mockupProject.devices?.[0];
-            if (targetBase) {
-              targetBase.deviceId = dev.id;
-              targetBase.label = dev.name;
-              await saveCurrentMockupProject();
-              renderMockupCanvas();
-              renderMockupMatrix();
-              renderMockupDevicesSection();
-              await showAlert(`Updated base device frame to ${dev.name}.`);
+        // Card Container Click -> Selects device (displays blue border highlight)
+        card.onclick = (e) => {
+          if (e.target.closest(".device-lib-card-btn")) return;
+          selectedLibraryDeviceId = dev.id;
+          grid.querySelectorAll(".device-lib-card").forEach((c) => c.classList.remove("is-selected"));
+          card.classList.add("is-selected");
+        };
+
+        // "Use Device" Button Click -> Applies device across ALL pages of current template
+        const useBtn = card.querySelector(".device-lib-card-btn");
+        if (useBtn) {
+          useBtn.onclick = async (e) => {
+            e.stopPropagation();
+            if (!mockupProject) return showAlert("Please select or create a project first from the Projects tab.");
+
+            // Update project device rows
+            if (!Array.isArray(mockupProject.devices) || mockupProject.devices.length === 0) {
+              mockupProject.devices = [{ id: "row-1", deviceId: dev.id, label: dev.name, previewsVisible: true, isBase: true }];
+            } else {
+              const base = mockupProject.devices.find((d) => d.isBase) || mockupProject.devices[0];
+              base.deviceId = dev.id;
+              base.label = dev.name;
             }
+
+            // Dynamically update ALL pages of the active template
+            if (Array.isArray(mockupProject.columns)) {
+              for (const col of mockupProject.columns) {
+                if (col.style) {
+                  if (col.style.deviceOne) {
+                    const targetW = (col.style.layout || "").includes("two-devices") ? 1080 * 0.72 : 1080 * 0.78;
+                    const wScale = targetW / (dev.width || 1080);
+                    const hScale = (1920 * 0.82) / (dev.height || 1920);
+                    col.style.deviceOne.size = Math.round(90 * Math.min(wScale, hScale));
+                  }
+                  if (col.style.deviceTwo) {
+                    const targetW = 1080 * 0.72;
+                    const wScale = targetW / (dev.width || 1080);
+                    const hScale = (1920 * 0.82) / (dev.height || 1920);
+                    col.style.deviceTwo.size = Math.round(90 * Math.min(wScale, hScale));
+                  }
+                  if (col.templateDefaultStyle) {
+                    if (col.templateDefaultStyle.deviceOne) col.templateDefaultStyle.deviceOne.size = col.style.deviceOne?.size ?? 90;
+                    if (col.templateDefaultStyle.deviceTwo) col.templateDefaultStyle.deviceTwo.size = col.style.deviceTwo?.size ?? 90;
+                  }
+                }
+              }
+            }
+
+            await saveCurrentMockupProject();
+            renderMockupCanvas();
+            renderMockupMatrix();
+            renderMockupDevicesSection();
+            showToast(`Applied "${dev.name}" frame across all ${mockupProject.columns?.length || 0} page(s) of this template.`, "success");
           };
         }
 

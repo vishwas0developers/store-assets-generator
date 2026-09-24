@@ -1,4 +1,4 @@
-import { addColumn, addDeviceRow, defaultColumnStyle, type ColumnStyle, type MockupProject } from "./project.js";
+import { addColumn, addDeviceRow, defaultColumnStyle, ensureSizeRows, type ColumnStyle, type MockupProject } from "./project.js";
 import { DEVICE_REGISTRY, resolveGeometry } from "../devices/registry.js";
 import { getLayoutPreset } from "./layouts.js";
 
@@ -475,11 +475,12 @@ function sizeForDevice(deviceId: string, variant: string | undefined, targetWidt
   const device = DEVICE_REGISTRY[deviceId] ?? DEVICE_REGISTRY["phone"];
   const geometry = resolveGeometry(device, variant);
   const widthScale = targetWidthPx / geometry.width;
+  // ponytail: still targets a 1920 canvas; retune only if pages look too empty at 2400.
   const heightScale = maxHeightPx / geometry.height;
   return Math.round(90 * Math.min(widthScale, heightScale));
 }
 
-export function applyMockupTemplate(project: MockupProject, templateId: string): void {
+export function applyMockupTemplate(project: MockupProject, templateId: string, platform?: string): void {
   const template = MOCKUP_TEMPLATES.find((t) => t.id === templateId);
   if (!template) throw new Error(`Unknown template '${templateId}'.`);
 
@@ -488,6 +489,9 @@ export function applyMockupTemplate(project: MockupProject, templateId: string):
   project.cells = {};
 
   template.devices.forEach((d, i) => addDeviceRow(project, { deviceId: d.deviceId, label: d.label, variant: d.variant, previewsVisible: true, isBase: i === 0 }));
+
+  // Real project callers pass platform so rows match its size targets; thumbnail scratch renders omit it.
+  if (platform) ensureSizeRows(project, platform);
 
   const preset = getLayoutPreset(template.layout);
   const targetWidth = preset.twoDevices ? CANVAS_WIDTH * 0.72 : CANVAS_WIDTH * 0.78;

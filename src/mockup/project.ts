@@ -44,6 +44,8 @@ export interface MockupDeviceRow {
   /** config/devices.json id. */
   deviceId: string;
   variant?: string;
+  /** Platform size target key (see sizeTargets.ts); unset on legacy rows until ensureSizeRows runs. */
+  sizeKey?: string;
   /** Free label shown in the row header, e.g. "6.5 Inch". */
   label: string;
   previewsVisible: boolean;
@@ -172,11 +174,10 @@ export interface DeviceLayerStyle {
    *  positioning for the X axis only -- Y/size/rotation/brightness/frameless
    *  stay exactly as governed by this column's own fields, unaffected. The
    *  device then renders (and is projected onto) every page its box
-   *  intersects, exactly like PanoramaAssetLayer, as ONE continuous object
-   *  rather than a duplicated copy per page. Unset (the default) means
-   *  "normal single-page device, positioned as always" -- additive/optional,
-   *  zero behavior change for any existing project until a user drags a
-   *  device far enough to cross a page boundary. */
+   *  intersects, as ONE continuous object rather than a duplicated copy per
+   *  page. Unset (the default) means "normal single-page device, positioned
+   *  as always" -- additive/optional, zero behavior change for any existing
+   *  project until a user drags a device far enough to cross a page boundary. */
   panoramaXPx?: number;
 }
 
@@ -217,6 +218,36 @@ export interface MockupAssetLayer {
   shadow?: { color: string; blur: number; x: number; y: number };
 }
 
+/** A free-form, multi-instance text layer -- unlike `ColumnStyle.title`/
+ *  `.subtitle` (each a single fixed TextStyle slot per page), a page can
+ *  hold any number of these, each independently positioned/sized/rotated,
+ *  same percentage convention as `MockupAssetLayer` (xPct/yPct/widthPct/
+ *  heightPct, top-left anchored, matching render.ts's plain `left/top: X%`
+ *  and canvas.js's `(pct/100) * 1080|1920` top-left math). Text content and
+ *  formatting reuse `TextStyle`'s existing shape (`style.text`, color, size,
+ *  align, bold/italic/underline/fontFamily/etc) instead of duplicating a
+ *  parallel set of font fields -- `TextStyle`'s own x/y/rotation/opacity/
+ *  visible/locked/customName/zIndex fields (designed for the single
+ *  px-positioned title/subtitle slot) are simply unused here; THIS
+ *  interface's own xPct/yPct/rotation/opacity/visible/locked/customName/
+ *  zIndex fields are authoritative for a TextLayer. */
+export interface TextLayer {
+  id: string;
+  xPct: number;
+  yPct: number;
+  widthPct: number;
+  heightPct?: number;
+  rotation: number;
+  opacity: number;
+  visible?: boolean;
+  locked?: boolean;
+  /** Custom human-readable name for this layer */
+  customName?: string;
+  zIndex?: number;
+  /** Text content + all styling/formatting -- see interface doc comment. */
+  style: TextStyle;
+}
+
 export interface ColumnStyle {
   layout: string; // preset slug, see mockup/layouts.ts
   title: TextStyle;
@@ -231,6 +262,11 @@ export interface ColumnStyle {
   extraDevices?: DeviceLayerStyle[];
   decorations: Decoration[];
   assetLayers?: MockupAssetLayer[];
+  /** Free-form, multi-instance text layers -- distinct from the single
+   *  fixed title/subtitle slots above. Additive/optional, same lazy-compat
+   *  pattern as assetLayers -- unset for every existing project until a
+   *  user adds one via "+ Add Text". */
+  textLayers?: TextLayer[];
 }
 
 /** A device layer plus a stable key identifying its slot within the column
@@ -361,31 +397,6 @@ export interface MockupColumn {
  *  names, UI labels) first. New code should prefer `MockupPage`. */
 export type MockupPage = MockupColumn;
 
-/** An asset that can span more than one page, positioned once in a shared
- *  "panorama space" (column 0's left edge, by `order`, is x=0) rather than
- *  inside any single column's local 1080-wide box. Separate from
- *  `ColumnStyle.assetLayers` (page-local, untouched) rather than a migration
- *  of it -- additive, same pattern as `extraDevices`/`linkedTo`/`cells`.
- *  Only X is absolute px: every page is the same 1920 tall, so Y/height stay
- *  pct-of-1920 (unambiguous); X spans an open-ended multi-page width, where
- *  "%" has no single fixed denominator, so it must be absolute pixels. */
-export interface PanoramaAssetLayer {
-  id: string;
-  assetId: string; // same convention as MockupAssetLayer.assetId
-  name?: string;
-  xPx: number;
-  widthPx: number;
-  yPct: number;
-  heightPct?: number;
-  rotation: number;
-  opacity: number;
-  flipH?: boolean;
-  flipV?: boolean;
-  visible?: boolean;
-  locked?: boolean;
-  zIndex: number;
-}
-
 export interface MockupProject {
   id: string;
   createdAt: string;
@@ -397,13 +408,11 @@ export interface MockupProject {
   /** key = `${deviceId}:${columnId}` */
   cells: Record<string, Partial<ColumnStyle>>;
   globalPanoramic: { file?: string; flip: boolean };
-  /** Assets that span across page boundaries -- additive/optional, old
-   *  projects without any simply have none. See PanoramaAssetLayer. */
-  panoramaAssets?: PanoramaAssetLayer[];
   settings: { inspectorPosition: "left" | "right"; screenshotSizeLabel: string; palette: string[] };
 }
 
 import { loadProject, saveProject, listProjects } from "../project/projectStore.js";
+import { sizeTargetsFor } from "./sizeTargets.js";
 
 const ROOT = path.join(process.cwd(), "output", "projects");
 
@@ -440,6 +449,7 @@ export function defaultColumnStyle(title = ""): ColumnStyle {
     deviceOne: defaultDeviceLayerStyle(),
     decorations: [],
     assetLayers: [],
+    textLayers: [],
   };
 }
 
@@ -456,6 +466,7 @@ export function saveMockupProject(project: MockupProject): void {
 
 export function loadMockupProject(id: string): MockupProject {
   const unified = loadProject(id);
+  ensureSizeRows(unified.mockup, unified.platform);
   return unified.mockup;
 }
 
@@ -532,16 +543,8 @@ export function clearCellOverridePath(project: MockupProject, deviceRowId: strin
 export function effectiveCellStyle(project: MockupProject, deviceRowId: string, columnId: string): ColumnStyle {
   const column = project.columns.find((c) => c.id === columnId);
   if (!column) throw new Error(`Column '${columnId}' not found.`);
-  const override = project.cells[cellKey(deviceRowId, columnId)];
-  if (!override) return column.style;
-  const { [PATCH_KEY]: paths, ...legacy } = override as any;
-  const merged: ColumnStyle = { ...column.style, ...legacy };
-  if (paths) {
-    const cloned: ColumnStyle = JSON.parse(JSON.stringify(merged));
-    for (const [path, value] of Object.entries(paths)) setPath(cloned, path, value);
-    return cloned;
-  }
-  return merged;
+  // ponytail: per-cell overrides (project.cells) are retained only so old files still load; they are no longer applied.
+  return column.style;
 }
 
 /** Adding a device row clones every existing column's style into that row
@@ -558,4 +561,22 @@ export function addColumn(project: MockupProject, style: ColumnStyle): MockupCol
   const created: MockupColumn = { id: `col_${Date.now()}_${Math.round(Math.random() * 1e4)}`, order: project.columns.length, style };
   project.columns.push(created);
   return created;
+}
+
+/** Makes project.devices match the platform's size targets exactly (order included). The first existing row (the
+ *  template's) becomes the primary row and keeps its device/variant; rows already carrying a matching sizeKey keep
+ *  their ids so `cells` keys stay valid; anything else is dropped. Idempotent; never touches columns/styles. */
+export function ensureSizeRows(mockup: MockupProject, platform?: string): void {
+  const targets = sizeTargetsFor(platform);
+  const old = mockup.devices ?? [];
+  const templateRow = old[0];
+  mockup.devices = [];
+  targets.forEach((t, i) => {
+    const existing = old.find((r) => r.sizeKey === t.key) ?? (i === 0 ? templateRow : undefined);
+    if (existing) {
+      mockup.devices.push({ ...existing, sizeKey: t.key, label: t.label, isBase: i === 0, previewsVisible: existing.previewsVisible ?? true });
+    } else {
+      addDeviceRow(mockup, { deviceId: t.deviceId, label: t.label, sizeKey: t.key, previewsVisible: true, isBase: false });
+    }
+  });
 }
