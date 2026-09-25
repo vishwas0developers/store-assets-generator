@@ -1,0 +1,3375 @@
+{
+ "version": 1,
+ "id": "adhd-habit-app",
+ "name": "ADHD habit app screenshots",
+ "category": "health-and-fitness",
+ "description": "Present your ADHD habit tracking app with our thoughtful template. Display focus tools, habit formation features, and progress tracking in a supportive design that helps users with ADHD build sustainable routines and improve daily productivity.",
+ "devices": [
+  {
+   "deviceId": "apple-iphone-16-pro-max",
+   "label": "iPhone 16 Pro Max"
+  },
+  {
+   "deviceId": "apple-iphone-13-pro-max",
+   "label": "iPhone 13 Pro Max"
+  },
+  {
+   "deviceId": "samsung-galaxy-s21-ultra",
+   "label": "Samsung Galaxy S21 Ultra"
+  },
+  {
+   "deviceId": "apple-ipad-pro-12-9-inch",
+   "label": "iPad Pro 12.9-inch"
+  },
+  {
+   "deviceId": "samsung-galaxy-tab-s7",
+   "label": "Samsung Galaxy Tab S7"
+  }
+ ],
+ "layout": "single-no-text",
+ "background": {
+  "type": "solid",
+  "value": "#005ee7"
+ },
+ "panoramic": false,
+ "columnCount": 5,
+ "titles": [
+  "Stay on Track",
+  "Find People",
+  "Break it Down",
+  "You’re on Fire",
+  "Prepare Meals"
+ ],
+ "subtitles": [
+  "Tick off your tiny wins, one step at a time",
+  "Join teams that match your vibe and goals",
+  "Add subtasks and track your progress",
+  "Keep the streak going and celebrate your wins",
+  "Start your journey with a fun, focused twist"
+ ],
+ "textColor": "#ffffff",
+ "pages": [
+  {
+   "title": "Stay on Track",
+   "subtitle": "Tick off your tiny wins, one step at a time",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#005ee7"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t33",
+     "xPct": 0.0,
+     "yPct": 3.721,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Stay on\nTrack",
+      "color": "#ffffff",
+      "size": 174.3,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": 75
+     }
+    },
+    {
+     "id": "tpl-t34",
+     "xPct": 0.0,
+     "yPct": 22.805,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Tick off your tiny wins,\none step at a time",
+      "color": "#ffffff",
+      "size": 68.7,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.2
+     }
+    },
+    {
+     "id": "tpl-t35",
+     "xPct": 12.5,
+     "yPct": 90.557,
+     "widthPct": 75.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Quote",
+     "style": {
+      "text": "“Finally, an app that actually\nkeeps me on track!”",
+      "color": "#005ee7",
+      "size": 49.1,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.4,
+      "charSpacing": 25
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s1",
+     "assetId": "shape:Desk",
+     "name": "Desk",
+     "xPct": 4.773,
+     "yPct": 72.908,
+     "widthPct": 94.773,
+     "heightPct": 9.205,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 417,
+      "h": 88,
+      "vx": 21,
+      "vy": 697,
+      "path": "M22,718L300,698L437,745L437,758L120,784L22,727Z",
+      "fill": "#f7c283"
+     }
+    },
+    {
+     "id": "tpl-s2",
+     "assetId": "shape:Desk edge",
+     "name": "Desk edge",
+     "xPct": 4.773,
+     "yPct": 75.0,
+     "widthPct": 94.773,
+     "heightPct": 7.113,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 417,
+      "h": 68,
+      "vx": 21,
+      "vy": 717,
+      "path": "M22,718L22,727L120,784L437,758L437,748L120,776Z",
+      "fill": "#e9a55c"
+     }
+    },
+    {
+     "id": "tpl-s3",
+     "assetId": "shape:Paper",
+     "name": "Paper",
+     "xPct": 28.864,
+     "yPct": 73.745,
+     "widthPct": 42.273,
+     "heightPct": 6.904,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 6,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 186,
+      "h": 66,
+      "vx": 127,
+      "vy": 705,
+      "path": "M128,714L240,706L312,745L200,770Z",
+      "fill": "#fdf6e3"
+     }
+    },
+    {
+     "id": "tpl-s4",
+     "assetId": "shape:Paper line",
+     "name": "Paper line",
+     "xPct": 33.182,
+     "yPct": 74.686,
+     "widthPct": 17.727,
+     "heightPct": 1.36,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 7,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 78,
+      "h": 13,
+      "vx": 146,
+      "vy": 714,
+      "path": "M150,723L220,718",
+      "stroke": "#d8d0bf",
+      "strokeWidth": 3,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s5",
+     "assetId": "shape:Paper line",
+     "name": "Paper line",
+     "xPct": 35.455,
+     "yPct": 75.941,
+     "widthPct": 18.864,
+     "heightPct": 1.36,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 7,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 83,
+      "h": 13,
+      "vx": 156,
+      "vy": 726,
+      "path": "M160,735L235,730",
+      "stroke": "#d8d0bf",
+      "strokeWidth": 3,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s6",
+     "assetId": "shape:Paper line",
+     "name": "Paper line",
+     "xPct": 38.182,
+     "yPct": 77.51,
+     "widthPct": 15.455,
+     "heightPct": 1.36,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 7,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 68,
+      "h": 13,
+      "vx": 168,
+      "vy": 741,
+      "path": "M172,750L232,745",
+      "stroke": "#d8d0bf",
+      "strokeWidth": 3,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s7",
+     "assetId": "shape:Cup",
+     "name": "Cup",
+     "xPct": 61.818,
+     "yPct": 69.142,
+     "widthPct": 12.727,
+     "heightPct": 7.322,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 8,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 56,
+      "h": 70,
+      "vx": 272,
+      "vy": 661,
+      "path": "M273,662L327,662L322,723Q300,730 278,723Z",
+      "fill": "#fdc63a"
+     }
+    },
+    {
+     "id": "tpl-s8",
+     "assetId": "shape:Cup rim",
+     "name": "Cup rim",
+     "xPct": 61.818,
+     "yPct": 69.038,
+     "widthPct": 12.727,
+     "heightPct": 1.046,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 9,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 56,
+      "h": 10,
+      "radius": 5,
+      "fill": "#fde58a"
+     }
+    },
+    {
+     "id": "tpl-s9",
+     "assetId": "shape:Card",
+     "name": "Card",
+     "xPct": 45.227,
+     "yPct": 38.912,
+     "widthPct": 45.909,
+     "heightPct": 27.824,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 202,
+      "h": 266,
+      "radius": 16,
+      "fill": "#fdf6e3"
+     }
+    },
+    {
+     "id": "tpl-s10",
+     "assetId": "shape:Trophy cup",
+     "name": "Trophy cup",
+     "xPct": 49.773,
+     "yPct": 41.109,
+     "widthPct": 9.545,
+     "heightPct": 2.929,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 42,
+      "h": 28,
+      "vx": 219,
+      "vy": 393,
+      "path": "M220,394L260,394Q260,418 240,420Q220,418 220,394Z",
+      "fill": "#fdc63a"
+     }
+    },
+    {
+     "id": "tpl-s11",
+     "assetId": "shape:Trophy handle L",
+     "name": "Trophy handle L",
+     "xPct": 47.386,
+     "yPct": 41.266,
+     "widthPct": 4.091,
+     "heightPct": 2.197,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 18.0,
+      "h": 21.0,
+      "vx": 208.5,
+      "vy": 394.5,
+      "path": "M220,398Q212,398 216,407Q219,412 223,412",
+      "stroke": "#fdc63a",
+      "strokeWidth": 2.5,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s12",
+     "assetId": "shape:Trophy handle R",
+     "name": "Trophy handle R",
+     "xPct": 57.614,
+     "yPct": 41.266,
+     "widthPct": 4.091,
+     "heightPct": 2.197,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 18.0,
+      "h": 21.0,
+      "vx": 253.5,
+      "vy": 394.5,
+      "path": "M260,398Q268,398 264,407Q261,412 257,412",
+      "stroke": "#fdc63a",
+      "strokeWidth": 2.5,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s13",
+     "assetId": "shape:Trophy stem",
+     "name": "Trophy stem",
+     "xPct": 54.091,
+     "yPct": 43.828,
+     "widthPct": 0.909,
+     "heightPct": 0.628,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 4,
+      "h": 6,
+      "radius": 1,
+      "fill": "#fdc63a"
+     }
+    },
+    {
+     "id": "tpl-s14",
+     "assetId": "shape:Trophy base",
+     "name": "Trophy base",
+     "xPct": 52.273,
+     "yPct": 44.456,
+     "widthPct": 4.545,
+     "heightPct": 0.418,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 20,
+      "h": 4,
+      "radius": 2,
+      "fill": "#fdc63a"
+     }
+    },
+    {
+     "id": "tpl-s15",
+     "assetId": "shape:Bar",
+     "name": "Bar",
+     "xPct": 62.5,
+     "yPct": 42.573,
+     "widthPct": 24.091,
+     "heightPct": 0.732,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 106,
+      "h": 7,
+      "radius": 3.5,
+      "fill": "#d9d2c0"
+     }
+    },
+    {
+     "id": "tpl-s16",
+     "assetId": "shape:Checkbox",
+     "name": "Checkbox",
+     "xPct": 49.091,
+     "yPct": 46.13,
+     "widthPct": 7.727,
+     "heightPct": 3.556,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 34,
+      "h": 34,
+      "radius": 8,
+      "fill": "#005ee7"
+     }
+    },
+    {
+     "id": "tpl-s17",
+     "assetId": "shape:Check",
+     "name": "Check",
+     "xPct": 50.227,
+     "yPct": 46.862,
+     "widthPct": 5.455,
+     "heightPct": 2.092,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 24,
+      "h": 20,
+      "vx": 221,
+      "vy": 448,
+      "path": "M225,458L231,464L241,452",
+      "stroke": "#ffffff",
+      "strokeWidth": 3,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s18",
+     "assetId": "shape:Bar",
+     "name": "Bar",
+     "xPct": 60.0,
+     "yPct": 47.333,
+     "widthPct": 22.5,
+     "heightPct": 0.732,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 99,
+      "h": 7,
+      "radius": 3.5,
+      "fill": "#d9d2c0"
+     }
+    },
+    {
+     "id": "tpl-s19",
+     "assetId": "shape:Checkbox",
+     "name": "Checkbox",
+     "xPct": 49.091,
+     "yPct": 50.941,
+     "widthPct": 7.727,
+     "heightPct": 3.556,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 34,
+      "h": 34,
+      "radius": 8,
+      "fill": "#005ee7"
+     }
+    },
+    {
+     "id": "tpl-s20",
+     "assetId": "shape:Check",
+     "name": "Check",
+     "xPct": 50.227,
+     "yPct": 51.674,
+     "widthPct": 5.455,
+     "heightPct": 2.092,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 24,
+      "h": 20,
+      "vx": 221,
+      "vy": 494,
+      "path": "M225,504L231,510L241,498",
+      "stroke": "#ffffff",
+      "strokeWidth": 3,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s21",
+     "assetId": "shape:Bar",
+     "name": "Bar",
+     "xPct": 60.0,
+     "yPct": 52.249,
+     "widthPct": 26.591,
+     "heightPct": 0.732,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 117,
+      "h": 7,
+      "radius": 3.5,
+      "fill": "#d9d2c0"
+     }
+    },
+    {
+     "id": "tpl-s22",
+     "assetId": "shape:Checkbox",
+     "name": "Checkbox",
+     "xPct": 49.091,
+     "yPct": 55.753,
+     "widthPct": 7.727,
+     "heightPct": 3.556,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 34,
+      "h": 34,
+      "radius": 8,
+      "fill": "#005ee7"
+     }
+    },
+    {
+     "id": "tpl-s23",
+     "assetId": "shape:Check",
+     "name": "Check",
+     "xPct": 50.227,
+     "yPct": 56.485,
+     "widthPct": 5.455,
+     "heightPct": 2.092,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 24,
+      "h": 20,
+      "vx": 221,
+      "vy": 540,
+      "path": "M225,550L231,556L241,544",
+      "stroke": "#ffffff",
+      "strokeWidth": 3,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s24",
+     "assetId": "shape:Bar",
+     "name": "Bar",
+     "xPct": 71.136,
+     "yPct": 57.061,
+     "widthPct": 15.455,
+     "heightPct": 0.732,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 68,
+      "h": 7,
+      "radius": 3.5,
+      "fill": "#d9d2c0"
+     }
+    },
+    {
+     "id": "tpl-s25",
+     "assetId": "shape:Checkbox empty",
+     "name": "Checkbox empty",
+     "xPct": 49.091,
+     "yPct": 60.565,
+     "widthPct": 7.727,
+     "heightPct": 3.556,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 34,
+      "h": 34,
+      "radius": 8,
+      "fill": "#e9e3d2"
+     }
+    },
+    {
+     "id": "tpl-s26",
+     "assetId": "shape:Bar",
+     "name": "Bar",
+     "xPct": 63.636,
+     "yPct": 62.029,
+     "widthPct": 22.955,
+     "heightPct": 0.732,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 101,
+      "h": 7,
+      "radius": 3.5,
+      "fill": "#d9d2c0"
+     }
+    },
+    {
+     "id": "tpl-s27",
+     "assetId": "shape:Quote box",
+     "name": "Quote box",
+     "xPct": 12.5,
+     "yPct": 87.029,
+     "widthPct": 75.0,
+     "heightPct": 10.251,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 330,
+      "h": 98,
+      "radius": 16,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s28",
+     "assetId": "shape:Star",
+     "name": "Star",
+     "xPct": 33.9,
+     "yPct": 87.5,
+     "widthPct": 6.291,
+     "heightPct": 2.764,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 27.68,
+      "h": 26.42,
+      "vx": 149.16,
+      "vy": 836.5,
+      "path": "M163.0,837.5L166.33,846.41L175.84,846.83L168.39,852.75L170.94,861.92L163.0,856.67L155.06,861.92L157.61,852.75L150.16,846.83L159.67,846.41Z",
+      "fill": "#005ee7"
+     }
+    },
+    {
+     "id": "tpl-s29",
+     "assetId": "shape:Star",
+     "name": "Star",
+     "xPct": 40.264,
+     "yPct": 87.5,
+     "widthPct": 6.291,
+     "heightPct": 2.764,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 27.68,
+      "h": 26.42,
+      "vx": 177.16,
+      "vy": 836.5,
+      "path": "M191.0,837.5L194.33,846.41L203.84,846.83L196.39,852.75L198.94,861.92L191.0,856.67L183.06,861.92L185.61,852.75L178.16,846.83L187.67,846.41Z",
+      "fill": "#005ee7"
+     }
+    },
+    {
+     "id": "tpl-s30",
+     "assetId": "shape:Star",
+     "name": "Star",
+     "xPct": 46.627,
+     "yPct": 87.5,
+     "widthPct": 6.291,
+     "heightPct": 2.764,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 27.68,
+      "h": 26.42,
+      "vx": 205.16,
+      "vy": 836.5,
+      "path": "M219.0,837.5L222.33,846.41L231.84,846.83L224.39,852.75L226.94,861.92L219.0,856.67L211.06,861.92L213.61,852.75L206.16,846.83L215.67,846.41Z",
+      "fill": "#005ee7"
+     }
+    },
+    {
+     "id": "tpl-s31",
+     "assetId": "shape:Star",
+     "name": "Star",
+     "xPct": 52.991,
+     "yPct": 87.5,
+     "widthPct": 6.291,
+     "heightPct": 2.764,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 27.68,
+      "h": 26.42,
+      "vx": 233.16,
+      "vy": 836.5,
+      "path": "M247.0,837.5L250.33,846.41L259.84,846.83L252.39,852.75L254.94,861.92L247.0,856.67L239.06,861.92L241.61,852.75L234.16,846.83L243.67,846.41Z",
+      "fill": "#005ee7"
+     }
+    },
+    {
+     "id": "tpl-s32",
+     "assetId": "shape:Star",
+     "name": "Star",
+     "xPct": 59.355,
+     "yPct": 87.5,
+     "widthPct": 6.291,
+     "heightPct": 2.764,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 27.68,
+      "h": 26.42,
+      "vx": 261.16,
+      "vy": 836.5,
+      "path": "M275.0,837.5L278.33,846.41L287.84,846.83L280.39,852.75L282.94,861.92L275.0,856.67L267.06,861.92L269.61,852.75L262.16,846.83L271.67,846.41Z",
+      "fill": "#005ee7"
+     }
+    }
+   ],
+   "deviceOne": {
+    "visible": false
+   }
+  },
+  {
+   "title": "Find People",
+   "subtitle": "Join teams that match your vibe and goals",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#ffeed7"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t50",
+     "xPct": 0.0,
+     "yPct": 3.248,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Find\nPeople",
+      "color": "#1a1a1a",
+      "size": 181.6,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.19,
+      "charSpacing": 45
+     }
+    },
+    {
+     "id": "tpl-t51",
+     "xPct": 0.0,
+     "yPct": 22.717,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Join teams that match\nyour vibe and goals",
+      "color": "#1a1a1a",
+      "size": 68.7,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.26
+     }
+    },
+    {
+     "id": "tpl-t43",
+     "xPct": 36.273,
+     "yPct": 64.441,
+     "widthPct": 10.8,
+     "rotation": -3.8,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "+35",
+     "style": {
+      "text": "+35",
+      "color": "#ffffff",
+      "size": 49.1,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t44",
+     "xPct": 11.506,
+     "yPct": 70.221,
+     "widthPct": 47.788,
+     "rotation": -3.8,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "AuDHD Legends!",
+     "style": {
+      "text": "AuDHD Legends!",
+      "color": "#111111",
+      "size": 58.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t45",
+     "xPct": 12.279,
+     "yPct": 73.99,
+     "widthPct": 25.789,
+     "rotation": -3.8,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "AuADHDers:",
+     "style": {
+      "text": "AuADHDers:",
+      "color": "#b8b8bc",
+      "size": 41.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t46",
+     "xPct": 12.506,
+     "yPct": 75.978,
+     "widthPct": 51.878,
+     "rotation": -3.8,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "Procrastinating, Time-Bl...",
+     "style": {
+      "text": "Procrastinating, Time-Bl...",
+      "color": "#b8b8bc",
+      "size": 41.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t47",
+     "xPct": 17.532,
+     "yPct": 79.715,
+     "widthPct": 30.666,
+     "rotation": -3.8,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "PICKED FOR YOU",
+     "style": {
+      "text": "PICKED FOR YOU",
+      "color": "#0a5ce0",
+      "size": 36.8,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s36",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 5.682,
+     "yPct": 28.661,
+     "widthPct": 88.636,
+     "heightPct": 75.388,
+     "rotation": 0,
+     "opacity": 0.1,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 390,
+      "h": 720.71,
+      "radius": 99.12,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s37",
+     "assetId": "shape:Card shadow",
+     "name": "Card shadow",
+     "xPct": 3.523,
+     "yPct": 58.577,
+     "widthPct": 92.5,
+     "heightPct": 24.686,
+     "rotation": -3.8,
+     "opacity": 0.1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 407,
+      "h": 236,
+      "radius": 30,
+      "fill": "#000000",
+      "blur": 8,
+      "inset": 14
+     }
+    },
+    {
+     "id": "tpl-s38",
+     "assetId": "shape:Legends card",
+     "name": "Legends card",
+     "xPct": 6.705,
+     "yPct": 60.042,
+     "widthPct": 86.136,
+     "heightPct": 21.757,
+     "rotation": -3.8,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 379,
+      "h": 208,
+      "radius": 16,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s39",
+     "assetId": "shape:Avatar 1",
+     "name": "Avatar 1",
+     "xPct": 10.682,
+     "yPct": 63.598,
+     "widthPct": 10.909,
+     "heightPct": 5.021,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 48,
+      "h": 48,
+      "fill": "#9fd8cc",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "inset": 1.0
+     }
+    },
+    {
+     "id": "tpl-s40",
+     "assetId": "shape:Avatar 2",
+     "name": "Avatar 2",
+     "xPct": 18.409,
+     "yPct": 63.494,
+     "widthPct": 10.909,
+     "heightPct": 5.021,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 48,
+      "h": 48,
+      "fill": "#6d8fa8",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "inset": 1.0
+     }
+    },
+    {
+     "id": "tpl-s41",
+     "assetId": "shape:Avatar 3",
+     "name": "Avatar 3",
+     "xPct": 26.136,
+     "yPct": 63.285,
+     "widthPct": 10.909,
+     "heightPct": 5.021,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 48,
+      "h": 48,
+      "fill": "#4a4a4c",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "inset": 1.0
+     }
+    },
+    {
+     "id": "tpl-s42",
+     "assetId": "shape:Badge",
+     "name": "Badge",
+     "xPct": 35.455,
+     "yPct": 62.866,
+     "widthPct": 10.909,
+     "heightPct": 5.021,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 48,
+      "h": 48,
+      "fill": "#015fe8",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "inset": 1.0
+     }
+    },
+    {
+     "id": "tpl-s48",
+     "assetId": "shape:Sparkle",
+     "name": "Sparkle",
+     "xPct": 13.864,
+     "yPct": 79.812,
+     "widthPct": 2.273,
+     "heightPct": 1.046,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 10,
+      "h": 10,
+      "fill": "#0a5ce0"
+     }
+    },
+    {
+     "id": "tpl-s49",
+     "assetId": "shape:Sticker",
+     "name": "Sticker",
+     "xPct": 74.545,
+     "yPct": 63.389,
+     "widthPct": 10.0,
+     "heightPct": 4.603,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 44,
+      "h": 44,
+      "fill": "#d9a3e8"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 47.19,
+    "x": 0.0,
+    "y": 24.54,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Break it Down",
+   "subtitle": "Add subtasks and track your progress",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#015fe8"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t75",
+     "xPct": 0.0,
+     "yPct": 3.248,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Break it\nDown",
+      "color": "#ffffff",
+      "size": 181.6,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.19,
+      "charSpacing": 45
+     }
+    },
+    {
+     "id": "tpl-t76",
+     "xPct": 0.0,
+     "yPct": 22.717,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Add subtasks and\ntrack your progress",
+      "color": "#ffffff",
+      "size": 68.7,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.26
+     }
+    },
+    {
+     "id": "tpl-t56",
+     "xPct": 17.944,
+     "yPct": 61.135,
+     "widthPct": 40.5,
+     "rotation": -1,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "Make breakfast",
+     "style": {
+      "text": "Make breakfast",
+      "color": "#111111",
+      "size": 54.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t57",
+     "xPct": 84.445,
+     "yPct": 60.501,
+     "widthPct": 11.894,
+     "rotation": -1,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "08:05",
+     "style": {
+      "text": "08:05",
+      "color": "#dccfbb",
+      "size": 36.8,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t60",
+     "xPct": 25.909,
+     "yPct": 68.802,
+     "widthPct": 23.37,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "Brush teeth",
+     "style": {
+      "text": "Brush teeth",
+      "color": "#111111",
+      "size": 40.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t61",
+     "xPct": 74.809,
+     "yPct": 69.104,
+     "widthPct": 9.964,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "20:00",
+     "style": {
+      "text": "20:00",
+      "color": "#e0d3bf",
+      "size": 29.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t64",
+     "xPct": 25.909,
+     "yPct": 75.81,
+     "widthPct": 46.066,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "Begin my ADHD journey",
+     "style": {
+      "text": "Begin my ADHD journey",
+      "color": "#111111",
+      "size": 40.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t68",
+     "xPct": 25.909,
+     "yPct": 82.714,
+     "widthPct": 50.277,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "Create a social media plan",
+     "style": {
+      "text": "Create a social media plan",
+      "color": "#111111",
+      "size": 40.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t72",
+     "xPct": 18.019,
+     "yPct": 89.074,
+     "widthPct": 30.449,
+     "rotation": 1,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "Drink water",
+     "style": {
+      "text": "Drink water",
+      "color": "#111111",
+      "size": 54.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t74",
+     "xPct": 84.299,
+     "yPct": 90.971,
+     "widthPct": 12.067,
+     "rotation": 1,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "09:00",
+     "style": {
+      "text": "09:00",
+      "color": "#dccfbb",
+      "size": 36.8,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s52",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -4.091,
+     "yPct": 28.661,
+     "widthPct": 108.182,
+     "heightPct": 94.933,
+     "rotation": 0,
+     "opacity": 0.18,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 476,
+      "h": 907.56,
+      "radius": 112.88,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s53",
+     "assetId": "shape:Make breakfast card",
+     "name": "Make breakfast card",
+     "xPct": 1.364,
+     "yPct": 57.427,
+     "widthPct": 97.045,
+     "heightPct": 7.741,
+     "rotation": -1,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 427,
+      "h": 74,
+      "radius": 16,
+      "fill": "#fdeed6"
+     }
+    },
+    {
+     "id": "tpl-s54",
+     "assetId": "shape:Checkbox tile",
+     "name": "Checkbox tile",
+     "xPct": 1.394,
+     "yPct": 59.021,
+     "widthPct": 12.727,
+     "heightPct": 6.485,
+     "rotation": -1,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 56,
+      "h": 62,
+      "radius": 14,
+      "fill": "#e5e4ea"
+     }
+    },
+    {
+     "id": "tpl-s55",
+     "assetId": "shape:Checkbox",
+     "name": "Checkbox",
+     "xPct": 6.637,
+     "yPct": 61.094,
+     "widthPct": 6.818,
+     "heightPct": 3.138,
+     "rotation": -1,
+     "opacity": 1,
+     "zIndex": 22,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 30,
+      "h": 30,
+      "radius": 6,
+      "stroke": "#4f86ea",
+      "strokeWidth": 2.5,
+      "inset": 1.25
+     }
+    },
+    {
+     "id": "tpl-s58",
+     "assetId": "shape:Brush teeth card",
+     "name": "Brush teeth card",
+     "xPct": 13.636,
+     "yPct": 66.946,
+     "widthPct": 72.727,
+     "heightPct": 5.649,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 320,
+      "h": 54,
+      "radius": 14,
+      "fill": "#fdeed6"
+     }
+    },
+    {
+     "id": "tpl-s59",
+     "assetId": "shape:Checkbox",
+     "name": "Checkbox",
+     "xPct": 17.5,
+     "yPct": 68.619,
+     "widthPct": 5.0,
+     "heightPct": 2.301,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 22,
+      "h": 22,
+      "radius": 6,
+      "stroke": "#4f86ea",
+      "strokeWidth": 2.5,
+      "inset": 1.25
+     }
+    },
+    {
+     "id": "tpl-s62",
+     "assetId": "shape:Begin card",
+     "name": "Begin card",
+     "xPct": 13.636,
+     "yPct": 73.849,
+     "widthPct": 72.727,
+     "heightPct": 5.858,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 320,
+      "h": 56,
+      "radius": 14,
+      "fill": "#f3f1f6"
+     }
+    },
+    {
+     "id": "tpl-s63",
+     "assetId": "shape:Checkbox",
+     "name": "Checkbox",
+     "xPct": 17.5,
+     "yPct": 75.628,
+     "widthPct": 5.0,
+     "heightPct": 2.301,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 22,
+      "h": 22,
+      "radius": 6,
+      "stroke": "#c4c2c8",
+      "strokeWidth": 2.5,
+      "inset": 1.25
+     }
+    },
+    {
+     "id": "tpl-s65",
+     "assetId": "shape:Create card",
+     "name": "Create card",
+     "xPct": 13.636,
+     "yPct": 80.753,
+     "widthPct": 72.727,
+     "heightPct": 5.858,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 320,
+      "h": 56,
+      "radius": 14,
+      "fill": "#fdeed6"
+     }
+    },
+    {
+     "id": "tpl-s66",
+     "assetId": "shape:Checkbox tile",
+     "name": "Checkbox tile",
+     "xPct": 13.636,
+     "yPct": 80.753,
+     "widthPct": 18.182,
+     "heightPct": 5.858,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 80,
+      "h": 56,
+      "radius": 14,
+      "fill": "#e5e4ea"
+     }
+    },
+    {
+     "id": "tpl-s67",
+     "assetId": "shape:Checkbox",
+     "name": "Checkbox",
+     "xPct": 17.5,
+     "yPct": 82.531,
+     "widthPct": 5.0,
+     "heightPct": 2.301,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 22,
+      "h": 22,
+      "radius": 6,
+      "stroke": "#4f86ea",
+      "strokeWidth": 2.5,
+      "inset": 1.25
+     }
+    },
+    {
+     "id": "tpl-s69",
+     "assetId": "shape:Drink water card",
+     "name": "Drink water card",
+     "xPct": 1.364,
+     "yPct": 86.402,
+     "widthPct": 97.045,
+     "heightPct": 8.996,
+     "rotation": 1,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 427,
+      "h": 86,
+      "radius": 16,
+      "fill": "#fdeed6"
+     }
+    },
+    {
+     "id": "tpl-s70",
+     "assetId": "shape:Checkbox",
+     "name": "Checkbox",
+     "xPct": 6.613,
+     "yPct": 88.592,
+     "widthPct": 6.818,
+     "heightPct": 3.138,
+     "rotation": 1,
+     "opacity": 1,
+     "zIndex": 22,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 30,
+      "h": 30,
+      "radius": 6,
+      "fill": "#7fa6ee"
+     }
+    },
+    {
+     "id": "tpl-s71",
+     "assetId": "shape:Tick",
+     "name": "Tick",
+     "xPct": 7.749,
+     "yPct": 89.232,
+     "widthPct": 4.792,
+     "heightPct": 1.868,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 23,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 21.09,
+      "h": 17.86,
+      "vx": 34.1,
+      "vy": 853.06,
+      "path": "M38.1,861.83L43.01,866.92L51.18,857.06",
+      "stroke": "#ffffff",
+      "strokeWidth": 3,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s73",
+     "assetId": "shape:Strike",
+     "name": "Strike",
+     "xPct": 17.972,
+     "yPct": 90.23,
+     "widthPct": 27.329,
+     "heightPct": 0.262,
+     "rotation": 1,
+     "opacity": 1,
+     "zIndex": 23,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 120.25,
+      "h": 2.5,
+      "radius": 0,
+      "fill": "#111111"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 61.59,
+    "x": 0.0,
+    "y": 30.49,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "You’re on Fire",
+   "subtitle": "Keep the streak going and celebrate your wins",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(135deg, #fc703d 0%, #fd7f31 50%, #ffb32d 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t116",
+     "xPct": 4.545,
+     "yPct": 3.331,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "You’re\non Fire",
+      "color": "#ffffff",
+      "size": 186.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.145,
+      "charSpacing": 10
+     }
+    },
+    {
+     "id": "tpl-t117",
+     "xPct": 4.545,
+     "yPct": 22.906,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Keep the streak going\nand celebrate your wins",
+      "color": "#ffffff",
+      "size": 66.3,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.2
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s77",
+     "assetId": "shape:Swoosh",
+     "name": "Swoosh",
+     "xPct": -0.227,
+     "yPct": 17.887,
+     "widthPct": 100.455,
+     "heightPct": 82.218,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 442,
+      "h": 786,
+      "vx": -1,
+      "vy": 171,
+      "path": "M0,335C120,330 230,270 300,232C350,205 400,176 440,172L440,956L0,956Z",
+      "fill": "#ffab2c"
+     }
+    },
+    {
+     "id": "tpl-s78",
+     "assetId": "shape:Confetti",
+     "name": "Confetti",
+     "xPct": 9.773,
+     "yPct": 3.4,
+     "widthPct": 3.636,
+     "heightPct": 0.941,
+     "rotation": 60,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 16,
+      "h": 9,
+      "radius": 1.5,
+      "fill": "#f08ad0"
+     }
+    },
+    {
+     "id": "tpl-s79",
+     "assetId": "shape:Confetti",
+     "name": "Confetti",
+     "xPct": 37.727,
+     "yPct": 4.132,
+     "widthPct": 3.636,
+     "heightPct": 0.941,
+     "rotation": -50,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 16,
+      "h": 9,
+      "radius": 1.5,
+      "fill": "#ffbd1f"
+     }
+    },
+    {
+     "id": "tpl-s80",
+     "assetId": "shape:Confetti",
+     "name": "Confetti",
+     "xPct": 57.273,
+     "yPct": 8.159,
+     "widthPct": 1.818,
+     "heightPct": 1.255,
+     "rotation": 30,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 8,
+      "h": 12,
+      "radius": 1.5,
+      "fill": "#ffbd1f"
+     }
+    },
+    {
+     "id": "tpl-s81",
+     "assetId": "shape:Confetti",
+     "name": "Confetti",
+     "xPct": 77.045,
+     "yPct": 8.368,
+     "widthPct": 3.182,
+     "heightPct": 0.837,
+     "rotation": 50,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 14,
+      "h": 8,
+      "radius": 1.5,
+      "fill": "#1fa35a"
+     }
+    },
+    {
+     "id": "tpl-s82",
+     "assetId": "shape:Confetti",
+     "name": "Confetti",
+     "xPct": 94.318,
+     "yPct": 16.632,
+     "widthPct": 1.818,
+     "heightPct": 1.255,
+     "rotation": -30,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 8,
+      "h": 12,
+      "radius": 1.5,
+      "fill": "#ffbd1f"
+     }
+    },
+    {
+     "id": "tpl-s83",
+     "assetId": "shape:Confetti",
+     "name": "Confetti",
+     "xPct": 54.773,
+     "yPct": 17.469,
+     "widthPct": 1.818,
+     "heightPct": 1.674,
+     "rotation": -10,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 8,
+      "h": 16,
+      "radius": 1.5,
+      "fill": "#ffbd1f"
+     }
+    },
+    {
+     "id": "tpl-s84",
+     "assetId": "shape:Confetti",
+     "name": "Confetti",
+     "xPct": 72.614,
+     "yPct": 19.508,
+     "widthPct": 3.409,
+     "heightPct": 0.941,
+     "rotation": 40,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 15,
+      "h": 9,
+      "radius": 1.5,
+      "fill": "#1fa35a"
+     }
+    },
+    {
+     "id": "tpl-s85",
+     "assetId": "shape:Confetti",
+     "name": "Confetti",
+     "xPct": 65.227,
+     "yPct": 29.603,
+     "widthPct": 3.636,
+     "heightPct": 0.837,
+     "rotation": -30,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 16,
+      "h": 8,
+      "radius": 1.5,
+      "fill": "#1fa35a"
+     }
+    },
+    {
+     "id": "tpl-s86",
+     "assetId": "shape:Confetti",
+     "name": "Confetti",
+     "xPct": 13.182,
+     "yPct": 35.146,
+     "widthPct": 3.182,
+     "heightPct": 1.883,
+     "rotation": 40,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 14,
+      "h": 18,
+      "radius": 1.5,
+      "fill": "#1fa35a"
+     }
+    },
+    {
+     "id": "tpl-s87",
+     "assetId": "shape:Confetti",
+     "name": "Confetti",
+     "xPct": 49.318,
+     "yPct": 38.18,
+     "widthPct": 3.636,
+     "heightPct": 1.255,
+     "rotation": 30,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 16,
+      "h": 12,
+      "radius": 1.5,
+      "fill": "#2a9de8"
+     }
+    },
+    {
+     "id": "tpl-s88",
+     "assetId": "shape:Confetti",
+     "name": "Confetti",
+     "xPct": 40.909,
+     "yPct": 39.121,
+     "widthPct": 4.091,
+     "heightPct": 2.301,
+     "rotation": -20,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 18,
+      "h": 22,
+      "radius": 1.5,
+      "fill": "#7aa9ff"
+     }
+    },
+    {
+     "id": "tpl-s89",
+     "assetId": "shape:Confetti",
+     "name": "Confetti",
+     "xPct": 18.409,
+     "yPct": 44.874,
+     "widthPct": 1.818,
+     "heightPct": 1.255,
+     "rotation": 30,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 8,
+      "h": 12,
+      "radius": 1.5,
+      "fill": "#2a9de8"
+     }
+    },
+    {
+     "id": "tpl-s90",
+     "assetId": "shape:Confetti",
+     "name": "Confetti",
+     "xPct": 33.636,
+     "yPct": 45.397,
+     "widthPct": 1.818,
+     "heightPct": 1.464,
+     "rotation": -35,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 8,
+      "h": 14,
+      "radius": 1.5,
+      "fill": "#ffbd1f"
+     }
+    },
+    {
+     "id": "tpl-s91",
+     "assetId": "shape:Confetti",
+     "name": "Confetti",
+     "xPct": 63.409,
+     "yPct": 49.163,
+     "widthPct": 1.818,
+     "heightPct": 0.837,
+     "rotation": 40,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 8,
+      "h": 8,
+      "radius": 1.5,
+      "fill": "#ff6a35"
+     }
+    },
+    {
+     "id": "tpl-s92",
+     "assetId": "shape:Confetti",
+     "name": "Confetti",
+     "xPct": 37.045,
+     "yPct": 51.883,
+     "widthPct": 3.182,
+     "heightPct": 2.51,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 14,
+      "h": 24,
+      "radius": 1.5,
+      "fill": "#7aa9ff"
+     }
+    },
+    {
+     "id": "tpl-s93",
+     "assetId": "shape:Confetti",
+     "name": "Confetti",
+     "xPct": 43.182,
+     "yPct": 52.824,
+     "widthPct": 4.545,
+     "heightPct": 2.092,
+     "rotation": -30,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 20,
+      "h": 20,
+      "radius": 1.5,
+      "fill": "#7aa9ff"
+     }
+    },
+    {
+     "id": "tpl-s94",
+     "assetId": "shape:Confetti",
+     "name": "Confetti",
+     "xPct": 50.0,
+     "yPct": 50.837,
+     "widthPct": 4.545,
+     "heightPct": 2.51,
+     "rotation": 30,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 20,
+      "h": 24,
+      "radius": 1.5,
+      "fill": "#7aa9ff"
+     }
+    },
+    {
+     "id": "tpl-s95",
+     "assetId": "shape:Confetti",
+     "name": "Confetti",
+     "xPct": 47.727,
+     "yPct": 54.184,
+     "widthPct": 4.091,
+     "heightPct": 1.674,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 18,
+      "h": 16,
+      "radius": 1.5,
+      "fill": "#0a5cf0"
+     }
+    },
+    {
+     "id": "tpl-s96",
+     "assetId": "shape:Confetti",
+     "name": "Confetti",
+     "xPct": 15.682,
+     "yPct": 57.008,
+     "widthPct": 1.818,
+     "heightPct": 1.674,
+     "rotation": 10,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 8,
+      "h": 16,
+      "radius": 1.5,
+      "fill": "#1fa35a"
+     }
+    },
+    {
+     "id": "tpl-s97",
+     "assetId": "shape:Confetti",
+     "name": "Confetti",
+     "xPct": 42.273,
+     "yPct": 57.845,
+     "widthPct": 2.727,
+     "heightPct": 1.046,
+     "rotation": 30,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 12,
+      "h": 10,
+      "radius": 1.5,
+      "fill": "#f08ad0"
+     }
+    },
+    {
+     "id": "tpl-s98",
+     "assetId": "shape:Confetti",
+     "name": "Confetti",
+     "xPct": 27.273,
+     "yPct": 59.833,
+     "widthPct": 5.0,
+     "heightPct": 2.092,
+     "rotation": -20,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 22,
+      "h": 20,
+      "radius": 1.5,
+      "fill": "#7aa9ff"
+     }
+    },
+    {
+     "id": "tpl-s99",
+     "assetId": "shape:Confetti",
+     "name": "Confetti",
+     "xPct": 41.136,
+     "yPct": 60.46,
+     "widthPct": 5.0,
+     "heightPct": 2.301,
+     "rotation": 20,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 22,
+      "h": 22,
+      "radius": 1.5,
+      "fill": "#0a5cf0"
+     }
+    },
+    {
+     "id": "tpl-s100",
+     "assetId": "shape:Confetti",
+     "name": "Confetti",
+     "xPct": 64.318,
+     "yPct": 62.029,
+     "widthPct": 5.0,
+     "heightPct": 2.092,
+     "rotation": 20,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 22,
+      "h": 20,
+      "radius": 1.5,
+      "fill": "#7aa9ff"
+     }
+    },
+    {
+     "id": "tpl-s101",
+     "assetId": "shape:Confetti",
+     "name": "Confetti",
+     "xPct": 70.0,
+     "yPct": 60.879,
+     "widthPct": 2.273,
+     "heightPct": 1.464,
+     "rotation": 30,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 10,
+      "h": 14,
+      "radius": 1.5,
+      "fill": "#1fa35a"
+     }
+    },
+    {
+     "id": "tpl-s102",
+     "assetId": "shape:Confetti",
+     "name": "Confetti",
+     "xPct": 28.409,
+     "yPct": 65.586,
+     "widthPct": 2.727,
+     "heightPct": 2.72,
+     "rotation": 15,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 12,
+      "h": 26,
+      "radius": 1.5,
+      "fill": "#ff6a35"
+     }
+    },
+    {
+     "id": "tpl-s103",
+     "assetId": "shape:Confetti",
+     "name": "Confetti",
+     "xPct": 5.0,
+     "yPct": 69.979,
+     "widthPct": 3.636,
+     "heightPct": 1.046,
+     "rotation": -40,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 16,
+      "h": 10,
+      "radius": 1.5,
+      "fill": "#ffbd1f"
+     }
+    },
+    {
+     "id": "tpl-s104",
+     "assetId": "shape:Confetti",
+     "name": "Confetti",
+     "xPct": 12.955,
+     "yPct": 71.444,
+     "widthPct": 4.091,
+     "heightPct": 1.883,
+     "rotation": 30,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 18,
+      "h": 18,
+      "radius": 1.5,
+      "fill": "#0a5cf0"
+     }
+    },
+    {
+     "id": "tpl-s105",
+     "assetId": "shape:Confetti",
+     "name": "Confetti",
+     "xPct": 18.409,
+     "yPct": 76.883,
+     "widthPct": 2.273,
+     "heightPct": 1.883,
+     "rotation": 10,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 10,
+      "h": 18,
+      "radius": 1.5,
+      "fill": "#1fa35a"
+     }
+    },
+    {
+     "id": "tpl-s106",
+     "assetId": "shape:Confetti",
+     "name": "Confetti",
+     "xPct": 45.795,
+     "yPct": 77.301,
+     "widthPct": 2.045,
+     "heightPct": 1.883,
+     "rotation": 15,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 9,
+      "h": 18,
+      "radius": 1.5,
+      "fill": "#ff6a35"
+     }
+    },
+    {
+     "id": "tpl-s107",
+     "assetId": "shape:Confetti",
+     "name": "Confetti",
+     "xPct": 52.727,
+     "yPct": 68.933,
+     "widthPct": 4.091,
+     "heightPct": 1.046,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 18,
+      "h": 10,
+      "radius": 1.5,
+      "fill": "#ffbd1f"
+     }
+    },
+    {
+     "id": "tpl-s108",
+     "assetId": "shape:Confetti",
+     "name": "Confetti",
+     "xPct": 71.136,
+     "yPct": 74.163,
+     "widthPct": 3.636,
+     "heightPct": 2.301,
+     "rotation": 50,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 16,
+      "h": 22,
+      "radius": 1.5,
+      "fill": "#2a9de8"
+     }
+    },
+    {
+     "id": "tpl-s109",
+     "assetId": "shape:Confetti",
+     "name": "Confetti",
+     "xPct": 86.136,
+     "yPct": 69.561,
+     "widthPct": 1.818,
+     "heightPct": 1.464,
+     "rotation": 40,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 8,
+      "h": 14,
+      "radius": 1.5,
+      "fill": "#ffbd1f"
+     }
+    },
+    {
+     "id": "tpl-s110",
+     "assetId": "shape:Confetti",
+     "name": "Confetti",
+     "xPct": 85.909,
+     "yPct": 54.184,
+     "widthPct": 1.818,
+     "heightPct": 1.464,
+     "rotation": 30,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 8,
+      "h": 14,
+      "radius": 1.5,
+      "fill": "#2a9de8"
+     }
+    },
+    {
+     "id": "tpl-s111",
+     "assetId": "shape:Confetti",
+     "name": "Confetti",
+     "xPct": 93.523,
+     "yPct": 84.414,
+     "widthPct": 1.591,
+     "heightPct": 1.464,
+     "rotation": -30,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 7,
+      "h": 14,
+      "radius": 1.5,
+      "fill": "#ff6a35"
+     }
+    },
+    {
+     "id": "tpl-s112",
+     "assetId": "shape:Confetti",
+     "name": "Confetti",
+     "xPct": 33.182,
+     "yPct": 87.343,
+     "widthPct": 2.727,
+     "heightPct": 1.674,
+     "rotation": 40,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 12,
+      "h": 16,
+      "radius": 1.5,
+      "fill": "#ffbd1f"
+     }
+    },
+    {
+     "id": "tpl-s113",
+     "assetId": "shape:Confetti",
+     "name": "Confetti",
+     "xPct": 63.409,
+     "yPct": 87.238,
+     "widthPct": 2.273,
+     "heightPct": 1.883,
+     "rotation": -20,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 10,
+      "h": 18,
+      "radius": 1.5,
+      "fill": "#1fa35a"
+     }
+    },
+    {
+     "id": "tpl-s114",
+     "assetId": "shape:Confetti",
+     "name": "Confetti",
+     "xPct": 74.318,
+     "yPct": 95.188,
+     "widthPct": 2.273,
+     "heightPct": 1.674,
+     "rotation": 40,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 10,
+      "h": 16,
+      "radius": 1.5,
+      "fill": "#ffbd1f"
+     }
+    },
+    {
+     "id": "tpl-s115",
+     "assetId": "shape:Confetti",
+     "name": "Confetti",
+     "xPct": 45.682,
+     "yPct": 97.385,
+     "widthPct": 4.091,
+     "heightPct": 0.837,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 18,
+      "h": 8,
+      "radius": 1.5,
+      "fill": "#2a9de8"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 61.92,
+    "x": 0.0,
+    "y": 30.59,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Prepare Meals",
+   "subtitle": "Start your journey with a fun, focused twist",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(135deg, #2e53f6 0%, #1530f8 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t125",
+     "xPct": 68.636,
+     "yPct": 38.213,
+     "widthPct": 15.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Public",
+     "style": {
+      "text": "Public",
+      "color": "#0a6cf0",
+      "size": 41.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -10
+     }
+    },
+    {
+     "id": "tpl-t126",
+     "xPct": 12.5,
+     "yPct": 44.57,
+     "widthPct": 77.273,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Make breakfast",
+     "style": {
+      "text": "Make breakfast",
+      "color": "#000000",
+      "size": 127.6,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -85
+     }
+    },
+    {
+     "id": "tpl-t136",
+     "xPct": 30.227,
+     "yPct": 68.519,
+     "widthPct": 34.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Add subtasks",
+     "style": {
+      "text": "Add subtasks",
+      "color": "#0a6cf0",
+      "size": 36.8,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -10
+     }
+    },
+    {
+     "id": "tpl-t137",
+     "xPct": 30.227,
+     "yPct": 74.795,
+     "widthPct": 34.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Tiny effort",
+     "style": {
+      "text": "Tiny effort",
+      "color": "#0a6cf0",
+      "size": 36.8,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -10
+     }
+    },
+    {
+     "id": "tpl-t140",
+     "xPct": 24.318,
+     "yPct": 79.293,
+     "widthPct": 9.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "S",
+     "style": {
+      "text": "S",
+      "color": "#ffffff",
+      "size": 36.8,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t142",
+     "xPct": 38.409,
+     "yPct": 79.293,
+     "widthPct": 9.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "M",
+     "style": {
+      "text": "M",
+      "color": "#0a6cf0",
+      "size": 36.8,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t144",
+     "xPct": 52.273,
+     "yPct": 79.293,
+     "widthPct": 9.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "L",
+     "style": {
+      "text": "L",
+      "color": "#0a6cf0",
+      "size": 36.8,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t146",
+     "xPct": 66.364,
+     "yPct": 79.293,
+     "widthPct": 9.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "XL",
+     "style": {
+      "text": "XL",
+      "color": "#0a6cf0",
+      "size": 36.8,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t150",
+     "xPct": 27.727,
+     "yPct": 90.857,
+     "widthPct": 20.455,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Task",
+     "style": {
+      "text": "Task",
+      "color": "#ffffff",
+      "size": 46.6,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -50
+     }
+    },
+    {
+     "id": "tpl-t152",
+     "xPct": 54.773,
+     "yPct": 90.857,
+     "widthPct": 22.727,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "Routine",
+     "style": {
+      "text": "Routine",
+      "color": "#000000",
+      "size": 46.6,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -50
+     }
+    },
+    {
+     "id": "tpl-t155",
+     "xPct": 4.545,
+     "yPct": 3.331,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Prepare\nMeals",
+      "color": "#ffffff",
+      "size": 186.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.145,
+      "charSpacing": 25
+     }
+    },
+    {
+     "id": "tpl-t156",
+     "xPct": 4.545,
+     "yPct": 22.906,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Start your journey with\na fun, focused twist",
+      "color": "#ffffff",
+      "size": 66.3,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.2
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s118",
+     "assetId": "shape:Swoosh",
+     "name": "Swoosh",
+     "xPct": 33.864,
+     "yPct": 19.561,
+     "widthPct": 66.364,
+     "heightPct": 15.063,
+     "rotation": 0,
+     "opacity": 0.7,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 292,
+      "h": 144,
+      "vx": 149,
+      "vy": 187,
+      "path": "M150,330C250,300 360,220 440,188L440,330Z",
+      "fill": "#4a68ff"
+     }
+    },
+    {
+     "id": "tpl-s119",
+     "assetId": "shape:Card",
+     "name": "Card",
+     "xPct": 5.0,
+     "yPct": 34.623,
+     "widthPct": 90.0,
+     "heightPct": 28.452,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 396,
+      "h": 272,
+      "radius": 30,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s120",
+     "assetId": "shape:Back",
+     "name": "Back",
+     "xPct": 9.545,
+     "yPct": 36.402,
+     "widthPct": 10.909,
+     "heightPct": 5.021,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 48,
+      "h": 48,
+      "fill": "#f1f1f5"
+     }
+    },
+    {
+     "id": "tpl-s121",
+     "assetId": "shape:Chevron",
+     "name": "Chevron",
+     "xPct": 13.182,
+     "yPct": 37.448,
+     "widthPct": 3.636,
+     "heightPct": 2.929,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 16,
+      "h": 28,
+      "vx": 58,
+      "vy": 358,
+      "path": "M70,362L62,372L70,382",
+      "stroke": "#444",
+      "strokeWidth": 3,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s122",
+     "assetId": "shape:Pill",
+     "name": "Pill",
+     "xPct": 57.273,
+     "yPct": 36.506,
+     "widthPct": 33.182,
+     "heightPct": 5.021,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 146,
+      "h": 48,
+      "radius": 24,
+      "fill": "#fdeed8"
+     }
+    },
+    {
+     "id": "tpl-s123",
+     "assetId": "shape:Megaphone",
+     "name": "Megaphone",
+     "xPct": 60.682,
+     "yPct": 37.448,
+     "widthPct": 5.909,
+     "heightPct": 3.138,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 26,
+      "h": 30,
+      "vx": 267,
+      "vy": 358,
+      "path": "M271,369L279,369L289,362L289,384L279,377L271,377Z",
+      "stroke": "#0a6cf0",
+      "strokeWidth": 3,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s124",
+     "assetId": "shape:PillChevron",
+     "name": "PillChevron",
+     "xPct": 83.295,
+     "yPct": 38.128,
+     "widthPct": 5.227,
+     "heightPct": 1.674,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 23.0,
+      "h": 16.0,
+      "vx": 366.5,
+      "vy": 364.5,
+      "path": "M371,369L378,376L385,369",
+      "stroke": "#0a6cf0",
+      "strokeWidth": 3.5,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s127",
+     "assetId": "shape:Pan",
+     "name": "Pan",
+     "xPct": 12.273,
+     "yPct": 50.105,
+     "widthPct": 9.545,
+     "heightPct": 4.393,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 42,
+      "h": 42,
+      "fill": "#2a2a2a"
+     }
+    },
+    {
+     "id": "tpl-s128",
+     "assetId": "shape:Handle",
+     "name": "Handle",
+     "xPct": 19.091,
+     "yPct": 52.929,
+     "widthPct": 5.682,
+     "heightPct": 2.51,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 25,
+      "h": 24,
+      "vx": 84,
+      "vy": 506,
+      "path": "M90,512L103,524",
+      "stroke": "#2a2a2a",
+      "strokeWidth": 5,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s129",
+     "assetId": "shape:Egg white",
+     "name": "Egg white",
+     "xPct": 13.636,
+     "yPct": 50.732,
+     "widthPct": 6.818,
+     "heightPct": 3.138,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 23,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 30,
+      "h": 30,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s130",
+     "assetId": "shape:Yolk",
+     "name": "Yolk",
+     "xPct": 15.455,
+     "yPct": 51.255,
+     "widthPct": 3.636,
+     "heightPct": 1.674,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 24,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 16,
+      "h": 16,
+      "fill": "#ffb31a"
+     }
+    },
+    {
+     "id": "tpl-s131",
+     "assetId": "shape:Blue back",
+     "name": "Blue back",
+     "xPct": 20.0,
+     "yPct": 65.063,
+     "widthPct": 60.0,
+     "heightPct": 32.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 264,
+      "h": 312,
+      "radius": 34,
+      "fill": "#0a6cf0"
+     }
+    },
+    {
+     "id": "tpl-s132",
+     "assetId": "shape:Subtasks card",
+     "name": "Subtasks card",
+     "xPct": 20.0,
+     "yPct": 65.586,
+     "widthPct": 60.0,
+     "heightPct": 6.59,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 264,
+      "h": 63,
+      "radius": 22,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s133",
+     "assetId": "shape:Effort card",
+     "name": "Effort card",
+     "xPct": 20.0,
+     "yPct": 72.385,
+     "widthPct": 60.0,
+     "heightPct": 11.925,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 264,
+      "h": 114,
+      "radius": 22,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s134",
+     "assetId": "shape:Bottom card",
+     "name": "Bottom card",
+     "xPct": 20.0,
+     "yPct": 84.519,
+     "widthPct": 60.0,
+     "heightPct": 12.762,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 264,
+      "h": 122,
+      "radius": 30,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s135",
+     "assetId": "shape:Sub icon",
+     "name": "Sub icon",
+     "xPct": 25.568,
+     "yPct": 68.149,
+     "widthPct": 3.409,
+     "heightPct": 1.674,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 15.0,
+      "h": 16.0,
+      "vx": 112.5,
+      "vy": 651.5,
+      "path": "M116,655L116,664L124,664",
+      "stroke": "#0a6cf0",
+      "strokeWidth": 2.5,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s138",
+     "assetId": "shape:Effort icon",
+     "name": "Effort icon",
+     "xPct": 25.0,
+     "yPct": 74.582,
+     "widthPct": 4.545,
+     "heightPct": 1.778,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 20,
+      "h": 17,
+      "radius": 6,
+      "stroke": "#0a6cf0",
+      "strokeWidth": 2.5,
+      "inset": 1.25
+     }
+    },
+    {
+     "id": "tpl-s139",
+     "assetId": "shape:Chip",
+     "name": "Chip",
+     "xPct": 24.545,
+     "yPct": 78.033,
+     "widthPct": 8.636,
+     "heightPct": 3.975,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 38,
+      "h": 38,
+      "fill": "#0a6cf0"
+     }
+    },
+    {
+     "id": "tpl-s141",
+     "assetId": "shape:Chip",
+     "name": "Chip",
+     "xPct": 38.636,
+     "yPct": 78.033,
+     "widthPct": 8.636,
+     "heightPct": 3.975,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 38,
+      "h": 38,
+      "fill": "#fdeed8"
+     }
+    },
+    {
+     "id": "tpl-s143",
+     "assetId": "shape:Chip",
+     "name": "Chip",
+     "xPct": 52.5,
+     "yPct": 78.033,
+     "widthPct": 8.636,
+     "heightPct": 3.975,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 38,
+      "h": 38,
+      "fill": "#fdeed8"
+     }
+    },
+    {
+     "id": "tpl-s145",
+     "assetId": "shape:Chip",
+     "name": "Chip",
+     "xPct": 66.591,
+     "yPct": 78.033,
+     "widthPct": 8.636,
+     "heightPct": 3.975,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 38,
+      "h": 38,
+      "fill": "#fdeed8"
+     }
+    },
+    {
+     "id": "tpl-s147",
+     "assetId": "shape:AI badge",
+     "name": "AI badge",
+     "xPct": 30.227,
+     "yPct": 77.615,
+     "widthPct": 3.636,
+     "heightPct": 1.674,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 23,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 16,
+      "h": 16,
+      "fill": "#e8483c"
+     }
+    },
+    {
+     "id": "tpl-s148",
+     "assetId": "shape:Task btn",
+     "name": "Task btn",
+     "xPct": 24.773,
+     "yPct": 86.715,
+     "widthPct": 24.545,
+     "heightPct": 8.264,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 108,
+      "h": 79,
+      "radius": 20,
+      "fill": "#0a6cf0"
+     }
+    },
+    {
+     "id": "tpl-s149",
+     "assetId": "shape:Task icon",
+     "name": "Task icon",
+     "xPct": 27.727,
+     "yPct": 88.075,
+     "widthPct": 4.091,
+     "heightPct": 1.883,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 18,
+      "h": 18,
+      "radius": 5,
+      "stroke": "#ffffff",
+      "strokeWidth": 2.5,
+      "inset": 1.25
+     }
+    },
+    {
+     "id": "tpl-s151",
+     "assetId": "shape:Routine card",
+     "name": "Routine card",
+     "xPct": 51.136,
+     "yPct": 86.715,
+     "widthPct": 23.864,
+     "heightPct": 8.264,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 105,
+      "h": 79,
+      "radius": 20,
+      "fill": "#ffffff",
+      "stroke": "#eeeeee",
+      "strokeWidth": 1.5,
+      "inset": 0.75
+     }
+    },
+    {
+     "id": "tpl-s153",
+     "assetId": "shape:Go",
+     "name": "Go",
+     "xPct": 64.318,
+     "yPct": 89.54,
+     "widthPct": 12.273,
+     "heightPct": 5.649,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 24,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 54,
+      "h": 54,
+      "fill": "#0a6cf0"
+     }
+    },
+    {
+     "id": "tpl-s154",
+     "assetId": "shape:Arrow",
+     "name": "Arrow",
+     "xPct": 67.5,
+     "yPct": 90.69,
+     "widthPct": 5.909,
+     "heightPct": 3.347,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 25,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 26,
+      "h": 32,
+      "vx": 297,
+      "vy": 867,
+      "path": "M310,895L310,871M301,880L310,871L319,880",
+      "stroke": "#ffffff",
+      "strokeWidth": 3,
+      "strokeLinejoin": "round"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 47.53,
+    "x": 0.0,
+    "y": 23.75,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  }
+ ],
+ "designHeight": 2347
+}
