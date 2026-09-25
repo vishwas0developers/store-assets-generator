@@ -300,6 +300,7 @@ function installProcessGuards(): void {
 
 export async function startWebServer(options: { port?: number; host?: string; openBrowser?: boolean } = {}): Promise<http.Server> {
   installProcessGuards();
+  console.log(`[SAG-SERVER] Starting -- cwd=${process.cwd()} node=${process.version} file=${import.meta.url}`);
   const port = options.port || 8787;
   const host = options.host || "127.0.0.1";
 
@@ -320,6 +321,16 @@ export async function startWebServer(options: { port?: number; host?: string; op
     const url = new URL(req.url || "/", `http://${req.headers.host || "127.0.0.1"}`);
     const p = url.pathname;
     const method = req.method?.toUpperCase();
+
+    // Request log: one line per API call / page asset with status + timing. Static
+    // frame polling and asset files are skipped (hundreds per minute, pure noise);
+    // failures (>=400) are always logged.
+    const started = Date.now();
+    res.on("finish", () => {
+      const noisy = /\/frame(\?|$)|\.(png|jpe?g|webp|svg|ico|woff2?|wav|mp3|mp4|webm)$/i.test(p) || p.startsWith("/vendor/");
+      if (noisy && res.statusCode < 400) return;
+      console.log(`[SAG-HTTP] ${method} ${p} -> ${res.statusCode} (${Date.now() - started}ms)`);
+    });
 
     // CORS headers for local development if accessed from local web server
     res.setHeader("Access-Control-Allow-Origin", "*");

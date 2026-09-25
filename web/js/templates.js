@@ -579,6 +579,19 @@ export function openMockupTemplateDetail(id) {
       </div>
     </div>
   `;
+  // Vertical wheel over the filmstrip scrolls it sideways (no Shift needed). At either
+  // end the wheel is released so the page can still scroll vertically.
+  const filmstrip = detail.querySelector(".detail-filmstrip");
+  if (filmstrip) {
+    filmstrip.addEventListener("wheel", (e) => {
+      if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+      const max = filmstrip.scrollWidth - filmstrip.clientWidth;
+      const next = filmstrip.scrollLeft + e.deltaY;
+      if (max <= 0 || (e.deltaY < 0 && filmstrip.scrollLeft <= 0) || (e.deltaY > 0 && filmstrip.scrollLeft >= max - 1)) return;
+      e.preventDefault();
+      filmstrip.scrollLeft = Math.max(0, Math.min(max, next));
+    }, { passive: false });
+  }
   const backBtn = document.getElementById("mockup-detail-back");
   const loadBtn = document.getElementById("mockup-detail-load-btn");
   if (backBtn) backBtn.onclick = closeMockupTemplateDetail;
