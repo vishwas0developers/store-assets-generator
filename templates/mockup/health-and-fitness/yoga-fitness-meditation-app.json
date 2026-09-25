@@ -1,0 +1,2109 @@
+{
+ "version": 1,
+ "id": "yoga-fitness-meditation-app",
+ "name": "Yoga, fitness & meditation app",
+ "category": "health-and-fitness",
+ "description": "Showcase your yoga, fitness, or meditation app with a calming and inspiring template. Highlight guided sessions, daily routines, mindfulness practices, progress tracking, and soothing visuals that help users achieve wellness and balance.",
+ "devices": [
+  {
+   "deviceId": "apple-iphone-16-pro-max",
+   "label": "iPhone 16 Pro Max"
+  },
+  {
+   "deviceId": "apple-iphone-13-pro-max",
+   "label": "iPhone 13 Pro Max"
+  },
+  {
+   "deviceId": "samsung-galaxy-s21-ultra",
+   "label": "Samsung Galaxy S21 Ultra"
+  },
+  {
+   "deviceId": "apple-ipad-pro-12-9-inch",
+   "label": "iPad Pro 12.9-inch"
+  },
+  {
+   "deviceId": "samsung-galaxy-tab-s7",
+   "label": "Samsung Galaxy Tab S7"
+  }
+ ],
+ "layout": "single-no-text",
+ "background": {
+  "type": "solid",
+  "value": "#f1ede5"
+ },
+ "panoramic": false,
+ "columnCount": 8,
+ "titles": [
+  "Your Body & Mind Health",
+  "Start a Fitter Healthier You",
+  "Daily Yoga Exercises",
+  "Find Your Peace",
+  "Free Courses",
+  "Organised Courses",
+  "Warm Up Breathing Sage Twist You Pilates Hot Yoga Hatha Yoga",
+  "Track Your Progress"
+ ],
+ "subtitles": [
+  "Daily Workouts, Nutrition, and Mindset Coaching",
+  "Join over 200K+ Happy Users",
+  "Videos for beginners and advanced",
+  "With Meditation and Visualisation",
+  "Yoga, Pilates and Many More to Come.",
+  "This is the smaller subtitle",
+  "Try our courses & Programs For Free",
+  "Weeks, Months Calories & more"
+ ],
+ "textColor": "#111111",
+ "pages": [
+  {
+   "title": "Your Body & Mind Health",
+   "subtitle": "Daily Workouts, Nutrition, and Mindset Coaching",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#f1ede5"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t4",
+     "xPct": 8.182,
+     "yPct": 2.909,
+     "widthPct": 79.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title 1",
+     "style": {
+      "text": "Your Body &",
+      "color": "#3a1214",
+      "size": 122.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": 23
+     }
+    },
+    {
+     "id": "tpl-t5",
+     "xPct": 8.182,
+     "yPct": 8.767,
+     "widthPct": 78.182,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title 2",
+     "style": {
+      "text": "Mind Health",
+      "color": "#3a1214",
+      "size": 122.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": 29
+     }
+    },
+    {
+     "id": "tpl-t6",
+     "xPct": 8.182,
+     "yPct": 15.781,
+     "widthPct": 72.273,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle 1",
+     "style": {
+      "text": "Daily Workouts, Nutrition,",
+      "color": "#1a1211",
+      "size": 58.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": -19
+     }
+    },
+    {
+     "id": "tpl-t7",
+     "xPct": 8.182,
+     "yPct": 18.919,
+     "widthPct": 65.455,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle 2",
+     "style": {
+      "text": "and Mindset Coaching",
+      "color": "#1a1211",
+      "size": 58.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": -14
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s1",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -4.091,
+     "yPct": 25.941,
+     "widthPct": 108.409,
+     "heightPct": 95.161,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 477,
+      "h": 909.74,
+      "radius": 113.04,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s2",
+     "assetId": "shape:Foot",
+     "name": "Foot",
+     "xPct": 83.636,
+     "yPct": 26.36,
+     "widthPct": 25.0,
+     "heightPct": 19.874,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 110,
+      "h": 190,
+      "radius": 50,
+      "fill": "#e0a984",
+      "blur": 5,
+      "inset": 10
+     }
+    },
+    {
+     "id": "tpl-s3",
+     "assetId": "shape:Sleeve",
+     "name": "Sleeve",
+     "xPct": 86.818,
+     "yPct": 42.364,
+     "widthPct": 20.455,
+     "heightPct": 23.013,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 90,
+      "h": 220,
+      "radius": 30,
+      "fill": "#e6cbb9",
+      "blur": 5,
+      "inset": 10
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 61.75,
+    "x": 0.14,
+    "y": 27.3,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#0a0a0a",
+    "borderColor": "#1c1c1c",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Start a Fitter Healthier You",
+   "subtitle": "Join over 200K+ Happy Users",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#ece7de"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t21",
+     "xPct": 8.182,
+     "yPct": 2.909,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title 1",
+     "style": {
+      "text": "Start a Fitter",
+      "color": "#3a1214",
+      "size": 122.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": 36
+     }
+    },
+    {
+     "id": "tpl-t22",
+     "xPct": 8.182,
+     "yPct": 8.767,
+     "widthPct": 85.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title 2",
+     "style": {
+      "text": "Healthier You",
+      "color": "#3a1214",
+      "size": 122.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": 12
+     }
+    },
+    {
+     "id": "tpl-t23",
+     "xPct": 8.182,
+     "yPct": 15.781,
+     "widthPct": 50.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle 1",
+     "style": {
+      "text": "Join over 200K+",
+      "color": "#1a1211",
+      "size": 58.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": -15
+     }
+    },
+    {
+     "id": "tpl-t24",
+     "xPct": 8.182,
+     "yPct": 18.919,
+     "widthPct": 42.045,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle 2",
+     "style": {
+      "text": "Happy Users",
+      "color": "#1a1211",
+      "size": 58.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": -8
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s8",
+     "assetId": "shape:Arrow",
+     "name": "Arrow",
+     "xPct": 16.364,
+     "yPct": 25.523,
+     "widthPct": 34.773,
+     "heightPct": 16.318,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 153,
+      "h": 156,
+      "vx": 72,
+      "vy": 244,
+      "path": "M120,254C82,292 84,338 112,356C145,376 185,388 215,390",
+      "stroke": "#0a0a0a",
+      "strokeWidth": 9,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s9",
+     "assetId": "shape:Arrow head",
+     "name": "Arrow head",
+     "xPct": 36.364,
+     "yPct": 36.611,
+     "widthPct": 15.0,
+     "heightPct": 8.264,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 66,
+      "h": 79,
+      "vx": 160,
+      "vy": 350,
+      "path": "M170,360L216,390L177,419",
+      "stroke": "#0a0a0a",
+      "strokeWidth": 9,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s10",
+     "assetId": "shape:Star",
+     "name": "Star",
+     "xPct": 43.651,
+     "yPct": 18.985,
+     "widthPct": 6.335,
+     "heightPct": 2.804,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 27.87,
+      "h": 26.8,
+      "vx": 192.06,
+      "vy": 181.5,
+      "path": "M206.0,184.5L209.04,191.81L216.94,192.45L210.92,197.6L212.76,205.3L206.0,201.18L199.24,205.3L201.08,197.6L195.06,192.45L202.96,191.81Z",
+      "fill": "#f6b91c",
+      "stroke": "#f6b91c",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s11",
+     "assetId": "shape:Star",
+     "name": "Star",
+     "xPct": 48.992,
+     "yPct": 18.985,
+     "widthPct": 6.335,
+     "heightPct": 2.804,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 27.87,
+      "h": 26.8,
+      "vx": 215.56,
+      "vy": 181.5,
+      "path": "M229.5,184.5L232.54,191.81L240.44,192.45L234.42,197.6L236.26,205.3L229.5,201.18L222.74,205.3L224.58,197.6L218.56,192.45L226.46,191.81Z",
+      "fill": "#f6b91c",
+      "stroke": "#f6b91c",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s12",
+     "assetId": "shape:Star",
+     "name": "Star",
+     "xPct": 54.332,
+     "yPct": 18.985,
+     "widthPct": 6.335,
+     "heightPct": 2.804,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 27.87,
+      "h": 26.8,
+      "vx": 239.06,
+      "vy": 181.5,
+      "path": "M253.0,184.5L256.04,191.81L263.94,192.45L257.92,197.6L259.76,205.3L253.0,201.18L246.24,205.3L248.08,197.6L242.06,192.45L249.96,191.81Z",
+      "fill": "#f6b91c",
+      "stroke": "#f6b91c",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s13",
+     "assetId": "shape:Star",
+     "name": "Star",
+     "xPct": 59.673,
+     "yPct": 18.985,
+     "widthPct": 6.335,
+     "heightPct": 2.804,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 27.87,
+      "h": 26.8,
+      "vx": 262.56,
+      "vy": 181.5,
+      "path": "M276.5,184.5L279.54,191.81L287.44,192.45L281.42,197.6L283.26,205.3L276.5,201.18L269.74,205.3L271.58,197.6L265.56,192.45L273.46,191.81Z",
+      "fill": "#f6b91c",
+      "stroke": "#f6b91c",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s14",
+     "assetId": "shape:Star",
+     "name": "Star",
+     "xPct": 65.014,
+     "yPct": 18.985,
+     "widthPct": 6.335,
+     "heightPct": 2.804,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 27.87,
+      "h": 26.8,
+      "vx": 286.06,
+      "vy": 181.5,
+      "path": "M300.0,184.5L303.04,191.81L310.94,192.45L304.92,197.6L306.76,205.3L300.0,201.18L293.24,205.3L295.08,197.6L289.06,192.45L296.96,191.81Z",
+      "fill": "#f6b91c",
+      "stroke": "#f6b91c",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s15",
+     "assetId": "shape:Leg",
+     "name": "Leg",
+     "xPct": -10.455,
+     "yPct": 48.536,
+     "widthPct": 41.364,
+     "heightPct": 53.556,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 182,
+      "h": 512,
+      "radius": 76,
+      "fill": "#dbb8a3",
+      "blur": 8,
+      "inset": 16
+     }
+    },
+    {
+     "id": "tpl-s16",
+     "assetId": "shape:Hip",
+     "name": "Hip",
+     "xPct": 10.0,
+     "yPct": 70.502,
+     "widthPct": 75.455,
+     "heightPct": 31.59,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 332,
+      "h": 302,
+      "radius": 106,
+      "fill": "#d9b9a6",
+      "blur": 8,
+      "inset": 16
+     }
+    },
+    {
+     "id": "tpl-s17",
+     "assetId": "shape:Torso",
+     "name": "Torso",
+     "xPct": 39.545,
+     "yPct": 56.904,
+     "widthPct": 52.727,
+     "heightPct": 23.222,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 232,
+      "h": 222,
+      "radius": 66,
+      "fill": "#d8b4a2",
+      "blur": 8,
+      "inset": 16
+     }
+    },
+    {
+     "id": "tpl-s18",
+     "assetId": "shape:Hair",
+     "name": "Hair",
+     "xPct": 54.091,
+     "yPct": 37.657,
+     "widthPct": 40.682,
+     "heightPct": 22.385,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 179,
+      "h": 214,
+      "radius": 84,
+      "fill": "#6a4633",
+      "blur": 6,
+      "inset": 12
+     }
+    },
+    {
+     "id": "tpl-s19",
+     "assetId": "shape:Face",
+     "name": "Face",
+     "xPct": 58.182,
+     "yPct": 39.958,
+     "widthPct": 32.273,
+     "heightPct": 17.992,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 142,
+      "h": 172,
+      "radius": 66,
+      "fill": "#d9a284",
+      "blur": 5,
+      "inset": 10
+     }
+    },
+    {
+     "id": "tpl-s20",
+     "assetId": "shape:Arm",
+     "name": "Arm",
+     "xPct": -7.273,
+     "yPct": 40.586,
+     "widthPct": 50.909,
+     "heightPct": 8.787,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 224,
+      "h": 84,
+      "radius": 42,
+      "fill": "#d9a284",
+      "blur": 6,
+      "inset": 12
+     }
+    }
+   ],
+   "deviceOne": {
+    "visible": false
+   }
+  },
+  {
+   "title": "Daily Yoga Exercises",
+   "subtitle": "Videos for beginners and advanced",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#ece8dc"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t32",
+     "xPct": 8.182,
+     "yPct": 2.909,
+     "widthPct": 67.045,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title 1",
+     "style": {
+      "text": "Daily Yoga",
+      "color": "#3a1214",
+      "size": 122.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": -4
+     }
+    },
+    {
+     "id": "tpl-t33",
+     "xPct": 8.182,
+     "yPct": 8.767,
+     "widthPct": 63.182,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title 2",
+     "style": {
+      "text": "Exercises",
+      "color": "#3a1214",
+      "size": 122.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": 10
+     }
+    },
+    {
+     "id": "tpl-t34",
+     "xPct": 8.182,
+     "yPct": 15.781,
+     "widthPct": 62.5,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle 1",
+     "style": {
+      "text": "Videos for beginners",
+      "color": "#1a1211",
+      "size": 58.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": -5
+     }
+    },
+    {
+     "id": "tpl-t35",
+     "xPct": 8.182,
+     "yPct": 18.919,
+     "widthPct": 45.227,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle 2",
+     "style": {
+      "text": "and advanced",
+      "color": "#1a1211",
+      "size": 58.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": -6
+     }
+    },
+    {
+     "id": "tpl-t36",
+     "xPct": 39.545,
+     "yPct": 71.092,
+     "widthPct": 13.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "01/10",
+     "style": {
+      "text": "01/10",
+      "color": "#d6d4d4",
+      "size": 29.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t37",
+     "xPct": 39.545,
+     "yPct": 73.359,
+     "widthPct": 20.455,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Warm-up",
+     "style": {
+      "text": "Warm-up",
+      "color": "#222222",
+      "size": 41.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -10
+     }
+    },
+    {
+     "id": "tpl-t38",
+     "xPct": 46.591,
+     "yPct": 78.547,
+     "widthPct": 20.455,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "1:30 mins",
+     "style": {
+      "text": "1:30 mins",
+      "color": "#cfcccc",
+      "size": 34.4,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s25",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -4.091,
+     "yPct": 21.025,
+     "widthPct": 108.409,
+     "heightPct": 95.161,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 477,
+      "h": 909.74,
+      "radius": 113.04,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s26",
+     "assetId": "shape:Card shadow",
+     "name": "Card shadow",
+     "xPct": -0.227,
+     "yPct": 68.933,
+     "widthPct": 100.455,
+     "heightPct": 14.749,
+     "rotation": 0,
+     "opacity": 0.12,
+     "zIndex": 14,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 442,
+      "h": 141,
+      "radius": 30,
+      "fill": "#000000",
+      "blur": 8,
+      "inset": 16
+     }
+    },
+    {
+     "id": "tpl-s27",
+     "assetId": "shape:Card",
+     "name": "Card",
+     "xPct": 3.409,
+     "yPct": 70.188,
+     "widthPct": 93.182,
+     "heightPct": 11.402,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 410,
+      "h": 109,
+      "radius": 14,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s28",
+     "assetId": "shape:Thumb",
+     "name": "Thumb",
+     "xPct": 7.045,
+     "yPct": 70.921,
+     "widthPct": 27.727,
+     "heightPct": 9.937,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 122,
+      "h": 95,
+      "radius": 4,
+      "fill": "#a9a8aa"
+     }
+    },
+    {
+     "id": "tpl-s29",
+     "assetId": "shape:Figure",
+     "name": "Figure",
+     "xPct": 14.091,
+     "yPct": 75.314,
+     "widthPct": 5.0,
+     "heightPct": 4.184,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 22,
+      "h": 40,
+      "radius": 8,
+      "fill": "#c9c6c8"
+     }
+    },
+    {
+     "id": "tpl-s30",
+     "assetId": "shape:Play",
+     "name": "Play",
+     "xPct": 39.545,
+     "yPct": 78.138,
+     "widthPct": 4.545,
+     "heightPct": 2.092,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 20,
+      "h": 20,
+      "stroke": "#555555",
+      "strokeWidth": 1.5,
+      "inset": 0.75
+     }
+    },
+    {
+     "id": "tpl-s31",
+     "assetId": "shape:Heart",
+     "name": "Heart",
+     "xPct": 85.727,
+     "yPct": 72.197,
+     "widthPct": 7.636,
+     "heightPct": 2.887,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 33.6,
+      "h": 27.6,
+      "vx": 377.2,
+      "vy": 690.2,
+      "path": "M394,715C380,700 386,693 394,700C402,693 408,700 394,715Z",
+      "stroke": "#222222",
+      "strokeWidth": 1.8,
+      "strokeLinejoin": "round"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 61.75,
+    "x": 0.14,
+    "y": 21.44,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#0a0a0a",
+    "borderColor": "#1c1c1c",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Find Your Peace",
+   "subtitle": "With Meditation and Visualisation",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg,#7a4d2c 0%,#a24d05 20%,#b34a04 26%,#7a1a03 30.5%,#3a1d0f 36%,#241209 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t46",
+     "xPct": 8.182,
+     "yPct": 2.909,
+     "widthPct": 33.182,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title 1",
+     "style": {
+      "text": "Find",
+      "color": "#ffffff",
+      "size": 122.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": 13
+     }
+    },
+    {
+     "id": "tpl-t47",
+     "xPct": 8.182,
+     "yPct": 8.767,
+     "widthPct": 72.273,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title 2",
+     "style": {
+      "text": "Your Peace",
+      "color": "#ffffff",
+      "size": 122.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": 5
+     }
+    },
+    {
+     "id": "tpl-t48",
+     "xPct": 8.182,
+     "yPct": 15.781,
+     "widthPct": 60.455,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle 1",
+     "style": {
+      "text": "With Meditation and",
+      "color": "#ffffff",
+      "size": 58.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": -2
+     }
+    },
+    {
+     "id": "tpl-t49",
+     "xPct": 8.182,
+     "yPct": 18.919,
+     "widthPct": 41.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle 2",
+     "style": {
+      "text": "Visualisation",
+      "color": "#ffffff",
+      "size": 58.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": -2
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s39",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -4.091,
+     "yPct": 21.13,
+     "widthPct": 108.409,
+     "heightPct": 95.161,
+     "rotation": 0,
+     "opacity": 0.3,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 477,
+      "h": 909.74,
+      "radius": 113.04,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s40",
+     "assetId": "shape:Torso",
+     "name": "Torso",
+     "xPct": 17.955,
+     "yPct": 61.088,
+     "widthPct": 66.364,
+     "heightPct": 28.452,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 292,
+      "h": 272,
+      "radius": 76,
+      "fill": "#d2ada0",
+      "blur": 8,
+      "inset": 16
+     }
+    },
+    {
+     "id": "tpl-s41",
+     "assetId": "shape:Arm L",
+     "name": "Arm L",
+     "xPct": 0.909,
+     "yPct": 73.64,
+     "widthPct": 27.727,
+     "heightPct": 16.946,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 122,
+      "h": 162,
+      "radius": 56,
+      "fill": "#cfae9f",
+      "blur": 8,
+      "inset": 16
+     }
+    },
+    {
+     "id": "tpl-s42",
+     "assetId": "shape:Arm R",
+     "name": "Arm R",
+     "xPct": 73.636,
+     "yPct": 73.64,
+     "widthPct": 27.727,
+     "heightPct": 16.946,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 122,
+      "h": 162,
+      "radius": 56,
+      "fill": "#cfae9f",
+      "blur": 8,
+      "inset": 16
+     }
+    },
+    {
+     "id": "tpl-s43",
+     "assetId": "shape:Hair",
+     "name": "Hair",
+     "xPct": 30.455,
+     "yPct": 39.644,
+     "widthPct": 41.364,
+     "heightPct": 33.682,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 182,
+      "h": 322,
+      "radius": 86,
+      "fill": "#8a5a3a",
+      "blur": 8,
+      "inset": 16
+     }
+    },
+    {
+     "id": "tpl-s44",
+     "assetId": "shape:Face",
+     "name": "Face",
+     "xPct": 38.182,
+     "yPct": 44.979,
+     "widthPct": 24.545,
+     "heightPct": 14.435,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 108,
+      "h": 138,
+      "radius": 50,
+      "fill": "#e0b596",
+      "blur": 5,
+      "inset": 10
+     }
+    },
+    {
+     "id": "tpl-s45",
+     "assetId": "shape:Legs",
+     "name": "Legs",
+     "xPct": -7.273,
+     "yPct": 85.565,
+     "widthPct": 114.545,
+     "heightPct": 17.155,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 504,
+      "h": 164,
+      "radius": 72,
+      "fill": "#8f8d8c",
+      "blur": 6,
+      "inset": 12
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 61.75,
+    "x": 0.14,
+    "y": 21.56,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#1d2026",
+    "borderColor": "#3a3d44",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Free Courses",
+   "subtitle": "Yoga, Pilates and Many More to Come.",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#f4f1e9"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t60",
+     "xPct": 8.182,
+     "yPct": 2.909,
+     "widthPct": 34.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title 1",
+     "style": {
+      "text": "Free",
+      "color": "#3a1214",
+      "size": 122.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": 15
+     }
+    },
+    {
+     "id": "tpl-t61",
+     "xPct": 8.182,
+     "yPct": 8.767,
+     "widthPct": 56.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title 2",
+     "style": {
+      "text": "Courses",
+      "color": "#3a1214",
+      "size": 122.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": 20
+     }
+    },
+    {
+     "id": "tpl-t62",
+     "xPct": 8.182,
+     "yPct": 15.781,
+     "widthPct": 52.955,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle 1",
+     "style": {
+      "text": "Yoga, Pilates and",
+      "color": "#1a1211",
+      "size": 58.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": -9
+     }
+    },
+    {
+     "id": "tpl-t63",
+     "xPct": 8.182,
+     "yPct": 18.919,
+     "widthPct": 62.727,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle 2",
+     "style": {
+      "text": "Many More to Come.",
+      "color": "#1a1211",
+      "size": 58.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": -5
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s50",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 41.136,
+     "yPct": 21.025,
+     "widthPct": 107.727,
+     "heightPct": 94.479,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 474,
+      "h": 903.22,
+      "radius": 112.56,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s55",
+     "assetId": "shape:Photo card",
+     "name": "Photo card",
+     "xPct": -9.091,
+     "yPct": 26.987,
+     "widthPct": 52.5,
+     "heightPct": 31.381,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 6,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 231,
+      "h": 300,
+      "radius": 30,
+      "fill": "#cfc6bb"
+     }
+    },
+    {
+     "id": "tpl-s51",
+     "assetId": "shape:Head",
+     "name": "Head",
+     "xPct": 15.909,
+     "yPct": 29.079,
+     "widthPct": 10.0,
+     "heightPct": 4.603,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 7,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 44,
+      "h": 44,
+      "fill": "#4a3226"
+     }
+    },
+    {
+     "id": "tpl-s52",
+     "assetId": "shape:Top",
+     "name": "Top",
+     "xPct": 11.364,
+     "yPct": 35.042,
+     "widthPct": 18.636,
+     "heightPct": 9.414,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 7,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 82,
+      "h": 90,
+      "radius": 20,
+      "fill": "#b5533a"
+     }
+    },
+    {
+     "id": "tpl-s53",
+     "assetId": "shape:Legs",
+     "name": "Legs",
+     "xPct": -1.136,
+     "yPct": 49.163,
+     "widthPct": 43.182,
+     "heightPct": 7.322,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 7,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 190,
+      "h": 70,
+      "radius": 30,
+      "fill": "#2c3a52"
+     }
+    },
+    {
+     "id": "tpl-s54",
+     "assetId": "shape:Mat",
+     "name": "Mat",
+     "xPct": -9.091,
+     "yPct": 57.008,
+     "widthPct": 52.273,
+     "heightPct": 1.255,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 7,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 230,
+      "h": 12,
+      "radius": 6,
+      "fill": "#8a8f95"
+     }
+    },
+    {
+     "id": "tpl-s59",
+     "assetId": "shape:Photo card",
+     "name": "Photo card",
+     "xPct": 10.0,
+     "yPct": 63.598,
+     "widthPct": 43.182,
+     "heightPct": 31.381,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 6,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 190,
+      "h": 300,
+      "radius": 30,
+      "fill": "#d8b39c"
+     }
+    },
+    {
+     "id": "tpl-s56",
+     "assetId": "shape:Head",
+     "name": "Head",
+     "xPct": 26.364,
+     "yPct": 64.644,
+     "widthPct": 10.0,
+     "heightPct": 4.603,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 7,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 44,
+      "h": 44,
+      "fill": "#3a2a22"
+     }
+    },
+    {
+     "id": "tpl-s57",
+     "assetId": "shape:Top",
+     "name": "Top",
+     "xPct": 22.727,
+     "yPct": 73.745,
+     "widthPct": 18.182,
+     "heightPct": 10.46,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 7,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 80,
+      "h": 100,
+      "radius": 24,
+      "fill": "#a07a66"
+     }
+    },
+    {
+     "id": "tpl-s58",
+     "assetId": "shape:Legs",
+     "name": "Legs",
+     "xPct": 10.0,
+     "yPct": 84.728,
+     "widthPct": 43.182,
+     "heightPct": 9.414,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 7,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 190,
+      "h": 90,
+      "radius": 34,
+      "fill": "#2a2320"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 61.25,
+    "x": 54.1,
+    "y": 21.2,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#0a0a0a",
+    "borderColor": "#1c1c1c",
+    "zIndex": 10,
+    "panoramaXPx": 5346.0
+   }
+  },
+  {
+   "title": "Organised Courses",
+   "subtitle": "This is the smaller subtitle",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#f4f1e9"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t65",
+     "xPct": 8.182,
+     "yPct": 2.909,
+     "widthPct": 67.955,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title 1",
+     "style": {
+      "text": "Organised",
+      "color": "#3a1214",
+      "size": 122.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": 24
+     }
+    },
+    {
+     "id": "tpl-t66",
+     "xPct": 8.182,
+     "yPct": 8.767,
+     "widthPct": 56.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title 2",
+     "style": {
+      "text": "Courses",
+      "color": "#3a1214",
+      "size": 122.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": 20
+     }
+    },
+    {
+     "id": "tpl-t67",
+     "xPct": 8.182,
+     "yPct": 15.781,
+     "widthPct": 35.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle 1",
+     "style": {
+      "text": "This is the",
+      "color": "#1a1211",
+      "size": 58.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": -8
+     }
+    },
+    {
+     "id": "tpl-t68",
+     "xPct": 8.182,
+     "yPct": 18.919,
+     "widthPct": 47.727,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle 2",
+     "style": {
+      "text": "smaller subtitle",
+      "color": "#1a1211",
+      "size": 58.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": -4
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s64",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 33.182,
+     "yPct": 19.874,
+     "widthPct": 103.409,
+     "heightPct": 90.161,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 455,
+      "h": 861.94,
+      "radius": 109.52,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 58.07,
+    "x": 44.24,
+    "y": 18.17,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#0a0a0a",
+    "borderColor": "#1c1c1c",
+    "zIndex": 10,
+    "panoramaXPx": 6316.8
+   }
+  },
+  {
+   "title": "Warm Up Breathing Sage Twist You Pilates Hot Yoga Hatha Yoga",
+   "subtitle": "Try our courses & Programs For Free",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#f4f1e9"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t76",
+     "xPct": 31.364,
+     "yPct": 57.515,
+     "widthPct": 53.409,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title 1",
+     "style": {
+      "text": "Warm Up",
+      "color": "#7a1f24",
+      "size": 103.1,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.28,
+      "charSpacing": 28
+     }
+    },
+    {
+     "id": "tpl-t77",
+     "xPct": 31.364,
+     "yPct": 63.132,
+     "widthPct": 55.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title 2",
+     "style": {
+      "text": "Breathing",
+      "color": "#7a1f24",
+      "size": 103.1,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.28,
+      "charSpacing": 27
+     }
+    },
+    {
+     "id": "tpl-t78",
+     "xPct": 31.364,
+     "yPct": 68.749,
+     "widthPct": 60.682,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title 3",
+     "style": {
+      "text": "Sage Twist",
+      "color": "#7a1f24",
+      "size": 103.1,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.28,
+      "charSpacing": 10
+     }
+    },
+    {
+     "id": "tpl-t79",
+     "xPct": 31.364,
+     "yPct": 74.366,
+     "widthPct": 61.591,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title 4",
+     "style": {
+      "text": "You Pilates",
+      "color": "#7a1f24",
+      "size": 103.1,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.28,
+      "charSpacing": 10
+     }
+    },
+    {
+     "id": "tpl-t80",
+     "xPct": 31.364,
+     "yPct": 79.984,
+     "widthPct": 51.591,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title 5",
+     "style": {
+      "text": "Hot Yoga",
+      "color": "#7a1f24",
+      "size": 103.1,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.28,
+      "charSpacing": 3
+     }
+    },
+    {
+     "id": "tpl-t81",
+     "xPct": 31.364,
+     "yPct": 85.601,
+     "widthPct": 63.409,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title 6",
+     "style": {
+      "text": "Hatha Yoga",
+      "color": "#7a1f24",
+      "size": 103.1,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.28,
+      "charSpacing": 11
+     }
+    },
+    {
+     "id": "tpl-t82",
+     "xPct": 32.273,
+     "yPct": 92.137,
+     "widthPct": 54.318,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle 1",
+     "style": {
+      "text": "Try our courses &",
+      "color": "#1a1211",
+      "size": 56.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": 14
+     }
+    },
+    {
+     "id": "tpl-t83",
+     "xPct": 32.273,
+     "yPct": 95.275,
+     "widthPct": 56.136,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle 2",
+     "style": {
+      "text": "Programs For Free",
+      "color": "#1a1211",
+      "size": 56.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": 10
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s69",
+     "assetId": "shape:Leg",
+     "name": "Leg",
+     "xPct": 7.955,
+     "yPct": 7.322,
+     "widthPct": 94.318,
+     "heightPct": 40.272,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 415,
+      "h": 385,
+      "vx": 35,
+      "vy": 70,
+      "path": "M100,390L240,300L385,135",
+      "blur": 3,
+      "stroke": "#8c6660",
+      "strokeWidth": 64,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s70",
+     "assetId": "shape:Hip",
+     "name": "Hip",
+     "xPct": 8.864,
+     "yPct": 32.845,
+     "widthPct": 32.273,
+     "heightPct": 13.808,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 142,
+      "h": 132,
+      "radius": 46,
+      "fill": "#8c6660",
+      "blur": 3,
+      "inset": 6
+     }
+    },
+    {
+     "id": "tpl-s71",
+     "assetId": "shape:Leg 2",
+     "name": "Leg 2",
+     "xPct": 11.591,
+     "yPct": 38.808,
+     "widthPct": 76.818,
+     "heightPct": 15.481,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 338,
+      "h": 148,
+      "vx": 51,
+      "vy": 371,
+      "path": "M110,440L210,460L330,430",
+      "blur": 3,
+      "stroke": "#8c6660",
+      "strokeWidth": 58,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s72",
+     "assetId": "shape:Top",
+     "name": "Top",
+     "xPct": 3.636,
+     "yPct": 21.862,
+     "widthPct": 33.409,
+     "heightPct": 13.598,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 147,
+      "h": 130,
+      "radius": 36,
+      "fill": "#b99b92",
+      "blur": 3,
+      "inset": 6
+     }
+    },
+    {
+     "id": "tpl-s73",
+     "assetId": "shape:Arms",
+     "name": "Arms",
+     "xPct": 22.5,
+     "yPct": 7.218,
+     "widthPct": 74.318,
+     "heightPct": 15.9,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 327,
+      "h": 152,
+      "vx": 99,
+      "vy": 69,
+      "path": "M130,190L300,130L395,100",
+      "blur": 2,
+      "stroke": "#c39784",
+      "strokeWidth": 30,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s74",
+     "assetId": "shape:Hair",
+     "name": "Hair",
+     "xPct": 11.818,
+     "yPct": 6.276,
+     "widthPct": 13.636,
+     "heightPct": 6.276,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 60,
+      "h": 60,
+      "fill": "#4a3228",
+      "blur": 2
+     }
+    },
+    {
+     "id": "tpl-s75",
+     "assetId": "shape:Head",
+     "name": "Head",
+     "xPct": 18.182,
+     "yPct": 6.485,
+     "widthPct": 13.636,
+     "heightPct": 6.276,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 60,
+      "h": 60,
+      "fill": "#c39784",
+      "blur": 2
+     }
+    }
+   ],
+   "deviceOne": {
+    "visible": false
+   }
+  },
+  {
+   "title": "Track Your Progress",
+   "subtitle": "Weeks, Months Calories & more",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#ece7de"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t85",
+     "xPct": 8.182,
+     "yPct": 2.909,
+     "widthPct": 70.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title 1",
+     "style": {
+      "text": "Track Your",
+      "color": "#3a1214",
+      "size": 122.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": 3
+     }
+    },
+    {
+     "id": "tpl-t86",
+     "xPct": 8.182,
+     "yPct": 8.767,
+     "widthPct": 59.545,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title 2",
+     "style": {
+      "text": "Progress",
+      "color": "#3a1214",
+      "size": 122.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": 13
+     }
+    },
+    {
+     "id": "tpl-t87",
+     "xPct": 8.182,
+     "yPct": 15.781,
+     "widthPct": 48.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle 1",
+     "style": {
+      "text": "Weeks, Months",
+      "color": "#1a1211",
+      "size": 58.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": -7
+     }
+    },
+    {
+     "id": "tpl-t88",
+     "xPct": 8.182,
+     "yPct": 18.919,
+     "widthPct": 49.773,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle 2",
+     "style": {
+      "text": "Calories & more",
+      "color": "#1a1211",
+      "size": 58.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": -3
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s84",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -4.091,
+     "yPct": 20.188,
+     "widthPct": 108.409,
+     "heightPct": 95.161,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 477,
+      "h": 909.74,
+      "radius": 113.04,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 61.75,
+    "x": 0.14,
+    "y": 20.44,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#0a0a0a",
+    "borderColor": "#1c1c1c",
+    "zIndex": 10
+   }
+  }
+ ],
+ "designHeight": 2347
+}

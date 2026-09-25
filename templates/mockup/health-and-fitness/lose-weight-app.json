@@ -1,0 +1,1280 @@
+{
+ "version": 1,
+ "id": "lose-weight-app",
+ "name": "Lose weight app",
+ "category": "health-and-fitness",
+ "description": "Elevate your weight loss app with our motivational template. Display progress tracking, meal planning, and fitness goals in an inspiring design that supports users on their journey to healthier living and sustainable weight management.",
+ "devices": [
+  {
+   "deviceId": "apple-iphone-16-pro-max",
+   "label": "iPhone 16 Pro Max"
+  },
+  {
+   "deviceId": "apple-iphone-13-pro-max",
+   "label": "iPhone 13 Pro Max"
+  },
+  {
+   "deviceId": "samsung-galaxy-s21-ultra",
+   "label": "Samsung Galaxy S21 Ultra"
+  },
+  {
+   "deviceId": "apple-ipad-pro-12-9-inch",
+   "label": "iPad Pro 12.9-inch"
+  },
+  {
+   "deviceId": "samsung-galaxy-tab-s7",
+   "label": "Samsung Galaxy Tab S7"
+  }
+ ],
+ "layout": "single-no-text",
+ "background": {
+  "type": "gradient",
+  "value": "linear-gradient(180deg,#141414 0%,#0a0a0a 100%)"
+ },
+ "panoramic": false,
+ "columnCount": 5,
+ "titles": [
+  "LOSE WEIGH THIS SUMMER",
+  "WORKOUT ROUTINE PROGRAMS",
+  "FOCUS TRAINING HOURS",
+  "MEALS DONE IN SECONDS",
+  "YOU VIEW RESULTS"
+ ],
+ "subtitles": [
+  "",
+  "",
+  "",
+  "",
+  ""
+ ],
+ "textColor": "#111111",
+ "pages": [
+  {
+   "title": "LOSE WEIGH THIS SUMMER",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg,#141414 0%,#0a0a0a 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t5",
+     "xPct": 32.045,
+     "yPct": 68.04,
+     "widthPct": 35.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "LOSE",
+     "style": {
+      "text": "LOSE",
+      "color": "#2bc6c1",
+      "size": 120.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -10
+     }
+    },
+    {
+     "id": "tpl-t7",
+     "xPct": 7.5,
+     "yPct": 77.991,
+     "widthPct": 47.5,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "WEIGH",
+     "style": {
+      "text": "WEIGH",
+      "color": "#2bc6c1",
+      "size": 127.2,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -10
+     }
+    },
+    {
+     "id": "tpl-t9",
+     "xPct": 59.091,
+     "yPct": 78.12,
+     "widthPct": 33.409,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "THIS",
+     "style": {
+      "text": "THIS",
+      "color": "#2bc6c1",
+      "size": 121.1,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -10
+     }
+    },
+    {
+     "id": "tpl-t11",
+     "xPct": 20.455,
+     "yPct": 88.044,
+     "widthPct": 59.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "SUMMER",
+     "style": {
+      "text": "SUMMER",
+      "color": "#2bc6c1",
+      "size": 124.2,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -10
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s1",
+     "assetId": "shape:Skin glow",
+     "name": "Skin glow",
+     "xPct": 11.364,
+     "yPct": 14.644,
+     "widthPct": 86.364,
+     "heightPct": 39.749,
+     "rotation": 0,
+     "opacity": 0.7,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 380,
+      "h": 380,
+      "fill": "#7a5a48",
+      "blur": 60
+     }
+    },
+    {
+     "id": "tpl-s2",
+     "assetId": "shape:Top glow",
+     "name": "Top glow",
+     "xPct": 0.0,
+     "yPct": 28.243,
+     "widthPct": 90.909,
+     "heightPct": 41.841,
+     "rotation": 0,
+     "opacity": 0.8,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 400,
+      "h": 400,
+      "fill": "#5a5a5e",
+      "blur": 50
+     }
+    },
+    {
+     "id": "tpl-s3",
+     "assetId": "shape:Warm bg",
+     "name": "Warm bg",
+     "xPct": -11.364,
+     "yPct": 9.414,
+     "widthPct": 50.0,
+     "heightPct": 23.013,
+     "rotation": 0,
+     "opacity": 0.8,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 220,
+      "h": 220,
+      "fill": "#3a3026",
+      "blur": 40
+     }
+    },
+    {
+     "id": "tpl-s4",
+     "assetId": "shape:Chip LOSE",
+     "name": "Chip LOSE",
+     "xPct": 32.045,
+     "yPct": 66.423,
+     "widthPct": 35.909,
+     "heightPct": 8.368,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 158,
+      "h": 80,
+      "radius": 18,
+      "fill": "#1c2c30",
+      "stroke": "#2bc6c1",
+      "strokeWidth": 2.5,
+      "inset": 1.25
+     }
+    },
+    {
+     "id": "tpl-s6",
+     "assetId": "shape:Chip WEIGH",
+     "name": "Chip WEIGH",
+     "xPct": 7.5,
+     "yPct": 76.464,
+     "widthPct": 47.5,
+     "heightPct": 8.473,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 209,
+      "h": 81,
+      "radius": 18,
+      "fill": "#1c2c30",
+      "stroke": "#2bc6c1",
+      "strokeWidth": 2.5,
+      "inset": 1.25
+     }
+    },
+    {
+     "id": "tpl-s8",
+     "assetId": "shape:Chip THIS",
+     "name": "Chip THIS",
+     "xPct": 59.091,
+     "yPct": 76.464,
+     "widthPct": 33.409,
+     "heightPct": 8.473,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 147,
+      "h": 81,
+      "radius": 18,
+      "fill": "#1c2c30",
+      "stroke": "#2bc6c1",
+      "strokeWidth": 2.5,
+      "inset": 1.25
+     }
+    },
+    {
+     "id": "tpl-s10",
+     "assetId": "shape:Chip SUMMER",
+     "name": "Chip SUMMER",
+     "xPct": 20.455,
+     "yPct": 86.506,
+     "widthPct": 59.091,
+     "heightPct": 8.368,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 260,
+      "h": 80,
+      "radius": 18,
+      "fill": "#1c2c30",
+      "stroke": "#2bc6c1",
+      "strokeWidth": 2.5,
+      "inset": 1.25
+     }
+    }
+   ],
+   "deviceOne": {
+    "visible": false
+   }
+  },
+  {
+   "title": "WORKOUT ROUTINE PROGRAMS",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #2bc6c1 0%, #1aa2a5 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t14",
+     "xPct": 12.5,
+     "yPct": 5.885,
+     "widthPct": 75.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "WORKOUT",
+     "style": {
+      "text": "WORKOUT",
+      "color": "#ffffff",
+      "size": 136.1,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -10
+     }
+    },
+    {
+     "id": "tpl-t16",
+     "xPct": 18.636,
+     "yPct": 15.981,
+     "widthPct": 62.5,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "ROUTINE",
+     "style": {
+      "text": "ROUTINE",
+      "color": "#ffffff",
+      "size": 133.6,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -10
+     }
+    },
+    {
+     "id": "tpl-t18",
+     "xPct": 9.091,
+     "yPct": 25.984,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "PROGRAMS",
+     "style": {
+      "text": "PROGRAMS",
+      "color": "#ffffff",
+      "size": 137.9,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -10
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s12",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -0.909,
+     "yPct": 31.59,
+     "widthPct": 110.909,
+     "heightPct": 97.661,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 488,
+      "h": 933.64,
+      "radius": 114.8,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s13",
+     "assetId": "shape:Chip WORKOUT",
+     "name": "Chip WORKOUT",
+     "xPct": 12.5,
+     "yPct": 4.603,
+     "widthPct": 75.0,
+     "heightPct": 8.368,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 330,
+      "h": 80,
+      "radius": 18,
+      "fill": "#111111"
+     }
+    },
+    {
+     "id": "tpl-s15",
+     "assetId": "shape:Chip ROUTINE",
+     "name": "Chip ROUTINE",
+     "xPct": 18.636,
+     "yPct": 14.644,
+     "widthPct": 62.5,
+     "heightPct": 8.368,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 275,
+      "h": 80,
+      "radius": 18,
+      "fill": "#111111"
+     }
+    },
+    {
+     "id": "tpl-s17",
+     "assetId": "shape:Chip PROGRAMS",
+     "name": "Chip PROGRAMS",
+     "xPct": 9.091,
+     "yPct": 24.686,
+     "widthPct": 81.818,
+     "heightPct": 8.473,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 360,
+      "h": 81,
+      "radius": 18,
+      "fill": "#111111"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 63.6,
+    "x": 5.26,
+    "y": 34.5,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#060606",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "FOCUS TRAINING HOURS",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #2bc6c1 0%, #1aa2a5 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t21",
+     "xPct": 24.318,
+     "yPct": 5.848,
+     "widthPct": 51.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "FOCUS",
+     "style": {
+      "text": "FOCUS",
+      "color": "#111111",
+      "size": 137.9,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -10
+     }
+    },
+    {
+     "id": "tpl-t23",
+     "xPct": 15.455,
+     "yPct": 15.941,
+     "widthPct": 69.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "TRAINING",
+     "style": {
+      "text": "TRAINING",
+      "color": "#111111",
+      "size": 135.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -10
+     }
+    },
+    {
+     "id": "tpl-t25",
+     "xPct": 24.091,
+     "yPct": 26.022,
+     "widthPct": 51.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "HOURS",
+     "style": {
+      "text": "HOURS",
+      "color": "#111111",
+      "size": 136.1,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -10
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s19",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -0.909,
+     "yPct": 31.59,
+     "widthPct": 110.909,
+     "heightPct": 97.661,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 488,
+      "h": 933.64,
+      "radius": 114.8,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s20",
+     "assetId": "shape:Chip FOCUS",
+     "name": "Chip FOCUS",
+     "xPct": 24.318,
+     "yPct": 4.603,
+     "widthPct": 51.364,
+     "heightPct": 8.368,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 226,
+      "h": 80,
+      "radius": 18,
+      "fill": "#3dd6d0"
+     }
+    },
+    {
+     "id": "tpl-s22",
+     "assetId": "shape:Chip TRAINING",
+     "name": "Chip TRAINING",
+     "xPct": 15.455,
+     "yPct": 14.644,
+     "widthPct": 69.091,
+     "heightPct": 8.368,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 304,
+      "h": 80,
+      "radius": 18,
+      "fill": "#3dd6d0"
+     }
+    },
+    {
+     "id": "tpl-s24",
+     "assetId": "shape:Chip HOURS",
+     "name": "Chip HOURS",
+     "xPct": 24.091,
+     "yPct": 24.686,
+     "widthPct": 51.818,
+     "heightPct": 8.473,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 228,
+      "h": 81,
+      "radius": 18,
+      "fill": "#3dd6d0"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 63.6,
+    "x": 5.26,
+    "y": 34.5,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#1fb0b0",
+    "borderColor": "#1fb0b0",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "MEALS DONE IN SECONDS",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #2bc6c1 0%, #1aa2a5 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t28",
+     "xPct": 25.455,
+     "yPct": 6.045,
+     "widthPct": 49.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "MEALS",
+     "style": {
+      "text": "MEALS",
+      "color": "#ffffff",
+      "size": 128.7,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -10
+     }
+    },
+    {
+     "id": "tpl-t30",
+     "xPct": 16.364,
+     "yPct": 15.932,
+     "widthPct": 42.955,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "DONE",
+     "style": {
+      "text": "DONE",
+      "color": "#ffffff",
+      "size": 135.9,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -10
+     }
+    },
+    {
+     "id": "tpl-t32",
+     "xPct": 64.318,
+     "yPct": 16.042,
+     "widthPct": 19.545,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "IN",
+     "style": {
+      "text": "IN",
+      "color": "#ffffff",
+      "size": 130.8,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -10
+     }
+    },
+    {
+     "id": "tpl-t34",
+     "xPct": 15.227,
+     "yPct": 25.997,
+     "widthPct": 69.545,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "SECONDS",
+     "style": {
+      "text": "SECONDS",
+      "color": "#ffffff",
+      "size": 137.3,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -10
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s26",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -0.909,
+     "yPct": 31.59,
+     "widthPct": 110.909,
+     "heightPct": 97.661,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 488,
+      "h": 933.64,
+      "radius": 114.8,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s27",
+     "assetId": "shape:Chip MEALS",
+     "name": "Chip MEALS",
+     "xPct": 25.455,
+     "yPct": 4.603,
+     "widthPct": 49.091,
+     "heightPct": 8.368,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 216,
+      "h": 80,
+      "radius": 18,
+      "fill": "#111111"
+     }
+    },
+    {
+     "id": "tpl-s29",
+     "assetId": "shape:Chip DONE",
+     "name": "Chip DONE",
+     "xPct": 16.364,
+     "yPct": 14.644,
+     "widthPct": 42.955,
+     "heightPct": 8.368,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 189,
+      "h": 80,
+      "radius": 18,
+      "fill": "#111111"
+     }
+    },
+    {
+     "id": "tpl-s31",
+     "assetId": "shape:Chip IN",
+     "name": "Chip IN",
+     "xPct": 64.318,
+     "yPct": 14.644,
+     "widthPct": 19.545,
+     "heightPct": 8.368,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 86,
+      "h": 80,
+      "radius": 18,
+      "fill": "#111111"
+     }
+    },
+    {
+     "id": "tpl-s33",
+     "assetId": "shape:Chip SECONDS",
+     "name": "Chip SECONDS",
+     "xPct": 15.227,
+     "yPct": 24.686,
+     "widthPct": 69.545,
+     "heightPct": 8.473,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 306,
+      "h": 81,
+      "radius": 18,
+      "fill": "#111111"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 63.6,
+    "x": 5.26,
+    "y": 34.5,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#060606",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "YOU VIEW RESULTS",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#ffffff"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t46",
+     "xPct": 36.591,
+     "yPct": 37.839,
+     "widthPct": 27.045,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "YOU",
+     "style": {
+      "text": "YOU",
+      "color": "#111111",
+      "size": 97.0,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -10
+     }
+    },
+    {
+     "id": "tpl-t48",
+     "xPct": 19.318,
+     "yPct": 38.674,
+     "widthPct": 11.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "↓",
+     "style": {
+      "text": "↓",
+      "color": "#111111",
+      "size": 57.8,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -10
+     }
+    },
+    {
+     "id": "tpl-t50",
+     "xPct": 69.091,
+     "yPct": 38.618,
+     "widthPct": 12.045,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "↓",
+     "style": {
+      "text": "↓",
+      "color": "#111111",
+      "size": 60.4,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -10
+     }
+    },
+    {
+     "id": "tpl-t52",
+     "xPct": 30.0,
+     "yPct": 79.989,
+     "widthPct": 40.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "VIEW",
+     "style": {
+      "text": "VIEW",
+      "color": "#111111",
+      "size": 131.6,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -10
+     }
+    },
+    {
+     "id": "tpl-t54",
+     "xPct": 19.545,
+     "yPct": 90.158,
+     "widthPct": 60.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "RESULTS",
+     "style": {
+      "text": "RESULTS",
+      "color": "#111111",
+      "size": 128.1,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -10
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s35",
+     "assetId": "shape:Photo",
+     "name": "Photo",
+     "xPct": 26.364,
+     "yPct": 5.23,
+     "widthPct": 47.5,
+     "heightPct": 27.51,
+     "rotation": 5,
+     "opacity": 1,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 209,
+      "h": 263,
+      "radius": 22,
+      "fill": "#a89888",
+      "stroke": "#2bc6c1",
+      "strokeWidth": 9,
+      "inset": 4.5
+     }
+    },
+    {
+     "id": "tpl-s36",
+     "assetId": "shape:Blob",
+     "name": "Blob",
+     "xPct": 37.595,
+     "yPct": 8.753,
+     "widthPct": 26.6,
+     "heightPct": 12.243,
+     "rotation": 0,
+     "opacity": 0.8,
+     "zIndex": 6,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 117.04,
+      "h": 117.04,
+      "fill": "#d8c0a8",
+      "blur": 14
+     }
+    },
+    {
+     "id": "tpl-s37",
+     "assetId": "shape:Blob2",
+     "name": "Blob2",
+     "xPct": 29.811,
+     "yPct": 17.092,
+     "widthPct": 38.0,
+     "heightPct": 17.49,
+     "rotation": 0,
+     "opacity": 0.8,
+     "zIndex": 6,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 167.2,
+      "h": 167.2,
+      "fill": "#40403f",
+      "blur": 14
+     }
+    },
+    {
+     "id": "tpl-s38",
+     "assetId": "shape:Photo",
+     "name": "Photo",
+     "xPct": 27.045,
+     "yPct": 46.548,
+     "widthPct": 45.909,
+     "heightPct": 28.766,
+     "rotation": -5,
+     "opacity": 1,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 202,
+      "h": 275,
+      "radius": 22,
+      "fill": "#6a6a70",
+      "stroke": "#2bc6c1",
+      "strokeWidth": 9,
+      "inset": 4.5
+     }
+    },
+    {
+     "id": "tpl-s39",
+     "assetId": "shape:Blob",
+     "name": "Blob",
+     "xPct": 36.328,
+     "yPct": 50.716,
+     "widthPct": 25.709,
+     "heightPct": 11.833,
+     "rotation": 0,
+     "opacity": 0.8,
+     "zIndex": 6,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 113.12,
+      "h": 113.12,
+      "fill": "#d8c0a8",
+      "blur": 14
+     }
+    },
+    {
+     "id": "tpl-s40",
+     "assetId": "shape:Blob2",
+     "name": "Blob2",
+     "xPct": 32.998,
+     "yPct": 59.643,
+     "widthPct": 36.727,
+     "heightPct": 16.904,
+     "rotation": 0,
+     "opacity": 0.8,
+     "zIndex": 6,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 161.6,
+      "h": 161.6,
+      "fill": "#40403f",
+      "blur": 14
+     }
+    },
+    {
+     "id": "tpl-s41",
+     "assetId": "shape:Arrow chip",
+     "name": "Arrow chip",
+     "xPct": 19.318,
+     "yPct": 36.402,
+     "widthPct": 12.045,
+     "heightPct": 7.008,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 53,
+      "h": 67,
+      "radius": 14,
+      "fill": "#2dd4cf"
+     }
+    },
+    {
+     "id": "tpl-s42",
+     "assetId": "shape:Arrow",
+     "name": "Arrow",
+     "xPct": 21.818,
+     "yPct": 37.971,
+     "widthPct": 6.818,
+     "heightPct": 4.079,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 30,
+      "h": 39,
+      "vx": 96,
+      "vy": 363,
+      "path": "M111,368L111,396M101,386L111,397L121,386",
+      "stroke": "#111111",
+      "strokeWidth": 4,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s43",
+     "assetId": "shape:Arrow chip",
+     "name": "Arrow chip",
+     "xPct": 69.091,
+     "yPct": 36.402,
+     "widthPct": 12.045,
+     "heightPct": 7.008,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 53,
+      "h": 67,
+      "radius": 14,
+      "fill": "#2dd4cf"
+     }
+    },
+    {
+     "id": "tpl-s44",
+     "assetId": "shape:Arrow",
+     "name": "Arrow",
+     "xPct": 71.591,
+     "yPct": 37.971,
+     "widthPct": 6.818,
+     "heightPct": 4.079,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 30,
+      "h": 39,
+      "vx": 315,
+      "vy": 363,
+      "path": "M330,368L330,396M320,386L330,397L340,386",
+      "stroke": "#111111",
+      "strokeWidth": 4,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s45",
+     "assetId": "shape:Chip YOU",
+     "name": "Chip YOU",
+     "xPct": 36.591,
+     "yPct": 36.402,
+     "widthPct": 27.045,
+     "heightPct": 7.008,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 119,
+      "h": 67,
+      "radius": 18,
+      "fill": "#2dd4cf"
+     }
+    },
+    {
+     "id": "tpl-s47",
+     "assetId": "shape:Chip ↓",
+     "name": "Chip ↓",
+     "xPct": 19.318,
+     "yPct": 36.402,
+     "widthPct": 11.818,
+     "heightPct": 7.008,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 52,
+      "h": 67,
+      "radius": 18,
+      "fill": "#2dd4cf"
+     }
+    },
+    {
+     "id": "tpl-s49",
+     "assetId": "shape:Chip ↓",
+     "name": "Chip ↓",
+     "xPct": 69.091,
+     "yPct": 36.402,
+     "widthPct": 12.045,
+     "heightPct": 7.008,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 53,
+      "h": 67,
+      "radius": 18,
+      "fill": "#2dd4cf"
+     }
+    },
+    {
+     "id": "tpl-s51",
+     "assetId": "shape:Chip VIEW",
+     "name": "Chip VIEW",
+     "xPct": 30.0,
+     "yPct": 78.556,
+     "widthPct": 40.0,
+     "heightPct": 8.473,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 176,
+      "h": 81,
+      "radius": 18,
+      "fill": "#2dd4cf"
+     }
+    },
+    {
+     "id": "tpl-s53",
+     "assetId": "shape:Chip RESULTS",
+     "name": "Chip RESULTS",
+     "xPct": 19.545,
+     "yPct": 88.703,
+     "widthPct": 60.909,
+     "heightPct": 8.368,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 268,
+      "h": 80,
+      "radius": 18,
+      "fill": "#2dd4cf"
+     }
+    }
+   ],
+   "deviceOne": {
+    "visible": false
+   }
+  }
+ ],
+ "designHeight": 2347
+}

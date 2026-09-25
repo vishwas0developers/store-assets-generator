@@ -1,0 +1,787 @@
+{
+ "version": 1,
+ "id": "anxiety-app",
+ "name": "Anxiety app",
+ "category": "health-and-fitness",
+ "description": "Support users with stress relief and anxiety management features through our compassionate template. Showcase breathing exercises, calming tools, symptom tracking, and wellness resources designed for emotional well-being.",
+ "devices": [
+  {
+   "deviceId": "apple-iphone-16-pro-max",
+   "label": "iPhone 16 Pro Max"
+  },
+  {
+   "deviceId": "apple-iphone-13-pro-max",
+   "label": "iPhone 13 Pro Max"
+  },
+  {
+   "deviceId": "samsung-galaxy-s21-ultra",
+   "label": "Samsung Galaxy S21 Ultra"
+  },
+  {
+   "deviceId": "apple-ipad-pro-12-9-inch",
+   "label": "iPad Pro 12.9-inch"
+  },
+  {
+   "deviceId": "samsung-galaxy-tab-s7",
+   "label": "Samsung Galaxy Tab S7"
+  }
+ ],
+ "layout": "single-no-text",
+ "background": {
+  "type": "gradient",
+  "value": "linear-gradient(180deg, #5d6a40 0%, #9c855d 35%, #a08360 50%, #5e5644 75%, #000000 93%)"
+ },
+ "panoramic": false,
+ "columnCount": 5,
+ "titles": [
+  "Unlock Full Experience",
+  "Track How You Feel",
+  "Speak Freely",
+  "Understand Your Feelings",
+  "Guided Prompts"
+ ],
+ "subtitles": [
+  "",
+  "",
+  "",
+  "",
+  ""
+ ],
+ "textColor": "#111111",
+ "pages": [
+  {
+   "title": "Unlock Full Experience",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #5d6a40 0%, #9c855d 35%, #a08360 50%, #5e5644 75%, #000000 93%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t5",
+     "xPct": 16.364,
+     "yPct": 5.218,
+     "widthPct": 45.455,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title 1",
+     "style": {
+      "text": "Unlock",
+      "color": "#ffffff",
+      "size": 127.6,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": 35
+     }
+    },
+    {
+     "id": "tpl-t6",
+     "xPct": 62.727,
+     "yPct": 5.218,
+     "widthPct": 22.727,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title 2",
+     "style": {
+      "text": "Full",
+      "color": "#0a0a0a",
+      "size": 127.6,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.2
+     }
+    },
+    {
+     "id": "tpl-t7",
+     "xPct": 15.909,
+     "yPct": 10.971,
+     "widthPct": 70.455,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title 3",
+     "style": {
+      "text": "Experience",
+      "color": "#0a0a0a",
+      "size": 127.6,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": 28
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s1",
+     "assetId": "shape:Glow",
+     "name": "Glow",
+     "xPct": -52.273,
+     "yPct": -24.059,
+     "widthPct": 122.727,
+     "heightPct": 56.485,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 540,
+      "h": 540,
+      "radius": 270,
+      "fill": "#4a5e3a",
+      "blur": 40,
+      "inset": 120
+     }
+    },
+    {
+     "id": "tpl-s2",
+     "assetId": "shape:Glow",
+     "name": "Glow",
+     "xPct": 36.364,
+     "yPct": -4.184,
+     "widthPct": 113.636,
+     "heightPct": 52.301,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 500,
+      "h": 500,
+      "radius": 250,
+      "fill": "#b89268",
+      "blur": 40,
+      "inset": 120
+     }
+    },
+    {
+     "id": "tpl-s3",
+     "assetId": "shape:Glow",
+     "name": "Glow",
+     "xPct": -50.0,
+     "yPct": 18.828,
+     "widthPct": 109.091,
+     "heightPct": 50.209,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 480,
+      "h": 480,
+      "radius": 240,
+      "fill": "#b89268",
+      "blur": 40,
+      "inset": 120
+     }
+    },
+    {
+     "id": "tpl-s4",
+     "assetId": "shape:Dark",
+     "name": "Dark",
+     "xPct": -36.364,
+     "yPct": 63.808,
+     "widthPct": 172.727,
+     "heightPct": 79.498,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 760,
+      "h": 760,
+      "radius": 380,
+      "fill": "#000000",
+      "blur": 40,
+      "inset": 120
+     }
+    },
+    {
+     "id": "tpl-s8",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 0.455,
+     "yPct": 18.201,
+     "widthPct": 99.091,
+     "heightPct": 82.898,
+     "rotation": 0,
+     "opacity": 0.45,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 436,
+      "h": 792.51,
+      "radius": 114.64,
+      "fill": "#000000",
+      "blur": 22,
+      "inset": 66
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 50.88,
+    "x": 0.0,
+    "y": 12.76,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Track How You Feel",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #000000 0%, #000000 12%, #1a2212 30%, #4e6038 52%, #747c4c 68%, #8b8051 82%, #a47d56 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t13",
+     "xPct": 17.273,
+     "yPct": 81.787,
+     "widthPct": 38.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title 1",
+     "style": {
+      "text": "Track",
+      "color": "#ffffff",
+      "size": 127.6,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": 28
+     }
+    },
+    {
+     "id": "tpl-t14",
+     "xPct": 55.909,
+     "yPct": 81.787,
+     "widthPct": 29.545,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title 2",
+     "style": {
+      "text": "How",
+      "color": "#0a0a0a",
+      "size": 127.6,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": 20
+     }
+    },
+    {
+     "id": "tpl-t15",
+     "xPct": 23.409,
+     "yPct": 87.54,
+     "widthPct": 59.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title 3",
+     "style": {
+      "text": "You Feel",
+      "color": "#0a0a0a",
+      "size": 127.6,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": 26
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s9",
+     "assetId": "shape:Glow",
+     "name": "Glow",
+     "xPct": 38.636,
+     "yPct": 31.381,
+     "widthPct": 118.182,
+     "heightPct": 54.393,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 520,
+      "h": 520,
+      "radius": 260,
+      "fill": "#607644",
+      "blur": 40,
+      "inset": 120
+     }
+    },
+    {
+     "id": "tpl-s10",
+     "assetId": "shape:Glow",
+     "name": "Glow",
+     "xPct": -50.0,
+     "yPct": 49.163,
+     "widthPct": 113.636,
+     "heightPct": 52.301,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 500,
+      "h": 500,
+      "radius": 250,
+      "fill": "#627546",
+      "blur": 40,
+      "inset": 120
+     }
+    },
+    {
+     "id": "tpl-s11",
+     "assetId": "shape:Glow",
+     "name": "Glow",
+     "xPct": 36.364,
+     "yPct": 72.176,
+     "widthPct": 118.182,
+     "heightPct": 54.393,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 520,
+      "h": 520,
+      "radius": 260,
+      "fill": "#b47d59",
+      "blur": 40,
+      "inset": 120
+     }
+    },
+    {
+     "id": "tpl-s12",
+     "assetId": "shape:Dark",
+     "name": "Dark",
+     "xPct": -27.273,
+     "yPct": -31.381,
+     "widthPct": 145.455,
+     "heightPct": 66.946,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 640,
+      "h": 640,
+      "radius": 320,
+      "fill": "#000000",
+      "blur": 40,
+      "inset": 120
+     }
+    },
+    {
+     "id": "tpl-s16",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 0.455,
+     "yPct": 3.661,
+     "widthPct": 99.091,
+     "heightPct": 82.898,
+     "rotation": 0,
+     "opacity": 0.45,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 436,
+      "h": 792.51,
+      "radius": 114.64,
+      "fill": "#000000",
+      "blur": 22,
+      "inset": 66
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 50.88,
+    "x": 0.0,
+    "y": -8.29,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Speak Freely",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #607078 0%, #6a7d84 35%, #8b8a85 62%, #a58a76 82%, #2a2420 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t21",
+     "xPct": 4.545,
+     "yPct": 5.415,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title 1",
+     "style": {
+      "text": "Speak",
+      "color": "#ffffff",
+      "size": 139.9,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.0,
+      "charSpacing": -10
+     }
+    },
+    {
+     "id": "tpl-t22",
+     "xPct": 4.545,
+     "yPct": 11.273,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title 2",
+     "style": {
+      "text": "Freely",
+      "color": "#141414",
+      "size": 139.9,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.0,
+      "charSpacing": -10
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s17",
+     "assetId": "shape:Warm glow",
+     "name": "Warm glow",
+     "xPct": -9.091,
+     "yPct": 46.025,
+     "widthPct": 118.182,
+     "heightPct": 54.393,
+     "rotation": 0,
+     "opacity": 0.9,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 520,
+      "h": 520,
+      "fill": "#c9a07f",
+      "blur": 60
+     }
+    },
+    {
+     "id": "tpl-s18",
+     "assetId": "shape:Warm glow 2",
+     "name": "Warm glow 2",
+     "xPct": 50.0,
+     "yPct": 71.13,
+     "widthPct": 100.0,
+     "heightPct": 46.025,
+     "rotation": 0,
+     "opacity": 0.8,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 440,
+      "h": 440,
+      "fill": "#b07a5a",
+      "blur": 60
+     }
+    },
+    {
+     "id": "tpl-s19",
+     "assetId": "shape:Dark base",
+     "name": "Dark base",
+     "xPct": -9.091,
+     "yPct": 83.682,
+     "widthPct": 118.182,
+     "heightPct": 20.921,
+     "rotation": 0,
+     "opacity": 0.95,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 520,
+      "h": 200,
+      "radius": 0,
+      "fill": "#000000",
+      "blur": 50
+     }
+    },
+    {
+     "id": "tpl-s20",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -0.568,
+     "yPct": 17.259,
+     "widthPct": 101.136,
+     "heightPct": 83.472,
+     "rotation": 0,
+     "opacity": 0.35,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 445,
+      "h": 797.99,
+      "radius": 120.16,
+      "fill": "#000000",
+      "blur": 24,
+      "inset": 72
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 50.37,
+    "x": 0.0,
+    "y": 12.23,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Understand Your Feelings",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "radial-gradient(circle at 5% 0%, #cfae9b 0%, rgba(207,174,155,0) 60%), linear-gradient(160deg, #c2a493 0%, #8a7263 25%, #3a322d 55%, #000000 80%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t25",
+     "xPct": 4.545,
+     "yPct": 82.089,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title 1",
+     "style": {
+      "text": "Understand",
+      "color": "#ffffff",
+      "size": 139.9,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.0,
+      "charSpacing": -10
+     }
+    },
+    {
+     "id": "tpl-t26",
+     "xPct": 4.545,
+     "yPct": 87.842,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title 2",
+     "style": {
+      "text": "Your Feelings",
+      "color": "#d9915f",
+      "size": 139.9,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.0,
+      "charSpacing": -10
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s23",
+     "assetId": "shape:Dark base",
+     "name": "Dark base",
+     "xPct": -9.091,
+     "yPct": 66.946,
+     "widthPct": 118.182,
+     "heightPct": 41.841,
+     "rotation": 0,
+     "opacity": 0.97,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 520,
+      "h": 400,
+      "radius": 0,
+      "fill": "#000000",
+      "blur": 40
+     }
+    },
+    {
+     "id": "tpl-s24",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -0.568,
+     "yPct": 2.929,
+     "widthPct": 101.136,
+     "heightPct": 83.472,
+     "rotation": 0,
+     "opacity": 0.35,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 445,
+      "h": 797.99,
+      "radius": 120.16,
+      "fill": "#000000",
+      "blur": 24,
+      "inset": 72
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 50.37,
+    "x": 0.0,
+    "y": -8.72,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Guided Prompts",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "radial-gradient(ellipse 90% 40% at 80% 100%, #37705a 0%, rgba(55,112,90,0) 100%), linear-gradient(180deg, #000000 0%, #000000 10%, #0c1f18 40%, #1f4a39 75%, #2f6a53 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t28",
+     "xPct": 0.0,
+     "yPct": 5.028,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Guided",
+     "style": {
+      "text": "Guided",
+      "color": "#4fc58f",
+      "size": 139.9,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.2
+     }
+    },
+    {
+     "id": "tpl-t29",
+     "xPct": 0.0,
+     "yPct": 10.99,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Prompts",
+     "style": {
+      "text": "Prompts",
+      "color": "#ffffff",
+      "size": 139.9,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.2
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s27",
+     "assetId": "shape:Glow",
+     "name": "Glow",
+     "xPct": 38.636,
+     "yPct": 76.36,
+     "widthPct": 77.273,
+     "heightPct": 35.565,
+     "rotation": 0,
+     "opacity": 0.6,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 340,
+      "h": 340,
+      "fill": "#3f7f66",
+      "blur": 70
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 50.88,
+    "x": 0.0,
+    "y": 12.76,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  }
+ ],
+ "designHeight": 2347
+}

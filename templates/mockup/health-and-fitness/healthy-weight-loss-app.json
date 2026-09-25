@@ -1,0 +1,1101 @@
+{
+ "version": 1,
+ "id": "healthy-weight-loss-app",
+ "name": "Healthy weight loss app",
+ "category": "health-and-fitness",
+ "description": "Present your wellness app with our comprehensive template. Display nutrition tracking, workout plans, and health monitoring in a balanced design that promotes sustainable weight loss through healthy lifestyle choices and expert guidance.",
+ "devices": [
+  {
+   "deviceId": "apple-iphone-16-pro-max",
+   "label": "iPhone 16 Pro Max"
+  },
+  {
+   "deviceId": "apple-iphone-13-pro-max",
+   "label": "iPhone 13 Pro Max"
+  },
+  {
+   "deviceId": "samsung-galaxy-s21-ultra",
+   "label": "Samsung Galaxy S21 Ultra"
+  },
+  {
+   "deviceId": "apple-ipad-pro-12-9-inch",
+   "label": "iPad Pro 12.9-inch"
+  },
+  {
+   "deviceId": "samsung-galaxy-tab-s7",
+   "label": "Samsung Galaxy Tab S7"
+  }
+ ],
+ "layout": "single-no-text",
+ "background": {
+  "type": "gradient",
+  "value": "linear-gradient(180deg, #5bf5ef 0%, #6ff7f2 100%)"
+ },
+ "panoramic": false,
+ "columnCount": 5,
+ "titles": [
+  "Healthy Weight Loss",
+  "Track your Macros",
+  "Daily Calories",
+  "Live Fasting Stats",
+  "Break Barriers"
+ ],
+ "subtitles": [
+  "4.9 Aug. Rating on App Store",
+  "See carbs, fats, and protein trends",
+  "Stay on top of your eating patterns",
+  "See progress and manage your fast",
+  "Identify what's held you back before"
+ ],
+ "textColor": "#111111",
+ "pages": [
+  {
+   "title": "Healthy Weight Loss",
+   "subtitle": "4.9 Aug. Rating on App Store",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #5bf5ef 0%, #6ff7f2 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t1",
+     "xPct": 0.0,
+     "yPct": 5.02,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Healthy",
+     "style": {
+      "text": "Healthy",
+      "color": "#000",
+      "size": 162.0,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -21
+     }
+    },
+    {
+     "id": "tpl-t2",
+     "xPct": 0.0,
+     "yPct": 13.598,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Weight Loss",
+     "style": {
+      "text": "Weight Loss",
+      "color": "#000",
+      "size": 162.0,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -113
+     }
+    },
+    {
+     "id": "tpl-t14",
+     "xPct": 12.045,
+     "yPct": 31.38,
+     "widthPct": 75.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "Rating",
+     "style": {
+      "text": "4.9 Aug. Rating on App Store",
+      "color": "#000",
+      "size": 54.0,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 5
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s3",
+     "assetId": "shape:Star box",
+     "name": "Star box",
+     "xPct": 21.136,
+     "yPct": 23.849,
+     "widthPct": 7.955,
+     "heightPct": 3.975,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 35,
+      "h": 38,
+      "radius": 3,
+      "fill": "#000"
+     }
+    },
+    {
+     "id": "tpl-s4",
+     "assetId": "shape:Star",
+     "name": "Star",
+     "xPct": 21.428,
+     "yPct": 24.059,
+     "widthPct": 7.371,
+     "heightPct": 3.237,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 32.43,
+      "h": 30.94,
+      "vx": 94.28,
+      "vy": 230.0,
+      "path": "M110.5,231.0L114.32,241.74L125.72,242.06L116.68,249.01L119.9,259.94L110.5,253.5L101.1,259.94L104.32,249.01L95.28,242.06L106.68,241.74Z",
+      "fill": "#ffd21f"
+     }
+    },
+    {
+     "id": "tpl-s5",
+     "assetId": "shape:Star box",
+     "name": "Star box",
+     "xPct": 32.955,
+     "yPct": 23.849,
+     "widthPct": 7.955,
+     "heightPct": 3.975,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 35,
+      "h": 38,
+      "radius": 3,
+      "fill": "#000"
+     }
+    },
+    {
+     "id": "tpl-s6",
+     "assetId": "shape:Star",
+     "name": "Star",
+     "xPct": 33.246,
+     "yPct": 24.059,
+     "widthPct": 7.371,
+     "heightPct": 3.237,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 32.43,
+      "h": 30.94,
+      "vx": 146.28,
+      "vy": 230.0,
+      "path": "M162.5,231.0L166.32,241.74L177.72,242.06L168.68,249.01L171.9,259.94L162.5,253.5L153.1,259.94L156.32,249.01L147.28,242.06L158.68,241.74Z",
+      "fill": "#ffd21f"
+     }
+    },
+    {
+     "id": "tpl-s7",
+     "assetId": "shape:Star box",
+     "name": "Star box",
+     "xPct": 44.773,
+     "yPct": 23.849,
+     "widthPct": 7.955,
+     "heightPct": 3.975,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 35,
+      "h": 38,
+      "radius": 3,
+      "fill": "#000"
+     }
+    },
+    {
+     "id": "tpl-s8",
+     "assetId": "shape:Star",
+     "name": "Star",
+     "xPct": 45.064,
+     "yPct": 24.059,
+     "widthPct": 7.371,
+     "heightPct": 3.237,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 32.43,
+      "h": 30.94,
+      "vx": 198.28,
+      "vy": 230.0,
+      "path": "M214.5,231.0L218.32,241.74L229.72,242.06L220.68,249.01L223.9,259.94L214.5,253.5L205.1,259.94L208.32,249.01L199.28,242.06L210.68,241.74Z",
+      "fill": "#ffd21f"
+     }
+    },
+    {
+     "id": "tpl-s9",
+     "assetId": "shape:Star box",
+     "name": "Star box",
+     "xPct": 56.591,
+     "yPct": 23.849,
+     "widthPct": 7.955,
+     "heightPct": 3.975,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 35,
+      "h": 38,
+      "radius": 3,
+      "fill": "#000"
+     }
+    },
+    {
+     "id": "tpl-s10",
+     "assetId": "shape:Star",
+     "name": "Star",
+     "xPct": 56.883,
+     "yPct": 24.059,
+     "widthPct": 7.371,
+     "heightPct": 3.237,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 32.43,
+      "h": 30.94,
+      "vx": 250.28,
+      "vy": 230.0,
+      "path": "M266.5,231.0L270.32,241.74L281.72,242.06L272.68,249.01L275.9,259.94L266.5,253.5L257.1,259.94L260.32,249.01L251.28,242.06L262.68,241.74Z",
+      "fill": "#ffd21f"
+     }
+    },
+    {
+     "id": "tpl-s11",
+     "assetId": "shape:Star box",
+     "name": "Star box",
+     "xPct": 68.409,
+     "yPct": 23.849,
+     "widthPct": 7.955,
+     "heightPct": 3.975,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 35,
+      "h": 38,
+      "radius": 3,
+      "fill": "#000"
+     }
+    },
+    {
+     "id": "tpl-s12",
+     "assetId": "shape:Star",
+     "name": "Star",
+     "xPct": 68.701,
+     "yPct": 24.059,
+     "widthPct": 7.371,
+     "heightPct": 3.237,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 32.43,
+      "h": 30.94,
+      "vx": 302.28,
+      "vy": 230.0,
+      "path": "M318.5,231.0L322.32,241.74L333.72,242.06L324.68,249.01L327.9,259.94L318.5,253.5L309.1,259.94L312.32,249.01L303.28,242.06L314.68,241.74Z",
+      "fill": "#ffd21f"
+     }
+    },
+    {
+     "id": "tpl-s13",
+     "assetId": "shape:Rating box",
+     "name": "Rating box",
+     "xPct": 12.045,
+     "yPct": 29.916,
+     "widthPct": 75.909,
+     "heightPct": 5.23,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 334,
+      "h": 50,
+      "radius": 2,
+      "fill": "#fbe24d"
+     }
+    },
+    {
+     "id": "tpl-s15",
+     "assetId": "shape:Apple",
+     "name": "Apple",
+     "xPct": 41.591,
+     "yPct": 70.293,
+     "widthPct": 21.818,
+     "heightPct": 10.042,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 96,
+      "h": 96,
+      "fill": "#d0242b"
+     }
+    },
+    {
+     "id": "tpl-s16",
+     "assetId": "shape:Apple shine",
+     "name": "Apple shine",
+     "xPct": 44.318,
+     "yPct": 71.13,
+     "widthPct": 9.091,
+     "heightPct": 4.184,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 40,
+      "h": 40,
+      "fill": "#f26b6b",
+      "blur": 8
+     }
+    },
+    {
+     "id": "tpl-s17",
+     "assetId": "shape:Glow",
+     "name": "Glow",
+     "xPct": 0.0,
+     "yPct": 73.222,
+     "widthPct": 90.909,
+     "heightPct": 41.841,
+     "rotation": 0,
+     "opacity": 0.35,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 400,
+      "h": 400,
+      "fill": "#1a3a5c",
+      "blur": 40
+     }
+    }
+   ],
+   "deviceOne": {
+    "visible": false
+   }
+  },
+  {
+   "title": "Track your Macros",
+   "subtitle": "See carbs, fats, and protein trends",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #5bf5ef 0%, #d9fffd 60%, #ffffff 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t18",
+     "xPct": 0.0,
+     "yPct": 5.02,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Track your",
+     "style": {
+      "text": "Track your",
+      "color": "#000",
+      "size": 162.0,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -55
+     }
+    },
+    {
+     "id": "tpl-t19",
+     "xPct": 0.0,
+     "yPct": 13.598,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Macros",
+     "style": {
+      "text": "Macros",
+      "color": "#000",
+      "size": 162.0,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -63
+     }
+    },
+    {
+     "id": "tpl-t21",
+     "xPct": 17.614,
+     "yPct": 22.97,
+     "widthPct": 64.773,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "Subtitle",
+     "style": {
+      "text": "See carbs, fats, and protein trends",
+      "color": "#000",
+      "size": 46.6,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -78
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s20",
+     "assetId": "shape:Subtitle box",
+     "name": "Subtitle box",
+     "xPct": 17.614,
+     "yPct": 22.071,
+     "widthPct": 64.773,
+     "heightPct": 3.766,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 285,
+      "h": 36,
+      "radius": 2,
+      "fill": "#fbe24d"
+     }
+    },
+    {
+     "id": "tpl-s22",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 3.182,
+     "yPct": 26.255,
+     "widthPct": 93.636,
+     "heightPct": 80.388,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 412,
+      "h": 768.51,
+      "radius": 102.64,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s23",
+     "assetId": "shape:Shoe",
+     "name": "Shoe",
+     "xPct": 42.955,
+     "yPct": 27.615,
+     "widthPct": 17.5,
+     "heightPct": 8.054,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 12,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 77,
+      "h": 77,
+      "vx": 189,
+      "vy": 264,
+      "path": "M190,275C220,265 260,285 265,320L200,340Z",
+      "fill": "#e8425a"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 50.88,
+    "x": 0.0,
+    "y": 22.9,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Daily Calories",
+   "subtitle": "Stay on top of your eating patterns",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #5bf5ef 0%, #d9fffd 60%, #ffffff 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t24",
+     "xPct": 0.0,
+     "yPct": 5.02,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Daily",
+     "style": {
+      "text": "Daily",
+      "color": "#000",
+      "size": 162.0,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -51
+     }
+    },
+    {
+     "id": "tpl-t25",
+     "xPct": 0.0,
+     "yPct": 13.598,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Calories",
+     "style": {
+      "text": "Calories",
+      "color": "#000",
+      "size": 162.0,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -52
+     }
+    },
+    {
+     "id": "tpl-t27",
+     "xPct": 14.773,
+     "yPct": 22.97,
+     "widthPct": 70.455,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Stay on top of your eating patterns",
+      "color": "#000",
+      "size": 46.6,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -41
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s26",
+     "assetId": "shape:Subtitle box",
+     "name": "Subtitle box",
+     "xPct": 14.773,
+     "yPct": 22.071,
+     "widthPct": 70.455,
+     "heightPct": 3.766,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 310,
+      "h": 36,
+      "radius": 2,
+      "fill": "#fbe24d"
+     }
+    },
+    {
+     "id": "tpl-s28",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 3.182,
+     "yPct": 25.314,
+     "widthPct": 93.636,
+     "heightPct": 80.388,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 412,
+      "h": 768.51,
+      "radius": 102.64,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s29",
+     "assetId": "shape:Swoosh",
+     "name": "Swoosh",
+     "xPct": -0.227,
+     "yPct": 83.577,
+     "widthPct": 100.455,
+     "heightPct": 16.527,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 442,
+      "h": 158,
+      "vx": -1,
+      "vy": 799,
+      "path": "M0,956C0,800 90,800 220,800C350,800 440,800 440,956Z",
+      "fill": "#1fd8d0"
+     }
+    },
+    {
+     "id": "tpl-s30",
+     "assetId": "shape:Scale",
+     "name": "Scale",
+     "xPct": 60.909,
+     "yPct": 69.038,
+     "widthPct": 34.091,
+     "heightPct": 15.69,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 150,
+      "h": 150,
+      "radius": 30,
+      "fill": "#2ba7a4"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 50.88,
+    "x": 0.0,
+    "y": 21.54,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Live Fasting Stats",
+   "subtitle": "See progress and manage your fast",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #5bf5ef 0%, #d9fffd 60%, #ffffff 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t31",
+     "xPct": 0.0,
+     "yPct": 5.02,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Live Fasting",
+     "style": {
+      "text": "Live Fasting",
+      "color": "#000",
+      "size": 162.0,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -50
+     }
+    },
+    {
+     "id": "tpl-t32",
+     "xPct": 0.0,
+     "yPct": 13.598,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Stats",
+     "style": {
+      "text": "Stats",
+      "color": "#000",
+      "size": 162.0,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -53
+     }
+    },
+    {
+     "id": "tpl-t34",
+     "xPct": 16.477,
+     "yPct": 22.97,
+     "widthPct": 67.045,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "Subtitle",
+     "style": {
+      "text": "See progress and manage your fast",
+      "color": "#000",
+      "size": 46.6,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -81
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s33",
+     "assetId": "shape:Subtitle box",
+     "name": "Subtitle box",
+     "xPct": 16.477,
+     "yPct": 22.071,
+     "widthPct": 67.045,
+     "heightPct": 3.766,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 295,
+      "h": 36,
+      "radius": 2,
+      "fill": "#fbe24d"
+     }
+    },
+    {
+     "id": "tpl-s35",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 3.182,
+     "yPct": 25.314,
+     "widthPct": 93.636,
+     "heightPct": 80.388,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 412,
+      "h": 768.51,
+      "radius": 102.64,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s36",
+     "assetId": "shape:Pie",
+     "name": "Pie",
+     "xPct": 40.455,
+     "yPct": 26.464,
+     "widthPct": 28.182,
+     "heightPct": 12.971,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 124,
+      "h": 124,
+      "fill": "#38cfc6"
+     }
+    },
+    {
+     "id": "tpl-s37",
+     "assetId": "shape:Pie2",
+     "name": "Pie2",
+     "xPct": 55.682,
+     "yPct": 28.243,
+     "widthPct": 13.636,
+     "heightPct": 6.276,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 60,
+      "h": 60,
+      "fill": "#c9b5f0"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 50.88,
+    "x": 0.0,
+    "y": 21.54,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Break Barriers",
+   "subtitle": "Identify what's held you back before",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #5bf5ef 0%, #d9fffd 60%, #ffffff 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t38",
+     "xPct": 0.0,
+     "yPct": 5.02,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Break",
+     "style": {
+      "text": "Break",
+      "color": "#000",
+      "size": 162.0,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -58
+     }
+    },
+    {
+     "id": "tpl-t39",
+     "xPct": 0.0,
+     "yPct": 13.598,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Barriers",
+     "style": {
+      "text": "Barriers",
+      "color": "#000",
+      "size": 162.0,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -51
+     }
+    },
+    {
+     "id": "tpl-t41",
+     "xPct": 15.909,
+     "yPct": 22.551,
+     "widthPct": 68.182,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Identify what's held you back before",
+      "color": "#000",
+      "size": 46.6,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -81
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s40",
+     "assetId": "shape:Subtitle box",
+     "name": "Subtitle box",
+     "xPct": 15.909,
+     "yPct": 21.653,
+     "widthPct": 68.182,
+     "heightPct": 3.766,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 300,
+      "h": 36,
+      "radius": 2,
+      "fill": "#fbe24d"
+     }
+    },
+    {
+     "id": "tpl-s42",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -2.955,
+     "yPct": 28.661,
+     "widthPct": 55.909,
+     "heightPct": 42.661,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 246,
+      "h": 407.84,
+      "radius": 76.08,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s43",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 28.636,
+     "yPct": 32.427,
+     "widthPct": 92.727,
+     "heightPct": 79.479,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 408,
+      "h": 759.82,
+      "radius": 102.0,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s44",
+     "assetId": "shape:Person stand-in",
+     "name": "Person stand-in",
+     "xPct": 60.227,
+     "yPct": 37.657,
+     "widthPct": 54.545,
+     "heightPct": 25.105,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 6,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 240,
+      "h": 240,
+      "fill": "#c98a62",
+      "blur": 20
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 50.21,
+    "x": 36.67,
+    "y": 31.59,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   },
+   "extraDevices": [
+    {
+     "size": 23.1,
+     "x": -79.71,
+     "y": -2.03,
+     "rotation": 0,
+     "brightness": 100,
+     "frameless": false,
+     "bezelColor": "#060606",
+     "borderColor": "#5e5e5e",
+     "zIndex": 9
+    },
+    {
+     "size": 25.94,
+     "x": -65.81,
+     "y": 110.57,
+     "rotation": 0,
+     "brightness": 100,
+     "frameless": false,
+     "bezelColor": "#060606",
+     "borderColor": "#5e5e5e",
+     "zIndex": 8
+    }
+   ]
+  }
+ ],
+ "designHeight": 2347
+}

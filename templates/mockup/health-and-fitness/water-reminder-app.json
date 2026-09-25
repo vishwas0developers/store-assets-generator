@@ -1,0 +1,1053 @@
+{
+ "version": 1,
+ "id": "water-reminder-app",
+ "name": "Water reminder app",
+ "category": "health-and-fitness",
+ "description": "Transform your hydration app with our refreshing template. Display water tracking, reminder notifications, and health insights in a clean design that encourages users to maintain optimal hydration levels and develop healthy drinking habits.",
+ "devices": [
+  {
+   "deviceId": "apple-iphone-16-pro-max",
+   "label": "iPhone 16 Pro Max"
+  },
+  {
+   "deviceId": "apple-iphone-13-pro-max",
+   "label": "iPhone 13 Pro Max"
+  },
+  {
+   "deviceId": "samsung-galaxy-s21-ultra",
+   "label": "Samsung Galaxy S21 Ultra"
+  },
+  {
+   "deviceId": "apple-ipad-pro-12-9-inch",
+   "label": "iPad Pro 12.9-inch"
+  },
+  {
+   "deviceId": "samsung-galaxy-tab-s7",
+   "label": "Samsung Galaxy Tab S7"
+  }
+ ],
+ "layout": "single-no-text",
+ "background": {
+  "type": "gradient",
+  "value": "linear-gradient(180deg, #1eb6d7 0%, #0cb0d2 60%, #01aed0 100%)"
+ },
+ "panoramic": false,
+ "columnCount": 5,
+ "titles": [
+  "DRINK YOUR WATER",
+  "REACH YOUR GOAL",
+  "SET SMART TARGETS",
+  "SEE FULL STATS",
+  "Stay Motivated"
+ ],
+ "subtitles": [
+  "Easily log every glass and reach your hydration goal.",
+  "Stay accountable & watch your health improves.",
+  "Pick a water goal that matches your routine",
+  "Get a snapshot of your water, calories, steps, sleep",
+  "Get reminders and encouraging feedback to keep you on track."
+ ],
+ "textColor": "#111111",
+ "pages": [
+  {
+   "title": "DRINK YOUR WATER",
+   "subtitle": "Easily log every glass and reach your hydration goal.",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #1eb6d7 0%, #0cb0d2 60%, #01aed0 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t6",
+     "xPct": 9.773,
+     "yPct": 65.193,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "DRINK",
+     "style": {
+      "text": "DRINK",
+      "color": "#000000",
+      "size": 175.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -7
+     }
+    },
+    {
+     "id": "tpl-t7",
+     "xPct": 9.773,
+     "yPct": 72.933,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "YOUR",
+     "style": {
+      "text": "YOUR",
+      "color": "#000000",
+      "size": 175.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -39
+     }
+    },
+    {
+     "id": "tpl-t8",
+     "xPct": 9.773,
+     "yPct": 80.465,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "WATER",
+     "style": {
+      "text": "WATER",
+      "color": "#000000",
+      "size": 175.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -40
+     }
+    },
+    {
+     "id": "tpl-t10",
+     "xPct": 10.682,
+     "yPct": 90.272,
+     "widthPct": 66.136,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Easily log every glass and",
+     "style": {
+      "text": "Easily log every glass and",
+      "color": "#35cbf2",
+      "size": 54.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -32
+     }
+    },
+    {
+     "id": "tpl-t12",
+     "xPct": 10.682,
+     "yPct": 92.991,
+     "widthPct": 68.182,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "reach your hydration goal.",
+     "style": {
+      "text": "reach your hydration goal.",
+      "color": "#35cbf2",
+      "size": 54.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -24
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s1",
+     "assetId": "shape:Skin",
+     "name": "Skin",
+     "xPct": 31.818,
+     "yPct": -13.598,
+     "widthPct": 90.909,
+     "heightPct": 83.682,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 400,
+      "h": 800,
+      "radius": 180,
+      "fill": "#a96b4d",
+      "blur": 14,
+      "inset": 50
+     }
+    },
+    {
+     "id": "tpl-s2",
+     "assetId": "shape:Skin light",
+     "name": "Skin light",
+     "xPct": 50.0,
+     "yPct": -2.092,
+     "widthPct": 81.818,
+     "heightPct": 56.485,
+     "rotation": 0,
+     "opacity": 0.6,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 360,
+      "h": 540,
+      "radius": 170,
+      "fill": "#c98a68",
+      "blur": 30,
+      "inset": 80
+     }
+    },
+    {
+     "id": "tpl-s3",
+     "assetId": "shape:Lips",
+     "name": "Lips",
+     "xPct": 39.773,
+     "yPct": 17.782,
+     "widthPct": 45.455,
+     "heightPct": 24.059,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 200,
+      "h": 230,
+      "radius": 90,
+      "fill": "#c47c72",
+      "blur": 14,
+      "inset": 40
+     }
+    },
+    {
+     "id": "tpl-s4",
+     "assetId": "shape:Bottle",
+     "name": "Bottle",
+     "xPct": -29.545,
+     "yPct": 19.874,
+     "widthPct": 84.091,
+     "heightPct": 51.255,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 370,
+      "h": 490,
+      "radius": 150,
+      "fill": "#bfeaf5",
+      "blur": 22,
+      "inset": 60
+     }
+    },
+    {
+     "id": "tpl-s5",
+     "assetId": "shape:Bottle cap",
+     "name": "Bottle cap",
+     "xPct": 15.909,
+     "yPct": 24.059,
+     "widthPct": 34.091,
+     "heightPct": 24.059,
+     "rotation": 0,
+     "opacity": 0.8,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 150,
+      "h": 230,
+      "radius": 60,
+      "fill": "#3fb4ea",
+      "blur": 10,
+      "inset": 30
+     }
+    },
+    {
+     "id": "tpl-s9",
+     "assetId": "shape:Subtitle pill",
+     "name": "Subtitle pill",
+     "xPct": 8.864,
+     "yPct": 89.644,
+     "widthPct": 61.591,
+     "heightPct": 3.661,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 271,
+      "h": 35,
+      "radius": 10,
+      "fill": "#000000"
+     }
+    },
+    {
+     "id": "tpl-s11",
+     "assetId": "shape:Subtitle pill",
+     "name": "Subtitle pill",
+     "xPct": 8.864,
+     "yPct": 93.305,
+     "widthPct": 63.636,
+     "heightPct": 2.72,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 280,
+      "h": 26,
+      "radius": 10,
+      "fill": "#000000"
+     }
+    }
+   ],
+   "deviceOne": {
+    "visible": false
+   }
+  },
+  {
+   "title": "REACH YOUR GOAL",
+   "subtitle": "Stay accountable & watch your health improves.",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#1cb5d6"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t15",
+     "xPct": 4.545,
+     "yPct": 4.153,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "REACH",
+     "style": {
+      "text": "REACH",
+      "color": "#000000",
+      "size": 131.6,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -2
+     }
+    },
+    {
+     "id": "tpl-t16",
+     "xPct": 4.545,
+     "yPct": 10.011,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "YOUR GOAL",
+     "style": {
+      "text": "YOUR GOAL",
+      "color": "#000000",
+      "size": 131.6,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 9
+     }
+    },
+    {
+     "id": "tpl-t18",
+     "xPct": 19.773,
+     "yPct": 18.724,
+     "widthPct": 68.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Stay accountable & watch",
+     "style": {
+      "text": "Stay accountable & watch",
+      "color": "#35cbf2",
+      "size": 54.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -15
+     }
+    },
+    {
+     "id": "tpl-t20",
+     "xPct": 25.341,
+     "yPct": 21.443,
+     "widthPct": 57.5,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "your health improves.",
+     "style": {
+      "text": "your health improves.",
+      "color": "#35cbf2",
+      "size": 54.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -29
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s13",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -23.147,
+     "yPct": 25.243,
+     "widthPct": 116.591,
+     "heightPct": 103.343,
+     "rotation": 5,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 513,
+      "h": 987.95,
+      "radius": 118.8,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s14",
+     "assetId": "shape:Skin edge",
+     "name": "Skin edge",
+     "xPct": -38.636,
+     "yPct": -13.598,
+     "widthPct": 63.636,
+     "heightPct": 49.163,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 280,
+      "h": 470,
+      "radius": 130,
+      "fill": "#a96b4d",
+      "blur": 26,
+      "inset": 70
+     }
+    },
+    {
+     "id": "tpl-s17",
+     "assetId": "shape:Subtitle pill",
+     "name": "Subtitle pill",
+     "xPct": 17.955,
+     "yPct": 18.096,
+     "widthPct": 64.091,
+     "heightPct": 3.661,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 282,
+      "h": 35,
+      "radius": 10,
+      "fill": "#000000"
+     }
+    },
+    {
+     "id": "tpl-s19",
+     "assetId": "shape:Subtitle pill",
+     "name": "Subtitle pill",
+     "xPct": 23.523,
+     "yPct": 21.757,
+     "widthPct": 52.955,
+     "heightPct": 2.72,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 233,
+      "h": 26,
+      "radius": 10,
+      "fill": "#000000"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 67.78,
+    "x": -16.13,
+    "y": 28.56,
+    "rotation": 5,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10,
+    "panoramaXPx": 1553.7
+   }
+  },
+  {
+   "title": "SET SMART TARGETS",
+   "subtitle": "Pick a water goal that matches your routine",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #1cb5d7 0%, #07a9cf 45%, #00a1c9 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t22",
+     "xPct": 4.545,
+     "yPct": 4.153,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "SET SMART",
+     "style": {
+      "text": "SET SMART",
+      "color": "#000000",
+      "size": 131.6,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -35
+     }
+    },
+    {
+     "id": "tpl-t23",
+     "xPct": 4.545,
+     "yPct": 10.011,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "TARGETS",
+     "style": {
+      "text": "TARGETS",
+      "color": "#000000",
+      "size": 131.6,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -40
+     }
+    },
+    {
+     "id": "tpl-t25",
+     "xPct": 25.114,
+     "yPct": 17.573,
+     "widthPct": 57.955,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Pick a water goal that",
+     "style": {
+      "text": "Pick a water goal that",
+      "color": "#35cbf2",
+      "size": 54.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -19
+     }
+    },
+    {
+     "id": "tpl-t27",
+     "xPct": 25.455,
+     "yPct": 20.293,
+     "widthPct": 57.273,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "matches your routine",
+     "style": {
+      "text": "matches your routine",
+      "color": "#35cbf2",
+      "size": 54.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -21
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s21",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 4.091,
+     "yPct": 26.569,
+     "widthPct": 91.818,
+     "heightPct": 75.626,
+     "rotation": 0,
+     "opacity": 0.25,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 404,
+      "h": 722.98,
+      "radius": 109.52,
+      "fill": "#000000",
+      "blur": 22,
+      "inset": 66
+     }
+    },
+    {
+     "id": "tpl-s24",
+     "assetId": "shape:Subtitle pill",
+     "name": "Subtitle pill",
+     "xPct": 23.295,
+     "yPct": 16.946,
+     "widthPct": 53.409,
+     "heightPct": 3.661,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 235,
+      "h": 35,
+      "radius": 10,
+      "fill": "#000000"
+     }
+    },
+    {
+     "id": "tpl-s26",
+     "assetId": "shape:Subtitle pill",
+     "name": "Subtitle pill",
+     "xPct": 23.636,
+     "yPct": 20.607,
+     "widthPct": 52.727,
+     "heightPct": 2.72,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 232,
+      "h": 26,
+      "radius": 10,
+      "fill": "#000000"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 45.52,
+    "x": 0.0,
+    "y": 22.25,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "SEE FULL STATS",
+   "subtitle": "Get a snapshot of your water, calories, steps, sleep",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#1cb5d6"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t30",
+     "xPct": 4.545,
+     "yPct": 4.153,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "SEE FULL",
+     "style": {
+      "text": "SEE FULL",
+      "color": "#000000",
+      "size": 131.6,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -40
+     }
+    },
+    {
+     "id": "tpl-t31",
+     "xPct": 4.545,
+     "yPct": 10.011,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "STATS",
+     "style": {
+      "text": "STATS",
+      "color": "#000000",
+      "size": 131.6,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -40
+     }
+    },
+    {
+     "id": "tpl-t33",
+     "xPct": 16.364,
+     "yPct": 17.573,
+     "widthPct": 75.455,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Get a snapshot of your water,",
+     "style": {
+      "text": "Get a snapshot of your water,",
+      "color": "#35cbf2",
+      "size": 54.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -27
+     }
+    },
+    {
+     "id": "tpl-t35",
+     "xPct": 26.818,
+     "yPct": 20.293,
+     "widthPct": 54.545,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "calories, steps, sleep",
+     "style": {
+      "text": "calories, steps, sleep",
+      "color": "#35cbf2",
+      "size": 54.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -40
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s28",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 0.378,
+     "yPct": 25.741,
+     "widthPct": 106.364,
+     "heightPct": 93.115,
+     "rotation": -7,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 468,
+      "h": 890.18,
+      "radius": 111.6,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s29",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 52.5,
+     "yPct": 41.318,
+     "widthPct": 95.0,
+     "heightPct": 81.752,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 418,
+      "h": 781.55,
+      "radius": 103.6,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s32",
+     "assetId": "shape:Subtitle pill",
+     "name": "Subtitle pill",
+     "xPct": 14.545,
+     "yPct": 16.946,
+     "widthPct": 70.909,
+     "heightPct": 3.661,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 312,
+      "h": 35,
+      "radius": 10,
+      "fill": "#000000"
+     }
+    },
+    {
+     "id": "tpl-s34",
+     "assetId": "shape:Subtitle pill",
+     "name": "Subtitle pill",
+     "xPct": 25.0,
+     "yPct": 20.607,
+     "widthPct": 50.0,
+     "heightPct": 2.72,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 220,
+      "h": 26,
+      "radius": 10,
+      "fill": "#000000"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 51.88,
+    "x": 70.97,
+    "y": 44.8,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 12,
+    "panoramaXPx": 4320.0
+   },
+   "extraDevices": [
+    {
+     "size": 60.25,
+     "x": 4.35,
+     "y": 26.49,
+     "rotation": -7,
+     "brightness": 100,
+     "frameless": false,
+     "bezelColor": "#060606",
+     "borderColor": "#5e5e5e",
+     "zIndex": 10
+    }
+   ]
+  },
+  {
+   "title": "Stay Motivated",
+   "subtitle": "Get reminders and encouraging feedback to keep you on track.",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#1cb5d6"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t37",
+     "xPct": 4.545,
+     "yPct": 4.153,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Stay",
+     "style": {
+      "text": "Stay",
+      "color": "#000000",
+      "size": 131.6,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 28
+     }
+    },
+    {
+     "id": "tpl-t38",
+     "xPct": 4.545,
+     "yPct": 10.011,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Motivated",
+     "style": {
+      "text": "Motivated",
+      "color": "#000000",
+      "size": 131.6,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 31
+     }
+    },
+    {
+     "id": "tpl-t40",
+     "xPct": 13.409,
+     "yPct": 17.573,
+     "widthPct": 81.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Get reminders and encouraging",
+     "style": {
+      "text": "Get reminders and encouraging",
+      "color": "#35cbf2",
+      "size": 54.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -18
+     }
+    },
+    {
+     "id": "tpl-t42",
+     "xPct": 15.0,
+     "yPct": 20.293,
+     "widthPct": 78.182,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "feedback to keep you on track.",
+     "style": {
+      "text": "feedback to keep you on track.",
+      "color": "#35cbf2",
+      "size": 54.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -31
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s36",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -3.315,
+     "yPct": 24.571,
+     "widthPct": 104.773,
+     "heightPct": 91.524,
+     "rotation": 6,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 461,
+      "h": 874.97,
+      "radius": 110.48,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s39",
+     "assetId": "shape:Subtitle pill",
+     "name": "Subtitle pill",
+     "xPct": 11.591,
+     "yPct": 16.946,
+     "widthPct": 76.818,
+     "heightPct": 3.661,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 338,
+      "h": 35,
+      "radius": 10,
+      "fill": "#000000"
+     }
+    },
+    {
+     "id": "tpl-s41",
+     "assetId": "shape:Subtitle pill",
+     "name": "Subtitle pill",
+     "xPct": 13.182,
+     "yPct": 20.607,
+     "widthPct": 73.636,
+     "heightPct": 2.72,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 324,
+      "h": 26,
+      "radius": 10,
+      "fill": "#000000"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 59.08,
+    "x": -1.16,
+    "y": 24.56,
+    "rotation": 6,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  }
+ ],
+ "designHeight": 2347
+}

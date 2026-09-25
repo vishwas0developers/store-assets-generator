@@ -1,0 +1,789 @@
+{
+ "version": 1,
+ "id": "file-sharing-app",
+ "name": "File sharing app",
+ "category": "productivity",
+ "description": "Transform your file-sharing app's presentation with our professional template. Showcase seamless file transfers, secure sharing features, and collaborative tools in a modern, clean design that emphasizes security and user experience.",
+ "devices": [
+  {
+   "deviceId": "apple-iphone-16-pro-max",
+   "label": "iPhone 16 Pro Max"
+  },
+  {
+   "deviceId": "apple-iphone-14-plus",
+   "label": "iPhone 14 Plus"
+  },
+  {
+   "deviceId": "samsung-galaxy-s21-ultra",
+   "label": "Samsung Galaxy S21 Ultra"
+  }
+ ],
+ "layout": "single-no-text",
+ "background": {
+  "type": "solid",
+  "value": "#f6f4f0"
+ },
+ "panoramic": false,
+ "columnCount": 6,
+ "titles": [
+  "Simple, secure cloud storage and sharing",
+  "Back up photos and videos automatically",
+  "Reliable, secure, and private",
+  "Access files anywhere from any device",
+  "Share or transfer large files securely",
+  "Scan, save, and organize right from your phone"
+ ],
+ "subtitles": [
+  "",
+  "",
+  "",
+  "",
+  "",
+  ""
+ ],
+ "textColor": "#111111",
+ "pages": [
+  {
+   "title": "Simple, secure cloud storage and sharing",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#f6f4f0"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t4",
+     "xPct": 10.227,
+     "yPct": 3.801,
+     "widthPct": 88.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Simple,\nsecure\ncloud\nstorage\nand sharing",
+      "color": "#141414",
+      "size": 139.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 0.98,
+      "charSpacing": 20
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s1",
+     "assetId": "shape:Top band",
+     "name": "Top band",
+     "xPct": 0.0,
+     "yPct": 0.0,
+     "widthPct": 100.0,
+     "heightPct": 37.657,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 440,
+      "h": 360,
+      "radius": 0,
+      "fill": "#c9d1ff"
+     }
+    },
+    {
+     "id": "tpl-s2",
+     "assetId": "shape:Bottom band",
+     "name": "Bottom band",
+     "xPct": 0.0,
+     "yPct": 37.657,
+     "widthPct": 100.0,
+     "heightPct": 62.343,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 440,
+      "h": 596,
+      "radius": 0,
+      "fill": "#f6f4f0"
+     }
+    },
+    {
+     "id": "tpl-s3",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -6.591,
+     "yPct": 34.728,
+     "widthPct": 113.182,
+     "heightPct": 99.933,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 498,
+      "h": 955.36,
+      "radius": 116.4,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 65.27,
+    "x": 0.0,
+    "y": 38.43,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Back up photos and videos automatically",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#fffcfb"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t9",
+     "xPct": 10.227,
+     "yPct": 3.801,
+     "widthPct": 88.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Back up\nphotos and\nvideos\nautomatically",
+      "color": "#141414",
+      "size": 139.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 0.98,
+      "charSpacing": 20
+     }
+    },
+    {
+     "id": "tpl-t8",
+     "xPct": 34.318,
+     "yPct": 35.14,
+     "widthPct": 45.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Badge text",
+     "style": {
+      "text": "700\nmillion+\nregistered\nusers",
+      "color": "#ffffff",
+      "size": 63.8,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.2
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s5",
+     "assetId": "shape:Top band",
+     "name": "Top band",
+     "xPct": 0.0,
+     "yPct": 0.0,
+     "widthPct": 100.0,
+     "heightPct": 37.657,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 440,
+      "h": 360,
+      "radius": 0,
+      "fill": "#c9d1ff"
+     }
+    },
+    {
+     "id": "tpl-s6",
+     "assetId": "shape:Bottom band",
+     "name": "Bottom band",
+     "xPct": 0.0,
+     "yPct": 37.657,
+     "widthPct": 100.0,
+     "heightPct": 62.343,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 440,
+      "h": 596,
+      "radius": 0,
+      "fill": "#fffcfb"
+     }
+    },
+    {
+     "id": "tpl-s7",
+     "assetId": "shape:Badge",
+     "name": "Badge",
+     "xPct": 34.318,
+     "yPct": 31.276,
+     "widthPct": 45.0,
+     "heightPct": 20.711,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 198,
+      "h": 198,
+      "fill": "#26234f",
+      "stroke": "#3a3770",
+      "strokeWidth": 3,
+      "inset": 1.5
+     }
+    }
+   ],
+   "deviceOne": {
+    "visible": false
+   }
+  },
+  {
+   "title": "Reliable, secure, and private",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#141414"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t15",
+     "xPct": 10.227,
+     "yPct": 61.541,
+     "widthPct": 88.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Reliable,\nsecure,\nand private",
+      "color": "#ffffff",
+      "size": 139.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 0.98,
+      "charSpacing": 20
+     }
+    },
+    {
+     "id": "tpl-t14",
+     "xPct": 47.045,
+     "yPct": 43.299,
+     "widthPct": 50.455,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Badge text",
+     "style": {
+      "text": "Trusted\nby most\nof The\nFortune\n500",
+      "color": "#ffffff",
+      "size": 63.8,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.2
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s10",
+     "assetId": "shape:Top band",
+     "name": "Top band",
+     "xPct": 0.0,
+     "yPct": 0.0,
+     "widthPct": 100.0,
+     "heightPct": 57.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 440,
+      "h": 551,
+      "radius": 0,
+      "fill": "#f6f4f0"
+     }
+    },
+    {
+     "id": "tpl-s11",
+     "assetId": "shape:Bottom band",
+     "name": "Bottom band",
+     "xPct": 0.0,
+     "yPct": 57.636,
+     "widthPct": 100.0,
+     "heightPct": 42.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 440,
+      "h": 405,
+      "radius": 0,
+      "fill": "#141414"
+     }
+    },
+    {
+     "id": "tpl-s12",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -6.591,
+     "yPct": -40.69,
+     "widthPct": 113.182,
+     "heightPct": 99.933,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 498,
+      "h": 955.36,
+      "radius": 116.4,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s13",
+     "assetId": "shape:Badge",
+     "name": "Badge",
+     "xPct": 47.045,
+     "yPct": 39.226,
+     "widthPct": 50.455,
+     "heightPct": 23.222,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 222,
+      "h": 222,
+      "fill": "#26234f",
+      "stroke": "#3a3770",
+      "strokeWidth": 3,
+      "inset": 1.5
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 65.27,
+    "x": 0.0,
+    "y": -46.65,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Access files anywhere from any device",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#141414"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t19",
+     "xPct": 10.227,
+     "yPct": 61.541,
+     "widthPct": 88.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Access\nfiles\nanywhere\nfrom any\ndevice",
+      "color": "#ffffff",
+      "size": 139.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 0.98,
+      "charSpacing": 20
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s16",
+     "assetId": "shape:Top band",
+     "name": "Top band",
+     "xPct": 0.0,
+     "yPct": 0.0,
+     "widthPct": 100.0,
+     "heightPct": 57.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 440,
+      "h": 551,
+      "radius": 0,
+      "fill": "#f6f4f0"
+     }
+    },
+    {
+     "id": "tpl-s17",
+     "assetId": "shape:Bottom band",
+     "name": "Bottom band",
+     "xPct": 0.0,
+     "yPct": 57.636,
+     "widthPct": 100.0,
+     "heightPct": 42.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 440,
+      "h": 405,
+      "radius": 0,
+      "fill": "#141414"
+     }
+    },
+    {
+     "id": "tpl-s18",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -6.591,
+     "yPct": -40.69,
+     "widthPct": 113.182,
+     "heightPct": 99.933,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 498,
+      "h": 955.36,
+      "radius": 116.4,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 65.27,
+    "x": 0.0,
+    "y": -46.65,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Share or transfer large files securely",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#f6f4f0"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t23",
+     "xPct": 10.227,
+     "yPct": 3.801,
+     "widthPct": 88.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Share or\ntransfer\nlarge files\nsecurely",
+      "color": "#141414",
+      "size": 139.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 0.98,
+      "charSpacing": 20
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s20",
+     "assetId": "shape:Top band",
+     "name": "Top band",
+     "xPct": 0.0,
+     "yPct": 0.0,
+     "widthPct": 100.0,
+     "heightPct": 37.657,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 440,
+      "h": 360,
+      "radius": 0,
+      "fill": "#c9d1ff"
+     }
+    },
+    {
+     "id": "tpl-s21",
+     "assetId": "shape:Bottom band",
+     "name": "Bottom band",
+     "xPct": 0.0,
+     "yPct": 37.657,
+     "widthPct": 100.0,
+     "heightPct": 62.343,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 440,
+      "h": 596,
+      "radius": 0,
+      "fill": "#f6f4f0"
+     }
+    },
+    {
+     "id": "tpl-s22",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -6.591,
+     "yPct": 37.134,
+     "widthPct": 113.182,
+     "heightPct": 99.933,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 498,
+      "h": 955.36,
+      "radius": 116.4,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 65.27,
+    "x": 0.0,
+    "y": 41.15,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Scan, save, and organize right from your phone",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#c9d1ff"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t29",
+     "xPct": 10.227,
+     "yPct": 67.399,
+     "widthPct": 88.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Scan, save,\nand organize\nright from\nyour phone",
+      "color": "#141414",
+      "size": 139.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 0.98,
+      "charSpacing": 20
+     }
+    },
+    {
+     "id": "tpl-t28",
+     "xPct": 6.818,
+     "yPct": 52.818,
+     "widthPct": 42.273,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Badge text",
+     "style": {
+      "text": "Offline\naccess\non mobile",
+      "color": "#ffffff",
+      "size": 63.8,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.2
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s24",
+     "assetId": "shape:Top band",
+     "name": "Top band",
+     "xPct": 0.0,
+     "yPct": 0.0,
+     "widthPct": 100.0,
+     "heightPct": 63.494,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 440,
+      "h": 607,
+      "radius": 0,
+      "fill": "#f6f4f0"
+     }
+    },
+    {
+     "id": "tpl-s25",
+     "assetId": "shape:Bottom band",
+     "name": "Bottom band",
+     "xPct": 0.0,
+     "yPct": 63.494,
+     "widthPct": 100.0,
+     "heightPct": 36.506,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 440,
+      "h": 349,
+      "radius": 0,
+      "fill": "#c9d1ff"
+     }
+    },
+    {
+     "id": "tpl-s26",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -6.591,
+     "yPct": -34.833,
+     "widthPct": 113.182,
+     "heightPct": 99.933,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 498,
+      "h": 955.36,
+      "radius": 116.4,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s27",
+     "assetId": "shape:Badge",
+     "name": "Badge",
+     "xPct": 6.818,
+     "yPct": 48.326,
+     "widthPct": 42.273,
+     "heightPct": 19.456,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 186,
+      "h": 186,
+      "fill": "#26234f",
+      "stroke": "#3a3770",
+      "strokeWidth": 3,
+      "inset": 1.5
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 65.27,
+    "x": 0.0,
+    "y": -40.04,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  }
+ ],
+ "designHeight": 2347
+}
