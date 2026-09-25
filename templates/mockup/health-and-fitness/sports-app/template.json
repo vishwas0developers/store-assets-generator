@@ -1,0 +1,163 @@
+{
+  "version": 1,
+  "id": "sports-app",
+  "name": "Sports app screenshots",
+  "category": "health-and-fitness",
+  "description": "Present your sports app with our premium template. Display live scores, statistics, and game updates in a dynamic design that keeps fans engaged and informed.",
+  "devices": [
+    {
+      "deviceId": "apple-iphone-16-pro-max",
+      "label": "iPhone 16 Pro Max"
+    },
+    {
+      "deviceId": "apple-iphone-14-plus",
+      "label": "iPhone 14 Plus"
+    },
+    {
+      "deviceId": "samsung-galaxy-s21-ultra",
+      "label": "Samsung Galaxy S21 Ultra"
+    }
+  ],
+  "layout": "single-title-above",
+  "background": {
+    "type": "solid",
+    "value": "#064e3b"
+  },
+  "panoramic": false,
+  "columnCount": 8,
+  "titles": [
+    "UNLOCK YOUR FAVORITE SPORT",
+    "APPLE SPORTS",
+    "PICK YOUR FAVORITE SPORT",
+    "FOLLOW TEAMS & LEAGUES",
+    "PLAY THE GAME",
+    "AND GET SOME FUN",
+    "VIEW PERFORMANCE STATS",
+    "CREATE & SHARE"
+  ],
+  "subtitles": [
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+  ],
+  "textColor": "#ffffff",
+  "pages": [
+    {
+      "title": "UNLOCK YOUR FAVORITE SPORT",
+      "subtitle": "",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#0a0a0a"
+      },
+      "textColor": "#22c55e",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "APPLE SPORTS",
+      "subtitle": "",
+      "layout": "single-no-text",
+      "background": {
+        "type": "solid",
+        "value": "#0a0a0a"
+      },
+      "textColor": "#ffffff",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "PICK YOUR FAVORITE SPORT",
+      "subtitle": "",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#050505"
+      },
+      "textColor": "#ffffff",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "FOLLOW TEAMS & LEAGUES",
+      "subtitle": "",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#14532d"
+      },
+      "textColor": "#ffffff",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "PLAY THE GAME",
+      "subtitle": "",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#031a0e"
+      },
+      "textColor": "#ffffff",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "AND GET SOME FUN",
+      "subtitle": "",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#14532d"
+      },
+      "textColor": "#ffffff",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "VIEW PERFORMANCE STATS",
+      "subtitle": "",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#171717"
+      },
+      "textColor": "#ffffff",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "CREATE & SHARE",
+      "subtitle": "",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#15803d"
+      },
+      "textColor": "#ffffff",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    }
+  ]
+}

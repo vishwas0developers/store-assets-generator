@@ -100,7 +100,13 @@ export function resolveDeviceFrame(id, catalog) {
 export function resolveFabricBackgroundFill(bg) {
   const fabric = window.fabric;
   if (!bg) bg = { type: 'gradient', value: 'ocean' };
-  if (bg.type === 'solid') return BG_SOLIDS[bg.value] || BG_SOLIDS['solid-navy'];
+  if (bg.type === 'solid') {
+    if (BG_SOLIDS[bg.value]) return BG_SOLIDS[bg.value];
+    if (bg.value && (bg.value.startsWith('#') || bg.value.startsWith('rgb') || bg.value.startsWith('hsl'))) {
+      return bg.value;
+    }
+    return BG_SOLIDS['solid-navy'];
+  }
   if (bg.type === 'pattern') {
     const val = bg.value;
     try {
@@ -148,7 +154,22 @@ export function resolveFabricBackgroundFill(bg) {
       colorStops: [{ offset: 0, color: c0 }, { offset: 1, color: c1 }],
     });
   }
-  const colors = BG_GRADIENTS[bg.value] || BG_GRADIENTS.ocean;
+  if (BG_GRADIENTS[bg.value]) {
+    const colors = BG_GRADIENTS[bg.value];
+    const stops = colors.map((color, i) => ({ offset: colors.length > 1 ? i / (colors.length - 1) : 0, color }));
+    return new fabric.Gradient({ type: 'linear', coords: { x1: 0, y1: 0, x2: 1080, y2: 1920 }, colorStops: stops });
+  }
+  // Try parsing hex colors or inline gradient values
+  if (typeof bg.value === 'string') {
+    const hexes = bg.value.match(/#(?:[0-9a-fA-F]{3,8})/g);
+    if (hexes && hexes.length >= 2) {
+      const stops = hexes.map((c, i) => ({ offset: i / (hexes.length - 1), color: c }));
+      return new fabric.Gradient({ type: 'linear', coords: { x1: 0, y1: 0, x2: 1080, y2: 1920 }, colorStops: stops });
+    } else if (hexes && hexes.length === 1) {
+      return hexes[0];
+    }
+  }
+  const colors = BG_GRADIENTS.ocean;
   const stops = colors.map((color, i) => ({ offset: colors.length > 1 ? i / (colors.length - 1) : 0, color }));
   return new fabric.Gradient({ type: 'linear', coords: { x1: 0, y1: 0, x2: 1080, y2: 1920 }, colorStops: stops });
 }

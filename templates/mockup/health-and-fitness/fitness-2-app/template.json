@@ -1,0 +1,123 @@
+{
+  "version": 1,
+  "id": "fitness-2-app",
+  "name": "Fitness 2 app screenshots",
+  "category": "health-and-fitness",
+  "description": "Elevate your fitness app with our dynamic template. Display advanced workout tracking, personalized training plans, and comprehensive health metrics in an energetic design that motivates users to achieve their fitness goals.",
+  "devices": [
+    {
+      "deviceId": "apple-iphone-16-pro-max",
+      "label": "iPhone 16 Pro Max"
+    },
+    {
+      "deviceId": "apple-iphone-13-pro-max",
+      "label": "iPhone 13 Pro Max"
+    },
+    {
+      "deviceId": "samsung-galaxy-s21-ultra",
+      "label": "Samsung Galaxy S21 Ultra"
+    },
+    {
+      "deviceId": "apple-ipad-pro-12-9-inch",
+      "label": "iPad Pro 12.9-inch"
+    },
+    {
+      "deviceId": "samsung-galaxy-tab-s7",
+      "label": "Samsung Galaxy Tab S7"
+    }
+  ],
+  "layout": "single-title-above",
+  "background": {
+    "type": "solid",
+    "value": "#e65100"
+  },
+  "panoramic": false,
+  "columnCount": 5,
+  "titles": [
+    "Track your Running",
+    "Record Every Run",
+    "Set Your Weekly Goal",
+    "Follow Top Athletes",
+    "Celebrate Your Best Efforts"
+  ],
+  "subtitles": [
+    "Get motivated togheter",
+    "Take challenges & earn rewards",
+    "Stay motivated & track progress",
+    "Get inspired by champions",
+    "Unlock badges & milestones"
+  ],
+  "textColor": "#ffffff",
+  "pages": [
+    {
+      "title": "Track your Running",
+      "subtitle": "Get motivated togheter",
+      "layout": "single-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(180deg, #ffccbc 0%, #ff8a65 100%)"
+      },
+      "textColor": "#d84315",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Record Every Run",
+      "subtitle": "Take challenges & earn rewards",
+      "layout": "the-airbnb-left-1-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#ffab91"
+      },
+      "textColor": "#d84315",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Set Your Weekly Goal",
+      "subtitle": "Stay motivated & track progress",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#e65100"
+      },
+      "textColor": "#ffffff",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Follow Top Athletes",
+      "subtitle": "Get inspired by champions",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#e65100"
+      },
+      "textColor": "#ffffff",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Celebrate Your Best Efforts",
+      "subtitle": "Unlock badges & milestones",
+      "layout": "the-airbnb-left-1-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#e65100"
+      },
+      "textColor": "#ffffff",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    }
+  ]
+}

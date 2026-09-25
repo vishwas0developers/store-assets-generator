@@ -1,0 +1,111 @@
+{
+  "version": 1,
+  "id": "business-finance-app",
+  "name": "Business finance app screenshots",
+  "category": "business",
+  "description": "Present your business finance platform with our premium template. Display invoicing, expense management, and financial reporting in a professional design that streamlines business financial operations and enhances decision-making.",
+  "devices": [
+    {
+      "deviceId": "apple-iphone-16-pro-max",
+      "label": "apple-iphone-16-pro-max"
+    },
+    {
+      "deviceId": "apple-iphone-13-pro-max",
+      "label": "apple-iphone-13-pro-max"
+    },
+    {
+      "deviceId": "samsung-galaxy-s21-ultra",
+      "label": "samsung-galaxy-s21-ultra"
+    },
+    {
+      "deviceId": "apple-ipad-pro-12-9-inch",
+      "label": "apple-ipad-pro-12-9-inch"
+    },
+    {
+      "deviceId": "samsung-galaxy-tab-s7",
+      "label": "samsung-galaxy-tab-s7"
+    }
+  ],
+  "layout": "the-airbnb-left-1-title-above",
+  "background": {
+    "type": "gradient",
+    "value": "linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)"
+  },
+  "panoramic": false,
+  "columnCount": 5,
+  "titles": [
+    "om Pas_& aE",
+    "2.0.0.0.8.¢",
+    "Check recent activity",
+    "= = — pum Bact o",
+    "View All"
+  ],
+  "subtitles": [
+    "= o © ®",
+    "Fast, reliable, and",
+    "and total cash",
+    "Present your business finance platform with our premium template",
+    "Monitor banking and"
+  ],
+  "pages": [
+    {
+      "title": "om Pas_& aE",
+      "subtitle": "= o © ®",
+      "layout": "the-airbnb-left-1-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "2.0.0.0.8.¢",
+      "subtitle": "Fast, reliable, and",
+      "layout": "tilted-right-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #312e81 0%, #4338ca 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Check recent activity",
+      "subtitle": "and total cash",
+      "layout": "single-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #065f46 0%, #022c22 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "= = — pum Bact o",
+      "subtitle": "Present your business finance platform with our premium template",
+      "layout": "rotated-left-1-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #1e1b4b 0%, #311b92 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "View All",
+      "subtitle": "Monitor banking and",
+      "layout": "two-devices-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    }
+  ]
+}

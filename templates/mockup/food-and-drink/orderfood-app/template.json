@@ -1,0 +1,153 @@
+{
+  "version": 1,
+  "id": "orderfood-app",
+  "name": "Order food app screenshots",
+  "category": "food-and-drink",
+  "description": "Showcase your food ordering app with this professional template. Highlight restaurant discovery, seamless ordering flow, and real-time delivery tracking in a modern design that makes food ordering intuitive and appealing.",
+  "devices": [
+    {
+      "deviceId": "apple-iphone-16-pro-max",
+      "label": "apple-iphone-16-pro-max"
+    },
+    {
+      "deviceId": "apple-iphone-13-pro-max",
+      "label": "apple-iphone-13-pro-max"
+    },
+    {
+      "deviceId": "samsung-galaxy-s21-ultra",
+      "label": "samsung-galaxy-s21-ultra"
+    },
+    {
+      "deviceId": "apple-ipad-pro-12-9-inch",
+      "label": "apple-ipad-pro-12-9-inch"
+    },
+    {
+      "deviceId": "samsung-galaxy-tab-s7",
+      "label": "samsung-galaxy-tab-s7"
+    }
+  ],
+  "layout": "the-airbnb-left-1-title-above",
+  "background": {
+    "type": "gradient",
+    "value": "linear-gradient(135deg, #f97316 0%, #c2410c 100%)"
+  },
+  "panoramic": false,
+  "columnCount": 8,
+  "titles": [
+    "| re",
+    "Receive the orders",
+    "Order completed",
+    "Foods tailered",
+    "Create Your Own Va",
+    "What you get with",
+    "Salads Custom Kid's Meals Sides Desse",
+    "~ = Users"
+  ],
+  "subtitles": [
+    "sid",
+    "next Day delivery",
+    "Order #27297419112792069",
+    "to your needs",
+    "SI al",
+    "Sweetpass+",
+    "Salads",
+    "Love"
+  ],
+  "pages": [
+    {
+      "title": "| re",
+      "subtitle": "sid",
+      "layout": "the-airbnb-left-1-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Receive the orders",
+      "subtitle": "next Day delivery",
+      "layout": "tilted-right-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #ffedd5 0%, #fed7aa 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Order completed",
+      "subtitle": "Order #27297419112792069",
+      "layout": "single-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #ef4444 0%, #991b1b 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Foods tailered",
+      "subtitle": "to your needs",
+      "layout": "rotated-left-1-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Create Your Own Va",
+      "subtitle": "SI al",
+      "layout": "two-devices-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #ffedd5 0%, #fed7aa 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "What you get with",
+      "subtitle": "Sweetpass+",
+      "layout": "left-side-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #ef4444 0%, #991b1b 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Salads Custom Kid's Meals Sides Desse",
+      "subtitle": "Salads",
+      "layout": "right-side-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "~ = Users",
+      "subtitle": "Love",
+      "layout": "tilted-left-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #ffedd5 0%, #fed7aa 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    }
+  ]
+}

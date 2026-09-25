@@ -303,6 +303,76 @@
       "ports": [{ "face": "bottom", "kind": "usb-c", "offsetPct": 0.5 }],
       "body": "#1c1c1c", "accent": "#404040", "railMaterial": "aluminum",
       "schemaVersion": 2
+    },
+    {
+      "id": "apple-ipad-pro-12-9-inch",
+      "name": "iPad Pro 12.9 Inch",
+      "vendor": "Apple",
+      "platforms": ["apple-app-store"],
+      "formFactor": "tablet",
+      "geometry": { "width": 2048, "height": 2732, "thickness": 62, "cornerRadius": 60 },
+      "screenInset": { "top": 44, "left": 44, "width": 1960, "height": 2644 },
+      "bezelWidth": 24,
+      "edgeProfile": "flat",
+      "cutout": { "type": "punch-hole", "size": { "width": 24, "height": 24 } },
+      "body": "#1c1c1c", "accent": "#404040", "railMaterial": "aluminum",
+      "schemaVersion": 2
+    },
+    {
+      "id": "apple-iphone-14-plus",
+      "name": "iPhone 14 Plus",
+      "vendor": "Apple",
+      "platforms": ["apple-app-store"],
+      "formFactor": "phone",
+      "geometry": { "width": 1284, "height": 2778, "thickness": 78, "cornerRadius": 90 },
+      "screenInset": { "top": 36, "left": 36, "width": 1212, "height": 2706 },
+      "bezelWidth": 18,
+      "edgeProfile": "flat",
+      "cutout": { "type": "notch", "size": { "width": 280, "height": 65 } },
+      "body": "#1f2937", "accent": "#111827", "railMaterial": "aluminum",
+      "schemaVersion": 2
+    },
+    {
+      "id": "apple-iphone-13-pro-max",
+      "name": "iPhone 13 Pro Max",
+      "vendor": "Apple",
+      "platforms": ["apple-app-store"],
+      "formFactor": "phone",
+      "geometry": { "width": 1284, "height": 2778, "thickness": 76, "cornerRadius": 90 },
+      "screenInset": { "top": 36, "left": 36, "width": 1212, "height": 2706 },
+      "bezelWidth": 18,
+      "edgeProfile": "flat",
+      "cutout": { "type": "notch", "size": { "width": 280, "height": 65 } },
+      "body": "#374151", "accent": "#1f2937", "railMaterial": "stainless-steel",
+      "schemaVersion": 2
+    },
+    {
+      "id": "samsung-galaxy-s21-ultra",
+      "name": "Samsung Galaxy S21 Ultra",
+      "vendor": "Samsung",
+      "platforms": ["google-play"],
+      "formFactor": "phone",
+      "geometry": { "width": 1440, "height": 3200, "thickness": 89, "cornerRadius": 70 },
+      "screenInset": { "top": 32, "left": 32, "width": 1376, "height": 3136 },
+      "bezelWidth": 16,
+      "edgeProfile": "curved",
+      "cutout": { "type": "punch-hole", "size": { "width": 30, "height": 30 } },
+      "body": "#111827", "accent": "#030712", "railMaterial": "aluminum",
+      "schemaVersion": 2
+    },
+    {
+      "id": "samsung-galaxy-tab-s7",
+      "name": "Samsung Galaxy Tab S7",
+      "vendor": "Samsung",
+      "platforms": ["google-play"],
+      "formFactor": "tablet",
+      "geometry": { "width": 1600, "height": 2560, "thickness": 63, "cornerRadius": 48 },
+      "screenInset": { "top": 36, "left": 36, "width": 1528, "height": 2488 },
+      "bezelWidth": 20,
+      "edgeProfile": "flat",
+      "cutout": { "type": "punch-hole", "size": { "width": 20, "height": 20 } },
+      "body": "#1e293b", "accent": "#0f172a", "railMaterial": "aluminum",
+      "schemaVersion": 2
     }
   ]
 }

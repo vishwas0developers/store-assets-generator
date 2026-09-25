@@ -4,6 +4,7 @@
 import {
   selectedColumn,
   selectedLayerId,
+  selectionPageId,
   setSelectedLayerId,
   setMockupDirty,
   mockupId,
@@ -17,7 +18,7 @@ import {
 import { escapeHtml, api, uploadFile, showAlert, showToast, showConfirm, resolveDeviceFrame, resolveDeviceGeometry, getLayoutPresetClient, presentationTransformClient } from './utils.js';
 import { resolveDeviceFrameGeometry } from '/dist/mockup/layerLayout.js';
 import { mockupDevicesCatalog } from './templates.js';
-import { ARTBOARD_H, loadColumnIntoFabric, renderMockupCanvas, setActivePage, syncFabricObjectToModel } from './canvas.js';
+import { ARTBOARD_H, loadColumnIntoFabric, renderMockupCanvas, setActivePage, syncFabricObjectToModel, syncCanvasSelectionOwner } from './canvas.js';
 import { renderMockupMatrix, getSelectedCellStyle, addMockupPage, syncEditingAreaToSelectedPages } from './matrix.js';
 import { loadDeviceCategories, getDeviceCategoriesSync, deviceCategoryLabel } from './deviceCategories.js';
 
@@ -219,7 +220,7 @@ export function renderMockupLayersPanel(column) {
 
   const layers = buildScreenLayersModel(column);
   container.innerHTML = layers.map((layer) => {
-    const isSelected = selectedLayerId === layer.id;
+    const isSelected = selectedLayerId === layer.id && (selectionPageId == null || selectionPageId === column.id);
     const isHidden = !layer.visible;
     const isLocked = !!layer.locked;
     return `
@@ -241,11 +242,12 @@ export function renderMockupLayersPanel(column) {
     const lid = item.dataset.layerId;
     item.onclick = (e) => {
       if (e.target.closest(".mk-layer-vis-btn") || e.target.closest(".mk-layer-lock-btn") || e.target.classList.contains("mk-layer-rename-input")) return;
-      setSelectedLayerId(lid);
+      setSelectedLayerId(lid, column.id);
       renderMockupLayersPanel(column);
       syncSection2Inputs(column, lid);
       routeInspectorForLayer(lid);
       loadColumnIntoFabric(column);
+      syncCanvasSelectionOwner();
     };
 
     const nameSpan = item.querySelector(".mk-layer-name");
@@ -1927,7 +1929,7 @@ export function setLayerBox(style, layerId, box) {
 }
 
 export async function duplicateSelectedLayer() {
-  if (!selectedColumn) return;
+  if (!selectedColumn || !selectedLayerId) return;
   const style = getSelectedCellStyle() || selectedColumn.style;
   if (!style) return;
   if (selectedLayerId.startsWith("asset:")) {

@@ -103,7 +103,7 @@ function compatFrame(def: DeviceDefinition): DeviceFrameTraits {
     cutout: def.cutout.type,
     cutoutSize: def.cutout.size,
     fold: unfoldedVariant ? { axis: unfoldedVariant.fold.axis, seamOffset: unfoldedVariant.fold.axis === "horizontal" ? unfoldedVariant.geometry.height / 2 : unfoldedVariant.geometry.width / 2 } : undefined,
-    buttons: def.buttons.length > 0,
+    buttons: Boolean(def.buttons && def.buttons.length > 0),
     thickness: def.geometry.thickness,
   };
 }

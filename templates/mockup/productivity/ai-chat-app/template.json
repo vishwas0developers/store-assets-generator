@@ -1,0 +1,163 @@
+{
+  "version": 1,
+  "id": "ai-chat-app",
+  "name": "AI chat app screenshots",
+  "category": "productivity",
+  "description": "Present your AI chat application with our premium template. Display intelligent conversations, personalized responses, and advanced AI features in a modern design that showcases the future of communication. Perfect for highlighting natural language processing and smart assistant capabilities.",
+  "devices": [
+    {
+      "deviceId": "apple-iphone-16-pro-max",
+      "label": "iPhone 16 Pro Max"
+    },
+    {
+      "deviceId": "apple-iphone-14-plus",
+      "label": "iPhone 14 Plus"
+    },
+    {
+      "deviceId": "samsung-galaxy-s21-ultra",
+      "label": "Samsung Galaxy S21 Ultra"
+    }
+  ],
+  "layout": "single-title-above",
+  "background": {
+    "type": "solid",
+    "value": "#f5ede3"
+  },
+  "panoramic": false,
+  "columnCount": 8,
+  "titles": [
+    "Meet Claude The next generation AI Assistant in the World",
+    "Write Better and Easier",
+    "Organize Your Work",
+    "Solve Problems",
+    "Faster & Smarter",
+    "Offload Small Tasks",
+    "Access the New Generation Ai Chat Assistant",
+    "Welcome, Jane"
+  ],
+  "subtitles": [
+    "Claude is by far the best Ai for coding & language. It has a far more natural cadence & has ability to mimic your writing style.",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+  ],
+  "textColor": "#1a1512",
+  "pages": [
+    {
+      "title": "Meet Claude The next generation AI Assistant in the World",
+      "subtitle": "Claude is by far the best Ai for coding & language. It has a far more natural cadence & has ability to mimic your writing style.",
+      "layout": "rotated-right-1-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#fcfbf7"
+      },
+      "textColor": "#1a1512",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Write Better and Easier",
+      "subtitle": "",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#c45d3e"
+      },
+      "textColor": "#ffffff",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Organize Your Work",
+      "subtitle": "",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#f5ede3"
+      },
+      "textColor": "#1a1512",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Solve Problems",
+      "subtitle": "",
+      "layout": "the-airbnb-left-1-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#c45d3e"
+      },
+      "textColor": "#ffffff",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Faster & Smarter",
+      "subtitle": "",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#f5ede3"
+      },
+      "textColor": "#1a1512",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Offload Small Tasks",
+      "subtitle": "",
+      "layout": "the-airbnb-left-1-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#c45d3e"
+      },
+      "textColor": "#ffffff",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Access the New Generation Ai Chat Assistant",
+      "subtitle": "",
+      "layout": "single-title-below",
+      "background": {
+        "type": "solid",
+        "value": "#f5ede3"
+      },
+      "textColor": "#1a1512",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Welcome, Jane",
+      "subtitle": "",
+      "layout": "rotated-left-1-no-text",
+      "background": {
+        "type": "solid",
+        "value": "#c45d3e"
+      },
+      "textColor": "#ffffff",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    }
+  ]
+}

@@ -8,6 +8,7 @@ import {
   type MockupTemplatePage
 } from "./template-loader.js";
 
+export { getMockupTemplateFromDisk, loadMockupTemplatesFromDisk };
 export type MockupStarterTemplate = MockupTemplateDefinition;
 
 export function getMockupTemplates(): MockupStarterTemplate[] {

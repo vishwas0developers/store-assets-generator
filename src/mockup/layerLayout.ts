@@ -66,7 +66,10 @@ export function resolveDeviceOneTransform(
   presetXPct: number,
   presetRotateDeg: number,
   deviceWidthPx: number,
-  panoramaColumnIndex: number
+  panoramaColumnIndex: number,
+  /** Editor only: how far past the page edge a device is still drawn (the off-page workspace margin).
+   *  Exports leave it 0, so anything fully off the page is skipped there. */
+  visibleMarginPx = 0
 ): ResolvedDeviceTransform {
   const scale = (d1.size ?? 90) / 90;
   const widthPx = deviceWidthPx * scale;
@@ -74,7 +77,7 @@ export function resolveDeviceOneTransform(
   let skip = false;
   if (d1.panoramaXPx != null) {
     const localCenterXPx = d1.panoramaXPx - panoramaColumnIndex * 1080;
-    if (localCenterXPx + widthPx / 2 <= 0 || localCenterXPx - widthPx / 2 >= 1080) {
+    if (localCenterXPx + widthPx / 2 <= -visibleMarginPx || localCenterXPx - widthPx / 2 >= 1080 + visibleMarginPx) {
       skip = true;
     } else {
       xPct = ((localCenterXPx - 540) / widthPx) * 100;

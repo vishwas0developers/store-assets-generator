@@ -213,7 +213,15 @@ export const PATTERNS: Record<string, string> = {
  *  -- gradients (the historical set), solid swatches, and CSS patterns --
  *  so video scenes are no longer limited to the 10 gradients alone. */
 export function backgroundCss(name: string): string {
-  return BACKGROUNDS[name] ?? SOLID_COLORS[name] ?? PATTERNS[name] ?? BACKGROUNDS["ocean"];
+  if (!name) return BACKGROUNDS["ocean"];
+  if (BACKGROUNDS[name]) return BACKGROUNDS[name];
+  if (SOLID_COLORS[name]) return SOLID_COLORS[name];
+  if (PATTERNS[name]) return PATTERNS[name];
+  const v = name.trim();
+  if (v.startsWith("#") || v.startsWith("rgb") || v.startsWith("hsl") || v.startsWith("linear-gradient") || v.startsWith("radial-gradient")) {
+    return v;
+  }
+  return BACKGROUNDS["ocean"];
 }
 
 export interface ResolvableBackground {
@@ -223,11 +231,6 @@ export interface ResolvableBackground {
   panoramaFile?: string;
 }
 
-/** Resolves any background type to a CSS `background` shorthand value, plus
- *  (for panoramic) the position needed so consecutive screens in the set
- *  read as slices of one continuous wide image. `resolveUri` turns a
- *  session-relative file into a usable src (a data: URI for a render, or
- *  an /api/sessions/:id/file URL for a live preview). */
 export function resolveBackground(
   bg: ResolvableBackground,
   resolveUri: (relativePath: string) => string,
@@ -235,8 +238,14 @@ export function resolveBackground(
   panoramaCount = 1,
 ): { background: string; backgroundSize?: string; backgroundPosition?: string } {
   switch (bg.type) {
-    case "solid":
-      return { background: SOLID_COLORS[bg.value] ?? SOLID_COLORS["solid-navy"] };
+    case "solid": {
+      if (SOLID_COLORS[bg.value]) return { background: SOLID_COLORS[bg.value] };
+      const val = (bg.value || "").trim();
+      if (val.startsWith("#") || val.startsWith("rgb") || val.startsWith("hsl")) {
+        return { background: val };
+      }
+      return { background: SOLID_COLORS["solid-navy"] };
+    }
     case "pattern":
       return { background: PATTERNS[bg.value] ?? PATTERNS["dots"] };
     case "image":
@@ -246,8 +255,6 @@ export function resolveBackground(
       return { background: backgroundCss(bg.value) };
     case "panoramic": {
       if (!bg.panoramaFile) return { background: backgroundCss(bg.value) };
-      // Evenly slice one wide image across the whole screenshot set —
-      // screen i shows the i/(count-1) fraction of the image horizontally.
       const pct = panoramaCount > 1 ? (panoramaIndex / (panoramaCount - 1)) * 100 : 0;
       return {
         background: `url(${resolveUri(bg.panoramaFile)})`,

@@ -1,0 +1,171 @@
+{
+  "version": 1,
+  "id": "budget-better-app",
+  "name": "Budget better app screenshots",
+  "category": "fintech",
+  "description": "Showcase your budget better app with our engaging template. Highlight budgeting tools, expense tracking, and financial goal setting in a visually appealing design that promotes financial literacy and responsible spending.",
+  "devices": [
+    {
+      "deviceId": "apple-iphone-16-pro-max",
+      "label": "iPhone 16 Pro Max"
+    },
+    {
+      "deviceId": "apple-iphone-13-pro-max",
+      "label": "iPhone 13 Pro Max"
+    },
+    {
+      "deviceId": "samsung-galaxy-s21-ultra",
+      "label": "Samsung Galaxy S21 Ultra"
+    },
+    {
+      "deviceId": "apple-ipad-pro-12-9-inch",
+      "label": "iPad Pro 12.9-inch"
+    },
+    {
+      "deviceId": "samsung-galaxy-tab-s7",
+      "label": "Samsung Galaxy Tab S7"
+    }
+  ],
+  "layout": "single-title-above",
+  "background": {
+    "type": "solid",
+    "value": "#4338ca"
+  },
+  "panoramic": false,
+  "columnCount": 8,
+  "titles": [
+    "Budget Better Spend Smarter",
+    "Log Spending Habits",
+    "Add holding fast",
+    "Split Bills easily",
+    "Set Monthly budget",
+    "Spend Wiser Now",
+    "Exceed in making fast",
+    "Monitor Bills Fast"
+  ],
+  "subtitles": [
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+  ],
+  "textColor": "#facc15",
+  "pages": [
+    {
+      "title": "Budget Better Spend Smarter",
+      "subtitle": "",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#4338ca"
+      },
+      "textColor": "#facc15",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Log Spending Habits",
+      "subtitle": "",
+      "layout": "the-airbnb-left-1-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#f8fafc"
+      },
+      "textColor": "#dc2626",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Add holding fast",
+      "subtitle": "",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#4338ca"
+      },
+      "textColor": "#facc15",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Split Bills easily",
+      "subtitle": "",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#f8fafc"
+      },
+      "textColor": "#dc2626",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Set Monthly budget",
+      "subtitle": "",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#4338ca"
+      },
+      "textColor": "#fb923c",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Spend Wiser Now",
+      "subtitle": "",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#f8fafc"
+      },
+      "textColor": "#dc2626",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Exceed in making fast",
+      "subtitle": "",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#4338ca"
+      },
+      "textColor": "#facc15",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Monitor Bills Fast",
+      "subtitle": "",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#f8fafc"
+      },
+      "textColor": "#dc2626",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    }
+  ]
+}

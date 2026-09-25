@@ -1,0 +1,82 @@
+{
+  "version": 1,
+  "id": "apple-music-template",
+  "name": "Music streaming app screenshots",
+  "category": "music",
+  "description": "Present your music streaming service with our free template. Display music libraries, playlist management, and playback features in an engaging design that enhances the listening experience.",
+  "devices": [
+    {
+      "deviceId": "apple-iphone-16-pro-max",
+      "label": "apple-iphone-16-pro-max"
+    },
+    {
+      "deviceId": "apple-iphone-14-plus",
+      "label": "apple-iphone-14-plus"
+    },
+    {
+      "deviceId": "samsung-galaxy-s21-ultra",
+      "label": "samsung-galaxy-s21-ultra"
+    }
+  ],
+  "layout": "single-title-above",
+  "background": {
+    "type": "panoramic",
+    "value": "ocean"
+  },
+  "panoramic": true,
+  "columnCount": 4,
+  "titles": [
+    "100+ million songs.\nall add-free.",
+    "Real-time lyrics.\nRead, follow, sing.",
+    "Latest music from\nyour favorite artists.",
+    "Discover playlists\nmade just for you."
+  ],
+  "subtitles": [
+    "Present your music streaming service wit",
+    "Present your music streaming service wit",
+    "Present your music streaming service wit",
+    "Present your music streaming service wit"
+  ],
+  "pages": [
+    {
+      "title": "100+ million songs.\nall add-free.",
+      "subtitle": "Present your music streaming service wit",
+      "layout": "single-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Real-time lyrics.\nRead, follow, sing.",
+      "subtitle": "Present your music streaming service wit",
+      "layout": "single-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Latest music from\nyour favorite artists.",
+      "subtitle": "Present your music streaming service wit",
+      "layout": "single-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Discover playlists\nmade just for you.",
+      "subtitle": "Present your music streaming service wit",
+      "layout": "single-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    }
+  ]
+}

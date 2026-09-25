@@ -28,6 +28,8 @@ export interface MockupTemplateDefinition {
   titles?: string[];
   subtitles?: string[];
   pages?: MockupTemplatePage[];
+  folderPath?: string;
+  filePath?: string;
 }
 
 const TEMPLATES_ROOT = path.join(process.cwd(), "templates", "mockup");
@@ -126,6 +128,8 @@ export function loadMockupTemplatesFromDisk(forceReload = false): MockupTemplate
       const rawText = fs.readFileSync(filePath, "utf-8");
       const json = JSON.parse(rawText);
       const normalized = validateAndNormalizeTemplate(json, filePath);
+      normalized.folderPath = path.dirname(filePath);
+      normalized.filePath = filePath;
       map.set(normalized.id, normalized);
     } catch (err: any) {
       console.error(`[TemplateLoader] Failed to load template file ${filePath}:`, err.message);

@@ -1,0 +1,111 @@
+{
+  "version": 1,
+  "id": "movie-stream-app",
+  "name": "Movie stream app screenshots",
+  "category": "entertainment",
+  "description": "Present your movie streaming platform with our premium template. Display content libraries, personalized recommendations, and seamless playback features in a sophisticated design that delivers an exceptional entertainment experience for movie enthusiasts.",
+  "devices": [
+    {
+      "deviceId": "apple-iphone-16-pro-max",
+      "label": "apple-iphone-16-pro-max"
+    },
+    {
+      "deviceId": "apple-iphone-13-pro-max",
+      "label": "apple-iphone-13-pro-max"
+    },
+    {
+      "deviceId": "samsung-galaxy-s21-ultra",
+      "label": "samsung-galaxy-s21-ultra"
+    },
+    {
+      "deviceId": "apple-ipad-pro-12-9-inch",
+      "label": "apple-ipad-pro-12-9-inch"
+    },
+    {
+      "deviceId": "samsung-galaxy-tab-s7",
+      "label": "samsung-galaxy-tab-s7"
+    }
+  ],
+  "layout": "the-airbnb-left-1-title-above",
+  "background": {
+    "type": "gradient",
+    "value": "linear-gradient(135deg, #09090b 0%, #18181b 100%)"
+  },
+  "panoramic": false,
+  "columnCount": 5,
+  "titles": [
+    "Stream full episodes",
+    "In bon",
+    "Find your next favorite",
+    "Preview trailers, cast",
+    "9:41 # ail T -"
+  ],
+  "subtitles": [
+    "anytime, anywhere",
+    "sao y somes",
+    "episode with ease &",
+    "and episode info ©",
+    "For Alex BOY"
+  ],
+  "pages": [
+    {
+      "title": "Stream full episodes",
+      "subtitle": "anytime, anywhere",
+      "layout": "the-airbnb-left-1-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "In bon",
+      "subtitle": "sao y somes",
+      "layout": "tilted-right-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #881337 0%, #4c0519 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Find your next favorite",
+      "subtitle": "episode with ease &",
+      "layout": "single-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #2e1065 0%, #09090b 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Preview trailers, cast",
+      "subtitle": "and episode info ©",
+      "layout": "rotated-left-1-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "9:41 # ail T -",
+      "subtitle": "For Alex BOY",
+      "layout": "two-devices-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #881337 0%, #4c0519 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    }
+  ]
+}

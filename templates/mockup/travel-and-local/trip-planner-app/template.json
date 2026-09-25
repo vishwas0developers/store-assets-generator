@@ -1,0 +1,153 @@
+{
+  "version": 1,
+  "id": "trip-planner-app",
+  "name": "Trip planner app screenshots",
+  "category": "travel-and-local",
+  "description": "Market your travel or itinerary app with a vibrant template that brings planning to life. Highlight interactive maps, day-by-day planning, budget tools, group coordination, and trip sharing in a design that inspires adventure.",
+  "devices": [
+    {
+      "deviceId": "apple-iphone-16-pro-max",
+      "label": "apple-iphone-16-pro-max"
+    },
+    {
+      "deviceId": "apple-iphone-14-plus",
+      "label": "apple-iphone-14-plus"
+    },
+    {
+      "deviceId": "samsung-galaxy-s21-ultra",
+      "label": "samsung-galaxy-s21-ultra"
+    },
+    {
+      "deviceId": "apple-ipad-pro-12-9-inch",
+      "label": "apple-ipad-pro-12-9-inch"
+    },
+    {
+      "deviceId": "samsung-galaxy-tab-s7",
+      "label": "samsung-galaxy-tab-s7"
+    }
+  ],
+  "layout": "the-airbnb-left-1-title-above",
+  "background": {
+    "type": "gradient",
+    "value": "linear-gradient(135deg, #0284c7 0%, #0369a1 100%)"
+  },
+  "panoramic": false,
+  "columnCount": 8,
+  "titles": [
+    "K ®",
+    "vo CED o-=-",
+    "Your Favorite",
+    "ww ED c=",
+    "Lost ALWAYS",
+    "vr GED c=",
+    "Booking",
+    "Best"
+  ],
+  "subtitles": [
+    "pact\" Apo pe Lamor",
+    "Connum Homes ~Chaming Comer 2 0»",
+    "Locations",
+    "< Hotel Uploads",
+    "ONLINE",
+    "x a",
+    "YOU'RE",
+    "results that"
+  ],
+  "pages": [
+    {
+      "title": "K ®",
+      "subtitle": "pact\" Apo pe Lamor",
+      "layout": "the-airbnb-left-1-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "vo CED o-=-",
+      "subtitle": "Connum Homes ~Chaming Comer 2 0»",
+      "layout": "tilted-right-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Your Favorite",
+      "subtitle": "Locations",
+      "layout": "single-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "ww ED c=",
+      "subtitle": "< Hotel Uploads",
+      "layout": "rotated-left-1-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Lost ALWAYS",
+      "subtitle": "ONLINE",
+      "layout": "two-devices-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "vr GED c=",
+      "subtitle": "x a",
+      "layout": "left-side-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Booking",
+      "subtitle": "YOU'RE",
+      "layout": "right-side-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Best",
+      "subtitle": "results that",
+      "layout": "tilted-left-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    }
+  ]
+}

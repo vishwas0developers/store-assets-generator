@@ -12,6 +12,8 @@ import {
   setSelectedLayerIds,
   setMockupFabricCanvas,
   setSelectedColumn,
+  selectionPageId,
+  clearSelection,
 } from './state.js';
 import {
   resolveFabricBackgroundFill,
@@ -53,22 +55,6 @@ export function syncArtboardHeightFromProject(proj) {
   for (const pid of [...pageCanvases.keys()]) destroyPageCanvas(pid);
 }
 
-// Off-page workspace: each page canvas extends this many px past every page
-// edge (viewportTransform shifts by it), so objects dragged off the page stay
-// visible/selectable in the editor. Export (render.ts) still clips to the page.
-// ponytail: objects dragged farther than WORKSPACE_MARGIN outside stay in data and the
-// Layers list but are drawn off-canvas. Raise the margin if that happens in practice.
-const WORKSPACE_MARGIN = 360;
-const WORKSPACE_BG = '#2b303b';
-
-/** Thin non-interactive page-edge outline. No layerId -> never a layer/sync target. */
-function buildPageEdgeOutline() {
-  return new window.fabric.Rect({
-    left: 0, top: 0, originX: 'left', originY: 'top', width: 1080, height: ARTBOARD_H,
-    fill: 'transparent', stroke: 'rgba(255,255,255,0.6)', strokeWidth: 2, strokeUniform: true,
-    objectCaching: false, selectable: false, evented: false, excludeFromExport: true, name: 'page-edge'
-  });
-}
 // Shared, dependency-free layout math also used server-side by
 // src/mockup/render.ts (compiled by `npm run build` to dist/src/mockup/
 // layerLayout.js, served at this URL by web/server.ts) -- the single source
@@ -332,11 +318,42 @@ function onObjectLiveRotate(e) {
   }
 }
 
+/** While > 0, selection:cleared events are programmatic (canvas rebuild or
+ *  cross-canvas discard) and must not touch the global selection state. */
+let suppressSelectionEvents = 0;
+
+/** Discards the Fabric active object on every page canvas that does not own
+ *  the active selection (Fabric canvases are independent, so nothing else
+ *  ever clears them). */
+export function syncCanvasSelectionOwner() {
+  suppressSelectionEvents++;
+  try {
+    for (const [pid, c] of pageCanvases) {
+      if (pid !== selectionPageId && c.getActiveObject()) {
+        c.discardActiveObject();
+        c.requestRenderAll();
+      }
+    }
+  } finally {
+    suppressSelectionEvents--;
+  }
+}
+
+function refreshAfterSelectionClear() {
+  if (typeof window.hideTextToolbar === 'function') window.hideTextToolbar();
+  if (!selectedColumn) return;
+  if (typeof window.renderMockupLayersPanel === 'function') window.renderMockupLayersPanel(selectedColumn);
+  if (typeof window.syncSection2Inputs === 'function') window.syncSection2Inputs(selectedColumn, null);
+}
+
 function attachPageCanvasHandlers(canvas, pageId) {
-  canvas.on('object:modified', (e) => onFabricObjectModified(e, pageId));
-  canvas.on('selection:created', onFabricSelectionCreated);
-  canvas.on('selection:updated', onFabricSelectionUpdated);
-  canvas.on('selection:cleared', onFabricSelectionCleared);
+  canvas.__pageId = pageId;
+  canvas.on('object:modified', (e) => {
+    try { onFabricObjectModified(e, pageId); } catch (err) { console.error('[canvas] object:modified handler failed', err); }
+  });
+  canvas.on('selection:created', (e) => handleFabricSelection(e, pageId));
+  canvas.on('selection:updated', (e) => handleFabricSelection(e, pageId));
+  canvas.on('selection:cleared', () => onFabricSelectionCleared(pageId));
   canvas.on('text:changed', onFabricTextChanged);
   canvas.on('object:moving', (e) => onPanoramaObjectLiveTransform(e, canvas, pageId));
   canvas.on('object:scaling', (e) => onPanoramaObjectLiveTransform(e, canvas, pageId));
@@ -355,18 +372,19 @@ function attachPageCanvasHandlers(canvas, pageId) {
   canvas.on('mouse:down', (e) => {
     console.log('[TOOLBAR-TRACE] canvas mouse:down target=', e.target?.layerId, 'pageId=', pageId, 'currentSelected=', selectedLayerId);
     if (e.target?.layerId === 'title' || e.target?.layerId === 'subtitle') {
-      setSelectedLayerId(e.target.layerId);
+      setSelectedLayerId(e.target.layerId, pageId);
+      syncCanvasSelectionOwner();
       if (selectedColumn && typeof window.syncSection2Inputs === 'function') {
         window.syncSection2Inputs(selectedColumn, e.target.layerId);
       }
     } else if (!e.target) {
+      const hadSelection = !!selectedLayerId;
+      clearSelection();
+      syncCanvasSelectionOwner();
       if (pageId !== selectedColumn?.id) {
         setActivePage(pageId);
-      }
-      if (selectedLayerId === 'title' || selectedLayerId === 'subtitle') {
-        console.log('[TOOLBAR-TRACE] Empty canvas clicked while text selected, clearing text selection');
-        setSelectedLayerId(null);
-        if (typeof window.hideTextToolbar === 'function') window.hideTextToolbar();
+      } else if (hadSelection) {
+        refreshAfterSelectionClear();
       }
     }
   });
@@ -388,31 +406,23 @@ export function createPageCanvas(pageId) {
 
   const canvasEl = document.createElement("canvas");
   canvasEl.id = `mockup-fabric-canvas-${pageId}`;
-  const boxW = 1080 + 2 * WORKSPACE_MARGIN;
-  const boxH = ARTBOARD_H + 2 * WORKSPACE_MARGIN;
-  artboard.style.width = boxW + "px";
-  artboard.style.height = boxH + "px";
-  canvasEl.width = boxW;
-  canvasEl.height = boxH;
-  canvasEl.style.cssText = "width:" + boxW + "px;height:" + boxH + "px;display:block;";
+  // The artboard box is exactly the page (export boundary). The Fabric canvas is a screen-sized "window"
+  // over the visible workspace, sized/positioned by updateCanvasWindows(), so objects can live anywhere.
+  artboard.style.width = "1080px";
+  artboard.style.height = ARTBOARD_H + "px";
   artboard.appendChild(canvasEl);
   stage.appendChild(artboard);
 
   const canvas = new fabric.Canvas(canvasEl, {
-    width: boxW,
-    height: boxH,
+    width: 1,
+    height: 1,
     preserveObjectStacking: true,
     selection: true,
-    renderOnAddRemove: true,
-    backgroundColor: WORKSPACE_BG
+    renderOnAddRemove: true
   });
-  // Page coords stay 0..1080 / 0..ARTBOARD_H; only the view is shifted by the margin.
-  // Fabric v7 API: setViewportTransform also refreshes viewport boundaries (culling) and active-object coords;
-  // pointer/hit-testing (getScenePoint) inverts canvas.viewportTransform, so it honours this.
-  canvas.setViewportTransform([1, 0, 0, 1, WORKSPACE_MARGIN, WORKSPACE_MARGIN]);
-  canvas.requestRenderAll();
   attachPageCanvasHandlers(canvas, pageId);
   pageCanvases.set(pageId, canvas);
+  scheduleCanvasWindows();
   return canvas;
 }
 
@@ -424,6 +434,7 @@ export function destroyPageCanvas(pageId) {
   canvas.dispose();
   document.getElementById(`mockup-canvas-artboard-${pageId}`)?.remove();
   pageCanvases.delete(pageId);
+  scheduleCanvasWindows();
   if (mockupFabricCanvas === canvas) setMockupFabricCanvas(null);
 }
 
@@ -461,6 +472,8 @@ async function setActivePageInner(pageId) {
 
   const col = mockupProject?.columns?.find((c) => c.id === pageId);
   if (col) setSelectedColumn(col);
+  // Selection belongs to the page that owns it; a different page starts unselected.
+  if (selectionPageId && selectionPageId !== pageId) clearSelection();
 
   for (const [pid, canvas] of pageCanvases) {
     const pcol = mockupProject?.columns?.find((c) => c.id === pid);
@@ -473,6 +486,7 @@ async function setActivePageInner(pageId) {
   // mockupFabricCanvas ends up pointed at it regardless (every existing
   // editor.js/main.js call site reads this binding for "the active page").
   setMockupFabricCanvas(targetCanvas);
+  syncCanvasSelectionOwner();
   try { centerArtboardInViewport(); } catch (_) {}
 }
 
@@ -510,10 +524,43 @@ function onFabricObjectModified(e, originPageId) {
     for (const member of obj._objects) {
       if (member?.layerId) dispatchObjectSync(member, obj, originPageId);
     }
+    // Only release if the whole group is outside the page.
+    releaseAfterFabricMouseUp(obj, originPageId);
     return;
   }
   if (!obj.layerId) return;
   dispatchObjectSync(obj, undefined, originPageId);
+  releaseAfterFabricMouseUp(obj, originPageId);
+}
+
+/** object:modified fires from INSIDE Fabric's mouseup handler, before it clears
+ *  its _currentTransform. Discarding the selection right there (or any throw
+ *  from the release UI refresh) leaves the transform alive, so the dropped
+ *  object stays glued to the cursor. Run the release after mouseup finishes,
+ *  and never let it throw back into Fabric. */
+function releaseAfterFabricMouseUp(obj, pageId) {
+  setTimeout(() => {
+    try { releaseSelectionIfOutsidePage(obj, pageId); } catch (err) { console.error('[canvas] release-outside failed', err); }
+  }, 0);
+}
+
+/** Drag ended with the object entirely outside the page: drop the selection
+ *  (object, data and position are untouched; click / Layers row re-selects). */
+function releaseSelectionIfOutsidePage(obj, pageId) {
+  if (obj.layerId?.startsWith('panoramaDevice:')) return;
+  if (pageId !== selectionPageId) return;
+  const cs = obj.getCoords();
+  const xs = cs.map((p) => p.x), ys = cs.map((p) => p.y);
+  const outside = Math.max(...xs) <= 0 || Math.min(...xs) >= 1080
+    || Math.max(...ys) <= 0 || Math.min(...ys) >= ARTBOARD_H;
+  if (!outside) return;
+  const canvas = pageCanvases.get(pageId);
+  if (canvas) {
+    suppressSelectionEvents++;
+    try { canvas.discardActiveObject(); canvas.requestRenderAll(); } finally { suppressSelectionEvents--; }
+  }
+  clearSelection();
+  refreshAfterSelectionClear();
 }
 
 /** A panorama-DEVICE-tagged object can be modified on ANY page's canvas (not
@@ -733,12 +780,13 @@ async function syncPanoramaDeviceObjectToModel(obj, originPageId) {
 // discarding multi-select. setSelectedLayerIds keeps the full set (for group
 // operations); setSelectedLayerId keeps the first as the "primary" selection
 // the single-object inspector panel edits, same as before for a single pick.
-function handleFabricSelection(e) {
+function handleFabricSelection(e, pageId) {
+  if (suppressSelectionEvents) return;
   const objs = (e.selected || []).filter((o) => o.layerId);
-  console.log('[TOOLBAR-TRACE] handleFabricSelection objs=', objs.map(o => o.layerId));
   if (!objs.length) return;
+  setSelectedLayerId(objs[0].layerId, pageId);
   setSelectedLayerIds(objs.map((o) => o.layerId));
-  setSelectedLayerId(objs[0].layerId);
+  syncCanvasSelectionOwner();
   if (selectedColumn) {
     if (typeof window.renderMockupLayersPanel === 'function') window.renderMockupLayersPanel(selectedColumn);
     if (typeof window.syncSection2Inputs === 'function') window.syncSection2Inputs(selectedColumn, objs[0].layerId);
@@ -746,10 +794,14 @@ function handleFabricSelection(e) {
   }
 }
 
-function onFabricSelectionCreated(e) { handleFabricSelection(e); }
-function onFabricSelectionUpdated(e) { handleFabricSelection(e); }
-function onFabricSelectionCleared(e) {
-  console.log('[TOOLBAR-TRACE] selection:cleared. selectedLayerId=', selectedLayerId, 'activeObj=', mockupFabricCanvas?.getActiveObject()?.layerId);
+function onFabricSelectionCleared(pageId) {
+  // Programmatic clears (rebuild / cross-canvas discard) never change selection.
+  if (suppressSelectionEvents) return;
+  if (pageId === selectionPageId && selectedLayerId) {
+    clearSelection();
+    refreshAfterSelectionClear();
+    return;
+  }
   // Hides the text-editing toolbar when the user deselects everything --
   // without this, it stayed visible/stale after clicking away from a text
   // layer onto empty canvas. BUT: clicking an already selected text object
@@ -1250,7 +1302,7 @@ export async function loadColumnIntoFabric(column, { interactive = true } = {}) 
   // preset-offset formula -- Y/rotation/size stay exactly as governed by
   // this column's own fields below, unaffected. Shared with render.ts's
   // identical branch in cellHtml via resolveDeviceOneTransform().
-  const d1Resolved = resolveDeviceOneTransform(d1, transform.d1.xPct, transform.d1.rotate, d1BaseW, columnOrderIndex);
+  const d1Resolved = resolveDeviceOneTransform(d1, transform.d1.xPct, transform.d1.rotate, d1BaseW, columnOrderIndex, Number.POSITIVE_INFINITY); // editor: never hide an off-page device
   const d1W = d1BaseW * d1Resolved.scale;
   const d1H = d1BaseH * d1Resolved.scale;
   // resolveDeviceOneTransform() already folds the panorama-crossing pixel
@@ -1358,19 +1410,25 @@ export async function loadColumnIntoFabric(column, { interactive = true } = {}) 
   pendingObjects.sort((a, b) => a.zIndex - b.zIndex);
   // A newer call for this canvas started while we awaited: drop our stale result.
   if (canvas.__renderToken !== renderToken) return;
-  canvas.clear();
-  for (const { obj } of pendingObjects) canvas.add(obj);
-  canvas.add(buildPageEdgeOutline());
+  // Synchronous from here on: rebuild events must not alter global selection.
+  suppressSelectionEvents++;
+  try {
+    canvas.clear();
+    for (const { obj } of pendingObjects) canvas.add(obj);
 
-  canvas.requestRenderAll();
+    canvas.requestRenderAll();
 
-  // Restore selected layer selection
-  if (selectedLayerId) {
-    const target = canvas.getObjects().find((o) => o.layerId === selectedLayerId);
-    if (target) {
-      canvas.setActiveObject(target);
-      canvas.requestRenderAll();
+    // Restore selection only on the interactive canvas that owns it.
+    const owner = selectionPageId ?? selectedColumn?.id;
+    if (interactive && selectedLayerId && column.id === owner) {
+      const target = canvas.getObjects().find((o) => o.layerId === selectedLayerId);
+      if (target) {
+        canvas.setActiveObject(target);
+        canvas.requestRenderAll();
+      }
     }
+  } finally {
+    suppressSelectionEvents--;
   }
 }
 
@@ -1608,7 +1666,7 @@ const ARTBOARD_GAP = 8; // must match .mockup-canvas-stage's gap in app.css -- s
  *  visible together. */
 function stageContentWidth() {
   const n = Math.max(1, pageCanvases.size);
-  return n * (1080 + 2 * WORKSPACE_MARGIN) + (n - 1) * ARTBOARD_GAP;
+  return n * 1080 + (n - 1) * ARTBOARD_GAP;
 }
 
 export function _fitZoomForViewport() {
@@ -1618,7 +1676,7 @@ export function _fitZoomForViewport() {
   const availW = vp.clientWidth - pad * 2;
   const availH = vp.clientHeight - pad * 2;
   if (availW <= 0 || availH <= 0) return 0.2;
-  return Math.max(0.08, Math.min(availW / stageContentWidth(), availH / (ARTBOARD_H + 2 * WORKSPACE_MARGIN)));
+  return Math.max(0.08, Math.min(availW / stageContentWidth(), availH / ARTBOARD_H));
 }
 
 export function applyCanvasTransform() {
@@ -1628,6 +1686,49 @@ export function applyCanvasTransform() {
   stage.style.transformOrigin = "top left";
   const badge = document.getElementById("mockup-zoom-level");
   if (badge) badge.textContent = `${Math.round(stageZoomRatio * 100)}%`;
+  scheduleCanvasWindows();
+}
+
+export function scheduleCanvasWindows() { updateCanvasWindows(); } // sync: cheap, and no rAF dependency
+
+/** Each page's Fabric canvas covers only its "slab" of the visible workspace (backstore ~ screen pixels);
+ *  zoom/pan live in viewportTransform, so object coordinates never change and nothing is clamped.
+ *  ponytail: with 2+ pages selected the mid-gap slab edge between adjacent pages limits regular
+ *  (non-panorama) objects; top/bottom/outer sides and the single-page case are unlimited. */
+export function updateCanvasWindows() {
+  const stage = document.getElementById("mockup-canvas-stage");
+  const vp = document.getElementById("mockup-canvas-viewport");
+  if (!stage || !vp) return;
+  const z = stageZoomRatio;
+  const over = 64 / z;
+  const vx0 = -canvasPan.x / z - over, vx1 = (vp.clientWidth - canvasPan.x) / z + over;
+  const vy0 = -canvasPan.y / z - over, vy1 = (vp.clientHeight - canvasPan.y) / z + over;
+  const arts = [...stage.querySelectorAll(".mockup-canvas-artboard")];
+  arts.forEach((art, i) => {
+    const canvas = pageCanvases.get(art.dataset.pageId);
+    if (!canvas) return;
+    const prev = arts[i - 1], next = arts[i + 1];
+    const l = prev ? Math.max(vx0, (prev.offsetLeft + 1080 + art.offsetLeft) / 2) : vx0;
+    const r = next ? Math.min(vx1, (art.offsetLeft + 1080 + next.offsetLeft) / 2) : vx1;
+    const container = canvas.wrapperEl;
+    if (r <= l || vy1 <= vy0) { container.style.display = "none"; return; }
+    container.style.display = "";
+    // snap the slab origin to a whole screen pixel so the canvas raster isn't resampled by the CSS scale
+    const sx = Math.floor(canvasPan.x + l * z), sy = Math.floor(canvasPan.y + vy0 * z);
+    const lx = (sx - canvasPan.x) / z - art.offsetLeft, ly = (sy - canvasPan.y) / z - art.offsetTop;
+    const W = Math.ceil((canvasPan.x + r * z) - sx), H = Math.ceil((canvasPan.y + vy1 * z) - sy);
+    if (canvas.getWidth() !== W || canvas.getHeight() !== H) {
+      canvas.setDimensions({ width: W, height: H }, { backstoreOnly: true });
+      canvas.setDimensions({ width: W / z + "px", height: H / z + "px" }, { cssOnly: true });
+    } else if (canvas._winZ !== z) {
+      canvas.setDimensions({ width: W / z + "px", height: H / z + "px" }, { cssOnly: true });
+    }
+    canvas._winZ = z;
+    container.style.left = lx + "px";
+    container.style.top = ly + "px";
+    canvas.setViewportTransform([z, 0, 0, z, -lx * z, -ly * z]);
+    canvas.requestRenderAll();
+  });
 }
 
 export function setStageZoomAndCenter(zoom) {
@@ -1638,7 +1739,7 @@ export function setStageZoomAndCenter(zoom) {
   const availH = vp.clientHeight;
   canvasPan = {
     x: Math.round((availW - stageContentWidth() * zoom) / 2),
-    y: Math.max(20, Math.round((availH - (ARTBOARD_H + 2 * WORKSPACE_MARGIN) * zoom) / 2))
+    y: Math.max(20, Math.round((availH - ARTBOARD_H * zoom) / 2))
   };
   applyCanvasTransform();
   if (typeof moveableInstance !== "undefined" && moveableInstance) {
@@ -1686,6 +1787,7 @@ export function initCanvasPanZoomEvents() {
   const viewport = document.getElementById("mockup-canvas-viewport");
   if (!viewport || viewport._panZoomInitialized) return;
   viewport._panZoomInitialized = true;
+  new ResizeObserver(scheduleCanvasWindows).observe(viewport);
 
   window.addEventListener("keydown", (e) => {
     if (e.code === "Space" && document.activeElement?.tagName !== "INPUT" && document.activeElement?.tagName !== "TEXTAREA") {
@@ -1894,7 +1996,7 @@ export function renderTransformGizmoOverlay(frameEl, col, zoomRatio) {
     const cx = 540 + (d1.x / 100 * 1080);
     const cy = 1100 + (d1.y / 100 * ARTBOARD_H);
     box = { left: cx - w / 2, top: cy - h / 2, width: w, height: h, rotation: d1.rotation || 0 };
-  } else if (selectedLayerId.startsWith("asset:")) {
+  } else if (selectedLayerId?.startsWith("asset:")) {
     const idx = parseInt(selectedLayerId.split(":")[1], 10);
     const ast = style.assetLayers ? style.assetLayers[idx] : null;
     if (ast) {
@@ -1975,7 +2077,7 @@ export function attachGizmoEvents(gizmoEl, col, zoomRatio) {
           if (deg < -180) deg += 360;
 
           if (selectedLayerId === "deviceOne") d1.rotation = deg;
-          else if (selectedLayerId.startsWith("asset:")) {
+          else if (selectedLayerId?.startsWith("asset:")) {
             const idx = parseInt(selectedLayerId.split(":")[1], 10);
             if (style.assetLayers[idx]) style.assetLayers[idx].rotation = deg;
           }
@@ -1983,7 +2085,7 @@ export function attachGizmoEvents(gizmoEl, col, zoomRatio) {
           const delta = Math.round((dx + dy) / 4);
           if (selectedLayerId === "deviceOne") {
             d1.size = Math.max(10, Math.min(200, initialSize + delta));
-          } else if (selectedLayerId.startsWith("asset:")) {
+          } else if (selectedLayerId?.startsWith("asset:")) {
             const idx = parseInt(selectedLayerId.split(":")[1], 10);
             if (style.assetLayers[idx]) {
               style.assetLayers[idx].widthPct = Math.max(5, Math.min(100, (style.assetLayers[idx].widthPct || 30) + delta));
@@ -1996,7 +2098,7 @@ export function attachGizmoEvents(gizmoEl, col, zoomRatio) {
           if (selectedLayerId === "deviceOne") {
             d1.x = Math.max(-100, Math.min(100, initialX + pctX));
             d1.y = Math.max(-100, Math.min(100, initialY + pctY));
-          } else if (selectedLayerId.startsWith("asset:")) {
+          } else if (selectedLayerId?.startsWith("asset:")) {
             const idx = parseInt(selectedLayerId.split(":")[1], 10);
             if (style.assetLayers[idx]) {
               style.assetLayers[idx].xPct = Math.max(0, Math.min(100, (style.assetLayers[idx].xPct || 50) + pctX));

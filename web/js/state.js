@@ -109,13 +109,25 @@ export function clearPageSelection() {
   selectedPages = [];
 }
 
-export function setSelectedLayerId(layerId) {
+/** Page whose canvas owns the active selection (null = nothing selected).
+ *  Layer ids repeat on every page, so the id alone is ambiguous. */
+export let selectionPageId = selectedColumn?.id ?? null;
+
+export function setSelectedLayerId(layerId, pageId = selectedColumn?.id ?? null) {
   selectedLayerId = layerId;
-  if (!selectedLayerIds.includes(layerId)) selectedLayerIds = [layerId];
+  selectionPageId = layerId ? pageId : null;
+  if (!layerId) selectedLayerIds = [];
+  else if (!selectedLayerIds.includes(layerId)) selectedLayerIds = [layerId];
 }
 
 export function setSelectedLayerIds(layerIds) {
-  selectedLayerIds = layerIds && layerIds.length ? layerIds : [selectedLayerId];
+  selectedLayerIds = layerIds && layerIds.length ? layerIds : (selectedLayerId ? [selectedLayerId] : []);
+}
+
+export function clearSelection() {
+  selectedLayerId = null;
+  selectedLayerIds = [];
+  selectionPageId = null;
 }
 
 /** The only fields a history step stores -- editable content, never the

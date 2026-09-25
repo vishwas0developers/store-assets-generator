@@ -1,0 +1,82 @@
+{
+  "version": 1,
+  "id": "foot-app-template-5",
+  "name": "Food app screenshots",
+  "category": "food-and-drink",
+  "description": "Present your food delivery platform with our free template. Display restaurant discovery, menu browsing, and order management in an appealing design that enhances the food ordering experience.",
+  "devices": [
+    {
+      "deviceId": "apple-iphone-16-pro-max",
+      "label": "apple-iphone-16-pro-max"
+    },
+    {
+      "deviceId": "apple-iphone-14-plus",
+      "label": "apple-iphone-14-plus"
+    },
+    {
+      "deviceId": "samsung-galaxy-s21-ultra",
+      "label": "samsung-galaxy-s21-ultra"
+    }
+  ],
+  "layout": "single-title-above",
+  "background": {
+    "type": "panoramic",
+    "value": "ocean"
+  },
+  "panoramic": true,
+  "columnCount": 4,
+  "titles": [
+    "ORDER NOW\nFROM US",
+    "CHECK THE\nONLINE MENU",
+    "CHOOSE YOUR\nFAVORITE RECIPES",
+    "PAY\nONLINE"
+  ],
+  "subtitles": [
+    "Present your food delivery platform with",
+    "Present your food delivery platform with",
+    "Present your food delivery platform with",
+    "Present your food delivery platform with"
+  ],
+  "pages": [
+    {
+      "title": "ORDER NOW\nFROM US",
+      "subtitle": "Present your food delivery platform with",
+      "layout": "single-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "CHECK THE\nONLINE MENU",
+      "subtitle": "Present your food delivery platform with",
+      "layout": "single-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "CHOOSE YOUR\nFAVORITE RECIPES",
+      "subtitle": "Present your food delivery platform with",
+      "layout": "single-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "PAY\nONLINE",
+      "subtitle": "Present your food delivery platform with",
+      "layout": "single-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    }
+  ]
+}

@@ -1,0 +1,123 @@
+{
+  "version": 1,
+  "id": "productivity-app",
+  "name": "Productivity app screenshots",
+  "category": "productivity",
+  "description": "Showcase your productivity platform with our efficient template. Display task management, time tracking, and workflow optimization in a streamlined design that helps users maximize their efficiency and achieve their goals.",
+  "devices": [
+    {
+      "deviceId": "apple-iphone-16-pro-max",
+      "label": "iPhone 16 Pro Max"
+    },
+    {
+      "deviceId": "apple-iphone-13-pro-max",
+      "label": "iPhone 13 Pro Max"
+    },
+    {
+      "deviceId": "samsung-galaxy-s21-ultra",
+      "label": "Samsung Galaxy S21 Ultra"
+    },
+    {
+      "deviceId": "apple-ipad-pro-12-9-inch",
+      "label": "iPad Pro 12.9-inch"
+    },
+    {
+      "deviceId": "samsung-galaxy-tab-s7",
+      "label": "Samsung Galaxy Tab S7"
+    }
+  ],
+  "layout": "single-title-above",
+  "background": {
+    "type": "solid",
+    "value": "#000000"
+  },
+  "panoramic": false,
+  "columnCount": 5,
+  "titles": [
+    "Master Screen Time",
+    "This app saved me a lot of time. Love it!",
+    "Daily Focus Report",
+    "Stay Focused",
+    "Peaceful Progress"
+  ],
+  "subtitles": [
+    "block apps & save time",
+    "",
+    "Daily Focus Report",
+    "3 apps are paused. 2H30MIN YOU WERE SUPER FOCUSED TODAY",
+    "Hold your attention."
+  ],
+  "textColor": "#86efac",
+  "pages": [
+    {
+      "title": "Master Screen Time",
+      "subtitle": "block apps & save time",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#000000"
+      },
+      "textColor": "#86efac",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "This app saved me a lot of time. Love it!",
+      "subtitle": "",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#000000"
+      },
+      "textColor": "#ffffff",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Daily Focus Report",
+      "subtitle": "Daily Focus Report",
+      "layout": "single-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(180deg, #86efac 0%, #4ade80 50%, #22c55e 100%)"
+      },
+      "textColor": "#0f172a",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Stay Focused",
+      "subtitle": "3 apps are paused. 2H30MIN YOU WERE SUPER FOCUSED TODAY",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#000000"
+      },
+      "textColor": "#ffffff",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Peaceful Progress",
+      "subtitle": "Hold your attention.",
+      "layout": "the-airbnb-left-1-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(180deg, #86efac 0%, #4ade80 50%, #22c55e 100%)"
+      },
+      "textColor": "#0f172a",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    }
+  ]
+}

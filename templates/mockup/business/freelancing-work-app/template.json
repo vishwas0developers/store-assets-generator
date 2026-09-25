@@ -1,0 +1,111 @@
+{
+  "version": 1,
+  "id": "freelancing-work-app",
+  "name": "Freelancing work app screenshots",
+  "category": "business",
+  "description": "Showcase your freelancing platform with our professional template. Display project management, client communication, and earnings tracking in a sophisticated design that empowers freelancers to manage their business efficiently and grow their client base.",
+  "devices": [
+    {
+      "deviceId": "apple-iphone-16-pro-max",
+      "label": "apple-iphone-16-pro-max"
+    },
+    {
+      "deviceId": "apple-iphone-13-pro-max",
+      "label": "apple-iphone-13-pro-max"
+    },
+    {
+      "deviceId": "samsung-galaxy-s21-ultra",
+      "label": "samsung-galaxy-s21-ultra"
+    },
+    {
+      "deviceId": "apple-ipad-pro-12-9-inch",
+      "label": "apple-ipad-pro-12-9-inch"
+    },
+    {
+      "deviceId": "samsung-galaxy-tab-s7",
+      "label": "samsung-galaxy-tab-s7"
+    }
+  ],
+  "layout": "the-airbnb-left-1-title-above",
+  "background": {
+    "type": "gradient",
+    "value": "linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)"
+  },
+  "panoramic": false,
+  "columnCount": 5,
+  "titles": [
+    "Trl. ol I ad",
+    "Save and track top",
+    "Perfect for",
+    "Narrow results to",
+    "Personalized"
+  ],
+  "subtitles": [
+    "L od =r >",
+    "opportunities",
+    "remote job seekers!",
+    "what fits you",
+    "Job Feed"
+  ],
+  "pages": [
+    {
+      "title": "Trl. ol I ad",
+      "subtitle": "L od =r >",
+      "layout": "the-airbnb-left-1-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Save and track top",
+      "subtitle": "opportunities",
+      "layout": "tilted-right-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #312e81 0%, #4338ca 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Perfect for",
+      "subtitle": "remote job seekers!",
+      "layout": "single-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #065f46 0%, #022c22 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Narrow results to",
+      "subtitle": "what fits you",
+      "layout": "rotated-left-1-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #1e1b4b 0%, #311b92 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Personalized",
+      "subtitle": "Job Feed",
+      "layout": "two-devices-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    }
+  ]
+}

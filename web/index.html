@@ -204,14 +204,6 @@
               <div class="hint" style="margin-bottom: 0.6rem;">
                 Navigate to the target screen in the device view, then click the red capture button or press <kbd>Alt + C</kbd> to save.
               </div>
-              <div style="display: flex; gap: 0.5rem; margin-bottom: 0.8rem;">
-                <select id="browser-capture-filter-device" style="flex: 1; font-size: 0.78rem;" title="Filter by device size (Phone / 7-inch Tablet / 10-inch Tablet)">
-                  <option value="">All device sizes</option>
-                </select>
-                <select id="browser-capture-filter-resolution" style="flex: 1; font-size: 0.78rem;" title="Refine by exact pixel resolution (technical detail)">
-                  <option value="">All resolutions</option>
-                </select>
-              </div>
               <div id="live-captures-gallery" class="thumb-grid" style="grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 0.8rem; align-items: start; align-content: start; overflow-y: auto; flex: 1; min-height: 0;">
                 <div class="hint" style="grid-column: span 2; text-align: center; padding: 2rem 0;">No screenshots captured yet.</div>
               </div>
@@ -351,7 +343,7 @@
     <div class="app-body">
       <div class="rail">
         <div class="rail-btn active" data-section="templates"><span class="ico">&#9636;</span>Templates</div>
-        <div class="rail-btn" data-section="editor"><span class="ico">&#9998;</span>Editor</div>
+        <div class="rail-btn" data-section="mockup-editing"><span class="ico">&#9998;</span>Editing</div>
         <div class="rail-btn" data-section="panoramic"><span class="ico">&#127916;</span>Panoramic</div>
         <div class="rail-btn" data-section="preview"><span class="ico">&#128065;</span>Preview</div>
         <div class="rail-btn" data-section="devices"><span class="ico">&#128241;</span>Devices</div>
@@ -377,7 +369,7 @@
           <div class="card" id="mockup-template-detail" style="display:none;"></div>
         </div>
 
-        <div class="section-page" id="mockup-section-editor">
+        <div class="section-page" id="mockup-section-mockup-editing">
           <div class="studio-editor-container">
             <!-- Real-Time Stage Controls Toolbar -->
             <div class="mockup-toolbar">
@@ -882,7 +874,7 @@
     <div class="app-body">
       <div class="rail">
         <div class="rail-btn active" data-section="templates"><span class="ico">&#9636;</span>Templates</div>
-        <div class="rail-btn" data-section="scenes"><span class="ico">&#127909;</span>Scenes</div>
+        <div class="rail-btn" data-section="scene-editing"><span class="ico">&#127909;</span>Editing</div>
         <div class="rail-btn" data-section="devices"><span class="ico">&#128241;</span>Devices</div>
         <div class="rail-btn" data-section="saved-configs"><span class="ico">&#128193;</span>Saved Configs</div>
       </div>
@@ -901,7 +893,7 @@
           </div>
         </div>
 
-        <div class="section-page" id="video-section-scenes">
+        <div class="section-page" id="video-section-scene-editing">
           <div class="card video-scenes-nav-card scene-navigation-container" id="video-scenes-nav-card">
             <div id="video-selected-template-label" class="hint" style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 6px;"></div>
             <div class="row" style="align-items: center; justify-content: space-between;">
@@ -928,15 +920,17 @@
                 </div>
                 <div id="sc-content-panel"></div>
 
+                <div id="sc-source-section">
                 <h3 style="margin:1.5rem 0 .5rem; font-size:.85rem;">Screenshot source</h3>
                 <select id="sc-source"></select>
-                <input id="sc-source-file" type="file" accept="image/*,video/mp4,video/webm" style="margin-top:.4rem;" />
+                <input id="sc-source-file" type="file" accept="image/*,video/mp4,video/webm" style="display:none;" />
                 <p class="hint" style="margin:.2rem 0 0;">Upload a screen recording (mp4/webm) to play it inside the device instead of a static screenshot.</p>
                 <button id="sc-source-upload" class="secondary small" type="button" style="margin-top:.4rem;">Upload New Source</button>
+                </div>
 
                 <h3 style="margin:1.5rem 0 .5rem; font-size:.85rem;">BGM</h3>
                 <p class="hint" style="margin:0 0 .5rem;">Every template ships its own generated background music automatically. Upload a file only to override it.</p>
-                <input id="bgm-file" type="file" accept="audio/*" />
+                <input id="bgm-file" type="file" accept="audio/*" style="display:none;" />
                 <button id="bgm-upload" class="secondary small" type="button" style="margin-top:.5rem;">Upload BGM</button>
               </div>
 

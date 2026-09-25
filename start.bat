@@ -23,10 +23,12 @@ for /f "tokens=5" %%P in ('netstat -ano ^| findstr /r /c:"[0-9]:%APP_PORT% .*LIS
 REM Give Windows a moment to fully release the socket before rebinding.
 timeout /t 1 /nobreak >nul
 
-call npx electron .
-if !ERRORLEVEL! neq 0 (
-    echo.
-    echo ERROR: Desktop application exited with code !ERRORLEVEL!.
-    pause
-    exit /b !ERRORLEVEL!
-)
+REM electron.exe is a GUI-subsystem binary: on Windows its stdout/stderr never reach
+REM this console unless piped. Piping through `findstr "^"` (pass-through, no paging) forces live output; the logging
+REM env var also forwards renderer console messages and Chromium errors.
+set ELECTRON_ENABLE_LOGGING=1
+call npx electron . 2>&1 | findstr "^"
+
+echo.
+echo Application closed. Press any key to close this window...
+pause >nul

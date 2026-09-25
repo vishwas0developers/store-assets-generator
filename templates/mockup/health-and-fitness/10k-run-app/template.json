@@ -1,0 +1,155 @@
+{
+  "version": 1,
+  "id": "10k-run-app",
+  "name": "10K run app screenshots",
+  "category": "health-and-fitness",
+  "description": "Elevate your running app with our premium template. Display training plans, run tracking, and performance analytics in a motivational design that helps users achieve their 10K goals. Showcase features for progress monitoring, route mapping, and community engagement.",
+  "devices": [
+    {
+      "deviceId": "apple-iphone-16-pro-max",
+      "label": "iPhone 16 Pro Max"
+    },
+    {
+      "deviceId": "apple-iphone-14-plus",
+      "label": "iPhone 14 Plus"
+    },
+    {
+      "deviceId": "samsung-galaxy-s21-ultra",
+      "label": "Samsung Galaxy S21 Ultra"
+    }
+  ],
+  "layout": "the-airbnb-left-1-title-above",
+  "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #ffffff 0%, #ffffff 65%, #84cc16 100%)"
+  },
+  "panoramic": false,
+  "columnCount": 8,
+  "titles": [
+    "10K RUN",
+    "Good Morning, David!",
+    "RUN",
+    "GET",
+    "TRACK",
+    "RUN AND HAVE SOME FUN",
+    "RESULTS",
+    "ACCESS"
+  ],
+  "subtitles": [
+    "10-Week Program",
+    "Ready to rock?",
+    "With visual and Voice Guidence",
+    "Workout with Details & Tracking",
+    "Daily Progress and Goals",
+    "",
+    "View the Results Faster & Precise",
+    "See What Users are Saying about us"
+  ],
+  "textColor": "#111827",
+  "pages": [
+    {
+      "title": "10K RUN",
+      "subtitle": "10-Week Program",
+      "layout": "the-airbnb-left-1-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(180deg, #ffffff 0%, #ffffff 60%, #84cc16 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Good Morning, David!",
+      "subtitle": "Ready to rock?",
+      "layout": "tilted-right-no-text",
+      "background": {
+        "type": "solid",
+        "value": "#84cc16"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "RUN",
+      "subtitle": "With visual and Voice Guidence",
+      "layout": "single-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(180deg, #ffffff 0%, #ffffff 75%, #84cc16 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "GET",
+      "subtitle": "Workout with Details & Tracking",
+      "layout": "the-airbnb-left-1-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(180deg, #ffffff 0%, #ffffff 60%, #84cc16 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "TRACK",
+      "subtitle": "Daily Progress and Goals",
+      "layout": "the-airbnb-right-1-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(180deg, #ffffff 0%, #ffffff 70%, #84cc16 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "RUN AND HAVE SOME FUN",
+      "subtitle": "",
+      "layout": "single-no-text",
+      "background": {
+        "type": "solid",
+        "value": "#84cc16"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "RESULTS",
+      "subtitle": "View the Results Faster & Precise",
+      "layout": "single-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(180deg, #ffffff 0%, #ffffff 70%, #84cc16 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "ACCESS",
+      "subtitle": "See What Users are Saying about us",
+      "layout": "two-devices-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(180deg, #ffffff 0%, #ffffff 65%, #84cc16 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    }
+  ]
+}

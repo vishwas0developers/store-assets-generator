@@ -1,0 +1,111 @@
+{
+  "version": 1,
+  "id": "ai-translator-language-app",
+  "name": "AI translator language app screenshots",
+  "category": "utilities",
+  "description": "Showcase your translation app with our intelligent template. Display AI-powered translation, voice recognition, and multi-language support in a sophisticated design that breaks down language barriers and facilitates global communication.",
+  "devices": [
+    {
+      "deviceId": "apple-iphone-16-pro-max",
+      "label": "apple-iphone-16-pro-max"
+    },
+    {
+      "deviceId": "apple-iphone-13-pro-max",
+      "label": "apple-iphone-13-pro-max"
+    },
+    {
+      "deviceId": "samsung-galaxy-s21-ultra",
+      "label": "samsung-galaxy-s21-ultra"
+    },
+    {
+      "deviceId": "apple-ipad-pro-12-9-inch",
+      "label": "apple-ipad-pro-12-9-inch"
+    },
+    {
+      "deviceId": "samsung-galaxy-tab-s7",
+      "label": "samsung-galaxy-tab-s7"
+    }
+  ],
+  "layout": "the-airbnb-left-1-title-above",
+  "background": {
+    "type": "gradient",
+    "value": "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)"
+  },
+  "panoramic": false,
+  "columnCount": 5,
+  "titles": [
+    "Speak Any",
+    "Learn Faster",
+    "Your Words,",
+    "Progress stats and daily streaks",
+    "AAA"
+  ],
+  "subtitles": [
+    "Language",
+    "Smarter",
+    "Everywhere",
+    "Get ready for an interactive video",
+    "This Al translation app is"
+  ],
+  "pages": [
+    {
+      "title": "Speak Any",
+      "subtitle": "Language",
+      "layout": "the-airbnb-left-1-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Learn Faster",
+      "subtitle": "Smarter",
+      "layout": "tilted-right-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Your Words,",
+      "subtitle": "Everywhere",
+      "layout": "single-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Progress stats and daily streaks",
+      "subtitle": "Get ready for an interactive video",
+      "layout": "rotated-left-1-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "AAA",
+      "subtitle": "This Al translation app is",
+      "layout": "two-devices-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    }
+  ]
+}

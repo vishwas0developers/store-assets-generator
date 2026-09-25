@@ -1,0 +1,145 @@
+{
+  "version": 1,
+  "id": "music-and-podcasts-streaming-app",
+  "name": "Music and podcasts streaming app screenshots",
+  "category": "music",
+  "description": "Elevate your audio streaming app with our premium template. Display music libraries, podcast collections, and playback features in a sophisticated design that enhances the listening experience.",
+  "devices": [
+    {
+      "deviceId": "apple-iphone-16-pro-max",
+      "label": "apple-iphone-16-pro-max"
+    },
+    {
+      "deviceId": "apple-iphone-14-plus",
+      "label": "apple-iphone-14-plus"
+    },
+    {
+      "deviceId": "samsung-galaxy-s21-ultra",
+      "label": "samsung-galaxy-s21-ultra"
+    }
+  ],
+  "layout": "the-airbnb-left-1-title-above",
+  "background": {
+    "type": "gradient",
+    "value": "linear-gradient(135deg, #fae8ff 0%, #d8b4fe 100%)"
+  },
+  "panoramic": false,
+  "columnCount": 8,
+  "titles": [
+    "Music,",
+    "Find Artists",
+    "Connect",
+    "Search for",
+    "Find Music",
+    "Allow tracking for more",
+    "Receive",
+    "( Choose 3 or more artists you like. |"
+  ],
+  "subtitles": [
+    "Podcasts &",
+    "Good morning PRE",
+    "with Friends",
+    "Podcast",
+    "for Your Soul",
+    "relevant ads",
+    "Notifications |",
+    "CEE"
+  ],
+  "pages": [
+    {
+      "title": "Music,",
+      "subtitle": "Podcasts &",
+      "layout": "the-airbnb-left-1-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Find Artists",
+      "subtitle": "Good morning PRE",
+      "layout": "tilted-right-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #581c87 0%, #3b0764 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Connect",
+      "subtitle": "with Friends",
+      "layout": "single-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #09090b 0%, #18181b 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Search for",
+      "subtitle": "Podcast",
+      "layout": "rotated-left-1-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Find Music",
+      "subtitle": "for Your Soul",
+      "layout": "two-devices-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #581c87 0%, #3b0764 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Allow tracking for more",
+      "subtitle": "relevant ads",
+      "layout": "left-side-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #09090b 0%, #18181b 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Receive",
+      "subtitle": "Notifications |",
+      "layout": "right-side-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "( Choose 3 or more artists you like. |",
+      "subtitle": "CEE",
+      "layout": "tilted-left-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #581c87 0%, #3b0764 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    }
+  ]
+}

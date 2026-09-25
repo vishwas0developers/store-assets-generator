@@ -1,0 +1,163 @@
+{
+  "version": 1,
+  "id": "fitness-routine-app",
+  "name": "Fitness routine app screenshots",
+  "category": "health-and-fitness",
+  "description": "Transform your fitness app's presentation with our professional template. Showcase workout routines, progress tracking, and exercise demonstrations in a dynamic design that motivates and engages users.",
+  "devices": [
+    {
+      "deviceId": "apple-iphone-16-pro-max",
+      "label": "iPhone 16 Pro Max"
+    },
+    {
+      "deviceId": "apple-iphone-14-plus",
+      "label": "iPhone 14 Plus"
+    },
+    {
+      "deviceId": "samsung-galaxy-s21-ultra",
+      "label": "Samsung Galaxy S21 Ultra"
+    }
+  ],
+  "layout": "single-title-above",
+  "background": {
+    "type": "solid",
+    "value": "#a6e22e"
+  },
+  "panoramic": false,
+  "columnCount": 8,
+  "titles": [
+    "ANYTIME ANYWHERE",
+    "FROM YOGA TO STRENGTH TO RUNNING",
+    "ACCESS THOUSANDS OF WORKOUTS",
+    "AT THE GYM",
+    "OR ON THE GO",
+    "NO EQUIPMENT NEEDED",
+    "MANIFEST YOUR DREAM BODY",
+    "CONQUER YOURSELF"
+  ],
+  "subtitles": [
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+  ],
+  "textColor": "#a6e22e",
+  "pages": [
+    {
+      "title": "ANYTIME ANYWHERE",
+      "subtitle": "",
+      "layout": "single-title-below",
+      "background": {
+        "type": "solid",
+        "value": "#181818"
+      },
+      "textColor": "#c6ff00",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "FROM YOGA TO STRENGTH TO RUNNING",
+      "subtitle": "",
+      "layout": "single-title-below",
+      "background": {
+        "type": "solid",
+        "value": "#c6ff00"
+      },
+      "textColor": "#14532d",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "ACCESS THOUSANDS OF WORKOUTS",
+      "subtitle": "",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#c6ff00"
+      },
+      "textColor": "#14532d",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "AT THE GYM",
+      "subtitle": "",
+      "layout": "single-title-below",
+      "background": {
+        "type": "solid",
+        "value": "#143a22"
+      },
+      "textColor": "#c6ff00",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "OR ON THE GO",
+      "subtitle": "",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#c6ff00"
+      },
+      "textColor": "#14532d",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "NO EQUIPMENT NEEDED",
+      "subtitle": "",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#b39c82"
+      },
+      "textColor": "#ffffff",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "MANIFEST YOUR DREAM BODY",
+      "subtitle": "",
+      "layout": "single-title-below",
+      "background": {
+        "type": "solid",
+        "value": "#143a22"
+      },
+      "textColor": "#c6ff00",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "CONQUER YOURSELF",
+      "subtitle": "",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#c6ff00"
+      },
+      "textColor": "#14532d",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    }
+  ]
+}

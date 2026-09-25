@@ -299,7 +299,7 @@ export function selectCell(deviceRowId, columnId) {
   renderMockupMatrix();
   try { centerArtboardInViewport(); } catch (_) {}
   // Inspector: only visible if in editor section
-  const isEditorActive = document.getElementById("mockup-section-editor")?.classList.contains("active");
+  const isEditorActive = document.getElementById("mockup-section-mockup-editing")?.classList.contains("active");
   const inspector = document.getElementById("mockup-inspector");
   if (inspector) inspector.style.display = isEditorActive ? "block" : "none";
   const row = mockupProject.devices?.find((d) => d.id === deviceRowId);
@@ -324,7 +324,7 @@ export async function selectMockupPage(columnId) {
   togglePageSelection(columnId);
   await syncEditingAreaToSelectedPages();
   renderMockupMatrix();
-  const isEditorActive2 = document.getElementById("mockup-section-editor")?.classList.contains("active");
+  const isEditorActive2 = document.getElementById("mockup-section-mockup-editing")?.classList.contains("active");
   const insp = document.getElementById("mockup-inspector");
   if (insp) insp.style.display = isEditorActive2 ? "block" : "none";
 }

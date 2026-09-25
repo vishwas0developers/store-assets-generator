@@ -1,0 +1,82 @@
+{
+  "version": 1,
+  "id": "personal-messaging-app-template",
+  "name": "Personal messaging app screenshots",
+  "category": "social-networking",
+  "description": "Showcase your messaging app with our free template. Display private chats, message features, and personal communication tools in a secure design that prioritizes privacy.",
+  "devices": [
+    {
+      "deviceId": "apple-iphone-16-pro-max",
+      "label": "apple-iphone-16-pro-max"
+    },
+    {
+      "deviceId": "apple-iphone-14-plus",
+      "label": "apple-iphone-14-plus"
+    },
+    {
+      "deviceId": "samsung-galaxy-s21-ultra",
+      "label": "samsung-galaxy-s21-ultra"
+    }
+  ],
+  "layout": "snapshot-single-title-above",
+  "background": {
+    "type": "gradient",
+    "value": "linear-gradient(135deg, #112f31, #1a4a4d)"
+  },
+  "panoramic": false,
+  "columnCount": 4,
+  "titles": [
+    "Simple.\nReliable.\nPrivate.",
+    "Message privately with",
+    "Make calls",
+    "Group chat with"
+  ],
+  "subtitles": [
+    "Showcase your messaging app with our fre",
+    "end-to-end encryption",
+    "across the world",
+    "friends and family"
+  ],
+  "pages": [
+    {
+      "title": "Simple.\nReliable.\nPrivate.",
+      "subtitle": "Showcase your messaging app with our fre",
+      "layout": "snapshot-single-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Message privately with",
+      "subtitle": "end-to-end encryption",
+      "layout": "snapshot-single-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Make calls",
+      "subtitle": "across the world",
+      "layout": "snapshot-single-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Group chat with",
+      "subtitle": "friends and family",
+      "layout": "snapshot-single-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    }
+  ]
+}

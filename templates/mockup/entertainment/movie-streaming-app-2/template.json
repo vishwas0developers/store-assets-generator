@@ -1,0 +1,145 @@
+{
+  "version": 1,
+  "id": "movie-streaming-app-2",
+  "name": "Movie streaming app screenshots template 2",
+  "category": "entertainment",
+  "description": "Elevate your streaming platform's presence with our professional template. Display your content catalog, user profiles, and streaming features in a modern design that emphasizes user experience and content discovery.",
+  "devices": [
+    {
+      "deviceId": "apple-iphone-16-pro-max",
+      "label": "apple-iphone-16-pro-max"
+    },
+    {
+      "deviceId": "apple-iphone-14-plus",
+      "label": "apple-iphone-14-plus"
+    },
+    {
+      "deviceId": "samsung-galaxy-s21-ultra",
+      "label": "samsung-galaxy-s21-ultra"
+    }
+  ],
+  "layout": "the-airbnb-left-1-title-above",
+  "background": {
+    "type": "gradient",
+    "value": "linear-gradient(135deg, #09090b 0%, #18181b 100%)"
+  },
+  "panoramic": false,
+  "columnCount": 8,
+  "titles": [
+    "Ww, ¢ | 3",
+    "CHOOSE FROM",
+    "9:41 il 7 -",
+    "UNCOVER",
+    "NJOY",
+    "PLAY",
+    "YOUR",
+    "UNLOCK"
+  ],
+  "subtitles": [
+    "x a & Series",
+    "800+ MOVIES",
+    "For JudyS. SS Qa",
+    "THE MAGIC",
+    ": UR",
+    "ENDLESS",
+    "UNFORGETABLE",
+    "A WORLD OF"
+  ],
+  "pages": [
+    {
+      "title": "Ww, ¢ | 3",
+      "subtitle": "x a & Series",
+      "layout": "the-airbnb-left-1-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "CHOOSE FROM",
+      "subtitle": "800+ MOVIES",
+      "layout": "tilted-right-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #881337 0%, #4c0519 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "9:41 il 7 -",
+      "subtitle": "For JudyS. SS Qa",
+      "layout": "single-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #2e1065 0%, #09090b 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "UNCOVER",
+      "subtitle": "THE MAGIC",
+      "layout": "rotated-left-1-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "NJOY",
+      "subtitle": ": UR",
+      "layout": "two-devices-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #881337 0%, #4c0519 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "PLAY",
+      "subtitle": "ENDLESS",
+      "layout": "left-side-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #2e1065 0%, #09090b 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "YOUR",
+      "subtitle": "UNFORGETABLE",
+      "layout": "right-side-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "UNLOCK",
+      "subtitle": "A WORLD OF",
+      "layout": "tilted-left-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #881337 0%, #4c0519 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    }
+  ]
+}

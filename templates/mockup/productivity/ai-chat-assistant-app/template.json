@@ -1,0 +1,123 @@
+{
+  "version": 1,
+  "id": "ai-chat-assistant-app",
+  "name": "AI chat assistant app screenshots",
+  "category": "productivity",
+  "description": "Showcase your AI chat assistant app with our premium template. Display intelligent conversations, voice commands, and personalized AI interactions in a cutting-edge design that highlights advanced natural language processing and smart automation features.",
+  "devices": [
+    {
+      "deviceId": "apple-iphone-16-pro-max",
+      "label": "iPhone 16 Pro Max"
+    },
+    {
+      "deviceId": "apple-iphone-13-pro-max",
+      "label": "iPhone 13 Pro Max"
+    },
+    {
+      "deviceId": "samsung-galaxy-s21-ultra",
+      "label": "Samsung Galaxy S21 Ultra"
+    },
+    {
+      "deviceId": "apple-ipad-pro-12-9-inch",
+      "label": "iPad Pro 12.9-inch"
+    },
+    {
+      "deviceId": "samsung-galaxy-tab-s7",
+      "label": "Samsung Galaxy Tab S7"
+    }
+  ],
+  "layout": "single-title-above",
+  "background": {
+    "type": "solid",
+    "value": "#121212"
+  },
+  "panoramic": false,
+  "columnCount": 5,
+  "titles": [
+    "AI CHAT BOT",
+    "All In One",
+    "Generate Images In Seconds",
+    "AI Interior Designer",
+    "Quick Summarize Subject"
+  ],
+  "subtitles": [
+    "",
+    "",
+    "",
+    "Generate images for your home",
+    ""
+  ],
+  "textColor": "#f59e0b",
+  "pages": [
+    {
+      "title": "AI CHAT BOT",
+      "subtitle": "",
+      "layout": "the-airbnb-left-1-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#17140f"
+      },
+      "textColor": "#f59e0b",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "All In One",
+      "subtitle": "",
+      "layout": "the-airbnb-right-1-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#e2e8f0"
+      },
+      "textColor": "#f59e0b",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Generate Images In Seconds",
+      "subtitle": "",
+      "layout": "single-title-below",
+      "background": {
+        "type": "solid",
+        "value": "#cbd5e1"
+      },
+      "textColor": "#f59e0b",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "AI Interior Designer",
+      "subtitle": "Generate images for your home",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#475569"
+      },
+      "textColor": "#f59e0b",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Quick Summarize Subject",
+      "subtitle": "",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#17140f"
+      },
+      "textColor": "#f59e0b",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    }
+  ]
+}

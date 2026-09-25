@@ -1,0 +1,111 @@
+{
+  "version": 1,
+  "id": "photo-and-video-app",
+  "name": "Photo and video app screenshots",
+  "category": "photo-and-video",
+  "description": "Transform your media app with our creative template. Display photo editing, video creation, and content sharing features in a visually stunning design that showcases powerful multimedia capabilities and creative tools.",
+  "devices": [
+    {
+      "deviceId": "apple-iphone-16-pro-max",
+      "label": "apple-iphone-16-pro-max"
+    },
+    {
+      "deviceId": "apple-iphone-13-pro-max",
+      "label": "apple-iphone-13-pro-max"
+    },
+    {
+      "deviceId": "samsung-galaxy-s21-ultra",
+      "label": "samsung-galaxy-s21-ultra"
+    },
+    {
+      "deviceId": "apple-ipad-pro-12-9-inch",
+      "label": "apple-ipad-pro-12-9-inch"
+    },
+    {
+      "deviceId": "samsung-galaxy-tab-s7",
+      "label": "samsung-galaxy-tab-s7"
+    }
+  ],
+  "layout": "the-airbnb-left-1-title-above",
+  "background": {
+    "type": "gradient",
+    "value": "linear-gradient(135deg, #09090b 0%, #18181b 100%)"
+  },
+  "panoramic": false,
+  "columnCount": 5,
+  "titles": [
+    "Connect Elements Created",
+    "\\ Keep visuals that move you",
+    "Explore, Save, Connect",
+    "Build Your World",
+    "For All Your Projects"
+  ],
+  "subtitles": [
+    "SIMPLE",
+    "Wi i",
+    ".+. Extension Setup x",
+    "Organize",
+    "STAY"
+  ],
+  "pages": [
+    {
+      "title": "Connect Elements Created",
+      "subtitle": "SIMPLE",
+      "layout": "the-airbnb-left-1-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "\\ Keep visuals that move you",
+      "subtitle": "Wi i",
+      "layout": "tilted-right-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #881337 0%, #4c0519 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Explore, Save, Connect",
+      "subtitle": ".+. Extension Setup x",
+      "layout": "single-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #2e1065 0%, #09090b 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Build Your World",
+      "subtitle": "Organize",
+      "layout": "rotated-left-1-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "For All Your Projects",
+      "subtitle": "STAY",
+      "layout": "two-devices-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #881337 0%, #4c0519 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    }
+  ]
+}

@@ -55,6 +55,7 @@
     "@types/unzipper": "^0.10.9",
     "electron": "^44.0.0",
     "electron-builder": "^26.15.3",
+    "tesseract.js": "^7.0.0",
     "typescript": "^5.5.2"
   }
 }

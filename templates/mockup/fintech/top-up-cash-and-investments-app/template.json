@@ -1,0 +1,111 @@
+{
+  "version": 1,
+  "id": "top-up-cash-and-investments-app",
+  "name": "Top-up cash and investments app screenshots",
+  "category": "fintech",
+  "description": "Showcase your financial services app with our professional template. Display mobile top-ups, investment options, and cash management features in a secure design that emphasizes convenience, growth opportunities, and financial accessibility.",
+  "devices": [
+    {
+      "deviceId": "apple-iphone-16-pro-max",
+      "label": "apple-iphone-16-pro-max"
+    },
+    {
+      "deviceId": "apple-iphone-13-pro-max",
+      "label": "apple-iphone-13-pro-max"
+    },
+    {
+      "deviceId": "samsung-galaxy-s21-ultra",
+      "label": "samsung-galaxy-s21-ultra"
+    },
+    {
+      "deviceId": "apple-ipad-pro-12-9-inch",
+      "label": "apple-ipad-pro-12-9-inch"
+    },
+    {
+      "deviceId": "samsung-galaxy-tab-s7",
+      "label": "samsung-galaxy-tab-s7"
+    }
+  ],
+  "layout": "the-airbnb-left-1-title-above",
+  "background": {
+    "type": "gradient",
+    "value": "linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)"
+  },
+  "panoramic": false,
+  "columnCount": 5,
+  "titles": [
+    "Cash",
+    "4, Add",
+    "Buy stocks in top companies",
+    "r L",
+    "9:41 a --"
+  ],
+  "subtitles": [
+    "Top-Up",
+    "= Fund",
+    "on GEE c=",
+    "cn en gl +=",
+    "Amazon"
+  ],
+  "pages": [
+    {
+      "title": "Cash",
+      "subtitle": "Top-Up",
+      "layout": "the-airbnb-left-1-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "4, Add",
+      "subtitle": "= Fund",
+      "layout": "tilted-right-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #312e81 0%, #4338ca 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Buy stocks in top companies",
+      "subtitle": "on GEE c=",
+      "layout": "single-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #065f46 0%, #022c22 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "r L",
+      "subtitle": "cn en gl +=",
+      "layout": "rotated-left-1-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #1e1b4b 0%, #311b92 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "9:41 a --",
+      "subtitle": "Amazon",
+      "layout": "two-devices-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    }
+  ]
+}

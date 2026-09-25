@@ -1011,6 +1011,8 @@ export function composeStandaloneHtml(project: VideoProject, activeSceneIndex?: 
 
   // Calculate scene offset if activeSceneIndex is set
   let sceneStartMs = 0;
+  const activeSceneDurMs = activeSceneIndex === undefined ? 0
+    : scenes[activeSceneIndex]?.durationMs || ((scenes[activeSceneIndex]?.durationSeconds || 5) * 1000);
   if (activeSceneIndex !== undefined) {
     for (let idx = 0; idx < activeSceneIndex; idx++) {
       sceneStartMs += scenes[idx]?.durationMs || ((scenes[idx]?.durationSeconds || 5) * 1000);
@@ -1073,7 +1075,9 @@ export function composeStandaloneHtml(project: VideoProject, activeSceneIndex?: 
         const startMs = ${sceneStartMs};
         window.seek = (ms) => {
           if (typeof originalSeek === 'function') {
-            return originalSeek(startMs + ms);
+            // Clamp inside the scene: seeking to its exact end (startMs + duration)
+            // lands on the NEXT scene's first frame, so hold the last frame instead.
+            return originalSeek(startMs + Math.min(ms, Math.max(0, ${activeSceneDurMs} - 1)));
           }
         };
         // Jump the interactive player to this scene on load -- without this

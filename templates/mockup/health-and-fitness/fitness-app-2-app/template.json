@@ -1,0 +1,171 @@
+{
+  "version": 1,
+  "id": "fitness-app-2-app",
+  "name": "Fitness app 2 screenshots",
+  "category": "health-and-fitness",
+  "description": "Promote your fitness or workout app with a clean, energetic template designed to showcase features like activity tracking, personalized plans, and progress dashboards. Perfect for gyms, personal trainers, and health-focused startups.",
+  "devices": [
+    {
+      "deviceId": "apple-iphone-16-pro-max",
+      "label": "iPhone 16 Pro Max"
+    },
+    {
+      "deviceId": "apple-iphone-13-pro-max",
+      "label": "iPhone 13 Pro Max"
+    },
+    {
+      "deviceId": "samsung-galaxy-s21-ultra",
+      "label": "Samsung Galaxy S21 Ultra"
+    },
+    {
+      "deviceId": "apple-ipad-pro-12-9-inch",
+      "label": "iPad Pro 12.9-inch"
+    },
+    {
+      "deviceId": "samsung-galaxy-tab-s7",
+      "label": "Samsung Galaxy Tab S7"
+    }
+  ],
+  "layout": "single-title-above",
+  "background": {
+    "type": "solid",
+    "value": "#2563eb"
+  },
+  "panoramic": false,
+  "columnCount": 8,
+  "titles": [
+    "START YOUR FITNESS JOURNEY",
+    "SHRED AT HOME",
+    "VIDEO WORKOUTS",
+    "Sara G",
+    "FIND THE BEST MEALS",
+    "TRACK YOUR PROGRESS",
+    "LOGBOOK EXERCISES",
+    "MEET THE TEAM"
+  ],
+  "subtitles": [
+    "DAILY WORKOUTS, EASY GO TO MEALS",
+    "MULTIPLE VIDEOS TO WATCH",
+    "AT HOME OR AT THE GYM",
+    "I'm genuinely impressed. This fitness platform transforms traditional battle rope workouts into structured ones.",
+    "OVER 100+ MEALS IN THE APP",
+    "PROGRESS BAR & MANY OTHERS",
+    "ADD LOG TO YOUR WORKOUT",
+    "JIM MILLER / AMBER GRIFF"
+  ],
+  "textColor": "#ffffff",
+  "pages": [
+    {
+      "title": "START YOUR FITNESS JOURNEY",
+      "subtitle": "DAILY WORKOUTS, EASY GO TO MEALS",
+      "layout": "single-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(180deg, #1e293b 0%, #0f172a 100%)"
+      },
+      "textColor": "#ffffff",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "SHRED AT HOME",
+      "subtitle": "MULTIPLE VIDEOS TO WATCH",
+      "layout": "the-airbnb-left-1-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#2563eb"
+      },
+      "textColor": "#ffffff",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "VIDEO WORKOUTS",
+      "subtitle": "AT HOME OR AT THE GYM",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#f8fafc"
+      },
+      "textColor": "#1e293b",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Sara G",
+      "subtitle": "I'm genuinely impressed. This fitness platform transforms traditional battle rope workouts into structured ones.",
+      "layout": "single-no-text",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(180deg, #334155 0%, #0f172a 100%)"
+      },
+      "textColor": "#ffffff",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "FIND THE BEST MEALS",
+      "subtitle": "OVER 100+ MEALS IN THE APP",
+      "layout": "the-airbnb-right-1-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#2563eb"
+      },
+      "textColor": "#ffffff",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "TRACK YOUR PROGRESS",
+      "subtitle": "PROGRESS BAR & MANY OTHERS",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#f8fafc"
+      },
+      "textColor": "#1e293b",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "LOGBOOK EXERCISES",
+      "subtitle": "ADD LOG TO YOUR WORKOUT",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#2563eb"
+      },
+      "textColor": "#ffffff",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "MEET THE TEAM",
+      "subtitle": "JIM MILLER / AMBER GRIFF",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#f8fafc"
+      },
+      "textColor": "#1e293b",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    }
+  ]
+}

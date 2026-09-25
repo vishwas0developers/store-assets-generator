@@ -1,0 +1,133 @@
+{
+  "version": 1,
+  "id": "dating-app-1",
+  "name": "Dating app screenshots",
+  "category": "social-networking",
+  "description": "Elevate your dating app's market presence with our sophisticated template. Display profile matching, chat features, and dating preferences in an elegant, user-friendly design that attracts and retains users looking for meaningful connections.",
+  "devices": [
+    {
+      "deviceId": "apple-iphone-16-pro-max",
+      "label": "apple-iphone-16-pro-max"
+    },
+    {
+      "deviceId": "apple-iphone-14-plus",
+      "label": "apple-iphone-14-plus"
+    },
+    {
+      "deviceId": "samsung-galaxy-s21-ultra",
+      "label": "samsung-galaxy-s21-ultra"
+    }
+  ],
+  "layout": "the-airbnb-left-1-title-above",
+  "background": {
+    "type": "gradient",
+    "value": "linear-gradient(135deg, #ec4899 0%, #be185d 100%)"
+  },
+  "panoramic": false,
+  "columnCount": 7,
+  "titles": [
+    "Find",
+    "2.00 ol FT -",
+    "...at places",
+    "Make it",
+    "Find",
+    "Find",
+    "..the best"
+  ],
+  "subtitles": [
+    "your",
+    "Spots",
+    "you love",
+    "happn!",
+    "Your",
+    "love in...",
+    "places"
+  ],
+  "pages": [
+    {
+      "title": "Find",
+      "subtitle": "your",
+      "layout": "the-airbnb-left-1-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "2.00 ol FT -",
+      "subtitle": "Spots",
+      "layout": "tilted-right-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #0066ff 0%, #0044cc 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "...at places",
+      "subtitle": "you love",
+      "layout": "single-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #fdf5eb 0%, #fcd34d 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Make it",
+      "subtitle": "happn!",
+      "layout": "rotated-left-1-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Find",
+      "subtitle": "Your",
+      "layout": "two-devices-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Find",
+      "subtitle": "love in...",
+      "layout": "left-side-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #0066ff 0%, #0044cc 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "..the best",
+      "subtitle": "places",
+      "layout": "right-side-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #fdf5eb 0%, #fcd34d 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    }
+  ]
+}

@@ -99,7 +99,7 @@ import {
 import { groupedLayoutPresets, listLayoutPresets } from "../src/mockup/layouts.js";
 import { cellPreviewHtml, renderTemplateDetailThumbs, renderTemplateThumbs, templateThumbHtml, templateDetailThumbHtml, templateScreenHtml } from "../src/mockup/render.js";
 import { exportMockupProject, exportSingleScreen, exportPanoramicBanner } from "../src/mockup/export.js";
-import { MOCKUP_TEMPLATES, applyMockupTemplate } from "../src/mockup/templates.js";
+import { MOCKUP_TEMPLATES, applyMockupTemplate, getMockupTemplateFromDisk } from "../src/mockup/templates.js";
 import { sizeTargetsFor } from "../src/mockup/sizeTargets.js";
 
 import {
@@ -1375,6 +1375,28 @@ export async function startWebServer(options: { port?: number; host?: string; op
         }))
       });
       return;
+    }
+
+    {
+      const m = p.match(/^\/api\/mockups\/templates\/([^/]+)\/asset$/);
+      if (m && method === "GET") {
+        const templateId = decodeURIComponent(m[1]);
+        const rel = url.searchParams.get("p");
+        if (!rel) return sendError(res, 400, "query param 'p' is required");
+        const template = getMockupTemplateFromDisk(templateId);
+        if (!template || !template.folderPath) {
+          return sendError(res, 404, `Template '${templateId}' not found.`);
+        }
+        const safeRel = path.normalize(rel).replace(/^(\.\.[\/\\])+/, "");
+        const abs = path.join(template.folderPath, safeRel);
+        if (!fs.existsSync(abs)) {
+          return sendError(res, 404, `Asset '${rel}' not found in template.`);
+        }
+        const ext = path.extname(abs).toLowerCase();
+        const mime = ext === ".svg" ? "image/svg+xml" : ext === ".webp" ? "image/webp" : ext === ".jpg" || ext === ".jpeg" ? "image/jpeg" : "image/png";
+        sendFile(res, abs, mime);
+        return;
+      }
     }
 
     {

@@ -1,0 +1,163 @@
+{
+  "version": 1,
+  "id": "banking-transfer-app",
+  "name": "Banking transfer app screenshots",
+  "category": "fintech",
+  "description": "Showcase your banking app with our premium template. Display secure money transfers, account management, and financial transactions in a professional design that emphasizes security and user trust. Perfect for highlighting modern banking features and digital payment solutions.",
+  "devices": [
+    {
+      "deviceId": "apple-iphone-16-pro-max",
+      "label": "iPhone 16 Pro Max"
+    },
+    {
+      "deviceId": "apple-iphone-14-plus",
+      "label": "iPhone 14 Plus"
+    },
+    {
+      "deviceId": "samsung-galaxy-s21-ultra",
+      "label": "Samsung Galaxy S21 Ultra"
+    }
+  ],
+  "layout": "single-title-above",
+  "background": {
+    "type": "solid",
+    "value": "#581c87"
+  },
+  "panoramic": false,
+  "columnCount": 8,
+  "titles": [
+    "CHANGE THE WAY YOU MONEY",
+    "REVOLUT",
+    "TRANSFER MONEY INTERNATIONALLY",
+    "WITHDRAW CASH WORLDWIDE",
+    "GET UP TO 5% CASH BACK",
+    "EARN UP TO 4% API",
+    "NOW IN DARK MODE",
+    "APPLE INVESTING"
+  ],
+  "subtitles": [
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+  ],
+  "textColor": "#ffffff",
+  "pages": [
+    {
+      "title": "CHANGE THE WAY YOU MONEY",
+      "subtitle": "",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#581c87"
+      },
+      "textColor": "#ffffff",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "REVOLUT",
+      "subtitle": "",
+      "layout": "single-no-text",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(180deg, #6b21a8 0%, #3b0764 100%)"
+      },
+      "textColor": "#ffffff",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "TRANSFER MONEY INTERNATIONALLY",
+      "subtitle": "",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#ffffff"
+      },
+      "textColor": "#0f172a",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "WITHDRAW CASH WORLDWIDE",
+      "subtitle": "",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#4c1d95"
+      },
+      "textColor": "#ffffff",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "GET UP TO 5% CASH BACK",
+      "subtitle": "",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#eab308"
+      },
+      "textColor": "#0f172a",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "EARN UP TO 4% API",
+      "subtitle": "",
+      "layout": "single-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(180deg, #365314 0%, #14532d 100%)"
+      },
+      "textColor": "#ffffff",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "NOW IN DARK MODE",
+      "subtitle": "",
+      "layout": "the-airbnb-left-1-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#18181b"
+      },
+      "textColor": "#ffffff",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "APPLE INVESTING",
+      "subtitle": "",
+      "layout": "tilted-left-no-text",
+      "background": {
+        "type": "solid",
+        "value": "#09090b"
+      },
+      "textColor": "#ffffff",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    }
+  ]
+}
