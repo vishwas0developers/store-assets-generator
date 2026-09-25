@@ -23,7 +23,7 @@ import { projectFile } from "../project/projectStore.js";
 import { VIDEO_TEMPLATES, type VideoTemplate } from "./templates.js";
 import { templateHtmlPath, templateConfig } from "./templateConfig.js";
 import { placeholderScreenUri } from "./placeholder.js";
-import { resolveSlots, resolveImageSequences } from "./slots.js";
+import { resolveSlots, resolveImageSequences, slotSpecsForScene } from "./slots.js";
 import { installThreeJsRoutes, THREE_BRIDGE_SCRIPT } from "../render/three-bridge.js";
 import { resolveDemoAsset } from "./demoAssets.js";
 import { BGM_PRESETS, renderBgmWav } from "./bgm.js";
@@ -1027,6 +1027,24 @@ export function composeStandaloneHtml(project: VideoProject, activeSceneIndex?: 
   // resolveImageSequences's doc comment for why this can't be per-scene).
   const sequences = resolveImageSequences(project, uriFor, allowDemo);
 
+  // Screenshot -> video hand-off for the active scene (see VideoScene.videoSourceId).
+  const activeScene = activeSceneIndex === undefined ? undefined : project.scenes.find((sc) => sc.order === activeSceneIndex);
+  const videoSource = activeScene?.videoSourceId ? project.sources.find((src) => src.id === activeScene.videoSourceId && src.kind === "video") : undefined;
+  const videoTargets = activeScene && videoSource && project.template
+    ? slotSpecsForScene(project.template, activeScene.order)
+        .filter((sp) => sp.key === "screenshot" || sp.key === "screenshots")
+        .flatMap((sp) => sp.targets)
+    : [];
+  const videoCfg = videoSource && activeScene && videoTargets.length
+    ? {
+        src: uriFor(videoSource.file),
+        targets: videoTargets,
+        holdMs: Math.max(0, activeScene.screenshotHoldSec ?? 2) * 1000,
+        startSec: activeScene.videoStartSec ?? 0,
+        endSec: activeScene.videoEndSec ?? 0,
+      }
+    : null;
+
   const injectionScript = `
   <script>
     window.addEventListener('DOMContentLoaded', () => {
@@ -1073,11 +1091,54 @@ export function composeStandaloneHtml(project: VideoProject, activeSceneIndex?: 
       if (${activeSceneIndex !== undefined}) {
         const originalSeek = window.seek;
         const startMs = ${sceneStartMs};
+        const vid = ${JSON.stringify(videoCfg)};
+        let videoEl = null;
+        let videoShown = null;
+        if (vid) {
+          const imgs = vid.targets.flatMap((sel) => Array.from(document.querySelectorAll(sel)));
+          if (imgs[0]) {
+            videoEl = document.createElement('video');
+            videoEl.src = vid.src;
+            videoEl.muted = true;
+            videoEl.playsInline = true;
+            videoEl.preload = 'auto';
+            videoEl.className = imgs[0].className;
+            videoEl.style.cssText = imgs[0].style.cssText;
+            videoEl.style.setProperty('opacity', '1', 'important');
+            videoEl.style.setProperty('object-fit', 'cover');
+            videoEl.style.display = 'none';
+            imgs[0].parentNode.insertBefore(videoEl, imgs[0].nextSibling);
+          }
+          // Show the screenshot(s) OR the video for a given scene-relative time.
+          // visibility (not opacity/display) on the imgs: templates animate their
+          // opacity every frame, so those must stay untouched.
+          var syncVideo = (ms) => {
+            if (!videoEl) return;
+            const showVideo = ms >= vid.holdMs;
+            if (showVideo !== videoShown) {
+              videoShown = showVideo;
+              imgs.forEach((im) => { im.style.visibility = showVideo ? 'hidden' : ''; });
+              videoEl.style.display = showVideo ? '' : 'none';
+            }
+            if (!showVideo) return;
+            const clipEnd = vid.endSec > vid.startSec ? vid.endSec : (videoEl.duration || vid.startSec);
+            const t = Math.min(clipEnd, vid.startSec + (ms - vid.holdMs) / 1000);
+            if (Math.abs(videoEl.currentTime - t) < 0.001) return;
+            return new Promise((resolve) => {
+              const done = () => { videoEl.removeEventListener('seeked', done); resolve(undefined); };
+              videoEl.addEventListener('seeked', done);
+              videoEl.currentTime = t;
+              setTimeout(done, 1500);
+            });
+          };
+        }
         window.seek = (ms) => {
+          const videoDone = videoEl ? syncVideo(ms) : undefined;
           if (typeof originalSeek === 'function') {
             // Clamp inside the scene: seeking to its exact end (startMs + duration)
             // lands on the NEXT scene's first frame, so hold the last frame instead.
-            return originalSeek(startMs + Math.min(ms, Math.max(0, ${activeSceneDurMs} - 1)));
+            const seeked = originalSeek(startMs + Math.min(ms, Math.max(0, ${activeSceneDurMs} - 1)));
+            return videoDone ? Promise.all([videoDone, seeked]) : seeked;
           }
         };
         // Jump the interactive player to this scene on load -- without this
