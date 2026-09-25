@@ -1,0 +1,123 @@
+{
+  "version": 1,
+  "id": "mental-health-2-app",
+  "name": "Mental health 2 app screenshots",
+  "category": "health-and-fitness",
+  "description": "Showcase your mental wellness app with our compassionate template. Display therapy tools, mood tracking, and mental health resources in a supportive design that promotes emotional well-being and provides accessible mental health support.",
+  "devices": [
+    {
+      "deviceId": "apple-iphone-16-pro-max",
+      "label": "iPhone 16 Pro Max"
+    },
+    {
+      "deviceId": "apple-iphone-13-pro-max",
+      "label": "iPhone 13 Pro Max"
+    },
+    {
+      "deviceId": "samsung-galaxy-s21-ultra",
+      "label": "Samsung Galaxy S21 Ultra"
+    },
+    {
+      "deviceId": "apple-ipad-pro-12-9-inch",
+      "label": "iPad Pro 12.9-inch"
+    },
+    {
+      "deviceId": "samsung-galaxy-tab-s7",
+      "label": "Samsung Galaxy Tab S7"
+    }
+  ],
+  "layout": "single-title-above",
+  "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #f1f5f9 0%, #cbd5e1 100%)"
+  },
+  "panoramic": false,
+  "columnCount": 5,
+  "titles": [
+    "Talk It Out, Feel Better",
+    "Your Mindset Daily",
+    "Elevate Your Wellbeing",
+    "Thrive Beyond Stress",
+    "Let's Talk Together Anytime"
+  ],
+  "subtitles": [
+    "Reach Out Anytime You're Not Alone",
+    "",
+    "",
+    "",
+    ""
+  ],
+  "textColor": "#1a365d",
+  "pages": [
+    {
+      "title": "Talk It Out, Feel Better",
+      "subtitle": "Reach Out Anytime You're Not Alone",
+      "layout": "single-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%)"
+      },
+      "textColor": "#1a365d",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Your Mindset Daily",
+      "subtitle": "",
+      "layout": "single-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%)"
+      },
+      "textColor": "#1a365d",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Elevate Your Wellbeing",
+      "subtitle": "",
+      "layout": "single-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%)"
+      },
+      "textColor": "#1a365d",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Thrive Beyond Stress",
+      "subtitle": "",
+      "layout": "the-airbnb-right-1-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%)"
+      },
+      "textColor": "#1a365d",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Let's Talk Together Anytime",
+      "subtitle": "",
+      "layout": "single-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%)"
+      },
+      "textColor": "#1a365d",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    }
+  ]
+}

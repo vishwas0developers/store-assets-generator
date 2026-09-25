@@ -952,6 +952,7 @@
     let globalTimeMs = 0;
     let playState = "idle"; // idle | playing | paused | ended
     let mode = "sequence"; // sequence | scene
+    let sceneEndMs = 0; // end of the scene started by playScene()
     let playbackInterval = null;
     let lastTickTime = Date.now();
     let hideTimeout = null;
@@ -1080,6 +1081,14 @@
         lastTickTime = now;
 
         globalTimeMs += delta;
+        if (mode === "scene" && globalTimeMs >= sceneEndMs) {
+          // playScene(n) plays exactly that scene: stop at its end, never run into the next.
+          globalTimeMs = Math.max(0, sceneEndMs - 1);
+          window.pause();
+          playState = "ended";
+          notify();
+          return;
+        }
         if (globalTimeMs >= totalDuration) {
           globalTimeMs = totalDuration;
           renderFrameAt(globalTimeMs);
@@ -1151,6 +1160,7 @@
       let targetMs = 0;
       for (let i = 0; i < index; i++) targetMs += durations[i];
       globalTimeMs = targetMs;
+      sceneEndMs = targetMs + durations[index];
       mode = "scene";
       playState = "playing";
       startLoop();

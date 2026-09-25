@@ -1,0 +1,163 @@
+{
+  "version": 1,
+  "id": "cloud-storage-app",
+  "name": "Cloud storage app screenshots",
+  "category": "productivity",
+  "description": "Present your cloud storage solution with our free template. Showcase file management, sharing capabilities, and storage features in a clean design that emphasizes security and accessibility.",
+  "devices": [
+    {
+      "deviceId": "apple-iphone-16-pro-max",
+      "label": "iPhone 16 Pro Max"
+    },
+    {
+      "deviceId": "apple-iphone-14-plus",
+      "label": "iPhone 14 Plus"
+    },
+    {
+      "deviceId": "samsung-galaxy-s21-ultra",
+      "label": "Samsung Galaxy S21 Ultra"
+    }
+  ],
+  "layout": "single-title-above",
+  "background": {
+    "type": "solid",
+    "value": "#0d2b82"
+  },
+  "panoramic": false,
+  "columnCount": 8,
+  "titles": [
+    "Back up and access your files and photos anywhere",
+    "View and share files on the go, from any device",
+    "Automatically back up photos to Dropbox",
+    "Quickly scan any document with your phone",
+    "Simple, secure cloud storage and sharing",
+    "Back up photos and videos automatically",
+    "Share or transfer large files securely",
+    "Scan, save, and organize right from your phone"
+  ],
+  "subtitles": [
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+  ],
+  "textColor": "#ff9e80",
+  "pages": [
+    {
+      "title": "Back up and access your files and photos anywhere",
+      "subtitle": "",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#0d2b82"
+      },
+      "textColor": "#ff9e80",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "View and share files on the go, from any device",
+      "subtitle": "",
+      "layout": "single-title-below",
+      "background": {
+        "type": "solid",
+        "value": "#ff9e80"
+      },
+      "textColor": "#0d2b82",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Automatically back up photos to Dropbox",
+      "subtitle": "",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#0d2b82"
+      },
+      "textColor": "#ff9e80",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Quickly scan any document with your phone",
+      "subtitle": "",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#ff9e80"
+      },
+      "textColor": "#0d2b82",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Simple, secure cloud storage and sharing",
+      "subtitle": "",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#0d2b82"
+      },
+      "textColor": "#ff9e80",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Back up photos and videos automatically",
+      "subtitle": "",
+      "layout": "single-title-below",
+      "background": {
+        "type": "solid",
+        "value": "#ff9e80"
+      },
+      "textColor": "#0d2b82",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Share or transfer large files securely",
+      "subtitle": "",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#0d2b82"
+      },
+      "textColor": "#ff9e80",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Scan, save, and organize right from your phone",
+      "subtitle": "",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#ff9e80"
+      },
+      "textColor": "#0d2b82",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    }
+  ]
+}

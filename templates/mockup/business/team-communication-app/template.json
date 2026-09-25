@@ -1,0 +1,133 @@
+{
+  "version": 1,
+  "id": "team-communication-app",
+  "name": "Team communication app screenshots",
+  "category": "business",
+  "description": "Showcase your team communication app's potential with our premium template. Highlight real-time messaging, video conferencing, and team collaboration features in a sophisticated design that emphasizes productivity and seamless interaction.",
+  "devices": [
+    {
+      "deviceId": "apple-iphone-16-pro-max",
+      "label": "apple-iphone-16-pro-max"
+    },
+    {
+      "deviceId": "apple-iphone-14-plus",
+      "label": "apple-iphone-14-plus"
+    },
+    {
+      "deviceId": "samsung-galaxy-s21-ultra",
+      "label": "samsung-galaxy-s21-ultra"
+    }
+  ],
+  "layout": "the-airbnb-left-1-title-above",
+  "background": {
+    "type": "gradient",
+    "value": "linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)"
+  },
+  "panoramic": false,
+  "columnCount": 7,
+  "titles": [
+    "Slack is",
+    "Organize your",
+    "Connect",
+    "Send documents,",
+    "Express yourself",
+    "Connect with all",
+    "Also available on"
+  ],
+  "subtitles": [
+    "where works",
+    "9:41 lS -",
+    "9:41 wll F -",
+    "videos & more",
+    "with reactions",
+    "your work apps",
+    "desktop"
+  ],
+  "pages": [
+    {
+      "title": "Slack is",
+      "subtitle": "where works",
+      "layout": "the-airbnb-left-1-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Organize your",
+      "subtitle": "9:41 lS -",
+      "layout": "tilted-right-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #312e81 0%, #4338ca 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Connect",
+      "subtitle": "9:41 wll F -",
+      "layout": "single-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #065f46 0%, #022c22 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Send documents,",
+      "subtitle": "videos & more",
+      "layout": "rotated-left-1-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #1e1b4b 0%, #311b92 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Express yourself",
+      "subtitle": "with reactions",
+      "layout": "two-devices-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Connect with all",
+      "subtitle": "your work apps",
+      "layout": "left-side-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #312e81 0%, #4338ca 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Also available on",
+      "subtitle": "desktop",
+      "layout": "right-side-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #065f46 0%, #022c22 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    }
+  ]
+}

@@ -1,0 +1,130 @@
+{
+  "version": 1,
+  "id": "uber-eats-template",
+  "name": "Food app screenshots",
+  "category": "food-and-drink",
+  "description": "Showcase your food service app with our free template. Display restaurant exploration, meal ordering, and delivery features in a vibrant design that makes food discovery exciting.",
+  "devices": [
+    {
+      "deviceId": "apple-iphone-16-pro-max",
+      "label": "apple-iphone-16-pro-max"
+    },
+    {
+      "deviceId": "apple-iphone-14-plus",
+      "label": "apple-iphone-14-plus"
+    },
+    {
+      "deviceId": "samsung-galaxy-s21-ultra",
+      "label": "samsung-galaxy-s21-ultra"
+    }
+  ],
+  "layout": "snapshot-single-title-above",
+  "background": {
+    "type": "gradient",
+    "value": "linear-gradient(135deg, #ffffff, #ffffff)"
+  },
+  "panoramic": false,
+  "columnCount": 8,
+  "titles": [
+    "Hungry?\nOrder Now",
+    "Crave It?\nGet It",
+    "Food Your\nWay",
+    "Delicious\nJust Arrived",
+    "Satisfy\nAny Craving",
+    "Local Eats\nDelivered",
+    "Order\nWith Ease",
+    "Fresh\nFood Fast"
+  ],
+  "subtitles": [
+    "Showcase your food service app with our ",
+    "Showcase your food service app with our ",
+    "Showcase your food service app with our ",
+    "Showcase your food service app with our ",
+    "Showcase your food service app with our ",
+    "Showcase your food service app with our ",
+    "Showcase your food service app with our ",
+    "Showcase your food service app with our "
+  ],
+  "pages": [
+    {
+      "title": "Hungry?\nOrder Now",
+      "subtitle": "Showcase your food service app with our ",
+      "layout": "snapshot-single-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Crave It?\nGet It",
+      "subtitle": "Showcase your food service app with our ",
+      "layout": "snapshot-single-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Food Your\nWay",
+      "subtitle": "Showcase your food service app with our ",
+      "layout": "snapshot-single-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Delicious\nJust Arrived",
+      "subtitle": "Showcase your food service app with our ",
+      "layout": "snapshot-single-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Satisfy\nAny Craving",
+      "subtitle": "Showcase your food service app with our ",
+      "layout": "snapshot-single-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Local Eats\nDelivered",
+      "subtitle": "Showcase your food service app with our ",
+      "layout": "snapshot-single-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Order\nWith Ease",
+      "subtitle": "Showcase your food service app with our ",
+      "layout": "snapshot-single-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Fresh\nFood Fast",
+      "subtitle": "Showcase your food service app with our ",
+      "layout": "snapshot-single-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    }
+  ]
+}

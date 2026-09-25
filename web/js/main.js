@@ -206,7 +206,7 @@ window.saveCurrentMockupProject = saveCurrentMockupProject;
 // the Studio Mockup editor section is actually the active one on screen.
 document.addEventListener("keydown", (e) => {
   if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA" || e.target.tagName === "SELECT" || e.target.isContentEditable)) return;
-  const editorActive = document.getElementById("mockup-section-editor")?.classList.contains("active");
+  const editorActive = document.getElementById("mockup-section-mockup-editing")?.classList.contains("active");
   if (!editorActive) return;
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") {
     if (e.shiftKey) {
@@ -517,7 +517,7 @@ function setupMockupToolbar() {
 
   // Keep the artboard centered when the viewport is resized (panel toggles, window resize).
   window.addEventListener("resize", () => {
-    if (document.getElementById("mockup-section-editor")?.classList.contains("active")) {
+    if (document.getElementById("mockup-section-mockup-editing")?.classList.contains("active")) {
       try { centerArtboardInViewport(); } catch (_) {}
       try { renderMockupMatrix(); } catch (_) {}
     }
@@ -574,15 +574,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       if (prefix === "mockup") {
         const inspector = document.getElementById("mockup-inspector");
-        if (inspector) inspector.style.display = railBtn.dataset.section === "editor" ? "block" : "none";
+        if (inspector) inspector.style.display = railBtn.dataset.section === "mockup-editing" ? "block" : "none";
         if (railBtn.dataset.section === "devices") renderMockupDevicesSection();
         if (railBtn.dataset.section === "preview") renderLivePreviews();
         if (railBtn.dataset.section === "panoramic") renderLivePanoramic();
         // Viewport was hidden (0 width) while off-screen — re-center now that it's visible.
-        if (railBtn.dataset.section === "editor") { try { centerArtboardInViewport(); } catch (_) {} }
+        if (railBtn.dataset.section === "mockup-editing") { try { centerArtboardInViewport(); } catch (_) {} }
       }
       if (prefix === "video") {
-        if (railBtn.dataset.section === "scenes") renderVideoScenes();
+        if (railBtn.dataset.section === "scene-editing") renderVideoScenes();
         if (railBtn.dataset.section === "devices") loadDevicesCatalogue();
         if (railBtn.dataset.section === "saved-configs") loadSavedConfigs();
       }

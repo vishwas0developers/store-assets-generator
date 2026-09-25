@@ -619,7 +619,7 @@ export async function loadMockupTemplateNow(id) {
   showToast(`Applied "${t ? t.name : id}" — ${updatedProj.devices?.length || 0} device row(s), ${updatedProj.columns?.length || 0} screen(s).`, "success");
 
   // Switch rail navigation to Editor section after template is applied
-  const editorRailBtn = document.querySelector('#tab-mockup .rail-btn[data-section="editor"]');
+  const editorRailBtn = document.querySelector('#tab-mockup .rail-btn[data-section="mockup-editing"]');
   if (editorRailBtn) {
     editorRailBtn.click();
   }

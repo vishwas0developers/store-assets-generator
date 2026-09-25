@@ -1,0 +1,145 @@
+{
+  "version": 1,
+  "id": "event-ticket-app",
+  "name": "Event ticket app screenshots",
+  "category": "entertainment",
+  "description": "Showcase your event ticketing platform with our premium template. Display event discovery, ticket purchasing, and digital ticket management in a dynamic design that highlights convenience and user experience for event-goers.",
+  "devices": [
+    {
+      "deviceId": "apple-iphone-16-pro-max",
+      "label": "apple-iphone-16-pro-max"
+    },
+    {
+      "deviceId": "apple-iphone-14-plus",
+      "label": "apple-iphone-14-plus"
+    },
+    {
+      "deviceId": "samsung-galaxy-s21-ultra",
+      "label": "samsung-galaxy-s21-ultra"
+    }
+  ],
+  "layout": "the-airbnb-left-1-title-above",
+  "background": {
+    "type": "gradient",
+    "value": "linear-gradient(135deg, #09090b 0%, #18181b 100%)"
+  },
+  "panoramic": false,
+  "columnCount": 8,
+  "titles": [
+    "Made for",
+    "Find an",
+    "Like",
+    "Follow your favorites. Be the first",
+    "Discover",
+    "tickets",
+    "Like",
+    "tickets"
+  ],
+  "subtitles": [
+    "those who do",
+    "Discover new experiences and",
+    "Save and share events that",
+    "to hear about upcoming events.",
+    "collections",
+    "Access and manage your tickets",
+    "Easily save and share events that",
+    "Access and manage your tickets"
+  ],
+  "pages": [
+    {
+      "title": "Made for",
+      "subtitle": "those who do",
+      "layout": "the-airbnb-left-1-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Find an",
+      "subtitle": "Discover new experiences and",
+      "layout": "tilted-right-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #881337 0%, #4c0519 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Like",
+      "subtitle": "Save and share events that",
+      "layout": "single-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #2e1065 0%, #09090b 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Follow your favorites. Be the first",
+      "subtitle": "to hear about upcoming events.",
+      "layout": "rotated-left-1-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Discover",
+      "subtitle": "collections",
+      "layout": "two-devices-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #881337 0%, #4c0519 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "tickets",
+      "subtitle": "Access and manage your tickets",
+      "layout": "left-side-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #2e1065 0%, #09090b 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Like",
+      "subtitle": "Easily save and share events that",
+      "layout": "right-side-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "tickets",
+      "subtitle": "Access and manage your tickets",
+      "layout": "tilted-left-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #881337 0%, #4c0519 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    }
+  ]
+}

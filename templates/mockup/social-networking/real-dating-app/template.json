@@ -1,0 +1,111 @@
+{
+  "version": 1,
+  "id": "real-dating-app",
+  "name": "Real dating app screenshots",
+  "category": "social-networking",
+  "description": "Showcase your authentic dating app with our genuine template. Display profile verification, meaningful matching, and relationship-focused features in a trustworthy design that promotes real connections and lasting relationships.",
+  "devices": [
+    {
+      "deviceId": "apple-iphone-16-pro-max",
+      "label": "apple-iphone-16-pro-max"
+    },
+    {
+      "deviceId": "apple-iphone-13-pro-max",
+      "label": "apple-iphone-13-pro-max"
+    },
+    {
+      "deviceId": "samsung-galaxy-s21-ultra",
+      "label": "samsung-galaxy-s21-ultra"
+    },
+    {
+      "deviceId": "apple-ipad-pro-12-9-inch",
+      "label": "apple-ipad-pro-12-9-inch"
+    },
+    {
+      "deviceId": "samsung-galaxy-tab-s7",
+      "label": "samsung-galaxy-tab-s7"
+    }
+  ],
+  "layout": "the-airbnb-left-1-title-above",
+  "background": {
+    "type": "gradient",
+    "value": "linear-gradient(135deg, #ec4899 0%, #be185d 100%)"
+  },
+  "panoramic": false,
+  "columnCount": 5,
+  "titles": [
+    "REAL LOVE.",
+    "SAFE.",
+    "NO CATFISH. ONLY",
+    ": 5",
+    "Xx i"
+  ],
+  "subtitles": [
+    "REAL DATES.",
+    "« ————————",
+    "SERIOUS PEPLE",
+    "| Am Looking For...",
+    "CS | | ="
+  ],
+  "pages": [
+    {
+      "title": "REAL LOVE.",
+      "subtitle": "REAL DATES.",
+      "layout": "the-airbnb-left-1-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "SAFE.",
+      "subtitle": "« ————————",
+      "layout": "tilted-right-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #0066ff 0%, #0044cc 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "NO CATFISH. ONLY",
+      "subtitle": "SERIOUS PEPLE",
+      "layout": "single-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #fdf5eb 0%, #fcd34d 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": ": 5",
+      "subtitle": "| Am Looking For...",
+      "layout": "rotated-left-1-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Xx i",
+      "subtitle": "CS | | =",
+      "layout": "two-devices-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    }
+  ]
+}

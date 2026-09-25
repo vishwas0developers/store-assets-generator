@@ -1,0 +1,131 @@
+{
+  "version": 1,
+  "id": "file-sharing-app",
+  "name": "File sharing app screenshots",
+  "category": "productivity",
+  "description": "Transform your file-sharing app's presentation with our professional template. Showcase seamless file transfers, secure sharing features, and collaborative tools in a modern, clean design that emphasizes security and user experience.",
+  "devices": [
+    {
+      "deviceId": "apple-iphone-16-pro-max",
+      "label": "iPhone 16 Pro Max"
+    },
+    {
+      "deviceId": "apple-iphone-14-plus",
+      "label": "iPhone 14 Plus"
+    },
+    {
+      "deviceId": "samsung-galaxy-s21-ultra",
+      "label": "Samsung Galaxy S21 Ultra"
+    }
+  ],
+  "layout": "single-title-above",
+  "background": {
+    "type": "solid",
+    "value": "#dbeafe"
+  },
+  "panoramic": false,
+  "columnCount": 6,
+  "titles": [
+    "Simple, secure cloud storage and sharing",
+    "Back up photos and videos automatically",
+    "Reliable, secure, and private",
+    "Access files anywhere from any device",
+    "Share or transfer large files securely",
+    "Scan, save, and organize right from your phone"
+  ],
+  "subtitles": [
+    "",
+    "700 million+ registered users",
+    "Trusted by most of The Fortune 500",
+    "",
+    "",
+    "Offline access on mobile"
+  ],
+  "textColor": "#1e293b",
+  "pages": [
+    {
+      "title": "Simple, secure cloud storage and sharing",
+      "subtitle": "",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#cbdcf8"
+      },
+      "textColor": "#1e293b",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Back up photos and videos automatically",
+      "subtitle": "700 million+ registered users",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#cbdcf8"
+      },
+      "textColor": "#1e293b",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Reliable, secure, and private",
+      "subtitle": "Trusted by most of The Fortune 500",
+      "layout": "single-title-below",
+      "background": {
+        "type": "solid",
+        "value": "#18181b"
+      },
+      "textColor": "#ffffff",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Access files anywhere from any device",
+      "subtitle": "",
+      "layout": "single-title-below",
+      "background": {
+        "type": "solid",
+        "value": "#18181b"
+      },
+      "textColor": "#ffffff",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Share or transfer large files securely",
+      "subtitle": "",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#cbdcf8"
+      },
+      "textColor": "#1e293b",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Scan, save, and organize right from your phone",
+      "subtitle": "Offline access on mobile",
+      "layout": "single-title-below",
+      "background": {
+        "type": "solid",
+        "value": "#cbdcf8"
+      },
+      "textColor": "#1e293b",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    }
+  ]
+}

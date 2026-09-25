@@ -1,0 +1,153 @@
+{
+  "version": 1,
+  "id": "learning-app",
+  "name": "Learning app screenshots",
+  "category": "education",
+  "description": "Showcase your learning app with our engaging template. Highlight interactive lessons, progress tracking, and user achievements in a visually appealing design that motivates users to enhance their skills and knowledge.",
+  "devices": [
+    {
+      "deviceId": "apple-iphone-16-pro-max",
+      "label": "apple-iphone-16-pro-max"
+    },
+    {
+      "deviceId": "apple-iphone-13-pro-max",
+      "label": "apple-iphone-13-pro-max"
+    },
+    {
+      "deviceId": "samsung-galaxy-s21-ultra",
+      "label": "samsung-galaxy-s21-ultra"
+    },
+    {
+      "deviceId": "apple-ipad-pro-12-9-inch",
+      "label": "apple-ipad-pro-12-9-inch"
+    },
+    {
+      "deviceId": "samsung-galaxy-tab-s7",
+      "label": "samsung-galaxy-tab-s7"
+    }
+  ],
+  "layout": "the-airbnb-left-1-title-above",
+  "background": {
+    "type": "gradient",
+    "value": "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)"
+  },
+  "panoramic": false,
+  "columnCount": 8,
+  "titles": [
+    "Replace |",
+    "15min book",
+    "Computer Science: Programming with",
+    "Enj dail",
+    "vr QED v=",
+    "on CED o--",
+    "os (ED c=",
+    "' . Sokokokdc 4/5"
+  ],
+  "subtitles": [
+    "Scrolling",
+    "vn GED =",
+    "aPurpose",
+    "9:41 il -",
+    "X Basic Programming Concepts... Instructions",
+    "Basic Programming Concepts Summary",
+    "Switch Catalog",
+    "_ can quickly get the key"
+  ],
+  "pages": [
+    {
+      "title": "Replace |",
+      "subtitle": "Scrolling",
+      "layout": "the-airbnb-left-1-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "15min book",
+      "subtitle": "vn GED =",
+      "layout": "tilted-right-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Computer Science: Programming with",
+      "subtitle": "aPurpose",
+      "layout": "single-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Enj dail",
+      "subtitle": "9:41 il -",
+      "layout": "rotated-left-1-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "vr QED v=",
+      "subtitle": "X Basic Programming Concepts... Instructions",
+      "layout": "two-devices-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "on CED o--",
+      "subtitle": "Basic Programming Concepts Summary",
+      "layout": "left-side-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "os (ED c=",
+      "subtitle": "Switch Catalog",
+      "layout": "right-side-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "' . Sokokokdc 4/5",
+      "subtitle": "_ can quickly get the key",
+      "layout": "tilted-left-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    }
+  ]
+}

@@ -1,0 +1,123 @@
+{
+  "version": 1,
+  "id": "water-reminder-app",
+  "name": "Water reminder app screenshots",
+  "category": "health-and-fitness",
+  "description": "Transform your hydration app with our refreshing template. Display water tracking, reminder notifications, and health insights in a clean design that encourages users to maintain optimal hydration levels and develop healthy drinking habits.",
+  "devices": [
+    {
+      "deviceId": "apple-iphone-16-pro-max",
+      "label": "iPhone 16 Pro Max"
+    },
+    {
+      "deviceId": "apple-iphone-13-pro-max",
+      "label": "iPhone 13 Pro Max"
+    },
+    {
+      "deviceId": "samsung-galaxy-s21-ultra",
+      "label": "Samsung Galaxy S21 Ultra"
+    },
+    {
+      "deviceId": "apple-ipad-pro-12-9-inch",
+      "label": "iPad Pro 12.9-inch"
+    },
+    {
+      "deviceId": "samsung-galaxy-tab-s7",
+      "label": "Samsung Galaxy Tab S7"
+    }
+  ],
+  "layout": "single-title-above",
+  "background": {
+    "type": "solid",
+    "value": "#0ea5e9"
+  },
+  "panoramic": false,
+  "columnCount": 5,
+  "titles": [
+    "DRINK YOUR WATER",
+    "REACH YOUR GOAL",
+    "SET SMART TARGETS",
+    "SEE FULL STATS",
+    "Stay Motivated"
+  ],
+  "subtitles": [
+    "Easily log every glass and reach your hydration goal.",
+    "Stay accountable & watch your health improves.",
+    "Pick a water goal that matches your routine",
+    "Get a snapshot of your water, calories, steps, sleep",
+    "Get reminders and encouraging feedback to keep you on track."
+  ],
+  "textColor": "#0f172a",
+  "pages": [
+    {
+      "title": "DRINK YOUR WATER",
+      "subtitle": "Easily log every glass and reach your hydration goal.",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#00b4d8"
+      },
+      "textColor": "#0f172a",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "REACH YOUR GOAL",
+      "subtitle": "Stay accountable & watch your health improves.",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#00b4d8"
+      },
+      "textColor": "#0f172a",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "SET SMART TARGETS",
+      "subtitle": "Pick a water goal that matches your routine",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#00b4d8"
+      },
+      "textColor": "#0f172a",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "SEE FULL STATS",
+      "subtitle": "Get a snapshot of your water, calories, steps, sleep",
+      "layout": "the-airbnb-left-1-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#00b4d8"
+      },
+      "textColor": "#0f172a",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Stay Motivated",
+      "subtitle": "Get reminders and encouraging feedback to keep you on track.",
+      "layout": "the-airbnb-right-1-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#00b4d8"
+      },
+      "textColor": "#0f172a",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    }
+  ]
+}

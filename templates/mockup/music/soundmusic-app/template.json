@@ -1,0 +1,145 @@
+{
+  "version": 1,
+  "id": "soundmusic-app",
+  "name": "Sound music app screenshots",
+  "category": "music",
+  "description": "Present your music streaming app with this elegant template. Showcase music discovery, personalized playlists, and immersive player features in a sleek design that highlights the complete listening experience.",
+  "devices": [
+    {
+      "deviceId": "apple-iphone-16-pro-max",
+      "label": "apple-iphone-16-pro-max"
+    },
+    {
+      "deviceId": "apple-iphone-14-plus",
+      "label": "apple-iphone-14-plus"
+    },
+    {
+      "deviceId": "samsung-galaxy-s21-ultra",
+      "label": "samsung-galaxy-s21-ultra"
+    }
+  ],
+  "layout": "the-airbnb-left-1-title-above",
+  "background": {
+    "type": "gradient",
+    "value": "linear-gradient(135deg, #fae8ff 0%, #d8b4fe 100%)"
+  },
+  "panoramic": false,
+  "columnCount": 8,
+  "titles": [
+    "“The best music player | had",
+    "MUSIC & TOP",
+    "of)",
+    "UNLIMITED",
+    "9, NN",
+    "oS)",
+    "A |",
+    "A THE NEW"
+  ],
+  "subtitles": [
+    "in years, easy to use, and also",
+    "BEST ARTISTS",
+    "~ DOLBY",
+    "MUSIC y",
+    "\"5 1, #, \" > h",
+    "Pal IONS OF",
+    "| i",
+    "ERA OF"
+  ],
+  "pages": [
+    {
+      "title": "“The best music player | had",
+      "subtitle": "in years, easy to use, and also",
+      "layout": "the-airbnb-left-1-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "MUSIC & TOP",
+      "subtitle": "BEST ARTISTS",
+      "layout": "tilted-right-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #581c87 0%, #3b0764 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "of)",
+      "subtitle": "~ DOLBY",
+      "layout": "single-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #09090b 0%, #18181b 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "UNLIMITED",
+      "subtitle": "MUSIC y",
+      "layout": "rotated-left-1-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "9, NN",
+      "subtitle": "\"5 1, #, \" > h",
+      "layout": "two-devices-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #581c87 0%, #3b0764 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "oS)",
+      "subtitle": "Pal IONS OF",
+      "layout": "left-side-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #09090b 0%, #18181b 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "A |",
+      "subtitle": "| i",
+      "layout": "right-side-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "A THE NEW",
+      "subtitle": "ERA OF",
+      "layout": "tilted-left-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #581c87 0%, #3b0764 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    }
+  ]
+}

@@ -1,0 +1,111 @@
+{
+  "version": 1,
+  "id": "instafood-app",
+  "name": "Instafood app screenshots",
+  "category": "food-and-drink",
+  "description": "Showcase your food social media app with our premium template. Display food photography, social sharing, and recipe discovery features in a vibrant design that celebrates culinary creativity and food culture. Perfect for food bloggers and culinary enthusiasts.",
+  "devices": [
+    {
+      "deviceId": "apple-iphone-16-pro-max",
+      "label": "apple-iphone-16-pro-max"
+    },
+    {
+      "deviceId": "apple-iphone-13-pro-max",
+      "label": "apple-iphone-13-pro-max"
+    },
+    {
+      "deviceId": "samsung-galaxy-s21-ultra",
+      "label": "samsung-galaxy-s21-ultra"
+    },
+    {
+      "deviceId": "apple-ipad-pro-12-9-inch",
+      "label": "apple-ipad-pro-12-9-inch"
+    },
+    {
+      "deviceId": "samsung-galaxy-tab-s7",
+      "label": "samsung-galaxy-tab-s7"
+    }
+  ],
+  "layout": "the-airbnb-left-1-title-above",
+  "background": {
+    "type": "gradient",
+    "value": "linear-gradient(135deg, #f97316 0%, #c2410c 100%)"
+  },
+  "panoramic": false,
+  "columnCount": 5,
+  "titles": [
+    "a 94",
+    "0 Jl 1",
+    "at wre",
+    "| - |",
+    "&7 5)"
+  ],
+  "subtitles": [
+    "instacart",
+    "= -",
+    "Zz -— x",
+    "| om —-———,",
+    "AD."
+  ],
+  "pages": [
+    {
+      "title": "a 94",
+      "subtitle": "instacart",
+      "layout": "the-airbnb-left-1-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "0 Jl 1",
+      "subtitle": "= -",
+      "layout": "tilted-right-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #ffedd5 0%, #fed7aa 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "at wre",
+      "subtitle": "Zz -— x",
+      "layout": "single-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #ef4444 0%, #991b1b 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "| - |",
+      "subtitle": "| om —-———,",
+      "layout": "rotated-left-1-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "&7 5)",
+      "subtitle": "AD.",
+      "layout": "two-devices-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #ffedd5 0%, #fed7aa 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    }
+  ]
+}

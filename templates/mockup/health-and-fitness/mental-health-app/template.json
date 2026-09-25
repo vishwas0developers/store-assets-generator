@@ -1,0 +1,123 @@
+{
+  "version": 1,
+  "id": "mental-health-app",
+  "name": "Mental health app screenshots",
+  "category": "health-and-fitness",
+  "description": "Present your mental wellness platform with our thoughtful template. Display counseling features, mindfulness exercises, and emotional support tools in a caring design that helps users navigate their mental health journey with confidence and support.",
+  "devices": [
+    {
+      "deviceId": "apple-iphone-16-pro-max",
+      "label": "iPhone 16 Pro Max"
+    },
+    {
+      "deviceId": "apple-iphone-13-pro-max",
+      "label": "iPhone 13 Pro Max"
+    },
+    {
+      "deviceId": "samsung-galaxy-s21-ultra",
+      "label": "Samsung Galaxy S21 Ultra"
+    },
+    {
+      "deviceId": "apple-ipad-pro-12-9-inch",
+      "label": "iPad Pro 12.9-inch"
+    },
+    {
+      "deviceId": "samsung-galaxy-tab-s7",
+      "label": "Samsung Galaxy Tab S7"
+    }
+  ],
+  "layout": "single-title-above",
+  "background": {
+    "type": "solid",
+    "value": "#ffffff"
+  },
+  "panoramic": false,
+  "columnCount": 5,
+  "titles": [
+    "#1 Mental Health App",
+    "Start Your Day Right",
+    "Choose Your Priorities",
+    "Discover New Inspiration",
+    "Track Your Daily Progress"
+  ],
+  "subtitles": [
+    "",
+    "",
+    "This mental health app is easy to use and genuinely helpful",
+    "",
+    ""
+  ],
+  "textColor": "#0f172a",
+  "pages": [
+    {
+      "title": "#1 Mental Health App",
+      "subtitle": "",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#ffffff"
+      },
+      "textColor": "#0f172a",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Start Your Day Right",
+      "subtitle": "",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#ffffff"
+      },
+      "textColor": "#0f172a",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Choose Your Priorities",
+      "subtitle": "This mental health app is easy to use and genuinely helpful",
+      "layout": "the-airbnb-left-1-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#ffffff"
+      },
+      "textColor": "#0f172a",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Discover New Inspiration",
+      "subtitle": "",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#ffffff"
+      },
+      "textColor": "#0f172a",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Track Your Daily Progress",
+      "subtitle": "",
+      "layout": "the-airbnb-right-1-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#ffffff"
+      },
+      "textColor": "#0f172a",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    }
+  ]
+}

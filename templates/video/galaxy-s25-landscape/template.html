@@ -1044,18 +1044,9 @@
           startY: 0, endY: 0,
           startScale: 0.88, endScale: 1.05
         };
-      }
-      else if (sceneIdx === 2) { // Scene 3: Feature Breakdown (2 screenshots crossfade)
-        animConfig = {
-          startYaw: 25, endYaw: 0,
-          startPitch: 0, endPitch: 0,
-          startX: 0, endX: 0,
-          startY: 200, endY: 0,
-          startScale: 0.86, endScale: 1.0
-        };
-        // Crossfade screenshots inside the screen wrap
-        const imgA = document.getElementById("slot-2-0") || document.getElementById("slot-1-0");
-        const imgB = document.getElementById("slot-2-1") || document.getElementById("slot-1-1");
+        // Scene 2 shows two screenshots (slot-1-0 / slot-1-1): crossfade between them
+        const imgA = document.getElementById("slot-1-0");
+        const imgB = document.getElementById("slot-1-1");
         if (imgA && imgB) {
           const fadeStart = 0.35;
           const fadeDur = 0.25;
@@ -1063,6 +1054,15 @@
           imgA.style.opacity = 1 - tFade;
           imgB.style.opacity = tFade;
         }
+      }
+      else if (sceneIdx === 2) { // Scene 3: Feature Breakdown (single screenshot)
+        animConfig = {
+          startYaw: 25, endYaw: 0,
+          startPitch: 0, endPitch: 0,
+          startX: 0, endX: 0,
+          startY: 200, endY: 0,
+          startScale: 0.86, endScale: 1.0
+        };
       }
       else if (sceneIdx === 3) { // Scene 4: Zoom Focus
         animConfig = {
@@ -1322,6 +1322,7 @@
     }
 
     let animationFrameId = null;
+    let sceneEndMs = 0; // end of the scene started by playScene()
 
     function startLoop() {
       if (animationFrameId) cancelAnimationFrame(animationFrameId);
@@ -1333,6 +1334,14 @@
         lastTickTime = now;
 
         globalTimeMs += delta;
+        if (mode === "scene" && globalTimeMs >= sceneEndMs) {
+          // playScene(n) plays exactly that scene: stop at its end, never run into the next.
+          globalTimeMs = Math.max(0, sceneEndMs - 1);
+          window.pause();
+          playState = "ended";
+          notify();
+          return;
+        }
         if (globalTimeMs >= totalDuration) {
           globalTimeMs = totalDuration;
           renderFrameAt(globalTimeMs);
@@ -1407,6 +1416,7 @@
       let targetMs = 0;
       for (let i = 0; i < index; i++) targetMs += durations[i];
       globalTimeMs = targetMs;
+      sceneEndMs = targetMs + durations[index];
       mode = "scene";
       playState = "playing";
       startLoop();

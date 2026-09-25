@@ -1,0 +1,123 @@
+{
+  "version": 1,
+  "id": "tracking-habits-app",
+  "name": "Tracking habits app screenshots",
+  "category": "health-and-fitness",
+  "description": "Transform your habit tracking app with our motivational template. Display habit formation, streak tracking, and behavioral insights in an encouraging design that helps users build positive routines and achieve lasting change.",
+  "devices": [
+    {
+      "deviceId": "apple-iphone-16-pro-max",
+      "label": "iPhone 16 Pro Max"
+    },
+    {
+      "deviceId": "apple-iphone-13-pro-max",
+      "label": "iPhone 13 Pro Max"
+    },
+    {
+      "deviceId": "samsung-galaxy-s21-ultra",
+      "label": "Samsung Galaxy S21 Ultra"
+    },
+    {
+      "deviceId": "apple-ipad-pro-12-9-inch",
+      "label": "iPad Pro 12.9-inch"
+    },
+    {
+      "deviceId": "samsung-galaxy-tab-s7",
+      "label": "Samsung Galaxy Tab S7"
+    }
+  ],
+  "layout": "single-title-above",
+  "background": {
+    "type": "solid",
+    "value": "#5b21b6"
+  },
+  "panoramic": false,
+  "columnCount": 5,
+  "titles": [
+    "Track your journey",
+    "Time saver",
+    "Boost Focus & Output",
+    "Track Time",
+    "You Made It"
+  ],
+  "subtitles": [
+    "Track your habits, Choose 3 best ideas, Find the right people",
+    "Find out where your time is going",
+    "",
+    "Mobile, desktop in perfect sync",
+    "Your time tracking journey starts now"
+  ],
+  "textColor": "#ffffff",
+  "pages": [
+    {
+      "title": "Track your journey",
+      "subtitle": "Track your habits, Choose 3 best ideas, Find the right people",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#5b21b6"
+      },
+      "textColor": "#ffffff",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Time saver",
+      "subtitle": "Find out where your time is going",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#c084fc"
+      },
+      "textColor": "#2e1065",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Boost Focus & Output",
+      "subtitle": "",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#faf5f0"
+      },
+      "textColor": "#2e1065",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Track Time",
+      "subtitle": "Mobile, desktop in perfect sync",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#c084fc"
+      },
+      "textColor": "#2e1065",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "You Made It",
+      "subtitle": "Your time tracking journey starts now",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#faf5f0"
+      },
+      "textColor": "#2e1065",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    }
+  ]
+}

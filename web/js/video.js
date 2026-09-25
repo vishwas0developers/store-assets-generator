@@ -238,7 +238,8 @@ function videoDetailTogglePlay(id) {
   if (videoDetailState === "playing") {
     apiInstance.pause();
   } else {
-    if (videoDetailState === "ended") apiInstance.replay();
+    if (videoDetailState === "ended" && videoDetailMode === "scene") apiInstance.playScene(videoDetailSceneIndex);
+    else if (videoDetailState === "ended") apiInstance.replay();
     else apiInstance.play();
   }
 }
@@ -812,10 +813,24 @@ async function loadSceneContentPanel(sceneId) {
   renderSegmentsPanel(sceneId, spec.specs, spec.values);
 }
 
+/** Hides a native file input and returns the app's own button that opens it,
+ *  so no browser-default "Choose File / No file chosen" widget is ever shown. */
+function uploadButton(fileInput, label = "Upload New Source") {
+  fileInput.style.display = "none";
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "secondary small";
+  btn.style.width = "100%";
+  btn.textContent = label;
+  btn.onclick = () => fileInput.click();
+  return btn;
+}
+
 function renderSlotEditor(specs, values, issues, sceneId) {
   const panel = $("sc-content-panel");
   if (!panel) return;
   panel.innerHTML = "";
+  if ($("sc-source-section")) $("sc-source-section").style.display = "";
   if (!specs || specs.length === 0) {
     panel.innerHTML = '<p class="hint">This scene needs no content.</p>';
     return;
@@ -825,6 +840,10 @@ function renderSlotEditor(specs, values, issues, sceneId) {
   for (const issue of issues || []) (issuesByKey[issue.slotKey] ??= []).push(issue);
 
   const screenshotSpec = specs.find((s) => s.key === "screenshot" || s.key === "screenshots");
+  // The screenshot slot(s) below already offer reuse + upload, so the generic
+  // "Screenshot source" block would just be a duplicate of them.
+  const sourceSection = $("sc-source-section");
+  if (sourceSection) sourceSection.style.display = screenshotSpec ? "none" : "";
   if (screenshotSpec) {
     const count = screenshotSpec.kind === "imageList" ? screenshotSpec.count || 1 : 1;
     const summary = document.createElement("p");
@@ -960,6 +979,7 @@ function legacyImageField(sourceId, sceneId, index, count) {
     }
   };
   controls.appendChild(fileInput);
+  controls.appendChild(uploadButton(fileInput));
   wrap.appendChild(controls);
   return wrap;
 }
@@ -1059,7 +1079,12 @@ function imageField(spec, sourceId, sceneId, index) {
   } else {
     thumb.textContent = "No image";
   }
-  wrap.appendChild(thumb);
+  // Thumbnail + device-size label stack vertically so the label sits under
+  // the preview instead of crowding the controls beside it.
+  const thumbCol = document.createElement("div");
+  thumbCol.className = "content-slot-thumb-col";
+  thumbCol.appendChild(thumb);
+  wrap.appendChild(thumbCol);
 
   if (source) {
     // Device size only -- resolution/pixel dimensions stay in the data as
@@ -1068,7 +1093,7 @@ function imageField(spec, sourceId, sceneId, index) {
     dims.className = "hint";
     dims.style.cssText = "font-size:0.68rem; margin-top:2px;";
     dims.textContent = deviceCategoryLabel(source.deviceCategory);
-    wrap.appendChild(dims);
+    thumbCol.appendChild(dims);
   }
 
   const controls = document.createElement("div");
@@ -1124,6 +1149,7 @@ function imageField(spec, sourceId, sceneId, index) {
     }
   };
   controls.appendChild(fileInput);
+  controls.appendChild(uploadButton(fileInput));
 
   if (source) {
     const removeBtn = document.createElement("button");
@@ -1308,6 +1334,7 @@ function renderSegmentsPanel(sceneId, specs, values) {
         }
       };
       row.appendChild(fileInput);
+      row.appendChild(uploadButton(fileInput));
 
       const durationInput = document.createElement("input");
       durationInput.type = "number";
@@ -1661,15 +1688,19 @@ export function renderSavedConfigsGrid() {
   if (saveConfigConfirm) saveConfigConfirm.onclick = () => submitSaveConfig(false);
 
   const bgmUploadBtn = $("bgm-upload");
-  if (bgmUploadBtn) {
-    bgmUploadBtn.onclick = async () => {
-      const file = $("bgm-file")?.files[0];
-      if (!file) {
-        await showAlert("Choose an audio file first.");
-        return;
+  const bgmFile = $("bgm-file");
+  if (bgmUploadBtn && bgmFile) {
+    bgmUploadBtn.onclick = () => bgmFile.click();
+    bgmFile.onchange = async () => {
+      const file = bgmFile.files[0];
+      if (!file) return;
+      try {
+        await uploadFile(`/api/videos/${videoId}/bgm`, file);
+        await showAlert("BGM uploaded.");
+      } catch (e) {
+        await showAlert("Upload failed: " + e.message);
       }
-      await uploadFile(`/api/videos/${videoId}/bgm`, file);
-      await showAlert("BGM uploaded.");
+      bgmFile.value = "";
     };
   }
 

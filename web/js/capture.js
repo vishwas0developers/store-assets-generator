@@ -225,10 +225,8 @@ async function populateCaptureFilters(deviceSelId, resSelId, sectionFilterFn) {
 }
 
 async function renderLiveBrowserCaptures() {
-  await populateCaptureFilters("browser-capture-filter-device", "browser-capture-filter-resolution", isLiveWebCapture);
-
-  const deviceFilter = document.getElementById("browser-capture-filter-device")?.value || "";
-  const resFilter = document.getElementById("browser-capture-filter-resolution")?.value || "";
+  // The connect dropdown is the only filter for Live Web captures.
+  const deviceFilter = document.getElementById("browser-resolution-select")?.value || "";
 
   const titleEl = document.getElementById("session-captures-title");
   if (titleEl) {
@@ -240,10 +238,9 @@ async function renderLiveBrowserCaptures() {
   await renderCaptureGallery(
     "live-captures-gallery",
     (c) => isLiveWebCapture(c)
-      && (!deviceFilter || c.deviceCategory === deviceFilter)
-      && (!resFilter || c.resolution === resFilter),
-    (deviceFilter || resFilter)
-      ? `No screenshots match the selected filters.<br><br><span style="font-size:0.8rem; color:#888;">Try "All device sizes" / "All resolutions".</span>`
+      && (!deviceFilter || c.deviceCategory === deviceFilter),
+    deviceFilter
+      ? `No screenshots match the selected filters.<br><br><span style="font-size:0.8rem; color:#888;">Try another device size.</span>`
       : `No screenshots captured yet.<br><br><span style="font-size:0.8rem; color:#888;">Connect and capture a screenshot to see it here.</span>`
   );
 }
@@ -529,24 +526,9 @@ export function setupCaptureHandlers() {
   populateConnectDeviceSelect();
   if ($id("browser-resolution-select")) {
     $id("browser-resolution-select").addEventListener("change", async () => {
-      // The connect-session device size IS the primary gallery filter -- keep
-      // it in sync so switching device size here also switches which
-      // screenshots are shown (the resolution filter is secondary/technical
-      // and gets cleared so it doesn't hide results from the new device size).
-      const deviceFilterSel = $id("browser-capture-filter-device");
-      const newCategory = $id("browser-resolution-select").value;
-      if (deviceFilterSel) deviceFilterSel.value = newCategory;
-      const resFilterSel = $id("browser-capture-filter-resolution");
-      if (resFilterSel) resFilterSel.value = "";
       await renderLiveBrowserCaptures();
       if (browserConnected) { await disconnectLiveBrowser(); await connectLiveBrowser(); }
     });
-  }
-  if ($id("browser-capture-filter-device")) {
-    $id("browser-capture-filter-device").addEventListener("change", renderLiveBrowserCaptures);
-  }
-  if ($id("browser-capture-filter-resolution")) {
-    $id("browser-capture-filter-resolution").addEventListener("change", renderLiveBrowserCaptures);
   }
   if ($id("android-capture-filter-device")) {
     $id("android-capture-filter-device").addEventListener("change", renderAndroidCaptures);
@@ -975,7 +957,7 @@ export async function renderAndroidCaptures() {
       && (!deviceFilter || c.deviceCategory === deviceFilter)
       && (!resFilter || c.resolution === resFilter),
     (deviceFilter || resFilter)
-      ? `No screenshots match the selected filters.<br><br><span style="font-size:0.8rem; color:#888;">Try "All device sizes" / "All resolutions".</span>`
+      ? `No screenshots match the selected filters.<br><br><span style="font-size:0.8rem; color:#888;">Try another device size.</span>`
       : "No screenshots captured yet."
   );
 }

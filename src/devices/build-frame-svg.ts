@@ -41,6 +41,7 @@ function cutoutMarkup(def: DeviceDefinition, geometry: DeviceGeometry): string {
  *  instead of the old fixed 3-rect block — button count/placement now
  *  varies per device. */
 function buttonsMarkup(def: DeviceDefinition, geometry: DeviceGeometry, bezelWidth: number): string {
+  if (!def.buttons || !def.buttons.length) return "";
   const { width, height } = geometry;
   const rects = (def.buttons as DeviceButton[]).map((btn) => {
     const spanPx = btn.face === "top" || btn.face === "bottom" ? width : height;

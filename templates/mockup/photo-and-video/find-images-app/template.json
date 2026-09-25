@@ -1,0 +1,145 @@
+{
+  "version": 1,
+  "id": "find-images-app",
+  "name": "Find images app screenshots",
+  "category": "photo-and-video",
+  "description": "Transform your image search app with our premium template. Showcase powerful search capabilities, image collections, and filtering options in an elegant design that makes visual content discovery intuitive and engaging. Perfect for highlighting advanced search features and user curation tools.",
+  "devices": [
+    {
+      "deviceId": "apple-iphone-16-pro-max",
+      "label": "apple-iphone-16-pro-max"
+    },
+    {
+      "deviceId": "apple-iphone-14-plus",
+      "label": "apple-iphone-14-plus"
+    },
+    {
+      "deviceId": "samsung-galaxy-s21-ultra",
+      "label": "samsung-galaxy-s21-ultra"
+    }
+  ],
+  "layout": "the-airbnb-left-1-title-above",
+  "background": {
+    "type": "gradient",
+    "value": "linear-gradient(135deg, #09090b 0%, #18181b 100%)"
+  },
+  "panoramic": false,
+  "columnCount": 8,
+  "titles": [
+    "FIND",
+    "— \"",
+    "BEAUTIFUL",
+    "GET THE",
+    "EXPLORE",
+    "COLLECT",
+    "UNIQUE",
+    "| R"
+  ],
+  "subtitles": [
+    "IMAGES",
+    "Transform your image search app with our premium template",
+    "FREE PHOTOS",
+    "BEST IMAGES",
+    "THE",
+    "YOUR",
+    "SEARCH",
+    "BEST"
+  ],
+  "pages": [
+    {
+      "title": "FIND",
+      "subtitle": "IMAGES",
+      "layout": "the-airbnb-left-1-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "— \"",
+      "subtitle": "Transform your image search app with our premium template",
+      "layout": "tilted-right-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #881337 0%, #4c0519 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "BEAUTIFUL",
+      "subtitle": "FREE PHOTOS",
+      "layout": "single-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #2e1065 0%, #09090b 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "GET THE",
+      "subtitle": "BEST IMAGES",
+      "layout": "rotated-left-1-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "EXPLORE",
+      "subtitle": "THE",
+      "layout": "two-devices-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #881337 0%, #4c0519 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "COLLECT",
+      "subtitle": "YOUR",
+      "layout": "left-side-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #2e1065 0%, #09090b 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "UNIQUE",
+      "subtitle": "SEARCH",
+      "layout": "right-side-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "| R",
+      "subtitle": "BEST",
+      "layout": "tilted-left-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #881337 0%, #4c0519 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    }
+  ]
+}

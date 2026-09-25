@@ -1,0 +1,123 @@
+{
+  "version": 1,
+  "id": "family-finances-app",
+  "name": "Family finances app screenshots",
+  "category": "fintech",
+  "description": "Showcase your family finances app with our engaging template. Highlight budgeting tools, expense tracking, and family sharing features in a visually appealing design that promotes financial literacy and collaboration.",
+  "devices": [
+    {
+      "deviceId": "apple-iphone-16-pro-max",
+      "label": "iPhone 16 Pro Max"
+    },
+    {
+      "deviceId": "apple-iphone-13-pro-max",
+      "label": "iPhone 13 Pro Max"
+    },
+    {
+      "deviceId": "samsung-galaxy-s21-ultra",
+      "label": "Samsung Galaxy S21 Ultra"
+    },
+    {
+      "deviceId": "apple-ipad-pro-12-9-inch",
+      "label": "iPad Pro 12.9-inch"
+    },
+    {
+      "deviceId": "samsung-galaxy-tab-s7",
+      "label": "Samsung Galaxy Tab S7"
+    }
+  ],
+  "layout": "single-title-above",
+  "background": {
+    "type": "solid",
+    "value": "#3b28cc"
+  },
+  "panoramic": false,
+  "columnCount": 5,
+  "titles": [
+    "Save money for your family",
+    "Spend your budget",
+    "Cash flow reminder",
+    "Check all accounts",
+    "Budget every week"
+  ],
+  "subtitles": [
+    "",
+    "",
+    "",
+    "",
+    ""
+  ],
+  "textColor": "#2563eb",
+  "pages": [
+    {
+      "title": "Save money for your family",
+      "subtitle": "",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#f8fafc"
+      },
+      "textColor": "#2563eb",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Spend your budget",
+      "subtitle": "",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#3b28cc"
+      },
+      "textColor": "#ffffff",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Cash flow reminder",
+      "subtitle": "",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#f8fafc"
+      },
+      "textColor": "#2563eb",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Check all accounts",
+      "subtitle": "",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#f8fafc"
+      },
+      "textColor": "#2563eb",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Budget every week",
+      "subtitle": "",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#3b28cc"
+      },
+      "textColor": "#ffffff",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    }
+  ]
+}

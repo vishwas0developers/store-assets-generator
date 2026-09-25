@@ -1,0 +1,145 @@
+{
+  "version": 1,
+  "id": "create-images-with-ai-app",
+  "name": "Create images with AI app screenshots",
+  "category": "photo-and-video",
+  "description": "Showcase your AI image generation app with our premium template. Display creative tools, generation processes, and gallery features in an inspiring design that demonstrates the power of AI artwork creation. Perfect for highlighting advanced AI capabilities and user creativity.",
+  "devices": [
+    {
+      "deviceId": "apple-iphone-16-pro-max",
+      "label": "apple-iphone-16-pro-max"
+    },
+    {
+      "deviceId": "apple-iphone-14-plus",
+      "label": "apple-iphone-14-plus"
+    },
+    {
+      "deviceId": "samsung-galaxy-s21-ultra",
+      "label": "samsung-galaxy-s21-ultra"
+    }
+  ],
+  "layout": "the-airbnb-left-1-title-above",
+  "background": {
+    "type": "gradient",
+    "value": "linear-gradient(135deg, #09090b 0%, #18181b 100%)"
+  },
+  "panoramic": false,
+  "columnCount": 8,
+  "titles": [
+    "Connect &",
+    "ol» ~",
+    "ol LJ",
+    "Connect",
+    "Discover",
+    "y Connect",
+    "Goodbye",
+    "Collect"
+  ],
+  "subtitles": [
+    "with the §",
+    "“We are not Numa,",
+    "Conpeg, Blemepy,",
+    "Elements 8",
+    "with",
+    "with",
+    "Mindless",
+    "Anything"
+  ],
+  "pages": [
+    {
+      "title": "Connect &",
+      "subtitle": "with the §",
+      "layout": "the-airbnb-left-1-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "ol» ~",
+      "subtitle": "“We are not Numa,",
+      "layout": "tilted-right-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #881337 0%, #4c0519 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "ol LJ",
+      "subtitle": "Conpeg, Blemepy,",
+      "layout": "single-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #2e1065 0%, #09090b 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Connect",
+      "subtitle": "Elements 8",
+      "layout": "rotated-left-1-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Discover",
+      "subtitle": "with",
+      "layout": "two-devices-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #881337 0%, #4c0519 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "y Connect",
+      "subtitle": "with",
+      "layout": "left-side-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #2e1065 0%, #09090b 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Goodbye",
+      "subtitle": "Mindless",
+      "layout": "right-side-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Collect",
+      "subtitle": "Anything",
+      "layout": "tilted-left-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #881337 0%, #4c0519 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    }
+  ]
+}

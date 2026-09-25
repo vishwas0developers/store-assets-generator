@@ -1,0 +1,142 @@
+{
+  "version": 1,
+  "id": "medium-template",
+  "name": "Articles app screenshots",
+  "category": "entertainment",
+  "description": "Present your news and articles app with our free template. Display content feeds, reading features, and article collections in a clean design that enhances readability.",
+  "devices": [
+    {
+      "deviceId": "apple-iphone-16-pro-max",
+      "label": "apple-iphone-16-pro-max"
+    },
+    {
+      "deviceId": "apple-iphone-14-plus",
+      "label": "apple-iphone-14-plus"
+    },
+    {
+      "deviceId": "samsung-galaxy-s21-ultra",
+      "label": "samsung-galaxy-s21-ultra"
+    }
+  ],
+  "layout": "single-title-above",
+  "background": {
+    "type": "panoramic",
+    "value": "ocean"
+  },
+  "panoramic": true,
+  "columnCount": 8,
+  "titles": [
+    "A homepage\nthat gets you",
+    "Stories that\ncaptivate you",
+    "Insights that\nstay with you",
+    "Collections\nabsorb you",
+    "Like, reply,\nand engage",
+    "Set up your\npublic profile",
+    "Read stories\ncatered to you",
+    "A home for\nyour words"
+  ],
+  "subtitles": [
+    "Stories based on your\ninterests & editors' picks",
+    "Focus on the words without ads getting in the way",
+    "Bookmark and respond to\nstories you can't forget",
+    "Compelling stories into collections to binge-read",
+    "Engage with stories that\nresonate with you",
+    "Let people know what you\nwrite about",
+    "Choose your favorite topics and\nlet us do the heavy lifting",
+    "Compelling stories into collections to binge-read"
+  ],
+  "pages": [
+    {
+      "title": "A homepage\nthat gets you",
+      "subtitle": "Stories based on your\ninterests & editors' picks",
+      "layout": "single-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Stories that\ncaptivate you",
+      "subtitle": "Focus on the words without ads getting in the way",
+      "layout": "single-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #ffffff, #ffffff)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Insights that\nstay with you",
+      "subtitle": "Bookmark and respond to\nstories you can't forget",
+      "layout": "single-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Collections\nabsorb you",
+      "subtitle": "Compelling stories into collections to binge-read",
+      "layout": "single-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #ffffff, #ffffff)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Like, reply,\nand engage",
+      "subtitle": "Engage with stories that\nresonate with you",
+      "layout": "single-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Set up your\npublic profile",
+      "subtitle": "Let people know what you\nwrite about",
+      "layout": "single-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #ffffff, #ffffff)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Read stories\ncatered to you",
+      "subtitle": "Choose your favorite topics and\nlet us do the heavy lifting",
+      "layout": "single-title-above",
+      "background": null,
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "A home for\nyour words",
+      "subtitle": "Compelling stories into collections to binge-read",
+      "layout": "single-title-above",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #ffffff, #ffffff)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    }
+  ]
+}

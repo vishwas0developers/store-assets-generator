@@ -576,7 +576,9 @@ export function ensureSizeRows(mockup: MockupProject, platform?: string): void {
     if (existing) {
       mockup.devices.push({ ...existing, sizeKey: t.key, label: t.label, isBase: i === 0, previewsVisible: existing.previewsVisible ?? true });
     } else {
-      addDeviceRow(mockup, { deviceId: t.deviceId, label: t.label, sizeKey: t.key, previewsVisible: true, isBase: false });
+      // Deterministic id: this runs on every load without being saved, so a random id would differ between the
+      // client's load and the cell-preview route's own load ("Device row not found").
+      mockup.devices.push({ id: `row-${t.key}`, deviceId: t.deviceId, label: t.label, sizeKey: t.key, previewsVisible: true, isBase: false });
     }
   });
 }

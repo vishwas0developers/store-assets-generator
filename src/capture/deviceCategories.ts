@@ -15,7 +15,7 @@ export type DeviceCategory = "phone" | "tablet7" | "tablet10";
 export const DEVICE_CATEGORY_ORDER: DeviceCategory[] = ["phone", "tablet7", "tablet10"];
 
 export const DEVICE_CATEGORY_LABELS: Record<DeviceCategory, string> = {
-  phone: "Phone",
+  phone: "6.7 inch Phone",
   tablet7: "7-inch Tablet",
   tablet10: "10-inch Tablet",
 };
