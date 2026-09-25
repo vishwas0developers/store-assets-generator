@@ -1,0 +1,616 @@
+{
+ "version": 1,
+ "id": "fitness-routine-app",
+ "name": "Fitness routine app",
+ "category": "health-and-fitness",
+ "description": "Transform your fitness app's presentation with our professional template. Showcase workout routines, progress tracking, and exercise demonstrations in a dynamic design that motivates and engages users.",
+ "devices": [
+  {
+   "deviceId": "apple-iphone-16-pro-max",
+   "label": "iPhone 16 Pro Max"
+  },
+  {
+   "deviceId": "apple-iphone-14-plus",
+   "label": "iPhone 14 Plus"
+  },
+  {
+   "deviceId": "samsung-galaxy-s21-ultra",
+   "label": "Samsung Galaxy S21 Ultra"
+  }
+ ],
+ "layout": "single-no-text",
+ "background": {
+  "type": "gradient",
+  "value": "linear-gradient(180deg,#3a352c 0%,#1b1a17 100%)"
+ },
+ "panoramic": false,
+ "columnCount": 8,
+ "titles": [
+  "ANYTIME ANYWHERE",
+  "FROM YOGA TO STRENGTH TO RUNNING",
+  "ACCESS THOUSANDS OF WORKOUTS",
+  "AT THE GYM",
+  "OR ON THE GO",
+  "NO EQUIPMENT NEEDED",
+  "MANIFEST YOUR DREAM BODY",
+  "CONQUER YOURSELF"
+ ],
+ "subtitles": [
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  ""
+ ],
+ "textColor": "#111111",
+ "pages": [
+  {
+   "title": "ANYTIME ANYWHERE",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg,#3a352c 0%,#1b1a17 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t3",
+     "xPct": 10.0,
+     "yPct": 78.697,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "ANYTIME\nANYWHERE",
+      "color": "#ccfe39",
+      "size": 117.8,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.05,
+      "charSpacing": -10
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s1",
+     "assetId": "shape:Glow",
+     "name": "Glow",
+     "xPct": 6.818,
+     "yPct": 13.598,
+     "widthPct": 77.273,
+     "heightPct": 35.565,
+     "rotation": 0,
+     "opacity": 0.5,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 340,
+      "h": 340,
+      "fill": "#d9a98a",
+      "blur": 59.49999999999999
+     }
+    },
+    {
+     "id": "tpl-s2",
+     "assetId": "shape:Glow",
+     "name": "Glow",
+     "xPct": -18.182,
+     "yPct": 53.347,
+     "widthPct": 63.636,
+     "heightPct": 29.289,
+     "rotation": 0,
+     "opacity": 0.6,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 280,
+      "h": 280,
+      "fill": "#2c4a3a",
+      "blur": 49.0
+     }
+    }
+   ],
+   "deviceOne": {
+    "visible": false
+   }
+  },
+  {
+   "title": "FROM YOGA TO STRENGTH TO RUNNING",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#ccfe39"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t5",
+     "xPct": 10.0,
+     "yPct": 79.816,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "FROM YOGA\nTO STRENGTH\nTO RUNNING",
+      "color": "#133c1c",
+      "size": 90.8,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.0,
+      "charSpacing": -10
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s4",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -6.25,
+     "yPct": -21.967,
+     "widthPct": 112.5,
+     "heightPct": 99.252,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 495,
+      "h": 948.85,
+      "radius": 115.92,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 64.77,
+    "x": 0.0,
+    "y": -26.11,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "ACCESS THOUSANDS OF WORKOUTS",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#ccfe39"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t7",
+     "xPct": 10.0,
+     "yPct": 9.209,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "ACCESS\nTHOUSANDS OF\nWORKOUTS",
+      "color": "#133c1c",
+      "size": 90.8,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.0,
+      "charSpacing": -10
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s6",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -6.25,
+     "yPct": 24.059,
+     "widthPct": 112.5,
+     "heightPct": 99.252,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 495,
+      "h": 948.85,
+      "radius": 115.92,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 64.77,
+    "x": 0.0,
+    "y": 26.21,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "AT THE GYM",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#133c1c"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t9",
+     "xPct": 10.0,
+     "yPct": 87.452,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "AT THE GYM",
+      "color": "#ccfe39",
+      "size": 90.8,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.0,
+      "charSpacing": -10
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s8",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -6.25,
+     "yPct": -14.644,
+     "widthPct": 112.5,
+     "heightPct": 99.252,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 495,
+      "h": 948.85,
+      "radius": 115.92,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 64.77,
+    "x": 0.0,
+    "y": -17.79,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "OR ON THE GO",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#ccfe39"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t11",
+     "xPct": 10.0,
+     "yPct": 8.791,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "OR ON THE GO",
+      "color": "#133c1c",
+      "size": 90.8,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.0,
+      "charSpacing": -10
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s10",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -6.25,
+     "yPct": 16.736,
+     "widthPct": 112.5,
+     "heightPct": 99.252,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 495,
+      "h": 948.85,
+      "radius": 115.92,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 64.77,
+    "x": 0.0,
+    "y": 17.89,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "NO EQUIPMENT NEEDED",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg,#8a8378 0%,#c9bfae 60%,#b7a58c 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t14",
+     "xPct": 10.0,
+     "yPct": 8.756,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "NO\nEQUIPMENT\nNEEDED",
+      "color": "#ffffff",
+      "size": 105.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.1,
+      "charSpacing": -10
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s12",
+     "assetId": "shape:Glow",
+     "name": "Glow",
+     "xPct": 15.909,
+     "yPct": 42.887,
+     "widthPct": 68.182,
+     "heightPct": 31.381,
+     "rotation": 0,
+     "opacity": 0.7,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 300,
+      "h": 300,
+      "fill": "#f5e6c8",
+      "blur": 52.5
+     }
+    },
+    {
+     "id": "tpl-s13",
+     "assetId": "shape:Glow",
+     "name": "Glow",
+     "xPct": 22.727,
+     "yPct": 62.762,
+     "widthPct": 54.545,
+     "heightPct": 25.105,
+     "rotation": 0,
+     "opacity": 0.6,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 240,
+      "h": 240,
+      "fill": "#8d6a70",
+      "blur": 42.0
+     }
+    }
+   ],
+   "deviceOne": {
+    "visible": false
+   }
+  },
+  {
+   "title": "MANIFEST YOUR DREAM BODY",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#133c1c"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t16",
+     "xPct": 10.0,
+     "yPct": 79.816,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "MANIFEST\nYOUR DREAM\nBODY",
+      "color": "#ccfe39",
+      "size": 90.8,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.0,
+      "charSpacing": -10
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s15",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -6.25,
+     "yPct": -22.385,
+     "widthPct": 112.5,
+     "heightPct": 99.252,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 495,
+      "h": 948.85,
+      "radius": 115.92,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 64.77,
+    "x": 0.0,
+    "y": -26.59,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "CONQUER YOURSELF",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#ccfe39"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t18",
+     "xPct": 10.0,
+     "yPct": 8.791,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "CONQUER\nYOURSELF",
+      "color": "#133c1c",
+      "size": 90.8,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.0,
+      "charSpacing": -10
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s17",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -6.25,
+     "yPct": 20.397,
+     "widthPct": 112.5,
+     "heightPct": 99.252,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 495,
+      "h": 948.85,
+      "radius": 115.92,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 64.77,
+    "x": 0.0,
+    "y": 22.05,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  }
+ ],
+ "designHeight": 2347
+}

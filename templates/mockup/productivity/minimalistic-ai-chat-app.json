@@ -1,0 +1,596 @@
+{
+ "version": 1,
+ "id": "minimalistic-ai-chat-app",
+ "name": "Minimalistic AI chat app",
+ "category": "productivity",
+ "description": "Present your minimalistic AI chat application with our sleek, clean template. Display intelligent conversations, clean minimalist interface, and advanced AI features in an elegant design.",
+ "devices": [
+  {
+   "deviceId": "apple-iphone-16-pro-max",
+   "label": "iPhone 16 Pro Max"
+  },
+  {
+   "deviceId": "apple-iphone-14-plus",
+   "label": "iPhone 14 Plus"
+  },
+  {
+   "deviceId": "samsung-galaxy-s21-ultra",
+   "label": "Samsung Galaxy S21 Ultra"
+  }
+ ],
+ "layout": "single-no-text",
+ "background": {
+  "type": "gradient",
+  "value": "radial-gradient(circle at 0% 100%, #e9b2a9 0%, rgba(255,255,255,0) 55%), linear-gradient(180deg, #eff0f9 0%, #e8ecf0 60%, #eaeaf3 100%)"
+ },
+ "panoramic": false,
+ "columnCount": 8,
+ "titles": [
+  "Turn words into images",
+  "Answers that think it through",
+  "Real-time answers, with sources",
+  "Never face a blank page again",
+  "Debug, explain, and ship faster",
+  "Just talk. It listens.",
+  "Snap a photo, get answers",
+  "Research reports in minutes"
+ ],
+ "subtitles": [
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  ""
+ ],
+ "textColor": "#111111",
+ "pages": [
+  {
+   "title": "Turn words into images",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "radial-gradient(circle at 0% 100%, #e9b2a9 0%, rgba(255,255,255,0) 55%), linear-gradient(180deg, #eff0f9 0%, #e8ecf0 60%, #eaeaf3 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t1",
+     "xPct": 0.0,
+     "yPct": 5.95,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Turn words\ninto images",
+      "color": "#0b0b0f",
+      "size": 103.1,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.04,
+      "charSpacing": -40
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s2",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -2.841,
+     "yPct": 14.226,
+     "widthPct": 105.682,
+     "heightPct": 90.961,
+     "rotation": 0,
+     "opacity": 0.14,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 465,
+      "h": 869.59,
+      "radius": 115.2,
+      "fill": "#000000",
+      "blur": 20,
+      "inset": 60
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 57.74,
+    "x": 0.0,
+    "y": 11.58,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#f6f6fb",
+    "borderColor": "#e4e4ee",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Answers that think it through",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "radial-gradient(circle at 0% 100%, #97c4e7 0%, rgba(255,255,255,0) 55%), linear-gradient(180deg, #f1f2eb 0%, #e8ecf0 60%, #eaeaf3 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t3",
+     "xPct": 0.0,
+     "yPct": 5.95,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Answers that\nthink it through",
+      "color": "#0b0b0f",
+      "size": 103.1,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.04,
+      "charSpacing": -40
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s4",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -2.841,
+     "yPct": 14.226,
+     "widthPct": 105.682,
+     "heightPct": 90.961,
+     "rotation": 0,
+     "opacity": 0.14,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 465,
+      "h": 869.59,
+      "radius": 115.2,
+      "fill": "#000000",
+      "blur": 20,
+      "inset": 60
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 57.74,
+    "x": 0.0,
+    "y": 11.58,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#f6f6fb",
+    "borderColor": "#e4e4ee",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Real-time answers, with sources",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "radial-gradient(circle at 0% 100%, #e0aee8 0%, rgba(255,255,255,0) 55%), linear-gradient(180deg, #ebf4f1 0%, #e8ecf0 60%, #eaeaf3 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t5",
+     "xPct": 0.0,
+     "yPct": 5.95,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Real-time answers,\nwith sources",
+      "color": "#0b0b0f",
+      "size": 103.1,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.04,
+      "charSpacing": -40
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s6",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -2.841,
+     "yPct": 14.226,
+     "widthPct": 105.682,
+     "heightPct": 90.961,
+     "rotation": 0,
+     "opacity": 0.14,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 465,
+      "h": 869.59,
+      "radius": 115.2,
+      "fill": "#000000",
+      "blur": 20,
+      "inset": 60
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 57.74,
+    "x": 0.0,
+    "y": 11.58,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#f6f6fb",
+    "borderColor": "#e4e4ee",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Never face a blank page again",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "radial-gradient(circle at 0% 100%, #98cb9d 0%, rgba(255,255,255,0) 55%), linear-gradient(180deg, #faeef2 0%, #e8ecf0 60%, #eaeaf3 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t7",
+     "xPct": 0.0,
+     "yPct": 5.95,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Never face a\nblank page again",
+      "color": "#0b0b0f",
+      "size": 103.1,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.04,
+      "charSpacing": -40
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s8",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -2.841,
+     "yPct": 14.226,
+     "widthPct": 105.682,
+     "heightPct": 90.961,
+     "rotation": 0,
+     "opacity": 0.14,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 465,
+      "h": 869.59,
+      "radius": 115.2,
+      "fill": "#000000",
+      "blur": 20,
+      "inset": 60
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 57.74,
+    "x": 0.0,
+    "y": 11.58,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#f6f6fb",
+    "borderColor": "#e4e4ee",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Debug, explain, and ship faster",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "radial-gradient(circle at 0% 100%, #8acbce 0%, rgba(255,255,255,0) 55%), linear-gradient(180deg, #f6f0eb 0%, #e8ecf0 60%, #eaeaf3 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t9",
+     "xPct": 0.0,
+     "yPct": 5.95,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Debug, explain,\nand ship faster",
+      "color": "#0b0b0f",
+      "size": 103.1,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.04,
+      "charSpacing": -40
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s10",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -2.841,
+     "yPct": 14.226,
+     "widthPct": 105.682,
+     "heightPct": 90.961,
+     "rotation": 0,
+     "opacity": 0.14,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 465,
+      "h": 869.59,
+      "radius": 115.2,
+      "fill": "#000000",
+      "blur": 20,
+      "inset": 60
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 57.74,
+    "x": 0.0,
+    "y": 11.58,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#f6f6fb",
+    "borderColor": "#e4e4ee",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Just talk. It listens.",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "radial-gradient(circle at 0% 100%, #c8b4f4 0%, rgba(255,255,255,0) 55%), linear-gradient(180deg, #ebf5ef 0%, #e8ecf0 60%, #eaeaf3 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t11",
+     "xPct": 0.0,
+     "yPct": 5.95,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Just talk.\nIt listens.",
+      "color": "#0b0b0f",
+      "size": 103.1,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.04,
+      "charSpacing": -40
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s12",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -2.841,
+     "yPct": 14.226,
+     "widthPct": 105.682,
+     "heightPct": 90.961,
+     "rotation": 0,
+     "opacity": 0.14,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 465,
+      "h": 869.59,
+      "radius": 115.2,
+      "fill": "#000000",
+      "blur": 20,
+      "inset": 60
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 57.74,
+    "x": 0.0,
+    "y": 11.58,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#f6f6fb",
+    "borderColor": "#e4e4ee",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Snap a photo, get answers",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "radial-gradient(circle at 0% 100%, #acbcf4 0%, rgba(255,255,255,0) 55%), linear-gradient(180deg, #ecf5eb 0%, #e8ecf0 60%, #eaeaf3 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t13",
+     "xPct": 0.0,
+     "yPct": 5.95,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Snap a photo,\nget answers",
+      "color": "#0b0b0f",
+      "size": 103.1,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.04,
+      "charSpacing": -40
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s14",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -2.841,
+     "yPct": 14.226,
+     "widthPct": 105.682,
+     "heightPct": 90.961,
+     "rotation": 0,
+     "opacity": 0.14,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 465,
+      "h": 869.59,
+      "radius": 115.2,
+      "fill": "#000000",
+      "blur": 20,
+      "inset": 60
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 57.74,
+    "x": 0.0,
+    "y": 11.58,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#f6f6fb",
+    "borderColor": "#e4e4ee",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Research reports in minutes",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "radial-gradient(circle at 0% 100%, #b3c491 0%, rgba(255,255,255,0) 55%), linear-gradient(180deg, #f9eff4 0%, #e8ecf0 60%, #eaeaf3 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t15",
+     "xPct": 0.0,
+     "yPct": 5.95,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Research reports\nin minutes",
+      "color": "#0b0b0f",
+      "size": 103.1,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.04,
+      "charSpacing": -40
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s16",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -2.841,
+     "yPct": 14.226,
+     "widthPct": 105.682,
+     "heightPct": 90.961,
+     "rotation": 0,
+     "opacity": 0.14,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 465,
+      "h": 869.59,
+      "radius": 115.2,
+      "fill": "#000000",
+      "blur": 20,
+      "inset": 60
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 57.74,
+    "x": 0.0,
+    "y": 11.58,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#f6f6fb",
+    "borderColor": "#e4e4ee",
+    "zIndex": 10
+   }
+  }
+ ],
+ "designHeight": 2347
+}

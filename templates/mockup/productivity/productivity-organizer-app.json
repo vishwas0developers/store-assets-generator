@@ -1,0 +1,1909 @@
+{
+ "version": 1,
+ "id": "productivity-organizer-app",
+ "name": "Productivity organizer app",
+ "category": "productivity",
+ "description": "Showcase your organization app with our efficient template. Display task management, calendar integration, and productivity tools in a streamlined design that helps users optimize their workflow and achieve better work-life balance.",
+ "devices": [
+  {
+   "deviceId": "apple-iphone-16-pro-max",
+   "label": "iPhone 16 Pro Max"
+  },
+  {
+   "deviceId": "apple-iphone-13-pro-max",
+   "label": "iPhone 13 Pro Max"
+  },
+  {
+   "deviceId": "samsung-galaxy-s21-ultra",
+   "label": "Samsung Galaxy S21 Ultra"
+  },
+  {
+   "deviceId": "apple-ipad-pro-12-9-inch",
+   "label": "iPad Pro 12.9-inch"
+  },
+  {
+   "deviceId": "samsung-galaxy-tab-s7",
+   "label": "Samsung Galaxy Tab S7"
+  }
+ ],
+ "layout": "single-no-text",
+ "background": {
+  "type": "gradient",
+  "value": "linear-gradient(180deg,#e3ddf6 0%,#f8e0d8 55%,#a28afd 100%)"
+ },
+ "panoramic": false,
+ "columnCount": 5,
+ "titles": [
+  "Plan. Grow. Flow.",
+  "Organize Your Day",
+  "Plan Your Routine",
+  "Explore What Matters",
+  "Focus With Flow"
+ ],
+ "subtitles": [
+  "Grow every day.",
+  "Smart widgets & calendars, everything in one place.",
+  "Add events, checklists, and tags to stay on track.",
+  "Search by category or discover new routines",
+  "Use visual timers to maintain concentration"
+ ],
+ "textColor": "#111111",
+ "pages": [
+  {
+   "title": "Plan. Grow. Flow.",
+   "subtitle": "Grow every day.",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg,#e3ddf6 0%,#f8e0d8 55%,#a28afd 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t11",
+     "xPct": 53.182,
+     "yPct": 71.139,
+     "widthPct": 40.455,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Grow",
+     "style": {
+      "text": "Grow",
+      "color": "#ffffff",
+      "size": 127.6,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t14",
+     "xPct": 53.182,
+     "yPct": 79.925,
+     "widthPct": 43.182,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "every",
+     "style": {
+      "text": "every",
+      "color": "#ffffff",
+      "size": 127.6,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t17",
+     "xPct": 53.182,
+     "yPct": 88.921,
+     "widthPct": 35.227,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "day.",
+     "style": {
+      "text": "day.",
+      "color": "#ffffff",
+      "size": 127.6,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t18",
+     "xPct": 11.818,
+     "yPct": 4.276,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Plan.\nGrow.\nFlow.",
+      "color": "#4a3fc4",
+      "size": 235.6,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 0.9
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s1",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -17.226,
+     "yPct": 32.001,
+     "widthPct": 101.818,
+     "heightPct": 88.57,
+     "rotation": 12,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 448,
+      "h": 846.73,
+      "radius": 108.4,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s2",
+     "assetId": "shape:Body",
+     "name": "Body",
+     "xPct": 2.273,
+     "yPct": 69.038,
+     "widthPct": 48.864,
+     "heightPct": 26.151,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 215,
+      "h": 250,
+      "radius": 80,
+      "fill": "#f2793c",
+      "stroke": "#2a1f4a",
+      "strokeWidth": 2.5,
+      "inset": 1.25
+     }
+    },
+    {
+     "id": "tpl-s3",
+     "assetId": "shape:Hand",
+     "name": "Hand",
+     "xPct": 4.545,
+     "yPct": 64.435,
+     "widthPct": 9.545,
+     "heightPct": 9.623,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 42,
+      "h": 92,
+      "radius": 20,
+      "fill": "#f2793c",
+      "stroke": "#2a1f4a",
+      "strokeWidth": 2.5,
+      "inset": 1.25
+     }
+    },
+    {
+     "id": "tpl-s4",
+     "assetId": "shape:Ring",
+     "name": "Ring",
+     "xPct": 10.909,
+     "yPct": 71.967,
+     "widthPct": 32.727,
+     "heightPct": 15.063,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 144,
+      "h": 144,
+      "fill": "#f2793c",
+      "stroke": "#2a1f4a",
+      "strokeWidth": 2.5,
+      "inset": 1.25
+     }
+    },
+    {
+     "id": "tpl-s5",
+     "assetId": "shape:Ring hole",
+     "name": "Ring hole",
+     "xPct": 17.045,
+     "yPct": 74.791,
+     "widthPct": 20.455,
+     "heightPct": 9.414,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 90,
+      "h": 90,
+      "fill": "#b7a4f8",
+      "stroke": "#2a1f4a",
+      "strokeWidth": 2.5,
+      "inset": 1.25
+     }
+    },
+    {
+     "id": "tpl-s6",
+     "assetId": "shape:Hourglass",
+     "name": "Hourglass",
+     "xPct": 23.409,
+     "yPct": 77.615,
+     "widthPct": 7.727,
+     "heightPct": 3.766,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 34,
+      "h": 36,
+      "radius": 4,
+      "fill": "#f3dcc8",
+      "stroke": "#2a1f4a",
+      "strokeWidth": 2.5,
+      "inset": 1.25
+     }
+    },
+    {
+     "id": "tpl-s7",
+     "assetId": "shape:Foot",
+     "name": "Foot",
+     "xPct": 9.091,
+     "yPct": 92.573,
+     "widthPct": 9.091,
+     "heightPct": 4.184,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 40,
+      "h": 40,
+      "fill": "#f2793c",
+      "stroke": "#2a1f4a",
+      "strokeWidth": 2.5,
+      "inset": 1.25
+     }
+    },
+    {
+     "id": "tpl-s8",
+     "assetId": "shape:Foot2",
+     "name": "Foot2",
+     "xPct": 33.182,
+     "yPct": 91.632,
+     "widthPct": 10.909,
+     "heightPct": 5.021,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 48,
+      "h": 48,
+      "fill": "#f2793c",
+      "stroke": "#2a1f4a",
+      "strokeWidth": 2.5,
+      "inset": 1.25
+     }
+    },
+    {
+     "id": "tpl-s9",
+     "assetId": "shape:Tag shadow",
+     "name": "Tag shadow",
+     "xPct": 54.091,
+     "yPct": 71.548,
+     "widthPct": 40.455,
+     "heightPct": 6.276,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 178,
+      "h": 60,
+      "radius": 10,
+      "fill": "#3b2f9e"
+     }
+    },
+    {
+     "id": "tpl-s10",
+     "assetId": "shape:Tag",
+     "name": "Tag",
+     "xPct": 53.182,
+     "yPct": 71.025,
+     "widthPct": 40.455,
+     "heightPct": 6.276,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 178,
+      "h": 60,
+      "radius": 10,
+      "fill": "#5b4fd0"
+     }
+    },
+    {
+     "id": "tpl-s12",
+     "assetId": "shape:Tag shadow",
+     "name": "Tag shadow",
+     "xPct": 54.091,
+     "yPct": 80.126,
+     "widthPct": 43.182,
+     "heightPct": 6.485,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 190,
+      "h": 62,
+      "radius": 10,
+      "fill": "#3b2f9e"
+     }
+    },
+    {
+     "id": "tpl-s13",
+     "assetId": "shape:Tag",
+     "name": "Tag",
+     "xPct": 53.182,
+     "yPct": 79.603,
+     "widthPct": 43.182,
+     "heightPct": 6.485,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 190,
+      "h": 62,
+      "radius": 10,
+      "fill": "#5b4fd0"
+     }
+    },
+    {
+     "id": "tpl-s15",
+     "assetId": "shape:Tag shadow",
+     "name": "Tag shadow",
+     "xPct": 54.091,
+     "yPct": 88.912,
+     "widthPct": 35.227,
+     "heightPct": 6.695,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 155,
+      "h": 64,
+      "radius": 10,
+      "fill": "#3b2f9e"
+     }
+    },
+    {
+     "id": "tpl-s16",
+     "assetId": "shape:Tag",
+     "name": "Tag",
+     "xPct": 53.182,
+     "yPct": 88.389,
+     "widthPct": 35.227,
+     "heightPct": 6.695,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 155,
+      "h": 64,
+      "radius": 10,
+      "fill": "#5b4fd0"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 56.9,
+    "x": -21.12,
+    "y": 33.2,
+    "rotation": 12,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#4a3fc4",
+    "borderColor": "#4a3fc4",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Organize Your Day",
+   "subtitle": "Smart widgets & calendars, everything in one place.",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#5347ca"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t28",
+     "xPct": 12.727,
+     "yPct": 22.119,
+     "widthPct": 74.545,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Smart widgets & calendars,\neverything in one place.",
+      "color": "#5347ca",
+      "size": 56.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.25
+     }
+    },
+    {
+     "id": "tpl-t29",
+     "xPct": 4.545,
+     "yPct": 3.689,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Organize\nYour Day",
+      "color": "#f3e6f0",
+      "size": 166.9,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.0,
+      "charSpacing": -20
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s19",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -0.748,
+     "yPct": 32.001,
+     "widthPct": 112.045,
+     "heightPct": 98.797,
+     "rotation": -8,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 493,
+      "h": 944.5,
+      "radius": 115.6,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s20",
+     "assetId": "shape:Cloud base",
+     "name": "Cloud base",
+     "xPct": -2.273,
+     "yPct": 95.711,
+     "widthPct": 104.545,
+     "heightPct": 6.276,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 14,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 460,
+      "h": 60,
+      "radius": 0,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s21",
+     "assetId": "shape:Cloud",
+     "name": "Cloud",
+     "xPct": 6.818,
+     "yPct": 87.866,
+     "widthPct": 40.909,
+     "heightPct": 18.828,
+     "rotation": 0,
+     "opacity": 0.95,
+     "zIndex": 14,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 180,
+      "h": 180,
+      "fill": "#ffffff",
+      "blur": 6
+     }
+    },
+    {
+     "id": "tpl-s22",
+     "assetId": "shape:Cloud",
+     "name": "Cloud",
+     "xPct": 34.091,
+     "yPct": 85.774,
+     "widthPct": 36.364,
+     "heightPct": 16.736,
+     "rotation": 0,
+     "opacity": 0.95,
+     "zIndex": 14,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 160,
+      "h": 160,
+      "fill": "#ffffff",
+      "blur": 6
+     }
+    },
+    {
+     "id": "tpl-s23",
+     "assetId": "shape:Cloud",
+     "name": "Cloud",
+     "xPct": 53.409,
+     "yPct": 87.866,
+     "widthPct": 43.182,
+     "heightPct": 19.874,
+     "rotation": 0,
+     "opacity": 0.95,
+     "zIndex": 14,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 190,
+      "h": 190,
+      "fill": "#ffffff",
+      "blur": 6
+     }
+    },
+    {
+     "id": "tpl-s24",
+     "assetId": "shape:Cloud",
+     "name": "Cloud",
+     "xPct": -9.091,
+     "yPct": 92.05,
+     "widthPct": 31.818,
+     "heightPct": 14.644,
+     "rotation": 0,
+     "opacity": 0.95,
+     "zIndex": 14,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 140,
+      "h": 140,
+      "fill": "#ffffff",
+      "blur": 6
+     }
+    },
+    {
+     "id": "tpl-s25",
+     "assetId": "shape:Cloud",
+     "name": "Cloud",
+     "xPct": 84.091,
+     "yPct": 88.912,
+     "widthPct": 27.273,
+     "heightPct": 12.552,
+     "rotation": 0,
+     "opacity": 0.95,
+     "zIndex": 14,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 120,
+      "h": 120,
+      "fill": "#ffffff",
+      "blur": 6
+     }
+    },
+    {
+     "id": "tpl-s26",
+     "assetId": "shape:Pill shadow",
+     "name": "Pill shadow",
+     "xPct": 13.409,
+     "yPct": 21.862,
+     "widthPct": 74.545,
+     "heightPct": 8.996,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 328,
+      "h": 86,
+      "radius": 24,
+      "fill": "#1c1650"
+     }
+    },
+    {
+     "id": "tpl-s27",
+     "assetId": "shape:Pill",
+     "name": "Pill",
+     "xPct": 12.727,
+     "yPct": 21.444,
+     "widthPct": 74.545,
+     "heightPct": 8.996,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 328,
+      "h": 86,
+      "radius": 24,
+      "fill": "#f3e6f0",
+      "stroke": "#1c1650",
+      "strokeWidth": 2,
+      "inset": 1.0
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 64.43,
+    "x": 6.03,
+    "y": 35.17,
+    "rotation": -8,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#3d3499",
+    "borderColor": "#3d3499",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Plan Your Routine",
+   "subtitle": "Add events, checklists, and tags to stay on track.",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg,#f7f3d7 0%,#fefdf9 60%,#ffcca9 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t39",
+     "xPct": 13.182,
+     "yPct": 22.015,
+     "widthPct": 74.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Add events, checklists,\nand tags to stay on track.",
+      "color": "#1e2d24",
+      "size": 56.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.25
+     }
+    },
+    {
+     "id": "tpl-t40",
+     "xPct": 4.545,
+     "yPct": 3.689,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Plan Your\nRoutine",
+      "color": "#1e4a3a",
+      "size": 166.9,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.0,
+      "charSpacing": -20
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s30",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -4.886,
+     "yPct": 30.439,
+     "widthPct": 112.045,
+     "heightPct": 98.797,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 493,
+      "h": 944.5,
+      "radius": 115.6,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s31",
+     "assetId": "shape:Cloud base",
+     "name": "Cloud base",
+     "xPct": -2.273,
+     "yPct": 95.711,
+     "widthPct": 104.545,
+     "heightPct": 6.276,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 14,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 460,
+      "h": 60,
+      "radius": 0,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s32",
+     "assetId": "shape:Cloud",
+     "name": "Cloud",
+     "xPct": 6.818,
+     "yPct": 87.866,
+     "widthPct": 40.909,
+     "heightPct": 18.828,
+     "rotation": 0,
+     "opacity": 0.95,
+     "zIndex": 14,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 180,
+      "h": 180,
+      "fill": "#ffffff",
+      "blur": 6
+     }
+    },
+    {
+     "id": "tpl-s33",
+     "assetId": "shape:Cloud",
+     "name": "Cloud",
+     "xPct": 34.091,
+     "yPct": 85.774,
+     "widthPct": 36.364,
+     "heightPct": 16.736,
+     "rotation": 0,
+     "opacity": 0.95,
+     "zIndex": 14,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 160,
+      "h": 160,
+      "fill": "#ffffff",
+      "blur": 6
+     }
+    },
+    {
+     "id": "tpl-s34",
+     "assetId": "shape:Cloud",
+     "name": "Cloud",
+     "xPct": 53.409,
+     "yPct": 87.866,
+     "widthPct": 43.182,
+     "heightPct": 19.874,
+     "rotation": 0,
+     "opacity": 0.95,
+     "zIndex": 14,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 190,
+      "h": 190,
+      "fill": "#ffffff",
+      "blur": 6
+     }
+    },
+    {
+     "id": "tpl-s35",
+     "assetId": "shape:Cloud",
+     "name": "Cloud",
+     "xPct": -9.091,
+     "yPct": 92.05,
+     "widthPct": 31.818,
+     "heightPct": 14.644,
+     "rotation": 0,
+     "opacity": 0.95,
+     "zIndex": 14,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 140,
+      "h": 140,
+      "fill": "#ffffff",
+      "blur": 6
+     }
+    },
+    {
+     "id": "tpl-s36",
+     "assetId": "shape:Cloud",
+     "name": "Cloud",
+     "xPct": 84.091,
+     "yPct": 88.912,
+     "widthPct": 27.273,
+     "heightPct": 12.552,
+     "rotation": 0,
+     "opacity": 0.95,
+     "zIndex": 14,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 120,
+      "h": 120,
+      "fill": "#ffffff",
+      "blur": 6
+     }
+    },
+    {
+     "id": "tpl-s37",
+     "assetId": "shape:Pill shadow",
+     "name": "Pill shadow",
+     "xPct": 13.864,
+     "yPct": 21.653,
+     "widthPct": 74.091,
+     "heightPct": 9.205,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 326,
+      "h": 88,
+      "radius": 24,
+      "fill": "#4f6b52"
+     }
+    },
+    {
+     "id": "tpl-s38",
+     "assetId": "shape:Pill",
+     "name": "Pill",
+     "xPct": 13.182,
+     "yPct": 21.234,
+     "widthPct": 74.091,
+     "heightPct": 9.205,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 326,
+      "h": 88,
+      "radius": 24,
+      "fill": "#eef1d8",
+      "stroke": "#4f6b52",
+      "strokeWidth": 2,
+      "inset": 1.0
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 64.43,
+    "x": 1.3,
+    "y": 33.38,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#1e4a3a",
+    "borderColor": "#1e4a3a",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Explore What Matters",
+   "subtitle": "Search by category or discover new routines",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg,#e3def2 0%,#fbf9f7 60%,#f8e2da 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t75",
+     "xPct": 17.727,
+     "yPct": 29.337,
+     "widthPct": 65.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Search by category or\ndiscover new routines",
+      "color": "#ffffff",
+      "size": 56.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.25
+     }
+    },
+    {
+     "id": "tpl-t76",
+     "xPct": 4.545,
+     "yPct": 3.689,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Explore\nWhat\nMatters",
+      "color": "#5347ca",
+      "size": 166.9,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.0,
+      "charSpacing": -20
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s41",
+     "assetId": "shape:Calendar",
+     "name": "Calendar",
+     "xPct": 9.545,
+     "yPct": 46.234,
+     "widthPct": 21.818,
+     "heightPct": 10.251,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 10,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 96,
+      "h": 98,
+      "radius": 8,
+      "fill": "#f3efd8",
+      "stroke": "#2a2350",
+      "strokeWidth": 3,
+      "inset": 1.5
+     }
+    },
+    {
+     "id": "tpl-s42",
+     "assetId": "shape:Cal check",
+     "name": "Cal check",
+     "xPct": 21.818,
+     "yPct": 52.301,
+     "widthPct": 7.727,
+     "heightPct": 3.556,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 11,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 34,
+      "h": 34,
+      "fill": "#c7b6ea",
+      "stroke": "#2a2350",
+      "strokeWidth": 3,
+      "inset": 1.5
+     }
+    },
+    {
+     "id": "tpl-s43",
+     "assetId": "shape:Checklist",
+     "name": "Checklist",
+     "xPct": 38.409,
+     "yPct": 48.745,
+     "widthPct": 16.818,
+     "heightPct": 7.741,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 10,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 74,
+      "h": 74,
+      "radius": 4,
+      "fill": "#f3efd8",
+      "stroke": "#2a2350",
+      "strokeWidth": 3,
+      "inset": 1.5
+     }
+    },
+    {
+     "id": "tpl-s44",
+     "assetId": "shape:Clock",
+     "name": "Clock",
+     "xPct": 62.5,
+     "yPct": 46.862,
+     "widthPct": 23.636,
+     "heightPct": 10.879,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 10,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 104,
+      "h": 104,
+      "fill": "#c9c0ef",
+      "stroke": "#2a2350",
+      "strokeWidth": 3,
+      "inset": 1.5
+     }
+    },
+    {
+     "id": "tpl-s45",
+     "assetId": "shape:Clock face",
+     "name": "Clock face",
+     "xPct": 65.909,
+     "yPct": 48.431,
+     "widthPct": 16.818,
+     "heightPct": 7.741,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 11,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 74,
+      "h": 74,
+      "fill": "#f3efd8",
+      "stroke": "#2a2350",
+      "strokeWidth": 3,
+      "inset": 1.5
+     }
+    },
+    {
+     "id": "tpl-s46",
+     "assetId": "shape:Hand",
+     "name": "Hand",
+     "xPct": 10.227,
+     "yPct": 60.146,
+     "widthPct": 10.227,
+     "heightPct": 10.983,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 9,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 45,
+      "h": 105,
+      "radius": 20,
+      "fill": "#f0a58c",
+      "stroke": "#2a2350",
+      "strokeWidth": 3,
+      "inset": 1.5
+     }
+    },
+    {
+     "id": "tpl-s47",
+     "assetId": "shape:Hair",
+     "name": "Hair",
+     "xPct": 37.955,
+     "yPct": 61.402,
+     "widthPct": 21.818,
+     "heightPct": 10.042,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 9,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 96,
+      "h": 96,
+      "fill": "#263030"
+     }
+    },
+    {
+     "id": "tpl-s48",
+     "assetId": "shape:Head",
+     "name": "Head",
+     "xPct": 39.545,
+     "yPct": 64.749,
+     "widthPct": 11.818,
+     "heightPct": 5.439,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 10,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 52,
+      "h": 52,
+      "fill": "#f0a58c",
+      "stroke": "#2a2350",
+      "strokeWidth": 3,
+      "inset": 1.5
+     }
+    },
+    {
+     "id": "tpl-s49",
+     "assetId": "shape:Shirt",
+     "name": "Shirt",
+     "xPct": 30.682,
+     "yPct": 72.176,
+     "widthPct": 34.091,
+     "heightPct": 10.46,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 10,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 150,
+      "h": 100,
+      "radius": 40,
+      "fill": "#f0a0a0",
+      "stroke": "#2a2350",
+      "strokeWidth": 3,
+      "inset": 1.5
+     }
+    },
+    {
+     "id": "tpl-s50",
+     "assetId": "shape:Legs",
+     "name": "Legs",
+     "xPct": 19.318,
+     "yPct": 80.021,
+     "widthPct": 53.409,
+     "heightPct": 5.021,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 11,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 235,
+      "h": 48,
+      "radius": 24,
+      "fill": "#c7b6ea",
+      "stroke": "#2a2350",
+      "strokeWidth": 3,
+      "inset": 1.5
+     }
+    },
+    {
+     "id": "tpl-s51",
+     "assetId": "shape:Wall clock",
+     "name": "Wall clock",
+     "xPct": 55.682,
+     "yPct": 66.423,
+     "widthPct": 27.273,
+     "heightPct": 12.552,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 12,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 120,
+      "h": 120,
+      "fill": "#8ab4d0",
+      "stroke": "#2a2350",
+      "strokeWidth": 3,
+      "inset": 1.5
+     }
+    },
+    {
+     "id": "tpl-s52",
+     "assetId": "shape:Wall clock face",
+     "name": "Wall clock face",
+     "xPct": 58.864,
+     "yPct": 67.887,
+     "widthPct": 20.909,
+     "heightPct": 9.623,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 13,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 92,
+      "h": 92,
+      "fill": "#f3efd8",
+      "stroke": "#2a2350",
+      "strokeWidth": 3,
+      "inset": 1.5
+     }
+    },
+    {
+     "id": "tpl-s53",
+     "assetId": "shape:Mini checklist",
+     "name": "Mini checklist",
+     "xPct": 77.727,
+     "yPct": 60.46,
+     "widthPct": 12.727,
+     "heightPct": 5.858,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 10,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 56,
+      "h": 56,
+      "radius": 4,
+      "fill": "#f3efd8",
+      "stroke": "#2a2350",
+      "strokeWidth": 3,
+      "inset": 1.5
+     }
+    },
+    {
+     "id": "tpl-s54",
+     "assetId": "shape:Envelope",
+     "name": "Envelope",
+     "xPct": 69.318,
+     "yPct": 82.322,
+     "widthPct": 14.773,
+     "heightPct": 5.439,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 12,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 65,
+      "h": 52,
+      "radius": 4,
+      "fill": "#f3efd8",
+      "stroke": "#2a2350",
+      "strokeWidth": 3,
+      "inset": 1.5
+     }
+    },
+    {
+     "id": "tpl-s55",
+     "assetId": "shape:Cal cell",
+     "name": "Cal cell",
+     "xPct": 12.273,
+     "yPct": 49.582,
+     "widthPct": 3.182,
+     "heightPct": 1.255,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 12,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 14,
+      "h": 12,
+      "radius": 2,
+      "stroke": "#2a2350",
+      "strokeWidth": 2.5,
+      "inset": 1.25
+     }
+    },
+    {
+     "id": "tpl-s56",
+     "assetId": "shape:Cal cell",
+     "name": "Cal cell",
+     "xPct": 12.273,
+     "yPct": 52.092,
+     "widthPct": 3.182,
+     "heightPct": 1.255,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 12,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 14,
+      "h": 12,
+      "radius": 2,
+      "stroke": "#2a2350",
+      "strokeWidth": 2.5,
+      "inset": 1.25
+     }
+    },
+    {
+     "id": "tpl-s57",
+     "assetId": "shape:Check line",
+     "name": "Check line",
+     "xPct": 42.386,
+     "yPct": 50.366,
+     "widthPct": 10.682,
+     "heightPct": 0.732,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 12,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 47.0,
+      "h": 7.0,
+      "vx": 186.5,
+      "vy": 481.5,
+      "path": "M190,485L230,485",
+      "stroke": "#2a2350",
+      "strokeWidth": 2.5,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s58",
+     "assetId": "shape:Cal cell",
+     "name": "Cal cell",
+     "xPct": 17.727,
+     "yPct": 49.582,
+     "widthPct": 3.182,
+     "heightPct": 1.255,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 12,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 14,
+      "h": 12,
+      "radius": 2,
+      "stroke": "#2a2350",
+      "strokeWidth": 2.5,
+      "inset": 1.25
+     }
+    },
+    {
+     "id": "tpl-s59",
+     "assetId": "shape:Cal cell",
+     "name": "Cal cell",
+     "xPct": 17.727,
+     "yPct": 52.092,
+     "widthPct": 3.182,
+     "heightPct": 1.255,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 12,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 14,
+      "h": 12,
+      "radius": 2,
+      "stroke": "#2a2350",
+      "strokeWidth": 2.5,
+      "inset": 1.25
+     }
+    },
+    {
+     "id": "tpl-s60",
+     "assetId": "shape:Check line",
+     "name": "Check line",
+     "xPct": 42.386,
+     "yPct": 52.667,
+     "widthPct": 10.682,
+     "heightPct": 0.732,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 12,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 47.0,
+      "h": 7.0,
+      "vx": 186.5,
+      "vy": 503.5,
+      "path": "M190,507L230,507",
+      "stroke": "#2a2350",
+      "strokeWidth": 2.5,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s61",
+     "assetId": "shape:Cal cell",
+     "name": "Cal cell",
+     "xPct": 23.182,
+     "yPct": 49.582,
+     "widthPct": 3.182,
+     "heightPct": 1.255,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 12,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 14,
+      "h": 12,
+      "radius": 2,
+      "stroke": "#2a2350",
+      "strokeWidth": 2.5,
+      "inset": 1.25
+     }
+    },
+    {
+     "id": "tpl-s62",
+     "assetId": "shape:Cal cell",
+     "name": "Cal cell",
+     "xPct": 23.182,
+     "yPct": 52.092,
+     "widthPct": 3.182,
+     "heightPct": 1.255,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 12,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 14,
+      "h": 12,
+      "radius": 2,
+      "stroke": "#2a2350",
+      "strokeWidth": 2.5,
+      "inset": 1.25
+     }
+    },
+    {
+     "id": "tpl-s63",
+     "assetId": "shape:Check line",
+     "name": "Check line",
+     "xPct": 42.386,
+     "yPct": 54.969,
+     "widthPct": 10.682,
+     "heightPct": 0.732,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 12,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 47.0,
+      "h": 7.0,
+      "vx": 186.5,
+      "vy": 525.5,
+      "path": "M190,529L230,529",
+      "stroke": "#2a2350",
+      "strokeWidth": 2.5,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s64",
+     "assetId": "shape:Clock check",
+     "name": "Clock check",
+     "xPct": 70.455,
+     "yPct": 50.418,
+     "widthPct": 8.864,
+     "heightPct": 3.556,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 14,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 39,
+      "h": 34,
+      "vx": 310,
+      "vy": 482,
+      "path": "M314,502L324,512L345,486",
+      "stroke": "#2a2350",
+      "strokeWidth": 3,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s65",
+     "assetId": "shape:Wall hands",
+     "name": "Wall hands",
+     "xPct": 68.409,
+     "yPct": 69.456,
+     "widthPct": 6.364,
+     "heightPct": 5.021,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 14,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 28,
+      "h": 48,
+      "vx": 301,
+      "vy": 664,
+      "path": "M305,695L305,668M305,695L325,708",
+      "stroke": "#2a2350",
+      "strokeWidth": 3,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s66",
+     "assetId": "shape:Mini check",
+     "name": "Mini check",
+     "xPct": 78.636,
+     "yPct": 61.297,
+     "widthPct": 10.0,
+     "heightPct": 3.138,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 13,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 44,
+      "h": 30,
+      "vx": 346,
+      "vy": 586,
+      "path": "M350,596L366,612L386,590",
+      "stroke": "#2a2350",
+      "strokeWidth": 3,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s67",
+     "assetId": "shape:Cloud base",
+     "name": "Cloud base",
+     "xPct": -2.273,
+     "yPct": 95.711,
+     "widthPct": 104.545,
+     "heightPct": 6.276,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 14,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 460,
+      "h": 60,
+      "radius": 0,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s68",
+     "assetId": "shape:Cloud",
+     "name": "Cloud",
+     "xPct": 6.818,
+     "yPct": 87.866,
+     "widthPct": 40.909,
+     "heightPct": 18.828,
+     "rotation": 0,
+     "opacity": 0.95,
+     "zIndex": 14,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 180,
+      "h": 180,
+      "fill": "#ffffff",
+      "blur": 6
+     }
+    },
+    {
+     "id": "tpl-s69",
+     "assetId": "shape:Cloud",
+     "name": "Cloud",
+     "xPct": 34.091,
+     "yPct": 85.774,
+     "widthPct": 36.364,
+     "heightPct": 16.736,
+     "rotation": 0,
+     "opacity": 0.95,
+     "zIndex": 14,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 160,
+      "h": 160,
+      "fill": "#ffffff",
+      "blur": 6
+     }
+    },
+    {
+     "id": "tpl-s70",
+     "assetId": "shape:Cloud",
+     "name": "Cloud",
+     "xPct": 53.409,
+     "yPct": 87.866,
+     "widthPct": 43.182,
+     "heightPct": 19.874,
+     "rotation": 0,
+     "opacity": 0.95,
+     "zIndex": 14,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 190,
+      "h": 190,
+      "fill": "#ffffff",
+      "blur": 6
+     }
+    },
+    {
+     "id": "tpl-s71",
+     "assetId": "shape:Cloud",
+     "name": "Cloud",
+     "xPct": -9.091,
+     "yPct": 92.05,
+     "widthPct": 31.818,
+     "heightPct": 14.644,
+     "rotation": 0,
+     "opacity": 0.95,
+     "zIndex": 14,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 140,
+      "h": 140,
+      "fill": "#ffffff",
+      "blur": 6
+     }
+    },
+    {
+     "id": "tpl-s72",
+     "assetId": "shape:Cloud",
+     "name": "Cloud",
+     "xPct": 84.091,
+     "yPct": 88.912,
+     "widthPct": 27.273,
+     "heightPct": 12.552,
+     "rotation": 0,
+     "opacity": 0.95,
+     "zIndex": 14,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 120,
+      "h": 120,
+      "fill": "#ffffff",
+      "blur": 6
+     }
+    },
+    {
+     "id": "tpl-s73",
+     "assetId": "shape:Pill shadow",
+     "name": "Pill shadow",
+     "xPct": 18.409,
+     "yPct": 28.975,
+     "widthPct": 65.0,
+     "heightPct": 9.205,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 286,
+      "h": 88,
+      "radius": 24,
+      "fill": "#2a2360"
+     }
+    },
+    {
+     "id": "tpl-s74",
+     "assetId": "shape:Pill",
+     "name": "Pill",
+     "xPct": 17.727,
+     "yPct": 28.556,
+     "widthPct": 65.0,
+     "heightPct": 9.205,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 286,
+      "h": 88,
+      "radius": 24,
+      "fill": "#5347ca",
+      "stroke": "#2a2360",
+      "strokeWidth": 2,
+      "inset": 1.0
+     }
+    }
+   ],
+   "deviceOne": {
+    "visible": false
+   }
+  },
+  {
+   "title": "Focus With Flow",
+   "subtitle": "Use visual timers to maintain concentration",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#5347ca"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t80",
+     "xPct": 15.455,
+     "yPct": 20.027,
+     "widthPct": 69.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Use visual timers to\nmaintain concentration",
+      "color": "#5347ca",
+      "size": 56.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.25
+     }
+    },
+    {
+     "id": "tpl-t81",
+     "xPct": 4.545,
+     "yPct": 3.689,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Focus\nWith Flow",
+      "color": "#ffffff",
+      "size": 166.9,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.0,
+      "charSpacing": -20
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s77",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -5.455,
+     "yPct": 30.439,
+     "widthPct": 110.909,
+     "heightPct": 97.661,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 488,
+      "h": 933.64,
+      "radius": 114.8,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s78",
+     "assetId": "shape:Pill shadow",
+     "name": "Pill shadow",
+     "xPct": 16.136,
+     "yPct": 19.77,
+     "widthPct": 69.091,
+     "heightPct": 8.996,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 304,
+      "h": 86,
+      "radius": 24,
+      "fill": "#1c1650"
+     }
+    },
+    {
+     "id": "tpl-s79",
+     "assetId": "shape:Pill",
+     "name": "Pill",
+     "xPct": 15.455,
+     "yPct": 19.351,
+     "widthPct": 69.091,
+     "heightPct": 8.996,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 304,
+      "h": 86,
+      "radius": 24,
+      "fill": "#f3e6f0",
+      "stroke": "#1c1650",
+      "strokeWidth": 2,
+      "inset": 1.0
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 63.6,
+    "x": 0.0,
+    "y": 33.16,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#3d3499",
+    "borderColor": "#3d3499",
+    "zIndex": 10
+   },
+   "extraDevices": [
+    {
+     "size": 66.94,
+     "x": 0.0,
+     "y": 54.83,
+     "rotation": 0,
+     "brightness": 100,
+     "frameless": false,
+     "bezelColor": "#3d3499",
+     "borderColor": "#3d3499",
+     "zIndex": 14
+    }
+   ]
+  }
+ ],
+ "designHeight": 2347
+}

@@ -1,0 +1,1128 @@
+{
+ "version": 1,
+ "id": "meditation-sound-app",
+ "name": "Meditation sound app",
+ "category": "health-and-fitness",
+ "description": "Transform your meditation app with our calming template. Display guided meditations, ambient sounds, and mindfulness features in a serene design that promotes relaxation, mental clarity, and spiritual well-being.",
+ "devices": [
+  {
+   "deviceId": "apple-iphone-16-pro-max",
+   "label": "iPhone 16 Pro Max"
+  },
+  {
+   "deviceId": "apple-iphone-13-pro-max",
+   "label": "iPhone 13 Pro Max"
+  },
+  {
+   "deviceId": "samsung-galaxy-s21-ultra",
+   "label": "Samsung Galaxy S21 Ultra"
+  },
+  {
+   "deviceId": "apple-ipad-pro-12-9-inch",
+   "label": "iPad Pro 12.9-inch"
+  },
+  {
+   "deviceId": "samsung-galaxy-tab-s7",
+   "label": "Samsung Galaxy Tab S7"
+  }
+ ],
+ "layout": "single-no-text",
+ "background": {
+  "type": "solid",
+  "value": "#1cae91"
+ },
+ "panoramic": false,
+ "columnCount": 5,
+ "titles": [
+  "\"Quiet mind, peaceful heart, daily reset.\"",
+  "Find Your Sound",
+  "Progress Overview",
+  "Customize Session",
+  "Your Journey"
+ ],
+ "subtitles": [
+  "Best Meditation App",
+  "Pick the ambient sounds that relax you most",
+  "See how your meditation practice is developing",
+  "Adjust duration & guidance for your perfect meditation",
+  "Track your progress & celebrate your growth"
+ ],
+ "textColor": "#111111",
+ "pages": [
+  {
+   "title": "\"Quiet mind, peaceful heart, daily reset.\"",
+   "subtitle": "Best Meditation App",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#1cae91"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t1",
+     "xPct": 10.227,
+     "yPct": 2.957,
+     "widthPct": 88.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "\"Quiet\nmind,\npeaceful\nheart, daily\nreset.\"",
+      "color": "#0f1925",
+      "size": 166.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.1176470588235294,
+      "charSpacing": -14
+     }
+    },
+    {
+     "id": "tpl-t2",
+     "xPct": 10.227,
+     "yPct": 50.614,
+     "widthPct": 68.182,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Rating",
+     "style": {
+      "text": "Best Meditation App",
+      "color": "#2ed3a6",
+      "size": 58.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": -38
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s3",
+     "assetId": "shape:Band",
+     "name": "Band",
+     "xPct": 0.0,
+     "yPct": 44.77,
+     "widthPct": 100.0,
+     "heightPct": 10.46,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 440,
+      "h": 100,
+      "radius": 0,
+      "fill": "#0f1925"
+     }
+    },
+    {
+     "id": "tpl-s4",
+     "assetId": "shape:Star",
+     "name": "Star",
+     "xPct": 10.025,
+     "yPct": 47.646,
+     "widthPct": 5.404,
+     "heightPct": 2.365,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 23.78,
+      "h": 22.61,
+      "vx": 44.11,
+      "vy": 455.5,
+      "path": "M56.0,455.5L58.94,463.95L67.89,464.14L60.76,469.55L63.35,478.11L56.0,473.0L48.65,478.11L51.24,469.55L44.11,464.14L53.06,463.95Z",
+      "fill": "#2ed3a6"
+     }
+    },
+    {
+     "id": "tpl-s5",
+     "assetId": "shape:Star",
+     "name": "Star",
+     "xPct": 15.48,
+     "yPct": 47.646,
+     "widthPct": 5.404,
+     "heightPct": 2.365,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 23.78,
+      "h": 22.61,
+      "vx": 68.11,
+      "vy": 455.5,
+      "path": "M80.0,455.5L82.94,463.95L91.89,464.14L84.76,469.55L87.35,478.11L80.0,473.0L72.65,478.11L75.24,469.55L68.11,464.14L77.06,463.95Z",
+      "fill": "#2ed3a6"
+     }
+    },
+    {
+     "id": "tpl-s6",
+     "assetId": "shape:Star",
+     "name": "Star",
+     "xPct": 20.934,
+     "yPct": 47.646,
+     "widthPct": 5.404,
+     "heightPct": 2.365,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 23.78,
+      "h": 22.61,
+      "vx": 92.11,
+      "vy": 455.5,
+      "path": "M104.0,455.5L106.94,463.95L115.89,464.14L108.76,469.55L111.35,478.11L104.0,473.0L96.65,478.11L99.24,469.55L92.11,464.14L101.06,463.95Z",
+      "fill": "#2ed3a6"
+     }
+    },
+    {
+     "id": "tpl-s7",
+     "assetId": "shape:Star",
+     "name": "Star",
+     "xPct": 26.389,
+     "yPct": 47.646,
+     "widthPct": 5.404,
+     "heightPct": 2.365,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 23.78,
+      "h": 22.61,
+      "vx": 116.11,
+      "vy": 455.5,
+      "path": "M128.0,455.5L130.94,463.95L139.89,464.14L132.76,469.55L135.35,478.11L128.0,473.0L120.65,478.11L123.24,469.55L116.11,464.14L125.06,463.95Z",
+      "fill": "#2ed3a6"
+     }
+    },
+    {
+     "id": "tpl-s8",
+     "assetId": "shape:Star",
+     "name": "Star",
+     "xPct": 31.844,
+     "yPct": 47.646,
+     "widthPct": 5.404,
+     "heightPct": 2.365,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 23.78,
+      "h": 22.61,
+      "vx": 140.11,
+      "vy": 455.5,
+      "path": "M152.0,455.5L154.94,463.95L163.89,464.14L156.76,469.55L159.35,478.11L152.0,473.0L144.65,478.11L147.24,469.55L140.11,464.14L149.06,463.95Z",
+      "fill": "#2ed3a6"
+     }
+    },
+    {
+     "id": "tpl-s9",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -10.895,
+     "yPct": 50.549,
+     "widthPct": 82.5,
+     "heightPct": 69.252,
+     "rotation": 44,
+     "opacity": 0.3,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 363,
+      "h": 662.05,
+      "radius": 94.8,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s10",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 28.878,
+     "yPct": 78.164,
+     "widthPct": 82.5,
+     "heightPct": 69.252,
+     "rotation": 44,
+     "opacity": 0.3,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 363,
+      "h": 662.05,
+      "radius": 94.8,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 42.68,
+    "x": -33.9,
+    "y": 59.61,
+    "rotation": 44,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   },
+   "extraDevices": [
+    {
+     "size": 42.68,
+     "x": 34.73,
+     "y": 107.26,
+     "rotation": 44,
+     "brightness": 100,
+     "frameless": false,
+     "bezelColor": "#060606",
+     "borderColor": "#5e5e5e",
+     "zIndex": 9
+    }
+   ]
+  },
+  {
+   "title": "Find Your Sound",
+   "subtitle": "Pick the ambient sounds that relax you most",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #264f66 0%, #1d3a4d 38%, #0e1f29 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t11",
+     "xPct": 0.0,
+     "yPct": 4.221,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Find Your\nSound",
+      "color": "#ffffff",
+      "size": 132.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.037037037037037,
+      "charSpacing": -61
+     }
+    },
+    {
+     "id": "tpl-t12",
+     "xPct": 0.0,
+     "yPct": 18.039,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Pick the ambient sounds\nthat relax you most",
+      "color": "#8fe3d8",
+      "size": 57.7,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.2765957446808511,
+      "charSpacing": 9
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s13",
+     "assetId": "shape:Band",
+     "name": "Band",
+     "xPct": 0.0,
+     "yPct": 16.736,
+     "widthPct": 100.0,
+     "heightPct": 8.787,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 440,
+      "h": 84,
+      "radius": 0,
+      "fill": "#0f1925"
+     }
+    },
+    {
+     "id": "tpl-s14",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 3.977,
+     "yPct": 25.314,
+     "widthPct": 92.045,
+     "heightPct": 78.797,
+     "rotation": 0,
+     "opacity": 0.3,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 405,
+      "h": 753.3,
+      "radius": 101.52,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s15",
+     "assetId": "shape:Wave",
+     "name": "Wave",
+     "xPct": -2.5,
+     "yPct": 37.552,
+     "widthPct": 36.818,
+     "heightPct": 10.146,
+     "rotation": 0,
+     "opacity": 0.45,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 162,
+      "h": 97,
+      "vx": -11,
+      "vy": 359,
+      "path": "M0,370C60,395C100,430C140,445",
+      "stroke": "#3fa6d6",
+      "strokeWidth": 10,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s16",
+     "assetId": "shape:Wave",
+     "name": "Wave",
+     "xPct": -2.5,
+     "yPct": 51.674,
+     "widthPct": 36.818,
+     "heightPct": 8.054,
+     "rotation": 0,
+     "opacity": 0.45,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 162,
+      "h": 77,
+      "vx": -11,
+      "vy": 494,
+      "path": "M0,505C50,520C100,545C140,560",
+      "stroke": "#3fa6d6",
+      "strokeWidth": 10,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s17",
+     "assetId": "shape:Wave",
+     "name": "Wave",
+     "xPct": 65.682,
+     "yPct": 52.72,
+     "widthPct": 36.818,
+     "heightPct": 4.916,
+     "rotation": 0,
+     "opacity": 0.45,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 162,
+      "h": 47,
+      "vx": 289,
+      "vy": 504,
+      "path": "M300,520C380,515C420,540C440,525",
+      "stroke": "#3fa6d6",
+      "strokeWidth": 10,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s18",
+     "assetId": "shape:Wave",
+     "name": "Wave",
+     "xPct": 65.682,
+     "yPct": 63.703,
+     "widthPct": 36.818,
+     "heightPct": 12.762,
+     "rotation": 0,
+     "opacity": 0.4,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 162,
+      "h": 122,
+      "vx": 289,
+      "vy": 609,
+      "path": "M300,620C380,640C420,690C440,720",
+      "stroke": "#3fa6d6",
+      "strokeWidth": 10,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s19",
+     "assetId": "shape:Wave",
+     "name": "Wave",
+     "xPct": 65.682,
+     "yPct": 76.778,
+     "widthPct": 36.818,
+     "heightPct": 8.054,
+     "rotation": 0,
+     "opacity": 0.4,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 162,
+      "h": 77,
+      "vx": 289,
+      "vy": 734,
+      "path": "M300,745C370,775C410,790C440,800",
+      "stroke": "#3fa6d6",
+      "strokeWidth": 10,
+      "strokeLinejoin": "round"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 49.7,
+    "x": 0.0,
+    "y": 20.87,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Progress Overview",
+   "subtitle": "See how your meditation practice is developing",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #00757b 0%, #015660 36%, #00748a 62%, #00292f 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t20",
+     "xPct": 0.0,
+     "yPct": 4.221,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Progress\nOverview",
+      "color": "#ffffff",
+      "size": 132.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.037037037037037,
+      "charSpacing": -97
+     }
+    },
+    {
+     "id": "tpl-t21",
+     "xPct": 0.0,
+     "yPct": 18.039,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "See how your meditation\npractice is developing",
+      "color": "#2ed3a6",
+      "size": 57.7,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.2765957446808511,
+      "charSpacing": 7
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s22",
+     "assetId": "shape:Band",
+     "name": "Band",
+     "xPct": 0.0,
+     "yPct": 16.736,
+     "widthPct": 100.0,
+     "heightPct": 8.787,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 440,
+      "h": 84,
+      "radius": 0,
+      "fill": "#0f1925"
+     }
+    },
+    {
+     "id": "tpl-s23",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 3.977,
+     "yPct": 25.314,
+     "widthPct": 92.045,
+     "heightPct": 78.797,
+     "rotation": 0,
+     "opacity": 0.3,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 405,
+      "h": 753.3,
+      "radius": 101.52,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s24",
+     "assetId": "shape:Wave",
+     "name": "Wave",
+     "xPct": 81.591,
+     "yPct": 36.297,
+     "widthPct": 21.364,
+     "heightPct": 5.335,
+     "rotation": 0,
+     "opacity": 0.5,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 94,
+      "h": 51,
+      "vx": 359,
+      "vy": 347,
+      "path": "M372,385C400,370C420,365C440,360",
+      "stroke": "#22d0c8",
+      "strokeWidth": 12,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s25",
+     "assetId": "shape:Wave",
+     "name": "Wave",
+     "xPct": 82.045,
+     "yPct": 42.782,
+     "widthPct": 20.455,
+     "heightPct": 5.439,
+     "rotation": 0,
+     "opacity": 0.5,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 90,
+      "h": 52,
+      "vx": 361,
+      "vy": 409,
+      "path": "M372,420C400,440C420,450C440,445",
+      "stroke": "#22d0c8",
+      "strokeWidth": 10,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s26",
+     "assetId": "shape:Wave",
+     "name": "Wave",
+     "xPct": -2.5,
+     "yPct": 52.197,
+     "widthPct": 20.455,
+     "heightPct": 3.347,
+     "rotation": 0,
+     "opacity": 0.5,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 90,
+      "h": 32,
+      "vx": -11,
+      "vy": 499,
+      "path": "M0,512C30,510C50,515C68,520",
+      "stroke": "#22d0c8",
+      "strokeWidth": 10,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s27",
+     "assetId": "shape:Wave",
+     "name": "Wave",
+     "xPct": -2.5,
+     "yPct": 55.858,
+     "widthPct": 20.455,
+     "heightPct": 5.962,
+     "rotation": 0,
+     "opacity": 0.5,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 90,
+      "h": 57,
+      "vx": -11,
+      "vy": 534,
+      "path": "M0,580C30,570C50,560C68,545",
+      "stroke": "#22d0c8",
+      "strokeWidth": 10,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s28",
+     "assetId": "shape:Wave",
+     "name": "Wave",
+     "xPct": 82.045,
+     "yPct": 51.151,
+     "widthPct": 20.455,
+     "heightPct": 4.393,
+     "rotation": 0,
+     "opacity": 0.5,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 90,
+      "h": 42,
+      "vx": 361,
+      "vy": 489,
+      "path": "M372,505C400,510C420,520C440,500",
+      "stroke": "#22d0c8",
+      "strokeWidth": 10,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s29",
+     "assetId": "shape:Wave",
+     "name": "Wave",
+     "xPct": 82.045,
+     "yPct": 60.565,
+     "widthPct": 20.455,
+     "heightPct": 4.393,
+     "rotation": 0,
+     "opacity": 0.5,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 90,
+      "h": 42,
+      "vx": 361,
+      "vy": 579,
+      "path": "M372,590C400,600C420,610C440,600",
+      "stroke": "#22d0c8",
+      "strokeWidth": 10,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s30",
+     "assetId": "shape:Wave",
+     "name": "Wave",
+     "xPct": -2.5,
+     "yPct": 78.347,
+     "widthPct": 20.455,
+     "heightPct": 5.439,
+     "rotation": 0,
+     "opacity": 0.5,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 90,
+      "h": 52,
+      "vx": -11,
+      "vy": 749,
+      "path": "M0,780C30,790C50,770C68,760",
+      "stroke": "#22d0c8",
+      "strokeWidth": 10,
+      "strokeLinejoin": "round"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 49.7,
+    "x": 0.0,
+    "y": 20.87,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Customize Session",
+   "subtitle": "Adjust duration & guidance for your perfect meditation",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #dce9eb 0%, #c4d7e3 18%, #9fbdcc 32%, #d3e3ec 50%, #a5c3da 68%, #5e93b8 85%, #2a5f92 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t31",
+     "xPct": 0.0,
+     "yPct": 4.221,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Customize\nSession",
+      "color": "#0f1925",
+      "size": 132.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.037037037037037,
+      "charSpacing": -27
+     }
+    },
+    {
+     "id": "tpl-t32",
+     "xPct": 0.0,
+     "yPct": 18.039,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Adjust duration & guidance\nfor your perfect meditation",
+      "color": "#8ec9ee",
+      "size": 57.7,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.2765957446808511,
+      "charSpacing": 9
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s33",
+     "assetId": "shape:Band",
+     "name": "Band",
+     "xPct": 0.0,
+     "yPct": 16.736,
+     "widthPct": 100.0,
+     "heightPct": 8.787,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 440,
+      "h": 84,
+      "radius": 0,
+      "fill": "#0f1925"
+     }
+    },
+    {
+     "id": "tpl-s34",
+     "assetId": "shape:Wave R",
+     "name": "Wave R",
+     "xPct": 59.091,
+     "yPct": 35.565,
+     "widthPct": 81.818,
+     "heightPct": 37.657,
+     "rotation": 0,
+     "opacity": 0.95,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 360,
+      "h": 360,
+      "radius": 180,
+      "fill": "#1f5f96",
+      "blur": 12,
+      "inset": 40
+     }
+    },
+    {
+     "id": "tpl-s35",
+     "assetId": "shape:Wave top",
+     "name": "Wave top",
+     "xPct": 70.455,
+     "yPct": 25.105,
+     "widthPct": 45.455,
+     "heightPct": 18.828,
+     "rotation": 0,
+     "opacity": 0.8,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 200,
+      "h": 180,
+      "radius": 90,
+      "fill": "#3a86b5",
+      "blur": 10,
+      "inset": 30
+     }
+    },
+    {
+     "id": "tpl-s36",
+     "assetId": "shape:Sea",
+     "name": "Sea",
+     "xPct": -31.818,
+     "yPct": 77.406,
+     "widthPct": 163.636,
+     "heightPct": 39.749,
+     "rotation": 0,
+     "opacity": 0.95,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 720,
+      "h": 380,
+      "radius": 190,
+      "fill": "#123a68",
+      "blur": 12,
+      "inset": 40
+     }
+    },
+    {
+     "id": "tpl-s37",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 3.977,
+     "yPct": 25.314,
+     "widthPct": 92.045,
+     "heightPct": 78.797,
+     "rotation": 0,
+     "opacity": 0.3,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 405,
+      "h": 753.3,
+      "radius": 101.52,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 49.7,
+    "x": 0.0,
+    "y": 20.87,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Your Journey",
+   "subtitle": "Track your progress & celebrate your growth",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#1cae91"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t38",
+     "xPct": 0.0,
+     "yPct": 4.221,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Your\nJourney",
+      "color": "#0f1925",
+      "size": 132.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.037037037037037,
+      "charSpacing": 12
+     }
+    },
+    {
+     "id": "tpl-t39",
+     "xPct": 0.0,
+     "yPct": 18.039,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Track your progress &\ncelebrate your growth",
+      "color": "#2ed3a6",
+      "size": 57.7,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.2765957446808511,
+      "charSpacing": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s40",
+     "assetId": "shape:Band",
+     "name": "Band",
+     "xPct": 0.0,
+     "yPct": 16.736,
+     "widthPct": 100.0,
+     "heightPct": 8.787,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 440,
+      "h": 84,
+      "radius": 0,
+      "fill": "#0f1925"
+     }
+    },
+    {
+     "id": "tpl-s41",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -10.895,
+     "yPct": 23.353,
+     "widthPct": 82.5,
+     "heightPct": 69.252,
+     "rotation": 44,
+     "opacity": 0.3,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 363,
+      "h": 662.05,
+      "radius": 94.8,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s42",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 28.878,
+     "yPct": 50.968,
+     "widthPct": 82.5,
+     "heightPct": 69.252,
+     "rotation": 44,
+     "opacity": 0.3,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 363,
+      "h": 662.05,
+      "radius": 94.8,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 42.68,
+    "x": -33.9,
+    "y": 12.68,
+    "rotation": 44,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   },
+   "extraDevices": [
+    {
+     "size": 42.68,
+     "x": 34.73,
+     "y": 60.33,
+     "rotation": 44,
+     "brightness": 100,
+     "frameless": false,
+     "bezelColor": "#060606",
+     "borderColor": "#5e5e5e",
+     "zIndex": 9
+    }
+   ]
+  }
+ ],
+ "designHeight": 2347
+}

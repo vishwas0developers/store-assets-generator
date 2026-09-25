@@ -1,0 +1,870 @@
+{
+ "version": 1,
+ "id": "fitness-2-app",
+ "name": "Fitness 2 app",
+ "category": "health-and-fitness",
+ "description": "Elevate your fitness app with our dynamic template. Display advanced workout tracking, personalized training plans, and comprehensive health metrics in an energetic design that motivates users to achieve their fitness goals.",
+ "devices": [
+  {
+   "deviceId": "apple-iphone-16-pro-max",
+   "label": "iPhone 16 Pro Max"
+  },
+  {
+   "deviceId": "apple-iphone-13-pro-max",
+   "label": "iPhone 13 Pro Max"
+  },
+  {
+   "deviceId": "samsung-galaxy-s21-ultra",
+   "label": "Samsung Galaxy S21 Ultra"
+  },
+  {
+   "deviceId": "apple-ipad-pro-12-9-inch",
+   "label": "iPad Pro 12.9-inch"
+  },
+  {
+   "deviceId": "samsung-galaxy-tab-s7",
+   "label": "Samsung Galaxy Tab S7"
+  }
+ ],
+ "layout": "single-no-text",
+ "background": {
+  "type": "gradient",
+  "value": "linear-gradient(165deg, #fdcdb4 0%, #f8b48f 55%, #ff9f6b 100%)"
+ },
+ "panoramic": false,
+ "columnCount": 5,
+ "titles": [
+  "Track your Running",
+  "Record Every Run",
+  "Set Your Weekly Goal",
+  "Follow Top Athletes",
+  "Celebrate Your Best Efforts"
+ ],
+ "subtitles": [
+  "Get motivated togheter",
+  "Take challenges & earn rewards",
+  "Stay motivated & track progress",
+  "Get inspired by champions",
+  "Unlock badges & milestones"
+ ],
+ "textColor": "#111111",
+ "pages": [
+  {
+   "title": "Track your Running",
+   "subtitle": "Get motivated togheter",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(165deg, #fdcdb4 0%, #f8b48f 55%, #ff9f6b 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t2",
+     "xPct": 4.545,
+     "yPct": 4.289,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Track your\nRunning",
+      "color": "#dc4a08",
+      "size": 127.6,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.08,
+      "charSpacing": -15
+     }
+    },
+    {
+     "id": "tpl-t4",
+     "xPct": 21.818,
+     "yPct": 18.529,
+     "widthPct": 58.182,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Get motivated togheter",
+      "color": "#ffffff",
+      "size": 56.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -6
+     }
+    },
+    {
+     "id": "tpl-t6",
+     "xPct": 29.318,
+     "yPct": 69.037,
+     "widthPct": 40.455,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "You did",
+     "style": {
+      "text": "You did",
+      "color": "#ffe6d8",
+      "size": 108.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 11
+     }
+    },
+    {
+     "id": "tpl-t8",
+     "xPct": 17.955,
+     "yPct": 75.522,
+     "widthPct": 65.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "great today!",
+     "style": {
+      "text": "great today!",
+      "color": "#ffe6d8",
+      "size": 108.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 30
+     }
+    },
+    {
+     "id": "tpl-t10",
+     "xPct": 17.5,
+     "yPct": 82.322,
+     "widthPct": 66.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "10KM Run in",
+     "style": {
+      "text": "10KM Run in",
+      "color": "#ffe6d8",
+      "size": 108.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 36
+     }
+    },
+    {
+     "id": "tpl-t12",
+     "xPct": 32.955,
+     "yPct": 89.121,
+     "widthPct": 35.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "32MIN",
+     "style": {
+      "text": "32MIN",
+      "color": "#ffe6d8",
+      "size": 108.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 24
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s1",
+     "assetId": "shape:Frosted card",
+     "name": "Frosted card",
+     "xPct": 7.727,
+     "yPct": 59.728,
+     "widthPct": 84.318,
+     "heightPct": 41.841,
+     "rotation": 0,
+     "opacity": 0.25,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 371,
+      "h": 400,
+      "radius": 30,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s3",
+     "assetId": "shape:Subtitle box",
+     "name": "Subtitle box",
+     "xPct": 19.318,
+     "yPct": 17.573,
+     "widthPct": 61.364,
+     "heightPct": 4.184,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 270,
+      "h": 40,
+      "radius": 0,
+      "fill": "#e04c00"
+     }
+    },
+    {
+     "id": "tpl-s5",
+     "assetId": "shape:Line box",
+     "name": "Line box",
+     "xPct": 25.455,
+     "yPct": 69.142,
+     "widthPct": 46.364,
+     "heightPct": 6.276,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 204,
+      "h": 60,
+      "radius": 14,
+      "fill": "#e04c00"
+     }
+    },
+    {
+     "id": "tpl-s7",
+     "assetId": "shape:Line box",
+     "name": "Line box",
+     "xPct": 14.091,
+     "yPct": 75.523,
+     "widthPct": 71.818,
+     "heightPct": 6.381,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 316,
+      "h": 61,
+      "radius": 14,
+      "fill": "#e04c00"
+     }
+    },
+    {
+     "id": "tpl-s9",
+     "assetId": "shape:Line box",
+     "name": "Line box",
+     "xPct": 13.636,
+     "yPct": 81.904,
+     "widthPct": 72.727,
+     "heightPct": 6.799,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 320,
+      "h": 65,
+      "radius": 14,
+      "fill": "#e04c00"
+     }
+    },
+    {
+     "id": "tpl-s11",
+     "assetId": "shape:Line box",
+     "name": "Line box",
+     "xPct": 29.091,
+     "yPct": 88.703,
+     "widthPct": 41.818,
+     "heightPct": 6.485,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 184,
+      "h": 62,
+      "radius": 14,
+      "fill": "#e04c00"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 54.39,
+    "x": 400,
+    "y": 24.79,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Record Every Run",
+   "subtitle": "Take challenges & earn rewards",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(165deg, #fdcdb4 0%, #f8b48f 55%, #ff9f6b 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t15",
+     "xPct": 4.545,
+     "yPct": 4.289,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Record\nEvery Run",
+      "color": "#dc4a08",
+      "size": 127.6,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.08,
+      "charSpacing": -15
+     }
+    },
+    {
+     "id": "tpl-t17",
+     "xPct": 12.955,
+     "yPct": 18.529,
+     "widthPct": 75.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Take challenges & earn rewards",
+      "color": "#ffffff",
+      "size": 56.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -34
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s13",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -7.727,
+     "yPct": 21.444,
+     "widthPct": 79.545,
+     "heightPct": 66.297,
+     "rotation": 0,
+     "opacity": 0.08,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 350,
+      "h": 633.8,
+      "radius": 92.72,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s14",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 28.636,
+     "yPct": 39.121,
+     "widthPct": 79.091,
+     "heightPct": 65.843,
+     "rotation": 0,
+     "opacity": 0.08,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 348,
+      "h": 629.45,
+      "radius": 92.4,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s16",
+     "assetId": "shape:Subtitle box",
+     "name": "Subtitle box",
+     "xPct": 10.455,
+     "yPct": 17.573,
+     "widthPct": 79.091,
+     "heightPct": 4.184,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 348,
+      "h": 40,
+      "radius": 0,
+      "fill": "#e04c00"
+     }
+    },
+    {
+     "id": "tpl-s18",
+     "assetId": "shape:Fade",
+     "name": "Fade",
+     "xPct": 0.0,
+     "yPct": 24.059,
+     "widthPct": 100.0,
+     "heightPct": 75.941,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 440,
+      "h": 726,
+      "radius": 0,
+      "gradient": [
+       [
+        0,
+        "rgba(255,236,225,0)"
+       ],
+       [
+        0.06,
+        "rgba(255,236,225,0.62)"
+       ],
+       [
+        0.6,
+        "rgba(255,236,225,0.7)"
+       ],
+       [
+        1,
+        "rgba(255,236,225,0.6)"
+       ]
+      ]
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 40.5,
+    "x": -32.64,
+    "y": 7.21,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#f6f6f6",
+    "borderColor": "#ffffff",
+    "zIndex": 8
+   },
+   "extraDevices": [
+    {
+     "size": 40.17,
+     "x": 33.33,
+     "y": 39.26,
+     "rotation": 0,
+     "brightness": 100,
+     "frameless": false,
+     "bezelColor": "#f6f6f6",
+     "borderColor": "#ffffff",
+     "zIndex": 10
+    }
+   ]
+  },
+  {
+   "title": "Set Your Weekly Goal",
+   "subtitle": "Stay motivated & track progress",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#df4901"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t21",
+     "xPct": 4.545,
+     "yPct": 4.27,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Set Your\nWeekly Goal",
+      "color": "#f7b790",
+      "size": 132.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.02
+     }
+    },
+    {
+     "id": "tpl-t22",
+     "xPct": 2.273,
+     "yPct": 18.828,
+     "widthPct": 95.455,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Stay motivated & track progress",
+      "color": "#cf5518",
+      "size": 54.0,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s19",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 22.707,
+     "yPct": 20.425,
+     "widthPct": 60.909,
+     "heightPct": 47.661,
+     "rotation": -16,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 268,
+      "h": 455.64,
+      "radius": 79.6,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s20",
+     "assetId": "shape:Subtitle box",
+     "name": "Subtitle box",
+     "xPct": 9.773,
+     "yPct": 17.573,
+     "widthPct": 80.682,
+     "heightPct": 4.184,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 355,
+      "h": 40,
+      "radius": 0,
+      "fill": "#efbca0"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 26.78,
+    "x": 8.69,
+    "y": -17.52,
+    "rotation": -16,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#edb390",
+    "borderColor": "#edb390",
+    "zIndex": 8
+   },
+   "extraDevices": [
+    {
+     "size": 64.93,
+     "x": -0.52,
+     "y": 69.22,
+     "rotation": 0,
+     "brightness": 100,
+     "frameless": false,
+     "bezelColor": "#edb390",
+     "borderColor": "#edb390",
+     "zIndex": 12
+    }
+   ]
+  },
+  {
+   "title": "Follow Top Athletes",
+   "subtitle": "Get inspired by champions",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#e24a00"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t25",
+     "xPct": 4.545,
+     "yPct": 4.237,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Follow Top\nAthletes",
+      "color": "#f2bc9f",
+      "size": 127.6,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.08,
+      "charSpacing": 4
+     }
+    },
+    {
+     "id": "tpl-t26",
+     "xPct": 4.545,
+     "yPct": 18.633,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Get inspired by champions",
+      "color": "#e24a00",
+      "size": 56.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -32
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s23",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -6.705,
+     "yPct": 21.548,
+     "widthPct": 110.455,
+     "heightPct": 97.206,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 486,
+      "h": 929.29,
+      "radius": 114.48,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s24",
+     "assetId": "shape:Subtitle box",
+     "name": "Subtitle box",
+     "xPct": 16.364,
+     "yPct": 17.573,
+     "widthPct": 67.273,
+     "heightPct": 4.289,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 296,
+      "h": 41,
+      "radius": 0,
+      "fill": "#efbaa3"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 63.26,
+    "x": -1.72,
+    "y": 22.73,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#ecb495",
+    "borderColor": "#ecb495",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Celebrate Your Best Efforts",
+   "subtitle": "Unlock badges & milestones",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#e24a00"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t30",
+     "xPct": 4.545,
+     "yPct": 4.185,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Celebrate\nYour Best\nEfforts",
+      "color": "#f2bc9f",
+      "size": 127.6,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.08,
+      "charSpacing": 9
+     }
+    },
+    {
+     "id": "tpl-t31",
+     "xPct": 4.545,
+     "yPct": 24.491,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Unlock badges & milestones",
+      "color": "#e24a00",
+      "size": 56.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -29
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s27",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -0.909,
+     "yPct": 27.301,
+     "widthPct": 77.5,
+     "heightPct": 64.252,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 341,
+      "h": 614.25,
+      "radius": 91.28,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s28",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 36.591,
+     "yPct": 41.736,
+     "widthPct": 92.727,
+     "heightPct": 79.479,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 408,
+      "h": 759.82,
+      "radius": 102.0,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s29",
+     "assetId": "shape:Subtitle box",
+     "name": "Subtitle box",
+     "xPct": 14.318,
+     "yPct": 23.431,
+     "widthPct": 71.364,
+     "heightPct": 4.289,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 314,
+      "h": 41,
+      "radius": 0,
+      "fill": "#ecbaa0"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 38.99,
+    "x": -22.96,
+    "y": 16.62,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#ecb495",
+    "borderColor": "#ecb495",
+    "zIndex": 10
+   },
+   "extraDevices": [
+    {
+     "size": 50.21,
+     "x": 48.33,
+     "y": 45.24,
+     "rotation": 0,
+     "brightness": 100,
+     "frameless": false,
+     "bezelColor": "#ecb495",
+     "borderColor": "#ecb495",
+     "zIndex": 12
+    }
+   ]
+  }
+ ],
+ "designHeight": 2347
+}

@@ -1,0 +1,1169 @@
+{
+ "version": 1,
+ "id": "fitness-light-mode-app",
+ "name": "Fitness light mode app",
+ "category": "health-and-fitness",
+ "description": "Showcase your fitness app with our bright template. Display workout routines, progress tracking, and fitness goals in a clean, light design that motivates users to achieve their health objectives with clarity and focus.",
+ "devices": [
+  {
+   "deviceId": "apple-iphone-16-pro-max",
+   "label": "iPhone 16 Pro Max"
+  },
+  {
+   "deviceId": "apple-iphone-13-pro-max",
+   "label": "iPhone 13 Pro Max"
+  },
+  {
+   "deviceId": "samsung-galaxy-s21-ultra",
+   "label": "Samsung Galaxy S21 Ultra"
+  },
+  {
+   "deviceId": "apple-ipad-pro-12-9-inch",
+   "label": "iPad Pro 12.9-inch"
+  },
+  {
+   "deviceId": "samsung-galaxy-tab-s7",
+   "label": "Samsung Galaxy Tab S7"
+  }
+ ],
+ "layout": "single-no-text",
+ "background": {
+  "type": "gradient",
+  "value": "linear-gradient(180deg, #e6e6e8 0%, #efeff0 100%)"
+ },
+ "panoramic": false,
+ "columnCount": 5,
+ "titles": [
+  "TRACK YOUR RUNNING",
+  "RECORD EVERY STEP",
+  "SET YOUR GOAL",
+  "FOLLOW YOUR COMMUNITY",
+  "TRACK YOUR PROGRES"
+ ],
+ "subtitles": [
+  "4.9 AVG. RATING ON APP STORE",
+  "",
+  "",
+  "",
+  ""
+ ],
+ "textColor": "#111111",
+ "pages": [
+  {
+   "title": "TRACK YOUR RUNNING",
+   "subtitle": "4.9 AVG. RATING ON APP STORE",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #e6e6e8 0%, #efeff0 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t2",
+     "xPct": 24.545,
+     "yPct": 5.804,
+     "widthPct": 50.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "TRACK",
+     "style": {
+      "text": "TRACK",
+      "color": "#ffffff",
+      "size": 122.7,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -10
+     }
+    },
+    {
+     "id": "tpl-t4",
+     "xPct": 28.182,
+     "yPct": 15.218,
+     "widthPct": 43.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "YOUR",
+     "style": {
+      "text": "YOUR",
+      "color": "#ffffff",
+      "size": 122.7,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -10
+     }
+    },
+    {
+     "id": "tpl-t6",
+     "xPct": 15.0,
+     "yPct": 24.633,
+     "widthPct": 70.227,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "RUNNING",
+     "style": {
+      "text": "RUNNING",
+      "color": "#ffffff",
+      "size": 122.7,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -10
+     }
+    },
+    {
+     "id": "tpl-t8",
+     "xPct": 24.773,
+     "yPct": 84.533,
+     "widthPct": 50.455,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "4.9 AVG. RATING",
+     "style": {
+      "text": "4.9 AVG. RATING",
+      "color": "#ffffff",
+      "size": 56.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t9",
+     "xPct": 24.773,
+     "yPct": 87.775,
+     "widthPct": 50.455,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "ON APP STORE",
+     "style": {
+      "text": "ON APP STORE",
+      "color": "#ffffff",
+      "size": 56.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s1",
+     "assetId": "shape:Chip TRACK",
+     "name": "Chip TRACK",
+     "xPct": 24.545,
+     "yPct": 4.603,
+     "widthPct": 50.909,
+     "heightPct": 8.054,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 28,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 224,
+      "h": 77,
+      "radius": 10,
+      "fill": "#f26a10"
+     }
+    },
+    {
+     "id": "tpl-s3",
+     "assetId": "shape:Chip YOUR",
+     "name": "Chip YOUR",
+     "xPct": 28.182,
+     "yPct": 14.017,
+     "widthPct": 43.636,
+     "heightPct": 8.054,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 28,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 192,
+      "h": 77,
+      "radius": 10,
+      "fill": "#f26a10"
+     }
+    },
+    {
+     "id": "tpl-s5",
+     "assetId": "shape:Chip RUNNING",
+     "name": "Chip RUNNING",
+     "xPct": 15.0,
+     "yPct": 23.431,
+     "widthPct": 70.227,
+     "heightPct": 8.054,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 28,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 309,
+      "h": 77,
+      "radius": 10,
+      "fill": "#f26a10"
+     }
+    },
+    {
+     "id": "tpl-s7",
+     "assetId": "shape:Rating chip",
+     "name": "Rating chip",
+     "xPct": 24.773,
+     "yPct": 83.473,
+     "widthPct": 50.455,
+     "heightPct": 7.741,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 28,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 222,
+      "h": 74,
+      "radius": 10,
+      "fill": "#f26a10"
+     }
+    }
+   ],
+   "deviceOne": {
+    "visible": false
+   }
+  },
+  {
+   "title": "RECORD EVERY STEP",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #e6e6e8 0%, #f4f2ef 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t11",
+     "xPct": 19.091,
+     "yPct": 5.543,
+     "widthPct": 61.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "RECORD",
+     "style": {
+      "text": "RECORD",
+      "color": "#ffffff",
+      "size": 122.7,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -10
+     }
+    },
+    {
+     "id": "tpl-t13",
+     "xPct": 25.227,
+     "yPct": 14.225,
+     "widthPct": 49.545,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "EVERY",
+     "style": {
+      "text": "EVERY",
+      "color": "#ffffff",
+      "size": 122.7,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -10
+     }
+    },
+    {
+     "id": "tpl-t15",
+     "xPct": 30.909,
+     "yPct": 22.907,
+     "widthPct": 38.182,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "STEP",
+     "style": {
+      "text": "STEP",
+      "color": "#ffffff",
+      "size": 122.7,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -10
+     }
+    },
+    {
+     "id": "tpl-t21",
+     "xPct": 59.773,
+     "yPct": 79.579,
+     "widthPct": 22.727,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "TIMER",
+     "style": {
+      "text": "TIMER",
+      "color": "#ffe9d6",
+      "size": 31.9,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t22",
+     "xPct": 57.5,
+     "yPct": 82.621,
+     "widthPct": 27.273,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "00:35.67",
+     "style": {
+      "text": "00:35.67",
+      "color": "#fff3e8",
+      "size": 51.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s10",
+     "assetId": "shape:Chip RECORD",
+     "name": "Chip RECORD",
+     "xPct": 19.091,
+     "yPct": 4.603,
+     "widthPct": 61.818,
+     "heightPct": 7.531,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 28,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 272,
+      "h": 72,
+      "radius": 10,
+      "fill": "#f26a10"
+     }
+    },
+    {
+     "id": "tpl-s12",
+     "assetId": "shape:Chip EVERY",
+     "name": "Chip EVERY",
+     "xPct": 25.227,
+     "yPct": 13.285,
+     "widthPct": 49.545,
+     "heightPct": 7.531,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 28,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 218,
+      "h": 72,
+      "radius": 10,
+      "fill": "#f26a10"
+     }
+    },
+    {
+     "id": "tpl-s14",
+     "assetId": "shape:Chip STEP",
+     "name": "Chip STEP",
+     "xPct": 30.909,
+     "yPct": 21.967,
+     "widthPct": 38.182,
+     "heightPct": 7.531,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 28,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 168,
+      "h": 72,
+      "radius": 10,
+      "fill": "#f26a10"
+     }
+    },
+    {
+     "id": "tpl-s16",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 4.545,
+     "yPct": 30.021,
+     "widthPct": 83.182,
+     "heightPct": 69.933,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 366,
+      "h": 668.56,
+      "radius": 95.28,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s17",
+     "assetId": "shape:Watch strap",
+     "name": "Watch strap",
+     "xPct": 60.909,
+     "yPct": 70.921,
+     "widthPct": 20.227,
+     "heightPct": 25.941,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 89,
+      "h": 248,
+      "radius": 14,
+      "fill": "#1a1a1a"
+     }
+    },
+    {
+     "id": "tpl-s18",
+     "assetId": "shape:Watch case",
+     "name": "Watch case",
+     "xPct": 52.045,
+     "yPct": 74.582,
+     "widthPct": 38.182,
+     "heightPct": 17.573,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 168,
+      "h": 168,
+      "fill": "#141414"
+     }
+    },
+    {
+     "id": "tpl-s19",
+     "assetId": "shape:Watch ring",
+     "name": "Watch ring",
+     "xPct": 57.955,
+     "yPct": 77.301,
+     "widthPct": 26.364,
+     "heightPct": 12.134,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 116,
+      "h": 116,
+      "stroke": "#e8791f",
+      "strokeWidth": 3,
+      "inset": 1.5
+     }
+    },
+    {
+     "id": "tpl-s20",
+     "assetId": "shape:Watch face",
+     "name": "Watch face",
+     "xPct": 59.318,
+     "yPct": 77.929,
+     "widthPct": 23.636,
+     "heightPct": 10.879,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 104,
+      "h": 104,
+      "fill": "#e8681a"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 43.18,
+    "x": -6.59,
+    "y": 24.49,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#e8791f",
+    "borderColor": "#e8791f",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "SET YOUR GOAL",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#f4f3f7"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t24",
+     "xPct": 12.045,
+     "yPct": 88.388,
+     "widthPct": 29.545,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "SET",
+     "style": {
+      "text": "SET",
+      "color": "#ffffff",
+      "size": 122.7,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -10
+     }
+    },
+    {
+     "id": "tpl-t26",
+     "xPct": 44.773,
+     "yPct": 88.388,
+     "widthPct": 43.409,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "YOUR",
+     "style": {
+      "text": "YOUR",
+      "color": "#ffffff",
+      "size": 122.7,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -10
+     }
+    },
+    {
+     "id": "tpl-t28",
+     "xPct": 28.409,
+     "yPct": 97.802,
+     "widthPct": 43.182,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "GOAL",
+     "style": {
+      "text": "GOAL",
+      "color": "#ffffff",
+      "size": 122.7,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -10
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s23",
+     "assetId": "shape:Chip SET",
+     "name": "Chip SET",
+     "xPct": 12.045,
+     "yPct": 87.448,
+     "widthPct": 29.545,
+     "heightPct": 7.531,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 28,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 130,
+      "h": 72,
+      "radius": 10,
+      "fill": "#f26a10"
+     }
+    },
+    {
+     "id": "tpl-s25",
+     "assetId": "shape:Chip YOUR",
+     "name": "Chip YOUR",
+     "xPct": 44.773,
+     "yPct": 87.448,
+     "widthPct": 43.409,
+     "heightPct": 7.531,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 28,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 191,
+      "h": 72,
+      "radius": 10,
+      "fill": "#f26a10"
+     }
+    },
+    {
+     "id": "tpl-s27",
+     "assetId": "shape:Chip GOAL",
+     "name": "Chip GOAL",
+     "xPct": 28.409,
+     "yPct": 96.862,
+     "widthPct": 43.182,
+     "heightPct": 7.531,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 28,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 190,
+      "h": 72,
+      "radius": 10,
+      "fill": "#f26a10"
+     }
+    },
+    {
+     "id": "tpl-s29",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 4.397,
+     "yPct": -17.74,
+     "widthPct": 72.273,
+     "heightPct": 59.024,
+     "rotation": 42,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 318,
+      "h": 564.27,
+      "radius": 87.6,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s30",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 22.348,
+     "yPct": 13.707,
+     "widthPct": 72.273,
+     "heightPct": 59.024,
+     "rotation": 41,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 318,
+      "h": 564.27,
+      "radius": 87.6,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s31",
+     "assetId": "shape:Runner head",
+     "name": "Runner head",
+     "xPct": 51.364,
+     "yPct": 58.682,
+     "widthPct": 7.727,
+     "heightPct": 3.556,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 34,
+      "h": 34,
+      "fill": "#000000"
+     }
+    },
+    {
+     "id": "tpl-s32",
+     "assetId": "shape:Runner limb",
+     "name": "Runner limb",
+     "xPct": 42.955,
+     "yPct": 59.519,
+     "widthPct": 18.182,
+     "heightPct": 11.506,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 80,
+      "h": 110,
+      "vx": 189,
+      "vy": 569,
+      "path": "M238,600L220,648",
+      "stroke": "#000000",
+      "strokeWidth": 30,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s33",
+     "assetId": "shape:Runner limb",
+     "name": "Runner limb",
+     "xPct": 38.409,
+     "yPct": 62.238,
+     "widthPct": 17.273,
+     "heightPct": 4.393,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 76,
+      "h": 42,
+      "vx": 169,
+      "vy": 595,
+      "path": "M230,610L184,622",
+      "stroke": "#000000",
+      "strokeWidth": 14,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s34",
+     "assetId": "shape:Runner limb",
+     "name": "Runner limb",
+     "xPct": 51.136,
+     "yPct": 62.029,
+     "widthPct": 14.091,
+     "heightPct": 4.393,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 62,
+      "h": 42,
+      "vx": 225,
+      "vy": 593,
+      "path": "M240,608L272,620",
+      "stroke": "#000000",
+      "strokeWidth": 14,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s35",
+     "assetId": "shape:Runner limb",
+     "name": "Runner limb",
+     "xPct": 46.136,
+     "yPct": 66.004,
+     "widthPct": 12.955,
+     "heightPct": 8.787,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 57,
+      "h": 84,
+      "vx": 203,
+      "vy": 631,
+      "path": "M220,648L243,668L222,698",
+      "stroke": "#000000",
+      "strokeWidth": 16,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s36",
+     "assetId": "shape:Runner limb",
+     "name": "Runner limb",
+     "xPct": 34.318,
+     "yPct": 66.423,
+     "widthPct": 18.182,
+     "heightPct": 6.485,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 80,
+      "h": 62,
+      "vx": 151,
+      "vy": 635,
+      "path": "M214,652L168,680",
+      "stroke": "#000000",
+      "strokeWidth": 16,
+      "strokeLinejoin": "round"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 35.14,
+    "x": -19.83,
+    "y": -81.41,
+    "rotation": 42,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#e8791f",
+    "borderColor": "#e8791f",
+    "zIndex": 10
+   },
+   "extraDevices": [
+    {
+     "size": 35.14,
+     "x": 17.78,
+     "y": -15.52,
+     "rotation": 41,
+     "brightness": 100,
+     "frameless": false,
+     "bezelColor": "#e8791f",
+     "borderColor": "#e8791f",
+     "zIndex": 11
+    }
+   ]
+  },
+  {
+   "title": "FOLLOW YOUR COMMUNITY",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#ffffff"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t38",
+     "xPct": 23.409,
+     "yPct": 5.161,
+     "widthPct": 53.182,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "FOLLOW",
+     "style": {
+      "text": "FOLLOW",
+      "color": "#ffffff",
+      "size": 118.6,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -10
+     }
+    },
+    {
+     "id": "tpl-t40",
+     "xPct": 31.364,
+     "yPct": 13.879,
+     "widthPct": 37.273,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "YOUR",
+     "style": {
+      "text": "YOUR",
+      "color": "#ffffff",
+      "size": 116.9,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -10
+     }
+    },
+    {
+     "id": "tpl-t42",
+     "xPct": 11.364,
+     "yPct": 22.584,
+     "widthPct": 77.045,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "COMMUNITY",
+     "style": {
+      "text": "COMMUNITY",
+      "color": "#ffffff",
+      "size": 115.8,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -10
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s37",
+     "assetId": "shape:Chip FOLLOW",
+     "name": "Chip FOLLOW",
+     "xPct": 23.409,
+     "yPct": 4.603,
+     "widthPct": 53.182,
+     "heightPct": 6.59,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 28,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 234,
+      "h": 63,
+      "radius": 10,
+      "fill": "#f26a10"
+     }
+    },
+    {
+     "id": "tpl-s39",
+     "assetId": "shape:Chip YOUR",
+     "name": "Chip YOUR",
+     "xPct": 31.364,
+     "yPct": 13.285,
+     "widthPct": 37.273,
+     "heightPct": 6.59,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 28,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 164,
+      "h": 63,
+      "radius": 10,
+      "fill": "#f26a10"
+     }
+    },
+    {
+     "id": "tpl-s41",
+     "assetId": "shape:Chip COMMUNITY",
+     "name": "Chip COMMUNITY",
+     "xPct": 11.364,
+     "yPct": 21.967,
+     "widthPct": 77.045,
+     "heightPct": 6.59,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 28,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 339,
+      "h": 63,
+      "radius": 10,
+      "fill": "#f26a10"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 65.6,
+    "x": 0.0,
+    "y": 31.21,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#e8791f",
+    "borderColor": "#e8791f",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "TRACK YOUR PROGRES",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#f5820f"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t44",
+     "xPct": 28.182,
+     "yPct": 5.298,
+     "widthPct": 43.409,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "TRACK",
+     "style": {
+      "text": "TRACK",
+      "color": "#f5820f",
+      "size": 112.1,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -10
+     }
+    },
+    {
+     "id": "tpl-t46",
+     "xPct": 31.364,
+     "yPct": 13.879,
+     "widthPct": 37.273,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "YOUR",
+     "style": {
+      "text": "YOUR",
+      "color": "#f5820f",
+      "size": 116.9,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -10
+     }
+    },
+    {
+     "id": "tpl-t48",
+     "xPct": 20.682,
+     "yPct": 22.502,
+     "widthPct": 58.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "PROGRES",
+     "style": {
+      "text": "PROGRES",
+      "color": "#f5820f",
+      "size": 119.6,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -10
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s43",
+     "assetId": "shape:Chip TRACK",
+     "name": "Chip TRACK",
+     "xPct": 28.182,
+     "yPct": 4.603,
+     "widthPct": 43.409,
+     "heightPct": 6.59,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 28,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 191,
+      "h": 63,
+      "radius": 10,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s45",
+     "assetId": "shape:Chip YOUR",
+     "name": "Chip YOUR",
+     "xPct": 31.364,
+     "yPct": 13.285,
+     "widthPct": 37.273,
+     "heightPct": 6.59,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 28,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 164,
+      "h": 63,
+      "radius": 10,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s47",
+     "assetId": "shape:Chip PROGRES",
+     "name": "Chip PROGRES",
+     "xPct": 20.682,
+     "yPct": 21.967,
+     "widthPct": 58.636,
+     "heightPct": 6.59,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 28,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 258,
+      "h": 63,
+      "radius": 10,
+      "fill": "#ffffff"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 65.6,
+    "x": 0.0,
+    "y": 29.69,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#f79b48",
+    "borderColor": "#f79b48",
+    "zIndex": 10
+   }
+  }
+ ],
+ "designHeight": 2347
+}
