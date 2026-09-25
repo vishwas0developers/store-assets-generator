@@ -125,13 +125,34 @@ export function validateAndNormalizeTemplate(raw: any, filepath?: string): Mocku
   };
 }
 
+/** path+mtime+size of every template file -- the cache is only valid while this is unchanged,
+ *  so editing/adding/removing a template JSON shows up without restarting the app. */
+function templateSignature(files: string[]): string {
+  return files
+    .map((f) => {
+      try {
+        const st = fs.statSync(f);
+        return `${f}:${st.mtimeMs}:${st.size}`;
+      } catch {
+        return `${f}:missing`;
+      }
+    })
+    .sort()
+    .join("|");
+}
+let cachedSignature = "";
+
 export function loadMockupTemplatesFromDisk(forceReload = false): MockupTemplateDefinition[] {
-  if (cachedTemplates && !forceReload) {
+  const jsonFiles = scanJsonFiles(TEMPLATES_ROOT);
+  const signature = templateSignature(jsonFiles);
+  if (cachedTemplates && !forceReload && signature === cachedSignature) {
     return Array.from(cachedTemplates.values());
   }
+  console.log(
+    `[TemplateLoader] ${cachedTemplates ? "Change detected -- reloading" : "Loading"} mockup templates from ${TEMPLATES_ROOT} (${jsonFiles.length} files)`,
+  );
 
   const map = new Map<string, MockupTemplateDefinition>();
-  const jsonFiles = scanJsonFiles(TEMPLATES_ROOT);
 
   for (const filePath of jsonFiles) {
     try {
@@ -147,6 +168,8 @@ export function loadMockupTemplatesFromDisk(forceReload = false): MockupTemplate
   }
 
   cachedTemplates = map;
+  cachedSignature = signature;
+  console.log(`[TemplateLoader] Loaded ${map.size}/${jsonFiles.length} mockup templates`);
   return Array.from(cachedTemplates.values());
 }
 

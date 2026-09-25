@@ -961,12 +961,13 @@ html.light .mockup-canvas-viewport {
 @media (max-width: 1000px) {
   .template-detail { grid-template-columns: 1fr; }
 }
-.template-detail-side { display: flex; flex-direction: column; gap: 0; overflow: hidden; background: #141722; padding: 1.25rem; border-radius: 12px; border: 1px solid #232738; }
+.template-detail-side { display: flex; flex-direction: column; gap: 0; overflow: hidden; background: var(--bg-card); padding: 1.25rem; border-radius: 12px; border: 1px solid var(--border-subtle); }
 
 /* Mockup: horizontally-wide, vertically-compact filmstrip of the template's
    own screens at their real device proportions -- not a single tall phone. */
 .template-detail-mockup .template-detail-thumb { width: 100%; border-radius: 12px; overflow: hidden; border: 1px solid #232733; background: #0a0c10; padding: 12px; }
-.detail-filmstrip { display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 8px; }
+/* No scroll-snap: wheel-driven horizontal scrolling (see templates.js) must glide, not jump card to card. */
+.detail-filmstrip { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 8px; border-radius: 12px; }
 .detail-filmstrip::-webkit-scrollbar,
 .detail-filmstrip::-webkit-scrollbar-track,
 .detail-filmstrip::-webkit-scrollbar-thumb {
@@ -980,11 +981,20 @@ html.light .mockup-canvas-viewport {
   height: 480px;
   border-radius: 12px;
   overflow: hidden;
-  scroll-snap-align: start;
   position: relative;
   background: #0d1017;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+  border: 1px solid var(--border-divider);
+}
+/* Shadow that belongs to the screenshot itself: strongest at the bottom edge,
+   fading upward into the artwork (replaces the old outer box-shadow). */
+.detail-filmstrip-card::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 40%;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.38), rgba(0, 0, 0, 0));
+  pointer-events: none;
+  border-radius: 0 0 12px 12px;
 }
 .detail-filmstrip-card iframe {
   position: absolute;
@@ -1000,14 +1010,14 @@ html.light .mockup-canvas-viewport {
 
 .detail-facts { display: grid; grid-template-columns: 1fr; gap: .7rem; margin: 1rem 0; }
 .detail-facts div { display: flex; flex-direction: column; gap: .15rem; }
-.detail-facts span { font-size: .68rem; text-transform: uppercase; color: #6b7280; letter-spacing: .03em; }
-.detail-facts strong { font-size: .85rem; color: #e5e7eb; font-weight: 600; text-transform: capitalize; }
+.detail-facts span { font-size: .68rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: .03em; }
+.detail-facts strong { font-size: .85rem; color: var(--text-primary); font-weight: 600; text-transform: capitalize; }
 .detail-screens { margin-top: .9rem; }
-.detail-screens span { font-size: .68rem; text-transform: uppercase; color: #6b7280; letter-spacing: .03em; }
-.detail-screens ul { margin: .4rem 0 0; padding-left: 1.1rem; font-size: .82rem; color: #d1d5db; display: flex; flex-direction: column; gap: .25rem; }
+.detail-screens span { font-size: .68rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: .03em; }
+.detail-screens ul { margin: .4rem 0 0; padding-left: 1.1rem; font-size: .82rem; color: var(--text-secondary); display: flex; flex-direction: column; gap: .25rem; }
 .detail-screens li[data-scene-jump] { cursor: pointer; list-style: none; margin-left: -1.1rem; padding: .2rem .4rem; border-radius: 6px; }
-.detail-screens li[data-scene-jump]:hover { background: #171a22; }
-.detail-screens li[data-scene-jump].active { color: #93c5fd; background: #1d2636; font-weight: 600; }
+.detail-screens li[data-scene-jump]:hover { background: var(--bg-hover); }
+.detail-screens li[data-scene-jump].active { color: var(--accent-active-text); background: var(--accent-active-bg); font-weight: 600; }
 
 /* Video Studio Templates section: a persistent secondary nav (list of
    template cards) down the left, mirroring Studio Mockup's rail + content

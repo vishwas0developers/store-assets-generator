@@ -50,12 +50,12 @@ function fitPageToHeight(style: ColumnStyle, designH: number, H: number, deviceH
   const ox = (1080 * (1 - s)) / 2;
   const yk = (s * designH) / H; // design % of page height -> new %
   const fitBox = (l: { xPct: number; yPct: number; widthPct: number; heightPct?: number }) => {
-    const bleedX = l.xPct <= 0.01 && l.xPct + l.widthPct >= 99.99;
+    // A layer touching a side edge keeps touching it (stretching) -- uniform scaling alone would open a gap there.
+    const left = l.xPct, right = l.xPct + l.widthPct;
     const bleedBottom = l.heightPct != null && l.yPct + l.heightPct >= 99.9;
-    if (!bleedX) {
-      l.xPct = ((ox + (s * l.xPct * 1080) / 100) / 1080) * 100;
-      l.widthPct *= s;
-    }
+    l.xPct = left <= 0.01 ? left : ((ox + (s * left * 1080) / 100) / 1080) * 100;
+    const newRight = right >= 99.99 ? right : ((ox + (s * right * 1080) / 100) / 1080) * 100;
+    l.widthPct = newRight - l.xPct;
     l.yPct *= yk;
     if (l.heightPct != null) l.heightPct = bleedBottom ? 100 - l.yPct : l.heightPct * yk;
   };

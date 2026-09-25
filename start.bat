@@ -23,6 +23,17 @@ for /f "tokens=5" %%P in ('netstat -ano ^| findstr /r /c:"[0-9]:%APP_PORT% .*LIS
 REM Give Windows a moment to fully release the socket before rebinding.
 timeout /t 1 /nobreak >nul
 
+REM The app runs the COMPILED code in dist/ -- without a rebuild, source edits (templates,
+REM server logic) are silently ignored and old designs keep showing. Always rebuild first.
+echo Building (npm run build)...
+call npm run build
+if errorlevel 1 (
+    echo.
+    echo ERROR: Build failed -- fix the TypeScript errors above. Not starting the app with stale code.
+    pause
+    exit /b 1
+)
+
 REM electron.exe is a GUI-subsystem binary: on Windows its stdout/stderr never reach
 REM this console unless piped. Piping through `findstr "^"` (pass-through, no paging) forces live output; the logging
 REM env var also forwards renderer console messages and Chromium errors.
