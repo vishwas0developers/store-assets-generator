@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import type { ColumnStyle, Decoration, MockupAssetLayer, TextLayer } from "./project.js";
+import type { ColumnStyle, Decoration, DeviceLayerStyle, MockupAssetLayer, TextLayer } from "./project.js";
 
 export interface MockupTemplatePage {
   title?: string;
@@ -11,6 +11,10 @@ export interface MockupTemplatePage {
   decorations?: Decoration[];
   textLayers?: TextLayer[];
   assetLayers?: MockupAssetLayer[];
+  /** Per-page device placement (size/x/y/rotation/zIndex/panoramaXPx/visible...) merged over the layout preset defaults. */
+  deviceOne?: Partial<DeviceLayerStyle>;
+  deviceTwo?: Partial<DeviceLayerStyle>;
+  extraDevices?: DeviceLayerStyle[];
 }
 
 export interface MockupTemplateDefinition {
@@ -28,6 +32,8 @@ export interface MockupTemplateDefinition {
   titles?: string[];
   subtitles?: string[];
   pages?: MockupTemplatePage[];
+  /** Page height (at 1080 wide) the absolute layer/device positions were authored for; see fitPageToHeight in templates.ts. */
+  designHeight?: number;
   folderPath?: string;
   filePath?: string;
 }
@@ -80,6 +86,9 @@ export function validateAndNormalizeTemplate(raw: any, filepath?: string): Mocku
       decorations: Array.isArray(p.decorations) ? p.decorations : [],
       textLayers: Array.isArray(p.textLayers) ? p.textLayers : [],
       assetLayers: Array.isArray(p.assetLayers) ? p.assetLayers : [],
+      deviceOne: p.deviceOne,
+      deviceTwo: p.deviceTwo,
+      extraDevices: Array.isArray(p.extraDevices) ? p.extraDevices : undefined,
     }));
   } else {
     const count = typeof raw.columnCount === "number" && raw.columnCount > 0 ? raw.columnCount : (raw.titles?.length || 5);
@@ -108,6 +117,7 @@ export function validateAndNormalizeTemplate(raw: any, filepath?: string): Mocku
     background,
     textColor: raw.textColor,
     panoramic: !!raw.panoramic,
+    designHeight: typeof raw.designHeight === "number" ? raw.designHeight : undefined,
     columnCount: pages.length,
     titles: pages.map((p) => p.title || ""),
     subtitles: pages.map((p) => p.subtitle || ""),

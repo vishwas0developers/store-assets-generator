@@ -376,6 +376,15 @@ export async function startWebServer(options: { port?: number; host?: string; op
       return;
     }
 
+    // Centralized font directory (fonts/<Family>/<file>.woff2) -- one copy shared by the editor page and the renderer.
+    if (method === "GET" && /^\/fonts\/[\w-]+\/[\w.-]+\.woff2$/.test(p)) {
+      const fontPath = path.join(process.cwd(), p);
+      if (fs.existsSync(fontPath)) {
+        sendFile(res, fontPath, "font/woff2");
+        return;
+      }
+    }
+
     if (method === "GET" && p.startsWith("/js/")) {
       let jsPath = path.join(process.cwd(), "web", p);
       if (!fs.existsSync(jsPath)) {
@@ -1388,7 +1397,7 @@ export async function startWebServer(options: { port?: number; host?: string; op
         let abs = mockupFile(id, rel);
         if (!fs.existsSync(abs)) abs = projectFile(id, rel);
         const ext = path.extname(abs).toLowerCase();
-        sendFile(res, abs, ext === ".zip" ? "application/zip" : "image/png");
+        sendFile(res, abs, ext === ".zip" ? "application/zip" : ext === ".svg" ? "image/svg+xml" : ext === ".webp" ? "image/webp" : ext === ".jpg" || ext === ".jpeg" ? "image/jpeg" : "image/png");
         return;
       }
     }
@@ -1447,7 +1456,7 @@ export async function startWebServer(options: { port?: number; host?: string; op
         } else {
           html = templateThumbHtml(template);
         }
-        res.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, max-age=3600" });
+        res.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-cache" });
         res.end(html);
         return;
       }
@@ -1461,7 +1470,7 @@ export async function startWebServer(options: { port?: number; host?: string; op
         const template = MOCKUP_TEMPLATES.find((t) => t.id === slug);
         if (!template) return sendError(res, 404, `Unknown template '${slug}'.`);
         const html = templateScreenHtml(template, colIdx);
-        res.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, max-age=3600" });
+        res.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-cache" });
         res.end(html);
         return;
       }
@@ -1474,7 +1483,7 @@ export async function startWebServer(options: { port?: number; host?: string; op
         const template = MOCKUP_TEMPLATES.find((t) => t.id === slug);
         if (!template) return sendError(res, 404, `Unknown template '${slug}'.`);
         const html = templateDetailThumbHtml(template);
-        res.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, max-age=3600" });
+        res.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-cache" });
         res.end(html);
         return;
       }

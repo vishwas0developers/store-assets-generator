@@ -22,6 +22,7 @@ import {
   type TextStyle,
 } from "./project.js";
 import { applyMockupTemplate, type MockupStarterTemplate } from "./templates.js";
+import { shapeSvgUri } from "./shapeSvg.js";
 import {
   resolveTitleTextLayout,
   resolveSubtitleTextLayout,
@@ -114,7 +115,7 @@ function assetLayersMarkup(layers: MockupAssetLayer[] = [], resolveUri: (rel: st
   const sorted = [...visible].sort((a, b) => (a.zIndex ?? 10) - (b.zIndex ?? 10));
   return sorted
     .map((layer) => {
-      const src = layer.assetId ? resolveUri(layer.assetId) : placeholderScreenUri(0);
+      const src = layer.shape ? shapeSvgUri(layer.shape) : layer.assetId ? resolveUri(layer.assetId) : placeholderScreenUri(0);
       const box = resolveAssetLayerBox(layer);
       const left = box.xPct;
       const top = box.yPct;
@@ -145,7 +146,7 @@ function textLayersMarkup(layers: TextLayer[] = [], resolveUri: (rel: string) =>
       const width = box.widthPct;
       const height = box.heightPct != null ? `${box.heightPct}%` : "auto";
       const transform = `rotate(${box.rotationDeg}deg)`;
-      return `<div class="text-layer" style="position:absolute;left:${left}%;top:${top}%;width:${width}%;height:${height};transform:${transform};transform-origin:top left;opacity:${box.opacity};z-index:${layer.zIndex ?? 30};color:${t.color};font-size:${t.size}px;text-align:${t.align};${textFormatCss(t)}pointer-events:none;">${escapeHtml(t.text || "")}</div>`;
+      return `<div class="text-layer" style="position:absolute;left:${left}%;top:${top}%;width:${width}%;height:${height};transform:${transform};transform-origin:top left;opacity:${box.opacity};z-index:${layer.zIndex ?? 30};color:${t.color};font-size:${t.size}px;text-align:${t.align};white-space:pre-line;${textFormatCss(t)}pointer-events:none;">${escapeHtml(t.text || "")}</div>`;
     })
     .join("\n");
 }
@@ -319,6 +320,7 @@ export function cellHtml(project: MockupProject, deviceRowId: string, columnId: 
 
   return `<!doctype html>
 <html><head><meta charset="utf-8" /><style>
+  ${fontFaceCss(style)}
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; width: ${canvas.width}px; height: ${canvas.height}px; overflow: hidden; }
   .canvas {
@@ -366,7 +368,24 @@ export function cellPreviewHtml(project: MockupProject, deviceRowId: string, col
 }
 
 function dataUri(absPath: string): string {
-  return `data:image/png;base64,${fs.readFileSync(absPath, "base64")}`;
+  const ext = path.extname(absPath).toLowerCase();
+  const mime = ext === ".svg" ? "image/svg+xml" : ext === ".webp" ? "image/webp" : ext === ".jpg" || ext === ".jpeg" ? "image/jpeg" : "image/png";
+  return `data:${mime};base64,${fs.readFileSync(absPath, "base64")}`;
+}
+
+/** Embeds the centralized fonts/Inter files (weights below) when a page's styles ask for Inter, so preview
+ *  and Playwright export render the same face without needing Inter installed on the machine. */
+const INTER_WEIGHTS = [400, 700, 800, 900];
+let interFontFaceCache: string | undefined;
+function fontFaceCss(style: unknown): string {
+  if (!JSON.stringify(style).includes("Inter")) return "";
+  if (interFontFaceCache === undefined) {
+    interFontFaceCache = INTER_WEIGHTS.map((w) => {
+      const file = path.join(process.cwd(), "fonts", "Inter", `Inter-${w}.woff2`);
+      return fs.existsSync(file) ? `@font-face{font-family:"Inter";font-weight:${w};src:url(data:font/woff2;base64,${fs.readFileSync(file, "base64")}) format("woff2");}` : "";
+    }).join("");
+  }
+  return interFontFaceCache;
 }
 
 /** Renders every column for one device row at that row's real export
@@ -854,7 +873,7 @@ const THUMB_SIZE = { width: 720, height: 389 };
  *  template's actual screens rather than a single tall phone shot. */
 const DETAIL_THUMB_SIZE = { width: 1240, height: 420 };
 
-function buildScratchProject(template: MockupStarterTemplate): MockupProject {
+function buildScratchProject(template: MockupStarterTemplate, canvasHeight = THUMB_CANVAS.height): MockupProject {
   const scratch: MockupProject = {
     id: "__template_thumb__",
     createdAt: new Date().toISOString(),
@@ -867,12 +886,12 @@ function buildScratchProject(template: MockupStarterTemplate): MockupProject {
     globalPanoramic: { flip: false },
     settings: { inspectorPosition: "right", screenshotSizeLabel: "", palette: [] },
   };
-  applyMockupTemplate(scratch, template.id);
+  applyMockupTemplate(scratch, template.id, undefined, canvasHeight);
   return scratch;
 }
 
 export function templateScreenHtml(template: MockupStarterTemplate, columnIndex = 0, canvas = THUMB_CANVAS): string {
-  const scratch = buildScratchProject(template);
+  const scratch = buildScratchProject(template, canvas.height);
   scratch.sources = scratch.columns.map((_, i) => ({
     id: `template-placeholder-${i}`,
     name: `Template placeholder ${i + 1}`,

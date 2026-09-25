@@ -1,6 +1,7 @@
 import { addColumn, addDeviceRow, defaultColumnStyle, ensureSizeRows, type ColumnStyle, type MockupProject } from "./project.js";
 import { DEVICE_REGISTRY, resolveGeometry } from "../devices/registry.js";
 import { getLayoutPreset } from "./layouts.js";
+import { designSizeFor, primaryTargetFor } from "./sizeTargets.js";
 import {
   loadMockupTemplatesFromDisk,
   getMockupTemplateFromDisk,
@@ -39,7 +40,41 @@ function sizeForDevice(deviceId: string, variant: string | undefined, targetWidt
   return Math.round(90 * Math.min(widthScale, heightScale));
 }
 
-export function applyMockupTemplate(project: MockupProject, templateId: string, platform?: string): void {
+/** Re-fits a page authored for `designH` (absolute px at 1080 wide) to a page `H` tall: shorter pages scale the whole
+ *  composition down uniformly (centred horizontally, top-anchored); taller pages keep it at 1:1 from the top. Layers that
+ *  bled off the page bottom / both sides keep doing so. Without this, % positions stretch with the page height while
+ *  font sizes and widths don't -- e.g. an underline drifting up behind its title on a 1920-tall preview. */
+function fitPageToHeight(style: ColumnStyle, designH: number, H: number, deviceHeightAt90: number, pageIndex: number): void {
+  if (designH === H) return;
+  const s = Math.min(1, H / designH);
+  const ox = (1080 * (1 - s)) / 2;
+  const yk = (s * designH) / H; // design % of page height -> new %
+  const fitBox = (l: { xPct: number; yPct: number; widthPct: number; heightPct?: number }) => {
+    const bleedX = l.xPct <= 0.01 && l.xPct + l.widthPct >= 99.99;
+    const bleedBottom = l.heightPct != null && l.yPct + l.heightPct >= 99.9;
+    if (!bleedX) {
+      l.xPct = ((ox + (s * l.xPct * 1080) / 100) / 1080) * 100;
+      l.widthPct *= s;
+    }
+    l.yPct *= yk;
+    if (l.heightPct != null) l.heightPct = bleedBottom ? 100 - l.yPct : l.heightPct * yk;
+  };
+  for (const l of style.assetLayers ?? []) fitBox(l);
+  for (const l of style.textLayers ?? []) {
+    fitBox(l);
+    l.style.size *= s;
+  }
+  for (const d of [style.deviceOne, style.deviceTwo, ...(style.extraDevices ?? [])]) {
+    if (!d) continue;
+    const devH = (deviceHeightAt90 * d.size) / 90; // rendered height at design scale
+    const cy = designH / 2 + (d.y / 100) * devH;
+    d.size *= s;
+    d.y = ((s * cy - H / 2) / (s * devH)) * 100; // x is % of the device's own width, so it survives uniform scaling
+    if (d.panoramaXPx != null) d.panoramaXPx = pageIndex * 1080 + ox + s * (d.panoramaXPx - pageIndex * 1080);
+  }
+}
+
+export function applyMockupTemplate(project: MockupProject, templateId: string, platform?: string, canvasHeight?: number): void {
   const template = getMockupTemplateFromDisk(templateId) || loadMockupTemplatesFromDisk().find((t) => t.id === templateId);
   if (!template) throw new Error(`Unknown template '${templateId}'.`);
 
@@ -97,6 +132,12 @@ export function applyMockupTemplate(project: MockupProject, templateId: string, 
       style.deviceTwo = { ...style.deviceOne, sourceId: undefined };
     }
 
+    if (page.deviceOne) Object.assign(style.deviceOne, page.deviceOne);
+    if (page.deviceTwo && style.deviceTwo) Object.assign(style.deviceTwo, page.deviceTwo);
+    if (page.extraDevices && page.extraDevices.length > 0) {
+      style.extraDevices = page.extraDevices.map((d) => ({ ...style.deviceOne, sourceId: undefined, ...JSON.parse(JSON.stringify(d)) }));
+    }
+
     if (page.decorations && page.decorations.length > 0) {
       style.decorations = JSON.parse(JSON.stringify(page.decorations));
     }
@@ -105,6 +146,11 @@ export function applyMockupTemplate(project: MockupProject, templateId: string, 
     }
     if (page.assetLayers && page.assetLayers.length > 0) {
       style.assetLayers = JSON.parse(JSON.stringify(page.assetLayers));
+    }
+
+    if (template.designHeight) {
+      const geo = resolveGeometry(DEVICE_REGISTRY[baseDevice?.deviceId ?? "phone"] ?? DEVICE_REGISTRY["phone"], baseDevice?.variant);
+      fitPageToHeight(style, template.designHeight, canvasHeight ?? designSizeFor(primaryTargetFor(platform)).height, geo.height, i);
     }
 
     const col = addColumn(project, style);
