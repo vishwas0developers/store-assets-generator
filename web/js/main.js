@@ -528,6 +528,8 @@ function setupMockupToolbar() {
 document.addEventListener('DOMContentLoaded', async () => {
   initMockupFabricCanvas();
   initCanvasPanZoomEvents();
+  // Inter (templates/mockup redesigns) must be loaded before Fabric measures text, or widths are computed with the fallback face.
+  for (const w of [400, 700, 800, 900]) document.fonts.load(`${w} 20px Inter`).catch(() => {});
   setupInspectorEvents();
   setupTextToolbarEvents();
   setupObjectToolbarEvents();

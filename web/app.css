@@ -1,3 +1,7 @@
+@font-face { font-family: "Inter"; font-weight: 700; font-display: block; src: url("/fonts/Inter/Inter-700.woff2") format("woff2"); }
+@font-face { font-family: "Inter"; font-weight: 400; font-display: block; src: url("/fonts/Inter/Inter-400.woff2") format("woff2"); }
+@font-face { font-family: "Inter"; font-weight: 800; font-display: block; src: url("/fonts/Inter/Inter-800.woff2") format("woff2"); }
+@font-face { font-family: "Inter"; font-weight: 900; font-display: block; src: url("/fonts/Inter/Inter-900.woff2") format("woff2"); }
 :root {
   --bg-main: #0b0d12;
   --bg-card: #14161c;

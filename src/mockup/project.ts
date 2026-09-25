@@ -215,6 +215,8 @@ export interface MockupAssetLayer {
   customName?: string;
   zIndex: number;
   cropFit?: "contain" | "cover" | "stretch";
+  /** Code-drawn graphic (see shapeSvg.ts) -- when set it replaces the image file: `assetId` is then just a label. */
+  shape?: import("./shapeSvg.js").ShapeSpec;
   shadow?: { color: string; blur: number; x: number; y: number };
 }
 

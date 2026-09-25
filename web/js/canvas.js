@@ -80,6 +80,7 @@ import {
   resolveTextLayerZIndex,
   resolveTextLayerBox,
 } from '/dist/mockup/layerLayout.js';
+import { shapeSvgUri } from '/dist/mockup/shapeSvg.js';
 import { designSizeFor, primaryTargetFor } from '/dist/mockup/sizeTargets.js';
 
 // Selection-control styling, applied explicitly to every constructed object
@@ -235,7 +236,7 @@ function applyAssetLayerTransform(img, ast, layerId, interactive) {
 
 async function buildAssetImage(ast, layerId, { interactive = true } = {}) {
   if (ast.visible === false) return null;
-  const srcUrl = ast.assetId.startsWith('sources/')
+  const srcUrl = ast.shape ? shapeSvgUri(ast.shape) : ast.assetId.startsWith('sources/')
     ? `/api/mockups/${mockupId}/file?p=${encodeURIComponent(ast.assetId)}`
     : `/api/mockups/${mockupId}/file?p=sources/${ast.assetId}.png`;
   const assetImg = await loadFabricImageAsync(srcUrl);
