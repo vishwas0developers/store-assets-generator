@@ -47,6 +47,15 @@ export interface VideoScene {
    *  showing a single static screenshot for its whole duration. Falls back
    *  to `sourceId` when absent. */
   screenIds?: string[];
+  /** Optional screen recording (a `kind: "video"` source) that takes over the
+   *  device screen after the screenshot has been shown for `screenshotHoldSec`.
+   *  When set, `durationSeconds` is derived: hold + (videoEndSec - videoStartSec). */
+  videoSourceId?: string;
+  /** Seconds the static screenshot shows before the video starts (default 2). */
+  screenshotHoldSec?: number;
+  /** Clip window inside the source video, in seconds. */
+  videoStartSec?: number;
+  videoEndSec?: number;
   device: string;
   variant?: string;
   /** Fraction of canvas height the device fills (see deviceScaleFor) --

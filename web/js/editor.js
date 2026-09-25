@@ -57,6 +57,10 @@ export function routeInspectorForLayer(layerId) {
 // metadata but are never rendered in the UI (see updateSourceDimsReadout).
 export function populateSourceSelect(selectEl, sources, selectedId, options) {
   selectEl.innerHTML = "";
+  // Screenshot pickers list stills only; recordings are chosen through their own
+  // "Select Video" control (options.kind === "video" lists only those).
+  const wantVideo = options?.kind === "video";
+  sources = sources.filter((s) => (s.kind === "video") === wantVideo);
   if (options?.blankLabel) {
     const blankOpt = document.createElement("option");
     blankOpt.value = "";

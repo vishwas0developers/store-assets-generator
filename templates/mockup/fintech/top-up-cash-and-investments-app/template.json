@@ -7,101 +7,113 @@
   "devices": [
     {
       "deviceId": "apple-iphone-16-pro-max",
-      "label": "apple-iphone-16-pro-max"
+      "label": "iPhone 16 Pro Max"
     },
     {
       "deviceId": "apple-iphone-13-pro-max",
-      "label": "apple-iphone-13-pro-max"
+      "label": "iPhone 13 Pro Max"
     },
     {
       "deviceId": "samsung-galaxy-s21-ultra",
-      "label": "samsung-galaxy-s21-ultra"
+      "label": "Samsung Galaxy S21 Ultra"
     },
     {
       "deviceId": "apple-ipad-pro-12-9-inch",
-      "label": "apple-ipad-pro-12-9-inch"
+      "label": "iPad Pro 12.9-inch"
     },
     {
       "deviceId": "samsung-galaxy-tab-s7",
-      "label": "samsung-galaxy-tab-s7"
+      "label": "Samsung Galaxy Tab S7"
     }
   ],
-  "layout": "the-airbnb-left-1-title-above",
+  "layout": "single-title-above",
   "background": {
-    "type": "gradient",
-    "value": "linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)"
+    "type": "solid",
+    "value": "#10b981"
   },
   "panoramic": false,
   "columnCount": 5,
   "titles": [
-    "Cash",
-    "4, Add",
-    "Buy stocks in top companies",
-    "r L",
-    "9:41 a --"
+    "Cash Top-Up",
+    "Add Funds",
+    "Start Investing",
+    "Invest in Bitcoin",
+    "Sell Stocks"
   ],
   "subtitles": [
-    "Top-Up",
-    "= Fund",
-    "on GEE c=",
-    "cn en gl +=",
-    "Amazon"
+    "Select an amount 💰",
+    "Access your money 🪙",
+    "Buy stocks in top companies",
+    "Buy, sell, or send crypto",
+    "Buy, sell, or send stocks"
   ],
+  "textColor": "#059669",
   "pages": [
     {
-      "title": "Cash",
-      "subtitle": "Top-Up",
-      "layout": "the-airbnb-left-1-title-above",
-      "background": null,
-      "devices": null,
-      "decorations": [],
-      "textLayers": [],
-      "assetLayers": []
-    },
-    {
-      "title": "4, Add",
-      "subtitle": "= Fund",
-      "layout": "tilted-right-title-above",
-      "background": {
-        "type": "gradient",
-        "value": "linear-gradient(135deg, #312e81 0%, #4338ca 100%)"
-      },
-      "devices": null,
-      "decorations": [],
-      "textLayers": [],
-      "assetLayers": []
-    },
-    {
-      "title": "Buy stocks in top companies",
-      "subtitle": "on GEE c=",
+      "title": "Cash Top-Up",
+      "subtitle": "Select an amount 💰",
       "layout": "single-title-above",
       "background": {
-        "type": "gradient",
-        "value": "linear-gradient(135deg, #065f46 0%, #022c22 100%)"
+        "type": "solid",
+        "value": "#ffffff"
       },
+      "textColor": "#059669",
       "devices": null,
       "decorations": [],
       "textLayers": [],
       "assetLayers": []
     },
     {
-      "title": "r L",
-      "subtitle": "cn en gl +=",
-      "layout": "rotated-left-1-title-above",
+      "title": "Add Funds",
+      "subtitle": "Access your money 🪙",
+      "layout": "the-airbnb-left-1-title-above",
       "background": {
-        "type": "gradient",
-        "value": "linear-gradient(135deg, #1e1b4b 0%, #311b92 100%)"
+        "type": "solid",
+        "value": "#ffffff"
       },
+      "textColor": "#059669",
       "devices": null,
       "decorations": [],
       "textLayers": [],
       "assetLayers": []
     },
     {
-      "title": "9:41 a --",
-      "subtitle": "Amazon",
-      "layout": "two-devices-title-above",
-      "background": null,
+      "title": "Start Investing",
+      "subtitle": "Buy stocks in top companies",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#16a34a"
+      },
+      "textColor": "#ffffff",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Invest in Bitcoin",
+      "subtitle": "Buy, sell, or send crypto",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#0284c7"
+      },
+      "textColor": "#ffffff",
+      "devices": null,
+      "decorations": [],
+      "textLayers": [],
+      "assetLayers": []
+    },
+    {
+      "title": "Sell Stocks",
+      "subtitle": "Buy, sell, or send stocks",
+      "layout": "single-title-above",
+      "background": {
+        "type": "solid",
+        "value": "#ea580c"
+      },
+      "textColor": "#ffffff",
       "devices": null,
       "decorations": [],
       "textLayers": [],

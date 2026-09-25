@@ -669,6 +669,7 @@ function selectScene(sceneId) {
 
   updateVariantSelect("sc-device", "sc-variant", scene.variant, videoDevices);
   updateSceneSpecialPanels(scene.sceneTemplate);
+  syncVideoTimingUi(scene);
   renderFlowStepsEditor(scene.flowSteps);
   showScenePreview();
   updateScenePreviewScale();
@@ -890,6 +891,128 @@ function renderSlotEditor(specs, values, issues, sceneId) {
     }
     panel.appendChild(row);
   }
+
+  if (screenshotSpec) panel.appendChild(videoSelectBlock(sceneId));
+}
+
+const videoDurationCache = new Map();
+/** Length in seconds of an uploaded recording, read from its metadata (0 if unreadable). */
+function probeVideoDuration(source) {
+  if (!videoDurationCache.has(source.id)) {
+    videoDurationCache.set(source.id, new Promise((resolve) => {
+      const v = document.createElement("video");
+      v.preload = "metadata";
+      v.onloadedmetadata = () => resolve(Number.isFinite(v.duration) ? v.duration : 0);
+      v.onerror = () => resolve(0);
+      v.src = `/api/videos/${videoId}/file?p=${encodeURIComponent(source.file)}`;
+    }));
+  }
+  return videoDurationCache.get(source.id);
+}
+
+const round1 = (n) => Math.round(n * 10) / 10;
+
+/** "Select Video" control under the screenshot slot(s): pick or upload a recording
+ *  that plays after the screenshot has been shown for its hold time. */
+function videoSelectBlock(sceneId) {
+  const scene = videoProject.scenes.find((sc) => sc.id === sceneId) || {};
+  const row = document.createElement("div");
+  row.className = "content-slot";
+  const label = document.createElement("label");
+  label.textContent = "Select Video";
+  row.appendChild(label);
+
+  const select = document.createElement("select");
+  populateSourceSelect(select, videoProject.sources || [], scene.videoSourceId || "", { kind: "video", blankLabel: "No video (static screenshot)" });
+  select.onchange = () => setSceneVideo(sceneId, select.value || null);
+  row.appendChild(select);
+
+  const fileInput = document.createElement("input");
+  fileInput.type = "file";
+  fileInput.accept = "video/mp4,video/webm";
+  fileInput.onchange = async () => {
+    const file = fileInput.files[0];
+    if (!file) return;
+    try {
+      const uploaded = await uploadFile(`/api/videos/${videoId}/sources?name=${encodeURIComponent(file.name)}`, file);
+      videoProject.sources.push(uploaded);
+      await setSceneVideo(sceneId, uploaded.id);
+    } catch (e) {
+      await showAlert("Upload failed: " + e.message);
+    }
+  };
+  const btn = uploadButton(fileInput, "Upload New Video");
+  btn.style.marginTop = ".35rem";
+  row.appendChild(fileInput);
+  row.appendChild(btn);
+  return row;
+}
+
+/** Links (or, with null, unlinks) a recording to a scene and re-derives the scene length. */
+async function setSceneVideo(sceneId, sourceId) {
+  const scene = videoProject.scenes.find((sc) => sc.id === sceneId);
+  if (!scene) return;
+  let patch;
+  if (sourceId) {
+    const source = videoProject.sources.find((src) => src.id === sourceId);
+    const clip = source ? await probeVideoDuration(source) : 0;
+    const hold = scene.screenshotHoldSec ?? 2;
+    patch = {
+      videoSourceId: sourceId, screenshotHoldSec: hold, videoStartSec: 0, videoEndSec: round1(clip),
+      durationSeconds: Math.max(1, round1(hold + clip)),
+    };
+  } else {
+    // null (not undefined) so the server's merge actually clears the field.
+    patch = { videoSourceId: null, videoStartSec: null, videoEndSec: null };
+  }
+  await saveLegacySceneField(sceneId, patch);
+  if (sceneId !== selectedSceneId) return;
+  const fresh = videoProject.scenes.find((sc) => sc.id === sceneId);
+  if ($("sc-duration") && fresh) $("sc-duration").value = fresh.durationSeconds;
+  syncVideoTimingUi(fresh);
+  loadSceneContentPanel(sceneId);
+}
+
+/** Right-panel timing: video controls only exist while a video is linked, and
+ *  then Total Time is derived (hold + clip) and read-only. */
+async function syncVideoTimingUi(scene) {
+  const box = $("sc-video-timing");
+  const total = $("sc-duration");
+  if (!box || !total) return;
+  const source = scene?.videoSourceId ? (videoProject.sources || []).find((src) => src.id === scene.videoSourceId && src.kind === "video") : null;
+  box.style.display = source ? "" : "none";
+  total.readOnly = !!source;
+  total.title = source ? "Screenshot time + video clip length (edit those instead)" : "";
+  if (!source) return;
+  const sourceLen = await probeVideoDuration(source);
+  if (selectedSceneId !== scene.id) return;
+  const start = scene.videoStartSec ?? 0;
+  const end = scene.videoEndSec > start ? scene.videoEndSec : round1(sourceLen);
+  $("sc-shot-hold").value = scene.screenshotHoldSec ?? 2;
+  $("sc-video-start").value = start;
+  $("sc-video-end").value = end;
+  for (const id of ["sc-video-start", "sc-video-end"]) $(id).max = sourceLen || "";
+  $("sc-video-source-len").textContent = sourceLen ? `Source length ${round1(sourceLen)}s` : "";
+  updateVideoTotal();
+}
+
+function updateVideoTotal() {
+  const hold = Math.max(0, Number($("sc-shot-hold").value) || 0);
+  const clip = Math.max(0, (Number($("sc-video-end").value) || 0) - (Number($("sc-video-start").value) || 0));
+  $("sc-duration").value = Math.max(1, round1(hold + clip));
+  $("sc-video-clip-len").textContent = `Clip ${round1(clip)}s`;
+}
+
+function onVideoTimingInput() {
+  const startEl = $("sc-video-start"), endEl = $("sc-video-end");
+  if (Number(endEl.value) <= Number(startEl.value)) endEl.value = round1(Number(startEl.value) + 0.1);
+  updateVideoTotal();
+  saveLegacySceneField(selectedSceneId, {
+    screenshotHoldSec: Math.max(0, Number($("sc-shot-hold").value) || 0),
+    videoStartSec: Number(startEl.value) || 0,
+    videoEndSec: Number(endEl.value) || 0,
+    durationSeconds: Number($("sc-duration").value),
+  });
 }
 
 async function saveLegacySceneField(sceneId, patch) {
@@ -1104,7 +1227,7 @@ function imageField(spec, sourceId, sceneId, index) {
   // Capture tab writes and Studio Mockup's Screenshot Source Mapping reads
   // (see editor.js's populateSourceSelect), so picking here is consistent
   // with both other tabs instead of forcing a fresh upload every time.
-  const sources = videoProject.sources || [];
+  const sources = (videoProject.sources || []).filter((src) => src.kind !== "video");
   if (sources.length > 0) {
     const existingSelect = document.createElement("select");
     existingSelect.style.cssText = "width:100%; font-size:0.78rem; margin-bottom:0.35rem;";
@@ -1579,6 +1702,11 @@ export function renderSavedConfigsGrid() {
     speedSelect.onchange = () => {
       scTransport.speed = parseFloat(speedSelect.value) || 1.0;
     };
+  }
+
+  for (const id of ["sc-shot-hold", "sc-video-start", "sc-video-end"]) {
+    const el = $(id);
+    if (el) el.oninput = onVideoTimingInput;
   }
 
   const scSourceUpload = $("sc-source-upload");

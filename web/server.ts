@@ -185,6 +185,40 @@ function sendFile(res: http.ServerResponse, filePath: string, contentType: strin
   fs.createReadStream(filePath).pipe(res);
 }
 
+/** sendFile plus HTTP Range support. <video>/<audio> can only seek (set currentTime)
+ *  on a source that answers byte-range requests; without this a recording plays
+ *  from the start but every seek is ignored, so the scene editor's frame-by-frame
+ *  preview sits frozen on one frame. */
+function sendFileRanged(req: http.IncomingMessage, res: http.ServerResponse, filePath: string, contentType: string): void {
+  if (!fs.existsSync(filePath)) {
+    sendError(res, 404, "File not found");
+    return;
+  }
+  const size = fs.statSync(filePath).size;
+  const m = /^bytes=(\d*)-(\d*)$/.exec(req.headers.range ?? "");
+  if (!m || (m[1] === "" && m[2] === "")) {
+    res.writeHead(200, { "Content-Type": contentType, "Content-Length": size, "Accept-Ranges": "bytes", "Cache-Control": "no-cache" });
+    fs.createReadStream(filePath).pipe(res);
+    return;
+  }
+  // "bytes=-N" is the last N bytes; otherwise start[-end].
+  const start = m[1] === "" ? Math.max(0, size - Number(m[2])) : Number(m[1]);
+  const end = m[1] === "" || m[2] === "" ? size - 1 : Math.min(Number(m[2]), size - 1);
+  if (start > end || start >= size) {
+    res.writeHead(416, { "Content-Range": `bytes */${size}` });
+    res.end();
+    return;
+  }
+  res.writeHead(206, {
+    "Content-Type": contentType,
+    "Content-Length": end - start + 1,
+    "Content-Range": `bytes ${start}-${end}/${size}`,
+    "Accept-Ranges": "bytes",
+    "Cache-Control": "no-cache",
+  });
+  fs.createReadStream(filePath, { start, end }).pipe(res);
+}
+
 function validateProject(project: { template: string | null; scenes: { id: string; order: number; slotValues?: Record<string, SlotValue> }[] }) {
   const scenes = project.template
     ? project.scenes.map((scene) => {
@@ -1575,7 +1609,7 @@ export async function startWebServer(options: { port?: number; host?: string; op
         else if (ext === ".webm") mime = "video/webm";
         else if (ext === ".wav") mime = "audio/wav";
         else if (ext === ".mp3") mime = "audio/mpeg";
-        sendFile(res, abs, mime);
+        sendFileRanged(req, res, abs, mime);
         return;
       }
     }
