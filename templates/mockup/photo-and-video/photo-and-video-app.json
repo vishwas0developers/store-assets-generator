@@ -1,0 +1,849 @@
+{
+ "version": 1,
+ "id": "photo-and-video-app",
+ "name": "Photo and video app",
+ "category": "photo-and-video",
+ "description": "Transform your media app with our creative template. Display photo editing, video creation, and content sharing features in a visually stunning design that showcases powerful multimedia capabilities and creative tools.",
+ "devices": [
+  {
+   "deviceId": "apple-iphone-16-pro-max",
+   "label": "apple-iphone-16-pro-max"
+  },
+  {
+   "deviceId": "apple-iphone-13-pro-max",
+   "label": "apple-iphone-13-pro-max"
+  },
+  {
+   "deviceId": "samsung-galaxy-s21-ultra",
+   "label": "samsung-galaxy-s21-ultra"
+  },
+  {
+   "deviceId": "apple-ipad-pro-12-9-inch",
+   "label": "apple-ipad-pro-12-9-inch"
+  },
+  {
+   "deviceId": "samsung-galaxy-tab-s7",
+   "label": "samsung-galaxy-tab-s7"
+  }
+ ],
+ "layout": "single-no-text",
+ "background": {
+  "type": "solid",
+  "value": "#03080e"
+ },
+ "panoramic": false,
+ "columnCount": 5,
+ "titles": [
+  "SIMPLE & FAST",
+  "INSPIRATION SAVED",
+  "FOR ALL CREATIVES",
+  "Organize inspiration",
+  "STAY ALIGNED"
+ ],
+ "subtitles": [
+  "Connect Elements Created",
+  "Keep visuals that move you",
+  "Explore, Save, Connect",
+  "Build Your World",
+  "For All Your Projects"
+ ],
+ "pages": [
+  {
+   "title": "SIMPLE & FAST",
+   "subtitle": "Connect Elements Created",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#03080e"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t7",
+     "xPct": 4.545,
+     "yPct": 12.964,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "SIMPLE\n& FAST",
+      "color": "#ffffff",
+      "size": 83.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.1,
+      "charSpacing": 20
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s1",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -4.432,
+     "yPct": 23.431,
+     "widthPct": 108.864,
+     "heightPct": 91.199,
+     "rotation": 0,
+     "opacity": 0.4,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 479,
+      "h": 871.86,
+      "radius": 125.6,
+      "fill": "#000000",
+      "blur": 24,
+      "inset": 72
+     }
+    },
+    {
+     "id": "tpl-s2",
+     "assetId": "shape:Dot",
+     "name": "Dot",
+     "xPct": 4.545,
+     "yPct": 29.289,
+     "widthPct": 90.909,
+     "heightPct": 41.841,
+     "rotation": 0,
+     "opacity": 0.6,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 400,
+      "h": 400,
+      "fill": "#042638",
+      "blur": 60
+     }
+    },
+    {
+     "id": "tpl-s3",
+     "assetId": "shape:Tile Shadow",
+     "name": "Tile Shadow",
+     "xPct": -0.455,
+     "yPct": 41.004,
+     "widthPct": 31.591,
+     "heightPct": 14.54,
+     "rotation": 0,
+     "opacity": 0.4,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 139,
+      "h": 139,
+      "radius": 18,
+      "fill": "#000000",
+      "blur": 8,
+      "inset": 12
+     }
+    },
+    {
+     "id": "tpl-s4",
+     "assetId": "shape:Tile Box",
+     "name": "Tile Box",
+     "xPct": 1.818,
+     "yPct": 41.841,
+     "widthPct": 26.136,
+     "heightPct": 12.029,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 115,
+      "h": 115,
+      "radius": 6,
+      "fill": "#ece8dc",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "inset": 1.0
+     }
+    },
+    {
+     "id": "tpl-s5",
+     "assetId": "shape:Tag Badge",
+     "name": "Tag Badge",
+     "xPct": 29.545,
+     "yPct": 6.276,
+     "widthPct": 40.909,
+     "heightPct": 2.929,
+     "rotation": 0,
+     "opacity": 0.85,
+     "zIndex": 25,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 180,
+      "h": 28,
+      "radius": 14.0,
+      "fill": "#0d1f2d",
+      "stroke": "#1e3a52",
+      "strokeWidth": 1,
+      "inset": 0.5
+     }
+    },
+    {
+     "id": "tpl-t6",
+     "xPct": 29.545,
+     "yPct": 7.016,
+     "widthPct": 40.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 26,
+     "customName": "Tag Text",
+     "style": {
+      "text": "Connect Elements Created",
+      "color": "#a0c4e2",
+      "size": 31.9,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.2
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 56.06,
+    "x": 0.0,
+    "y": 24.17,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#0d0d0f",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "INSPIRATION SAVED",
+   "subtitle": "Keep visuals that move you",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#03080e"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t13",
+     "xPct": 4.545,
+     "yPct": 12.964,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "INSPIRATION\nSAVED",
+      "color": "#ffffff",
+      "size": 83.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.1,
+      "charSpacing": 20
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s8",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -12.955,
+     "yPct": 23.431,
+     "widthPct": 125.909,
+     "heightPct": 108.245,
+     "rotation": 0,
+     "opacity": 0.4,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 554,
+      "h": 1034.82,
+      "radius": 137.6,
+      "fill": "#000000",
+      "blur": 24,
+      "inset": 72
+     }
+    },
+    {
+     "id": "tpl-s9",
+     "assetId": "shape:Dot",
+     "name": "Dot",
+     "xPct": 13.636,
+     "yPct": 10.46,
+     "widthPct": 72.727,
+     "heightPct": 33.473,
+     "rotation": 0,
+     "opacity": 0.7,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 320,
+      "h": 320,
+      "fill": "#054b68",
+      "blur": 50
+     }
+    },
+    {
+     "id": "tpl-s10",
+     "assetId": "shape:Dot",
+     "name": "Dot",
+     "xPct": 9.091,
+     "yPct": 33.473,
+     "widthPct": 81.818,
+     "heightPct": 37.657,
+     "rotation": 0,
+     "opacity": 0.5,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 360,
+      "h": 360,
+      "fill": "#043248",
+      "blur": 60
+     }
+    },
+    {
+     "id": "tpl-s11",
+     "assetId": "shape:Tag Badge",
+     "name": "Tag Badge",
+     "xPct": 28.409,
+     "yPct": 6.276,
+     "widthPct": 43.182,
+     "heightPct": 2.929,
+     "rotation": 0,
+     "opacity": 0.85,
+     "zIndex": 25,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 190,
+      "h": 28,
+      "radius": 14.0,
+      "fill": "#0d1f2d",
+      "stroke": "#1e3a52",
+      "strokeWidth": 1,
+      "inset": 0.5
+     }
+    },
+    {
+     "id": "tpl-t12",
+     "xPct": 28.409,
+     "yPct": 7.016,
+     "widthPct": 43.182,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 26,
+     "customName": "Tag Text",
+     "style": {
+      "text": "Keep visuals that move you",
+      "color": "#a0c4e2",
+      "size": 31.9,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.2
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 68.62,
+    "x": 0.0,
+    "y": 28.9,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#0d0d0f",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "FOR ALL CREATIVES",
+   "subtitle": "Explore, Save, Connect",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#03080e"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t18",
+     "xPct": 4.545,
+     "yPct": 11.395,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "FOR ALL\nCREATIVES",
+      "color": "#ffffff",
+      "size": 83.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.1,
+      "charSpacing": 20
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s14",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -4.432,
+     "yPct": 21.862,
+     "widthPct": 108.864,
+     "heightPct": 91.199,
+     "rotation": 0,
+     "opacity": 0.4,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 479,
+      "h": 871.86,
+      "radius": 125.6,
+      "fill": "#000000",
+      "blur": 24,
+      "inset": 72
+     }
+    },
+    {
+     "id": "tpl-s15",
+     "assetId": "shape:Dot",
+     "name": "Dot",
+     "xPct": 4.545,
+     "yPct": 29.289,
+     "widthPct": 90.909,
+     "heightPct": 41.841,
+     "rotation": 0,
+     "opacity": 0.6,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 400,
+      "h": 400,
+      "fill": "#042638",
+      "blur": 60
+     }
+    },
+    {
+     "id": "tpl-s16",
+     "assetId": "shape:Tag Badge",
+     "name": "Tag Badge",
+     "xPct": 30.682,
+     "yPct": 5.23,
+     "widthPct": 38.636,
+     "heightPct": 2.929,
+     "rotation": 0,
+     "opacity": 0.85,
+     "zIndex": 25,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 170,
+      "h": 28,
+      "radius": 14.0,
+      "fill": "#0d1f2d",
+      "stroke": "#1e3a52",
+      "strokeWidth": 1,
+      "inset": 0.5
+     }
+    },
+    {
+     "id": "tpl-t17",
+     "xPct": 30.682,
+     "yPct": 5.97,
+     "widthPct": 38.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 26,
+     "customName": "Tag Text",
+     "style": {
+      "text": "Explore, Save, Connect",
+      "color": "#a0c4e2",
+      "size": 31.9,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.2
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 56.06,
+    "x": 0.0,
+    "y": 22.11,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#0d0d0f",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Organize inspiration",
+   "subtitle": "Build Your World",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#03080e"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t26",
+     "xPct": 4.545,
+     "yPct": 55.851,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Organize\ninspiration",
+      "color": "#ffffff",
+      "size": 83.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.1,
+      "charSpacing": -10
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s19",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -1.136,
+     "yPct": -24.477,
+     "widthPct": 102.273,
+     "heightPct": 87.552,
+     "rotation": 0,
+     "opacity": 0.35,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 450,
+      "h": 837.0,
+      "radius": 112.8,
+      "fill": "#000000",
+      "blur": 20,
+      "inset": 60
+     }
+    },
+    {
+     "id": "tpl-s20",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -1.136,
+     "yPct": -3.243,
+     "widthPct": 102.273,
+     "heightPct": 87.552,
+     "rotation": 180,
+     "opacity": 0.35,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 450,
+      "h": 837.0,
+      "radius": 112.8,
+      "fill": "#000000",
+      "blur": 20,
+      "inset": 60
+     }
+    },
+    {
+     "id": "tpl-s21",
+     "assetId": "shape:Dot",
+     "name": "Dot",
+     "xPct": 15.909,
+     "yPct": 34.519,
+     "widthPct": 68.182,
+     "heightPct": 31.381,
+     "rotation": 0,
+     "opacity": 0.6,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 300,
+      "h": 300,
+      "fill": "#042638",
+      "blur": 50
+     }
+    },
+    {
+     "id": "tpl-s22",
+     "assetId": "shape:Tile Shadow",
+     "name": "Tile Shadow",
+     "xPct": 40.909,
+     "yPct": 33.682,
+     "widthPct": 19.091,
+     "heightPct": 10.356,
+     "rotation": 0,
+     "opacity": 0.4,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 84,
+      "h": 99,
+      "radius": 18,
+      "fill": "#000000",
+      "blur": 8,
+      "inset": 12
+     }
+    },
+    {
+     "id": "tpl-s23",
+     "assetId": "shape:Tile Box",
+     "name": "Tile Box",
+     "xPct": 43.182,
+     "yPct": 34.519,
+     "widthPct": 13.636,
+     "heightPct": 7.845,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 60,
+      "h": 75,
+      "radius": 6,
+      "fill": "#0d1822",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "inset": 1.0
+     }
+    },
+    {
+     "id": "tpl-s24",
+     "assetId": "shape:Tag Badge",
+     "name": "Tag Badge",
+     "xPct": 32.955,
+     "yPct": 49.686,
+     "widthPct": 34.091,
+     "heightPct": 2.929,
+     "rotation": 0,
+     "opacity": 0.85,
+     "zIndex": 25,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 150,
+      "h": 28,
+      "radius": 14.0,
+      "fill": "#0d1f2d",
+      "stroke": "#1e3a52",
+      "strokeWidth": 1,
+      "inset": 0.5
+     }
+    },
+    {
+     "id": "tpl-t25",
+     "xPct": 32.955,
+     "yPct": 50.426,
+     "widthPct": 34.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 26,
+     "customName": "Tag Text",
+     "style": {
+      "text": "Build Your World",
+      "color": "#a0c4e2",
+      "size": 31.9,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.2
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 55.23,
+    "x": 0.0,
+    "y": -41.77,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#0d0d0f",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   },
+   "extraDevices": [
+    {
+     "size": 55.23,
+     "x": -0.0,
+     "y": -13.46,
+     "rotation": 180,
+     "brightness": 100,
+     "frameless": false,
+     "bezelColor": "#0d0d0f",
+     "borderColor": "#5e5e5e",
+     "zIndex": 10
+    }
+   ]
+  },
+  {
+   "title": "STAY ALIGNED",
+   "subtitle": "For All Your Projects",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#03080e"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t31",
+     "xPct": 4.545,
+     "yPct": 12.964,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "STAY\nALIGNED",
+      "color": "#ffffff",
+      "size": 83.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.1,
+      "charSpacing": 20
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s27",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -4.432,
+     "yPct": 23.431,
+     "widthPct": 108.864,
+     "heightPct": 91.199,
+     "rotation": 0,
+     "opacity": 0.4,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 479,
+      "h": 871.86,
+      "radius": 125.6,
+      "fill": "#000000",
+      "blur": 24,
+      "inset": 72
+     }
+    },
+    {
+     "id": "tpl-s28",
+     "assetId": "shape:Dot",
+     "name": "Dot",
+     "xPct": 4.545,
+     "yPct": 29.289,
+     "widthPct": 90.909,
+     "heightPct": 41.841,
+     "rotation": 0,
+     "opacity": 0.6,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 400,
+      "h": 400,
+      "fill": "#042638",
+      "blur": 60
+     }
+    },
+    {
+     "id": "tpl-s29",
+     "assetId": "shape:Tag Badge",
+     "name": "Tag Badge",
+     "xPct": 30.682,
+     "yPct": 6.276,
+     "widthPct": 38.636,
+     "heightPct": 2.929,
+     "rotation": 0,
+     "opacity": 0.85,
+     "zIndex": 25,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 170,
+      "h": 28,
+      "radius": 14.0,
+      "fill": "#0d1f2d",
+      "stroke": "#1e3a52",
+      "strokeWidth": 1,
+      "inset": 0.5
+     }
+    },
+    {
+     "id": "tpl-t30",
+     "xPct": 30.682,
+     "yPct": 7.016,
+     "widthPct": 38.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 26,
+     "customName": "Tag Text",
+     "style": {
+      "text": "For All Your Projects",
+      "color": "#a0c4e2",
+      "size": 31.9,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.2
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 56.06,
+    "x": 0.0,
+    "y": 24.17,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#0d0d0f",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  }
+ ],
+ "designHeight": 2347,
+ "textColor": "#111111"
+}

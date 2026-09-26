@@ -1,0 +1,764 @@
+{
+ "version": 1,
+ "id": "freelancing-work-app",
+ "name": "Freelancing work app",
+ "category": "business",
+ "description": "Showcase your freelancing platform with our professional template. Display project management, client communication, and earnings tracking in a sophisticated design that empowers freelancers to manage their business efficiently and grow their client base.",
+ "devices": [
+  {
+   "deviceId": "apple-iphone-16-pro-max",
+   "label": "apple-iphone-16-pro-max"
+  },
+  {
+   "deviceId": "apple-iphone-13-pro-max",
+   "label": "apple-iphone-13-pro-max"
+  },
+  {
+   "deviceId": "samsung-galaxy-s21-ultra",
+   "label": "samsung-galaxy-s21-ultra"
+  },
+  {
+   "deviceId": "apple-ipad-pro-12-9-inch",
+   "label": "apple-ipad-pro-12-9-inch"
+  },
+  {
+   "deviceId": "samsung-galaxy-tab-s7",
+   "label": "samsung-galaxy-tab-s7"
+  }
+ ],
+ "layout": "single-no-text",
+ "background": {
+  "type": "solid",
+  "value": "#eefcf4"
+ },
+ "panoramic": false,
+ "columnCount": 5,
+ "titles": [
+  "Work From Anywhere",
+  "Organize a Job Search",
+  "Search for Relevant Jobs",
+  "Customize Your Search",
+  "Personalized Job Feed"
+ ],
+ "subtitles": [
+  "Find jobs that match your skills",
+  "Save and track top opportunities",
+  "Perfect for remote job seekers!",
+  "Narrow results to what fits you",
+  "See your latest matches & results for you"
+ ],
+ "pages": [
+  {
+   "title": "Work From Anywhere",
+   "subtitle": "Find jobs that match your skills",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#eefcf4"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t9",
+     "xPct": 5.455,
+     "yPct": 40.261,
+     "widthPct": 89.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Work From\nAnywhere",
+      "color": "#111111",
+      "size": 93.3,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.12
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s1",
+     "assetId": "shape:Photo Placeholder",
+     "name": "Photo Placeholder",
+     "xPct": 4.545,
+     "yPct": 2.092,
+     "widthPct": 90.909,
+     "heightPct": 32.427,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 10,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 400,
+      "h": 310,
+      "radius": 20,
+      "fill": "#e2e8e4",
+      "stroke": "#d0ded4",
+      "strokeWidth": 1,
+      "inset": 0.5
+     }
+    },
+    {
+     "id": "tpl-s2",
+     "assetId": "shape:Silhouette Head",
+     "name": "Silhouette Head",
+     "xPct": 32.386,
+     "yPct": 8.63,
+     "widthPct": 35.227,
+     "heightPct": 16.213,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 11,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 155.0,
+      "h": 155.0,
+      "fill": "#c0d4c6"
+     }
+    },
+    {
+     "id": "tpl-s3",
+     "assetId": "shape:Silhouette Body",
+     "name": "Silhouette Body",
+     "xPct": 25.341,
+     "yPct": 20.397,
+     "widthPct": 49.318,
+     "heightPct": 4.184,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 11,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 217.0,
+      "h": 40,
+      "radius": 15,
+      "fill": "#c0d4c6"
+     }
+    },
+    {
+     "id": "tpl-s4",
+     "assetId": "shape:Photo Placeholder",
+     "name": "Photo Placeholder",
+     "xPct": 4.545,
+     "yPct": 64.854,
+     "widthPct": 90.909,
+     "heightPct": 32.427,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 10,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 400,
+      "h": 310,
+      "radius": 20,
+      "fill": "#e2e8e4",
+      "stroke": "#d0ded4",
+      "strokeWidth": 1,
+      "inset": 0.5
+     }
+    },
+    {
+     "id": "tpl-s5",
+     "assetId": "shape:Silhouette Head",
+     "name": "Silhouette Head",
+     "xPct": 32.386,
+     "yPct": 71.391,
+     "widthPct": 35.227,
+     "heightPct": 16.213,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 11,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 155.0,
+      "h": 155.0,
+      "fill": "#c0d4c6"
+     }
+    },
+    {
+     "id": "tpl-s6",
+     "assetId": "shape:Silhouette Body",
+     "name": "Silhouette Body",
+     "xPct": 25.341,
+     "yPct": 83.159,
+     "widthPct": 49.318,
+     "heightPct": 4.184,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 11,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 217.0,
+      "h": 40,
+      "radius": 15,
+      "fill": "#c0d4c6"
+     }
+    },
+    {
+     "id": "tpl-s7",
+     "assetId": "shape:Pill Badge Bg",
+     "name": "Pill Badge Bg",
+     "xPct": 27.727,
+     "yPct": 56.695,
+     "widthPct": 44.545,
+     "heightPct": 3.766,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 196,
+      "h": 36,
+      "radius": 18,
+      "fill": "#000000"
+     }
+    },
+    {
+     "id": "tpl-t8",
+     "xPct": 27.727,
+     "yPct": 57.584,
+     "widthPct": 44.545,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Pill Badge Text",
+     "style": {
+      "text": "Find jobs that match",
+      "color": "#ffffff",
+      "size": 34.4,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.2
+     }
+    }
+   ],
+   "deviceOne": {
+    "visible": false
+   }
+  },
+  {
+   "title": "Organize a Job Search",
+   "subtitle": "Save and track top opportunities",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#eefcf4"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t13",
+     "xPct": 5.455,
+     "yPct": 4.56,
+     "widthPct": 89.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Organize a\nJob Search",
+      "color": "#111111",
+      "size": 83.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.12
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s10",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -6.136,
+     "yPct": 21.339,
+     "widthPct": 112.273,
+     "heightPct": 94.608,
+     "rotation": 0,
+     "opacity": 0.18,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 494,
+      "h": 904.45,
+      "radius": 128.0,
+      "fill": "#000000",
+      "blur": 24,
+      "inset": 72
+     }
+    },
+    {
+     "id": "tpl-s11",
+     "assetId": "shape:Pill Badge Bg",
+     "name": "Pill Badge Bg",
+     "xPct": 16.818,
+     "yPct": 17.573,
+     "widthPct": 66.364,
+     "heightPct": 3.556,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 292,
+      "h": 34,
+      "radius": 17,
+      "fill": "#000000"
+     }
+    },
+    {
+     "id": "tpl-t12",
+     "xPct": 16.818,
+     "yPct": 18.359,
+     "widthPct": 66.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Pill Badge Text",
+     "style": {
+      "text": "Save and track top opportunities",
+      "color": "#ffffff",
+      "size": 34.4,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.2
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 58.57,
+    "x": 0.0,
+    "y": 22.65,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#111111",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Search for Relevant Jobs",
+   "subtitle": "Perfect for remote job seekers!",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#eefcf4"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [],
+   "assetLayers": [
+    {
+     "id": "tpl-t14",
+     "xPct": 5.455,
+     "yPct": 4.783,
+     "widthPct": 89.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Top Text",
+     "style": {
+      "text": "Perfect for\nremote job seekers!",
+      "color": "#111111",
+      "size": 49.1,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.2
+     }
+    },
+    {
+     "id": "tpl-t15",
+     "xPct": 5.455,
+     "yPct": 11.582,
+     "widthPct": 89.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Stars",
+     "style": {
+      "text": "★★★★★",
+      "color": "#111111",
+      "size": 49.1,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.2
+     }
+    },
+    {
+     "id": "tpl-s16",
+     "assetId": "shape:Green Title Box",
+     "name": "Green Title Box",
+     "xPct": 5.455,
+     "yPct": 18.828,
+     "widthPct": 50.0,
+     "heightPct": 18.828,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 25,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 220,
+      "h": 180,
+      "radius": 16,
+      "fill": "#108a00"
+     }
+    },
+    {
+     "id": "tpl-t17",
+     "xPct": 9.091,
+     "yPct": 22.569,
+     "widthPct": 43.182,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Search for\nRelevant\nJobs",
+      "color": "#ffffff",
+      "size": 78.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.1
+     }
+    },
+    {
+     "id": "tpl-s18",
+     "assetId": "shape:Photo Placeholder",
+     "name": "Photo Placeholder",
+     "xPct": 4.545,
+     "yPct": 41.841,
+     "widthPct": 90.909,
+     "heightPct": 55.439,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 10,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 400,
+      "h": 530,
+      "radius": 20,
+      "fill": "#e2e8e4",
+      "stroke": "#d0ded4",
+      "strokeWidth": 1,
+      "inset": 0.5
+     }
+    },
+    {
+     "id": "tpl-s19",
+     "assetId": "shape:Silhouette Head",
+     "name": "Silhouette Head",
+     "xPct": 27.273,
+     "yPct": 57.531,
+     "widthPct": 45.455,
+     "heightPct": 20.921,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 11,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 200.0,
+      "h": 200.0,
+      "fill": "#c0d4c6"
+     }
+    },
+    {
+     "id": "tpl-s20",
+     "assetId": "shape:Silhouette Body",
+     "name": "Silhouette Body",
+     "xPct": 18.182,
+     "yPct": 71.653,
+     "widthPct": 63.636,
+     "heightPct": 4.184,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 11,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 280.0,
+      "h": 40,
+      "radius": 15,
+      "fill": "#c0d4c6"
+     }
+    }
+   ],
+   "deviceOne": {
+    "visible": false
+   }
+  },
+  {
+   "title": "Customize Your Search",
+   "subtitle": "Narrow results to what fits you",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#eefcf4"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t24",
+     "xPct": 5.455,
+     "yPct": 4.56,
+     "widthPct": 89.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Customize\nYour Search",
+      "color": "#111111",
+      "size": 83.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.12
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s21",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -6.136,
+     "yPct": 21.339,
+     "widthPct": 112.273,
+     "heightPct": 94.608,
+     "rotation": 0,
+     "opacity": 0.18,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 494,
+      "h": 904.45,
+      "radius": 128.0,
+      "fill": "#000000",
+      "blur": 24,
+      "inset": 72
+     }
+    },
+    {
+     "id": "tpl-s22",
+     "assetId": "shape:Pill Badge Bg",
+     "name": "Pill Badge Bg",
+     "xPct": 17.727,
+     "yPct": 17.573,
+     "widthPct": 64.545,
+     "heightPct": 3.556,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 284,
+      "h": 34,
+      "radius": 17,
+      "fill": "#000000"
+     }
+    },
+    {
+     "id": "tpl-t23",
+     "xPct": 17.727,
+     "yPct": 18.359,
+     "widthPct": 64.545,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Pill Badge Text",
+     "style": {
+      "text": "Narrow results to what fits you",
+      "color": "#ffffff",
+      "size": 34.4,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.2
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 58.57,
+    "x": 0.0,
+    "y": 22.65,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#111111",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Personalized Job Feed",
+   "subtitle": "See your latest matches & results for you",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#eefcf4"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t29",
+     "xPct": 5.455,
+     "yPct": 4.56,
+     "widthPct": 89.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Personalized\nJob Feed",
+      "color": "#111111",
+      "size": 83.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.12
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s25",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -7.955,
+     "yPct": 22.594,
+     "widthPct": 97.727,
+     "heightPct": 83.007,
+     "rotation": 0,
+     "opacity": 0.18,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 430,
+      "h": 793.55,
+      "radius": 109.6,
+      "fill": "#000000",
+      "blur": 20,
+      "inset": 60
+     }
+    },
+    {
+     "id": "tpl-s26",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 18.864,
+     "yPct": 39.121,
+     "widthPct": 103.182,
+     "heightPct": 85.517,
+     "rotation": 0,
+     "opacity": 0.28,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 454,
+      "h": 817.55,
+      "radius": 121.6,
+      "fill": "#000000",
+      "blur": 24,
+      "inset": 72
+     }
+    },
+    {
+     "id": "tpl-s27",
+     "assetId": "shape:Pill Badge Bg",
+     "name": "Pill Badge Bg",
+     "xPct": 8.636,
+     "yPct": 17.573,
+     "widthPct": 82.727,
+     "heightPct": 3.556,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 364,
+      "h": 34,
+      "radius": 17,
+      "fill": "#000000"
+     }
+    },
+    {
+     "id": "tpl-t28",
+     "xPct": 8.636,
+     "yPct": 18.359,
+     "widthPct": 82.727,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Pill Badge Text",
+     "style": {
+      "text": "See your latest matches & results for you",
+      "color": "#ffffff",
+      "size": 34.4,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.2
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 51.88,
+    "x": 29.03,
+    "y": 44.36,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#111111",
+    "borderColor": "#5e5e5e",
+    "zIndex": 12
+   },
+   "extraDevices": [
+    {
+     "id": "dev-left",
+     "size": 51.88,
+     "x": -12.9,
+     "y": 19.12,
+     "rotation": 0,
+     "brightness": 100,
+     "frameless": false,
+     "bezelColor": "#111111",
+     "borderColor": "#5e5e5e",
+     "zIndex": 8
+    }
+   ]
+  }
+ ],
+ "designHeight": 2347,
+ "textColor": "#111111"
+}
