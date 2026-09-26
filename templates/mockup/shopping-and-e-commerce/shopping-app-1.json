@@ -1,0 +1,1011 @@
+{
+ "version": 1,
+ "id": "shopping-app-1",
+ "name": "Shopping app",
+ "category": "shopping-and-e-commerce",
+ "description": "Elevate your e-commerce app with our premium template. Showcase product catalogs, shopping features, and checkout processes in a sleek design that drives conversions.",
+ "devices": [
+  {
+   "deviceId": "apple-iphone-16-pro-max",
+   "label": "apple-iphone-16-pro-max"
+  },
+  {
+   "deviceId": "apple-iphone-14-plus",
+   "label": "apple-iphone-14-plus"
+  },
+  {
+   "deviceId": "samsung-galaxy-s21-ultra",
+   "label": "samsung-galaxy-s21-ultra"
+  }
+ ],
+ "layout": "single-no-text",
+ "background": {
+  "type": "solid",
+  "value": "#f4f4f6"
+ },
+ "panoramic": false,
+ "columnCount": 8,
+ "titles": [
+  "Shop new and pre-loved.",
+  "Never miss a beat.",
+  "Clear out and cash in.",
+  "Pay your way.",
+  "Snap. Share. Shop.",
+  "Track your orders.",
+  "Shop Daily Deals.",
+  "Never miss a sale."
+ ],
+ "subtitles": [
+  "Download and sign in to get the best of eBay.",
+  "Real-time notifications for drops, offers, and more",
+  "List items quickly and get notified as soon as they sell.",
+  "Pick from various payment methods for each purchase",
+  "Try it in dark mode to buy anytime you want",
+  "Keep up with every step of your item's delivery",
+  "Save, sell, repeat-enjoy exclusive offers every day",
+  "Trust your purchase and get money back 100%"
+ ],
+ "pages": [
+  {
+   "title": "Shop new and pre-loved.",
+   "subtitle": "Download and sign in to get the best of eBay.",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#f4f4f6"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t2",
+     "xPct": 5.455,
+     "yPct": 1.808,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Shop new\nand pre-loved.",
+      "color": "#111111",
+      "size": 73.6,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.12
+     }
+    },
+    {
+     "id": "tpl-t3",
+     "xPct": 5.455,
+     "yPct": 12.047,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Download and sign in\nto get the best of eBay.",
+      "color": "#555555",
+      "size": 36.8,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.25
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s1",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -7.727,
+     "yPct": 20.084,
+     "widthPct": 115.455,
+     "heightPct": 94.846,
+     "rotation": 0,
+     "opacity": 0.18,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 508,
+      "h": 906.73,
+      "radius": 138.4,
+      "fill": "#000000",
+      "blur": 28,
+      "inset": 84
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 56.9,
+    "x": 0.0,
+    "y": 21.84,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#111111",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Never miss a beat.",
+   "subtitle": "Real-time notifications for drops, offers, and more",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#f4f4f6"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t11",
+     "xPct": 5.455,
+     "yPct": 1.808,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Never miss\na beat.",
+      "color": "#111111",
+      "size": 73.6,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.12
+     }
+    },
+    {
+     "id": "tpl-t12",
+     "xPct": 5.455,
+     "yPct": 12.047,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Real-time notifications for\ndrops, offers, and more",
+      "color": "#555555",
+      "size": 36.8,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.25
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s4",
+     "assetId": "shape:Dot",
+     "name": "Dot",
+     "xPct": -4.545,
+     "yPct": 23.013,
+     "widthPct": 118.182,
+     "heightPct": 54.393,
+     "rotation": 0,
+     "opacity": 0.8,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 520,
+      "h": 520,
+      "fill": "#e8e8ec",
+      "blur": 60
+     }
+    },
+    {
+     "id": "tpl-s5",
+     "assetId": "shape:Dot",
+     "name": "Dot",
+     "xPct": 9.091,
+     "yPct": 20.921,
+     "widthPct": 72.727,
+     "heightPct": 33.473,
+     "rotation": 0,
+     "opacity": 0.5,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 320,
+      "h": 320,
+      "fill": "#d0d0d8",
+      "blur": 40
+     }
+    },
+    {
+     "id": "tpl-s6",
+     "assetId": "shape:Promo Card Bg",
+     "name": "Promo Card Bg",
+     "xPct": 4.545,
+     "yPct": 81.59,
+     "widthPct": 90.909,
+     "heightPct": 13.598,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 40,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 400,
+      "h": 130,
+      "radius": 20,
+      "fill": "#541a2f",
+      "stroke": "#6e253e",
+      "strokeWidth": 1,
+      "inset": 0.5
+     }
+    },
+    {
+     "id": "tpl-s7",
+     "assetId": "shape:Promo CTA Bg",
+     "name": "Promo CTA Bg",
+     "xPct": 8.182,
+     "yPct": 90.795,
+     "widthPct": 29.545,
+     "heightPct": 2.929,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 41,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 130,
+      "h": 28,
+      "radius": 14,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-t8",
+     "xPct": 8.182,
+     "yPct": 81.651,
+     "widthPct": 83.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 42,
+     "customName": "Promo Title",
+     "style": {
+      "text": "Give big with 15% off",
+      "color": "#ffffff",
+      "size": 39.3,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.2
+     }
+    },
+    {
+     "id": "tpl-t9",
+     "xPct": 8.182,
+     "yPct": 84.774,
+     "widthPct": 83.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 42,
+     "customName": "Promo Subtitle",
+     "style": {
+      "text": "Huge savings to support small businesses. Ends 11/24.",
+      "color": "#f0b4c8",
+      "size": 29.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.2
+     }
+    },
+    {
+     "id": "tpl-t10",
+     "xPct": 10.0,
+     "yPct": 90.523,
+     "widthPct": 25.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 43,
+     "customName": "Promo CTA Text",
+     "style": {
+      "text": "Get the coupon",
+      "color": "#541a2f",
+      "size": 27.0,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.2
+     }
+    }
+   ],
+   "deviceOne": {
+    "visible": false
+   }
+  },
+  {
+   "title": "Clear out and cash in.",
+   "subtitle": "List items quickly and get notified as soon as they sell.",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#f4f4f6"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t14",
+     "xPct": 5.455,
+     "yPct": 1.808,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Clear out\nand cash in.",
+      "color": "#111111",
+      "size": 73.6,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.12
+     }
+    },
+    {
+     "id": "tpl-t15",
+     "xPct": 5.455,
+     "yPct": 12.047,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "List items quickly and get\nnotified as soon as they sell.",
+      "color": "#555555",
+      "size": 36.8,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.25
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s13",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -7.727,
+     "yPct": 19.038,
+     "widthPct": 115.455,
+     "heightPct": 94.846,
+     "rotation": 0,
+     "opacity": 0.18,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 508,
+      "h": 906.73,
+      "radius": 138.4,
+      "fill": "#000000",
+      "blur": 28,
+      "inset": 84
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 56.9,
+    "x": 0.0,
+    "y": 20.49,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#111111",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Pay your way.",
+   "subtitle": "Pick from various payment methods for each purchase",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#f4f4f6"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t18",
+     "xPct": 5.455,
+     "yPct": 1.808,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Pay\nyour way.",
+      "color": "#111111",
+      "size": 73.6,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.12
+     }
+    },
+    {
+     "id": "tpl-t19",
+     "xPct": 5.455,
+     "yPct": 12.047,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Pick from various payment\nmethods for each purchase",
+      "color": "#555555",
+      "size": 36.8,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.25
+     }
+    },
+    {
+     "id": "tpl-t20",
+     "xPct": 20.0,
+     "yPct": 34.677,
+     "widthPct": 45.455,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 35,
+     "customName": "Menu Title",
+     "style": {
+      "text": "Shopping",
+      "color": "#111111",
+      "size": 34.4,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.2
+     }
+    },
+    {
+     "id": "tpl-t21",
+     "xPct": 20.0,
+     "yPct": 38.117,
+     "widthPct": 59.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 35,
+     "customName": "Menu Items",
+     "style": {
+      "text": "Saved\nSearches, sellers, feed\n\nBuy again\nShop your past purchases\n\nPurchases\nYour order history",
+      "color": "#444444",
+      "size": 27.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.2
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s16",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -7.727,
+     "yPct": 19.038,
+     "widthPct": 115.455,
+     "heightPct": 94.846,
+     "rotation": 0,
+     "opacity": 0.18,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 508,
+      "h": 906.73,
+      "radius": 138.4,
+      "fill": "#000000",
+      "blur": 28,
+      "inset": 84
+     }
+    },
+    {
+     "id": "tpl-s17",
+     "assetId": "shape:Popout Account Menu",
+     "name": "Popout Account Menu",
+     "xPct": 15.455,
+     "yPct": 33.473,
+     "widthPct": 69.091,
+     "heightPct": 21.967,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 25,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 304,
+      "h": 210,
+      "radius": 16,
+      "fill": "#ffffff",
+      "stroke": "#e8e8ec",
+      "strokeWidth": 1,
+      "inset": 0.5
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 56.9,
+    "x": 0.0,
+    "y": 20.49,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#111111",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Snap. Share. Shop.",
+   "subtitle": "Try it in dark mode to buy anytime you want",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#111113"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t28",
+     "xPct": 5.455,
+     "yPct": 1.808,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Snap.\nShare. Shop.",
+      "color": "#ffffff",
+      "size": 73.6,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.12
+     }
+    },
+    {
+     "id": "tpl-t29",
+     "xPct": 5.455,
+     "yPct": 12.047,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Try it in dark mode to buy\nanytime you want",
+      "color": "#a0a0a8",
+      "size": 36.8,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.25
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s22",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -9.091,
+     "yPct": 18.41,
+     "widthPct": 118.182,
+     "heightPct": 96.101,
+     "rotation": 0,
+     "opacity": 0.45,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 520,
+      "h": 918.73,
+      "radius": 144.4,
+      "fill": "#000000",
+      "blur": 30,
+      "inset": 90
+     }
+    },
+    {
+     "id": "tpl-s23",
+     "assetId": "shape:Sheet Bg",
+     "name": "Sheet Bg",
+     "xPct": 3.409,
+     "yPct": 67.992,
+     "widthPct": 93.182,
+     "heightPct": 19.874,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 410,
+      "h": 190,
+      "radius": 20,
+      "fill": "#ffffff",
+      "stroke": "#222222",
+      "strokeWidth": 1,
+      "inset": 0.5
+     }
+    },
+    {
+     "id": "tpl-t24",
+     "xPct": 7.955,
+     "yPct": 68.269,
+     "widthPct": 84.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Sheet Title",
+     "style": {
+      "text": "You don't run with the crowd",
+      "color": "#111111",
+      "size": 44.2,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.2
+     }
+    },
+    {
+     "id": "tpl-t25",
+     "xPct": 7.955,
+     "yPct": 72.33,
+     "widthPct": 84.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Sheet Subtitle",
+     "style": {
+      "text": "Get fit your own way with health and wellness gear on eBay.",
+      "color": "#666666",
+      "size": 31.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.2
+     }
+    },
+    {
+     "id": "tpl-s26",
+     "assetId": "shape:Sheet CTA Bg",
+     "name": "Sheet CTA Bg",
+     "xPct": 7.955,
+     "yPct": 80.021,
+     "widthPct": 36.364,
+     "heightPct": 3.766,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 160,
+      "h": 36,
+      "radius": 18,
+      "fill": "#111111"
+     }
+    },
+    {
+     "id": "tpl-t27",
+     "xPct": 10.227,
+     "yPct": 79.753,
+     "widthPct": 31.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "Sheet CTA Text",
+     "style": {
+      "text": "Shop for your style",
+      "color": "#ffffff",
+      "size": 29.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.2
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 56.9,
+    "x": 0.0,
+    "y": 20.49,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#222222",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Track your orders.",
+   "subtitle": "Keep up with every step of your item's delivery",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#f4f4f6"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t31",
+     "xPct": 5.455,
+     "yPct": 1.808,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Track\nyour orders.",
+      "color": "#111111",
+      "size": 73.6,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.12
+     }
+    },
+    {
+     "id": "tpl-t32",
+     "xPct": 5.455,
+     "yPct": 12.047,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Keep up with every step\nof your item's delivery",
+      "color": "#555555",
+      "size": 36.8,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.25
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s30",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -7.727,
+     "yPct": 19.038,
+     "widthPct": 115.455,
+     "heightPct": 94.846,
+     "rotation": 0,
+     "opacity": 0.18,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 508,
+      "h": 906.73,
+      "radius": 138.4,
+      "fill": "#000000",
+      "blur": 28,
+      "inset": 84
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 56.9,
+    "x": 0.0,
+    "y": 20.49,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#111111",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Shop Daily Deals.",
+   "subtitle": "Save, sell, repeat-enjoy exclusive offers every day",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#f4f4f6"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t34",
+     "xPct": 5.455,
+     "yPct": 1.808,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Shop\nDaily Deals.",
+      "color": "#111111",
+      "size": 73.6,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.12
+     }
+    },
+    {
+     "id": "tpl-t35",
+     "xPct": 5.455,
+     "yPct": 12.047,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Save, sell, repeat-enjoy\nexclusive offers every day",
+      "color": "#555555",
+      "size": 36.8,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.25
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s33",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -7.727,
+     "yPct": 19.038,
+     "widthPct": 115.455,
+     "heightPct": 94.846,
+     "rotation": 0,
+     "opacity": 0.18,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 508,
+      "h": 906.73,
+      "radius": 138.4,
+      "fill": "#000000",
+      "blur": 28,
+      "inset": 84
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 56.9,
+    "x": 0.0,
+    "y": 20.49,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#111111",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Never miss a sale.",
+   "subtitle": "Trust your purchase and get money back 100%",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#f4f4f6"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t37",
+     "xPct": 5.455,
+     "yPct": 1.808,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Never\nmiss a sale.",
+      "color": "#111111",
+      "size": 73.6,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.12
+     }
+    },
+    {
+     "id": "tpl-t38",
+     "xPct": 5.455,
+     "yPct": 12.047,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Trust your purchase and\nget money back 100%",
+      "color": "#555555",
+      "size": 36.8,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.25
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s36",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -4.318,
+     "yPct": 19.038,
+     "widthPct": 117.727,
+     "heightPct": 97.119,
+     "rotation": 0,
+     "opacity": 0.18,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 518,
+      "h": 928.45,
+      "radius": 140.0,
+      "fill": "#000000",
+      "blur": 28,
+      "inset": 84
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 58.57,
+    "x": 5.71,
+    "y": 21.33,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#111111",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  }
+ ],
+ "designHeight": 2347,
+ "textColor": "#111111"
+}
