@@ -646,16 +646,23 @@ function sourceUriFor(project: VideoProject, scene: VideoScene, resolveUri: (rel
  *  demo/template-preview assets never end up baked into a real rendered
  *  video, only the interactive editor preview. */
 export function sourceUrisFor(project: VideoProject, scene: VideoScene, resolveUri: (rel: string) => string, allowDemo = true): string[] {
-  if (scene.screenIds && scene.screenIds.length > 1) {
-    return scene.screenIds.map((id, i) => {
+  const slotShot = scene.slotValues?.screenshot?.kind === "image" ? scene.slotValues.screenshot.sourceId : undefined;
+  const slotShots = scene.slotValues?.screenshots?.kind === "imageList" ? scene.slotValues.screenshots.sourceIds : undefined;
+  const screenIds = (slotShots && slotShots.length > 1) ? slotShots : scene.screenIds;
+  const effectiveSourceId = slotShot || scene.sourceId;
+
+  if (screenIds && screenIds.length > 1) {
+    return screenIds.map((id, i) => {
       const source = project.sources.find((s) => s.id === id);
       if (source) return resolveUri(source.file);
       const demo = allowDemo ? resolveDemoAsset(id) : undefined;
       return demo ? dataUri(demo.absPath) : placeholderScreenUri(i);
     });
   }
-  const uri = sourceUriFor(project, scene, resolveUri, allowDemo);
-  return uri ? [uri] : [];
+  const source = project.sources.find((s) => s.id === effectiveSourceId) ?? (effectiveSourceId ? null : project.sources[0]);
+  if (source) return [resolveUri(source.file)];
+  const demo = allowDemo ? resolveDemoAsset(effectiveSourceId) : undefined;
+  return demo ? [dataUri(demo.absPath)] : [];
 }
 
 /** Parallel to `sourceUrisFor` -- which of those URIs is a real screen
@@ -1047,15 +1054,35 @@ export function composeStandaloneHtml(project: VideoProject, activeSceneIndex?: 
 
   const injectionScript = `
   <script>
-    window.addEventListener('DOMContentLoaded', () => {
-      const payload = ${JSON.stringify(payload)};
-      payload.forEach(({ targets, op, value }) => targets.forEach((sel) => {
-        document.querySelectorAll(sel).forEach((el) => {
-          if (op === 'text') el.textContent = value;
-          else if (op === 'src') el.src = value;
-          else el.innerHTML = value;
-        });
-      }));
+    (function() {
+      function applyPayload() {
+        const payload = ${JSON.stringify(payload)};
+        payload.forEach(({ targets, op, value }) => targets.forEach((sel) => {
+          document.querySelectorAll(sel).forEach((el) => {
+            if (op === 'text') el.textContent = value;
+            else if (op === 'src') el.src = value;
+            else el.innerHTML = value;
+          });
+        }));
+        if (window.__videoPreview && !window.__videoPreview.togglePlay) {
+          window.__videoPreview.togglePlay = function() {
+            if (typeof window.__videoPreview.currentState === 'function' && window.__videoPreview.currentState() === 'playing') {
+              window.__videoPreview.pause();
+            } else if (typeof window.__videoPreview.currentState === 'function' && window.__videoPreview.currentState() === 'ended') {
+              if (typeof window.__videoPreview.replay === 'function') window.__videoPreview.replay();
+              else window.__videoPreview.play();
+            } else {
+              window.__videoPreview.play();
+            }
+          };
+        }
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', applyPayload);
+      } else {
+        applyPayload();
+      }
+    })();
 
       // Multi-screenshot timeline: swap each target's src to whichever
       // segment covers the current ABSOLUTE document time. Driven by

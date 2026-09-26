@@ -420,7 +420,20 @@ export function resolveSlots(
   const scene = project.scenes[sceneIndex];
   if (!scene) return [];
   const specs = slotSpecsForScene(templateId, sceneIndex);
-  const values = scene.slotValues ?? {};
+  const rawValues = scene.slotValues ?? {};
+  const values: Record<string, any> = { ...rawValues };
+  if (!values.text && scene.text) {
+    values.text = { kind: "text", value: scene.text };
+  }
+  if (!values.subtext && scene.subtext) {
+    values.subtext = { kind: "text", value: scene.subtext };
+  }
+  if (!values.screenshot && scene.sourceId) {
+    values.screenshot = { kind: "image", sourceId: scene.sourceId };
+  }
+  if (!values.screenshots && (scene.screenIds || scene.sourceId)) {
+    values.screenshots = { kind: "imageList", sourceIds: scene.screenIds || (scene.sourceId ? [scene.sourceId] : []) };
+  }
   const brand = project.brand;
   const resolved: ResolvedSlot[] = [];
 

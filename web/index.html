@@ -23,7 +23,7 @@
     <div class="topbar-tabs">
       <div class="topbar-tab active" data-tab="projects">Projects List</div>
       <div class="topbar-tab disabled" data-tab="capture" id="tab-nav-capture">Screen Capture</div>
-      <div class="topbar-tab" data-tab="mockup" id="tab-nav-mockup">Studio Mockup</div>
+      <div class="topbar-tab" data-tab="mockup" id="tab-nav-mockup">Mockup Studio</div>
       <div class="topbar-tab" data-tab="video" id="tab-nav-video">Video Studio</div>
     </div>
     <div class="topbar-icons">
@@ -892,8 +892,8 @@
       <div class="rail">
         <div class="rail-btn active" data-section="templates"><span class="ico">&#9636;</span>Templates</div>
         <div class="rail-btn" data-section="scene-editing"><span class="ico">&#127909;</span>Editing</div>
+        <div class="rail-btn" data-section="saved-configs"><span class="ico">&#128190;</span>Saved Templates</div>
         <div class="rail-btn" data-section="devices"><span class="ico">&#128241;</span>Devices</div>
-        <div class="rail-btn" data-section="saved-configs"><span class="ico">&#128193;</span>Saved Configs</div>
       </div>
       <div class="content">
         <div class="row" style="margin-bottom:1rem;">
@@ -1106,6 +1106,21 @@
           </div>
         </div>
 
+        <!-- ============ SUB-TAB: Saved Templates ============ -->
+        <div class="section-page" id="video-section-saved-configs">
+          <div class="saved-templates-shell card">
+            <div class="saved-templates-header">
+              <div>
+                <h2 style="margin:0; font-size:1.2rem; font-weight:600;">💾 Saved Templates</h2>
+                <p class="hint" style="margin:.2rem 0 0;">Temporarily saved template snapshots created in the Editing section. Reuse, edit, preview, or export saved templates.</p>
+              </div>
+            </div>
+            <div id="saved-configs-grid" class="saved-templates-grid">
+              <div class="hint">No project loaded.</div>
+            </div>
+          </div>
+        </div>
+
         <!-- ============ SUB-TAB: Device Management System ============ -->
         <div class="section-page" id="video-section-devices">
           <div class="card" style="padding: 1.5rem;">
@@ -1142,21 +1157,6 @@
             </div>
           </div>
         </div>
-
-        <!-- ============ SUB-TAB: Saved Template Configurations ============ -->
-        <div class="section-page" id="video-section-saved-configs">
-          <div class="card" style="padding: 1.5rem;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:1rem;">
-              <div>
-                <h2 style="margin:0; font-size:1.2rem; font-weight:600;">&#128193; Saved Configurations</h2>
-                <p class="hint" style="margin:.2rem 0 0;">Named snapshots of this project's template + scenes, saved from the Scenes tab.</p>
-              </div>
-            </div>
-            <div id="saved-configs-grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap:16px;">
-              <div class="hint">No project loaded.</div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   </div>
@@ -1166,7 +1166,7 @@
 <div class="modal-backdrop" id="save-config-backdrop">
   <div class="modal" style="width: 420px; max-width: 90%;">
     <div class="modal-header">
-      <h2>Save Template Configuration</h2>
+      <h2>Save Template</h2>
       <button class="close-btn" id="save-config-close">&times;</button>
     </div>
     <div style="padding: 1rem;">
