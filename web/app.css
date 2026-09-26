@@ -3414,4 +3414,188 @@ button.danger-ghost:hover {
   transform: scale(1.15) !important;
 }
 
+/* ==========================================
+   SAVED TEMPLATES SECTION STYLES (v2)
+   ========================================== */
+.saved-templates-shell {
+  padding: 1.5rem;
+}
+
+.saved-templates-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 1rem;
+}
+
+html.light .saved-templates-header {
+  border-bottom-color: rgba(0, 0, 0, 0.1);
+}
+
+.saved-templates-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.25rem;
+}
+
+/* Card Outer Shell */
+.saved-template-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.saved-template-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.3);
+  border-color: rgba(59, 130, 246, 0.4);
+}
+
+html.light .saved-template-card:hover {
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
+}
+
+/* Zone 1: Header (Centered Name + Badges) */
+.saved-template-card-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.2rem;
+  padding: 0.1rem 0.85rem 0.45rem 0.85rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.saved-template-card-title {
+  margin: 0 !important;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+}
+
+.saved-template-card-badges {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.saved-template-badge {
+  font-size: 0.7rem;
+  font-weight: 500;
+  padding: 0.15rem 0.5rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  text-transform: capitalize;
+}
+
+html.light .saved-template-badge {
+  background: rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+.saved-template-badge.template-name {
+  background: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.saved-template-badge.aspect {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+.saved-template-badge.scene-count {
+  background: rgba(168, 85, 247, 0.15);
+  color: #c084fc;
+  border-color: rgba(168, 85, 247, 0.3);
+}
+
+/* Zone 2: Video Player Frame */
+.saved-template-preview-wrapper {
+  position: relative;
+  width: 100%;
+  background: #000;
+  overflow: hidden;
+}
+
+.saved-template-preview-wrapper.portrait {
+  padding-bottom: 177.78%;
+}
+
+.saved-template-preview-wrapper.landscape {
+  padding-bottom: 56.25%;
+}
+
+.saved-template-preview-iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* Zone 3: Action Buttons (Centered Row) */
+.saved-template-card-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 1rem;
+  border-top: 1px solid var(--border-subtle);
+  background: var(--bg-card);
+}
+
+.saved-template-card-actions .icon-btn {
+  width: 34px !important;
+  height: 34px !important;
+  min-width: 34px !important;
+  min-height: 34px !important;
+  border-radius: 8px !important;
+  box-sizing: border-box !important;
+}
+
+.saved-template-card-actions .icon-btn:hover,
+.saved-template-card-actions .icon-btn:focus,
+.saved-template-card-actions .icon-btn:active {
+  border-radius: 8px !important;
+}
+
+/* Zone 4: Footer Metadata (Horizontally Centered) */
+.saved-template-card-footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.35rem 0.85rem 0.3rem;
+  background: var(--bg-card);
+  border-top: 1px solid var(--border-subtle);
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+/* Global button shape preservation on hover */
+.icon-btn,
+.icon-btn:hover,
+.icon-btn:focus,
+.icon-btn:active {
+  border-radius: 8px !important;
+}
+
 

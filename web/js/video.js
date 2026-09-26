@@ -1554,12 +1554,12 @@ export async function loadSavedConfigs() {
     grid.innerHTML = '<div class="hint">No project loaded.</div>';
     return;
   }
-  grid.innerHTML = '<div class="hint">Loading...</div>';
+  grid.innerHTML = '<div class="hint">Loading saved templates...</div>';
   try {
     savedConfigsCache = await api(`/api/videos/${videoId}/configs`);
     renderSavedConfigsGrid();
   } catch (e) {
-    grid.innerHTML = `<div class="hint slot-issue error">Failed to load saved configurations: ${e.message}</div>`;
+    grid.innerHTML = `<div class="hint slot-issue error">Failed to load saved templates: ${e.message}</div>`;
   }
 }
 
@@ -1567,35 +1567,192 @@ export function renderSavedConfigsGrid() {
   const grid = $("saved-configs-grid");
   if (!grid) return;
   if (savedConfigsCache.length === 0) {
-    grid.innerHTML = '<div class="hint">No saved configurations yet. Use "Save Template Configuration" in the Scenes tab.</div>';
+    grid.innerHTML = '<div class="hint">No saved templates yet. Use "Save Template" in the Editing section.</div>';
     return;
   }
+
   grid.innerHTML = savedConfigsCache.map((c) => {
-    const aspect = c.scenes[0]?.aspectRatio === "16:9" ? "16:9" : "9:16";
+    const displayName = (c.name && c.name !== "1" && c.name.trim() !== "") ? c.name : (c.template ? `${c.template} Template` : "Saved Template");
+    const firstScene = c.scenes[0] || {};
+    const aspect = firstScene.aspectRatio === "16:9" ? "16:9" : "9:16";
+    const isPortrait = aspect === "9:16";
+    const previewUrl = `/api/videos/${videoId}/configs/${c.id}/preview`;
+    const devicesUsed = [...new Set(c.scenes.map((s) => s.device || "default"))].join(", ");
+
     return `
-      <div class="card" style="padding:1rem;" data-config-id="${c.id}">
-        <div style="font-weight:600; margin-bottom:.3rem;">${c.name}</div>
-        <div class="hint" style="margin-bottom:.5rem;">${c.scenes.length} scenes &middot; ${aspect} &middot; ${new Date(c.savedAt).toLocaleDateString()}</div>
-        <div class="row" style="gap:.4rem;">
-          <button class="small primary" data-act="apply-config" data-id="${c.id}">Apply to Project</button>
-          <button class="small danger" data-act="delete-config" data-id="${c.id}">Delete</button>
+      <div class="saved-template-card card" data-config-id="${c.id}">
+        <!-- Top: Template Name & Badges (Centered) -->
+        <div class="saved-template-card-header">
+          <h3 class="saved-template-card-title">${displayName}</h3>
+          <div class="saved-template-card-badges">
+            <span class="saved-template-badge aspect">${aspect}</span>
+            <span class="saved-template-badge scene-count">${c.scenes.length} Scenes</span>
+          </div>
+        </div>
+
+        <!-- Middle: Single Live Video Player -->
+        <div class="saved-template-preview-wrapper ${isPortrait ? "portrait" : "landscape"}">
+          <iframe class="saved-template-preview-iframe"
+                  id="saved-template-iframe-${c.id}"
+                  src="${previewUrl}"
+                  loading="lazy"
+                  title="Preview ${displayName}"></iframe>
+        </div>
+
+        <!-- Action Buttons (Centered) -->
+        <div class="saved-template-card-actions">
+          <button class="icon-btn small secondary" data-act="preview-config" data-id="${c.id}" title="Play / Pause Preview">
+            <span class="ico">&#9654;</span>
+          </button>
+          <button class="icon-btn small secondary" data-act="reedit-config" data-id="${c.id}" title="Reuse & Re-edit">
+            <span class="ico">&#9998;</span>
+          </button>
+          <button class="icon-btn small secondary" data-act="export-config" data-id="${c.id}" title="Export Video MP4">
+            <span class="ico">&#128229;</span>
+          </button>
+          <button class="icon-btn small secondary danger" data-act="delete-config" data-id="${c.id}" title="Delete Saved Template">
+            <span class="ico">&#128465;</span>
+          </button>
+        </div>
+
+        <!-- Bottom: Metadata Footer (Single line, horizontally centered) -->
+        <div class="saved-template-card-footer">
+          📱 ${devicesUsed} &nbsp;&middot;&nbsp; Saved ${new Date(c.savedAt).toLocaleDateString()}
         </div>
       </div>
     `;
   }).join("");
 
-  grid.querySelectorAll('[data-act="apply-config"]').forEach((btn) => {
+  // Action button handlers
+  grid.querySelectorAll('[data-act="preview-config"]').forEach((btn) => {
+    const id = btn.dataset.id;
+    const iframe = $(`saved-template-iframe-${id}`);
+
+    const syncState = (state) => {
+      if (state === "playing") {
+        btn.innerHTML = '<span class="ico">&#10074;&#10074;</span>';
+        btn.title = "Pause Preview";
+      } else {
+        btn.innerHTML = '<span class="ico">&#9654;</span>';
+        btn.title = state === "ended" ? "Replay Preview" : "Play Preview";
+      }
+    };
+
+    if (iframe) {
+      iframe.onload = () => {
+        try {
+          const win = iframe.contentWindow;
+          if (win && win.__videoPreview) {
+            win.__videoPreview.onState = (evt) => syncState(evt.state);
+          }
+        } catch (_) {}
+      };
+    }
+
+    btn.onclick = () => {
+      if (!iframe || !iframe.contentWindow) return;
+      const win = iframe.contentWindow;
+      const player = win.__videoPreview;
+
+      // Pause other template previews so only one plays at a time
+      grid.querySelectorAll('iframe').forEach((otherFrame) => {
+        if (otherFrame !== iframe && otherFrame.contentWindow?.__videoPreview?.pause) {
+          try {
+            otherFrame.contentWindow.__videoPreview.pause();
+            const otherCard = otherFrame.closest('.saved-template-card');
+            const otherPlayBtn = otherCard?.querySelector('[data-act="preview-config"]');
+            if (otherPlayBtn) {
+              otherPlayBtn.innerHTML = '<span class="ico">&#9654;</span>';
+              otherPlayBtn.title = "Play Preview";
+            }
+          } catch (_) {}
+        }
+      });
+
+      if (player) {
+        const state = typeof player.currentState === "function" ? player.currentState() : (player.isPaused && player.isPaused() ? "paused" : "playing");
+        if (state === "playing") {
+          player.pause();
+          syncState("paused");
+        } else if (state === "ended") {
+          if (typeof player.replay === "function") player.replay();
+          else if (typeof player.play === "function") player.play();
+          syncState("playing");
+        } else {
+          if (typeof player.play === "function") player.play();
+          syncState("playing");
+        }
+      } else if (typeof win.play === "function") {
+        if (win.playState === "playing") {
+          win.pause();
+          syncState("paused");
+        } else {
+          win.play();
+          syncState("playing");
+        }
+      }
+    };
+  });
+
+  grid.querySelectorAll('[data-act="reedit-config"]').forEach((btn) => {
     btn.onclick = async () => {
       const id = btn.dataset.id;
-      const ok = await showConfirm("Apply this configuration? Current scenes will be replaced.");
+      const cfg = savedConfigsCache.find((c) => c.id === id);
+      const name = cfg?.name || "this saved template";
+      const ok = await showConfirm(`Apply "${name}" to your current editing sequence? Any unsaved edits in the editor will be replaced.`);
       if (!ok) return;
+
+      const originalHtml = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = `<span class="ico animate-spin">&#8635;</span>`;
+
       try {
-        const updated = await api(`/api/videos/${videoId}/apply-config/${id}`, { method: "POST" });
+        const updated = await api(`/api/videos/${videoId}/configs/${id}/apply`, { method: "POST" });
         setVideoProject(updated);
         renderVideoScenes();
-        showToast("Configuration applied.", "success");
+        if (updated.scenes?.length) {
+          selectScene(updated.scenes[0].id);
+        }
+        showToast(`Template "${name}" loaded into Editing section.`, "success");
+        const editingTab = document.querySelector('#tab-video .rail-btn[data-section="scene-editing"]');
+        if (editingTab) editingTab.click();
       } catch (e) {
-        await showAlert("Could not apply configuration: " + e.message);
+        await showAlert("Could not apply saved template: " + e.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalHtml;
+      }
+    };
+  });
+
+  grid.querySelectorAll('[data-act="export-config"]').forEach((btn) => {
+    btn.onclick = async () => {
+      const id = btn.dataset.id;
+      const cfg = savedConfigsCache.find((c) => c.id === id);
+      if (!cfg) return;
+
+      const originalHtml = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = `<span class="ico animate-spin">&#8635;</span>`;
+      showToast("Rendering template video MP4 with your custom scenes & screenshots...", "info");
+
+      try {
+        const renderRes = await api(`/api/videos/${videoId}/configs/${id}/render`, { method: "POST" });
+        if (!renderRes || !renderRes.ok) throw new Error(renderRes?.error || "Render failed");
+
+        showToast("Rendering complete! Downloading MP4 video...", "success");
+
+        const a = document.createElement("a");
+        a.href = `/api/videos/${videoId}/configs/${id}/download?t=${Date.now()}`;
+        a.download = `${(cfg.name || "saved-template").toLowerCase().replace(/[^a-z0-9]+/g, "-")}.mp4`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      } catch (e) {
+        await showAlert("Could not export template video: " + e.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalHtml;
       }
     };
   });
@@ -1603,13 +1760,24 @@ export function renderSavedConfigsGrid() {
   grid.querySelectorAll('[data-act="delete-config"]').forEach((btn) => {
     btn.onclick = async () => {
       const id = btn.dataset.id;
-      const ok = await showConfirm("Delete this saved configuration?");
+      const cfg = savedConfigsCache.find((c) => c.id === id);
+      const name = cfg?.name || "this saved template";
+      const ok = await showConfirm(`Delete "${name}"? This action cannot be undone.`);
       if (!ok) return;
+
+      const originalHtml = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = `<span class="ico animate-spin">&#8635;</span>`;
+
       try {
         savedConfigsCache = await api(`/api/videos/${videoId}/configs/${id}`, { method: "DELETE" });
+        if (videoProject) videoProject.savedConfigs = savedConfigsCache;
         renderSavedConfigsGrid();
+        showToast(`Saved template "${name}" deleted.`, "success");
       } catch (e) {
-        await showAlert("Could not delete configuration: " + e.message);
+        btn.disabled = false;
+        btn.innerHTML = originalHtml;
+        await showAlert("Could not delete saved template: " + e.message);
       }
     };
   });

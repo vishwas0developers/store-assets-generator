@@ -219,11 +219,24 @@ function sendFileRanged(req: http.IncomingMessage, res: http.ServerResponse, fil
   fs.createReadStream(filePath, { start, end }).pipe(res);
 }
 
-function validateProject(project: { template: string | null; scenes: { id: string; order: number; slotValues?: Record<string, SlotValue> }[] }) {
+function validateProject(project: { template: string | null; scenes: { id: string; order: number; slotValues?: Record<string, SlotValue>; sourceId?: string; screenIds?: string[]; text?: string; subtext?: string }[] }) {
   const scenes = project.template
     ? project.scenes.map((scene) => {
         const specs = slotSpecsForScene(project.template as string, scene.order);
-        const issues: SlotIssue[] = validateScene(specs, scene.slotValues);
+        const slotValues = { ...(scene.slotValues ?? {}) };
+        if (!slotValues.text && scene.text) {
+          slotValues.text = { kind: "text", value: scene.text };
+        }
+        if (!slotValues.subtext && scene.subtext) {
+          slotValues.subtext = { kind: "text", value: scene.subtext };
+        }
+        if (!slotValues.screenshot && scene.sourceId) {
+          slotValues.screenshot = { kind: "image", sourceId: scene.sourceId };
+        }
+        if (!slotValues.screenshots && (scene.screenIds || scene.sourceId)) {
+          slotValues.screenshots = { kind: "imageList", sourceIds: scene.screenIds || (scene.sourceId ? [scene.sourceId] : []) };
+        }
+        const issues: SlotIssue[] = validateScene(specs, slotValues);
         return { sceneId: scene.id, issues };
       })
     : [];
@@ -1895,6 +1908,64 @@ export async function startWebServer(options: { port?: number; host?: string; op
         if (project.savedConfigs.length === before) return sendError(res, 404, "Saved configuration not found");
         saveVideoProject(project);
         sendJson(res, 200, project.savedConfigs);
+        return;
+      }
+    }
+
+    {
+      const m = p.match(/^\/api\/videos\/([^/]+)\/configs\/([^/]+)\/preview$/);
+      if (m && method === "GET") {
+        const project = loadVideoProject(decodeURIComponent(m[1]));
+        const cfg = (project.savedConfigs ?? []).find((c) => c.id === decodeURIComponent(m[2]));
+        if (!cfg) return sendError(res, 404, "Saved configuration not found");
+        const overrideProject = {
+          ...project,
+          template: cfg.template,
+          scenes: JSON.parse(JSON.stringify(cfg.scenes)),
+        };
+        res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
+        res.end(templatePreviewHtml(overrideProject));
+        return;
+      }
+    }
+
+    {
+      const m = p.match(/^\/api\/videos\/([^/]+)\/configs\/([^/]+)\/render$/);
+      if (m && method === "POST") {
+        const vid = decodeURIComponent(m[1]);
+        const cfgId = decodeURIComponent(m[2]);
+        const project = loadVideoProject(vid);
+        const cfg = (project.savedConfigs ?? []).find((c) => c.id === cfgId);
+        if (!cfg) return sendError(res, 404, "Saved configuration not found");
+        const overrideProject = {
+          ...project,
+          template: cfg.template,
+          scenes: JSON.parse(JSON.stringify(cfg.scenes)),
+        };
+        const preflight = validateProject(overrideProject as any);
+        if (!preflight.ready) {
+          res.writeHead(400, { "Content-Type": "application/json; charset=utf-8" });
+          res.end(JSON.stringify({ error: "Some scenes are missing required content.", ...preflight }));
+          return;
+        }
+        const rawVideoPath = await renderVideo(overrideProject as any);
+        const configMp4Path = path.join(videoDir(vid), `config_${cfgId}.mp4`);
+        fs.copyFileSync(rawVideoPath, configMp4Path);
+        sendJson(res, 200, { ok: true, configId: cfgId });
+        return;
+      }
+    }
+
+    {
+      const m = p.match(/^\/api\/videos\/([^/]+)\/configs\/([^/]+)\/download$/);
+      if (m && method === "GET") {
+        const vid = decodeURIComponent(m[1]);
+        const cfgId = decodeURIComponent(m[2]);
+        const configMp4Path = path.join(videoDir(vid), `config_${cfgId}.mp4`);
+        if (!fs.existsSync(configMp4Path)) {
+          return sendError(res, 404, "Rendered video not found for this template");
+        }
+        sendFile(res, configMp4Path, "video/mp4");
         return;
       }
     }
