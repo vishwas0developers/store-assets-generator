@@ -1,0 +1,1232 @@
+{
+ "version": 1,
+ "id": "spotify-2-app",
+ "name": "Spotify 2 app",
+ "category": "music",
+ "description": "Present your music streaming service with our premium template. Display advanced music discovery, social features, and personalized playlists in a modern design that creates an immersive audio experience for music lovers.",
+ "devices": [
+  {
+   "deviceId": "apple-iphone-16-pro-max",
+   "label": "apple-iphone-16-pro-max"
+  },
+  {
+   "deviceId": "apple-iphone-13-pro-max",
+   "label": "apple-iphone-13-pro-max"
+  },
+  {
+   "deviceId": "samsung-galaxy-s21-ultra",
+   "label": "samsung-galaxy-s21-ultra"
+  },
+  {
+   "deviceId": "apple-ipad-pro-12-9-inch",
+   "label": "apple-ipad-pro-12-9-inch"
+  },
+  {
+   "deviceId": "samsung-galaxy-tab-s7",
+   "label": "samsung-galaxy-tab-s7"
+  }
+ ],
+ "layout": "single-no-text",
+ "background": {
+  "type": "solid",
+  "value": "#7dde84"
+ },
+ "panoramic": false,
+ "columnCount": 5,
+ "titles": [
+  "MUSIC PODCASTS & AUDIOBOOK",
+  "YOUR FAVOURITE ARTIST",
+  "1 MONTH FREE PREMIUM",
+  "YOUR MUSIC UNIVERSE",
+  "DISCOVER YOUR SOUND"
+ ],
+ "subtitles": [
+  "",
+  "",
+  "",
+  "",
+  ""
+ ],
+ "pages": [
+  {
+   "title": "MUSIC PODCASTS & AUDIOBOOK",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#7dde84"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t2",
+     "xPct": 10.227,
+     "yPct": 5.705,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "MUSIC",
+     "style": {
+      "text": "MUSIC",
+      "color": "#7dde84",
+      "size": 117.8,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 36
+     }
+    },
+    {
+     "id": "tpl-t3",
+     "xPct": 10.227,
+     "yPct": 11.563,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "PODCASTS &",
+     "style": {
+      "text": "PODCASTS &",
+      "color": "#7dde84",
+      "size": 117.8,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 48
+     }
+    },
+    {
+     "id": "tpl-t4",
+     "xPct": 10.227,
+     "yPct": 17.316,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "AUDIOBOOK",
+     "style": {
+      "text": "AUDIOBOOK",
+      "color": "#7dde84",
+      "size": 117.8,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 46
+     }
+    },
+    {
+     "id": "tpl-t9",
+     "xPct": 30.0,
+     "yPct": 34.195,
+     "widthPct": 31.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Spotify",
+     "style": {
+      "text": "Spotify",
+      "color": "#000000",
+      "size": 88.4,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -15
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s1",
+     "assetId": "shape:Title box",
+     "name": "Title box",
+     "xPct": 6.364,
+     "yPct": 4.393,
+     "widthPct": 83.864,
+     "heightPct": 19.142,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 369,
+      "h": 183,
+      "radius": 14,
+      "fill": "#000000"
+     }
+    },
+    {
+     "id": "tpl-s5",
+     "assetId": "shape:Logo",
+     "name": "Logo",
+     "xPct": 14.318,
+     "yPct": 32.741,
+     "widthPct": 13.636,
+     "heightPct": 6.276,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 60,
+      "h": 60,
+      "fill": "#000000"
+     }
+    },
+    {
+     "id": "tpl-s6",
+     "assetId": "shape:Logo arc",
+     "name": "Logo arc",
+     "xPct": 14.864,
+     "yPct": 33.515,
+     "widthPct": 12.545,
+     "heightPct": 2.113,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 55.2,
+      "h": 20.2,
+      "vx": 65.4,
+      "vy": 320.4,
+      "path": "M71,335Q93,326 115,335",
+      "stroke": "#7dde84",
+      "strokeWidth": 4.6,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s7",
+     "assetId": "shape:Logo arc",
+     "name": "Logo arc",
+     "xPct": 15.636,
+     "yPct": 34.707,
+     "widthPct": 11.0,
+     "heightPct": 2.029,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 48.4,
+      "h": 19.4,
+      "vx": 68.8,
+      "vy": 331.8,
+      "path": "M74,346Q93,337 112,346",
+      "stroke": "#7dde84",
+      "strokeWidth": 4.199999999999999,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s8",
+     "assetId": "shape:Logo arc",
+     "name": "Logo arc",
+     "xPct": 16.636,
+     "yPct": 35.795,
+     "widthPct": 9.0,
+     "heightPct": 1.946,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 39.6,
+      "h": 18.6,
+      "vx": 73.2,
+      "vy": 342.2,
+      "path": "M78,356Q93,347 108,356",
+      "stroke": "#7dde84",
+      "strokeWidth": 3.8,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s10",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -1.818,
+     "yPct": 41.318,
+     "widthPct": 75.682,
+     "heightPct": 62.433,
+     "rotation": 0,
+     "opacity": 0.3,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 333,
+      "h": 596.86,
+      "radius": 90.0,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s11",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 61.364,
+     "yPct": 22.176,
+     "widthPct": 67.273,
+     "heightPct": 54.024,
+     "rotation": 0,
+     "opacity": 0.3,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 296,
+      "h": 516.47,
+      "radius": 84.08,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s12",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 61.364,
+     "yPct": 70.293,
+     "widthPct": 65.909,
+     "heightPct": 52.661,
+     "rotation": 0,
+     "opacity": 0.3,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 290,
+      "h": 503.44,
+      "radius": 83.12,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s13",
+     "assetId": "shape:Held phone",
+     "name": "Held phone",
+     "xPct": 75.909,
+     "yPct": 80.021,
+     "widthPct": 12.727,
+     "heightPct": 14.644,
+     "rotation": -40,
+     "opacity": 1,
+     "zIndex": 14,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 56,
+      "h": 140,
+      "radius": 12,
+      "fill": "#0d0d0d"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 37.65,
+    "x": -27.33,
+    "y": 42.84,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   },
+   "extraDevices": [
+    {
+     "size": 31.46,
+     "x": 105.32,
+     "y": -3.37,
+     "rotation": 0,
+     "brightness": 100,
+     "frameless": false,
+     "bezelColor": "#060606",
+     "borderColor": "#5e5e5e",
+     "zIndex": 9
+    },
+    {
+     "size": 30.46,
+     "x": 107.14,
+     "y": 111.2,
+     "rotation": 0,
+     "brightness": 100,
+     "frameless": false,
+     "bezelColor": "#060606",
+     "borderColor": "#5e5e5e",
+     "zIndex": 9
+    }
+   ]
+  },
+  {
+   "title": "YOUR FAVOURITE ARTIST",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#7dde84"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t17",
+     "xPct": 10.227,
+     "yPct": 5.705,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "YOUR",
+     "style": {
+      "text": "YOUR",
+      "color": "#7dde84",
+      "size": 117.8,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 30
+     }
+    },
+    {
+     "id": "tpl-t18",
+     "xPct": 10.227,
+     "yPct": 11.563,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "FAVOURITE",
+     "style": {
+      "text": "FAVOURITE",
+      "color": "#7dde84",
+      "size": 117.8,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 36
+     }
+    },
+    {
+     "id": "tpl-t19",
+     "xPct": 10.227,
+     "yPct": 17.316,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "ARTIST",
+     "style": {
+      "text": "ARTIST",
+      "color": "#7dde84",
+      "size": 117.8,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -6
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s14",
+     "assetId": "shape:Title box",
+     "name": "Title box",
+     "xPct": 6.364,
+     "yPct": 4.393,
+     "widthPct": 43.182,
+     "heightPct": 7.322,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 190,
+      "h": 70,
+      "radius": 14,
+      "fill": "#000000"
+     }
+    },
+    {
+     "id": "tpl-s15",
+     "assetId": "shape:Title box",
+     "name": "Title box",
+     "xPct": 6.364,
+     "yPct": 10.251,
+     "widthPct": 73.182,
+     "heightPct": 6.799,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 322,
+      "h": 65,
+      "radius": 14,
+      "fill": "#000000"
+     }
+    },
+    {
+     "id": "tpl-s16",
+     "assetId": "shape:Title box",
+     "name": "Title box",
+     "xPct": 6.364,
+     "yPct": 15.69,
+     "widthPct": 48.182,
+     "heightPct": 7.845,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 212,
+      "h": 75,
+      "radius": 14,
+      "fill": "#000000"
+     }
+    },
+    {
+     "id": "tpl-s20",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -38.636,
+     "yPct": 22.176,
+     "widthPct": 67.273,
+     "heightPct": 54.024,
+     "rotation": 0,
+     "opacity": 0.3,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 296,
+      "h": 516.47,
+      "radius": 84.08,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s21",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -39.091,
+     "yPct": 70.293,
+     "widthPct": 66.818,
+     "heightPct": 53.57,
+     "rotation": 0,
+     "opacity": 0.3,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 294,
+      "h": 512.13,
+      "radius": 83.76,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 31.46,
+    "x": -128.72,
+    "y": -3.37,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   },
+   "extraDevices": [
+    {
+     "size": 31.13,
+     "x": -131.72,
+     "y": 109.88,
+     "rotation": 0,
+     "brightness": 100,
+     "frameless": false,
+     "bezelColor": "#060606",
+     "borderColor": "#5e5e5e",
+     "zIndex": 9
+    }
+   ]
+  },
+  {
+   "title": "1 MONTH FREE PREMIUM",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #000000 0%, #000000 47.1%, #7dde84 47.1%, #7dde84 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t23",
+     "xPct": 10.227,
+     "yPct": 5.705,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "1 MONTH",
+     "style": {
+      "text": "1 MONTH",
+      "color": "#000000",
+      "size": 117.8,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 14
+     }
+    },
+    {
+     "id": "tpl-t24",
+     "xPct": 10.227,
+     "yPct": 11.563,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "FREE",
+     "style": {
+      "text": "FREE",
+      "color": "#000000",
+      "size": 117.8,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t25",
+     "xPct": 10.227,
+     "yPct": 17.316,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "PREMIUM",
+     "style": {
+      "text": "PREMIUM",
+      "color": "#000000",
+      "size": 117.8,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 17
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s22",
+     "assetId": "shape:Title box",
+     "name": "Title box",
+     "xPct": 6.818,
+     "yPct": 4.603,
+     "widthPct": 61.364,
+     "heightPct": 18.619,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 270,
+      "h": 178,
+      "radius": 14,
+      "fill": "#7dde84"
+     }
+    },
+    {
+     "id": "tpl-s26",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 18.182,
+     "yPct": 23.013,
+     "widthPct": 63.636,
+     "heightPct": 50.388,
+     "rotation": 0,
+     "opacity": 0.3,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 280,
+      "h": 481.71,
+      "radius": 81.52,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s27",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 2.5,
+     "yPct": 64.854,
+     "widthPct": 95.455,
+     "heightPct": 82.206,
+     "rotation": 0,
+     "opacity": 0.3,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 420,
+      "h": 785.89,
+      "radius": 103.92,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 28.79,
+    "x": 0.0,
+    "y": -6.19,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   },
+   "extraDevices": [
+    {
+     "size": 52.21,
+     "x": 0.32,
+     "y": 78.03,
+     "rotation": 0,
+     "brightness": 100,
+     "frameless": false,
+     "bezelColor": "#060606",
+     "borderColor": "#5e5e5e",
+     "zIndex": 9
+    }
+   ]
+  },
+  {
+   "title": "YOUR MUSIC UNIVERSE",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#7dde84"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t31",
+     "xPct": 10.227,
+     "yPct": 5.705,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "YOUR",
+     "style": {
+      "text": "YOUR",
+      "color": "#7dde84",
+      "size": 117.8,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 35
+     }
+    },
+    {
+     "id": "tpl-t32",
+     "xPct": 10.227,
+     "yPct": 11.563,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "MUSIC",
+     "style": {
+      "text": "MUSIC",
+      "color": "#7dde84",
+      "size": 117.8,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 36
+     }
+    },
+    {
+     "id": "tpl-t33",
+     "xPct": 10.227,
+     "yPct": 17.316,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "UNIVERSE",
+     "style": {
+      "text": "UNIVERSE",
+      "color": "#7dde84",
+      "size": 117.8,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 12
+     }
+    },
+    {
+     "id": "tpl-t42",
+     "xPct": 42.727,
+     "yPct": 70.079,
+     "widthPct": 45.455,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "(5/5 stars)",
+     "style": {
+      "text": "(5/5 stars)",
+      "color": "#000000",
+      "size": 71.2,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t43",
+     "xPct": 10.227,
+     "yPct": 75.956,
+     "widthPct": 88.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Quote",
+     "style": {
+      "text": "\"Spotify has completely\ntransformed how I\nconsume audio content.\nThe free tier offers\nincredible value with\nmillions of songs and\npodcasts\"",
+      "color": "#000000",
+      "size": 66.3,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.04,
+      "charSpacing": 26
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s28",
+     "assetId": "shape:Title box",
+     "name": "Title box",
+     "xPct": 6.364,
+     "yPct": 4.393,
+     "widthPct": 40.455,
+     "heightPct": 7.322,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 178,
+      "h": 70,
+      "radius": 14,
+      "fill": "#000000"
+     }
+    },
+    {
+     "id": "tpl-s29",
+     "assetId": "shape:Title box",
+     "name": "Title box",
+     "xPct": 6.364,
+     "yPct": 10.251,
+     "widthPct": 46.136,
+     "heightPct": 6.276,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 203,
+      "h": 60,
+      "radius": 14,
+      "fill": "#000000"
+     }
+    },
+    {
+     "id": "tpl-s30",
+     "assetId": "shape:Title box",
+     "name": "Title box",
+     "xPct": 6.364,
+     "yPct": 16.109,
+     "widthPct": 64.318,
+     "heightPct": 7.427,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 283,
+      "h": 71,
+      "radius": 14,
+      "fill": "#000000"
+     }
+    },
+    {
+     "id": "tpl-s34",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -1.591,
+     "yPct": 23.013,
+     "widthPct": 103.182,
+     "heightPct": 89.933,
+     "rotation": 0,
+     "opacity": 0.3,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 454,
+      "h": 859.76,
+      "radius": 109.36,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s35",
+     "assetId": "shape:Cover panel",
+     "name": "Cover panel",
+     "xPct": 0.0,
+     "yPct": 64.854,
+     "widthPct": 100.0,
+     "heightPct": 35.146,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 440,
+      "h": 336,
+      "radius": 0,
+      "fill": "#7dde84"
+     }
+    },
+    {
+     "id": "tpl-s36",
+     "assetId": "shape:Panel edge",
+     "name": "Panel edge",
+     "xPct": 0.0,
+     "yPct": 64.854,
+     "widthPct": 100.0,
+     "heightPct": 0.209,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 440,
+      "h": 2,
+      "radius": 0,
+      "fill": "#1a1a1a"
+     }
+    },
+    {
+     "id": "tpl-s37",
+     "assetId": "shape:Star",
+     "name": "Star",
+     "xPct": 10.156,
+     "yPct": 69.874,
+     "widthPct": 6.052,
+     "heightPct": 2.649,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 26.63,
+      "h": 25.33,
+      "vx": 44.69,
+      "vy": 668.0,
+      "path": "M58.0,668.0L61.29,677.47L71.31,677.67L63.33,683.73L66.23,693.33L58.0,687.6L49.77,693.33L52.67,683.73L44.69,677.67L54.71,677.47Z",
+      "fill": "#000000"
+     }
+    },
+    {
+     "id": "tpl-s38",
+     "assetId": "shape:Star",
+     "name": "Star",
+     "xPct": 16.292,
+     "yPct": 69.874,
+     "widthPct": 6.052,
+     "heightPct": 2.649,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 26.63,
+      "h": 25.33,
+      "vx": 71.69,
+      "vy": 668.0,
+      "path": "M85.0,668.0L88.29,677.47L98.31,677.67L90.33,683.73L93.23,693.33L85.0,687.6L76.77,693.33L79.67,683.73L71.69,677.67L81.71,677.47Z",
+      "fill": "#000000"
+     }
+    },
+    {
+     "id": "tpl-s39",
+     "assetId": "shape:Star",
+     "name": "Star",
+     "xPct": 22.428,
+     "yPct": 69.874,
+     "widthPct": 6.052,
+     "heightPct": 2.649,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 26.63,
+      "h": 25.33,
+      "vx": 98.69,
+      "vy": 668.0,
+      "path": "M112.0,668.0L115.29,677.47L125.31,677.67L117.33,683.73L120.23,693.33L112.0,687.6L103.77,693.33L106.67,683.73L98.69,677.67L108.71,677.47Z",
+      "fill": "#000000"
+     }
+    },
+    {
+     "id": "tpl-s40",
+     "assetId": "shape:Star",
+     "name": "Star",
+     "xPct": 28.565,
+     "yPct": 69.874,
+     "widthPct": 6.052,
+     "heightPct": 2.649,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 26.63,
+      "h": 25.33,
+      "vx": 125.69,
+      "vy": 668.0,
+      "path": "M139.0,668.0L142.29,677.47L152.31,677.67L144.33,683.73L147.23,693.33L139.0,687.6L130.77,693.33L133.67,683.73L125.69,677.67L135.71,677.47Z",
+      "fill": "#000000"
+     }
+    },
+    {
+     "id": "tpl-s41",
+     "assetId": "shape:Star",
+     "name": "Star",
+     "xPct": 34.701,
+     "yPct": 69.874,
+     "widthPct": 6.052,
+     "heightPct": 2.649,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 26.63,
+      "h": 25.33,
+      "vx": 152.69,
+      "vy": 668.0,
+      "path": "M166.0,668.0L169.29,677.47L179.31,677.67L171.33,683.73L174.23,693.33L166.0,687.6L157.77,693.33L160.67,683.73L152.69,677.67L162.71,677.47Z",
+      "fill": "#000000"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 57.9,
+    "x": 0.0,
+    "y": 22.07,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "DISCOVER YOUR SOUND",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #7dde84 0%, #7dde84 44.5%, #000000 44.5%, #000000 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t46",
+     "xPct": 10.227,
+     "yPct": 77.553,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "DISCOVER",
+     "style": {
+      "text": "DISCOVER",
+      "color": "#000000",
+      "size": 115.4,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 52
+     }
+    },
+    {
+     "id": "tpl-t47",
+     "xPct": 10.227,
+     "yPct": 83.515,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "YOUR",
+     "style": {
+      "text": "YOUR",
+      "color": "#000000",
+      "size": 115.4,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 47
+     }
+    },
+    {
+     "id": "tpl-t48",
+     "xPct": 10.227,
+     "yPct": 89.373,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "SOUND",
+     "style": {
+      "text": "SOUND",
+      "color": "#000000",
+      "size": 115.4,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 66
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s44",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -1.591,
+     "yPct": -15.9,
+     "widthPct": 103.182,
+     "heightPct": 89.933,
+     "rotation": 0,
+     "opacity": 0.3,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 454,
+      "h": 859.76,
+      "radius": 109.36,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s45",
+     "assetId": "shape:Title box",
+     "name": "Title box",
+     "xPct": 6.818,
+     "yPct": 76.569,
+     "widthPct": 66.818,
+     "heightPct": 18.724,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 294,
+      "h": 179,
+      "radius": 14,
+      "fill": "#7dde84"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 57.9,
+    "x": 0.0,
+    "y": -27.42,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  }
+ ],
+ "designHeight": 2347,
+ "textColor": "#111111"
+}

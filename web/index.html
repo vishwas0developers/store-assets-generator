@@ -101,12 +101,22 @@
                 <button id="proj-download-zip-btn" class="secondary small">Download All as ZIP</button>
               </div>
             </div>
-            <div class="tabs" style="margin-bottom: 1rem;">
-              <div class="tab active" data-file-filter="all">All Files</div>
-              <div class="tab" data-file-filter="captures">Screenshots</div>
-              <div class="tab" data-file-filter="mockup">Mockups</div>
-              <div class="tab" data-file-filter="video">Videos</div>
-              <div class="tab" data-file-filter="uploads">Uploads</div>
+            <div class="tabs" style="margin-bottom: 1rem; align-items: center; justify-content: space-between;">
+              <div style="display: flex; gap: .25rem; align-items: center;">
+                <div class="tab active" data-file-filter="all">All Files</div>
+                <div class="tab" data-file-filter="captures">Screenshots</div>
+                <div class="tab" data-file-filter="mockup">Mockups</div>
+                <div class="tab" data-file-filter="video">Videos</div>
+                <div class="tab" data-file-filter="uploads">Uploads</div>
+              </div>
+              <div class="file-view-toggle-group" style="display: flex; gap: 0.35rem; align-items: center; padding-bottom: 0.25rem;">
+                <button id="file-view-list-btn" class="icon-btn small active" type="button" title="List View" aria-label="List View">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                </button>
+                <button id="file-view-grid-btn" class="icon-btn small secondary" type="button" title="Object / Icon View" aria-label="Object / Icon View">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+                </button>
+              </div>
             </div>
             <div id="project-files-list" style="overflow-y: auto; flex: 1; min-height: 0;">
               Select a project to inspect files.

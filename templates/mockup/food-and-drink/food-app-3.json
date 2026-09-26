@@ -1,0 +1,2213 @@
+{
+ "version": 1,
+ "id": "food-app-3",
+ "name": "Food app",
+ "category": "food-and-drink",
+ "description": "Present your food delivery app with our professional template. Showcase restaurant listings, menu browsing, and order tracking in an appealing design that makes food ordering seamless and engaging.",
+ "devices": [
+  {
+   "deviceId": "apple-iphone-16-pro-max",
+   "label": "apple-iphone-16-pro-max"
+  },
+  {
+   "deviceId": "apple-iphone-14-plus",
+   "label": "apple-iphone-14-plus"
+  },
+  {
+   "deviceId": "samsung-galaxy-s21-ultra",
+   "label": "samsung-galaxy-s21-ultra"
+  }
+ ],
+ "layout": "single-no-text",
+ "background": {
+  "type": "solid",
+  "value": "#f3c012"
+ },
+ "panoramic": false,
+ "columnCount": 7,
+ "titles": [
+  "Burger. Anytime. Anywhere.",
+  "Pick a restaurant",
+  "Track your order",
+  "Choose ingredients",
+  "Feast on a snack",
+  "Chill on ice cream",
+  "Get a drink"
+ ],
+ "subtitles": [
+  "Burger. Anytime. Anywhere.",
+  "",
+  "",
+  "",
+  "",
+  "",
+  ""
+ ],
+ "pages": [
+  {
+   "title": "Burger. Anytime. Anywhere.",
+   "subtitle": "Burger. Anytime. Anywhere.",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#f3c012"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t7",
+     "xPct": 10.227,
+     "yPct": 4.013,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Burger.\nAnytime.\nAnywhere.",
+      "color": "#000000",
+      "size": 135.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.15,
+      "charSpacing": -15
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s1",
+     "assetId": "shape:Top bun",
+     "name": "Top bun",
+     "xPct": -18.182,
+     "yPct": 28.766,
+     "widthPct": 75.0,
+     "heightPct": 15.69,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 330,
+      "h": 150,
+      "radius": 70,
+      "fill": "#d98a3a"
+     }
+    },
+    {
+     "id": "tpl-s2",
+     "assetId": "shape:Lettuce",
+     "name": "Lettuce",
+     "xPct": -13.636,
+     "yPct": 43.41,
+     "widthPct": 90.909,
+     "heightPct": 7.322,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 400,
+      "h": 70,
+      "radius": 35,
+      "fill": "#66a02c"
+     }
+    },
+    {
+     "id": "tpl-s3",
+     "assetId": "shape:Tomato",
+     "name": "Tomato",
+     "xPct": -13.636,
+     "yPct": 49.163,
+     "widthPct": 81.818,
+     "heightPct": 5.753,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 360,
+      "h": 55,
+      "radius": 27,
+      "fill": "#d8321f"
+     }
+    },
+    {
+     "id": "tpl-s4",
+     "assetId": "shape:Onion",
+     "name": "Onion",
+     "xPct": -13.636,
+     "yPct": 54.916,
+     "widthPct": 77.273,
+     "heightPct": 4.184,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 340,
+      "h": 40,
+      "radius": 20,
+      "fill": "#f2eee0"
+     }
+    },
+    {
+     "id": "tpl-s5",
+     "assetId": "shape:Patty",
+     "name": "Patty",
+     "xPct": -13.636,
+     "yPct": 60.669,
+     "widthPct": 79.545,
+     "heightPct": 20.921,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 350,
+      "h": 200,
+      "radius": 40,
+      "fill": "#6a2f1b"
+     }
+    },
+    {
+     "id": "tpl-s6",
+     "assetId": "shape:Bottom bun",
+     "name": "Bottom bun",
+     "xPct": -13.636,
+     "yPct": 80.544,
+     "widthPct": 77.273,
+     "heightPct": 19.874,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 340,
+      "h": 190,
+      "radius": 60,
+      "fill": "#d98a3a"
+     }
+    }
+   ],
+   "deviceOne": {
+    "visible": false
+   }
+  },
+  {
+   "title": "Pick a restaurant",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#000000"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t22",
+     "xPct": 0.0,
+     "yPct": 16.398,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Pick a restaurant",
+      "color": "#f3c012",
+      "size": 85.9,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -10
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s8",
+     "assetId": "shape:Blob L",
+     "name": "Blob L",
+     "xPct": -25.0,
+     "yPct": 40.795,
+     "widthPct": 52.273,
+     "heightPct": 27.197,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 230,
+      "h": 260,
+      "radius": 115.0,
+      "fill": "#d9a516",
+      "blur": 22,
+      "inset": 60
+     }
+    },
+    {
+     "id": "tpl-s9",
+     "assetId": "shape:Blob R",
+     "name": "Blob R",
+     "xPct": 73.864,
+     "yPct": 46.548,
+     "widthPct": 50.0,
+     "heightPct": 26.151,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 220,
+      "h": 250,
+      "radius": 110.0,
+      "fill": "#d9a516",
+      "blur": 22,
+      "inset": 60
+     }
+    },
+    {
+     "id": "tpl-s10",
+     "assetId": "shape:Blob L2",
+     "name": "Blob L2",
+     "xPct": -27.273,
+     "yPct": 64.854,
+     "widthPct": 54.545,
+     "heightPct": 37.657,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 240,
+      "h": 360,
+      "radius": 120.0,
+      "fill": "#c99010",
+      "blur": 22,
+      "inset": 60
+     }
+    },
+    {
+     "id": "tpl-s11",
+     "assetId": "shape:Blob R2",
+     "name": "Blob R2",
+     "xPct": 75.0,
+     "yPct": 70.084,
+     "widthPct": 50.0,
+     "heightPct": 33.473,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 220,
+      "h": 320,
+      "radius": 110.0,
+      "fill": "#a11a1a",
+      "blur": 22,
+      "inset": 60
+     }
+    },
+    {
+     "id": "tpl-s12",
+     "assetId": "shape:Blob L3",
+     "name": "Blob L3",
+     "xPct": -23.864,
+     "yPct": 87.343,
+     "widthPct": 52.273,
+     "heightPct": 21.967,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 230,
+      "h": 210,
+      "radius": 105.0,
+      "fill": "#a11a1a",
+      "blur": 22,
+      "inset": 60
+     }
+    },
+    {
+     "id": "tpl-s13",
+     "assetId": "shape:Fry",
+     "name": "Fry",
+     "xPct": 40.0,
+     "yPct": 5.021,
+     "widthPct": 5.227,
+     "heightPct": 7.218,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 23,
+      "h": 69,
+      "vx": 176,
+      "vy": 48,
+      "path": "M185,108L190,57",
+      "stroke": "#ffc21a",
+      "strokeWidth": 8,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s14",
+     "assetId": "shape:Fry",
+     "name": "Fry",
+     "xPct": 42.273,
+     "yPct": 4.393,
+     "widthPct": 5.682,
+     "heightPct": 7.531,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 25,
+      "h": 72,
+      "vx": 186,
+      "vy": 42,
+      "path": "M195,105L202,51",
+      "stroke": "#ffc21a",
+      "strokeWidth": 8,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s15",
+     "assetId": "shape:Fry",
+     "name": "Fry",
+     "xPct": 44.545,
+     "yPct": 3.766,
+     "widthPct": 6.136,
+     "heightPct": 7.845,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 27,
+      "h": 75,
+      "vx": 196,
+      "vy": 36,
+      "path": "M205,102L214,45",
+      "stroke": "#ffc21a",
+      "strokeWidth": 8,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s16",
+     "assetId": "shape:Fry",
+     "name": "Fry",
+     "xPct": 46.818,
+     "yPct": 4.393,
+     "widthPct": 6.591,
+     "heightPct": 6.904,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 29,
+      "h": 66,
+      "vx": 206,
+      "vy": 42,
+      "path": "M215,99L226,51",
+      "stroke": "#ffc21a",
+      "strokeWidth": 8,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s17",
+     "assetId": "shape:Fry",
+     "name": "Fry",
+     "xPct": 49.091,
+     "yPct": 5.021,
+     "widthPct": 7.045,
+     "heightPct": 5.962,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 31,
+      "h": 57,
+      "vx": 216,
+      "vy": 48,
+      "path": "M225,96L238,57",
+      "stroke": "#ffc21a",
+      "strokeWidth": 8,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s18",
+     "assetId": "shape:Fry",
+     "name": "Fry",
+     "xPct": 51.364,
+     "yPct": 5.649,
+     "widthPct": 7.5,
+     "heightPct": 5.021,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 33,
+      "h": 48,
+      "vx": 226,
+      "vy": 54,
+      "path": "M235,93L250,63",
+      "stroke": "#ffc21a",
+      "strokeWidth": 8,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s19",
+     "assetId": "shape:Fry box",
+     "name": "Fry box",
+     "xPct": 38.864,
+     "yPct": 7.008,
+     "widthPct": 19.318,
+     "heightPct": 7.741,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 85,
+      "h": 74,
+      "vx": 171,
+      "vy": 67,
+      "path": "M172,92L240,68L255,130L225,140Z",
+      "fill": "#d9202a"
+     }
+    },
+    {
+     "id": "tpl-s20",
+     "assetId": "shape:Label",
+     "name": "Label",
+     "xPct": 50.0,
+     "yPct": 10.46,
+     "widthPct": 5.909,
+     "heightPct": 1.674,
+     "rotation": 0,
+     "opacity": 0.9,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 26,
+      "h": 16,
+      "radius": 3,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s21",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -0.682,
+     "yPct": 21.13,
+     "widthPct": 101.364,
+     "heightPct": 88.115,
+     "rotation": 0,
+     "opacity": 0.25,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 446,
+      "h": 842.38,
+      "radius": 108.08,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 56.57,
+    "x": 0.0,
+    "y": 18.95,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Track your order",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#000000"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t33",
+     "xPct": 0.0,
+     "yPct": 16.398,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Track your order",
+      "color": "#f3c012",
+      "size": 85.9,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -10
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s25",
+     "assetId": "shape:Blob L2",
+     "name": "Blob L2",
+     "xPct": -27.273,
+     "yPct": 64.854,
+     "widthPct": 54.545,
+     "heightPct": 37.657,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 240,
+      "h": 360,
+      "radius": 120.0,
+      "fill": "#a52a14",
+      "blur": 22,
+      "inset": 60
+     }
+    },
+    {
+     "id": "tpl-s26",
+     "assetId": "shape:Blob R2",
+     "name": "Blob R2",
+     "xPct": 75.0,
+     "yPct": 70.084,
+     "widthPct": 50.0,
+     "heightPct": 33.473,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 220,
+      "h": 320,
+      "radius": 110.0,
+      "fill": "#a15100",
+      "blur": 22,
+      "inset": 60
+     }
+    },
+    {
+     "id": "tpl-s27",
+     "assetId": "shape:Blob L3",
+     "name": "Blob L3",
+     "xPct": -23.864,
+     "yPct": 87.343,
+     "widthPct": 52.273,
+     "heightPct": 21.967,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 230,
+      "h": 210,
+      "radius": 105.0,
+      "fill": "#a15100",
+      "blur": 22,
+      "inset": 60
+     }
+    },
+    {
+     "id": "tpl-s28",
+     "assetId": "shape:Pizza",
+     "name": "Pizza",
+     "xPct": 39.545,
+     "yPct": 4.079,
+     "widthPct": 21.591,
+     "heightPct": 7.322,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 95,
+      "h": 70,
+      "vx": 174,
+      "vy": 39,
+      "path": "M175,105C200,60 240,40 265,42C268,70 262,95 250,108Z",
+      "fill": "#f2b632"
+     }
+    },
+    {
+     "id": "tpl-s29",
+     "assetId": "shape:Pep",
+     "name": "Pep",
+     "xPct": 46.591,
+     "yPct": 7.845,
+     "widthPct": 4.545,
+     "heightPct": 2.092,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 20,
+      "h": 20,
+      "fill": "#d9302a"
+     }
+    },
+    {
+     "id": "tpl-s30",
+     "assetId": "shape:Pep",
+     "name": "Pep",
+     "xPct": 53.636,
+     "yPct": 6.904,
+     "widthPct": 4.091,
+     "heightPct": 1.883,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 18,
+      "h": 18,
+      "fill": "#d9302a"
+     }
+    },
+    {
+     "id": "tpl-s31",
+     "assetId": "shape:Drip",
+     "name": "Drip",
+     "xPct": 41.818,
+     "yPct": 10.669,
+     "widthPct": 12.5,
+     "heightPct": 4.393,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 55,
+      "h": 42,
+      "vx": 184,
+      "vy": 102,
+      "path": "M190,108L192,135M210,110L211,128M232,108L233,138",
+      "stroke": "#f2b632",
+      "strokeWidth": 5,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s32",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -0.682,
+     "yPct": 21.13,
+     "widthPct": 101.364,
+     "heightPct": 88.115,
+     "rotation": 0,
+     "opacity": 0.25,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 446,
+      "h": 842.38,
+      "radius": 108.08,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 56.57,
+    "x": 0.0,
+    "y": 18.95,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Choose ingredients",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#f3c012"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t59",
+     "xPct": 0.0,
+     "yPct": 16.398,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Choose ingredients",
+      "color": "#000000",
+      "size": 85.9,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -10
+     }
+    },
+    {
+     "id": "tpl-t43",
+     "xPct": 19.318,
+     "yPct": 41.817,
+     "widthPct": 45.455,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Search Uber Eats",
+     "style": {
+      "text": "Search Uber Eats",
+      "color": "#555",
+      "size": 31.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t45",
+     "xPct": 9.091,
+     "yPct": 52.936,
+     "widthPct": 16.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Pizza",
+     "style": {
+      "text": "Pizza",
+      "color": "#111",
+      "size": 28.2,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t47",
+     "xPct": 26.136,
+     "yPct": 52.936,
+     "widthPct": 16.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Sushi",
+     "style": {
+      "text": "Sushi",
+      "color": "#111",
+      "size": 28.2,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t49",
+     "xPct": 43.182,
+     "yPct": 52.936,
+     "widthPct": 16.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Chinese",
+     "style": {
+      "text": "Chinese",
+      "color": "#111",
+      "size": 28.2,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t51",
+     "xPct": 60.227,
+     "yPct": 52.936,
+     "widthPct": 16.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Thai",
+     "style": {
+      "text": "Thai",
+      "color": "#111",
+      "size": 28.2,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t53",
+     "xPct": 77.273,
+     "yPct": 52.936,
+     "widthPct": 16.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Indian",
+     "style": {
+      "text": "Indian",
+      "color": "#111",
+      "size": 28.2,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s34",
+     "assetId": "shape:Blob L",
+     "name": "Blob L",
+     "xPct": -25.0,
+     "yPct": 40.795,
+     "widthPct": 52.273,
+     "heightPct": 27.197,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 230,
+      "h": 260,
+      "radius": 115.0,
+      "fill": "#d98a2a",
+      "blur": 22,
+      "inset": 60
+     }
+    },
+    {
+     "id": "tpl-s35",
+     "assetId": "shape:Blob R",
+     "name": "Blob R",
+     "xPct": 73.864,
+     "yPct": 46.548,
+     "widthPct": 50.0,
+     "heightPct": 26.151,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 220,
+      "h": 250,
+      "radius": 110.0,
+      "fill": "#d98a2a",
+      "blur": 22,
+      "inset": 60
+     }
+    },
+    {
+     "id": "tpl-s36",
+     "assetId": "shape:Blob L2",
+     "name": "Blob L2",
+     "xPct": -27.273,
+     "yPct": 64.854,
+     "widthPct": 54.545,
+     "heightPct": 37.657,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 240,
+      "h": 360,
+      "radius": 120.0,
+      "fill": "#b8641a",
+      "blur": 22,
+      "inset": 60
+     }
+    },
+    {
+     "id": "tpl-s37",
+     "assetId": "shape:Blob R2",
+     "name": "Blob R2",
+     "xPct": 75.0,
+     "yPct": 70.084,
+     "widthPct": 50.0,
+     "heightPct": 33.473,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 220,
+      "h": 320,
+      "radius": 110.0,
+      "fill": "#b51c02",
+      "blur": 22,
+      "inset": 60
+     }
+    },
+    {
+     "id": "tpl-s38",
+     "assetId": "shape:Blob L3",
+     "name": "Blob L3",
+     "xPct": -23.864,
+     "yPct": 87.343,
+     "widthPct": 52.273,
+     "heightPct": 21.967,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 230,
+      "h": 210,
+      "radius": 105.0,
+      "fill": "#b51c02",
+      "blur": 22,
+      "inset": 60
+     }
+    },
+    {
+     "id": "tpl-s54",
+     "assetId": "shape:Top bun",
+     "name": "Top bun",
+     "xPct": 39.545,
+     "yPct": 3.033,
+     "widthPct": 20.909,
+     "heightPct": 3.87,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 92,
+      "h": 37,
+      "vx": 174,
+      "vy": 29,
+      "path": "M175,65C180,30 260,30 265,65Z",
+      "fill": "#e0872a"
+     }
+    },
+    {
+     "id": "tpl-s55",
+     "assetId": "shape:Lettuce",
+     "name": "Lettuce",
+     "xPct": 39.091,
+     "yPct": 7.113,
+     "widthPct": 21.818,
+     "heightPct": 1.255,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 96,
+      "h": 12,
+      "radius": 6,
+      "fill": "#5aa02c"
+     }
+    },
+    {
+     "id": "tpl-s56",
+     "assetId": "shape:Patty",
+     "name": "Patty",
+     "xPct": 40.0,
+     "yPct": 8.368,
+     "widthPct": 20.0,
+     "heightPct": 2.51,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 88,
+      "h": 24,
+      "radius": 12,
+      "fill": "#5b2a17"
+     }
+    },
+    {
+     "id": "tpl-s57",
+     "assetId": "shape:Bottom bun",
+     "name": "Bottom bun",
+     "xPct": 40.455,
+     "yPct": 10.879,
+     "widthPct": 19.091,
+     "heightPct": 1.883,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 84,
+      "h": 18,
+      "radius": 9,
+      "fill": "#d98a2c"
+     }
+    },
+    {
+     "id": "tpl-s58",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -0.682,
+     "yPct": 21.13,
+     "widthPct": 101.364,
+     "heightPct": 88.115,
+     "rotation": 0,
+     "opacity": 0.25,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 446,
+      "h": 842.38,
+      "radius": 108.08,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s39",
+     "assetId": "shape:Search card",
+     "name": "Search card",
+     "xPct": 6.136,
+     "yPct": 38.18,
+     "widthPct": 87.727,
+     "heightPct": 17.573,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 386,
+      "h": 168,
+      "radius": 24,
+      "fill": "#fdfdfd"
+     }
+    },
+    {
+     "id": "tpl-s40",
+     "assetId": "shape:Search pill",
+     "name": "Search pill",
+     "xPct": 9.545,
+     "yPct": 40.167,
+     "widthPct": 80.909,
+     "heightPct": 4.603,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 356,
+      "h": 44,
+      "radius": 22,
+      "fill": "#f1f1f3"
+     }
+    },
+    {
+     "id": "tpl-s41",
+     "assetId": "shape:Lens",
+     "name": "Lens",
+     "xPct": 13.409,
+     "yPct": 41.736,
+     "widthPct": 2.727,
+     "heightPct": 1.255,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 12,
+      "h": 12,
+      "stroke": "#111",
+      "strokeWidth": 2,
+      "inset": 1.0
+     }
+    },
+    {
+     "id": "tpl-s42",
+     "assetId": "shape:Lens h",
+     "name": "Lens h",
+     "xPct": 15.0,
+     "yPct": 42.469,
+     "widthPct": 2.5,
+     "heightPct": 1.151,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 11,
+      "h": 11,
+      "vx": 66,
+      "vy": 406,
+      "path": "M69,409L74,414",
+      "stroke": "#111",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s44",
+     "assetId": "shape:Pizza icon",
+     "name": "Pizza icon",
+     "xPct": 12.955,
+     "yPct": 47.071,
+     "widthPct": 9.091,
+     "heightPct": 4.184,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 40,
+      "h": 40,
+      "radius": 12,
+      "fill": "#f2a83a"
+     }
+    },
+    {
+     "id": "tpl-s46",
+     "assetId": "shape:Sushi icon",
+     "name": "Sushi icon",
+     "xPct": 30.0,
+     "yPct": 47.071,
+     "widthPct": 9.091,
+     "heightPct": 4.184,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 40,
+      "h": 40,
+      "radius": 12,
+      "fill": "#d9202a"
+     }
+    },
+    {
+     "id": "tpl-s48",
+     "assetId": "shape:Chinese icon",
+     "name": "Chinese icon",
+     "xPct": 47.045,
+     "yPct": 47.071,
+     "widthPct": 9.091,
+     "heightPct": 4.184,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 40,
+      "h": 40,
+      "radius": 12,
+      "fill": "#e0242c"
+     }
+    },
+    {
+     "id": "tpl-s50",
+     "assetId": "shape:Thai icon",
+     "name": "Thai icon",
+     "xPct": 64.091,
+     "yPct": 47.071,
+     "widthPct": 9.091,
+     "heightPct": 4.184,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 40,
+      "h": 40,
+      "radius": 12,
+      "fill": "#d9302a"
+     }
+    },
+    {
+     "id": "tpl-s52",
+     "assetId": "shape:Indian icon",
+     "name": "Indian icon",
+     "xPct": 81.136,
+     "yPct": 47.071,
+     "widthPct": 9.091,
+     "heightPct": 4.184,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 40,
+      "h": 40,
+      "radius": 12,
+      "fill": "#e0952a"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 56.57,
+    "x": 0.0,
+    "y": 18.95,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Feast on a snack",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#000000"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t68",
+     "xPct": 0.0,
+     "yPct": 16.398,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Feast on a snack",
+      "color": "#f3c012",
+      "size": 85.9,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -10
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s60",
+     "assetId": "shape:Blob L",
+     "name": "Blob L",
+     "xPct": -25.0,
+     "yPct": 40.795,
+     "widthPct": 52.273,
+     "heightPct": 27.197,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 230,
+      "h": 260,
+      "radius": 115.0,
+      "fill": "#d9a516",
+      "blur": 22,
+      "inset": 60
+     }
+    },
+    {
+     "id": "tpl-s61",
+     "assetId": "shape:Blob R",
+     "name": "Blob R",
+     "xPct": 73.864,
+     "yPct": 46.548,
+     "widthPct": 50.0,
+     "heightPct": 26.151,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 220,
+      "h": 250,
+      "radius": 110.0,
+      "fill": "#d9a516",
+      "blur": 22,
+      "inset": 60
+     }
+    },
+    {
+     "id": "tpl-s62",
+     "assetId": "shape:Blob L2",
+     "name": "Blob L2",
+     "xPct": -27.273,
+     "yPct": 64.854,
+     "widthPct": 54.545,
+     "heightPct": 37.657,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 240,
+      "h": 360,
+      "radius": 120.0,
+      "fill": "#c99010",
+      "blur": 22,
+      "inset": 60
+     }
+    },
+    {
+     "id": "tpl-s63",
+     "assetId": "shape:Blob R2",
+     "name": "Blob R2",
+     "xPct": 75.0,
+     "yPct": 70.084,
+     "widthPct": 50.0,
+     "heightPct": 33.473,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 220,
+      "h": 320,
+      "radius": 110.0,
+      "fill": "#a11a1a",
+      "blur": 22,
+      "inset": 60
+     }
+    },
+    {
+     "id": "tpl-s64",
+     "assetId": "shape:Blob L3",
+     "name": "Blob L3",
+     "xPct": -23.864,
+     "yPct": 87.343,
+     "widthPct": 52.273,
+     "heightPct": 21.967,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 230,
+      "h": 210,
+      "radius": 105.0,
+      "fill": "#a11a1a",
+      "blur": 22,
+      "inset": 60
+     }
+    },
+    {
+     "id": "tpl-s65",
+     "assetId": "shape:Donut",
+     "name": "Donut",
+     "xPct": 41.364,
+     "yPct": 5.439,
+     "widthPct": 17.273,
+     "heightPct": 7.95,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 76,
+      "h": 76,
+      "fill": "#f18ac0"
+     }
+    },
+    {
+     "id": "tpl-s66",
+     "assetId": "shape:Hole",
+     "name": "Hole",
+     "xPct": 47.273,
+     "yPct": 8.159,
+     "widthPct": 5.455,
+     "heightPct": 2.51,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 24,
+      "h": 24,
+      "fill": "#000000"
+     }
+    },
+    {
+     "id": "tpl-s67",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -0.682,
+     "yPct": 21.13,
+     "widthPct": 101.364,
+     "heightPct": 88.115,
+     "rotation": 0,
+     "opacity": 0.25,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 446,
+      "h": 842.38,
+      "radius": 108.08,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 56.57,
+    "x": 0.0,
+    "y": 18.95,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Chill on ice cream",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#000000"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t77",
+     "xPct": 0.0,
+     "yPct": 16.398,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Chill on ice cream",
+      "color": "#f3c012",
+      "size": 85.9,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -10
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s71",
+     "assetId": "shape:Blob L2",
+     "name": "Blob L2",
+     "xPct": -27.273,
+     "yPct": 64.854,
+     "widthPct": 54.545,
+     "heightPct": 37.657,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 240,
+      "h": 360,
+      "radius": 120.0,
+      "fill": "#a52a14",
+      "blur": 22,
+      "inset": 60
+     }
+    },
+    {
+     "id": "tpl-s72",
+     "assetId": "shape:Blob R2",
+     "name": "Blob R2",
+     "xPct": 75.0,
+     "yPct": 70.084,
+     "widthPct": 50.0,
+     "heightPct": 33.473,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 220,
+      "h": 320,
+      "radius": 110.0,
+      "fill": "#a15100",
+      "blur": 22,
+      "inset": 60
+     }
+    },
+    {
+     "id": "tpl-s73",
+     "assetId": "shape:Blob L3",
+     "name": "Blob L3",
+     "xPct": -23.864,
+     "yPct": 87.343,
+     "widthPct": 52.273,
+     "heightPct": 21.967,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 230,
+      "h": 210,
+      "radius": 105.0,
+      "fill": "#a15100",
+      "blur": 22,
+      "inset": 60
+     }
+    },
+    {
+     "id": "tpl-s74",
+     "assetId": "shape:Scoop",
+     "name": "Scoop",
+     "xPct": 45.0,
+     "yPct": 4.184,
+     "widthPct": 10.0,
+     "heightPct": 4.603,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 44,
+      "h": 44,
+      "fill": "#f4efe6"
+     }
+    },
+    {
+     "id": "tpl-s75",
+     "assetId": "shape:Cone",
+     "name": "Cone",
+     "xPct": 45.682,
+     "yPct": 8.054,
+     "widthPct": 8.636,
+     "heightPct": 6.172,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 38,
+      "h": 59,
+      "vx": 201,
+      "vy": 77,
+      "path": "M202,78L238,78L221,135Z",
+      "fill": "#e0b070"
+     }
+    },
+    {
+     "id": "tpl-s76",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -0.682,
+     "yPct": 21.13,
+     "widthPct": 101.364,
+     "heightPct": 88.115,
+     "rotation": 0,
+     "opacity": 0.25,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 446,
+      "h": 842.38,
+      "radius": 108.08,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 56.57,
+    "x": 0.0,
+    "y": 18.95,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Get a drink",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#f3c012"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t99",
+     "xPct": 0.0,
+     "yPct": 16.398,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Get a drink",
+      "color": "#000000",
+      "size": 85.9,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -10
+     }
+    },
+    {
+     "id": "tpl-t84",
+     "xPct": 19.318,
+     "yPct": 41.817,
+     "widthPct": 45.455,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Search Uber Eats",
+     "style": {
+      "text": "Search Uber Eats",
+      "color": "#555",
+      "size": 31.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t86",
+     "xPct": 9.091,
+     "yPct": 52.936,
+     "widthPct": 16.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Pizza",
+     "style": {
+      "text": "Pizza",
+      "color": "#111",
+      "size": 28.2,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t88",
+     "xPct": 26.136,
+     "yPct": 52.936,
+     "widthPct": 16.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Sushi",
+     "style": {
+      "text": "Sushi",
+      "color": "#111",
+      "size": 28.2,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t90",
+     "xPct": 43.182,
+     "yPct": 52.936,
+     "widthPct": 16.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Chinese",
+     "style": {
+      "text": "Chinese",
+      "color": "#111",
+      "size": 28.2,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t92",
+     "xPct": 60.227,
+     "yPct": 52.936,
+     "widthPct": 16.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Thai",
+     "style": {
+      "text": "Thai",
+      "color": "#111",
+      "size": 28.2,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t94",
+     "xPct": 77.273,
+     "yPct": 52.936,
+     "widthPct": 16.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Indian",
+     "style": {
+      "text": "Indian",
+      "color": "#111",
+      "size": 28.2,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s78",
+     "assetId": "shape:Cup L",
+     "name": "Cup L",
+     "xPct": -9.091,
+     "yPct": 63.808,
+     "widthPct": 20.455,
+     "heightPct": 35.565,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 90,
+      "h": 340,
+      "radius": 30,
+      "fill": "#d61a22"
+     }
+    },
+    {
+     "id": "tpl-s79",
+     "assetId": "shape:Cup R",
+     "name": "Cup R",
+     "xPct": 88.636,
+     "yPct": 63.808,
+     "widthPct": 20.455,
+     "heightPct": 35.565,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 90,
+      "h": 340,
+      "radius": 30,
+      "fill": "#d61a22"
+     }
+    },
+    {
+     "id": "tpl-s95",
+     "assetId": "shape:Cup",
+     "name": "Cup",
+     "xPct": 44.773,
+     "yPct": 7.218,
+     "widthPct": 11.136,
+     "heightPct": 6.695,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 49,
+      "h": 64,
+      "vx": 197,
+      "vy": 69,
+      "path": "M198,70L245,70L238,132L205,132Z",
+      "fill": "#d9202a"
+     }
+    },
+    {
+     "id": "tpl-s96",
+     "assetId": "shape:Lid",
+     "name": "Lid",
+     "xPct": 44.091,
+     "yPct": 6.485,
+     "widthPct": 12.727,
+     "heightPct": 1.255,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 56,
+      "h": 12,
+      "radius": 6,
+      "fill": "#e8323a"
+     }
+    },
+    {
+     "id": "tpl-s97",
+     "assetId": "shape:Straw",
+     "name": "Straw",
+     "xPct": 51.591,
+     "yPct": 4.079,
+     "widthPct": 5.227,
+     "heightPct": 2.929,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 23,
+      "h": 28,
+      "vx": 227,
+      "vy": 39,
+      "path": "M232,62L245,44",
+      "stroke": "#d9202a",
+      "strokeWidth": 4,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s98",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -0.682,
+     "yPct": 21.13,
+     "widthPct": 101.364,
+     "heightPct": 88.115,
+     "rotation": 0,
+     "opacity": 0.25,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 446,
+      "h": 842.38,
+      "radius": 108.08,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s80",
+     "assetId": "shape:Search card",
+     "name": "Search card",
+     "xPct": 6.136,
+     "yPct": 38.18,
+     "widthPct": 87.727,
+     "heightPct": 17.573,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 386,
+      "h": 168,
+      "radius": 24,
+      "fill": "#fdfdfd"
+     }
+    },
+    {
+     "id": "tpl-s81",
+     "assetId": "shape:Search pill",
+     "name": "Search pill",
+     "xPct": 9.545,
+     "yPct": 40.167,
+     "widthPct": 80.909,
+     "heightPct": 4.603,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 356,
+      "h": 44,
+      "radius": 22,
+      "fill": "#f1f1f3"
+     }
+    },
+    {
+     "id": "tpl-s82",
+     "assetId": "shape:Lens",
+     "name": "Lens",
+     "xPct": 13.409,
+     "yPct": 41.736,
+     "widthPct": 2.727,
+     "heightPct": 1.255,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 12,
+      "h": 12,
+      "stroke": "#111",
+      "strokeWidth": 2,
+      "inset": 1.0
+     }
+    },
+    {
+     "id": "tpl-s83",
+     "assetId": "shape:Lens h",
+     "name": "Lens h",
+     "xPct": 15.0,
+     "yPct": 42.469,
+     "widthPct": 2.5,
+     "heightPct": 1.151,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 11,
+      "h": 11,
+      "vx": 66,
+      "vy": 406,
+      "path": "M69,409L74,414",
+      "stroke": "#111",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s85",
+     "assetId": "shape:Pizza icon",
+     "name": "Pizza icon",
+     "xPct": 12.955,
+     "yPct": 47.071,
+     "widthPct": 9.091,
+     "heightPct": 4.184,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 40,
+      "h": 40,
+      "radius": 12,
+      "fill": "#f2a83a"
+     }
+    },
+    {
+     "id": "tpl-s87",
+     "assetId": "shape:Sushi icon",
+     "name": "Sushi icon",
+     "xPct": 30.0,
+     "yPct": 47.071,
+     "widthPct": 9.091,
+     "heightPct": 4.184,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 40,
+      "h": 40,
+      "radius": 12,
+      "fill": "#d9202a"
+     }
+    },
+    {
+     "id": "tpl-s89",
+     "assetId": "shape:Chinese icon",
+     "name": "Chinese icon",
+     "xPct": 47.045,
+     "yPct": 47.071,
+     "widthPct": 9.091,
+     "heightPct": 4.184,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 40,
+      "h": 40,
+      "radius": 12,
+      "fill": "#e0242c"
+     }
+    },
+    {
+     "id": "tpl-s91",
+     "assetId": "shape:Thai icon",
+     "name": "Thai icon",
+     "xPct": 64.091,
+     "yPct": 47.071,
+     "widthPct": 9.091,
+     "heightPct": 4.184,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 40,
+      "h": 40,
+      "radius": 12,
+      "fill": "#d9302a"
+     }
+    },
+    {
+     "id": "tpl-s93",
+     "assetId": "shape:Indian icon",
+     "name": "Indian icon",
+     "xPct": 81.136,
+     "yPct": 47.071,
+     "widthPct": 9.091,
+     "heightPct": 4.184,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 40,
+      "h": 40,
+      "radius": 12,
+      "fill": "#e0952a"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 56.57,
+    "x": 0.0,
+    "y": 18.95,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  }
+ ],
+ "designHeight": 2347,
+ "textColor": "#111111"
+}

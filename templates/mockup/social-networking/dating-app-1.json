@@ -1,0 +1,1754 @@
+{
+ "version": 1,
+ "id": "dating-app-1",
+ "name": "Dating app",
+ "category": "social-networking",
+ "description": "Elevate your dating app's market presence with our sophisticated template. Display profile matching, chat features, and dating preferences in an elegant, user-friendly design that attracts and retains users looking for meaningful connections.",
+ "devices": [
+  {
+   "deviceId": "apple-iphone-16-pro-max",
+   "label": "apple-iphone-16-pro-max"
+  },
+  {
+   "deviceId": "apple-iphone-14-plus",
+   "label": "apple-iphone-14-plus"
+  },
+  {
+   "deviceId": "samsung-galaxy-s21-ultra",
+   "label": "samsung-galaxy-s21-ultra"
+  }
+ ],
+ "layout": "single-no-text",
+ "background": {
+  "type": "solid",
+  "value": "#0f0b08"
+ },
+ "panoramic": false,
+ "columnCount": 7,
+ "titles": [
+  "Find your crush at your favorite spots",
+  "Find your crush",
+  "at places you love",
+  "Make it happn!",
+  "Find Your Match Here",
+  "Find love in...",
+  "the best places"
+ ],
+ "subtitles": [
+  "Your exact location is never revealed",
+  "",
+  "",
+  "",
+  "Discover who shares your favorite local spots",
+  "",
+  ""
+ ],
+ "pages": [
+  {
+   "title": "Find your crush at your favorite spots",
+   "subtitle": "Your exact location is never revealed",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#0f0b08"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t7",
+     "xPct": 10.0,
+     "yPct": 35.031,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Find\nyour\ncrush\nat your\nfavorite\nspots",
+      "color": "#fbf6ea",
+      "size": 196.4,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.0,
+      "charSpacing": -40
+     }
+    },
+    {
+     "id": "tpl-t8",
+     "xPct": 10.0,
+     "yPct": 91.405,
+     "widthPct": 77.273,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Your exact location\nis never revealed",
+      "color": "#eee6d8",
+      "size": 44.2,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.18
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s1",
+     "assetId": "shape:Warm glow",
+     "name": "Warm glow",
+     "xPct": -9.091,
+     "yPct": -5.23,
+     "widthPct": 168.182,
+     "heightPct": 77.406,
+     "rotation": 0,
+     "opacity": 0.9,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 740,
+      "h": 740,
+      "radius": 370,
+      "fill": "#3b2412",
+      "blur": 60,
+      "inset": 180
+     }
+    },
+    {
+     "id": "tpl-s2",
+     "assetId": "shape:Jacket",
+     "name": "Jacket",
+     "xPct": 13.636,
+     "yPct": 33.473,
+     "widthPct": 145.455,
+     "heightPct": 66.946,
+     "rotation": 0,
+     "opacity": 0.9,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 640,
+      "h": 640,
+      "radius": 320,
+      "fill": "#2c1a0d",
+      "blur": 50,
+      "inset": 150
+     }
+    },
+    {
+     "id": "tpl-s3",
+     "assetId": "shape:Bokeh L",
+     "name": "Bokeh L",
+     "xPct": -40.909,
+     "yPct": -7.322,
+     "widthPct": 109.091,
+     "heightPct": 50.209,
+     "rotation": 0,
+     "opacity": 0.7,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 480,
+      "h": 480,
+      "radius": 240,
+      "fill": "#6b4a1e",
+      "blur": 50,
+      "inset": 150
+     }
+    },
+    {
+     "id": "tpl-s4",
+     "assetId": "shape:Bokeh R",
+     "name": "Bokeh R",
+     "xPct": 50.0,
+     "yPct": -12.552,
+     "widthPct": 81.818,
+     "heightPct": 37.657,
+     "rotation": 0,
+     "opacity": 0.6,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 360,
+      "h": 360,
+      "radius": 180,
+      "fill": "#8a7a2a",
+      "blur": 40,
+      "inset": 120
+     }
+    },
+    {
+     "id": "tpl-s5",
+     "assetId": "shape:Bokeh T",
+     "name": "Bokeh T",
+     "xPct": 2.273,
+     "yPct": -11.506,
+     "widthPct": 68.182,
+     "heightPct": 31.381,
+     "rotation": 0,
+     "opacity": 0.6,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 300,
+      "h": 300,
+      "radius": 150,
+      "fill": "#3d5a52",
+      "blur": 35,
+      "inset": 105
+     }
+    },
+    {
+     "id": "tpl-s6",
+     "assetId": "shape:Skin glow",
+     "name": "Skin glow",
+     "xPct": -11.364,
+     "yPct": 12.552,
+     "widthPct": 81.818,
+     "heightPct": 37.657,
+     "rotation": 0,
+     "opacity": 0.5,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 360,
+      "h": 360,
+      "radius": 180,
+      "fill": "#8a5a3a",
+      "blur": 40,
+      "inset": 120
+     }
+    }
+   ],
+   "deviceOne": {
+    "visible": false
+   }
+  },
+  {
+   "title": "Find your crush",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#100d0a"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t10",
+     "xPct": 0.0,
+     "yPct": 6.408,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Find your",
+      "color": "#fbf6ea",
+      "size": 166.9,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.0,
+      "charSpacing": -38
+     }
+    },
+    {
+     "id": "tpl-t11",
+     "xPct": 0.0,
+     "yPct": 15.87,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "crush",
+      "color": "#fbf6ea",
+      "size": 157.1,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.0,
+      "charSpacing": -34
+     }
+    },
+    {
+     "id": "tpl-t15",
+     "xPct": 24.429,
+     "yPct": 62.231,
+     "widthPct": 28.061,
+     "rotation": -1.5,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Alameda Beach",
+     "style": {
+      "text": "Alameda Beach",
+      "color": "#111111",
+      "size": 36.8,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t17",
+     "xPct": 30.047,
+     "yPct": 65.065,
+     "widthPct": 31.684,
+     "rotation": -1.5,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Mar and 25 happners",
+     "style": {
+      "text": "Mar and 25 happners",
+      "color": "#8a8780",
+      "size": 31.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s9",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 1.016,
+     "yPct": 23.837,
+     "widthPct": 100.455,
+     "heightPct": 87.206,
+     "rotation": -4.5,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 442,
+      "h": 833.69,
+      "radius": 107.44,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s12",
+     "assetId": "shape:Spot card",
+     "name": "Spot card",
+     "xPct": 4.545,
+     "yPct": 58.473,
+     "widthPct": 90.0,
+     "heightPct": 11.297,
+     "rotation": -1.5,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 396,
+      "h": 108,
+      "radius": 32,
+      "fill": "#fbf7ee",
+      "stroke": "#5fc85a",
+      "strokeWidth": 9,
+      "inset": 4.5
+     }
+    },
+    {
+     "id": "tpl-s13",
+     "assetId": "shape:Icon",
+     "name": "Icon",
+     "xPct": 9.516,
+     "yPct": 61.617,
+     "widthPct": 9.545,
+     "heightPct": 4.393,
+     "rotation": -1.5,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 42,
+      "h": 42,
+      "radius": 12,
+      "fill": "#6bd063"
+     }
+    },
+    {
+     "id": "tpl-s14",
+     "assetId": "shape:Icon dot",
+     "name": "Icon dot",
+     "xPct": 12.47,
+     "yPct": 62.977,
+     "widthPct": 3.636,
+     "heightPct": 1.674,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 16,
+      "h": 16,
+      "fill": "#0f0f0f"
+     }
+    },
+    {
+     "id": "tpl-s16",
+     "assetId": "shape:Avatar",
+     "name": "Avatar",
+     "xPct": 24.176,
+     "yPct": 64.714,
+     "widthPct": 4.545,
+     "heightPct": 2.092,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 20,
+      "h": 20,
+      "fill": "#e4e2dc"
+     }
+    },
+    {
+     "id": "tpl-s18",
+     "assetId": "shape:Chevron",
+     "name": "Chevron",
+     "xPct": 86.722,
+     "yPct": 61.779,
+     "widthPct": 3.223,
+     "heightPct": 2.301,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 14.18,
+      "h": 22.0,
+      "vx": 381.58,
+      "vy": 590.61,
+      "path": "M385.58,594.61L391.76,601.45L385.94,608.6",
+      "stroke": "#111",
+      "strokeWidth": 3,
+      "strokeLinejoin": "round"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 55.9,
+    "x": 1.64,
+    "y": 22.15,
+    "rotation": -4.5,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#fbf7ef",
+    "borderColor": "#fbf7ef",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "at places you love",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#f6ebcf"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t20",
+     "xPct": 0.0,
+     "yPct": 7.041,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "...at places",
+      "color": "#111111",
+      "size": 149.7,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.0,
+      "charSpacing": -34
+     }
+    },
+    {
+     "id": "tpl-t21",
+     "xPct": 0.0,
+     "yPct": 16.051,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "you love",
+      "color": "#111111",
+      "size": 152.2,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.0,
+      "charSpacing": -32
+     }
+    },
+    {
+     "id": "tpl-t28",
+     "xPct": 22.037,
+     "yPct": 78.528,
+     "widthPct": 18.261,
+     "rotation": -2,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "16 km away",
+     "style": {
+      "text": "16 km away",
+      "color": "#ffffff",
+      "size": 31.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s19",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -0.334,
+     "yPct": 22.976,
+     "widthPct": 101.136,
+     "heightPct": 87.888,
+     "rotation": 2.5,
+     "opacity": 0.12,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 445,
+      "h": 840.21,
+      "radius": 107.92,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s22",
+     "assetId": "shape:Photo card",
+     "name": "Photo card",
+     "xPct": 4.432,
+     "yPct": 41.266,
+     "widthPct": 92.045,
+     "heightPct": 41.318,
+     "rotation": -2,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 405,
+      "h": 395,
+      "radius": 40,
+      "gradient": [
+       [
+        0,
+        "#69b3cf"
+       ],
+       [
+        0.45,
+        "#7c9aa6"
+       ],
+       [
+        1,
+        "#8fb0c4"
+       ]
+      ],
+      "stroke": "#0a0a0a",
+      "strokeWidth": 8,
+      "inset": 4.0
+     }
+    },
+    {
+     "id": "tpl-s23",
+     "assetId": "shape:Blob",
+     "name": "Blob",
+     "xPct": 5.622,
+     "yPct": 33.639,
+     "widthPct": 61.364,
+     "heightPct": 28.243,
+     "rotation": -2,
+     "opacity": 0.7,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 270,
+      "h": 270,
+      "radius": 135,
+      "fill": "#8a7a72",
+      "blur": 25,
+      "inset": 75
+     }
+    },
+    {
+     "id": "tpl-s24",
+     "assetId": "shape:Face blob",
+     "name": "Face blob",
+     "xPct": 38.596,
+     "yPct": 45.742,
+     "widthPct": 39.091,
+     "heightPct": 22.176,
+     "rotation": -2,
+     "opacity": 0.95,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 172,
+      "h": 212,
+      "radius": 86,
+      "fill": "#85807c",
+      "blur": 6,
+      "inset": 18
+     }
+    },
+    {
+     "id": "tpl-s25",
+     "assetId": "shape:Jacket",
+     "name": "Jacket",
+     "xPct": 24.784,
+     "yPct": 60.542,
+     "widthPct": 74.545,
+     "heightPct": 23.849,
+     "rotation": -2,
+     "opacity": 0.7,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 328,
+      "h": 228,
+      "radius": 114,
+      "fill": "#9dbdd6",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s26",
+     "assetId": "shape:Distance pill",
+     "name": "Distance pill",
+     "xPct": 14.811,
+     "yPct": 77.418,
+     "widthPct": 25.455,
+     "heightPct": 3.347,
+     "rotation": -2,
+     "opacity": 0.9,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 112,
+      "h": 32,
+      "radius": 10,
+      "fill": "#1b1b1b"
+     }
+    },
+    {
+     "id": "tpl-s27",
+     "assetId": "shape:Pin",
+     "name": "Pin",
+     "xPct": 17.543,
+     "yPct": 78.603,
+     "widthPct": 2.727,
+     "heightPct": 1.255,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 12,
+      "h": 12,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s29",
+     "assetId": "shape:Action",
+     "name": "Action",
+     "xPct": 19.318,
+     "yPct": 88.912,
+     "widthPct": 10.0,
+     "heightPct": 4.603,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 44,
+      "h": 44,
+      "radius": 16,
+      "fill": "#0e0e0e"
+     }
+    },
+    {
+     "id": "tpl-s30",
+     "assetId": "shape:Action icon",
+     "name": "Action icon",
+     "xPct": 22.727,
+     "yPct": 90.481,
+     "widthPct": 3.182,
+     "heightPct": 1.464,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 14,
+      "h": 14,
+      "fill": "#f26a2a"
+     }
+    },
+    {
+     "id": "tpl-s31",
+     "assetId": "shape:Action",
+     "name": "Action",
+     "xPct": 32.955,
+     "yPct": 88.389,
+     "widthPct": 12.5,
+     "heightPct": 5.753,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 55,
+      "h": 55,
+      "radius": 16,
+      "fill": "#0e0e0e"
+     }
+    },
+    {
+     "id": "tpl-s32",
+     "assetId": "shape:Action icon",
+     "name": "Action icon",
+     "xPct": 37.614,
+     "yPct": 90.533,
+     "widthPct": 3.182,
+     "heightPct": 1.464,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 14,
+      "h": 14,
+      "fill": "#f2b13a"
+     }
+    },
+    {
+     "id": "tpl-s33",
+     "assetId": "shape:Action",
+     "name": "Action",
+     "xPct": 49.091,
+     "yPct": 88.703,
+     "widthPct": 12.5,
+     "heightPct": 5.753,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 55,
+      "h": 55,
+      "radius": 16,
+      "fill": "#0e0e0e"
+     }
+    },
+    {
+     "id": "tpl-s34",
+     "assetId": "shape:Action icon",
+     "name": "Action icon",
+     "xPct": 53.75,
+     "yPct": 90.847,
+     "widthPct": 3.182,
+     "heightPct": 1.464,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 14,
+      "h": 14,
+      "fill": "#f0507a"
+     }
+    },
+    {
+     "id": "tpl-s35",
+     "assetId": "shape:Action",
+     "name": "Action",
+     "xPct": 65.227,
+     "yPct": 89.749,
+     "widthPct": 10.227,
+     "heightPct": 4.707,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 45,
+      "h": 45,
+      "radius": 16,
+      "fill": "#b9dcf7"
+     }
+    },
+    {
+     "id": "tpl-s36",
+     "assetId": "shape:Action icon",
+     "name": "Action icon",
+     "xPct": 68.75,
+     "yPct": 91.37,
+     "widthPct": 3.182,
+     "heightPct": 1.464,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 14,
+      "h": 14,
+      "fill": "#111111"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 56.4,
+    "x": 0.31,
+    "y": 21.27,
+    "rotation": 2.5,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#0a0a0a",
+    "borderColor": "#0a0a0a",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Make it happn!",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#100d0a"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t38",
+     "xPct": 0.0,
+     "yPct": 6.318,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Make it",
+      "color": "#fbf6ea",
+      "size": 169.4,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.0,
+      "charSpacing": -29
+     }
+    },
+    {
+     "id": "tpl-t39",
+     "xPct": 0.0,
+     "yPct": 15.78,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "happn!",
+      "color": "#fbf6ea",
+      "size": 159.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.0,
+      "charSpacing": -36
+     }
+    },
+    {
+     "id": "tpl-t41",
+     "xPct": 10.455,
+     "yPct": 89.991,
+     "widthPct": 81.818,
+     "rotation": -1.5,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "CTA text",
+     "style": {
+      "text": "Start a conversation",
+      "color": "#ffffff",
+      "size": 41.7,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s37",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -2.064,
+     "yPct": 23.336,
+     "widthPct": 102.273,
+     "heightPct": 89.024,
+     "rotation": -4,
+     "opacity": 0.1,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 450,
+      "h": 851.07,
+      "radius": 108.72,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s40",
+     "assetId": "shape:CTA",
+     "name": "CTA",
+     "xPct": 4.545,
+     "yPct": 86.611,
+     "widthPct": 93.636,
+     "heightPct": 8.787,
+     "rotation": -1.5,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 412,
+      "h": 84,
+      "radius": 38,
+      "fill": "#0a0a0a",
+      "stroke": "#5fc85a",
+      "strokeWidth": 7,
+      "inset": 3.5
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 57.24,
+    "x": -1.19,
+    "y": 22.16,
+    "rotation": -4,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#5fc85a",
+    "borderColor": "#5fc85a",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Find Your Match Here",
+   "subtitle": "Discover who shares your favorite local spots",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#0d0a08"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t50",
+     "xPct": 4.545,
+     "yPct": 30.709,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Find",
+      "color": "#fbf6ea",
+      "size": 208.6,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.0,
+      "charSpacing": -35
+     }
+    },
+    {
+     "id": "tpl-t51",
+     "xPct": 4.545,
+     "yPct": 40.775,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Your",
+      "color": "#fbf6ea",
+      "size": 176.7,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.0,
+      "charSpacing": -34
+     }
+    },
+    {
+     "id": "tpl-t52",
+     "xPct": 4.545,
+     "yPct": 48.582,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Match",
+      "color": "#fbf6ea",
+      "size": 206.2,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.0,
+      "charSpacing": -34
+     }
+    },
+    {
+     "id": "tpl-t53",
+     "xPct": 4.545,
+     "yPct": 57.564,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Here",
+      "color": "#fbf6ea",
+      "size": 203.7,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.0,
+      "charSpacing": -35
+     }
+    },
+    {
+     "id": "tpl-t54",
+     "xPct": 4.545,
+     "yPct": 66.817,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Discover who shares\nyour favorite local spots",
+      "color": "#ece4d4",
+      "size": 41.7,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.3
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s42",
+     "assetId": "shape:Body",
+     "name": "Body",
+     "xPct": -43.182,
+     "yPct": 30.335,
+     "widthPct": 186.364,
+     "heightPct": 85.774,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 820,
+      "h": 820,
+      "radius": 410,
+      "fill": "#1c1410",
+      "blur": 60,
+      "inset": 180
+     }
+    },
+    {
+     "id": "tpl-s43",
+     "assetId": "shape:Head",
+     "name": "Head",
+     "xPct": -25.0,
+     "yPct": -4.184,
+     "widthPct": 118.182,
+     "heightPct": 54.393,
+     "rotation": 0,
+     "opacity": 0.8,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 520,
+      "h": 520,
+      "radius": 260,
+      "fill": "#3a2c22",
+      "blur": 50,
+      "inset": 150
+     }
+    },
+    {
+     "id": "tpl-s44",
+     "assetId": "shape:Warm R",
+     "name": "Warm R",
+     "xPct": 34.091,
+     "yPct": 39.749,
+     "widthPct": 118.182,
+     "heightPct": 54.393,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 520,
+      "h": 520,
+      "radius": 260,
+      "fill": "#7a5a1e",
+      "blur": 50,
+      "inset": 150
+     }
+    },
+    {
+     "id": "tpl-s45",
+     "assetId": "shape:Bokeh1",
+     "name": "Bokeh1",
+     "xPct": 64.773,
+     "yPct": 3.138,
+     "widthPct": 22.727,
+     "heightPct": 10.46,
+     "rotation": 0,
+     "opacity": 0.7,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 100,
+      "h": 100,
+      "radius": 50,
+      "fill": "#d8c56a",
+      "blur": 8,
+      "inset": 24
+     }
+    },
+    {
+     "id": "tpl-s46",
+     "assetId": "shape:Bokeh2",
+     "name": "Bokeh2",
+     "xPct": 69.773,
+     "yPct": 11.715,
+     "widthPct": 21.818,
+     "heightPct": 10.042,
+     "rotation": 0,
+     "opacity": 0.6,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 96,
+      "h": 96,
+      "radius": 48,
+      "fill": "#c9c66a",
+      "blur": 8,
+      "inset": 24
+     }
+    },
+    {
+     "id": "tpl-s47",
+     "assetId": "shape:Bokeh3",
+     "name": "Bokeh3",
+     "xPct": 57.955,
+     "yPct": 16.736,
+     "widthPct": 27.273,
+     "heightPct": 12.552,
+     "rotation": 0,
+     "opacity": 0.5,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 120,
+      "h": 120,
+      "radius": 60,
+      "fill": "#bdb8a0",
+      "blur": 10,
+      "inset": 30
+     }
+    },
+    {
+     "id": "tpl-s48",
+     "assetId": "shape:Bokeh4",
+     "name": "Bokeh4",
+     "xPct": -12.273,
+     "yPct": -4.603,
+     "widthPct": 42.727,
+     "heightPct": 19.665,
+     "rotation": 0,
+     "opacity": 0.5,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 188,
+      "h": 188,
+      "radius": 94,
+      "fill": "#3d6a66",
+      "blur": 20,
+      "inset": 60
+     }
+    },
+    {
+     "id": "tpl-s49",
+     "assetId": "shape:Sign glow",
+     "name": "Sign glow",
+     "xPct": 0.0,
+     "yPct": -5.439,
+     "widthPct": 54.545,
+     "heightPct": 17.155,
+     "rotation": 0,
+     "opacity": 0.6,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 240,
+      "h": 164,
+      "radius": 82,
+      "fill": "#2f5560",
+      "blur": 20,
+      "inset": 60
+     }
+    }
+   ],
+   "deviceOne": {
+    "visible": false
+   }
+  },
+  {
+   "title": "Find love in...",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#f6ebcf"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t57",
+     "xPct": 15.909,
+     "yPct": 9.979,
+     "widthPct": 68.182,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Find",
+      "color": "#0d0d0d",
+      "size": 169.4,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.0,
+      "charSpacing": -39
+     }
+    },
+    {
+     "id": "tpl-t58",
+     "xPct": 13.636,
+     "yPct": 19.503,
+     "widthPct": 72.727,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "love in...",
+      "color": "#0d0d0d",
+      "size": 152.2,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.0,
+      "charSpacing": -36
+     }
+    },
+    {
+     "id": "tpl-t60",
+     "xPct": 9.007,
+     "yPct": 57.58,
+     "widthPct": 13.046,
+     "rotation": -0.5,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Gender",
+     "style": {
+      "text": "Gender",
+      "color": "#111111",
+      "size": 34.4,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t61",
+     "xPct": 9.048,
+     "yPct": 59.762,
+     "widthPct": 7.955,
+     "rotation": -0.5,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Men",
+     "style": {
+      "text": "Men",
+      "color": "#8a8780",
+      "size": 31.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t63",
+     "xPct": 9.122,
+     "yPct": 63.646,
+     "widthPct": 17.555,
+     "rotation": -0.5,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Age range",
+     "style": {
+      "text": "Age range",
+      "color": "#111111",
+      "size": 34.4,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t64",
+     "xPct": 9.163,
+     "yPct": 65.829,
+     "widthPct": 25.358,
+     "rotation": -0.5,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "18 - 44 years old",
+     "style": {
+      "text": "18 - 44 years old",
+      "color": "#8a8780",
+      "size": 31.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s55",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 0.636,
+     "yPct": 30.521,
+     "widthPct": 100.682,
+     "heightPct": 87.433,
+     "rotation": 2,
+     "opacity": 0.14,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 443,
+      "h": 835.86,
+      "radius": 107.6,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s56",
+     "assetId": "shape:Title pill",
+     "name": "Title pill",
+     "xPct": 13.636,
+     "yPct": 6.485,
+     "widthPct": 73.182,
+     "heightPct": 22.803,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 6,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 322,
+      "h": 218,
+      "radius": 45,
+      "fill": "#dcb8e6",
+      "stroke": "#0a0a0a",
+      "strokeWidth": 5,
+      "inset": 2.5
+     }
+    },
+    {
+     "id": "tpl-s59",
+     "assetId": "shape:Filter card",
+     "name": "Filter card",
+     "xPct": 4.091,
+     "yPct": 55.544,
+     "widthPct": 90.909,
+     "heightPct": 12.762,
+     "rotation": -0.5,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 400,
+      "h": 122,
+      "radius": 32,
+      "fill": "#efece5",
+      "stroke": "#050505",
+      "strokeWidth": 9,
+      "inset": 4.5
+     }
+    },
+    {
+     "id": "tpl-s62",
+     "assetId": "shape:Divider",
+     "name": "Divider",
+     "xPct": 9.098,
+     "yPct": 62.238,
+     "widthPct": 80.909,
+     "heightPct": 0.157,
+     "rotation": -0.5,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 356,
+      "h": 1.5,
+      "radius": 0,
+      "fill": "#d6d2c8"
+     }
+    },
+    {
+     "id": "tpl-s65",
+     "assetId": "shape:Chevron",
+     "name": "Chevron",
+     "xPct": 84.028,
+     "yPct": 58.121,
+     "widthPct": 3.423,
+     "heightPct": 2.301,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 15.06,
+      "h": 22.0,
+      "vx": 369.72,
+      "vy": 555.64,
+      "path": "M373.72,559.64L380.78,566.58L373.85,573.64",
+      "stroke": "#b5b2ab",
+      "strokeWidth": 3,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s66",
+     "assetId": "shape:Chevron",
+     "name": "Chevron",
+     "xPct": 84.145,
+     "yPct": 64.293,
+     "widthPct": 3.423,
+     "heightPct": 2.301,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 15.06,
+      "h": 22.0,
+      "vx": 370.24,
+      "vy": 614.64,
+      "path": "M374.24,618.64L381.3,625.58L374.36,632.64",
+      "stroke": "#b5b2ab",
+      "strokeWidth": 3,
+      "strokeLinejoin": "round"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 56.06,
+    "x": 1.28,
+    "y": 31.01,
+    "rotation": 2,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#050505",
+    "borderColor": "#050505",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "the best places",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#100d0a"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t68",
+     "xPct": 0.0,
+     "yPct": 7.041,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "...the best",
+      "color": "#fbf6ea",
+      "size": 149.7,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.0,
+      "charSpacing": -33
+     }
+    },
+    {
+     "id": "tpl-t69",
+     "xPct": 0.0,
+     "yPct": 16.051,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "places",
+      "color": "#fbf6ea",
+      "size": 152.2,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.0,
+      "charSpacing": -36
+     }
+    },
+    {
+     "id": "tpl-t73",
+     "xPct": 27.273,
+     "yPct": 56.927,
+     "widthPct": 45.455,
+     "rotation": 1.5,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Recent crossings",
+     "style": {
+      "text": "Recent\ncrossings",
+      "color": "#ffffff",
+      "size": 49.1,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.35
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s67",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 0.239,
+     "yPct": 23.314,
+     "widthPct": 100.682,
+     "heightPct": 87.433,
+     "rotation": -4.5,
+     "opacity": 0.1,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 443,
+      "h": 835.86,
+      "radius": 107.6,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s70",
+     "assetId": "shape:Photo card",
+     "name": "Photo card",
+     "xPct": 5.682,
+     "yPct": 39.226,
+     "widthPct": 93.182,
+     "heightPct": 41.841,
+     "rotation": 1.5,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 410,
+      "h": 400,
+      "radius": 42,
+      "gradient": [
+       [
+        0,
+        "#1d4d7a"
+       ],
+       [
+        1,
+        "#173f66"
+       ]
+      ],
+      "stroke": "#fbf7ef",
+      "strokeWidth": 6,
+      "inset": 3.0
+     }
+    },
+    {
+     "id": "tpl-s71",
+     "assetId": "shape:Red jacket",
+     "name": "Red jacket",
+     "xPct": 54.419,
+     "yPct": 45.775,
+     "widthPct": 40.909,
+     "heightPct": 33.473,
+     "rotation": 1.5,
+     "opacity": 0.9,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 180,
+      "h": 320,
+      "radius": 34,
+      "fill": "#c4362d"
+     }
+    },
+    {
+     "id": "tpl-s72",
+     "assetId": "shape:Pattern",
+     "name": "Pattern",
+     "xPct": 29.116,
+     "yPct": 40.321,
+     "widthPct": 20.455,
+     "heightPct": 14.644,
+     "rotation": 1.5,
+     "opacity": 0.6,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 90,
+      "h": 140,
+      "radius": 16,
+      "fill": "#a9b0c4"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 56.06,
+    "x": 0.76,
+    "y": 21.54,
+    "rotation": -4.5,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#fbf7ef",
+    "borderColor": "#fbf7ef",
+    "zIndex": 10
+   }
+  }
+ ],
+ "designHeight": 2347,
+ "textColor": "#111111"
+}

@@ -1,0 +1,2143 @@
+{
+ "version": 1,
+ "id": "cooking-app",
+ "name": "Cooking app",
+ "category": "food-and-drink",
+ "description": "Showcase your cooking app with our premium template. Display recipes, cooking instructions, and meal planning features in an appetizing design that inspires users to explore culinary creativity.",
+ "devices": [
+  {
+   "deviceId": "apple-iphone-16-pro-max",
+   "label": "apple-iphone-16-pro-max"
+  },
+  {
+   "deviceId": "apple-iphone-14-plus",
+   "label": "apple-iphone-14-plus"
+  },
+  {
+   "deviceId": "samsung-galaxy-s21-ultra",
+   "label": "samsung-galaxy-s21-ultra"
+  }
+ ],
+ "layout": "single-no-text",
+ "background": {
+  "type": "gradient",
+  "value": "linear-gradient(180deg, #efefed 0%, #f0f0ee 60%, #ececea 100%)"
+ },
+ "panoramic": false,
+ "columnCount": 8,
+ "titles": [
+  "Your Favorite Cooking Book App",
+  "Discover thousands of recipes.",
+  "New recipes every week",
+  "Search for cooking time",
+  "Learn the basics of cooking",
+  "Receive notifications",
+  "Receive notifications",
+  "Best Seller Cooking Recipes"
+ ],
+ "subtitles": [
+  "Your favorite cooking book app",
+  "Browse thousands of recipes",
+  "New recipes every week",
+  "Search recipes by cooking time",
+  "Learn the basics of cooking",
+  "Receive notifications",
+  "Receive notifications",
+  "Best seller cooking recipes"
+ ],
+ "pages": [
+  {
+   "title": "Your Favorite Cooking Book App",
+   "subtitle": "Your favorite cooking book app",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #efefed 0%, #f0f0ee 60%, #ececea 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t14",
+     "xPct": 9.773,
+     "yPct": 5.97,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title 1",
+     "style": {
+      "text": "Your\nFavorite",
+      "color": "#0a0a0a",
+      "size": 147.3,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.07
+     }
+    },
+    {
+     "id": "tpl-t15",
+     "xPct": 9.773,
+     "yPct": 19.359,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title 2",
+     "style": {
+      "text": "Cooking\nBook App",
+      "color": "#d14a35",
+      "size": 147.3,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.07
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s1",
+     "assetId": "shape:Bowl shadow",
+     "name": "Bowl shadow",
+     "xPct": 7.727,
+     "yPct": 44.351,
+     "widthPct": 116.364,
+     "heightPct": 53.556,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 512,
+      "h": 512,
+      "fill": "#d9d7d2",
+      "blur": 14
+     }
+    },
+    {
+     "id": "tpl-s2",
+     "assetId": "shape:Bowl",
+     "name": "Bowl",
+     "xPct": 9.091,
+     "yPct": 44.77,
+     "widthPct": 113.636,
+     "heightPct": 52.301,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 500,
+      "h": 500,
+      "fill": "#f4f2ee"
+     }
+    },
+    {
+     "id": "tpl-s3",
+     "assetId": "shape:Bowl inner",
+     "name": "Bowl inner",
+     "xPct": 19.318,
+     "yPct": 50.732,
+     "widthPct": 93.182,
+     "heightPct": 42.887,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 410,
+      "h": 410,
+      "fill": "#f1eee9"
+     }
+    },
+    {
+     "id": "tpl-s4",
+     "assetId": "shape:Food base",
+     "name": "Food base",
+     "xPct": 34.091,
+     "yPct": 56.485,
+     "widthPct": 54.545,
+     "heightPct": 25.105,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 6,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 240,
+      "h": 240,
+      "fill": "#f1dc9c",
+      "blur": 6
+     }
+    },
+    {
+     "id": "tpl-s5",
+     "assetId": "shape:Food",
+     "name": "Food",
+     "xPct": 40.0,
+     "yPct": 62.134,
+     "widthPct": 20.909,
+     "heightPct": 9.623,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 7,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 92,
+      "h": 92,
+      "fill": "#c8621f",
+      "blur": 3
+     }
+    },
+    {
+     "id": "tpl-s6",
+     "assetId": "shape:Food",
+     "name": "Food",
+     "xPct": 52.727,
+     "yPct": 64.331,
+     "widthPct": 13.636,
+     "heightPct": 6.276,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 7,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 60,
+      "h": 60,
+      "fill": "#e9b24a",
+      "blur": 3
+     }
+    },
+    {
+     "id": "tpl-s7",
+     "assetId": "shape:Food",
+     "name": "Food",
+     "xPct": 67.045,
+     "yPct": 61.715,
+     "widthPct": 13.636,
+     "heightPct": 6.276,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 7,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 60,
+      "h": 60,
+      "fill": "#5a2e22",
+      "blur": 3
+     }
+    },
+    {
+     "id": "tpl-s8",
+     "assetId": "shape:Food",
+     "name": "Food",
+     "xPct": 71.364,
+     "yPct": 67.155,
+     "widthPct": 11.818,
+     "heightPct": 5.439,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 7,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 52,
+      "h": 52,
+      "fill": "#6b3a26",
+      "blur": 3
+     }
+    },
+    {
+     "id": "tpl-s9",
+     "assetId": "shape:Food",
+     "name": "Food",
+     "xPct": 60.227,
+     "yPct": 75.314,
+     "widthPct": 13.636,
+     "heightPct": 6.276,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 7,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 60,
+      "h": 60,
+      "fill": "#ecd28a",
+      "blur": 3
+     }
+    },
+    {
+     "id": "tpl-s10",
+     "assetId": "shape:Food",
+     "name": "Food",
+     "xPct": 39.091,
+     "yPct": 71.862,
+     "widthPct": 12.727,
+     "heightPct": 5.858,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 7,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 56,
+      "h": 56,
+      "fill": "#f2dc8e",
+      "blur": 3
+     }
+    },
+    {
+     "id": "tpl-s11",
+     "assetId": "shape:Food",
+     "name": "Food",
+     "xPct": 77.5,
+     "yPct": 64.435,
+     "widthPct": 10.909,
+     "heightPct": 5.021,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 7,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 48,
+      "h": 48,
+      "fill": "#eed58c",
+      "blur": 3
+     }
+    },
+    {
+     "id": "tpl-s12",
+     "assetId": "shape:Herb",
+     "name": "Herb",
+     "xPct": 35.0,
+     "yPct": 72.071,
+     "widthPct": 16.364,
+     "heightPct": 8.054,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 8,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 72,
+      "h": 77,
+      "vx": 154,
+      "vy": 689,
+      "path": "M155,690C170,720 190,750 215,765L225,740C200,720 180,695 155,690Z",
+      "fill": "#3d7a2a"
+     }
+    },
+    {
+     "id": "tpl-s13",
+     "assetId": "shape:Herb 2",
+     "name": "Herb 2",
+     "xPct": 61.136,
+     "yPct": 56.904,
+     "widthPct": 11.818,
+     "heightPct": 5.753,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 8,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 52,
+      "h": 55,
+      "vx": 269,
+      "vy": 544,
+      "path": "M270,545C285,570 300,590 320,598L300,550Z",
+      "fill": "#4c8a30"
+     }
+    }
+   ],
+   "deviceOne": {
+    "visible": false
+   }
+  },
+  {
+   "title": "Discover thousands of recipes.",
+   "subtitle": "Browse thousands of recipes",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#d14a35"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t19",
+     "xPct": 7.273,
+     "yPct": 66.971,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Card text",
+     "style": {
+      "text": "Make your Recipe Box the\norganizing principle for your\nkitchen, accessible at home or on\nthe go.",
+      "color": "#222222",
+      "size": 55.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.64
+     }
+    },
+    {
+     "id": "tpl-t20",
+     "xPct": 0.0,
+     "yPct": 6.031,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Discover\nthousands of\nrecipes.",
+      "color": "#ffffff",
+      "size": 110.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.11
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s16",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -3.636,
+     "yPct": 24.686,
+     "widthPct": 107.273,
+     "heightPct": 94.024,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 472,
+      "h": 898.87,
+      "radius": 112.24,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s17",
+     "assetId": "shape:Card shadow",
+     "name": "Card shadow",
+     "xPct": -1.364,
+     "yPct": 60.983,
+     "widthPct": 102.727,
+     "heightPct": 27.929,
+     "rotation": 0,
+     "opacity": 0.28,
+     "zIndex": 14,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 452,
+      "h": 267,
+      "radius": 44,
+      "fill": "#000000",
+      "blur": 10,
+      "inset": 24
+     }
+    },
+    {
+     "id": "tpl-s18",
+     "assetId": "shape:Card",
+     "name": "Card",
+     "xPct": 4.091,
+     "yPct": 63.494,
+     "widthPct": 91.818,
+     "heightPct": 22.908,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 404,
+      "h": 219,
+      "radius": 20,
+      "fill": "#ffffff"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 60.92,
+    "x": 0.0,
+    "y": 25.47,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "New recipes every week",
+   "subtitle": "New recipes every week",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#f3f3f0"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t44",
+     "xPct": 0.0,
+     "yPct": 44.552,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "New recipes\nevery week",
+      "color": "#d14a35",
+      "size": 108.0,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.14
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s21",
+     "assetId": "shape:Tile 1",
+     "name": "Tile 1",
+     "xPct": 10.227,
+     "yPct": 4.498,
+     "widthPct": 79.545,
+     "heightPct": 36.715,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 350,
+      "h": 351,
+      "radius": 40,
+      "fill": "#dfe0dd"
+     }
+    },
+    {
+     "id": "tpl-s22",
+     "assetId": "shape:Plate shade",
+     "name": "Plate shade",
+     "xPct": 15.909,
+     "yPct": 7.845,
+     "widthPct": 69.091,
+     "heightPct": 31.799,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 304,
+      "h": 304,
+      "fill": "#c9c9c6",
+      "blur": 8
+     }
+    },
+    {
+     "id": "tpl-s23",
+     "assetId": "shape:Plate",
+     "name": "Plate",
+     "xPct": 15.455,
+     "yPct": 8.159,
+     "widthPct": 67.273,
+     "heightPct": 30.962,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 296,
+      "h": 296,
+      "fill": "#ecebe7"
+     }
+    },
+    {
+     "id": "tpl-s24",
+     "assetId": "shape:Pasta",
+     "name": "Pasta",
+     "xPct": 29.545,
+     "yPct": 14.017,
+     "widthPct": 41.818,
+     "heightPct": 19.247,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 6,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 184,
+      "h": 184,
+      "fill": "#f0d590",
+      "blur": 3
+     }
+    },
+    {
+     "id": "tpl-s25",
+     "assetId": "shape:Pasta 2",
+     "name": "Pasta 2",
+     "xPct": 34.773,
+     "yPct": 18.096,
+     "widthPct": 28.182,
+     "heightPct": 12.971,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 7,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 124,
+      "h": 124,
+      "fill": "#e6b968",
+      "blur": 3
+     }
+    },
+    {
+     "id": "tpl-s26",
+     "assetId": "shape:Scallop",
+     "name": "Scallop",
+     "xPct": 42.727,
+     "yPct": 17.05,
+     "widthPct": 12.273,
+     "heightPct": 5.649,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 8,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 54,
+      "h": 54,
+      "fill": "#c4611f",
+      "blur": 2
+     }
+    },
+    {
+     "id": "tpl-s27",
+     "assetId": "shape:Scallop",
+     "name": "Scallop",
+     "xPct": 36.818,
+     "yPct": 21.13,
+     "widthPct": 13.636,
+     "heightPct": 6.276,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 8,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 60,
+      "h": 60,
+      "fill": "#c4611f",
+      "blur": 2
+     }
+    },
+    {
+     "id": "tpl-s28",
+     "assetId": "shape:Scallop",
+     "name": "Scallop",
+     "xPct": 50.682,
+     "yPct": 21.025,
+     "widthPct": 12.273,
+     "heightPct": 5.649,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 8,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 54,
+      "h": 54,
+      "fill": "#c4611f",
+      "blur": 2
+     }
+    },
+    {
+     "id": "tpl-s29",
+     "assetId": "shape:Scallop",
+     "name": "Scallop",
+     "xPct": 49.091,
+     "yPct": 17.573,
+     "widthPct": 10.0,
+     "heightPct": 4.603,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 8,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 44,
+      "h": 44,
+      "fill": "#c4611f",
+      "blur": 2
+     }
+    },
+    {
+     "id": "tpl-s30",
+     "assetId": "shape:Rosemary",
+     "name": "Rosemary",
+     "xPct": 55.909,
+     "yPct": 16.318,
+     "widthPct": 15.455,
+     "heightPct": 3.975,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 9,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 68,
+      "h": 38,
+      "vx": 246,
+      "vy": 156,
+      "path": "M250,190L310,160",
+      "stroke": "#5b6a3b",
+      "strokeWidth": 3,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s31",
+     "assetId": "shape:Tile 2",
+     "name": "Tile 2",
+     "xPct": 10.0,
+     "yPct": 58.682,
+     "widthPct": 79.773,
+     "heightPct": 52.301,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 351,
+      "h": 500,
+      "radius": 40,
+      "fill": "#c9ccd4"
+     }
+    },
+    {
+     "id": "tpl-s32",
+     "assetId": "shape:Slab",
+     "name": "Slab",
+     "xPct": 15.682,
+     "yPct": 62.448,
+     "widthPct": 34.091,
+     "heightPct": 21.757,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 150,
+      "h": 208,
+      "radius": 10,
+      "fill": "#6b4a2a"
+     }
+    },
+    {
+     "id": "tpl-s33",
+     "assetId": "shape:Slab",
+     "name": "Slab",
+     "xPct": 52.727,
+     "yPct": 61.925,
+     "widthPct": 37.045,
+     "heightPct": 22.49,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 163,
+      "h": 215,
+      "radius": 10,
+      "fill": "#a37a45"
+     }
+    },
+    {
+     "id": "tpl-s34",
+     "assetId": "shape:Slab",
+     "name": "Slab",
+     "xPct": 12.5,
+     "yPct": 87.343,
+     "widthPct": 37.5,
+     "heightPct": 25.105,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 165,
+      "h": 240,
+      "radius": 10,
+      "fill": "#9a7040"
+     }
+    },
+    {
+     "id": "tpl-s35",
+     "assetId": "shape:Slab",
+     "name": "Slab",
+     "xPct": 50.455,
+     "yPct": 84.728,
+     "widthPct": 39.318,
+     "heightPct": 27.197,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 173,
+      "h": 260,
+      "radius": 10,
+      "fill": "#8a6236"
+     }
+    },
+    {
+     "id": "tpl-s36",
+     "assetId": "shape:Squash",
+     "name": "Squash",
+     "xPct": 30.227,
+     "yPct": 62.552,
+     "widthPct": 19.091,
+     "heightPct": 8.787,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 84,
+      "h": 84,
+      "fill": "#e9832f",
+      "blur": 3
+     }
+    },
+    {
+     "id": "tpl-s37",
+     "assetId": "shape:Squash",
+     "name": "Squash",
+     "xPct": 17.273,
+     "yPct": 66.527,
+     "widthPct": 15.455,
+     "heightPct": 7.113,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 68,
+      "h": 68,
+      "fill": "#e9832f",
+      "blur": 3
+     }
+    },
+    {
+     "id": "tpl-s38",
+     "assetId": "shape:Squash",
+     "name": "Squash",
+     "xPct": 19.318,
+     "yPct": 72.176,
+     "widthPct": 25.0,
+     "heightPct": 11.506,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 110,
+      "h": 110,
+      "fill": "#e9832f",
+      "blur": 3
+     }
+    },
+    {
+     "id": "tpl-s39",
+     "assetId": "shape:Squash",
+     "name": "Squash",
+     "xPct": 57.955,
+     "yPct": 64.331,
+     "widthPct": 20.455,
+     "heightPct": 9.414,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 90,
+      "h": 90,
+      "fill": "#e9832f",
+      "blur": 3
+     }
+    },
+    {
+     "id": "tpl-s40",
+     "assetId": "shape:Squash",
+     "name": "Squash",
+     "xPct": 65.909,
+     "yPct": 73.745,
+     "widthPct": 18.182,
+     "heightPct": 8.368,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 80,
+      "h": 80,
+      "fill": "#e9832f",
+      "blur": 3
+     }
+    },
+    {
+     "id": "tpl-s41",
+     "assetId": "shape:Squash",
+     "name": "Squash",
+     "xPct": 12.5,
+     "yPct": 87.343,
+     "widthPct": 20.455,
+     "heightPct": 9.414,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 90,
+      "h": 90,
+      "fill": "#e9832f",
+      "blur": 3
+     }
+    },
+    {
+     "id": "tpl-s42",
+     "assetId": "shape:Squash",
+     "name": "Squash",
+     "xPct": 56.818,
+     "yPct": 85.774,
+     "widthPct": 22.727,
+     "heightPct": 10.46,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 100,
+      "h": 100,
+      "fill": "#e9832f",
+      "blur": 3
+     }
+    },
+    {
+     "id": "tpl-s43",
+     "assetId": "shape:Squash",
+     "name": "Squash",
+     "xPct": 30.0,
+     "yPct": 91.736,
+     "widthPct": 17.273,
+     "heightPct": 7.95,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 76,
+      "h": 76,
+      "fill": "#e9832f",
+      "blur": 3
+     }
+    }
+   ],
+   "deviceOne": {
+    "visible": false
+   }
+  },
+  {
+   "title": "Search for cooking time",
+   "subtitle": "Search recipes by cooking time",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#d14a35"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t46",
+     "xPct": 0.0,
+     "yPct": 8.31,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Search for\ncooking time",
+      "color": "#ffffff",
+      "size": 109.2,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.14
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s45",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -3.636,
+     "yPct": 24.372,
+     "widthPct": 107.273,
+     "heightPct": 94.024,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 472,
+      "h": 898.87,
+      "radius": 112.24,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 60.92,
+    "x": 0.0,
+    "y": 25.09,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Learn the basics of cooking",
+   "subtitle": "Learn the basics of cooking",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #2b2e33 0%, #1c1b1a 35%, #0d0c0b 72%, #000000 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t66",
+     "xPct": 0.0,
+     "yPct": 72.126,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Learn the\nbasics of\ncooking",
+      "color": "#ffffff",
+      "size": 157.1,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s47",
+     "assetId": "shape:Hand L",
+     "name": "Hand L",
+     "xPct": -14.773,
+     "yPct": 1.046,
+     "widthPct": 50.0,
+     "heightPct": 23.013,
+     "rotation": 0,
+     "opacity": 0.8,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 220,
+      "h": 220,
+      "fill": "#b58876"
+     }
+    },
+    {
+     "id": "tpl-s48",
+     "assetId": "shape:Hand L 2",
+     "name": "Hand L 2",
+     "xPct": -4.545,
+     "yPct": 4.184,
+     "widthPct": 27.273,
+     "heightPct": 25.105,
+     "rotation": 0,
+     "opacity": 0.8,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 120,
+      "h": 240,
+      "radius": 50,
+      "fill": "#b58876"
+     }
+    },
+    {
+     "id": "tpl-s49",
+     "assetId": "shape:Hand R",
+     "name": "Hand R",
+     "xPct": 64.773,
+     "yPct": -2.092,
+     "widthPct": 38.636,
+     "heightPct": 36.611,
+     "rotation": 0,
+     "opacity": 0.75,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 170,
+      "h": 350,
+      "radius": 70,
+      "fill": "#a06f5c"
+     }
+    },
+    {
+     "id": "tpl-s50",
+     "assetId": "shape:Jar",
+     "name": "Jar",
+     "xPct": 21.591,
+     "yPct": 9.414,
+     "widthPct": 45.455,
+     "heightPct": 20.921,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 200,
+      "h": 200,
+      "fill": "#8f7420"
+     }
+    },
+    {
+     "id": "tpl-s51",
+     "assetId": "shape:Oil",
+     "name": "Oil",
+     "xPct": 29.545,
+     "yPct": 13.598,
+     "widthPct": 31.818,
+     "heightPct": 14.644,
+     "rotation": 0,
+     "opacity": 0.85,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 140,
+      "h": 140,
+      "fill": "#b9992a"
+     }
+    },
+    {
+     "id": "tpl-s52",
+     "assetId": "shape:Pan",
+     "name": "Pan",
+     "xPct": 0.0,
+     "yPct": 34.519,
+     "widthPct": 100.0,
+     "heightPct": 39.749,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 440,
+      "h": 380,
+      "radius": 60,
+      "fill": "#181a1c"
+     }
+    },
+    {
+     "id": "tpl-s53",
+     "assetId": "shape:Oil stream",
+     "name": "Oil stream",
+     "xPct": 43.182,
+     "yPct": 31.904,
+     "widthPct": 5.682,
+     "heightPct": 32.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 6,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 25,
+      "h": 312,
+      "vx": 190,
+      "vy": 305,
+      "path": "M205,310C210,380 195,500 197,612",
+      "stroke": "#d9c25a",
+      "strokeWidth": 4,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s54",
+     "assetId": "shape:Slice",
+     "name": "Slice",
+     "xPct": 21.591,
+     "yPct": 45.293,
+     "widthPct": 25.0,
+     "heightPct": 4.603,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 110,
+      "h": 44.0,
+      "radius": 22.0,
+      "fill": "#a89a48",
+      "blur": 2
+     }
+    },
+    {
+     "id": "tpl-s55",
+     "assetId": "shape:Slice",
+     "name": "Slice",
+     "xPct": 52.273,
+     "yPct": 46.548,
+     "widthPct": 22.727,
+     "heightPct": 4.184,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 100,
+      "h": 40.0,
+      "radius": 20.0,
+      "fill": "#b3a04e",
+      "blur": 2
+     }
+    },
+    {
+     "id": "tpl-s56",
+     "assetId": "shape:Slice",
+     "name": "Slice",
+     "xPct": -1.136,
+     "yPct": 47.071,
+     "widthPct": 22.727,
+     "heightPct": 4.184,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 100,
+      "h": 40.0,
+      "radius": 20.0,
+      "fill": "#9c8f45",
+      "blur": 2
+     }
+    },
+    {
+     "id": "tpl-s57",
+     "assetId": "shape:Slice",
+     "name": "Slice",
+     "xPct": 31.818,
+     "yPct": 50.628,
+     "widthPct": 29.545,
+     "heightPct": 5.439,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 130,
+      "h": 52.0,
+      "radius": 26.0,
+      "fill": "#d3bf58",
+      "blur": 2
+     }
+    },
+    {
+     "id": "tpl-s58",
+     "assetId": "shape:Slice",
+     "name": "Slice",
+     "xPct": 0.0,
+     "yPct": 56.067,
+     "widthPct": 27.273,
+     "heightPct": 5.021,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 120,
+      "h": 48.0,
+      "radius": 24.0,
+      "fill": "#cfc59e",
+      "blur": 2
+     }
+    },
+    {
+     "id": "tpl-s59",
+     "assetId": "shape:Slice",
+     "name": "Slice",
+     "xPct": 48.182,
+     "yPct": 57.824,
+     "widthPct": 30.909,
+     "heightPct": 5.69,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 136,
+      "h": 54.4,
+      "radius": 27.2,
+      "fill": "#c9b660",
+      "blur": 2
+     }
+    },
+    {
+     "id": "tpl-s60",
+     "assetId": "shape:Slice",
+     "name": "Slice",
+     "xPct": 79.091,
+     "yPct": 61.213,
+     "widthPct": 28.182,
+     "heightPct": 5.188,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 124,
+      "h": 49.6,
+      "radius": 24.8,
+      "fill": "#b19d48",
+      "blur": 2
+     }
+    },
+    {
+     "id": "tpl-s61",
+     "assetId": "shape:Slice",
+     "name": "Slice",
+     "xPct": 10.227,
+     "yPct": 63.075,
+     "widthPct": 25.0,
+     "heightPct": 4.603,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 110,
+      "h": 44.0,
+      "radius": 22.0,
+      "fill": "#b9a24d",
+      "blur": 2
+     }
+    },
+    {
+     "id": "tpl-s62",
+     "assetId": "shape:Slice",
+     "name": "Slice",
+     "xPct": 29.545,
+     "yPct": 64.435,
+     "widthPct": 27.273,
+     "heightPct": 5.021,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 120,
+      "h": 48.0,
+      "radius": 24.0,
+      "fill": "#b8a24a",
+      "blur": 2
+     }
+    },
+    {
+     "id": "tpl-s63",
+     "assetId": "shape:Slice",
+     "name": "Slice",
+     "xPct": 67.045,
+     "yPct": 50.0,
+     "widthPct": 25.0,
+     "heightPct": 4.603,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 110,
+      "h": 44.0,
+      "radius": 22.0,
+      "fill": "#a89546",
+      "blur": 2
+     }
+    },
+    {
+     "id": "tpl-s64",
+     "assetId": "shape:Tomato",
+     "name": "Tomato",
+     "xPct": 51.136,
+     "yPct": 41.318,
+     "widthPct": 9.091,
+     "heightPct": 4.184,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 40,
+      "h": 40,
+      "fill": "#a1281c",
+      "blur": 3
+     }
+    },
+    {
+     "id": "tpl-s65",
+     "assetId": "shape:Fade",
+     "name": "Fade",
+     "xPct": 0.0,
+     "yPct": 72.176,
+     "widthPct": 100.0,
+     "heightPct": 31.381,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 6,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 440,
+      "h": 300,
+      "radius": 0,
+      "fill": "#000000",
+      "gradient": [
+       [
+        0,
+        "#00000000"
+       ],
+       [
+        0.3,
+        "#000000"
+       ],
+       [
+        1,
+        "#000000"
+       ]
+      ]
+     }
+    }
+   ],
+   "deviceOne": {
+    "visible": false
+   }
+  },
+  {
+   "title": "Receive notifications",
+   "subtitle": "Receive notifications",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#d14a35"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t70",
+     "xPct": 0.0,
+     "yPct": 8.31,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Receive\nnotifications",
+      "color": "#ffffff",
+      "size": 109.2,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.14
+     }
+    },
+    {
+     "id": "tpl-t71",
+     "xPct": 17.5,
+     "yPct": 44.101,
+     "widthPct": 77.273,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Card text",
+     "style": {
+      "text": "Your payment will be charged to your\niTunes account at confirmation of\npurchase. Your subscription will\nautomatically renew each month or year\n24-hours before the end of the current\nperiod, and your credit card will be\ncharged through your iTunes account\nunless auto-renew is turned off at least\n24-hours before the end of the current\nperiod. You can turn off auto-renew at\nany time from your iTunes account\nsettings.\n\nAt the end of purchase via iTunes, you\nwill have unlimited access on this\ndevice. To activate full subscription\nbenefits on cooking.nytimes.com, you\nwill need to set-up a NYTimes.com\nregistration. As stated in the iTunes\nTerms of Services, there are no refunds\nand you may cancel auto-renewal at\nany time. All sales are final. Prices\nshown are in U.S. dollars. Other\nrestrictions apply.",
+      "color": "#7c7c7c",
+      "size": 34.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.3
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s67",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -3.636,
+     "yPct": 24.372,
+     "widthPct": 107.273,
+     "heightPct": 94.024,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 472,
+      "h": 898.87,
+      "radius": 112.24,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s68",
+     "assetId": "shape:Card shadow",
+     "name": "Card shadow",
+     "xPct": -2.045,
+     "yPct": 40.167,
+     "widthPct": 104.091,
+     "heightPct": 53.661,
+     "rotation": 0,
+     "opacity": 0.3,
+     "zIndex": 14,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 458,
+      "h": 513,
+      "radius": 46,
+      "fill": "#000000",
+      "blur": 10,
+      "inset": 24
+     }
+    },
+    {
+     "id": "tpl-s69",
+     "assetId": "shape:Card",
+     "name": "Card",
+     "xPct": 3.409,
+     "yPct": 42.678,
+     "widthPct": 93.182,
+     "heightPct": 48.64,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 410,
+      "h": 465,
+      "radius": 22,
+      "fill": "#ffffff"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 60.92,
+    "x": 0.0,
+    "y": 25.09,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Receive notifications",
+   "subtitle": "Receive notifications",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#f3f2f0"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t76",
+     "xPct": 0.0,
+     "yPct": 8.31,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Receive\nnotifications",
+      "color": "#d14a35",
+      "size": 109.2,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.14
+     }
+    },
+    {
+     "id": "tpl-t77",
+     "xPct": 20.455,
+     "yPct": 62.034,
+     "widthPct": 59.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Alert title",
+     "style": {
+      "text": "“NYT Cooking” Would Like to\nSend You Notifications",
+      "color": "#111111",
+      "size": 36.8,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.4
+     }
+    },
+    {
+     "id": "tpl-t78",
+     "xPct": 20.455,
+     "yPct": 66.611,
+     "widthPct": 59.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Alert body",
+     "style": {
+      "text": "Notifications may include alerts,\nsounds and icon badges. These can be\nconfigured in Settings.",
+      "color": "#222222",
+      "size": 30.4,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.24
+     }
+    },
+    {
+     "id": "tpl-t79",
+     "xPct": 20.455,
+     "yPct": 75.109,
+     "widthPct": 29.545,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Deny",
+     "style": {
+      "text": "Don't Allow",
+      "color": "#3b78e0",
+      "size": 36.8,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t80",
+     "xPct": 50.0,
+     "yPct": 75.109,
+     "widthPct": 29.545,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Allow",
+     "style": {
+      "text": "Allow",
+      "color": "#3b78e0",
+      "size": 36.8,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s72",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -3.182,
+     "yPct": 24.477,
+     "widthPct": 106.364,
+     "heightPct": 93.115,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 468,
+      "h": 890.18,
+      "radius": 111.6,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s73",
+     "assetId": "shape:Alert shadow",
+     "name": "Alert shadow",
+     "xPct": 16.818,
+     "yPct": 58.473,
+     "widthPct": 66.364,
+     "heightPct": 21.234,
+     "rotation": 0,
+     "opacity": 0.2,
+     "zIndex": 14,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 292,
+      "h": 203,
+      "radius": 30,
+      "fill": "#000000",
+      "blur": 8,
+      "inset": 16
+     }
+    },
+    {
+     "id": "tpl-s74",
+     "assetId": "shape:Alert",
+     "name": "Alert",
+     "xPct": 20.455,
+     "yPct": 60.146,
+     "widthPct": 59.091,
+     "heightPct": 17.887,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 260,
+      "h": 171,
+      "radius": 14,
+      "fill": "#f1e8dc"
+     }
+    },
+    {
+     "id": "tpl-s75",
+     "assetId": "shape:Divider",
+     "name": "Divider",
+     "xPct": 20.455,
+     "yPct": 73.431,
+     "widthPct": 59.091,
+     "heightPct": 0.105,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 260,
+      "h": 1,
+      "radius": 0,
+      "fill": "#d6cfc6"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 60.25,
+    "x": 0.0,
+    "y": 24.94,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Best Seller Cooking Recipes",
+   "subtitle": "Best seller cooking recipes",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #e8e7e2 0%, #eeece7 45%, #efece6 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t94",
+     "xPct": 9.773,
+     "yPct": 6.075,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Best\nSeller\nCooking\nRecipes",
+      "color": "#0a0a0a",
+      "size": 147.3,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.07
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s81",
+     "assetId": "shape:Bowl shade",
+     "name": "Bowl shade",
+     "xPct": -8.182,
+     "yPct": 48.536,
+     "widthPct": 105.0,
+     "heightPct": 44.142,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 462,
+      "h": 422,
+      "radius": 211,
+      "fill": "#c9c2b7",
+      "blur": 10,
+      "inset": 6
+     }
+    },
+    {
+     "id": "tpl-s82",
+     "assetId": "shape:Bowl",
+     "name": "Bowl",
+     "xPct": -6.818,
+     "yPct": 48.745,
+     "widthPct": 101.818,
+     "heightPct": 42.259,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 448,
+      "h": 404,
+      "radius": 205,
+      "fill": "#f6f4f0"
+     }
+    },
+    {
+     "id": "tpl-s83",
+     "assetId": "shape:Bowl inner",
+     "name": "Bowl inner",
+     "xPct": -4.545,
+     "yPct": 51.255,
+     "widthPct": 95.455,
+     "heightPct": 31.381,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 420,
+      "h": 300,
+      "radius": 150,
+      "fill": "#ebe6dd"
+     }
+    },
+    {
+     "id": "tpl-s84",
+     "assetId": "shape:Handle",
+     "name": "Handle",
+     "xPct": 59.091,
+     "yPct": 47.594,
+     "widthPct": 40.909,
+     "heightPct": 7.322,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 180,
+      "h": 70,
+      "radius": 30,
+      "fill": "#f3f1ec"
+     }
+    },
+    {
+     "id": "tpl-s85",
+     "assetId": "shape:Food",
+     "name": "Food",
+     "xPct": -2.273,
+     "yPct": 51.778,
+     "widthPct": 22.727,
+     "heightPct": 10.46,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 7,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 100,
+      "h": 100,
+      "fill": "#c9862f",
+      "blur": 3
+     }
+    },
+    {
+     "id": "tpl-s86",
+     "assetId": "shape:Food",
+     "name": "Food",
+     "xPct": 13.182,
+     "yPct": 56.276,
+     "widthPct": 23.636,
+     "heightPct": 10.879,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 7,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 104,
+      "h": 104,
+      "fill": "#e2b56a",
+      "blur": 3
+     }
+    },
+    {
+     "id": "tpl-s87",
+     "assetId": "shape:Food",
+     "name": "Food",
+     "xPct": 2.273,
+     "yPct": 63.285,
+     "widthPct": 22.727,
+     "heightPct": 10.46,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 7,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 100,
+      "h": 100,
+      "fill": "#a85a20",
+      "blur": 3
+     }
+    },
+    {
+     "id": "tpl-s88",
+     "assetId": "shape:Food",
+     "name": "Food",
+     "xPct": 30.0,
+     "yPct": 64.017,
+     "widthPct": 21.818,
+     "heightPct": 10.042,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 7,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 96,
+      "h": 96,
+      "fill": "#c97d2c",
+      "blur": 3
+     }
+    },
+    {
+     "id": "tpl-s89",
+     "assetId": "shape:Food",
+     "name": "Food",
+     "xPct": 47.727,
+     "yPct": 65.377,
+     "widthPct": 20.455,
+     "heightPct": 9.414,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 7,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 90,
+      "h": 90,
+      "fill": "#d99a3a",
+      "blur": 3
+     }
+    },
+    {
+     "id": "tpl-s90",
+     "assetId": "shape:Food",
+     "name": "Food",
+     "xPct": 14.773,
+     "yPct": 71.653,
+     "widthPct": 20.455,
+     "heightPct": 9.414,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 7,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 90,
+      "h": 90,
+      "fill": "#c58a3b",
+      "blur": 3
+     }
+    },
+    {
+     "id": "tpl-s91",
+     "assetId": "shape:Food",
+     "name": "Food",
+     "xPct": 0.0,
+     "yPct": 72.176,
+     "widthPct": 18.182,
+     "heightPct": 8.368,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 7,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 80,
+      "h": 80,
+      "fill": "#b5651f",
+      "blur": 3
+     }
+    },
+    {
+     "id": "tpl-s92",
+     "assetId": "shape:Dill",
+     "name": "Dill",
+     "xPct": 6.591,
+     "yPct": 47.49,
+     "widthPct": 26.591,
+     "heightPct": 7.008,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 8,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 117,
+      "h": 67,
+      "vx": 29,
+      "vy": 454,
+      "path": "M30,455C80,480 110,500 140,520L145,505C100,480 70,465 30,455Z",
+      "fill": "#5d7a3c"
+     }
+    },
+    {
+     "id": "tpl-s93",
+     "assetId": "shape:Dill 2",
+     "name": "Dill 2",
+     "xPct": 42.955,
+     "yPct": 65.795,
+     "widthPct": 14.091,
+     "heightPct": 6.485,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 8,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 62,
+      "h": 62,
+      "vx": 189,
+      "vy": 629,
+      "path": "M190,635C215,630 235,650 250,690L225,685Z",
+      "fill": "#4d7530"
+     }
+    }
+   ],
+   "deviceOne": {
+    "visible": false
+   }
+  }
+ ],
+ "designHeight": 2347,
+ "textColor": "#111111"
+}

@@ -1,0 +1,4475 @@
+{
+ "version": 1,
+ "id": "orderfood-app",
+ "name": "Order food app",
+ "category": "food-and-drink",
+ "description": "Showcase your food ordering app with this professional template. Highlight restaurant discovery, seamless ordering flow, and real-time delivery tracking in a modern design that makes food ordering intuitive and appealing.",
+ "devices": [
+  {
+   "deviceId": "apple-iphone-16-pro-max",
+   "label": "apple-iphone-16-pro-max"
+  },
+  {
+   "deviceId": "apple-iphone-13-pro-max",
+   "label": "apple-iphone-13-pro-max"
+  },
+  {
+   "deviceId": "samsung-galaxy-s21-ultra",
+   "label": "samsung-galaxy-s21-ultra"
+  },
+  {
+   "deviceId": "apple-ipad-pro-12-9-inch",
+   "label": "apple-ipad-pro-12-9-inch"
+  },
+  {
+   "deviceId": "samsung-galaxy-tab-s7",
+   "label": "samsung-galaxy-tab-s7"
+  }
+ ],
+ "layout": "single-no-text",
+ "background": {
+  "type": "solid",
+  "value": "#9aa29b"
+ },
+ "panoramic": false,
+ "columnCount": 8,
+ "titles": [
+  "Order Healthy Food Home",
+  "Receive the orders next Day delivery",
+  "Delivery instantly at your Door",
+  "Foods tailered to your needs",
+  "Order and Get 20% discount!",
+  "High Protein Delicious Meals",
+  "Subscribe for Free Delivery",
+  "Users Love Our App"
+ ],
+ "subtitles": [
+  "Fast delivery with hundreds of new options weekly",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  ""
+ ],
+ "pages": [
+  {
+   "title": "Order Healthy Food Home",
+   "subtitle": "Fast delivery with hundreds of new options weekly",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#9aa29b"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t16",
+     "xPct": 4.545,
+     "yPct": 76.603,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Order Healthy\nFood Home",
+      "color": "#ffffff",
+      "size": 122.6,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.1007486979166667
+     }
+    },
+    {
+     "id": "tpl-t17",
+     "xPct": 4.545,
+     "yPct": 90.916,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Fast delivery with hundreds\nof new options weekly",
+      "color": "#ffffff",
+      "size": 56.3,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.26421875
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s1",
+     "assetId": "shape:Wall",
+     "name": "Wall",
+     "xPct": 0.0,
+     "yPct": 0.0,
+     "widthPct": 100.0,
+     "heightPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 440,
+      "h": 956,
+      "radius": 0,
+      "gradient": [
+       [
+        0,
+        "#b9beb9"
+       ],
+       [
+        0.5,
+        "#b4b9b3"
+       ],
+       [
+        1,
+        "#8f9a92"
+       ]
+      ]
+     }
+    },
+    {
+     "id": "tpl-s2",
+     "assetId": "shape:Shirt",
+     "name": "Shirt",
+     "xPct": 56.818,
+     "yPct": 0.0,
+     "widthPct": 45.455,
+     "heightPct": 66.946,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 200,
+      "h": 640,
+      "radius": 0,
+      "fill": "#dfe0e0",
+      "gradient": [
+       [
+        0,
+        "#d3d4d4"
+       ],
+       [
+        1,
+        "#e8e9e9"
+       ]
+      ]
+     }
+    },
+    {
+     "id": "tpl-s3",
+     "assetId": "shape:Paper bag",
+     "name": "Paper bag",
+     "xPct": 13.636,
+     "yPct": 34.519,
+     "widthPct": 59.545,
+     "heightPct": 32.427,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 262,
+      "h": 310,
+      "radius": 6,
+      "gradient": [
+       [
+        0,
+        "#c19d70"
+       ],
+       [
+        1,
+        "#b58a5c"
+       ]
+      ]
+     }
+    },
+    {
+     "id": "tpl-s4",
+     "assetId": "shape:Bag light",
+     "name": "Bag light",
+     "xPct": 24.091,
+     "yPct": 46.653,
+     "widthPct": 56.364,
+     "heightPct": 16.527,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 248,
+      "h": 158,
+      "radius": 54,
+      "fill": "#d9b68a",
+      "blur": 8,
+      "inset": 24
+     }
+    },
+    {
+     "id": "tpl-s5",
+     "assetId": "shape:Groceries",
+     "name": "Groceries",
+     "xPct": 10.227,
+     "yPct": 25.628,
+     "widthPct": 25.0,
+     "heightPct": 11.506,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 6,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 110,
+      "h": 110,
+      "fill": "#77a63a",
+      "blur": 3
+     }
+    },
+    {
+     "id": "tpl-s6",
+     "assetId": "shape:Groceries",
+     "name": "Groceries",
+     "xPct": 27.273,
+     "yPct": 26.151,
+     "widthPct": 22.727,
+     "heightPct": 10.46,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 6,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 100,
+      "h": 100,
+      "fill": "#5f9a2e",
+      "blur": 3
+     }
+    },
+    {
+     "id": "tpl-s7",
+     "assetId": "shape:Groceries",
+     "name": "Groceries",
+     "xPct": 12.5,
+     "yPct": 24.059,
+     "widthPct": 13.636,
+     "heightPct": 6.276,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 6,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 60,
+      "h": 60,
+      "fill": "#c98a3d",
+      "blur": 3
+     }
+    },
+    {
+     "id": "tpl-s8",
+     "assetId": "shape:Groceries",
+     "name": "Groceries",
+     "xPct": 40.682,
+     "yPct": 23.431,
+     "widthPct": 11.818,
+     "heightPct": 5.439,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 6,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 52,
+      "h": 52,
+      "fill": "#d29a48",
+      "blur": 3
+     }
+    },
+    {
+     "id": "tpl-s9",
+     "assetId": "shape:Groceries",
+     "name": "Groceries",
+     "xPct": 35.909,
+     "yPct": 31.695,
+     "widthPct": 14.545,
+     "heightPct": 6.695,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 6,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 64,
+      "h": 64,
+      "fill": "#c62a20",
+      "blur": 3
+     }
+    },
+    {
+     "id": "tpl-s10",
+     "assetId": "shape:Groceries",
+     "name": "Groceries",
+     "xPct": 52.273,
+     "yPct": 28.766,
+     "widthPct": 18.182,
+     "heightPct": 8.368,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 6,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 80,
+      "h": 80,
+      "fill": "#c8261d",
+      "blur": 3
+     }
+    },
+    {
+     "id": "tpl-s11",
+     "assetId": "shape:Lettuce",
+     "name": "Lettuce",
+     "xPct": -5.0,
+     "yPct": 63.598,
+     "widthPct": 46.364,
+     "heightPct": 17.155,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 7,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 204.0,
+      "h": 164.0,
+      "vx": -22.0,
+      "vy": 608.0,
+      "path": "M80.0,620.0C129.71,620.0 170.0,651.34 170.0,690.0C170.0,728.66 129.71,760.0 80.0,760.0C30.29,760.0 -10.0,728.66 -10.0,690.0C-10.0,651.34 30.29,620.0 80.0,620.0Z",
+      "fill": "#4f8a2b",
+      "blur": 4
+     }
+    },
+    {
+     "id": "tpl-s12",
+     "assetId": "shape:Broccoli",
+     "name": "Broccoli",
+     "xPct": 29.091,
+     "yPct": 65.167,
+     "widthPct": 39.545,
+     "heightPct": 14.017,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 7,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 174.0,
+      "h": 134.0,
+      "vx": 128.0,
+      "vy": 623.0,
+      "path": "M215.0,635.0C256.42,635.0 290.0,659.62 290.0,690.0C290.0,720.38 256.42,745.0 215.0,745.0C173.58,745.0 140.0,720.38 140.0,690.0C140.0,659.62 173.58,635.0 215.0,635.0Z",
+      "fill": "#2f6a34",
+      "blur": 4
+     }
+    },
+    {
+     "id": "tpl-s13",
+     "assetId": "shape:Pepper",
+     "name": "Pepper",
+     "xPct": 75.227,
+     "yPct": 68.096,
+     "widthPct": 31.364,
+     "heightPct": 13.389,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 7,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 138.0,
+      "h": 128.0,
+      "vx": 331.0,
+      "vy": 651.0,
+      "path": "M400.0,660.0C433.14,660.0 460.0,684.62 460.0,715.0C460.0,745.38 433.14,770.0 400.0,770.0C366.86,770.0 340.0,745.38 340.0,715.0C340.0,684.62 366.86,660.0 400.0,660.0Z",
+      "fill": "#a41f1a",
+      "blur": 3
+     }
+    },
+    {
+     "id": "tpl-s14",
+     "assetId": "shape:Lemon",
+     "name": "Lemon",
+     "xPct": 61.591,
+     "yPct": 65.481,
+     "widthPct": 22.273,
+     "heightPct": 8.159,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 7,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 98.0,
+      "h": 78.0,
+      "vx": 271.0,
+      "vy": 626.0,
+      "path": "M320.0,635.0C342.09,635.0 360.0,648.43 360.0,665.0C360.0,681.57 342.09,695.0 320.0,695.0C297.91,695.0 280.0,681.57 280.0,665.0C280.0,648.43 297.91,635.0 320.0,635.0Z",
+      "fill": "#e6a02c",
+      "blur": 3
+     }
+    },
+    {
+     "id": "tpl-s15",
+     "assetId": "shape:Green fade",
+     "name": "Green fade",
+     "xPct": 0.0,
+     "yPct": 63.808,
+     "widthPct": 100.0,
+     "heightPct": 36.192,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 8,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 440,
+      "h": 346,
+      "radius": 0,
+      "gradient": [
+       [
+        0,
+        "rgba(0,70,60,0)"
+       ],
+       [
+        0.36,
+        "rgba(0,70,60,0.9)"
+       ],
+       [
+        0.55,
+        "#00463c"
+       ],
+       [
+        1,
+        "#00463c"
+       ]
+      ]
+     }
+    }
+   ],
+   "deviceOne": {
+    "visible": false
+   }
+  },
+  {
+   "title": "Receive the orders next Day delivery",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #bcd9bc 0%, #b8d6b7 55%, #a9c9a8 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t36",
+     "xPct": 9.545,
+     "yPct": 6.273,
+     "widthPct": 81.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Receive the orders\nnext Day delivery",
+      "color": "#0b4a3c",
+      "size": 84.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.1323334899129747
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s18",
+     "assetId": "shape:Tick",
+     "name": "Tick",
+     "xPct": 4.973,
+     "yPct": 8.173,
+     "widthPct": 3.057,
+     "heightPct": 2.796,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 13.45,
+      "h": 26.73,
+      "vx": 21.88,
+      "vy": 78.14,
+      "path": "M24.88,81.14L32.33,101.86",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s19",
+     "assetId": "shape:Tick",
+     "name": "Tick",
+     "xPct": 57.439,
+     "yPct": 15.524,
+     "widthPct": 2.327,
+     "heightPct": 2.368,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 10.24,
+      "h": 22.64,
+      "vx": 252.73,
+      "vy": 148.41,
+      "path": "M255.73,151.41L259.97,168.05",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s20",
+     "assetId": "shape:Tick",
+     "name": "Tick",
+     "xPct": 2.911,
+     "yPct": 2.431,
+     "widthPct": 2.269,
+     "heightPct": 2.419,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 9.98,
+      "h": 23.12,
+      "vx": 12.81,
+      "vy": 23.24,
+      "path": "M15.81,26.24L19.79,43.36",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s21",
+     "assetId": "shape:Tick",
+     "name": "Tick",
+     "xPct": 22.931,
+     "yPct": 2.072,
+     "widthPct": 2.003,
+     "heightPct": 2.265,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 8.81,
+      "h": 21.65,
+      "vx": 100.89,
+      "vy": 19.81,
+      "path": "M103.89,22.81L106.71,38.46",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s22",
+     "assetId": "shape:Tick",
+     "name": "Tick",
+     "xPct": 66.766,
+     "yPct": 17.871,
+     "widthPct": 3.193,
+     "heightPct": 2.85,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 14.05,
+      "h": 27.25,
+      "vx": 293.77,
+      "vy": 170.84,
+      "path": "M296.77,173.84L304.82,195.09",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s23",
+     "assetId": "shape:Tick",
+     "name": "Tick",
+     "xPct": 95.508,
+     "yPct": 15.805,
+     "widthPct": 2.956,
+     "heightPct": 2.704,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 13.01,
+      "h": 25.85,
+      "vx": 420.24,
+      "vy": 151.09,
+      "path": "M423.24,154.09L430.24,173.94",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s24",
+     "assetId": "shape:Tick",
+     "name": "Tick",
+     "xPct": 69.275,
+     "yPct": 16.293,
+     "widthPct": 2.471,
+     "heightPct": 2.968,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 10.87,
+      "h": 28.37,
+      "vx": 304.81,
+      "vy": 155.76,
+      "path": "M307.81,158.76L312.69,181.13",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s25",
+     "assetId": "shape:Tick",
+     "name": "Tick",
+     "xPct": 30.503,
+     "yPct": 20.468,
+     "widthPct": 2.971,
+     "heightPct": 2.375,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 13.07,
+      "h": 22.71,
+      "vx": 134.21,
+      "vy": 195.67,
+      "path": "M137.21,198.67L144.28,215.38",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s26",
+     "assetId": "shape:Tick",
+     "name": "Tick",
+     "xPct": 61.645,
+     "yPct": 7.224,
+     "widthPct": 3.03,
+     "heightPct": 2.78,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 13.33,
+      "h": 26.58,
+      "vx": 271.24,
+      "vy": 69.06,
+      "path": "M274.24,72.06L281.57,92.64",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s27",
+     "assetId": "shape:Tick",
+     "name": "Tick",
+     "xPct": 90.084,
+     "yPct": 18.826,
+     "widthPct": 2.103,
+     "heightPct": 2.791,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 9.25,
+      "h": 26.68,
+      "vx": 396.37,
+      "vy": 179.98,
+      "path": "M399.37,182.98L402.62,203.66",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s28",
+     "assetId": "shape:Tick",
+     "name": "Tick",
+     "xPct": 2.505,
+     "yPct": 35.922,
+     "widthPct": 2.392,
+     "heightPct": 2.02,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 10.52,
+      "h": 19.32,
+      "vx": 11.02,
+      "vy": 343.41,
+      "path": "M14.02,346.41L18.55,359.73",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s29",
+     "assetId": "shape:Tick",
+     "name": "Tick",
+     "xPct": 1.853,
+     "yPct": 72.629,
+     "widthPct": 1.947,
+     "heightPct": 1.881,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 8.57,
+      "h": 17.98,
+      "vx": 8.15,
+      "vy": 694.33,
+      "path": "M11.15,697.33L13.72,709.31",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s30",
+     "assetId": "shape:Tick",
+     "name": "Tick",
+     "xPct": 80.654,
+     "yPct": 15.398,
+     "widthPct": 2.418,
+     "heightPct": 2.032,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 10.64,
+      "h": 19.43,
+      "vx": 354.88,
+      "vy": 147.21,
+      "path": "M357.88,150.21L362.52,163.63",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s31",
+     "assetId": "shape:Tick",
+     "name": "Tick",
+     "xPct": 37.875,
+     "yPct": 4.002,
+     "widthPct": 2.345,
+     "heightPct": 3.084,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 10.32,
+      "h": 29.49,
+      "vx": 166.65,
+      "vy": 38.26,
+      "path": "M169.65,41.26L173.97,64.75",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s32",
+     "assetId": "shape:Tick",
+     "name": "Tick",
+     "xPct": 2.945,
+     "yPct": 34.106,
+     "widthPct": 2.862,
+     "heightPct": 2.534,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 12.59,
+      "h": 24.23,
+      "vx": 12.96,
+      "vy": 326.06,
+      "path": "M15.96,329.06L22.55,347.28",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s33",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -7.273,
+     "yPct": 16.946,
+     "widthPct": 114.545,
+     "heightPct": 101.297,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 504,
+      "h": 968.4,
+      "radius": 117.36,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s34",
+     "assetId": "shape:Title card shadow",
+     "name": "Title card shadow",
+     "xPct": 12.273,
+     "yPct": 5.439,
+     "widthPct": 80.455,
+     "heightPct": 11.611,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 6,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 354,
+      "h": 111,
+      "radius": 5,
+      "fill": "#dcebdb"
+     }
+    },
+    {
+     "id": "tpl-s35",
+     "assetId": "shape:Title card",
+     "name": "Title card",
+     "xPct": 9.545,
+     "yPct": 4.603,
+     "widthPct": 81.364,
+     "heightPct": 10.983,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 7,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 358,
+      "h": 105,
+      "radius": 5,
+      "fill": "#ffffff"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 66.27,
+    "x": 0.0,
+    "y": 18.85,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#fbfbf7",
+    "borderColor": "#e4e4de",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Delivery instantly at your Door",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #cdbd98 0%, #d2c19c 60%, #e2d3b2 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t45",
+     "xPct": 12.5,
+     "yPct": 85.104,
+     "widthPct": 75.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Delivery instantly\nat your Door",
+      "color": "#0b4a3c",
+      "size": 83.7,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.1730789811643836
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s37",
+     "assetId": "shape:Underline",
+     "name": "Underline",
+     "xPct": 0.605,
+     "yPct": 83.538,
+     "widthPct": 4.773,
+     "heightPct": 1.151,
+     "rotation": 0,
+     "opacity": 0.6,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 21.0,
+      "h": 11.0,
+      "vx": 2.66,
+      "vy": 798.62,
+      "path": "M5.66,801.62L10.66,806.62L15.66,801.62L20.66,806.62",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "miter"
+     }
+    },
+    {
+     "id": "tpl-s38",
+     "assetId": "shape:Underline",
+     "name": "Underline",
+     "xPct": 22.219,
+     "yPct": 99.355,
+     "widthPct": 4.773,
+     "heightPct": 1.151,
+     "rotation": 0,
+     "opacity": 0.6,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 21.0,
+      "h": 11.0,
+      "vx": 97.76,
+      "vy": 949.84,
+      "path": "M100.76,952.84L105.76,957.84L110.76,952.84L115.76,957.84",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "miter"
+     }
+    },
+    {
+     "id": "tpl-s39",
+     "assetId": "shape:Underline",
+     "name": "Underline",
+     "xPct": 61.361,
+     "yPct": 86.595,
+     "widthPct": 4.773,
+     "heightPct": 1.151,
+     "rotation": 0,
+     "opacity": 0.6,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 21.0,
+      "h": 11.0,
+      "vx": 269.99,
+      "vy": 827.85,
+      "path": "M272.99,830.85L277.99,835.85L282.99,830.85L287.99,835.85",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "miter"
+     }
+    },
+    {
+     "id": "tpl-s40",
+     "assetId": "shape:Underline",
+     "name": "Underline",
+     "xPct": 2.349,
+     "yPct": 86.344,
+     "widthPct": 4.773,
+     "heightPct": 1.151,
+     "rotation": 0,
+     "opacity": 0.6,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 21.0,
+      "h": 11.0,
+      "vx": 10.34,
+      "vy": 825.44,
+      "path": "M13.34,828.44L18.34,833.44L23.34,828.44L28.34,833.44",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "miter"
+     }
+    },
+    {
+     "id": "tpl-s41",
+     "assetId": "shape:Underline",
+     "name": "Underline",
+     "xPct": 69.567,
+     "yPct": 87.672,
+     "widthPct": 4.773,
+     "heightPct": 1.151,
+     "rotation": 0,
+     "opacity": 0.6,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 21.0,
+      "h": 11.0,
+      "vx": 306.09,
+      "vy": 838.15,
+      "path": "M309.09,841.15L314.09,846.15L319.09,841.15L324.09,846.15",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "miter"
+     }
+    },
+    {
+     "id": "tpl-s42",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -7.273,
+     "yPct": -18.096,
+     "widthPct": 114.545,
+     "heightPct": 101.297,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 504,
+      "h": 968.4,
+      "radius": 117.36,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s46",
+     "assetId": "shape:Road edge",
+     "name": "Road edge",
+     "xPct": -17.727,
+     "yPct": 31.799,
+     "widthPct": 135.455,
+     "heightPct": 38.075,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 596,
+      "h": 364,
+      "vx": -78,
+      "vy": 304,
+      "path": "M445,352C330,390 150,395 40,418C-30,430 -30,462 30,475C150,495 300,520 385,548C430,560 470,590 470,620",
+      "stroke": "#ffffff",
+      "strokeWidth": 47,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s47",
+     "assetId": "shape:Road line",
+     "name": "Road line",
+     "xPct": -16.591,
+     "yPct": 32.322,
+     "widthPct": 133.182,
+     "heightPct": 37.029,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 586,
+      "h": 354,
+      "vx": -73,
+      "vy": 309,
+      "path": "M445,352C330,390 150,395 40,418C-30,430 -30,462 30,475C150,495 300,520 385,548C430,560 470,590 470,620",
+      "stroke": "#3f9a63",
+      "strokeWidth": 42,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s48",
+     "assetId": "shape:Road",
+     "name": "Road",
+     "xPct": -15.455,
+     "yPct": 32.845,
+     "widthPct": 130.909,
+     "heightPct": 35.983,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 576,
+      "h": 344,
+      "vx": -68,
+      "vy": 314,
+      "path": "M445,352C330,390 150,395 40,418C-30,430 -30,462 30,475C150,495 300,520 385,548C430,560 470,590 470,620",
+      "stroke": "#3a4144",
+      "strokeWidth": 37,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s49",
+     "assetId": "shape:Road edge",
+     "name": "Road edge",
+     "xPct": -15.227,
+     "yPct": 62.238,
+     "widthPct": 130.455,
+     "heightPct": 15.9,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 574,
+      "h": 152,
+      "vx": -67,
+      "vy": 595,
+      "path": "M-10,652C110,662 300,680 450,690",
+      "stroke": "#ffffff",
+      "strokeWidth": 56,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s50",
+     "assetId": "shape:Road line",
+     "name": "Road line",
+     "xPct": -14.091,
+     "yPct": 62.762,
+     "widthPct": 128.182,
+     "heightPct": 14.854,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 564,
+      "h": 142,
+      "vx": -62,
+      "vy": 600,
+      "path": "M-10,652C110,662 300,680 450,690",
+      "stroke": "#3f9a63",
+      "strokeWidth": 51,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s51",
+     "assetId": "shape:Road",
+     "name": "Road",
+     "xPct": -12.955,
+     "yPct": 63.285,
+     "widthPct": 125.909,
+     "heightPct": 13.808,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 554,
+      "h": 132,
+      "vx": -57,
+      "vy": 605,
+      "path": "M-10,652C110,662 300,680 450,690",
+      "stroke": "#3a4144",
+      "strokeWidth": 46,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s52",
+     "assetId": "shape:Road dash",
+     "name": "Road dash",
+     "xPct": 17.273,
+     "yPct": 41.736,
+     "widthPct": 6.364,
+     "heightPct": 1.046,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 28,
+      "h": 10,
+      "vx": 76,
+      "vy": 399,
+      "path": "M80,405L100,403",
+      "stroke": "#ffffff",
+      "strokeWidth": 3,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s53",
+     "assetId": "shape:Road dash",
+     "name": "Road dash",
+     "xPct": 33.182,
+     "yPct": 41.004,
+     "widthPct": 7.5,
+     "heightPct": 1.255,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 33,
+      "h": 12,
+      "vx": 146,
+      "vy": 392,
+      "path": "M150,400L175,396",
+      "stroke": "#ffffff",
+      "strokeWidth": 3,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s54",
+     "assetId": "shape:Road dash",
+     "name": "Road dash",
+     "xPct": 55.909,
+     "yPct": 39.121,
+     "widthPct": 9.773,
+     "heightPct": 1.569,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 43,
+      "h": 15,
+      "vx": 246,
+      "vy": 374,
+      "path": "M250,385L285,378",
+      "stroke": "#ffffff",
+      "strokeWidth": 3,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s55",
+     "assetId": "shape:Road dash",
+     "name": "Road dash",
+     "xPct": 24.091,
+     "yPct": 51.255,
+     "widthPct": 6.364,
+     "heightPct": 1.255,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 28,
+      "h": 12,
+      "vx": 106,
+      "vy": 490,
+      "path": "M110,494L130,498",
+      "stroke": "#ffffff",
+      "strokeWidth": 3,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s56",
+     "assetId": "shape:Road dash",
+     "name": "Road dash",
+     "xPct": 42.273,
+     "yPct": 52.72,
+     "widthPct": 7.5,
+     "heightPct": 1.151,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 33,
+      "h": 11,
+      "vx": 186,
+      "vy": 504,
+      "path": "M190,508L215,511",
+      "stroke": "#ffffff",
+      "strokeWidth": 3,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s57",
+     "assetId": "shape:Road dash",
+     "name": "Road dash",
+     "xPct": 60.455,
+     "yPct": 54.393,
+     "widthPct": 8.636,
+     "heightPct": 1.464,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 38,
+      "h": 14,
+      "vx": 266,
+      "vy": 520,
+      "path": "M270,524L300,530",
+      "stroke": "#ffffff",
+      "strokeWidth": 3,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s58",
+     "assetId": "shape:Road dash",
+     "name": "Road dash",
+     "xPct": 3.636,
+     "yPct": 67.992,
+     "widthPct": 10.909,
+     "heightPct": 1.151,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 48,
+      "h": 11,
+      "vx": 16,
+      "vy": 650,
+      "path": "M20,654L60,657",
+      "stroke": "#ffffff",
+      "strokeWidth": 3,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s59",
+     "assetId": "shape:Road dash",
+     "name": "Road dash",
+     "xPct": 26.364,
+     "yPct": 69.038,
+     "widthPct": 13.182,
+     "heightPct": 1.255,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 58,
+      "h": 12,
+      "vx": 116,
+      "vy": 660,
+      "path": "M120,664L170,668",
+      "stroke": "#ffffff",
+      "strokeWidth": 3,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s60",
+     "assetId": "shape:Road dash",
+     "name": "Road dash",
+     "xPct": 74.091,
+     "yPct": 71.13,
+     "widthPct": 13.182,
+     "heightPct": 1.255,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 58,
+      "h": 12,
+      "vx": 326,
+      "vy": 680,
+      "path": "M330,684L380,688",
+      "stroke": "#ffffff",
+      "strokeWidth": 3,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s61",
+     "assetId": "shape:Road arrow",
+     "name": "Road arrow",
+     "xPct": 59.318,
+     "yPct": 68.41,
+     "widthPct": 15.0,
+     "heightPct": 4.289,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 66,
+      "h": 41,
+      "vx": 261,
+      "vy": 654,
+      "path": "M262,655L326,672L275,694Z",
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s62",
+     "assetId": "shape:Zucchini",
+     "name": "Zucchini",
+     "xPct": 17.727,
+     "yPct": 20.921,
+     "widthPct": 10.0,
+     "heightPct": 17.573,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 44.0,
+      "h": 168.0,
+      "vx": 78.0,
+      "vy": 200.0,
+      "path": "M100.0,200.0C112.15,200.0 122.0,237.61 122.0,284.0C122.0,330.39 112.15,368.0 100.0,368.0C87.85,368.0 78.0,330.39 78.0,284.0C78.0,237.61 87.85,200.0 100.0,200.0Z",
+      "fill": "#1f6b2c",
+      "gradient": [
+       [
+        0,
+        "#2c8438"
+       ],
+       [
+        1,
+        "#175a24"
+       ]
+      ]
+     }
+    },
+    {
+     "id": "tpl-s63",
+     "assetId": "shape:Cabbage",
+     "name": "Cabbage",
+     "xPct": 36.364,
+     "yPct": 23.222,
+     "widthPct": 28.182,
+     "heightPct": 12.552,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 124.0,
+      "h": 120.0,
+      "vx": 160.0,
+      "vy": 222.0,
+      "path": "M222.0,222.0C256.24,222.0 284.0,248.86 284.0,282.0C284.0,315.14 256.24,342.0 222.0,342.0C187.76,342.0 160.0,315.14 160.0,282.0C160.0,248.86 187.76,222.0 222.0,222.0Z",
+      "fill": "#6a1f5c",
+      "gradient": [
+       [
+        0,
+        "#7c2b6c"
+       ],
+       [
+        1,
+        "#57174a"
+       ]
+      ]
+     }
+    },
+    {
+     "id": "tpl-s64",
+     "assetId": "shape:Broccoli",
+     "name": "Broccoli",
+     "xPct": 69.091,
+     "yPct": 26.569,
+     "widthPct": 7.273,
+     "heightPct": 3.347,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 32,
+      "h": 32,
+      "fill": "#2f7d2a"
+     }
+    },
+    {
+     "id": "tpl-s65",
+     "assetId": "shape:Broccoli",
+     "name": "Broccoli",
+     "xPct": 75.0,
+     "yPct": 24.895,
+     "widthPct": 9.091,
+     "heightPct": 4.184,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 40,
+      "h": 40,
+      "fill": "#2f7d2a"
+     }
+    },
+    {
+     "id": "tpl-s66",
+     "assetId": "shape:Broccoli",
+     "name": "Broccoli",
+     "xPct": 82.273,
+     "yPct": 26.987,
+     "widthPct": 8.182,
+     "heightPct": 3.766,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 36,
+      "h": 36,
+      "fill": "#2f7d2a"
+     }
+    },
+    {
+     "id": "tpl-s67",
+     "assetId": "shape:Broccoli",
+     "name": "Broccoli",
+     "xPct": 73.636,
+     "yPct": 28.661,
+     "widthPct": 6.364,
+     "heightPct": 2.929,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 28,
+      "h": 28,
+      "fill": "#2f7d2a"
+     }
+    },
+    {
+     "id": "tpl-s68",
+     "assetId": "shape:Celery",
+     "name": "Celery",
+     "xPct": 40.909,
+     "yPct": 40.167,
+     "widthPct": 23.636,
+     "heightPct": 13.808,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 104.0,
+      "h": 132.0,
+      "vx": 180.0,
+      "vy": 384.0,
+      "path": "M232.0,384.0C260.72,384.0 284.0,413.55 284.0,450.0C284.0,486.45 260.72,516.0 232.0,516.0C203.28,516.0 180.0,486.45 180.0,450.0C180.0,413.55 203.28,384.0 232.0,384.0Z",
+      "fill": "#8fc45c",
+      "gradient": [
+       [
+        0,
+        "#6aa845"
+       ],
+       [
+        1,
+        "#a9d46e"
+       ]
+      ]
+     }
+    },
+    {
+     "id": "tpl-s69",
+     "assetId": "shape:Parsley",
+     "name": "Parsley",
+     "xPct": 40.455,
+     "yPct": 37.971,
+     "widthPct": 28.182,
+     "heightPct": 6.695,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 124.0,
+      "h": 64.0,
+      "vx": 178.0,
+      "vy": 363.0,
+      "path": "M240.0,363.0C274.24,363.0 302.0,377.33 302.0,395.0C302.0,412.67 274.24,427.0 240.0,427.0C205.76,427.0 178.0,412.67 178.0,395.0C178.0,377.33 205.76,363.0 240.0,363.0Z",
+      "fill": "#5f9f3d"
+     }
+    },
+    {
+     "id": "tpl-s70",
+     "assetId": "shape:Scallion",
+     "name": "Scallion",
+     "xPct": 75.227,
+     "yPct": 29.812,
+     "widthPct": 6.364,
+     "heightPct": 27.197,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 28.0,
+      "h": 260.0,
+      "vx": 331.0,
+      "vy": 285.0,
+      "path": "M345.0,285.0C352.73,285.0 359.0,343.2 359.0,415.0C359.0,486.8 352.73,545.0 345.0,545.0C337.27,545.0 331.0,486.8 331.0,415.0C331.0,343.2 337.27,285.0 345.0,285.0Z",
+      "fill": "#eef0e4",
+      "gradient": [
+       [
+        0,
+        "#6fae44"
+       ],
+       [
+        0.45,
+        "#dfe8c0"
+       ],
+       [
+        1,
+        "#f4f4ec"
+       ]
+      ]
+     }
+    },
+    {
+     "id": "tpl-s71",
+     "assetId": "shape:Avocado skin",
+     "name": "Avocado skin",
+     "xPct": 13.636,
+     "yPct": 43.285,
+     "widthPct": 19.091,
+     "heightPct": 11.548,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 84.0,
+      "h": 110.4,
+      "vx": 60.0,
+      "vy": 413.8,
+      "path": "M102.0,413.8C125.2,413.8 144.0,438.51 144.0,469.0C144.0,499.49 125.2,524.2 102.0,524.2C78.8,524.2 60.0,499.49 60.0,469.0C60.0,438.51 78.8,413.8 102.0,413.8Z",
+      "fill": "#2f6d2b"
+     }
+    },
+    {
+     "id": "tpl-s72",
+     "assetId": "shape:Avocado ring",
+     "name": "Avocado ring",
+     "xPct": 14.727,
+     "yPct": 43.975,
+     "widthPct": 16.909,
+     "heightPct": 10.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 74.4,
+      "h": 100.8,
+      "vx": 64.8,
+      "vy": 420.4,
+      "path": "M102.0,420.4C122.55,420.4 139.2,442.96 139.2,470.8C139.2,498.64 122.55,521.2 102.0,521.2C81.45,521.2 64.8,498.64 64.8,470.8C64.8,442.96 81.45,420.4 102.0,420.4Z",
+      "fill": "#5c9a37"
+     }
+    },
+    {
+     "id": "tpl-s73",
+     "assetId": "shape:Avocado flesh",
+     "name": "Avocado flesh",
+     "xPct": 16.091,
+     "yPct": 44.791,
+     "widthPct": 14.182,
+     "heightPct": 9.289,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 23,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 62.4,
+      "h": 88.8,
+      "vx": 70.8,
+      "vy": 428.2,
+      "path": "M102.0,428.2C119.23,428.2 133.2,448.08 133.2,472.6C133.2,497.12 119.23,517.0 102.0,517.0C84.77,517.0 70.8,497.12 70.8,472.6C70.8,448.08 84.77,428.2 102.0,428.2Z",
+      "fill": "#a5c95a",
+      "gradient": [
+       [
+        0,
+        "#b7d666"
+       ],
+       [
+        1,
+        "#8fb94b"
+       ]
+      ]
+     }
+    },
+    {
+     "id": "tpl-s74",
+     "assetId": "shape:Avocado pit",
+     "name": "Avocado pit",
+     "xPct": 18.545,
+     "yPct": 48.431,
+     "widthPct": 8.182,
+     "heightPct": 4.017,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 24,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 36.0,
+      "h": 38.4,
+      "vx": 81.6,
+      "vy": 463.0,
+      "path": "M99.6,463.0C109.54,463.0 117.6,471.6 117.6,482.2C117.6,492.8 109.54,501.4 99.6,501.4C89.66,501.4 81.6,492.8 81.6,482.2C81.6,471.6 89.66,463.0 99.6,463.0Z",
+      "fill": "#8a3f1c",
+      "gradient": [
+       [
+        0,
+        "#b4592b"
+       ],
+       [
+        1,
+        "#6b2c13"
+       ]
+      ]
+     }
+    },
+    {
+     "id": "tpl-s75",
+     "assetId": "shape:Avocado skin",
+     "name": "Avocado skin",
+     "xPct": 20.368,
+     "yPct": 43.992,
+     "widthPct": 18.356,
+     "heightPct": 10.342,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 80.77,
+      "h": 98.87,
+      "vx": 89.62,
+      "vy": 420.56,
+      "path": "M141.91,425.57C160.58,430.57 170.38,454.52 163.81,479.06C157.23,503.6 136.77,519.44 118.09,514.43C99.42,509.43 89.62,485.48 96.19,460.94C102.77,436.4 123.23,420.56 141.91,425.57Z",
+      "fill": "#2f6d2b"
+     }
+    },
+    {
+     "id": "tpl-s76",
+     "assetId": "shape:Avocado ring",
+     "name": "Avocado ring",
+     "xPct": 21.376,
+     "yPct": 44.613,
+     "widthPct": 16.34,
+     "heightPct": 9.414,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 23,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 71.89,
+      "h": 90.0,
+      "vx": 94.05,
+      "vy": 426.5,
+      "path": "M140.87,430.93C157.41,435.36 165.95,457.12 159.94,479.52C153.94,501.93 135.67,516.5 119.13,512.07C102.59,507.64 94.05,485.88 100.06,463.48C106.06,441.07 124.33,426.5 140.87,430.93Z",
+      "fill": "#5c9a37"
+     }
+    },
+    {
+     "id": "tpl-s77",
+     "assetId": "shape:Avocado flesh",
+     "name": "Avocado flesh",
+     "xPct": 22.636,
+     "yPct": 45.35,
+     "widthPct": 13.82,
+     "heightPct": 8.254,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 24,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 60.81,
+      "h": 78.91,
+      "vx": 99.6,
+      "vy": 433.54,
+      "path": "M139.58,437.26C153.45,440.98 160.4,459.99 155.11,479.73C149.83,499.47 134.29,512.46 120.42,508.74C106.55,505.02 99.6,486.01 104.89,466.27C110.17,446.53 125.71,433.54 139.58,437.26Z",
+      "fill": "#a5c95a",
+      "gradient": [
+       [
+        0,
+        "#b7d666"
+       ],
+       [
+        1,
+        "#8fb94b"
+       ]
+      ]
+     }
+    },
+    {
+     "id": "tpl-s43",
+     "assetId": "shape:Title card shadow",
+     "name": "Title card shadow",
+     "xPct": 15.227,
+     "yPct": 84.519,
+     "widthPct": 74.091,
+     "heightPct": 11.611,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 6,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 326,
+      "h": 111,
+      "radius": 5,
+      "fill": "#e6dcc3"
+     }
+    },
+    {
+     "id": "tpl-s44",
+     "assetId": "shape:Title card",
+     "name": "Title card",
+     "xPct": 12.5,
+     "yPct": 83.682,
+     "widthPct": 75.0,
+     "heightPct": 10.983,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 7,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 330,
+      "h": 105,
+      "radius": 5,
+      "fill": "#ffffff"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 66.27,
+    "x": 0.0,
+    "y": -20.08,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#fbfbf7",
+    "borderColor": "#e4e4de",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Foods tailered to your needs",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #bcd9bc 0%, #b8d6b7 55%, #a9c9a8 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t96",
+     "xPct": 18.182,
+     "yPct": 6.26,
+     "widthPct": 63.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Foods tailered\nto your needs",
+      "color": "#0b4a3c",
+      "size": 85.4,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.1214105275051653
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s78",
+     "assetId": "shape:Tick",
+     "name": "Tick",
+     "xPct": 22.923,
+     "yPct": 10.003,
+     "widthPct": 2.056,
+     "heightPct": 2.351,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 9.05,
+      "h": 22.47,
+      "vx": 100.86,
+      "vy": 95.63,
+      "path": "M103.86,98.63L106.91,115.1",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s79",
+     "assetId": "shape:Tick",
+     "name": "Tick",
+     "xPct": 16.585,
+     "yPct": 10.305,
+     "widthPct": 2.649,
+     "heightPct": 2.032,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 11.66,
+      "h": 19.43,
+      "vx": 72.97,
+      "vy": 98.51,
+      "path": "M75.97,101.51L81.63,114.94",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s80",
+     "assetId": "shape:Tick",
+     "name": "Tick",
+     "xPct": 79.363,
+     "yPct": 19.03,
+     "widthPct": 2.469,
+     "heightPct": 2.191,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 10.87,
+      "h": 20.95,
+      "vx": 349.2,
+      "vy": 181.92,
+      "path": "M352.2,184.92L357.06,199.87",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s81",
+     "assetId": "shape:Tick",
+     "name": "Tick",
+     "xPct": 87.323,
+     "yPct": 8.358,
+     "widthPct": 2.771,
+     "heightPct": 2.536,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 12.19,
+      "h": 24.25,
+      "vx": 384.22,
+      "vy": 79.9,
+      "path": "M387.22,82.9L393.42,101.15",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s82",
+     "assetId": "shape:Tick",
+     "name": "Tick",
+     "xPct": 49.914,
+     "yPct": 17.465,
+     "widthPct": 2.022,
+     "heightPct": 2.452,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 8.9,
+      "h": 23.44,
+      "vx": 219.62,
+      "vy": 166.97,
+      "path": "M222.62,169.97L225.52,187.41",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s83",
+     "assetId": "shape:Tick",
+     "name": "Tick",
+     "xPct": 80.577,
+     "yPct": 4.01,
+     "widthPct": 2.246,
+     "heightPct": 1.877,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 9.88,
+      "h": 17.94,
+      "vx": 354.54,
+      "vy": 38.34,
+      "path": "M357.54,41.34L361.43,53.28",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s84",
+     "assetId": "shape:Tick",
+     "name": "Tick",
+     "xPct": 99.046,
+     "yPct": 19.244,
+     "widthPct": 2.115,
+     "heightPct": 2.367,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 9.31,
+      "h": 22.63,
+      "vx": 435.8,
+      "vy": 183.97,
+      "path": "M438.8,186.97L442.11,203.6",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s85",
+     "assetId": "shape:Tick",
+     "name": "Tick",
+     "xPct": 89.75,
+     "yPct": 9.784,
+     "widthPct": 1.949,
+     "heightPct": 1.933,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 8.58,
+      "h": 18.48,
+      "vx": 394.9,
+      "vy": 93.54,
+      "path": "M397.9,96.54L400.47,109.01",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s86",
+     "assetId": "shape:Tick",
+     "name": "Tick",
+     "xPct": 1.137,
+     "yPct": 28.586,
+     "widthPct": 3.233,
+     "heightPct": 2.941,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 14.23,
+      "h": 28.11,
+      "vx": 5.0,
+      "vy": 273.28,
+      "path": "M8.0,276.28L16.23,298.39",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s87",
+     "assetId": "shape:Tick",
+     "name": "Tick",
+     "xPct": 28.659,
+     "yPct": 18.828,
+     "widthPct": 2.06,
+     "heightPct": 2.412,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 9.06,
+      "h": 23.06,
+      "vx": 126.1,
+      "vy": 179.99,
+      "path": "M129.1,182.99L132.16,200.05",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s88",
+     "assetId": "shape:Tick",
+     "name": "Tick",
+     "xPct": 32.449,
+     "yPct": 0.626,
+     "widthPct": 1.893,
+     "heightPct": 1.916,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 8.33,
+      "h": 18.32,
+      "vx": 142.78,
+      "vy": 5.98,
+      "path": "M145.78,8.98L148.11,21.3",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s89",
+     "assetId": "shape:Tick",
+     "name": "Tick",
+     "xPct": 28.352,
+     "yPct": 9.396,
+     "widthPct": 2.743,
+     "heightPct": 3.033,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 12.07,
+      "h": 28.99,
+      "vx": 124.75,
+      "vy": 89.83,
+      "path": "M127.75,92.83L133.82,115.82",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s90",
+     "assetId": "shape:Tick",
+     "name": "Tick",
+     "xPct": 20.11,
+     "yPct": 5.62,
+     "widthPct": 1.898,
+     "heightPct": 1.929,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 8.35,
+      "h": 18.44,
+      "vx": 88.48,
+      "vy": 53.73,
+      "path": "M91.48,56.73L93.83,69.17",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s91",
+     "assetId": "shape:Tick",
+     "name": "Tick",
+     "xPct": 67.001,
+     "yPct": 14.65,
+     "widthPct": 2.139,
+     "heightPct": 1.884,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 9.41,
+      "h": 18.02,
+      "vx": 294.8,
+      "vy": 140.06,
+      "path": "M297.8,143.06L301.22,155.07",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s92",
+     "assetId": "shape:Tick",
+     "name": "Tick",
+     "xPct": 98.084,
+     "yPct": 47.462,
+     "widthPct": 2.216,
+     "heightPct": 2.136,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 9.75,
+      "h": 20.42,
+      "vx": 431.57,
+      "vy": 453.74,
+      "path": "M434.57,456.74L438.32,471.16",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s93",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -7.273,
+     "yPct": 16.946,
+     "widthPct": 114.545,
+     "heightPct": 101.297,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 504,
+      "h": 968.4,
+      "radius": 117.36,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s97",
+     "assetId": "shape:Avocado skin",
+     "name": "Avocado skin",
+     "xPct": 76.48,
+     "yPct": 6.736,
+     "widthPct": 43.404,
+     "heightPct": 25.231,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 190.98,
+      "h": 241.21,
+      "vx": 336.51,
+      "vy": 64.39,
+      "path": "M448.0,71.12C495.86,77.84 527.49,134.28 518.65,197.18C509.81,260.07 463.85,305.61 416.0,298.88C368.14,292.16 336.51,235.72 345.35,172.82C354.19,109.93 400.15,64.39 448.0,71.12Z",
+      "fill": "#2f6d2b"
+     }
+    },
+    {
+     "id": "tpl-s98",
+     "assetId": "shape:Avocado ring",
+     "name": "Avocado ring",
+     "xPct": 78.905,
+     "yPct": 8.244,
+     "widthPct": 38.553,
+     "heightPct": 22.999,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 169.63,
+      "h": 219.87,
+      "vx": 347.18,
+      "vy": 78.81,
+      "path": "M446.61,84.77C489.0,90.73 516.82,142.11 508.75,199.54C500.67,256.96 459.77,298.69 417.39,292.73C375.0,286.77 347.18,235.39 355.25,177.96C363.33,120.54 404.23,78.81 446.61,84.77Z",
+      "fill": "#5c9a37"
+     }
+    },
+    {
+     "id": "tpl-s99",
+     "assetId": "shape:Avocado flesh",
+     "name": "Avocado flesh",
+     "xPct": 81.937,
+     "yPct": 10.032,
+     "widthPct": 32.49,
+     "heightPct": 20.208,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 142.95,
+      "h": 193.19,
+      "vx": 360.52,
+      "vy": 95.9,
+      "path": "M444.87,100.9C480.42,105.9 503.48,150.96 496.37,201.55C489.26,252.14 454.68,289.1 419.13,284.1C383.58,279.1 360.52,234.04 367.63,183.45C374.74,132.86 409.32,95.9 444.87,100.9Z",
+      "fill": "#a5c95a",
+      "gradient": [
+       [
+        0,
+        "#b7d666"
+       ],
+       [
+        1,
+        "#8fb94b"
+       ]
+      ]
+     }
+    },
+    {
+     "id": "tpl-s100",
+     "assetId": "shape:Avocado pit",
+     "name": "Avocado pit",
+     "xPct": 87.907,
+     "yPct": 17.783,
+     "widthPct": 18.277,
+     "heightPct": 8.89,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 80.42,
+      "h": 84.99,
+      "vx": 386.79,
+      "vy": 170.01,
+      "path": "M432.57,172.89C453.08,175.77 467.21,195.84 464.14,217.72C461.06,239.6 441.94,254.99 421.43,252.11C400.92,249.23 386.79,229.16 389.86,207.28C392.94,185.4 412.06,170.01 432.57,172.89Z",
+      "fill": "#8a3f1c",
+      "gradient": [
+       [
+        0,
+        "#b4592b"
+       ],
+       [
+        1,
+        "#6b2c13"
+       ]
+      ]
+     }
+    },
+    {
+     "id": "tpl-s94",
+     "assetId": "shape:Title card shadow",
+     "name": "Title card shadow",
+     "xPct": 20.909,
+     "yPct": 5.439,
+     "widthPct": 62.727,
+     "heightPct": 11.611,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 6,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 276,
+      "h": 111,
+      "radius": 5,
+      "fill": "#dcebdb"
+     }
+    },
+    {
+     "id": "tpl-s95",
+     "assetId": "shape:Title card",
+     "name": "Title card",
+     "xPct": 18.182,
+     "yPct": 4.603,
+     "widthPct": 63.636,
+     "heightPct": 10.983,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 7,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 280,
+      "h": 105,
+      "radius": 5,
+      "fill": "#ffffff"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 66.27,
+    "x": 0.0,
+    "y": 18.85,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#fbfbf7",
+    "borderColor": "#e4e4de",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Order and Get 20% discount!",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #cdbd98 0%, #d2c19c 60%, #e2d3b2 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t111",
+     "xPct": 18.636,
+     "yPct": 84.615,
+     "widthPct": 62.727,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Order and Get\n20% discount!",
+      "color": "#0b4a3c",
+      "size": 81.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.2048647584033614
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s101",
+     "assetId": "shape:Underline",
+     "name": "Underline",
+     "xPct": 77.03,
+     "yPct": 94.036,
+     "widthPct": 4.773,
+     "heightPct": 1.151,
+     "rotation": 0,
+     "opacity": 0.6,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 21.0,
+      "h": 11.0,
+      "vx": 338.93,
+      "vy": 898.98,
+      "path": "M341.93,901.98L346.93,906.98L351.93,901.98L356.93,906.98",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "miter"
+     }
+    },
+    {
+     "id": "tpl-s102",
+     "assetId": "shape:Underline",
+     "name": "Underline",
+     "xPct": 44.822,
+     "yPct": 94.126,
+     "widthPct": 4.773,
+     "heightPct": 1.151,
+     "rotation": 0,
+     "opacity": 0.6,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 21.0,
+      "h": 11.0,
+      "vx": 197.22,
+      "vy": 899.85,
+      "path": "M200.22,902.85L205.22,907.85L210.22,902.85L215.22,907.85",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "miter"
+     }
+    },
+    {
+     "id": "tpl-s103",
+     "assetId": "shape:Underline",
+     "name": "Underline",
+     "xPct": 0.6,
+     "yPct": 21.464,
+     "widthPct": 4.773,
+     "heightPct": 1.151,
+     "rotation": 0,
+     "opacity": 0.6,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 21.0,
+      "h": 11.0,
+      "vx": 2.64,
+      "vy": 205.19,
+      "path": "M5.64,208.19L10.64,213.19L15.64,208.19L20.64,213.19",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "miter"
+     }
+    },
+    {
+     "id": "tpl-s104",
+     "assetId": "shape:Underline",
+     "name": "Underline",
+     "xPct": 14.916,
+     "yPct": 79.505,
+     "widthPct": 4.773,
+     "heightPct": 1.151,
+     "rotation": 0,
+     "opacity": 0.6,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 21.0,
+      "h": 11.0,
+      "vx": 65.63,
+      "vy": 760.07,
+      "path": "M68.63,763.07L73.63,768.07L78.63,763.07L83.63,768.07",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "miter"
+     }
+    },
+    {
+     "id": "tpl-s105",
+     "assetId": "shape:Underline",
+     "name": "Underline",
+     "xPct": -0.508,
+     "yPct": 86.931,
+     "widthPct": 4.773,
+     "heightPct": 1.151,
+     "rotation": 0,
+     "opacity": 0.6,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 21.0,
+      "h": 11.0,
+      "vx": -2.24,
+      "vy": 831.06,
+      "path": "M0.76,834.06L5.76,839.06L10.76,834.06L15.76,839.06",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "miter"
+     }
+    },
+    {
+     "id": "tpl-s106",
+     "assetId": "shape:Underline",
+     "name": "Underline",
+     "xPct": 20.377,
+     "yPct": 98.033,
+     "widthPct": 5.909,
+     "heightPct": 1.151,
+     "rotation": 0,
+     "opacity": 0.6,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 26.0,
+      "h": 11.0,
+      "vx": 89.66,
+      "vy": 937.19,
+      "path": "M92.66,940.19L97.66,945.19L102.66,940.19L107.66,945.19L112.66,940.19",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "miter"
+     }
+    },
+    {
+     "id": "tpl-s107",
+     "assetId": "shape:Underline",
+     "name": "Underline",
+     "xPct": 27.591,
+     "yPct": 95.939,
+     "widthPct": 4.773,
+     "heightPct": 1.151,
+     "rotation": 0,
+     "opacity": 0.6,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 21.0,
+      "h": 11.0,
+      "vx": 121.4,
+      "vy": 917.17,
+      "path": "M124.4,920.17L129.4,925.17L134.4,920.17L139.4,925.17",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "miter"
+     }
+    },
+    {
+     "id": "tpl-s108",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -7.273,
+     "yPct": -18.096,
+     "widthPct": 114.545,
+     "heightPct": 101.297,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 504,
+      "h": 968.4,
+      "radius": 117.36,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s112",
+     "assetId": "shape:Avocado skin",
+     "name": "Avocado skin",
+     "xPct": -12.156,
+     "yPct": 7.259,
+     "widthPct": 43.404,
+     "heightPct": 25.231,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 190.98,
+      "h": 241.21,
+      "vx": -53.49,
+      "vy": 69.39,
+      "path": "M26.0,76.12C73.85,69.39 119.81,114.93 128.65,177.82C137.49,240.72 105.86,297.16 58.0,303.88C10.15,310.61 -35.81,265.07 -44.65,202.18C-53.49,139.28 -21.86,82.84 26.0,76.12Z",
+      "fill": "#2f6d2b"
+     }
+    },
+    {
+     "id": "tpl-s113",
+     "assetId": "shape:Avocado ring",
+     "name": "Avocado ring",
+     "xPct": -9.731,
+     "yPct": 8.767,
+     "widthPct": 38.553,
+     "heightPct": 22.999,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 169.63,
+      "h": 219.87,
+      "vx": -42.82,
+      "vy": 83.81,
+      "path": "M27.39,89.77C69.77,83.81 110.67,125.54 118.75,182.96C126.82,240.39 99.0,291.77 56.61,297.73C14.23,303.69 -26.67,261.96 -34.75,204.54C-42.82,147.11 -15.0,95.73 27.39,89.77Z",
+      "fill": "#5c9a37"
+     }
+    },
+    {
+     "id": "tpl-s114",
+     "assetId": "shape:Avocado flesh",
+     "name": "Avocado flesh",
+     "xPct": -6.699,
+     "yPct": 10.555,
+     "widthPct": 32.49,
+     "heightPct": 20.208,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 142.95,
+      "h": 193.19,
+      "vx": -29.48,
+      "vy": 100.9,
+      "path": "M29.13,105.9C64.68,100.9 99.26,137.86 106.37,188.45C113.48,239.04 90.42,284.1 54.87,289.1C19.32,294.1 -15.26,257.14 -22.37,206.55C-29.48,155.96 -6.42,110.9 29.13,105.9Z",
+      "fill": "#a5c95a",
+      "gradient": [
+       [
+        0,
+        "#b7d666"
+       ],
+       [
+        1,
+        "#8fb94b"
+       ]
+      ]
+     }
+    },
+    {
+     "id": "tpl-s109",
+     "assetId": "shape:Title card shadow",
+     "name": "Title card shadow",
+     "xPct": 21.364,
+     "yPct": 83.996,
+     "widthPct": 61.818,
+     "heightPct": 11.611,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 6,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 272,
+      "h": 111,
+      "radius": 5,
+      "fill": "#e6dcc3"
+     }
+    },
+    {
+     "id": "tpl-s110",
+     "assetId": "shape:Title card",
+     "name": "Title card",
+     "xPct": 18.636,
+     "yPct": 83.159,
+     "widthPct": 62.727,
+     "heightPct": 10.983,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 7,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 276,
+      "h": 105,
+      "radius": 5,
+      "fill": "#ffffff"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 66.27,
+    "x": 0.0,
+    "y": -20.08,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#fbfbf7",
+    "borderColor": "#e4e4de",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "High Protein Delicious Meals",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #bcd9bc 0%, #b8d6b7 55%, #a9c9a8 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t128",
+     "xPct": 15.455,
+     "yPct": 6.268,
+     "widthPct": 69.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "High Protein\nDelicious Meals",
+      "color": "#0b4a3c",
+      "size": 84.9,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.1276157924107142
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s115",
+     "assetId": "shape:Tick",
+     "name": "Tick",
+     "xPct": -0.637,
+     "yPct": 65.968,
+     "widthPct": 2.745,
+     "heightPct": 2.36,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 12.08,
+      "h": 22.56,
+      "vx": -2.8,
+      "vy": 630.65,
+      "path": "M0.2,633.65L6.28,650.22",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s116",
+     "assetId": "shape:Tick",
+     "name": "Tick",
+     "xPct": 8.696,
+     "yPct": 19.402,
+     "widthPct": 2.341,
+     "heightPct": 2.63,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 10.3,
+      "h": 25.14,
+      "vx": 38.26,
+      "vy": 185.49,
+      "path": "M41.26,188.49L45.56,207.63",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s117",
+     "assetId": "shape:Tick",
+     "name": "Tick",
+     "xPct": 2.16,
+     "yPct": 35.824,
+     "widthPct": 2.337,
+     "heightPct": 2.588,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 10.28,
+      "h": 24.74,
+      "vx": 9.51,
+      "vy": 342.48,
+      "path": "M12.51,345.48L16.79,364.21",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s118",
+     "assetId": "shape:Tick",
+     "name": "Tick",
+     "xPct": 58.234,
+     "yPct": 8.655,
+     "widthPct": 2.812,
+     "heightPct": 2.891,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 12.37,
+      "h": 27.64,
+      "vx": 256.23,
+      "vy": 82.74,
+      "path": "M259.23,85.74L265.6,107.38",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s119",
+     "assetId": "shape:Tick",
+     "name": "Tick",
+     "xPct": 30.546,
+     "yPct": 19.309,
+     "widthPct": 2.081,
+     "heightPct": 2.461,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 9.16,
+      "h": 23.52,
+      "vx": 134.4,
+      "vy": 184.59,
+      "path": "M137.4,187.59L140.56,205.11",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s120",
+     "assetId": "shape:Tick",
+     "name": "Tick",
+     "xPct": 69.141,
+     "yPct": 0.938,
+     "widthPct": 2.061,
+     "heightPct": 2.836,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 9.07,
+      "h": 27.11,
+      "vx": 304.22,
+      "vy": 8.97,
+      "path": "M307.22,11.97L310.29,33.09",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s121",
+     "assetId": "shape:Tick",
+     "name": "Tick",
+     "xPct": 97.416,
+     "yPct": 24.217,
+     "widthPct": 3.41,
+     "heightPct": 2.927,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 15.0,
+      "h": 27.98,
+      "vx": 428.63,
+      "vy": 231.52,
+      "path": "M431.63,234.52L440.63,256.5",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s122",
+     "assetId": "shape:Tick",
+     "name": "Tick",
+     "xPct": 40.225,
+     "yPct": 8.279,
+     "widthPct": 2.375,
+     "heightPct": 2.77,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 10.45,
+      "h": 26.48,
+      "vx": 176.99,
+      "vy": 79.15,
+      "path": "M179.99,82.15L184.44,102.63",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s123",
+     "assetId": "shape:Tick",
+     "name": "Tick",
+     "xPct": 16.531,
+     "yPct": 1.874,
+     "widthPct": 2.281,
+     "heightPct": 1.973,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 10.04,
+      "h": 18.86,
+      "vx": 72.74,
+      "vy": 17.91,
+      "path": "M75.74,20.91L79.77,33.77",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s124",
+     "assetId": "shape:Tick",
+     "name": "Tick",
+     "xPct": 47.172,
+     "yPct": 13.905,
+     "widthPct": 2.202,
+     "heightPct": 2.313,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 9.69,
+      "h": 22.11,
+      "vx": 207.56,
+      "vy": 132.93,
+      "path": "M210.56,135.93L214.24,152.04",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s125",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -7.273,
+     "yPct": 16.946,
+     "widthPct": 114.545,
+     "heightPct": 101.297,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 504,
+      "h": 968.4,
+      "radius": 117.36,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s129",
+     "assetId": "shape:Bowl shadow",
+     "name": "Bowl shadow",
+     "xPct": 66.818,
+     "yPct": 30.858,
+     "widthPct": 62.727,
+     "heightPct": 28.87,
+     "rotation": 0,
+     "opacity": 0.25,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 276,
+      "h": 276,
+      "fill": "#000000",
+      "blur": 8
+     }
+    },
+    {
+     "id": "tpl-s130",
+     "assetId": "shape:Bowl rim",
+     "name": "Bowl rim",
+     "xPct": 66.364,
+     "yPct": 30.23,
+     "widthPct": 61.818,
+     "heightPct": 28.452,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 272,
+      "h": 272,
+      "fill": "#a9846d",
+      "gradient": [
+       [
+        0,
+        "#c9a58f"
+       ],
+       [
+        1,
+        "#8a6450"
+       ]
+      ]
+     }
+    },
+    {
+     "id": "tpl-s131",
+     "assetId": "shape:Bowl inner",
+     "name": "Bowl inner",
+     "xPct": 68.636,
+     "yPct": 31.276,
+     "widthPct": 57.273,
+     "heightPct": 26.36,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 252,
+      "h": 252,
+      "fill": "#cfc9be"
+     }
+    },
+    {
+     "id": "tpl-s132",
+     "assetId": "shape:Bowl well",
+     "name": "Bowl well",
+     "xPct": 71.364,
+     "yPct": 32.531,
+     "widthPct": 51.818,
+     "heightPct": 23.849,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 228,
+      "h": 228,
+      "fill": "#cfc8bb"
+     }
+    },
+    {
+     "id": "tpl-s133",
+     "assetId": "shape:Rice",
+     "name": "Rice",
+     "xPct": 73.409,
+     "yPct": 46.339,
+     "widthPct": 27.273,
+     "heightPct": 12.552,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 120,
+      "h": 120,
+      "fill": "#e6e3dc",
+      "blur": 3
+     }
+    },
+    {
+     "id": "tpl-s134",
+     "assetId": "shape:Rice2",
+     "name": "Rice2",
+     "xPct": 95.0,
+     "yPct": 50.209,
+     "widthPct": 18.182,
+     "heightPct": 8.368,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 80,
+      "h": 80,
+      "fill": "#dcd9d2",
+      "blur": 3
+     }
+    },
+    {
+     "id": "tpl-s135",
+     "assetId": "shape:Salmon",
+     "name": "Salmon",
+     "xPct": 76.092,
+     "yPct": 42.399,
+     "widthPct": 28.724,
+     "heightPct": 8.716,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 126.39,
+      "h": 83.32,
+      "vx": 334.81,
+      "vy": 405.34,
+      "path": "M410.68,419.81C441.71,434.28 461.19,458.19 454.19,473.2C447.19,488.22 416.36,488.66 385.32,474.19C354.29,459.72 334.81,435.81 341.81,420.8C348.81,405.78 379.64,405.34 410.68,419.81Z",
+      "fill": "#f0763a",
+      "gradient": [
+       [
+        0,
+        "#f68a4a"
+       ],
+       [
+        1,
+        "#d8552a"
+       ]
+      ]
+     }
+    },
+    {
+     "id": "tpl-s136",
+     "assetId": "shape:Salmon 2",
+     "name": "Salmon 2",
+     "xPct": 95.033,
+     "yPct": 50.828,
+     "widthPct": 19.025,
+     "heightPct": 6.504,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 83.71,
+      "h": 62.18,
+      "vx": 418.15,
+      "vy": 485.91,
+      "path": "M470.14,495.25C490.16,504.59 501.85,521.89 496.25,533.9C490.65,545.92 469.88,548.09 449.86,538.75C429.84,529.41 418.15,512.11 423.75,500.1C429.35,488.08 450.12,485.91 470.14,495.25Z",
+      "fill": "#e8632f",
+      "gradient": [
+       [
+        0,
+        "#f68a4a"
+       ],
+       [
+        1,
+        "#d8552a"
+       ]
+      ]
+     }
+    },
+    {
+     "id": "tpl-s137",
+     "assetId": "shape:Salmon light",
+     "name": "Salmon light",
+     "xPct": 82.055,
+     "yPct": 42.945,
+     "widthPct": 20.435,
+     "heightPct": 5.533,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 89.92,
+      "h": 52.9,
+      "vx": 361.04,
+      "vy": 410.55,
+      "path": "M411.92,424.31C434.94,435.05 450.96,449.43 447.69,456.44C444.42,463.45 423.11,460.43 400.08,449.69C377.06,438.95 361.04,424.57 364.31,417.56C367.58,410.55 388.89,413.57 411.92,424.31Z",
+      "fill": "#f9a06a"
+     }
+    },
+    {
+     "id": "tpl-s138",
+     "assetId": "shape:Avocado slice",
+     "name": "Avocado slice",
+     "xPct": 87.283,
+     "yPct": 31.048,
+     "widthPct": 15.435,
+     "heightPct": 10.079,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 67.91,
+      "h": 96.36,
+      "vx": 384.04,
+      "vy": 296.82,
+      "path": "M425.99,299.7C442.31,302.58 451.96,325.19 447.54,350.21C443.13,375.23 426.33,393.18 410.01,390.3C393.69,387.42 384.04,364.81 388.46,339.79C392.87,314.77 409.67,296.82 425.99,299.7Z",
+      "fill": "#5b8f34",
+      "gradient": [
+       [
+        0,
+        "#9cc55a"
+       ],
+       [
+        1,
+        "#4a7a2c"
+       ]
+      ]
+     }
+    },
+    {
+     "id": "tpl-s139",
+     "assetId": "shape:Avocado slice 2",
+     "name": "Avocado slice 2",
+     "xPct": 98.636,
+     "yPct": 30.649,
+     "widthPct": 11.818,
+     "heightPct": 10.042,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 52.0,
+      "h": 96.0,
+      "vx": 434.0,
+      "vy": 293.0,
+      "path": "M460.0,293.0C474.36,293.0 486.0,314.49 486.0,341.0C486.0,367.51 474.36,389.0 460.0,389.0C445.64,389.0 434.0,367.51 434.0,341.0C434.0,314.49 445.64,293.0 460.0,293.0Z",
+      "fill": "#5b8f34",
+      "gradient": [
+       [
+        0,
+        "#9cc55a"
+       ],
+       [
+        1,
+        "#4a7a2c"
+       ]
+      ]
+     }
+    },
+    {
+     "id": "tpl-s140",
+     "assetId": "shape:Lime",
+     "name": "Lime",
+     "xPct": 70.348,
+     "yPct": 34.418,
+     "widthPct": 13.849,
+     "heightPct": 5.431,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 60.93,
+      "h": 51.92,
+      "vx": 309.53,
+      "vy": 329.04,
+      "path": "M332.48,334.33C347.01,329.04 362.16,334.01 366.31,345.42C370.47,356.84 362.06,370.38 347.52,375.67C332.99,380.96 317.84,375.99 313.69,364.58C309.53,353.16 317.94,339.62 332.48,334.33Z",
+      "fill": "#c9e26a"
+     }
+    },
+    {
+     "id": "tpl-s141",
+     "assetId": "shape:Lime 2",
+     "name": "Lime 2",
+     "xPct": 79.781,
+     "yPct": 33.633,
+     "widthPct": 13.166,
+     "heightPct": 5.746,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 57.93,
+      "h": 54.93,
+      "vx": 351.03,
+      "vy": 321.54,
+      "path": "M388.21,326.45C401.7,331.36 408.97,345.44 404.43,357.89C399.9,370.35 385.29,376.46 371.79,371.55C358.3,366.64 351.03,352.56 355.57,340.11C360.1,327.65 374.71,321.54 388.21,326.45Z",
+      "fill": "#d6ea78"
+     }
+    },
+    {
+     "id": "tpl-s142",
+     "assetId": "shape:Onion",
+     "name": "Onion",
+     "xPct": 103.636,
+     "yPct": 44.77,
+     "widthPct": 10.0,
+     "heightPct": 3.138,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 44.0,
+      "h": 30.0,
+      "vx": 456.0,
+      "vy": 428.0,
+      "path": "M478.0,428.0C490.15,428.0 500.0,434.72 500.0,443.0C500.0,451.28 490.15,458.0 478.0,458.0C465.85,458.0 456.0,451.28 456.0,443.0C456.0,434.72 465.85,428.0 478.0,428.0Z",
+      "fill": "#f4d3dc",
+      "stroke": "#c2436b",
+      "strokeWidth": 3,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s143",
+     "assetId": "shape:Onion",
+     "name": "Onion",
+     "xPct": 107.001,
+     "yPct": 48.529,
+     "widthPct": 10.543,
+     "heightPct": 3.989,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 46.39,
+      "h": 38.13,
+      "vx": 470.81,
+      "vy": 463.93,
+      "path": "M501.5,470.01C512.02,476.08 517.19,486.83 513.05,494.0C508.91,501.17 497.02,502.07 486.5,495.99C475.98,489.92 470.81,479.17 474.95,472.0C479.09,464.83 490.98,463.93 501.5,470.01Z",
+      "fill": "#f4d3dc",
+      "stroke": "#c2436b",
+      "strokeWidth": 3,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s144",
+     "assetId": "shape:Onion",
+     "name": "Onion",
+     "xPct": 102.94,
+     "yPct": 53.327,
+     "widthPct": 8.666,
+     "heightPct": 4.852,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 38.13,
+      "h": 46.39,
+      "vx": 452.93,
+      "vy": 509.81,
+      "path": "M484.99,525.5C491.07,536.02 490.17,547.91 483.0,552.05C475.83,556.19 465.08,551.02 459.01,540.5C452.93,529.98 453.83,518.09 461.0,513.95C468.17,509.81 478.92,514.98 484.99,525.5Z",
+      "fill": "#f4d3dc",
+      "stroke": "#c2436b",
+      "strokeWidth": 3,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s126",
+     "assetId": "shape:Title card shadow",
+     "name": "Title card shadow",
+     "xPct": 18.182,
+     "yPct": 5.439,
+     "widthPct": 68.182,
+     "heightPct": 11.611,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 6,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 300,
+      "h": 111,
+      "radius": 5,
+      "fill": "#dcebdb"
+     }
+    },
+    {
+     "id": "tpl-s127",
+     "assetId": "shape:Title card",
+     "name": "Title card",
+     "xPct": 15.455,
+     "yPct": 4.603,
+     "widthPct": 69.091,
+     "heightPct": 10.983,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 7,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 304,
+      "h": 105,
+      "radius": 5,
+      "fill": "#ffffff"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 66.27,
+    "x": 0.0,
+    "y": 18.85,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#fbfbf7",
+    "borderColor": "#e4e4de",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Subscribe for Free Delivery",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #cdbd98 0%, #d2c19c 60%, #e2d3b2 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t151",
+     "xPct": 20.0,
+     "yPct": 83.574,
+     "widthPct": 60.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Subscribe for\nFree Delivery",
+      "color": "#0b4a3c",
+      "size": 84.6,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.1316367701480263
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s145",
+     "assetId": "shape:Underline",
+     "name": "Underline",
+     "xPct": 40.805,
+     "yPct": 82.476,
+     "widthPct": 3.636,
+     "heightPct": 1.151,
+     "rotation": 0,
+     "opacity": 0.6,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 16.0,
+      "h": 11.0,
+      "vx": 179.54,
+      "vy": 788.47,
+      "path": "M182.54,791.47L187.54,796.47L192.54,791.47",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "miter"
+     }
+    },
+    {
+     "id": "tpl-s146",
+     "assetId": "shape:Underline",
+     "name": "Underline",
+     "xPct": 38.085,
+     "yPct": 97.416,
+     "widthPct": 3.636,
+     "heightPct": 1.151,
+     "rotation": 0,
+     "opacity": 0.6,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 16.0,
+      "h": 11.0,
+      "vx": 167.57,
+      "vy": 931.3,
+      "path": "M170.57,934.3L175.57,939.3L180.57,934.3",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "miter"
+     }
+    },
+    {
+     "id": "tpl-s147",
+     "assetId": "shape:Underline",
+     "name": "Underline",
+     "xPct": 29.465,
+     "yPct": 81.403,
+     "widthPct": 4.773,
+     "heightPct": 1.151,
+     "rotation": 0,
+     "opacity": 0.6,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 21.0,
+      "h": 11.0,
+      "vx": 129.65,
+      "vy": 778.22,
+      "path": "M132.65,781.22L137.65,786.22L142.65,781.22L147.65,786.22",
+      "stroke": "#ffffff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "miter"
+     }
+    },
+    {
+     "id": "tpl-s148",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -7.273,
+     "yPct": -18.096,
+     "widthPct": 114.545,
+     "heightPct": 101.297,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 504,
+      "h": 968.4,
+      "radius": 117.36,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s152",
+     "assetId": "shape:Bowl shadow",
+     "name": "Bowl shadow",
+     "xPct": -35.909,
+     "yPct": 30.858,
+     "widthPct": 62.727,
+     "heightPct": 28.87,
+     "rotation": 0,
+     "opacity": 0.25,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 276,
+      "h": 276,
+      "fill": "#000000",
+      "blur": 8
+     }
+    },
+    {
+     "id": "tpl-s153",
+     "assetId": "shape:Bowl rim",
+     "name": "Bowl rim",
+     "xPct": -36.364,
+     "yPct": 30.23,
+     "widthPct": 61.818,
+     "heightPct": 28.452,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 272,
+      "h": 272,
+      "fill": "#a9846d",
+      "gradient": [
+       [
+        0,
+        "#c9a58f"
+       ],
+       [
+        1,
+        "#8a6450"
+       ]
+      ]
+     }
+    },
+    {
+     "id": "tpl-s154",
+     "assetId": "shape:Bowl inner",
+     "name": "Bowl inner",
+     "xPct": -34.091,
+     "yPct": 31.276,
+     "widthPct": 57.273,
+     "heightPct": 26.36,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 252,
+      "h": 252,
+      "fill": "#cfc9be"
+     }
+    },
+    {
+     "id": "tpl-s155",
+     "assetId": "shape:Bowl well",
+     "name": "Bowl well",
+     "xPct": -31.364,
+     "yPct": 32.531,
+     "widthPct": 51.818,
+     "heightPct": 23.849,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 228,
+      "h": 228,
+      "fill": "#cfc8bb"
+     }
+    },
+    {
+     "id": "tpl-s156",
+     "assetId": "shape:Rice",
+     "name": "Rice",
+     "xPct": -29.318,
+     "yPct": 46.339,
+     "widthPct": 27.273,
+     "heightPct": 12.552,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 120,
+      "h": 120,
+      "fill": "#e6e3dc",
+      "blur": 3
+     }
+    },
+    {
+     "id": "tpl-s157",
+     "assetId": "shape:Rice2",
+     "name": "Rice2",
+     "xPct": -7.727,
+     "yPct": 50.209,
+     "widthPct": 18.182,
+     "heightPct": 8.368,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 80,
+      "h": 80,
+      "fill": "#dcd9d2",
+      "blur": 3
+     }
+    },
+    {
+     "id": "tpl-s158",
+     "assetId": "shape:Salmon",
+     "name": "Salmon",
+     "xPct": -26.635,
+     "yPct": 42.399,
+     "widthPct": 28.724,
+     "heightPct": 8.716,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 126.39,
+      "h": 83.32,
+      "vx": -117.19,
+      "vy": 405.34,
+      "path": "M-41.32,419.81C-10.29,434.28 9.19,458.19 2.19,473.2C-4.81,488.22 -35.64,488.66 -66.68,474.19C-97.71,459.72 -117.19,435.81 -110.19,420.8C-103.19,405.78 -72.36,405.34 -41.32,419.81Z",
+      "fill": "#f0763a",
+      "gradient": [
+       [
+        0,
+        "#f68a4a"
+       ],
+       [
+        1,
+        "#d8552a"
+       ]
+      ]
+     }
+    },
+    {
+     "id": "tpl-s159",
+     "assetId": "shape:Salmon 2",
+     "name": "Salmon 2",
+     "xPct": -7.694,
+     "yPct": 50.828,
+     "widthPct": 19.025,
+     "heightPct": 6.504,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 83.71,
+      "h": 62.18,
+      "vx": -33.85,
+      "vy": 485.91,
+      "path": "M18.14,495.25C38.16,504.59 49.85,521.89 44.25,533.9C38.65,545.92 17.88,548.09 -2.14,538.75C-22.16,529.41 -33.85,512.11 -28.25,500.1C-22.65,488.08 -1.88,485.91 18.14,495.25Z",
+      "fill": "#e8632f",
+      "gradient": [
+       [
+        0,
+        "#f68a4a"
+       ],
+       [
+        1,
+        "#d8552a"
+       ]
+      ]
+     }
+    },
+    {
+     "id": "tpl-s160",
+     "assetId": "shape:Salmon light",
+     "name": "Salmon light",
+     "xPct": -20.672,
+     "yPct": 42.945,
+     "widthPct": 20.435,
+     "heightPct": 5.533,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 89.92,
+      "h": 52.9,
+      "vx": -90.96,
+      "vy": 410.55,
+      "path": "M-40.08,424.31C-17.06,435.05 -1.04,449.43 -4.31,456.44C-7.58,463.45 -28.89,460.43 -51.92,449.69C-74.94,438.95 -90.96,424.57 -87.69,417.56C-84.42,410.55 -63.11,413.57 -40.08,424.31Z",
+      "fill": "#f9a06a"
+     }
+    },
+    {
+     "id": "tpl-s161",
+     "assetId": "shape:Avocado slice",
+     "name": "Avocado slice",
+     "xPct": -15.445,
+     "yPct": 31.048,
+     "widthPct": 15.435,
+     "heightPct": 10.079,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 67.91,
+      "h": 96.36,
+      "vx": -67.96,
+      "vy": 296.82,
+      "path": "M-26.01,299.7C-9.69,302.58 -0.04,325.19 -4.46,350.21C-8.87,375.23 -25.67,393.18 -41.99,390.3C-58.31,387.42 -67.96,364.81 -63.54,339.79C-59.13,314.77 -42.33,296.82 -26.01,299.7Z",
+      "fill": "#5b8f34",
+      "gradient": [
+       [
+        0,
+        "#9cc55a"
+       ],
+       [
+        1,
+        "#4a7a2c"
+       ]
+      ]
+     }
+    },
+    {
+     "id": "tpl-s162",
+     "assetId": "shape:Avocado slice 2",
+     "name": "Avocado slice 2",
+     "xPct": -4.091,
+     "yPct": 30.649,
+     "widthPct": 11.818,
+     "heightPct": 10.042,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 52.0,
+      "h": 96.0,
+      "vx": -18.0,
+      "vy": 293.0,
+      "path": "M8.0,293.0C22.36,293.0 34.0,314.49 34.0,341.0C34.0,367.51 22.36,389.0 8.0,389.0C-6.36,389.0 -18.0,367.51 -18.0,341.0C-18.0,314.49 -6.36,293.0 8.0,293.0Z",
+      "fill": "#5b8f34",
+      "gradient": [
+       [
+        0,
+        "#9cc55a"
+       ],
+       [
+        1,
+        "#4a7a2c"
+       ]
+      ]
+     }
+    },
+    {
+     "id": "tpl-s163",
+     "assetId": "shape:Lime",
+     "name": "Lime",
+     "xPct": -32.379,
+     "yPct": 34.418,
+     "widthPct": 13.849,
+     "heightPct": 5.431,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 60.93,
+      "h": 51.92,
+      "vx": -142.47,
+      "vy": 329.04,
+      "path": "M-119.52,334.33C-104.99,329.04 -89.84,334.01 -85.69,345.42C-81.53,356.84 -89.94,370.38 -104.48,375.67C-119.01,380.96 -134.16,375.99 -138.31,364.58C-142.47,353.16 -134.06,339.62 -119.52,334.33Z",
+      "fill": "#c9e26a"
+     }
+    },
+    {
+     "id": "tpl-s164",
+     "assetId": "shape:Lime 2",
+     "name": "Lime 2",
+     "xPct": -22.947,
+     "yPct": 33.633,
+     "widthPct": 13.166,
+     "heightPct": 5.746,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 57.93,
+      "h": 54.93,
+      "vx": -100.97,
+      "vy": 321.54,
+      "path": "M-63.79,326.45C-50.3,331.36 -43.03,345.44 -47.57,357.89C-52.1,370.35 -66.71,376.46 -80.21,371.55C-93.7,366.64 -100.97,352.56 -96.43,340.11C-91.9,327.65 -77.29,321.54 -63.79,326.45Z",
+      "fill": "#d6ea78"
+     }
+    },
+    {
+     "id": "tpl-s165",
+     "assetId": "shape:Onion",
+     "name": "Onion",
+     "xPct": 0.909,
+     "yPct": 44.77,
+     "widthPct": 10.0,
+     "heightPct": 3.138,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 44.0,
+      "h": 30.0,
+      "vx": 4.0,
+      "vy": 428.0,
+      "path": "M26.0,428.0C38.15,428.0 48.0,434.72 48.0,443.0C48.0,451.28 38.15,458.0 26.0,458.0C13.85,458.0 4.0,451.28 4.0,443.0C4.0,434.72 13.85,428.0 26.0,428.0Z",
+      "fill": "#f4d3dc",
+      "stroke": "#c2436b",
+      "strokeWidth": 3,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s166",
+     "assetId": "shape:Onion",
+     "name": "Onion",
+     "xPct": 4.274,
+     "yPct": 48.529,
+     "widthPct": 10.543,
+     "heightPct": 3.989,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 46.39,
+      "h": 38.13,
+      "vx": 18.81,
+      "vy": 463.93,
+      "path": "M49.5,470.01C60.02,476.08 65.19,486.83 61.05,494.0C56.91,501.17 45.02,502.07 34.5,495.99C23.98,489.92 18.81,479.17 22.95,472.0C27.09,464.83 38.98,463.93 49.5,470.01Z",
+      "fill": "#f4d3dc",
+      "stroke": "#c2436b",
+      "strokeWidth": 3,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s167",
+     "assetId": "shape:Onion",
+     "name": "Onion",
+     "xPct": 0.212,
+     "yPct": 53.327,
+     "widthPct": 8.666,
+     "heightPct": 4.852,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 38.13,
+      "h": 46.39,
+      "vx": 0.93,
+      "vy": 509.81,
+      "path": "M32.99,525.5C39.07,536.02 38.17,547.91 31.0,552.05C23.83,556.19 13.08,551.02 7.01,540.5C0.93,529.98 1.83,518.09 9.0,513.95C16.17,509.81 26.92,514.98 32.99,525.5Z",
+      "fill": "#f4d3dc",
+      "stroke": "#c2436b",
+      "strokeWidth": 3,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s149",
+     "assetId": "shape:Title card shadow",
+     "name": "Title card shadow",
+     "xPct": 22.727,
+     "yPct": 82.741,
+     "widthPct": 59.091,
+     "heightPct": 11.611,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 6,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 260,
+      "h": 111,
+      "radius": 5,
+      "fill": "#e6dcc3"
+     }
+    },
+    {
+     "id": "tpl-s150",
+     "assetId": "shape:Title card",
+     "name": "Title card",
+     "xPct": 20.0,
+     "yPct": 81.904,
+     "widthPct": 60.0,
+     "heightPct": 10.983,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 7,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 264,
+      "h": 105,
+      "radius": 5,
+      "fill": "#ffffff"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 66.27,
+    "x": 0.0,
+    "y": -20.08,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#fbfbf7",
+    "borderColor": "#e4e4de",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Users Love Our App",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#6a5f50"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t177",
+     "xPct": 24.773,
+     "yPct": 32.51,
+     "widthPct": 50.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Users\nLove\nOur\nApp",
+      "color": "#ffffff",
+      "size": 163.4,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.1119397615131579
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s168",
+     "assetId": "shape:Street",
+     "name": "Street",
+     "xPct": 0.0,
+     "yPct": 0.0,
+     "widthPct": 100.0,
+     "heightPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 440,
+      "h": 956,
+      "radius": 0,
+      "gradient": [
+       [
+        0,
+        "#a99a84"
+       ],
+       [
+        0.4,
+        "#8a7a66"
+       ],
+       [
+        1,
+        "#3a3a38"
+       ]
+      ]
+     }
+    },
+    {
+     "id": "tpl-s169",
+     "assetId": "shape:Building",
+     "name": "Building",
+     "xPct": 0.0,
+     "yPct": 0.0,
+     "widthPct": 29.545,
+     "heightPct": 34.519,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 130,
+      "h": 330,
+      "radius": 0,
+      "fill": "#4a4e4c"
+     }
+    },
+    {
+     "id": "tpl-s170",
+     "assetId": "shape:Delivery box",
+     "name": "Delivery box",
+     "xPct": 55.682,
+     "yPct": 26.151,
+     "widthPct": 45.455,
+     "heightPct": 33.473,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 200,
+      "h": 320,
+      "radius": 12,
+      "gradient": [
+       [
+        0,
+        "#7fb096"
+       ],
+       [
+        1,
+        "#6fa58a"
+       ]
+      ]
+     }
+    },
+    {
+     "id": "tpl-s171",
+     "assetId": "shape:Jacket",
+     "name": "Jacket",
+     "xPct": 34.091,
+     "yPct": 21.967,
+     "widthPct": 50.0,
+     "heightPct": 23.013,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 220.0,
+      "h": 220.0,
+      "vx": 150.0,
+      "vy": 210.0,
+      "path": "M260.0,210.0C320.75,210.0 370.0,259.25 370.0,320.0C370.0,380.75 320.75,430.0 260.0,430.0C199.25,430.0 150.0,380.75 150.0,320.0C150.0,259.25 199.25,210.0 260.0,210.0Z",
+      "fill": "#242c3a"
+     }
+    },
+    {
+     "id": "tpl-s172",
+     "assetId": "shape:Helmet",
+     "name": "Helmet",
+     "xPct": 31.475,
+     "yPct": 9.21,
+     "widthPct": 39.322,
+     "heightPct": 14.007,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 173.02,
+      "h": 133.91,
+      "vx": 138.49,
+      "vy": 88.05,
+      "path": "M214.58,95.91C259.18,88.05 300.0,108.13 305.75,140.76C311.51,173.4 280.02,206.22 235.42,214.09C190.82,221.95 150.0,201.87 144.25,169.24C138.49,136.6 169.98,103.78 214.58,95.91Z",
+      "fill": "#0d0d10"
+     }
+    },
+    {
+     "id": "tpl-s173",
+     "assetId": "shape:Legs",
+     "name": "Legs",
+     "xPct": 16.136,
+     "yPct": 55.544,
+     "widthPct": 24.545,
+     "heightPct": 24.895,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 108.0,
+      "h": 238.0,
+      "vx": 71.0,
+      "vy": 531.0,
+      "path": "M125.0,540.0C149.85,540.0 170.0,589.25 170.0,650.0C170.0,710.75 149.85,760.0 125.0,760.0C100.15,760.0 80.0,710.75 80.0,650.0C80.0,589.25 100.15,540.0 125.0,540.0Z",
+      "fill": "#8b8f90",
+      "blur": 3
+     }
+    },
+    {
+     "id": "tpl-s174",
+     "assetId": "shape:Scooter body",
+     "name": "Scooter body",
+     "xPct": 47.955,
+     "yPct": 66.841,
+     "widthPct": 58.636,
+     "heightPct": 10.669,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 6,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 258.0,
+      "h": 102.0,
+      "vx": 211.0,
+      "vy": 639.0,
+      "path": "M340.0,648.0C406.28,648.0 460.0,666.8 460.0,690.0C460.0,713.2 406.28,732.0 340.0,732.0C273.72,732.0 220.0,713.2 220.0,690.0C220.0,666.8 273.72,648.0 340.0,648.0Z",
+      "fill": "#c4c8c6",
+      "blur": 3
+     }
+    },
+    {
+     "id": "tpl-s175",
+     "assetId": "shape:Scooter dark",
+     "name": "Scooter dark",
+     "xPct": 0.0,
+     "yPct": 73.745,
+     "widthPct": 100.0,
+     "heightPct": 26.255,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 7,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 440,
+      "h": 251,
+      "radius": 0,
+      "gradient": [
+       [
+        0,
+        "rgba(20,20,20,0)"
+       ],
+       [
+        0.4,
+        "#1a1a1a"
+       ],
+       [
+        1,
+        "#101010"
+       ]
+      ]
+     }
+    },
+    {
+     "id": "tpl-s176",
+     "assetId": "shape:Title box",
+     "name": "Title box",
+     "xPct": 24.773,
+     "yPct": 30.858,
+     "widthPct": 50.909,
+     "heightPct": 34.205,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 224,
+      "h": 327,
+      "radius": 3,
+      "fill": "#000000"
+     }
+    }
+   ],
+   "deviceOne": {
+    "visible": false
+   }
+  }
+ ],
+ "designHeight": 2347,
+ "textColor": "#111111"
+}

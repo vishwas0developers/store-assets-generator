@@ -1,0 +1,970 @@
+{
+ "version": 1,
+ "id": "medium-app",
+ "name": "Medium app",
+ "category": "entertainment",
+ "description": "Present your content platform app with our professional template. Showcase articles, writer profiles, and reading features in a clean design that emphasizes readability and user engagement.",
+ "devices": [
+  {
+   "deviceId": "apple-iphone-16-pro-max",
+   "label": "apple-iphone-16-pro-max"
+  },
+  {
+   "deviceId": "apple-iphone-14-plus",
+   "label": "apple-iphone-14-plus"
+  },
+  {
+   "deviceId": "samsung-galaxy-s21-ultra",
+   "label": "samsung-galaxy-s21-ultra"
+  }
+ ],
+ "layout": "single-no-text",
+ "background": {
+  "type": "solid",
+  "value": "#c3e3fc"
+ },
+ "panoramic": false,
+ "columnCount": 8,
+ "titles": [
+  "Read millions of add-free stories.",
+  "Explore and follow thousands of topics.",
+  "Learn from experts and insiders.",
+  "Get recommended stories you'll devour.",
+  "Follow and engage with your favorite writers.",
+  "Bookmark stories and passages that resonate.",
+  "Listen to any story on the go.",
+  "Make Medium yours."
+ ],
+ "subtitles": [
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "Let's find people to follow based on your interests."
+ ],
+ "pages": [
+  {
+   "title": "Read millions of add-free stories.",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#c3e3fc"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t2",
+     "xPct": 10.0,
+     "yPct": 9.927,
+     "widthPct": 88.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Read millions\nof add-free\nstories.",
+      "color": "#111111",
+      "size": 115.4,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.1914893617021276,
+      "charSpacing": -8
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s1",
+     "assetId": "shape:Logo tab",
+     "name": "Logo tab",
+     "xPct": 10.0,
+     "yPct": 4.603,
+     "widthPct": 8.182,
+     "heightPct": 3.766,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 36,
+      "h": 36,
+      "vx": 44,
+      "vy": 44,
+      "path": "M44,44L62.0,44C71.94,44 80,52.06 80,62.0L80,62.0C80,71.94 71.94,80 62.0,80L44,80L44,44Z",
+      "fill": "#0085ff"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 58.91,
+    "x": 0.0,
+    "y": 29.34,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Explore and follow thousands of topics.",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#b4e5a7"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t4",
+     "xPct": 10.0,
+     "yPct": 66.517,
+     "widthPct": 88.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Explore\nand follow\nthousands\nof topics.",
+      "color": "#111111",
+      "size": 115.4,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.1914893617021276,
+      "charSpacing": -8
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s3",
+     "assetId": "shape:Logo tab",
+     "name": "Logo tab",
+     "xPct": 10.0,
+     "yPct": 91.632,
+     "widthPct": 8.182,
+     "heightPct": 3.766,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 36,
+      "h": 36,
+      "vx": 44,
+      "vy": 876,
+      "path": "M44,876L80,876L80,894.0C80,903.94 71.94,912 62.0,912L62.0,912C52.06,912 44,903.94 44,894.0L44,876Z",
+      "fill": "#198916"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 58.91,
+    "x": 0.0,
+    "y": -34.31,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Learn from experts and insiders.",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#e5bffe"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t6",
+     "xPct": 10.0,
+     "yPct": 9.927,
+     "widthPct": 88.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Learn from\nexperts and\ninsiders.",
+      "color": "#111111",
+      "size": 115.4,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.1914893617021276,
+      "charSpacing": -8
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s5",
+     "assetId": "shape:Logo tab",
+     "name": "Logo tab",
+     "xPct": 10.0,
+     "yPct": 4.603,
+     "widthPct": 8.182,
+     "heightPct": 3.766,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 36,
+      "h": 36,
+      "vx": 44,
+      "vy": 44,
+      "path": "M62.0,44L80,44L80,80L62.0,80C52.06,80 44,71.94 44,62.0L44,62.0C44,52.06 52.06,44 62.0,44Z",
+      "fill": "#863dd7"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 58.91,
+    "x": 0.0,
+    "y": 29.34,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Get recommended stories you'll devour.",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#fcd2ba"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t8",
+     "xPct": 10.0,
+     "yPct": 66.517,
+     "widthPct": 88.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Get\nrecommended\nstories you'll\ndevour.",
+      "color": "#111111",
+      "size": 115.4,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.1914893617021276,
+      "charSpacing": -8
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s7",
+     "assetId": "shape:Logo tab",
+     "name": "Logo tab",
+     "xPct": 10.0,
+     "yPct": 91.632,
+     "widthPct": 8.182,
+     "heightPct": 3.766,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 36,
+      "h": 36,
+      "vx": 44,
+      "vy": 876,
+      "path": "M62.0,876L62.0,876C71.94,876 80,884.06 80,894.0L80,912L44,912L44,894.0C44,884.06 52.06,876 62.0,876Z",
+      "fill": "#f24f2b"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 58.91,
+    "x": 0.0,
+    "y": -37.19,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Follow and engage with your favorite writers.",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#faeeae"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t10",
+     "xPct": 10.0,
+     "yPct": 9.927,
+     "widthPct": 88.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Follow and\nengage with\nyour favorite\nwriters.",
+      "color": "#111111",
+      "size": 115.4,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.1914893617021276,
+      "charSpacing": -8
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s9",
+     "assetId": "shape:Logo tab",
+     "name": "Logo tab",
+     "xPct": 10.0,
+     "yPct": 4.603,
+     "widthPct": 8.182,
+     "heightPct": 3.766,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 36,
+      "h": 36,
+      "vx": 44,
+      "vy": 44,
+      "path": "M44,44L62.0,44C71.94,44 80,52.06 80,62.0L80,62.0C80,71.94 71.94,80 62.0,80L44,80L44,44Z",
+      "fill": "#ffbf11"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 58.91,
+    "x": 0.0,
+    "y": 36.53,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Bookmark stories and passages that resonate.",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#facfdd"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t12",
+     "xPct": 10.0,
+     "yPct": 66.517,
+     "widthPct": 88.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Bookmark\nstories and\npassages that\nresonate.",
+      "color": "#111111",
+      "size": 115.4,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.1914893617021276,
+      "charSpacing": -8
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s11",
+     "assetId": "shape:Logo tab",
+     "name": "Logo tab",
+     "xPct": 10.0,
+     "yPct": 91.632,
+     "widthPct": 8.182,
+     "heightPct": 3.766,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 36,
+      "h": 36,
+      "vx": 44,
+      "vy": 876,
+      "path": "M44,876L80,876L80,894.0C80,903.94 71.94,912 62.0,912L62.0,912C52.06,912 44,903.94 44,894.0L44,876Z",
+      "fill": "#f85289"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 58.91,
+    "x": 0.0,
+    "y": -37.19,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Listen to any story on the go.",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#b4e6a3"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t14",
+     "xPct": 10.0,
+     "yPct": 9.927,
+     "widthPct": 88.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Listen\nto any story\non the go.",
+      "color": "#111111",
+      "size": 115.4,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.1914893617021276,
+      "charSpacing": -8
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s13",
+     "assetId": "shape:Logo tab",
+     "name": "Logo tab",
+     "xPct": 10.0,
+     "yPct": 4.603,
+     "widthPct": 8.182,
+     "heightPct": 3.766,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 36,
+      "h": 36,
+      "vx": 44,
+      "vy": 44,
+      "path": "M62.0,44L80,44L80,80L62.0,80C52.06,80 44,71.94 44,62.0L44,62.0C44,52.06 52.06,44 62.0,44Z",
+      "fill": "#35aa43"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 58.91,
+    "x": 0.0,
+    "y": 29.34,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Make Medium yours.",
+   "subtitle": "Let's find people to follow based on your interests.",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#111111"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t27",
+     "xPct": 0.0,
+     "yPct": 3.617,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Welcome",
+     "style": {
+      "text": "Welcome to Medium",
+      "color": "#ffffff",
+      "size": 39.3,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.2
+     }
+    },
+    {
+     "id": "tpl-t28",
+     "xPct": 0.0,
+     "yPct": 26.231,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Make Medium\nyours.",
+      "color": "#e6e6e6",
+      "size": 119.0,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.22
+     }
+    },
+    {
+     "id": "tpl-t29",
+     "xPct": 0.0,
+     "yPct": 39.937,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Let's find people to follow based on your\ninterests.",
+      "color": "#6f6f6f",
+      "size": 40.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.6
+     }
+    },
+    {
+     "id": "tpl-t30",
+     "xPct": 27.273,
+     "yPct": 54.117,
+     "widthPct": 20.455,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Avatar A",
+     "style": {
+      "text": "A",
+      "color": "#ffffff",
+      "size": 186.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t31",
+     "xPct": 0.0,
+     "yPct": 91.592,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Continue",
+     "style": {
+      "text": "Continue",
+      "color": "#ffffff",
+      "size": 41.7,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.2
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s15",
+     "assetId": "shape:Avatar",
+     "name": "Avatar",
+     "xPct": 3.409,
+     "yPct": 52.301,
+     "widthPct": 20.455,
+     "heightPct": 9.414,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 6,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 90,
+      "h": 90,
+      "gradient": [
+       [
+        0,
+        "#ececec"
+       ],
+       [
+        1,
+        "#3a3a3a"
+       ]
+      ]
+     }
+    },
+    {
+     "id": "tpl-s16",
+     "assetId": "shape:Avatar",
+     "name": "Avatar",
+     "xPct": 27.273,
+     "yPct": 52.301,
+     "widthPct": 20.455,
+     "heightPct": 9.414,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 6,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 90,
+      "h": 90,
+      "gradient": [
+       [
+        0,
+        "#e8231a"
+       ],
+       [
+        1,
+        "#e8231a"
+       ]
+      ]
+     }
+    },
+    {
+     "id": "tpl-s17",
+     "assetId": "shape:Avatar",
+     "name": "Avatar",
+     "xPct": 51.136,
+     "yPct": 52.301,
+     "widthPct": 20.455,
+     "heightPct": 9.414,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 6,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 90,
+      "h": 90,
+      "gradient": [
+       [
+        0,
+        "#b9b9b9"
+       ],
+       [
+        1,
+        "#2a2a2a"
+       ]
+      ]
+     }
+    },
+    {
+     "id": "tpl-s18",
+     "assetId": "shape:Avatar",
+     "name": "Avatar",
+     "xPct": 74.773,
+     "yPct": 52.301,
+     "widthPct": 20.455,
+     "heightPct": 9.414,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 6,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 90,
+      "h": 90,
+      "gradient": [
+       [
+        0,
+        "#8fa6c4"
+       ],
+       [
+        1,
+        "#7a3a2a"
+       ]
+      ]
+     }
+    },
+    {
+     "id": "tpl-s19",
+     "assetId": "shape:Avatar",
+     "name": "Avatar",
+     "xPct": 98.636,
+     "yPct": 52.301,
+     "widthPct": 1.364,
+     "heightPct": 9.414,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 6,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 6.0,
+      "h": 90.0,
+      "vx": 434.0,
+      "vy": 500.0,
+      "path": "M440,545.0L440,546.57L440,548.14L440,549.7L440,551.26L440,552.81L440,554.36L440,555.89L440,557.4L440,558.91L440,560.39L440,561.86L440,563.3L440,564.73L440,566.13L440,567.5L440,568.85L440,570.16L440,571.45L440,572.7L440,573.93L440,575.11L440,576.26L440,577.37L440,578.44L440,579.47L440,580.46L440,581.41L440,582.31L440,583.16L440,583.97L440,584.73L440,585.45L440,586.11L440,586.72L440,587.29L440,587.8L440,588.26L440,588.66L440,589.02L440,589.32L440,589.56L440,589.75L440,589.89L440,589.97L440,590.0L440,589.97L440,589.89L440,589.75L440,589.56L440,589.32L440,589.02L440,588.66L440,588.26L440,587.8L440,587.29L440,586.72L440,586.11L440,585.45L440,584.73L440,583.97L440,583.16L440,582.31L440,581.41L440,580.46L440,579.47L440,578.44L440,577.37L440,576.26L440,575.11L440,573.93L440,572.7L440,571.45L440,570.16L440,568.85L440,567.5L439.27,566.13L438.55,564.73L437.89,563.3L437.28,561.86L436.71,560.39L436.2,558.91L435.74,557.4L435.34,555.89L434.98,554.36L434.68,552.81L434.44,551.26L434.25,549.7L434.11,548.14L434.03,546.57L434.0,545.0L434.03,543.43L434.11,541.86L434.25,540.3L434.44,538.74L434.68,537.19L434.98,535.64L435.34,534.11L435.74,532.6L436.2,531.09L436.71,529.61L437.28,528.14L437.89,526.7L438.55,525.27L439.27,523.87L440,522.5L440,521.15L440,519.84L440,518.55L440,517.3L440,516.07L440,514.89L440,513.74L440,512.63L440,511.56L440,510.53L440,509.54L440,508.59L440,507.69L440,506.84L440,506.03L440,505.27L440,504.55L440,503.89L440,503.28L440,502.71L440,502.2L440,501.74L440,501.34L440,500.98L440,500.68L440,500.44L440,500.25L440,500.11L440,500.03L440,500.0L440,500.03L440,500.11L440,500.25L440,500.44L440,500.68L440,500.98L440,501.34L440,501.74L440,502.2L440,502.71L440,503.28L440,503.89L440,504.55L440,505.27L440,506.03L440,506.84L440,507.69L440,508.59L440,509.54L440,510.53L440,511.56L440,512.63L440,513.74L440,514.89L440,516.07L440,517.3L440,518.55L440,519.84L440,521.15L440,522.5L440,523.87L440,525.27L440,526.7L440,528.14L440,529.61L440,531.09L440,532.6L440,534.11L440,535.64L440,537.19L440,538.74L440,540.3L440,541.86L440,543.43L440,545.0Z",
+      "gradient": [
+       [
+        0,
+        "#1f6fe0"
+       ],
+       [
+        1,
+        "#1f6fe0"
+       ]
+      ]
+     }
+    },
+    {
+     "id": "tpl-s20",
+     "assetId": "shape:Avatar",
+     "name": "Avatar",
+     "xPct": 0.0,
+     "yPct": 61.925,
+     "widthPct": 12.045,
+     "heightPct": 9.414,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 6,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 53.0,
+      "h": 90.0,
+      "vx": 0,
+      "vy": 592.0,
+      "path": "M53.0,637.0L52.97,638.57L52.89,640.14L52.75,641.7L52.56,643.26L52.32,644.81L52.02,646.36L51.66,647.89L51.26,649.4L50.8,650.91L50.29,652.39L49.72,653.86L49.11,655.3L48.45,656.73L47.73,658.13L46.97,659.5L46.16,660.85L45.31,662.16L44.41,663.45L43.46,664.7L42.47,665.93L41.44,667.11L40.37,668.26L39.26,669.37L38.11,670.44L36.93,671.47L35.7,672.46L34.45,673.41L33.16,674.31L31.85,675.16L30.5,675.97L29.13,676.73L27.73,677.45L26.3,678.11L24.86,678.72L23.39,679.29L21.91,679.8L20.4,680.26L18.89,680.66L17.36,681.02L15.81,681.32L14.26,681.56L12.7,681.75L11.14,681.89L9.57,681.97L8.0,682.0L6.43,681.97L4.86,681.89L3.3,681.75L1.74,681.56L0.19,681.32L0,681.02L0,680.66L0,680.26L0,679.8L0,679.29L0,678.72L0,678.11L0,677.45L0,676.73L0,675.97L0,675.16L0,674.31L0,673.41L0,672.46L0,671.47L0,670.44L0,669.37L0,668.26L0,667.11L0,665.93L0,664.7L0,663.45L0,662.16L0,660.85L0,659.5L0,658.13L0,656.73L0,655.3L0,653.86L0,652.39L0,650.91L0,649.4L0,647.89L0,646.36L0,644.81L0,643.26L0,641.7L0,640.14L0,638.57L0,637.0L0,635.43L0,633.86L0,632.3L0,630.74L0,629.19L0,627.64L0,626.11L0,624.6L0,623.09L0,621.61L0,620.14L0,618.7L0,617.27L0,615.87L0,614.5L0,613.15L0,611.84L0,610.55L0,609.3L0,608.07L0,606.89L0,605.74L0,604.63L0,603.56L0,602.53L0,601.54L0,600.59L0,599.69L0,598.84L0,598.03L0,597.27L0,596.55L0,595.89L0,595.28L0,594.71L0,594.2L0,593.74L0,593.34L0,592.98L0.19,592.68L1.74,592.44L3.3,592.25L4.86,592.11L6.43,592.03L8.0,592.0L9.57,592.03L11.14,592.11L12.7,592.25L14.26,592.44L15.81,592.68L17.36,592.98L18.89,593.34L20.4,593.74L21.91,594.2L23.39,594.71L24.86,595.28L26.3,595.89L27.73,596.55L29.13,597.27L30.5,598.03L31.85,598.84L33.16,599.69L34.45,600.59L35.7,601.54L36.93,602.53L38.11,603.56L39.26,604.63L40.37,605.74L41.44,606.89L42.47,608.07L43.46,609.3L44.41,610.55L45.31,611.84L46.16,613.15L46.97,614.5L47.73,615.87L48.45,617.27L49.11,618.7L49.72,620.14L50.29,621.61L50.8,623.09L51.26,624.6L51.66,626.11L52.02,627.64L52.32,629.19L52.56,630.74L52.75,632.3L52.89,633.86L52.97,635.43L53.0,637.0Z",
+      "gradient": [
+       [
+        0,
+        "#bcd0f0"
+       ],
+       [
+        1,
+        "#3a2a22"
+       ]
+      ]
+     }
+    },
+    {
+     "id": "tpl-s21",
+     "assetId": "shape:Avatar",
+     "name": "Avatar",
+     "xPct": 15.227,
+     "yPct": 61.925,
+     "widthPct": 20.455,
+     "heightPct": 9.414,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 6,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 90,
+      "h": 90,
+      "gradient": [
+       [
+        0,
+        "#6c6c6c"
+       ],
+       [
+        1,
+        "#d2b7a5"
+       ]
+      ]
+     }
+    },
+    {
+     "id": "tpl-s22",
+     "assetId": "shape:Avatar",
+     "name": "Avatar",
+     "xPct": 39.318,
+     "yPct": 61.925,
+     "widthPct": 20.455,
+     "heightPct": 9.414,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 6,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 90,
+      "h": 90,
+      "gradient": [
+       [
+        0,
+        "#1a1a1a"
+       ],
+       [
+        1,
+        "#c7a58c"
+       ]
+      ]
+     }
+    },
+    {
+     "id": "tpl-s23",
+     "assetId": "shape:Avatar",
+     "name": "Avatar",
+     "xPct": 62.955,
+     "yPct": 61.925,
+     "widthPct": 20.455,
+     "heightPct": 9.414,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 6,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 90,
+      "h": 90,
+      "gradient": [
+       [
+        0,
+        "#c8bdb5"
+       ],
+       [
+        1,
+        "#6a4a3a"
+       ]
+      ]
+     }
+    },
+    {
+     "id": "tpl-s24",
+     "assetId": "shape:Avatar",
+     "name": "Avatar",
+     "xPct": 84.091,
+     "yPct": 61.925,
+     "widthPct": 15.909,
+     "heightPct": 9.414,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 6,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 70.0,
+      "h": 90.0,
+      "vx": 370.0,
+      "vy": 592.0,
+      "path": "M440,637.0L440,638.57L440,640.14L440,641.7L440,643.26L440,644.81L440,646.36L440,647.89L440,649.4L440,650.91L440,652.39L440,653.86L440,655.3L440,656.73L440,658.13L440,659.5L440,660.85L440,662.16L440,663.45L440,664.7L440,665.93L440,667.11L440,668.26L440,669.37L440,670.44L440,671.47L440,672.46L440,673.41L440,674.31L438.85,675.16L437.5,675.97L436.13,676.73L434.73,677.45L433.3,678.11L431.86,678.72L430.39,679.29L428.91,679.8L427.4,680.26L425.89,680.66L424.36,681.02L422.81,681.32L421.26,681.56L419.7,681.75L418.14,681.89L416.57,681.97L415.0,682.0L413.43,681.97L411.86,681.89L410.3,681.75L408.74,681.56L407.19,681.32L405.64,681.02L404.11,680.66L402.6,680.26L401.09,679.8L399.61,679.29L398.14,678.72L396.7,678.11L395.27,677.45L393.87,676.73L392.5,675.97L391.15,675.16L389.84,674.31L388.55,673.41L387.3,672.46L386.07,671.47L384.89,670.44L383.74,669.37L382.63,668.26L381.56,667.11L380.53,665.93L379.54,664.7L378.59,663.45L377.69,662.16L376.84,660.85L376.03,659.5L375.27,658.13L374.55,656.73L373.89,655.3L373.28,653.86L372.71,652.39L372.2,650.91L371.74,649.4L371.34,647.89L370.98,646.36L370.68,644.81L370.44,643.26L370.25,641.7L370.11,640.14L370.03,638.57L370.0,637.0L370.03,635.43L370.11,633.86L370.25,632.3L370.44,630.74L370.68,629.19L370.98,627.64L371.34,626.11L371.74,624.6L372.2,623.09L372.71,621.61L373.28,620.14L373.89,618.7L374.55,617.27L375.27,615.87L376.03,614.5L376.84,613.15L377.69,611.84L378.59,610.55L379.54,609.3L380.53,608.07L381.56,606.89L382.63,605.74L383.74,604.63L384.89,603.56L386.07,602.53L387.3,601.54L388.55,600.59L389.84,599.69L391.15,598.84L392.5,598.03L393.87,597.27L395.27,596.55L396.7,595.89L398.14,595.28L399.61,594.71L401.09,594.2L402.6,593.74L404.11,593.34L405.64,592.98L407.19,592.68L408.74,592.44L410.3,592.25L411.86,592.11L413.43,592.03L415.0,592.0L416.57,592.03L418.14,592.11L419.7,592.25L421.26,592.44L422.81,592.68L424.36,592.98L425.89,593.34L427.4,593.74L428.91,594.2L430.39,594.71L431.86,595.28L433.3,595.89L434.73,596.55L436.13,597.27L437.5,598.03L438.85,598.84L440,599.69L440,600.59L440,601.54L440,602.53L440,603.56L440,604.63L440,605.74L440,606.89L440,608.07L440,609.3L440,610.55L440,611.84L440,613.15L440,614.5L440,615.87L440,617.27L440,618.7L440,620.14L440,621.61L440,623.09L440,624.6L440,626.11L440,627.64L440,629.19L440,630.74L440,632.3L440,633.86L440,635.43L440,637.0Z",
+      "gradient": [
+       [
+        0,
+        "#dcdcdc"
+       ],
+       [
+        1,
+        "#444444"
+       ]
+      ]
+     }
+    },
+    {
+     "id": "tpl-s25",
+     "assetId": "shape:Divider",
+     "name": "Divider",
+     "xPct": 10.0,
+     "yPct": 48.536,
+     "widthPct": 80.0,
+     "heightPct": 0.105,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 352,
+      "h": 1,
+      "radius": 0,
+      "fill": "#262626"
+     }
+    },
+    {
+     "id": "tpl-s26",
+     "assetId": "shape:Continue button",
+     "name": "Continue button",
+     "xPct": 2.727,
+     "yPct": 89.958,
+     "widthPct": 94.545,
+     "heightPct": 5.335,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 8,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 416,
+      "h": 51,
+      "radius": 25.5,
+      "fill": "#198916"
+     }
+    }
+   ],
+   "deviceOne": {
+    "visible": false
+   }
+  }
+ ],
+ "designHeight": 2347,
+ "textColor": "#111111"
+}

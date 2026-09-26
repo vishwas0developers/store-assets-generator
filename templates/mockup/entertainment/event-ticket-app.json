@@ -1,0 +1,1264 @@
+{
+ "version": 1,
+ "id": "event-ticket-app",
+ "name": "Event ticket app",
+ "category": "entertainment",
+ "description": "Showcase your event ticketing platform with our premium template. Display event discovery, ticket purchasing, and digital ticket management in a dynamic design that highlights convenience and user experience for event-goers.",
+ "devices": [
+  {
+   "deviceId": "apple-iphone-16-pro-max",
+   "label": "apple-iphone-16-pro-max"
+  },
+  {
+   "deviceId": "apple-iphone-14-plus",
+   "label": "apple-iphone-14-plus"
+  },
+  {
+   "deviceId": "samsung-galaxy-s21-ultra",
+   "label": "samsung-galaxy-s21-ultra"
+  }
+ ],
+ "layout": "single-no-text",
+ "background": {
+  "type": "solid",
+  "value": "#f7f7fa"
+ },
+ "panoramic": false,
+ "columnCount": 8,
+ "titles": [
+  "Made for those who do",
+  "Find an experience",
+  "Like what you love",
+  "Follow your favorites",
+  "Discover collections",
+  "Get your tickets",
+  "Like what you love",
+  "Get your tickets"
+ ],
+ "subtitles": [
+  "Your ticket to the best independent live events.",
+  "Discover new experiences and more ways to do things you love.",
+  "Save and share events that you love and want to experience.",
+  "Follow your favorites. Be the first to hear about upcoming events.",
+  "Checkout the best events in your city, curated by experts.",
+  "Access and manage your tickets from the comfort of your phone.",
+  "Easily save and share events that you love and want to experience.",
+  "Access and manage your tickets from the comfort of your phone."
+ ],
+ "pages": [
+  {
+   "title": "Made for those who do",
+   "subtitle": "Your ticket to the best independent live events.",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#f7f7fa"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t7",
+     "xPct": 10.227,
+     "yPct": 4.166,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Made for\nthose who do",
+      "color": "#1b0d3a",
+      "size": 99.4,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 0.96
+     }
+    },
+    {
+     "id": "tpl-t8",
+     "xPct": 10.227,
+     "yPct": 13.77,
+     "widthPct": 88.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Your ticket to the best\nindependent live events.",
+      "color": "#646873",
+      "size": 50.1,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.17
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s1",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -13.696,
+     "yPct": 17.64,
+     "widthPct": 84.091,
+     "heightPct": 70.843,
+     "rotation": 45,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 370,
+      "h": 677.25,
+      "radius": 95.92,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s2",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 28.35,
+     "yPct": 45.464,
+     "widthPct": 84.091,
+     "heightPct": 70.843,
+     "rotation": 45,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 370,
+      "h": 677.25,
+      "radius": 95.92,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s3",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -16.423,
+     "yPct": 60.004,
+     "widthPct": 84.091,
+     "heightPct": 70.843,
+     "rotation": 45,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 370,
+      "h": 677.25,
+      "radius": 95.92,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s4",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -41.423,
+     "yPct": 60.317,
+     "widthPct": 84.091,
+     "heightPct": 70.843,
+     "rotation": 45,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 370,
+      "h": 677.25,
+      "radius": 95.92,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s5",
+     "assetId": "shape:Handle",
+     "name": "Handle",
+     "xPct": 14.205,
+     "yPct": 68.201,
+     "widthPct": 5.682,
+     "heightPct": 8.368,
+     "rotation": -35,
+     "opacity": 1,
+     "zIndex": 14,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 25,
+      "h": 80,
+      "radius": 3,
+      "fill": "#c5501f"
+     }
+    },
+    {
+     "id": "tpl-s6",
+     "assetId": "shape:Lens",
+     "name": "Lens",
+     "xPct": -26.818,
+     "yPct": 33.159,
+     "widthPct": 79.091,
+     "heightPct": 36.402,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 348,
+      "h": 348,
+      "fill": "#ece7f3",
+      "gradient": [
+       [
+        0,
+        "#e6dff0"
+       ],
+       [
+        1,
+        "#ffffff"
+       ]
+      ],
+      "stroke": "#1b0d3a",
+      "strokeWidth": 5,
+      "inset": 2.5
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 43.85,
+    "x": -36.36,
+    "y": 4.09,
+    "rotation": 45,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 8
+   },
+   "extraDevices": [
+    {
+     "size": 43.85,
+     "x": 34.25,
+     "y": 50.81,
+     "rotation": 45,
+     "brightness": 100,
+     "frameless": false,
+     "bezelColor": "#060606",
+     "borderColor": "#5e5e5e",
+     "zIndex": 9
+    },
+    {
+     "size": 43.85,
+     "x": -40.94,
+     "y": 75.23,
+     "rotation": 45,
+     "brightness": 100,
+     "frameless": false,
+     "bezelColor": "#060606",
+     "borderColor": "#5e5e5e",
+     "zIndex": 11
+    },
+    {
+     "size": 43.85,
+     "x": -82.92,
+     "y": 75.76,
+     "rotation": 45,
+     "brightness": 100,
+     "frameless": false,
+     "bezelColor": "#060606",
+     "borderColor": "#5e5e5e",
+     "zIndex": 10
+    }
+   ]
+  },
+  {
+   "title": "Find an experience",
+   "subtitle": "Discover new experiences and more ways to do things you love.",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#f7f7fa"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t10",
+     "xPct": 10.227,
+     "yPct": 4.166,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Find an\nexperience",
+      "color": "#f05539",
+      "size": 99.4,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 0.96
+     }
+    },
+    {
+     "id": "tpl-t11",
+     "xPct": 10.227,
+     "yPct": 13.77,
+     "widthPct": 88.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Discover new experiences and\nmore ways to do things you love.",
+      "color": "#646873",
+      "size": 50.1,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.17
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s9",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 0.455,
+     "yPct": 17.364,
+     "widthPct": 99.091,
+     "heightPct": 85.843,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 436,
+      "h": 820.65,
+      "radius": 106.48,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 54.89,
+    "x": 0.0,
+    "y": 12.96,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Like what you love",
+   "subtitle": "Save and share events that you love and want to experience.",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#f7f7fa"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t14",
+     "xPct": 10.227,
+     "yPct": 4.166,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Like\nwhat you love",
+      "color": "#1b0d3a",
+      "size": 99.4,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 0.96
+     }
+    },
+    {
+     "id": "tpl-t15",
+     "xPct": 10.227,
+     "yPct": 13.77,
+     "widthPct": 88.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Save and share events that\nyou love and want to experience.",
+      "color": "#646873",
+      "size": 50.1,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.17
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s12",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -14.545,
+     "yPct": 17.364,
+     "widthPct": 87.727,
+     "heightPct": 74.479,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 386,
+      "h": 712.02,
+      "radius": 98.48,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s13",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 26.818,
+     "yPct": 35.983,
+     "widthPct": 87.727,
+     "heightPct": 74.479,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 386,
+      "h": 712.02,
+      "radius": 98.48,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 46.52,
+    "x": -32.73,
+    "y": 6.29,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 9
+   },
+   "extraDevices": [
+    {
+     "size": 46.52,
+     "x": 32.73,
+     "y": 35.76,
+     "rotation": 0,
+     "brightness": 100,
+     "frameless": false,
+     "bezelColor": "#060606",
+     "borderColor": "#5e5e5e",
+     "zIndex": 11
+    }
+   ]
+  },
+  {
+   "title": "Follow your favorites",
+   "subtitle": "Follow your favorites. Be the first to hear about upcoming events.",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#f7f7fa"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t26",
+     "xPct": 10.227,
+     "yPct": 4.166,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Follow\nyour favorites",
+      "color": "#f05539",
+      "size": 99.4,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 0.96
+     }
+    },
+    {
+     "id": "tpl-t27",
+     "xPct": 10.227,
+     "yPct": 13.77,
+     "widthPct": 88.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Follow your favorites. Be the first\nto hear about upcoming events.",
+      "color": "#646873",
+      "size": 50.1,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.17
+     }
+    },
+    {
+     "id": "tpl-t20",
+     "xPct": 32.727,
+     "yPct": 35.831,
+     "widthPct": 45.455,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "The National Arts Club",
+     "style": {
+      "text": "The National Arts Club",
+      "color": "#1b0d3a",
+      "size": 36.8,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.2
+     }
+    },
+    {
+     "id": "tpl-t21",
+     "xPct": 32.727,
+     "yPct": 38.706,
+     "widthPct": 45.455,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "7 upcoming events",
+     "style": {
+      "text": "7 upcoming events",
+      "color": "#7a7a86",
+      "size": 35.6,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.2
+     }
+    },
+    {
+     "id": "tpl-t22",
+     "xPct": 32.727,
+     "yPct": 42.994,
+     "widthPct": 24.545,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Follow",
+     "style": {
+      "text": "Follow",
+      "color": "#3d5bd0",
+      "size": 35.6,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.2
+     }
+    },
+    {
+     "id": "tpl-t23",
+     "xPct": 81.364,
+     "yPct": 35.46,
+     "widthPct": 4.545,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "close",
+     "style": {
+      "text": "×",
+      "color": "#1b0d3a",
+      "size": 54.0,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.0
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s25",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 0.455,
+     "yPct": 17.364,
+     "widthPct": 99.091,
+     "heightPct": 85.843,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 436,
+      "h": 820.65,
+      "radius": 106.48,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s16",
+     "assetId": "shape:Card edge",
+     "name": "Card edge",
+     "xPct": 9.091,
+     "yPct": 33.054,
+     "widthPct": 81.818,
+     "heightPct": 16.946,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 14,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 360,
+      "h": 162,
+      "radius": 16,
+      "fill": "#1b0d3a"
+     }
+    },
+    {
+     "id": "tpl-s17",
+     "assetId": "shape:Card",
+     "name": "Card",
+     "xPct": 10.0,
+     "yPct": 32.741,
+     "widthPct": 80.0,
+     "heightPct": 15.9,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 352,
+      "h": 152,
+      "radius": 14,
+      "fill": "#ffffff",
+      "stroke": "#1b0d3a",
+      "strokeWidth": 3.5,
+      "inset": 1.75
+     }
+    },
+    {
+     "id": "tpl-s18",
+     "assetId": "shape:Logo",
+     "name": "Logo",
+     "xPct": 13.864,
+     "yPct": 35.565,
+     "widthPct": 14.545,
+     "heightPct": 6.695,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 64,
+      "h": 64,
+      "fill": "#101010"
+     }
+    },
+    {
+     "id": "tpl-s19",
+     "assetId": "shape:Logo ring",
+     "name": "Logo ring",
+     "xPct": 16.364,
+     "yPct": 36.715,
+     "widthPct": 9.545,
+     "heightPct": 4.393,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 42,
+      "h": 42,
+      "stroke": "#ffffff",
+      "strokeWidth": 2.2,
+      "inset": 1.1
+     }
+    },
+    {
+     "id": "tpl-s24",
+     "assetId": "shape:Follow btn",
+     "name": "Follow btn",
+     "xPct": 32.727,
+     "yPct": 42.259,
+     "widthPct": 24.545,
+     "heightPct": 3.138,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 108,
+      "h": 30,
+      "radius": 3,
+      "stroke": "#4a63cc",
+      "strokeWidth": 2,
+      "inset": 1.0
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 54.89,
+    "x": 0.0,
+    "y": 12.96,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Discover collections",
+   "subtitle": "Checkout the best events in your city, curated by experts.",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#f7f7fa"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t30",
+     "xPct": 10.227,
+     "yPct": 4.166,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Discover\ncollections",
+      "color": "#1b0d3a",
+      "size": 99.4,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 0.96
+     }
+    },
+    {
+     "id": "tpl-t31",
+     "xPct": 10.227,
+     "yPct": 13.77,
+     "widthPct": 88.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Checkout the best events in your\ncity, curated by experts.",
+      "color": "#646873",
+      "size": 50.1,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.17
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s28",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 37.665,
+     "yPct": 17.706,
+     "widthPct": 83.636,
+     "heightPct": 70.388,
+     "rotation": -45,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 368,
+      "h": 672.91,
+      "radius": 95.6,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s29",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -31.053,
+     "yPct": 54.51,
+     "widthPct": 83.636,
+     "heightPct": 70.388,
+     "rotation": 43,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 368,
+      "h": 672.91,
+      "radius": 95.6,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 43.51,
+    "x": 49.89,
+    "y": 3.85,
+    "rotation": -45,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 9
+   },
+   "extraDevices": [
+    {
+     "size": 43.51,
+     "x": -66.4,
+     "y": 66.13,
+     "rotation": 43,
+     "brightness": 100,
+     "frameless": false,
+     "bezelColor": "#060606",
+     "borderColor": "#5e5e5e",
+     "zIndex": 11
+    }
+   ]
+  },
+  {
+   "title": "Get your tickets",
+   "subtitle": "Access and manage your tickets from the comfort of your phone.",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#f7f7fa"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t37",
+     "xPct": 10.227,
+     "yPct": 4.166,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Get\nyour tickets",
+      "color": "#f05539",
+      "size": 99.4,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 0.96
+     }
+    },
+    {
+     "id": "tpl-t38",
+     "xPct": 10.227,
+     "yPct": 13.77,
+     "widthPct": 88.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Access and manage your tickets\nfrom the comfort of your phone.",
+      "color": "#646873",
+      "size": 50.1,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.17
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s36",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 0.455,
+     "yPct": 17.364,
+     "widthPct": 99.091,
+     "heightPct": 85.843,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 436,
+      "h": 820.65,
+      "radius": 106.48,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s32",
+     "assetId": "shape:Photo ring",
+     "name": "Photo ring",
+     "xPct": 54.773,
+     "yPct": 26.674,
+     "widthPct": 40.909,
+     "heightPct": 18.828,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 180,
+      "h": 180,
+      "fill": "#d6dbe4",
+      "stroke": "#1b0d3a",
+      "strokeWidth": 3.5,
+      "inset": 1.75
+     }
+    },
+    {
+     "id": "tpl-s33",
+     "assetId": "shape:soft",
+     "name": "soft",
+     "xPct": 69.545,
+     "yPct": 28.243,
+     "widthPct": 13.636,
+     "heightPct": 6.276,
+     "rotation": 0,
+     "opacity": 0,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 60,
+      "h": 60,
+      "fill": "#c9b8b0",
+      "blur": 14
+     }
+    },
+    {
+     "id": "tpl-s34",
+     "assetId": "shape:Arrow disc",
+     "name": "Arrow disc",
+     "xPct": 80.455,
+     "yPct": 37.134,
+     "widthPct": 16.818,
+     "heightPct": 7.741,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 74,
+      "h": 74,
+      "fill": "#f05539"
+     }
+    },
+    {
+     "id": "tpl-s35",
+     "assetId": "shape:Arrow",
+     "name": "Arrow",
+     "xPct": 84.5,
+     "yPct": 39.414,
+     "widthPct": 8.955,
+     "heightPct": 3.18,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 39.4,
+      "h": 30.4,
+      "vx": 371.8,
+      "vy": 376.8,
+      "path": "M376,392L407,392M396,381L407,392L396,403",
+      "stroke": "#ffffff",
+      "strokeWidth": 3.2,
+      "strokeLinejoin": "round"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 54.89,
+    "x": 0.0,
+    "y": 12.96,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Like what you love",
+   "subtitle": "Easily save and share events that you love and want to experience.",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#f7f7fa"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t41",
+     "xPct": 10.227,
+     "yPct": 4.166,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Like\nwhat you love",
+      "color": "#1b0d3a",
+      "size": 99.4,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 0.96
+     }
+    },
+    {
+     "id": "tpl-t42",
+     "xPct": 10.227,
+     "yPct": 13.77,
+     "widthPct": 88.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Easily save and share events that\nyou love and want to experience.",
+      "color": "#646873",
+      "size": 50.1,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.17
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s39",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 26.818,
+     "yPct": 17.364,
+     "widthPct": 87.727,
+     "heightPct": 74.479,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 386,
+      "h": 712.02,
+      "radius": 98.48,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s40",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -14.545,
+     "yPct": 35.983,
+     "widthPct": 87.727,
+     "heightPct": 74.479,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 386,
+      "h": 712.02,
+      "radius": 98.48,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 46.52,
+    "x": 32.73,
+    "y": 6.29,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 9
+   },
+   "extraDevices": [
+    {
+     "size": 46.52,
+     "x": -32.73,
+     "y": 35.76,
+     "rotation": 0,
+     "brightness": 100,
+     "frameless": false,
+     "bezelColor": "#060606",
+     "borderColor": "#5e5e5e",
+     "zIndex": 11
+    }
+   ]
+  },
+  {
+   "title": "Get your tickets",
+   "subtitle": "Access and manage your tickets from the comfort of your phone.",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#f7f7fa"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t44",
+     "xPct": 10.227,
+     "yPct": 4.166,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Get\nyour tickets",
+      "color": "#f05539",
+      "size": 99.4,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 0.96
+     }
+    },
+    {
+     "id": "tpl-t45",
+     "xPct": 10.227,
+     "yPct": 13.77,
+     "widthPct": 88.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Access and manage your tickets\nfrom the comfort of your phone.",
+      "color": "#646873",
+      "size": 50.1,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.17
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s43",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 0.455,
+     "yPct": 17.364,
+     "widthPct": 99.091,
+     "heightPct": 85.843,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 436,
+      "h": 820.65,
+      "radius": 106.48,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 54.89,
+    "x": 0.0,
+    "y": 12.96,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  }
+ ],
+ "designHeight": 2347,
+ "textColor": "#111111"
+}

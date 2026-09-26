@@ -1579,6 +1579,26 @@ button.xsmall {
   border-bottom: 1px solid var(--border-subtle);
   color: var(--text-secondary);
 }
+.file-table th.sortable-th {
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.15s ease;
+}
+.file-table th.sortable-th:hover {
+  color: var(--text-primary);
+}
+.file-table th.sortable-th .sort-arrow {
+  display: inline-block;
+  margin-left: 0.35rem;
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+.file-table th.sortable-th.active-sort {
+  color: var(--accent-primary);
+}
+.file-table th.sortable-th.active-sort .sort-arrow {
+  opacity: 1;
+}
 .file-table td {
   padding: 0.5rem;
   border-bottom: 1px solid var(--border-subtle);
@@ -1586,6 +1606,148 @@ button.xsmall {
 }
 .file-table tr:hover td {
   background: var(--bg-card-hover);
+}
+
+/* File Explorer Object/Icon Grid View */
+.file-grid-view {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 1rem;
+  padding: 0.25rem 0;
+}
+.file-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--card-inner-bg, #141721);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+  position: relative;
+}
+.file-card:hover {
+  border-color: var(--border-medium);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  transform: translateY(-2px);
+}
+.file-card-thumb-wrap {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  background: var(--bg-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.file-card-thumb-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform 0.2s ease;
+}
+.file-card-thumb-wrap:hover img {
+  transform: scale(1.04);
+}
+.file-card-thumb-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  color: var(--text-muted);
+}
+.file-card-thumb-placeholder svg {
+  opacity: 0.7;
+}
+.file-card-badge {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  font-size: 0.65rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(11, 13, 18, 0.85);
+  color: var(--text-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(4px);
+  text-transform: uppercase;
+  font-weight: 600;
+  pointer-events: none;
+}
+.file-card-body {
+  padding: 0.65rem 0.75rem 0.65rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  flex: 1;
+  min-width: 0;
+}
+.file-card-name {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+.file-card-name:hover {
+  color: var(--accent-primary);
+}
+.file-card-meta {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.file-card-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.4rem;
+  align-items: center;
+  padding-top: 0.2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+.file-action-icon-btn {
+  width: 28px !important;
+  height: 28px !important;
+  padding: 0 !important;
+  border-radius: 6px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  flex-shrink: 0;
+}
+.file-action-icon-btn svg {
+  width: 14px;
+  height: 14px;
+}
+.file-action-icon-btn.download-file-btn:hover {
+  background: rgba(59, 130, 246, 0.15) !important;
+  border-color: rgba(59, 130, 246, 0.4) !important;
+  color: #60a5fa !important;
+}
+.file-action-icon-btn.delete-btn:hover {
+  background: rgba(239, 68, 68, 0.15) !important;
+  border-color: rgba(239, 68, 68, 0.4) !important;
+  color: #ef4444 !important;
+}
+
+.file-view-toggle-group .icon-btn.small {
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 6px;
+}
+.file-view-toggle-group .icon-btn.small svg {
+  width: 15px;
+  height: 15px;
 }
 
 /* Universal asset selection grid */

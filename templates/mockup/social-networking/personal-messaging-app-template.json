@@ -1,0 +1,376 @@
+{
+ "version": 1,
+ "id": "personal-messaging-app-template",
+ "name": "Personal messaging app",
+ "category": "social-networking",
+ "description": "Showcase your messaging app with our free template. Display private chats, message features, and personal communication tools in a secure design that prioritizes privacy.",
+ "devices": [
+  {
+   "deviceId": "apple-iphone-16-pro-max",
+   "label": "apple-iphone-16-pro-max"
+  },
+  {
+   "deviceId": "apple-iphone-14-plus",
+   "label": "apple-iphone-14-plus"
+  },
+  {
+   "deviceId": "samsung-galaxy-s21-ultra",
+   "label": "samsung-galaxy-s21-ultra"
+  }
+ ],
+ "layout": "single-no-text",
+ "background": {
+  "type": "solid",
+  "value": "#05d757"
+ },
+ "panoramic": false,
+ "columnCount": 4,
+ "titles": [
+  "Simple. Reliable. Private.",
+  "Message privately with",
+  "Make calls",
+  "Group chat with"
+ ],
+ "subtitles": [
+  "",
+  "end-to-end encryption",
+  "across the world",
+  "friends and family"
+ ],
+ "pages": [
+  {
+   "title": "Simple. Reliable. Private.",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#05d757"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t1",
+     "xPct": 15.909,
+     "yPct": 6.093,
+     "widthPct": 77.273,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Simple.\nReliable.\nPrivate.",
+      "color": "#0a0a0a",
+      "size": 98.2,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.21,
+      "charSpacing": -20
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s2",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 2.841,
+     "yPct": 21.444,
+     "widthPct": 94.545,
+     "heightPct": 81.297,
+     "rotation": 0,
+     "opacity": 0.12,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 416,
+      "h": 777.2,
+      "radius": 103.28,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 51.55,
+    "x": 0.16,
+    "y": 16.38,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Message privately with",
+   "subtitle": "end-to-end encryption",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#fff5eb"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t3",
+     "xPct": 0.0,
+     "yPct": 6.386,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Message privately with",
+      "color": "#0a0a0a",
+      "size": 71.2,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t4",
+     "xPct": 0.0,
+     "yPct": 10.1,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "end-to-end encryption",
+      "color": "#0a0a0a",
+      "size": 71.2,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": -20
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s5",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -1.364,
+     "yPct": 14.226,
+     "widthPct": 102.727,
+     "heightPct": 89.479,
+     "rotation": 0,
+     "opacity": 0.12,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 452,
+      "h": 855.42,
+      "radius": 109.04,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 57.57,
+    "x": 0.0,
+    "y": 10.66,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Make calls",
+   "subtitle": "across the world",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#05d757"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t6",
+     "xPct": 0.0,
+     "yPct": 6.386,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Make calls",
+      "color": "#0a0a0a",
+      "size": 71.2,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t7",
+     "xPct": 0.0,
+     "yPct": 10.1,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "across the world",
+      "color": "#0a0a0a",
+      "size": 71.2,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": -20
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s8",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -1.364,
+     "yPct": 14.226,
+     "widthPct": 102.727,
+     "heightPct": 89.479,
+     "rotation": 0,
+     "opacity": 0.12,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 452,
+      "h": 855.42,
+      "radius": 109.04,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 57.57,
+    "x": 0.0,
+    "y": 10.66,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Group chat with",
+   "subtitle": "friends and family",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#fff5eb"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t9",
+     "xPct": 0.0,
+     "yPct": 6.386,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Group chat with",
+      "color": "#0a0a0a",
+      "size": 71.2,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t10",
+     "xPct": 0.0,
+     "yPct": 10.1,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "friends and family",
+      "color": "#0a0a0a",
+      "size": 71.2,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": -20
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s11",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -1.364,
+     "yPct": 14.226,
+     "widthPct": 102.727,
+     "heightPct": 89.479,
+     "rotation": 0,
+     "opacity": 0.12,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 452,
+      "h": 855.42,
+      "radius": 109.04,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 57.57,
+    "x": 0.0,
+    "y": 10.66,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  }
+ ],
+ "designHeight": 2347,
+ "textColor": "#111111"
+}

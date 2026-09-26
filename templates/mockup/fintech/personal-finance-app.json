@@ -1,0 +1,513 @@
+{
+ "version": 1,
+ "id": "personal-finance-app",
+ "name": "Personal finance app",
+ "category": "fintech",
+ "description": "Showcase your personal finance app with our premium template. Display budgeting tools, expense tracking, and financial insights in a professional design that emphasizes security and financial management.",
+ "devices": [
+  {
+   "deviceId": "apple-iphone-16-pro-max",
+   "label": "iPhone 16 Pro Max"
+  },
+  {
+   "deviceId": "apple-iphone-14-plus",
+   "label": "iPhone 14 Plus"
+  },
+  {
+   "deviceId": "samsung-galaxy-s21-ultra",
+   "label": "Samsung Galaxy S21 Ultra"
+  }
+ ],
+ "layout": "single-no-text",
+ "background": {
+  "type": "gradient",
+  "value": "linear-gradient(170deg, #3717cd 0%, #3c18d8 45%, #451af6 100%)"
+ },
+ "panoramic": false,
+ "columnCount": 6,
+ "titles": [
+  "Do more with your money.",
+  "Net worth",
+  "Always know what you can spend.",
+  "And where your money is going.",
+  "Send more money",
+  "Track your investments"
+ ],
+ "subtitles": [
+  "",
+  "",
+  "",
+  "\"Best finance app\" The New York Times",
+  "",
+  "Like a professional"
+ ],
+ "textColor": "#111111",
+ "pages": [
+  {
+   "title": "Do more with your money.",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(170deg, #3717cd 0%, #3c18d8 45%, #451af6 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t5",
+     "xPct": 10.455,
+     "yPct": 21.878,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Do more\nwith your\nmoney.",
+      "color": "#ffffff",
+      "size": 142.4,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.1120689655172413,
+      "charSpacing": 59
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s1",
+     "assetId": "shape:Icon shadow",
+     "name": "Icon shadow",
+     "xPct": 3.182,
+     "yPct": 2.092,
+     "widthPct": 42.727,
+     "heightPct": 19.665,
+     "rotation": 0,
+     "opacity": 0.35,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 188,
+      "h": 188,
+      "radius": 60,
+      "fill": "#20097a",
+      "blur": 14,
+      "inset": 30
+     }
+    },
+    {
+     "id": "tpl-s2",
+     "assetId": "shape:App icon",
+     "name": "App icon",
+     "xPct": 10.0,
+     "yPct": 4.603,
+     "widthPct": 29.091,
+     "heightPct": 13.389,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 6,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 128,
+      "h": 128,
+      "radius": 30,
+      "fill": "#4b23ff"
+     }
+    },
+    {
+     "id": "tpl-s3",
+     "assetId": "shape:Q ring",
+     "name": "Q ring",
+     "xPct": 14.205,
+     "yPct": 6.852,
+     "widthPct": 18.862,
+     "heightPct": 8.681,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 7,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 82.99,
+      "h": 82.99,
+      "vx": 62.5,
+      "vy": 65.5,
+      "path": "M108.78,134.08L107.35,134.3L105.92,134.43L104.48,134.5L103.04,134.48L101.6,134.4L100.17,134.23L98.75,133.99L97.35,133.68L95.96,133.3L94.59,132.84L93.25,132.31L91.94,131.72L90.67,131.05L89.43,130.32L88.23,129.53L87.07,128.67L85.96,127.75L84.9,126.78L83.89,125.75L82.93,124.68L82.04,123.55L81.2,122.38L80.43,121.16L79.72,119.91L79.08,118.62L78.5,117.3L78.0,115.95L77.57,114.58L77.2,113.19L76.92,111.78L76.7,110.35L76.57,108.92L76.5,107.48L76.52,106.04L76.6,104.6L76.77,103.17L77.01,101.75L77.32,100.35L77.7,98.96L78.16,97.59L78.69,96.25L79.28,94.94L79.95,93.67L80.68,92.43L81.47,91.23L82.33,90.07L83.25,88.96L84.22,87.9L85.25,86.89L86.32,85.93L87.45,85.04L88.62,84.2L89.84,83.43L91.09,82.72L92.38,82.08L93.7,81.5L95.05,81.0L96.42,80.57L97.81,80.2L99.22,79.92L100.65,79.7L102.08,79.57L103.52,79.5L104.96,79.52L106.4,79.6L107.83,79.77L109.25,80.01L110.65,80.32L112.04,80.7L113.41,81.16L114.75,81.69L116.06,82.28L117.33,82.95L118.57,83.68L119.77,84.47L120.93,85.33L122.04,86.25L123.1,87.22L124.11,88.25L125.07,89.32L125.96,90.45L126.8,91.62L127.57,92.84L128.28,94.09L128.92,95.38L129.5,96.7L130.0,98.05L130.43,99.42L130.8,100.81L131.08,102.22L131.3,103.65L131.43,105.08L131.5,106.52L131.48,107.96L131.4,109.4L131.23,110.83",
+      "stroke": "#ffffff",
+      "strokeWidth": 13,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s4",
+     "assetId": "shape:Q tail",
+     "name": "Q tail",
+     "xPct": 19.773,
+     "yPct": 12.657,
+     "widthPct": 15.909,
+     "heightPct": 3.452,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 7,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 70,
+      "h": 33,
+      "vx": 87,
+      "vy": 121,
+      "path": "M99,137Q124,142 145,133",
+      "stroke": "#ffffff",
+      "strokeWidth": 11,
+      "strokeLinejoin": "round"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 75.64,
+    "x": 36.03,
+    "y": 46.87,
+    "rotation": -19,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 14,
+    "panoramaXPx": 939.76
+   }
+  },
+  {
+   "title": "Net worth",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(170deg, #3717cd 0%, #3c18d8 45%, #471bfe 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [],
+   "assetLayers": [],
+   "deviceOne": {
+    "size": 64.93,
+    "x": 0.0,
+    "y": 1.37,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Always know what you can spend.",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#f5f3ff"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t7",
+     "xPct": 10.455,
+     "yPct": 4.041,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Always know\nwhat you can\nspend.",
+      "color": "#0b0b0b",
+      "size": 110.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.0666666666666667,
+      "charSpacing": 46
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s6",
+     "assetId": "shape:Purple band",
+     "name": "Purple band",
+     "xPct": -0.455,
+     "yPct": 89.958,
+     "widthPct": 100.909,
+     "heightPct": 10.46,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 444,
+      "h": 100,
+      "radius": 0,
+      "fill": "#3e18d6"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 64.93,
+    "x": 0.0,
+    "y": 19.4,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "And where your money is going.",
+   "subtitle": "\"Best finance app\" The New York Times",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#f5f3ff"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t9",
+     "xPct": 10.455,
+     "yPct": 71.536,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "And where\nyour money\nis going.",
+      "color": "#ffffff",
+      "size": 110.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.211111111111111,
+      "charSpacing": 47
+     }
+    },
+    {
+     "id": "tpl-t10",
+     "xPct": 10.227,
+     "yPct": 90.925,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "\"Best finance app\"\nThe New York Times",
+      "color": "#ffffff",
+      "size": 55.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.3215859030837005,
+      "charSpacing": 22
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s8",
+     "assetId": "shape:Purple band",
+     "name": "Purple band",
+     "xPct": -0.455,
+     "yPct": 68.201,
+     "widthPct": 100.909,
+     "heightPct": 32.218,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 444,
+      "h": 308,
+      "radius": 0,
+      "fill": "#3e18d6"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 64.93,
+    "x": 0.0,
+    "y": -34.34,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Send more money",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#f5f3ff"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t12",
+     "xPct": 10.455,
+     "yPct": 4.041,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Send\nmore\nmoney",
+      "color": "#0b0b0b",
+      "size": 110.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.0666666666666667,
+      "charSpacing": 73
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s11",
+     "assetId": "shape:Purple band",
+     "name": "Purple band",
+     "xPct": -0.455,
+     "yPct": 89.958,
+     "widthPct": 100.909,
+     "heightPct": 10.46,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 444,
+      "h": 100,
+      "radius": 0,
+      "fill": "#3e18d6"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 64.93,
+    "x": 0.0,
+    "y": 19.4,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Track your investments",
+   "subtitle": "Like a professional",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#f5f3ff"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t14",
+     "xPct": 10.455,
+     "yPct": 81.133,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Track your\ninvestments",
+      "color": "#ffffff",
+      "size": 110.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.2444444444444445,
+      "charSpacing": 37
+     }
+    },
+    {
+     "id": "tpl-t15",
+     "xPct": 10.227,
+     "yPct": 94.076,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Like a professional",
+      "color": "#ffffff",
+      "size": 58.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": 12
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s13",
+     "assetId": "shape:Purple band",
+     "name": "Purple band",
+     "xPct": -0.455,
+     "yPct": 77.929,
+     "widthPct": 100.909,
+     "heightPct": 22.49,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 444,
+      "h": 215,
+      "radius": 0,
+      "fill": "#3e18d6"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 64.93,
+    "x": 0.0,
+    "y": -23.67,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  }
+ ],
+ "designHeight": 2347
+}

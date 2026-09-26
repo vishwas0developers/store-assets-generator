@@ -1,0 +1,748 @@
+{
+ "version": 1,
+ "id": "medium-template",
+ "name": "Articles app",
+ "category": "entertainment",
+ "description": "Present your news and articles app with our free template. Display content feeds, reading features, and article collections in a clean design that enhances readability.",
+ "devices": [
+  {
+   "deviceId": "apple-iphone-16-pro-max",
+   "label": "apple-iphone-16-pro-max"
+  },
+  {
+   "deviceId": "apple-iphone-14-plus",
+   "label": "apple-iphone-14-plus"
+  },
+  {
+   "deviceId": "samsung-galaxy-s21-ultra",
+   "label": "samsung-galaxy-s21-ultra"
+  }
+ ],
+ "layout": "single-no-text",
+ "background": {
+  "type": "solid",
+  "value": "#f8f9f2"
+ },
+ "panoramic": true,
+ "columnCount": 8,
+ "titles": [
+  "A homepage that gets you",
+  "Stories that captivate you",
+  "Insights that stay with you",
+  "Collections absorb you",
+  "Like, reply, and engage",
+  "Set up your public profile",
+  "Read stories catered to you",
+  "A home for your words"
+ ],
+ "subtitles": [
+  "Stories based on your interests & editors' picks",
+  "Focus on the words without ads getting in the way",
+  "Bookmark and respond to stories you can't forget",
+  "Compelling stories into collections to binge-read",
+  "Engage with stories that resonate with you",
+  "Let people know what you write about",
+  "Choose your favorite topics and let us do the heavy lifting",
+  "Compelling stories into collections to binge-read"
+ ],
+ "pages": [
+  {
+   "title": "A homepage that gets you",
+   "subtitle": "Stories based on your interests & editors' picks",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#f8f9f2"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t1",
+     "xPct": 10.0,
+     "yPct": 5.205,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "A homepage\nthat gets you",
+      "color": "#111111",
+      "size": 110.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.15,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t2",
+     "xPct": 10.0,
+     "yPct": 18.067,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Stories based on your\ninterests & editors' picks",
+      "color": "#111111",
+      "size": 49.1,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.2
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s3",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -6.818,
+     "yPct": 23.013,
+     "widthPct": 113.636,
+     "heightPct": 100.388,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 500,
+      "h": 959.71,
+      "radius": 116.72,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 65.6,
+    "x": 0.0,
+    "y": 25.34,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Stories that captivate you",
+   "subtitle": "Focus on the words without ads getting in the way",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#000000"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t4",
+     "xPct": 10.0,
+     "yPct": 5.205,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Stories that\ncaptivate you",
+      "color": "#ffffff",
+      "size": 110.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.15,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t5",
+     "xPct": 10.0,
+     "yPct": 18.067,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Focus on the words without ads\ngetting in the way",
+      "color": "#ffffff",
+      "size": 49.1,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.2
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s6",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -6.818,
+     "yPct": 23.013,
+     "widthPct": 113.636,
+     "heightPct": 100.388,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 500,
+      "h": 959.71,
+      "radius": 116.72,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 65.6,
+    "x": 0.0,
+    "y": 25.34,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Insights that stay with you",
+   "subtitle": "Bookmark and respond to stories you can't forget",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#f8f9f2"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t7",
+     "xPct": 10.0,
+     "yPct": 5.205,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Insights that\nstay with you",
+      "color": "#111111",
+      "size": 110.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.15,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t8",
+     "xPct": 10.0,
+     "yPct": 18.067,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Bookmark and respond to\nstories you can't forget",
+      "color": "#111111",
+      "size": 49.1,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.2
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s9",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -6.818,
+     "yPct": 23.013,
+     "widthPct": 113.636,
+     "heightPct": 100.388,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 500,
+      "h": 959.71,
+      "radius": 116.72,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 65.6,
+    "x": 0.0,
+    "y": 25.34,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Collections absorb you",
+   "subtitle": "Compelling stories into collections to binge-read",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#000000"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t10",
+     "xPct": 10.0,
+     "yPct": 5.205,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Collections\nabsorb you",
+      "color": "#ffffff",
+      "size": 110.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.15,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t11",
+     "xPct": 10.0,
+     "yPct": 18.067,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Compelling stories into collections\nto binge-read",
+      "color": "#ffffff",
+      "size": 49.1,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.2
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s12",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -6.818,
+     "yPct": 23.013,
+     "widthPct": 113.636,
+     "heightPct": 100.388,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 500,
+      "h": 959.71,
+      "radius": 116.72,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 65.6,
+    "x": 0.0,
+    "y": 25.34,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Like, reply, and engage",
+   "subtitle": "Engage with stories that resonate with you",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#f8f9f2"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t13",
+     "xPct": 10.0,
+     "yPct": 5.205,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Like, reply,\nand engage",
+      "color": "#111111",
+      "size": 110.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.15,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t14",
+     "xPct": 10.0,
+     "yPct": 18.067,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Engage with stories that\nresonate with you",
+      "color": "#111111",
+      "size": 49.1,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.2
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s15",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -6.818,
+     "yPct": 23.013,
+     "widthPct": 113.636,
+     "heightPct": 100.388,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 500,
+      "h": 959.71,
+      "radius": 116.72,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 65.6,
+    "x": 0.0,
+    "y": 25.34,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Set up your public profile",
+   "subtitle": "Let people know what you write about",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#000000"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t16",
+     "xPct": 10.0,
+     "yPct": 5.205,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Set up your\npublic profile",
+      "color": "#ffffff",
+      "size": 110.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.15,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t17",
+     "xPct": 10.0,
+     "yPct": 18.067,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Let people know what you\nwrite about",
+      "color": "#ffffff",
+      "size": 49.1,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.2
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s18",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -6.818,
+     "yPct": 23.013,
+     "widthPct": 113.636,
+     "heightPct": 100.388,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 500,
+      "h": 959.71,
+      "radius": 116.72,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 65.6,
+    "x": 0.0,
+    "y": 25.34,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Read stories catered to you",
+   "subtitle": "Choose your favorite topics and let us do the heavy lifting",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#f8f9f2"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t19",
+     "xPct": 10.0,
+     "yPct": 5.205,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Read stories\ncatered to you",
+      "color": "#111111",
+      "size": 110.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.15,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t20",
+     "xPct": 10.0,
+     "yPct": 18.067,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Choose your favorite topics and\nlet us do the heavy lifting",
+      "color": "#111111",
+      "size": 49.1,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.2
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s21",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -6.818,
+     "yPct": 23.013,
+     "widthPct": 113.636,
+     "heightPct": 100.388,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 500,
+      "h": 959.71,
+      "radius": 116.72,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 65.6,
+    "x": 0.0,
+    "y": 25.34,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "A home for your words",
+   "subtitle": "Compelling stories into collections to binge-read",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#000000"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t22",
+     "xPct": 10.0,
+     "yPct": 5.205,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "A home for\nyour words",
+      "color": "#ffffff",
+      "size": 110.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.15,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t23",
+     "xPct": 10.0,
+     "yPct": 18.067,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Compelling stories into collections\nto binge-read",
+      "color": "#ffffff",
+      "size": 49.1,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.2
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s24",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -6.818,
+     "yPct": 23.013,
+     "widthPct": 113.636,
+     "heightPct": 100.388,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 500,
+      "h": 959.71,
+      "radius": 116.72,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 65.6,
+    "x": 0.0,
+    "y": 25.34,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  }
+ ],
+ "designHeight": 2347,
+ "textColor": "#111111"
+}

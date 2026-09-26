@@ -1,0 +1,890 @@
+{
+ "version": 1,
+ "id": "track-your-finance-app",
+ "name": "Track your finance app",
+ "category": "fintech",
+ "description": "Elevate your financial tracking app with our sophisticated template. Display comprehensive financial monitoring, investment tracking, and wealth management in a trustworthy design that empowers users to take control of their financial future.",
+ "devices": [
+  {
+   "deviceId": "apple-iphone-16-pro-max",
+   "label": "apple-iphone-16-pro-max"
+  },
+  {
+   "deviceId": "apple-iphone-13-pro-max",
+   "label": "apple-iphone-13-pro-max"
+  },
+  {
+   "deviceId": "samsung-galaxy-s21-ultra",
+   "label": "samsung-galaxy-s21-ultra"
+  },
+  {
+   "deviceId": "apple-ipad-pro-12-9-inch",
+   "label": "apple-ipad-pro-12-9-inch"
+  },
+  {
+   "deviceId": "samsung-galaxy-tab-s7",
+   "label": "samsung-galaxy-tab-s7"
+  }
+ ],
+ "layout": "single-no-text",
+ "background": {
+  "type": "gradient",
+  "value": "linear-gradient(135deg, #9db6fb 0%, #d8e2fc 32%, #d8e2fc 62%, #a1b8fd 100%)"
+ },
+ "panoramic": false,
+ "columnCount": 5,
+ "titles": [
+  "Track Your Finances",
+  "Real-Time Stocks",
+  "Manage Account",
+  "Split Your Bills",
+  "Buy & Sell Crypto"
+ ],
+ "subtitles": [
+  "View  accounts, bills, crypto & all assets",
+  "Monitor your performance",
+  "Access premium, security & help in one tap",
+  "Track, chat & settle up with friends",
+  "Market data with real-time performance"
+ ],
+ "pages": [
+  {
+   "title": "Track Your Finances",
+   "subtitle": "View  accounts, bills, crypto & all assets",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(135deg, #9db6fb 0%, #d8e2fc 32%, #d8e2fc 62%, #a1b8fd 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t7",
+     "xPct": 10.0,
+     "yPct": 4.366,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Track Your\nFinances",
+      "color": "#0d0d0d",
+      "size": 142.4,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.04,
+      "charSpacing": -24
+     }
+    },
+    {
+     "id": "tpl-t8",
+     "xPct": 10.0,
+     "yPct": 18.229,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "View  accounts, bills,\ncrypto & all assets",
+      "color": "#101010",
+      "size": 58.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.25,
+      "charSpacing": 10
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s1",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 9.318,
+     "yPct": 29.916,
+     "widthPct": 81.364,
+     "heightPct": 66.643,
+     "rotation": 0,
+     "opacity": 0.2,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 358,
+      "h": 637.11,
+      "radius": 98.08,
+      "fill": "#000000",
+      "blur": 20,
+      "inset": 60
+     }
+    },
+    {
+     "id": "tpl-s2",
+     "assetId": "shape:Palm",
+     "name": "Palm",
+     "xPct": -0.227,
+     "yPct": 54.603,
+     "widthPct": 83.409,
+     "heightPct": 45.502,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 6,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 367,
+      "h": 435,
+      "vx": -1,
+      "vy": 522,
+      "path": "M0,880C30,780 50,660 72,545C76,525 100,523 106,545L106,760L200,835C260,850 320,835 345,800L365,830C330,900 270,940 250,956L0,956Z",
+      "fill": "#dfae90"
+     }
+    },
+    {
+     "id": "tpl-s3",
+     "assetId": "shape:Finger top",
+     "name": "Finger top",
+     "xPct": 75.0,
+     "yPct": 55.021,
+     "widthPct": 10.0,
+     "heightPct": 6.276,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 6,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 44,
+      "h": 60,
+      "radius": 22,
+      "fill": "#e9bfa3"
+     }
+    },
+    {
+     "id": "tpl-s4",
+     "assetId": "shape:Finger",
+     "name": "Finger",
+     "xPct": 69.545,
+     "yPct": 64.226,
+     "widthPct": 15.455,
+     "heightPct": 4.812,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 68,
+      "h": 46,
+      "radius": 23,
+      "fill": "#dfae90"
+     }
+    },
+    {
+     "id": "tpl-s5",
+     "assetId": "shape:Finger",
+     "name": "Finger",
+     "xPct": 69.545,
+     "yPct": 69.874,
+     "widthPct": 15.455,
+     "heightPct": 4.812,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 68,
+      "h": 46,
+      "radius": 23,
+      "fill": "#dfae90"
+     }
+    },
+    {
+     "id": "tpl-s6",
+     "assetId": "shape:Finger",
+     "name": "Finger",
+     "xPct": 69.545,
+     "yPct": 77.824,
+     "widthPct": 15.455,
+     "heightPct": 4.812,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 68,
+      "h": 46,
+      "radius": 23,
+      "fill": "#dfae90"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 39.83,
+    "x": 0.0,
+    "y": 23.31,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Real-Time Stocks",
+   "subtitle": "Monitor your performance",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#1c1c1c"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t18",
+     "xPct": 10.0,
+     "yPct": 4.397,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Real-Time\nStocks",
+      "color": "#dbe1ff",
+      "size": 142.4,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.03,
+      "charSpacing": -22
+     }
+    },
+    {
+     "id": "tpl-t19",
+     "xPct": 10.0,
+     "yPct": 18.229,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Monitor your\nperformance",
+      "color": "#f2f4ff",
+      "size": 58.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.25,
+      "charSpacing": 10
+     }
+    },
+    {
+     "id": "tpl-t20",
+     "xPct": 9.091,
+     "yPct": 87.89,
+     "widthPct": 79.545,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Review",
+     "style": {
+      "text": "Super intuitive and easy to use.\nEverything I need in one place, love it!",
+      "color": "#eef0ff",
+      "size": 44.2,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.58,
+      "charSpacing": 8
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s9",
+     "assetId": "shape:Sweater",
+     "name": "Sweater",
+     "xPct": 42.727,
+     "yPct": 55.23,
+     "widthPct": 64.545,
+     "heightPct": 47.49,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 284,
+      "h": 454,
+      "radius": 82,
+      "fill": "#7b6552",
+      "blur": 6,
+      "inset": 12
+     }
+    },
+    {
+     "id": "tpl-s10",
+     "assetId": "shape:Hair",
+     "name": "Hair",
+     "xPct": 38.864,
+     "yPct": 21.025,
+     "widthPct": 67.727,
+     "heightPct": 34.31,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 298,
+      "h": 328,
+      "radius": 134,
+      "fill": "#c39a5c",
+      "blur": 8,
+      "inset": 24
+     }
+    },
+    {
+     "id": "tpl-s11",
+     "assetId": "shape:Face",
+     "name": "Face",
+     "xPct": 51.591,
+     "yPct": 24.791,
+     "widthPct": 40.0,
+     "heightPct": 24.686,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 176,
+      "h": 236,
+      "radius": 88,
+      "fill": "#dba98a",
+      "blur": 6,
+      "inset": 18
+     }
+    },
+    {
+     "id": "tpl-s12",
+     "assetId": "shape:Review card",
+     "name": "Review card",
+     "xPct": 5.455,
+     "yPct": 84.31,
+     "widthPct": 82.727,
+     "heightPct": 9.833,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 364,
+      "h": 94,
+      "radius": 22,
+      "fill": "#050505"
+     }
+    },
+    {
+     "id": "tpl-s13",
+     "assetId": "shape:Star",
+     "name": "Star",
+     "xPct": 9.657,
+     "yPct": 85.251,
+     "widthPct": 4.323,
+     "heightPct": 1.892,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 19.02,
+      "h": 18.09,
+      "vx": 42.49,
+      "vy": 815.0,
+      "path": "M52.0,815.0L54.65,821.36L61.51,821.91L56.28,826.39L57.88,833.09L52.0,829.5L46.12,833.09L47.72,826.39L42.49,821.91L49.35,821.36Z",
+      "fill": "#e3e8ff"
+     }
+    },
+    {
+     "id": "tpl-s14",
+     "assetId": "shape:Star",
+     "name": "Star",
+     "xPct": 14.089,
+     "yPct": 85.251,
+     "widthPct": 4.323,
+     "heightPct": 1.892,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 19.02,
+      "h": 18.09,
+      "vx": 61.99,
+      "vy": 815.0,
+      "path": "M71.5,815.0L74.15,821.36L81.01,821.91L75.78,826.39L77.38,833.09L71.5,829.5L65.62,833.09L67.22,826.39L61.99,821.91L68.85,821.36Z",
+      "fill": "#e3e8ff"
+     }
+    },
+    {
+     "id": "tpl-s15",
+     "assetId": "shape:Star",
+     "name": "Star",
+     "xPct": 18.52,
+     "yPct": 85.251,
+     "widthPct": 4.323,
+     "heightPct": 1.892,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 19.02,
+      "h": 18.09,
+      "vx": 81.49,
+      "vy": 815.0,
+      "path": "M91.0,815.0L93.65,821.36L100.51,821.91L95.28,826.39L96.88,833.09L91.0,829.5L85.12,833.09L86.72,826.39L81.49,821.91L88.35,821.36Z",
+      "fill": "#e3e8ff"
+     }
+    },
+    {
+     "id": "tpl-s16",
+     "assetId": "shape:Star",
+     "name": "Star",
+     "xPct": 22.952,
+     "yPct": 85.251,
+     "widthPct": 4.323,
+     "heightPct": 1.892,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 19.02,
+      "h": 18.09,
+      "vx": 100.99,
+      "vy": 815.0,
+      "path": "M110.5,815.0L113.15,821.36L120.01,821.91L114.78,826.39L116.38,833.09L110.5,829.5L104.62,833.09L106.22,826.39L100.99,821.91L107.85,821.36Z",
+      "fill": "#e3e8ff"
+     }
+    },
+    {
+     "id": "tpl-s17",
+     "assetId": "shape:Star",
+     "name": "Star",
+     "xPct": 27.384,
+     "yPct": 85.251,
+     "widthPct": 4.323,
+     "heightPct": 1.892,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 19.02,
+      "h": 18.09,
+      "vx": 120.49,
+      "vy": 815.0,
+      "path": "M130.0,815.0L132.65,821.36L139.51,821.91L134.28,826.39L135.88,833.09L130.0,829.5L124.12,833.09L125.72,826.39L120.49,821.91L127.35,821.36Z",
+      "fill": "#e3e8ff"
+     }
+    }
+   ],
+   "deviceOne": {
+    "visible": false
+   }
+  },
+  {
+   "title": "Manage Account",
+   "subtitle": "Access premium, security & help in one tap",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(160deg, #d8e2fc 0%, #d8e2fc 45%, #a8bdfd 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t23",
+     "xPct": 10.0,
+     "yPct": 4.397,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Manage\nAccount",
+      "color": "#dbe1ff",
+      "size": 142.4,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.03,
+      "charSpacing": -16
+     }
+    },
+    {
+     "id": "tpl-t24",
+     "xPct": 10.0,
+     "yPct": 18.229,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Access premium, security\n& help in one tap",
+      "color": "#f2f4ff",
+      "size": 58.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.25,
+      "charSpacing": 8
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s21",
+     "assetId": "shape:Dark band",
+     "name": "Dark band",
+     "xPct": 0.0,
+     "yPct": 0.0,
+     "widthPct": 100.0,
+     "heightPct": 33.264,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 440,
+      "h": 318,
+      "radius": 0,
+      "fill": "#1c1c1c"
+     }
+    },
+    {
+     "id": "tpl-s22",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -4.545,
+     "yPct": 34.205,
+     "widthPct": 109.091,
+     "heightPct": 92.898,
+     "rotation": 0,
+     "opacity": 0.18,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 480,
+      "h": 888.11,
+      "radius": 121.68,
+      "fill": "#000000",
+      "blur": 22,
+      "inset": 66
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 58.24,
+    "x": 0.0,
+    "y": 37.96,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Split Your Bills",
+   "subtitle": "Track, chat & settle up with friends",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(160deg, #d8e2fc 0%, #d8e2fc 45%, #a8bdfd 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t27",
+     "xPct": 10.0,
+     "yPct": 4.397,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Split\nYour Bills",
+      "color": "#dbe1ff",
+      "size": 142.4,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.03,
+      "charSpacing": -3
+     }
+    },
+    {
+     "id": "tpl-t28",
+     "xPct": 10.0,
+     "yPct": 18.229,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Track, chat & settle\nup with friends",
+      "color": "#f2f4ff",
+      "size": 58.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.25,
+      "charSpacing": 10
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s25",
+     "assetId": "shape:Dark band",
+     "name": "Dark band",
+     "xPct": 0.0,
+     "yPct": 0.0,
+     "widthPct": 100.0,
+     "heightPct": 33.264,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 440,
+      "h": 318,
+      "radius": 0,
+      "fill": "#1c1c1c"
+     }
+    },
+    {
+     "id": "tpl-s26",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -4.545,
+     "yPct": 34.205,
+     "widthPct": 109.091,
+     "heightPct": 92.898,
+     "rotation": 0,
+     "opacity": 0.18,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 480,
+      "h": 888.11,
+      "radius": 121.68,
+      "fill": "#000000",
+      "blur": 22,
+      "inset": 66
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 58.24,
+    "x": 0.0,
+    "y": 37.96,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Buy & Sell Crypto",
+   "subtitle": "Market data with real-time performance",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(135deg, #9db6fb 0%, #d8e2fc 32%, #d8e2fc 62%, #a1b8fd 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t32",
+     "xPct": 10.0,
+     "yPct": 3.395,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Buy & Sell\nCrypto",
+      "color": "#0d0d0d",
+      "size": 142.4,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.05,
+      "charSpacing": 3
+     }
+    },
+    {
+     "id": "tpl-t33",
+     "xPct": 10.0,
+     "yPct": 19.589,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Market data with\nreal-time performance",
+      "color": "#101010",
+      "size": 58.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.25,
+      "charSpacing": 15
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s29",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -3.409,
+     "yPct": 28.556,
+     "widthPct": 58.636,
+     "heightPct": 48.332,
+     "rotation": 0,
+     "opacity": 0.18,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 258,
+      "h": 462.05,
+      "radius": 69.84,
+      "fill": "#000000",
+      "blur": 14,
+      "inset": 42
+     }
+    },
+    {
+     "id": "tpl-s30",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 44.773,
+     "yPct": 28.556,
+     "widthPct": 58.636,
+     "heightPct": 48.332,
+     "rotation": 0,
+     "opacity": 0.18,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 258,
+      "h": 462.05,
+      "radius": 69.84,
+      "fill": "#000000",
+      "blur": 14,
+      "inset": 42
+     }
+    },
+    {
+     "id": "tpl-s31",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -4.545,
+     "yPct": 68.933,
+     "widthPct": 109.091,
+     "heightPct": 92.898,
+     "rotation": 0,
+     "opacity": 0.18,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 480,
+      "h": 888.11,
+      "radius": 121.68,
+      "fill": "#000000",
+      "blur": 22,
+      "inset": 66
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 58.24,
+    "x": 0.0,
+    "y": 81.87,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 12
+   },
+   "extraDevices": [
+    {
+     "size": 29.12,
+     "x": -60.92,
+     "y": 5.3,
+     "rotation": 0,
+     "brightness": 100,
+     "frameless": false,
+     "bezelColor": "#060606",
+     "borderColor": "#5e5e5e",
+     "zIndex": 10
+    },
+    {
+     "size": 29.12,
+     "x": 60.92,
+     "y": 5.3,
+     "rotation": 0,
+     "brightness": 100,
+     "frameless": false,
+     "bezelColor": "#060606",
+     "borderColor": "#5e5e5e",
+     "zIndex": 10
+    }
+   ]
+  }
+ ],
+ "designHeight": 2347,
+ "textColor": "#111111"
+}
