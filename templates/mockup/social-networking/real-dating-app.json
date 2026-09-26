@@ -1,0 +1,1691 @@
+{
+ "version": 1,
+ "id": "real-dating-app",
+ "name": "Real dating app",
+ "category": "social-networking",
+ "description": "Showcase your authentic dating app with our genuine template. Display profile verification, meaningful matching, and relationship-focused features in a trustworthy design that promotes real connections and lasting relationships.",
+ "devices": [
+  {
+   "deviceId": "apple-iphone-16-pro-max",
+   "label": "apple-iphone-16-pro-max"
+  },
+  {
+   "deviceId": "apple-iphone-13-pro-max",
+   "label": "apple-iphone-13-pro-max"
+  },
+  {
+   "deviceId": "samsung-galaxy-s21-ultra",
+   "label": "samsung-galaxy-s21-ultra"
+  },
+  {
+   "deviceId": "apple-ipad-pro-12-9-inch",
+   "label": "apple-ipad-pro-12-9-inch"
+  },
+  {
+   "deviceId": "samsung-galaxy-tab-s7",
+   "label": "samsung-galaxy-tab-s7"
+  }
+ ],
+ "layout": "single-no-text",
+ "background": {
+  "type": "gradient",
+  "value": "linear-gradient(180deg, #000000 0%, #0b0c0e 22%, #1e1f23 45%, #14151a 65%, #090909 100%)"
+ },
+ "panoramic": false,
+ "columnCount": 5,
+ "titles": [
+  "REAL LOVE. REAL DATES.",
+  "MATCH YOUR DATE SAFE.",
+  "EASY PLAN YOUR DATE",
+  "ENJOY THE DATE",
+  "DATE, LAUGHTER WITH HIM."
+ ],
+ "subtitles": [
+  "DATE IN PERSON",
+  "",
+  "NO CATFISH. ONLY SERIOUS PEPLE",
+  "TAKE YOUR TIME AND DISCUSS.",
+  ""
+ ],
+ "pages": [
+  {
+   "title": "REAL LOVE. REAL DATES.",
+   "subtitle": "DATE IN PERSON",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #000000 0%, #0b0c0e 22%, #1e1f23 45%, #14151a 65%, #090909 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t26",
+     "xPct": 10.455,
+     "yPct": 8.464,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "REAL LOVE.\nREAL DATES.",
+      "color": "#ffffff",
+      "size": 138.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.5022163003177966,
+      "charSpacing": -40
+     }
+    },
+    {
+     "id": "tpl-t27",
+     "xPct": 20.909,
+     "yPct": 90.992,
+     "widthPct": 68.182,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "DATE IN PERSON",
+      "color": "#f44336",
+      "size": 79.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -40
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s1",
+     "assetId": "shape:Glow",
+     "name": "Glow",
+     "xPct": 45.455,
+     "yPct": -2.092,
+     "widthPct": 81.818,
+     "heightPct": 37.657,
+     "rotation": 0,
+     "opacity": 0.35,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 360,
+      "h": 360,
+      "radius": 180,
+      "fill": "#8a4a1a",
+      "blur": 30,
+      "inset": 90
+     }
+    },
+    {
+     "id": "tpl-s2",
+     "assetId": "shape:Bokeh",
+     "name": "Bokeh",
+     "xPct": 16.591,
+     "yPct": 30.649,
+     "widthPct": 7.727,
+     "heightPct": 3.556,
+     "rotation": 0,
+     "opacity": 0.8,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 34,
+      "h": 34,
+      "radius": 17,
+      "fill": "#f0b030",
+      "blur": 2,
+      "inset": 6
+     }
+    },
+    {
+     "id": "tpl-s3",
+     "assetId": "shape:Bokeh",
+     "name": "Bokeh",
+     "xPct": 34.318,
+     "yPct": 31.067,
+     "widthPct": 7.273,
+     "heightPct": 3.347,
+     "rotation": 0,
+     "opacity": 0.8,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 32,
+      "h": 32,
+      "radius": 16,
+      "fill": "#f0b030",
+      "blur": 2,
+      "inset": 6
+     }
+    },
+    {
+     "id": "tpl-s4",
+     "assetId": "shape:Bokeh",
+     "name": "Bokeh",
+     "xPct": 41.364,
+     "yPct": 30.858,
+     "widthPct": 8.182,
+     "heightPct": 3.766,
+     "rotation": 0,
+     "opacity": 0.8,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 36,
+      "h": 36,
+      "radius": 18,
+      "fill": "#f0b030",
+      "blur": 2,
+      "inset": 6
+     }
+    },
+    {
+     "id": "tpl-s5",
+     "assetId": "shape:Bokeh",
+     "name": "Bokeh",
+     "xPct": 52.5,
+     "yPct": 31.067,
+     "widthPct": 7.727,
+     "heightPct": 3.556,
+     "rotation": 0,
+     "opacity": 0.8,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 34,
+      "h": 34,
+      "radius": 17,
+      "fill": "#f0a030",
+      "blur": 2,
+      "inset": 6
+     }
+    },
+    {
+     "id": "tpl-s6",
+     "assetId": "shape:Bokeh",
+     "name": "Bokeh",
+     "xPct": 61.136,
+     "yPct": 31.172,
+     "widthPct": 7.273,
+     "heightPct": 3.347,
+     "rotation": 0,
+     "opacity": 0.8,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 32,
+      "h": 32,
+      "radius": 16,
+      "fill": "#f0b030",
+      "blur": 2,
+      "inset": 6
+     }
+    },
+    {
+     "id": "tpl-s7",
+     "assetId": "shape:Bokeh",
+     "name": "Bokeh",
+     "xPct": 69.091,
+     "yPct": 31.172,
+     "widthPct": 7.273,
+     "heightPct": 3.347,
+     "rotation": 0,
+     "opacity": 0.8,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 32,
+      "h": 32,
+      "radius": 16,
+      "fill": "#f0b030",
+      "blur": 2,
+      "inset": 6
+     }
+    },
+    {
+     "id": "tpl-s8",
+     "assetId": "shape:Bokeh",
+     "name": "Bokeh",
+     "xPct": 67.5,
+     "yPct": 28.243,
+     "widthPct": 6.364,
+     "heightPct": 2.929,
+     "rotation": 0,
+     "opacity": 0.9,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 28,
+      "h": 28,
+      "radius": 14,
+      "fill": "#ffffff",
+      "blur": 2,
+      "inset": 6
+     }
+    },
+    {
+     "id": "tpl-s9",
+     "assetId": "shape:Bokeh",
+     "name": "Bokeh",
+     "xPct": 51.818,
+     "yPct": 35.251,
+     "widthPct": 7.273,
+     "heightPct": 3.347,
+     "rotation": 0,
+     "opacity": 0.9,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 32,
+      "h": 32,
+      "radius": 16,
+      "fill": "#fff6c0",
+      "blur": 2,
+      "inset": 6
+     }
+    },
+    {
+     "id": "tpl-s10",
+     "assetId": "shape:Bokeh",
+     "name": "Bokeh",
+     "xPct": 64.545,
+     "yPct": 37.238,
+     "widthPct": 7.273,
+     "heightPct": 3.347,
+     "rotation": 0,
+     "opacity": 0.9,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 32,
+      "h": 32,
+      "radius": 16,
+      "fill": "#ffffff",
+      "blur": 2,
+      "inset": 6
+     }
+    },
+    {
+     "id": "tpl-s11",
+     "assetId": "shape:Bokeh",
+     "name": "Bokeh",
+     "xPct": 58.182,
+     "yPct": 37.448,
+     "widthPct": 6.364,
+     "heightPct": 2.929,
+     "rotation": 0,
+     "opacity": 0.7,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 28,
+      "h": 28,
+      "radius": 14,
+      "fill": "#f0b030",
+      "blur": 2,
+      "inset": 6
+     }
+    },
+    {
+     "id": "tpl-s12",
+     "assetId": "shape:Bokeh",
+     "name": "Bokeh",
+     "xPct": 53.864,
+     "yPct": 39.854,
+     "widthPct": 9.545,
+     "heightPct": 4.393,
+     "rotation": 0,
+     "opacity": 0.7,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 42,
+      "h": 42,
+      "radius": 21,
+      "fill": "#ff3a20",
+      "blur": 2,
+      "inset": 6
+     }
+    },
+    {
+     "id": "tpl-s13",
+     "assetId": "shape:Bokeh",
+     "name": "Bokeh",
+     "xPct": 60.682,
+     "yPct": 40.167,
+     "widthPct": 8.182,
+     "heightPct": 3.766,
+     "rotation": 0,
+     "opacity": 0.7,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 36,
+      "h": 36,
+      "radius": 18,
+      "fill": "#ff5030",
+      "blur": 2,
+      "inset": 6
+     }
+    },
+    {
+     "id": "tpl-s14",
+     "assetId": "shape:Bokeh",
+     "name": "Bokeh",
+     "xPct": 48.864,
+     "yPct": 44.456,
+     "widthPct": 6.818,
+     "heightPct": 3.138,
+     "rotation": 0,
+     "opacity": 0.7,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 30,
+      "h": 30,
+      "radius": 15,
+      "fill": "#f0c060",
+      "blur": 2,
+      "inset": 6
+     }
+    },
+    {
+     "id": "tpl-s15",
+     "assetId": "shape:Bokeh",
+     "name": "Bokeh",
+     "xPct": 44.545,
+     "yPct": 51.255,
+     "widthPct": 6.818,
+     "heightPct": 3.138,
+     "rotation": 0,
+     "opacity": 0.8,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 30,
+      "h": 30,
+      "radius": 15,
+      "fill": "#f0b030",
+      "blur": 2,
+      "inset": 6
+     }
+    },
+    {
+     "id": "tpl-s16",
+     "assetId": "shape:Bokeh",
+     "name": "Bokeh",
+     "xPct": 28.409,
+     "yPct": 26.151,
+     "widthPct": 6.818,
+     "heightPct": 3.138,
+     "rotation": 0,
+     "opacity": 0.6,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 30,
+      "h": 30,
+      "radius": 15,
+      "fill": "#8ab0c0",
+      "blur": 2,
+      "inset": 6
+     }
+    },
+    {
+     "id": "tpl-s17",
+     "assetId": "shape:Bokeh",
+     "name": "Bokeh",
+     "xPct": 89.091,
+     "yPct": 32.636,
+     "widthPct": 8.182,
+     "heightPct": 3.766,
+     "rotation": 0,
+     "opacity": 0.8,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 36,
+      "h": 36,
+      "radius": 18,
+      "fill": "#f0b030",
+      "blur": 2,
+      "inset": 6
+     }
+    },
+    {
+     "id": "tpl-s18",
+     "assetId": "shape:Bokeh",
+     "name": "Bokeh",
+     "xPct": 10.0,
+     "yPct": 24.268,
+     "widthPct": 7.273,
+     "heightPct": 3.347,
+     "rotation": 0,
+     "opacity": 0.6,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 32,
+      "h": 32,
+      "radius": 16,
+      "fill": "#e0a040",
+      "blur": 2,
+      "inset": 6
+     }
+    },
+    {
+     "id": "tpl-s19",
+     "assetId": "shape:Bokeh",
+     "name": "Bokeh",
+     "xPct": 87.5,
+     "yPct": 24.059,
+     "widthPct": 6.818,
+     "heightPct": 3.138,
+     "rotation": 0,
+     "opacity": 0.5,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 30,
+      "h": 30,
+      "radius": 15,
+      "fill": "#f0b030",
+      "blur": 2,
+      "inset": 6
+     }
+    },
+    {
+     "id": "tpl-s20",
+     "assetId": "shape:Blue blob",
+     "name": "Blue blob",
+     "xPct": -20.909,
+     "yPct": 42.678,
+     "widthPct": 60.0,
+     "heightPct": 44.351,
+     "rotation": 0,
+     "opacity": 0.8,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 264,
+      "h": 424,
+      "radius": 132,
+      "fill": "#1c3448",
+      "blur": 14,
+      "inset": 42
+     }
+    },
+    {
+     "id": "tpl-s21",
+     "assetId": "shape:Dark blob",
+     "name": "Dark blob",
+     "xPct": 64.545,
+     "yPct": 48.536,
+     "widthPct": 48.182,
+     "heightPct": 38.912,
+     "rotation": 0,
+     "opacity": 0.9,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 212,
+      "h": 372,
+      "radius": 106,
+      "fill": "#101a1a",
+      "blur": 12,
+      "inset": 36
+     }
+    },
+    {
+     "id": "tpl-s22",
+     "assetId": "shape:Head 1",
+     "name": "Head 1",
+     "xPct": 7.045,
+     "yPct": 38.808,
+     "widthPct": 26.818,
+     "heightPct": 14.435,
+     "rotation": 0,
+     "opacity": 0.9,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 118,
+      "h": 138,
+      "radius": 59,
+      "fill": "#0c0d10",
+      "blur": 8,
+      "inset": 24
+     }
+    },
+    {
+     "id": "tpl-s23",
+     "assetId": "shape:Head 2",
+     "name": "Head 2",
+     "xPct": 78.636,
+     "yPct": 40.9,
+     "widthPct": 29.091,
+     "heightPct": 16.527,
+     "rotation": 0,
+     "opacity": 0.9,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 128,
+      "h": 158,
+      "radius": 64,
+      "fill": "#241a14",
+      "blur": 8,
+      "inset": 24
+     }
+    },
+    {
+     "id": "tpl-s24",
+     "assetId": "shape:Candle",
+     "name": "Candle",
+     "xPct": 43.864,
+     "yPct": 60.774,
+     "widthPct": 15.0,
+     "heightPct": 8.159,
+     "rotation": 0,
+     "opacity": 0.95,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 66,
+      "h": 78,
+      "radius": 33,
+      "fill": "#ff9a20",
+      "blur": 5,
+      "inset": 15
+     }
+    },
+    {
+     "id": "tpl-s25",
+     "assetId": "shape:Bottom fade",
+     "name": "Bottom fade",
+     "xPct": 0.0,
+     "yPct": 75.314,
+     "widthPct": 100.0,
+     "heightPct": 24.686,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 6,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 440,
+      "h": 236,
+      "radius": 0,
+      "gradient": [
+       [
+        0,
+        "#00000000"
+       ],
+       [
+        0.6,
+        "#000000cc"
+       ],
+       [
+        1,
+        "#000000"
+       ]
+      ]
+     }
+    }
+   ],
+   "deviceOne": {
+    "visible": false
+   }
+  },
+  {
+   "title": "MATCH YOUR DATE SAFE.",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#f44336"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t35",
+     "xPct": 8.182,
+     "yPct": 89.592,
+     "widthPct": 56.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Name",
+     "style": {
+      "text": "Marcus, 33",
+      "color": "#ffffff",
+      "size": 81.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t36",
+     "xPct": 8.182,
+     "yPct": 94.881,
+     "widthPct": 56.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Location",
+     "style": {
+      "text": "MALIBU • 20 KMS AWAY",
+      "color": "#ffffffb0",
+      "size": 28.2,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t37",
+     "xPct": 10.455,
+     "yPct": 4.284,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "MATCH\nYOUR DATE",
+      "color": "#000000",
+      "size": 128.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.642671315059727,
+      "charSpacing": -40
+     }
+    },
+    {
+     "id": "tpl-t38",
+     "xPct": 10.455,
+     "yPct": 23.303,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title 2",
+     "style": {
+      "text": "SAFE.",
+      "color": "#ffffff",
+      "size": 128.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.0,
+      "charSpacing": -40
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s28",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -2.159,
+     "yPct": 28.661,
+     "widthPct": 130.227,
+     "heightPct": 116.979,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 573,
+      "h": 1118.32,
+      "radius": 128.4,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s29",
+     "assetId": "shape:Card border",
+     "name": "Card border",
+     "xPct": 2.727,
+     "yPct": 63.389,
+     "widthPct": 84.318,
+     "heightPct": 35.46,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 371,
+      "h": 339,
+      "radius": 30,
+      "fill": "#f0453a"
+     }
+    },
+    {
+     "id": "tpl-s30",
+     "assetId": "shape:Card",
+     "name": "Card",
+     "xPct": 3.636,
+     "yPct": 63.808,
+     "widthPct": 82.5,
+     "heightPct": 34.623,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 363,
+      "h": 331,
+      "radius": 27,
+      "gradient": [
+       [
+        0,
+        "#3a0c0c"
+       ],
+       [
+        0.5,
+        "#12090c"
+       ],
+       [
+        1,
+        "#050a10"
+       ]
+      ]
+     }
+    },
+    {
+     "id": "tpl-s31",
+     "assetId": "shape:Neon red",
+     "name": "Neon red",
+     "xPct": 3.182,
+     "yPct": 67.364,
+     "widthPct": 32.273,
+     "heightPct": 6.485,
+     "rotation": 0,
+     "opacity": 0.5,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 142,
+      "h": 62,
+      "radius": 26,
+      "fill": "#ff3a20",
+      "blur": 10,
+      "inset": 6
+     }
+    },
+    {
+     "id": "tpl-s32",
+     "assetId": "shape:Neon cyan",
+     "name": "Neon cyan",
+     "xPct": 7.727,
+     "yPct": 77.615,
+     "widthPct": 23.182,
+     "heightPct": 4.393,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 102,
+      "h": 42,
+      "radius": 16,
+      "fill": "#20c8e0",
+      "blur": 8,
+      "inset": 6
+     }
+    },
+    {
+     "id": "tpl-s33",
+     "assetId": "shape:Neon orange",
+     "name": "Neon orange",
+     "xPct": 60.0,
+     "yPct": 73.117,
+     "widthPct": 20.909,
+     "heightPct": 5.439,
+     "rotation": 0,
+     "opacity": 0.5,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 92,
+      "h": 52,
+      "radius": 20,
+      "fill": "#ff6a20",
+      "blur": 9,
+      "inset": 6
+     }
+    },
+    {
+     "id": "tpl-s34",
+     "assetId": "shape:Figure",
+     "name": "Figure",
+     "xPct": 27.273,
+     "yPct": 71.13,
+     "widthPct": 34.091,
+     "heightPct": 28.243,
+     "rotation": 0,
+     "opacity": 0.9,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 150,
+      "h": 270,
+      "radius": 70,
+      "fill": "#2a1f1f",
+      "blur": 14,
+      "inset": 10
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 77.82,
+    "x": 12.26,
+    "y": 34.56,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "EASY PLAN YOUR DATE",
+   "subtitle": "NO CATFISH. ONLY SERIOUS PEPLE",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#f44336"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t40",
+     "xPct": 10.455,
+     "yPct": 4.284,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "EASY PLAN\nYOUR DATE",
+      "color": "#000000",
+      "size": 128.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.642671315059727,
+      "charSpacing": -40
+     }
+    },
+    {
+     "id": "tpl-t41",
+     "xPct": 10.455,
+     "yPct": 23.017,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "NO CATFISH. ONLY\nSERIOUS PEPLE",
+      "color": "#ffffff",
+      "size": 84.1,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.6061711841840833,
+      "charSpacing": -40
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s39",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 0.795,
+     "yPct": 35.774,
+     "widthPct": 98.409,
+     "heightPct": 85.161,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 433,
+      "h": 814.14,
+      "radius": 106.0,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 54.39,
+    "x": 0.0,
+    "y": 37.54,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "ENJOY THE DATE",
+   "subtitle": "TAKE YOUR TIME AND DISCUSS.",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#f44336"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t55",
+     "xPct": 10.455,
+     "yPct": 4.28,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "ENJOY\nTHE DATE",
+      "color": "#000000",
+      "size": 128.8,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.6389837474899598,
+      "charSpacing": -40
+     }
+    },
+    {
+     "id": "tpl-t56",
+     "xPct": 10.455,
+     "yPct": 21.939,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "TAKE YOUR TIME\nAND DISCUSS.",
+      "color": "#ffffff",
+      "size": 86.1,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.5673600146994773,
+      "charSpacing": -40
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s42",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 0.795,
+     "yPct": 34.728,
+     "widthPct": 98.409,
+     "heightPct": 85.161,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 433,
+      "h": 814.14,
+      "radius": 106.0,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s43",
+     "assetId": "shape:Ring",
+     "name": "Ring",
+     "xPct": 37.045,
+     "yPct": 35.774,
+     "widthPct": 25.0,
+     "heightPct": 11.506,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 110,
+      "h": 110,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s44",
+     "assetId": "shape:Photo bg",
+     "name": "Photo bg",
+     "xPct": 38.182,
+     "yPct": 36.297,
+     "widthPct": 22.727,
+     "heightPct": 10.46,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 100,
+      "h": 100,
+      "fill": "#8c8c88"
+     }
+    },
+    {
+     "id": "tpl-s45",
+     "assetId": "shape:Face blob",
+     "name": "Face blob",
+     "xPct": 41.193,
+     "yPct": 37.448,
+     "widthPct": 16.705,
+     "heightPct": 9.414,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 73.5,
+      "h": 90.0,
+      "radius": 36.75,
+      "fill": "#c99a80",
+      "blur": 4,
+      "inset": 12
+     }
+    },
+    {
+     "id": "tpl-s46",
+     "assetId": "shape:Ring",
+     "name": "Ring",
+     "xPct": -0.909,
+     "yPct": 58.054,
+     "widthPct": 35.0,
+     "heightPct": 16.109,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 154,
+      "h": 154,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s47",
+     "assetId": "shape:Photo bg",
+     "name": "Photo bg",
+     "xPct": 0.227,
+     "yPct": 58.577,
+     "widthPct": 32.727,
+     "heightPct": 15.063,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 144,
+      "h": 144,
+      "fill": "#8c8c88"
+     }
+    },
+    {
+     "id": "tpl-s48",
+     "assetId": "shape:Face blob",
+     "name": "Face blob",
+     "xPct": 5.989,
+     "yPct": 60.649,
+     "widthPct": 21.205,
+     "heightPct": 12.176,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 93.3,
+      "h": 116.4,
+      "radius": 46.65,
+      "fill": "#c49a80",
+      "blur": 4,
+      "inset": 12
+     }
+    },
+    {
+     "id": "tpl-s49",
+     "assetId": "shape:Ring",
+     "name": "Ring",
+     "xPct": 56.136,
+     "yPct": 80.23,
+     "widthPct": 37.727,
+     "heightPct": 17.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 166,
+      "h": 166,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s50",
+     "assetId": "shape:Photo bg",
+     "name": "Photo bg",
+     "xPct": 57.273,
+     "yPct": 80.753,
+     "widthPct": 35.455,
+     "heightPct": 16.318,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 156,
+      "h": 156,
+      "fill": "#8c8c88"
+     }
+    },
+    {
+     "id": "tpl-s51",
+     "assetId": "shape:Face blob",
+     "name": "Face blob",
+     "xPct": 63.784,
+     "yPct": 83.075,
+     "widthPct": 22.432,
+     "heightPct": 12.929,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 98.7,
+      "h": 123.6,
+      "radius": 49.35,
+      "fill": "#c08c78",
+      "blur": 4,
+      "inset": 12
+     }
+    },
+    {
+     "id": "tpl-s52",
+     "assetId": "shape:Ring",
+     "name": "Ring",
+     "xPct": 79.091,
+     "yPct": 0.0,
+     "widthPct": 37.273,
+     "heightPct": 17.155,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 164,
+      "h": 164,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s53",
+     "assetId": "shape:Photo bg",
+     "name": "Photo bg",
+     "xPct": 80.227,
+     "yPct": 0.523,
+     "widthPct": 35.0,
+     "heightPct": 16.109,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 154,
+      "h": 154,
+      "fill": "#8c8c88"
+     }
+    },
+    {
+     "id": "tpl-s54",
+     "assetId": "shape:Face blob",
+     "name": "Face blob",
+     "xPct": 93.432,
+     "yPct": 2.803,
+     "widthPct": 22.227,
+     "heightPct": 12.803,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 97.8,
+      "h": 122.4,
+      "radius": 48.9,
+      "fill": "#3a2a22",
+      "blur": 4,
+      "inset": 12
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 54.39,
+    "x": 0.0,
+    "y": 36.12,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "DATE, LAUGHTER WITH HIM.",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #2a1c10 0%, #3a2612 30%, #1c1006 55%, #0a0603 80%, #040200 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t70",
+     "xPct": 10.455,
+     "yPct": 70.515,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "DATE,\nLAUGHTER\nWITH HIM.",
+      "color": "#ffffff",
+      "size": 134.1,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.5737732189685314,
+      "charSpacing": -40
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s57",
+     "assetId": "shape:Hair 1",
+     "name": "Hair 1",
+     "xPct": -16.364,
+     "yPct": 3.975,
+     "widthPct": 64.545,
+     "heightPct": 21.339,
+     "rotation": 0,
+     "opacity": 0.95,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 284,
+      "h": 204,
+      "radius": 102,
+      "fill": "#2a1a10",
+      "blur": 14,
+      "inset": 42
+     }
+    },
+    {
+     "id": "tpl-s58",
+     "assetId": "shape:Face 1",
+     "name": "Face 1",
+     "xPct": -10.909,
+     "yPct": 14.854,
+     "widthPct": 58.182,
+     "heightPct": 33.054,
+     "rotation": 0,
+     "opacity": 0.8,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 256,
+      "h": 316,
+      "radius": 128,
+      "fill": "#b07050",
+      "blur": 16,
+      "inset": 48
+     }
+    },
+    {
+     "id": "tpl-s59",
+     "assetId": "shape:Blue shirt",
+     "name": "Blue shirt",
+     "xPct": -20.0,
+     "yPct": 36.82,
+     "widthPct": 62.727,
+     "heightPct": 35.146,
+     "rotation": 0,
+     "opacity": 0.9,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 276,
+      "h": 336,
+      "radius": 138,
+      "fill": "#123a55",
+      "blur": 16,
+      "inset": 48
+     }
+    },
+    {
+     "id": "tpl-s60",
+     "assetId": "shape:Face 2",
+     "name": "Face 2",
+     "xPct": 61.818,
+     "yPct": 17.992,
+     "widthPct": 53.636,
+     "heightPct": 26.778,
+     "rotation": 0,
+     "opacity": 0.7,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 236,
+      "h": 256,
+      "radius": 118,
+      "fill": "#c09070",
+      "blur": 16,
+      "inset": 48
+     }
+    },
+    {
+     "id": "tpl-s61",
+     "assetId": "shape:Hair 2",
+     "name": "Hair 2",
+     "xPct": 66.364,
+     "yPct": 9.623,
+     "widthPct": 49.091,
+     "heightPct": 22.594,
+     "rotation": 0,
+     "opacity": 0.8,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 216,
+      "h": 216,
+      "radius": 108,
+      "fill": "#7a5a3a",
+      "blur": 16,
+      "inset": 48
+     }
+    },
+    {
+     "id": "tpl-s62",
+     "assetId": "shape:Bokeh",
+     "name": "Bokeh",
+     "xPct": 73.636,
+     "yPct": 1.987,
+     "widthPct": 18.636,
+     "heightPct": 8.577,
+     "rotation": 0,
+     "opacity": 0.95,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 82,
+      "h": 82,
+      "radius": 41,
+      "fill": "#fff3b0",
+      "blur": 3,
+      "inset": 9
+     }
+    },
+    {
+     "id": "tpl-s63",
+     "assetId": "shape:Bokeh",
+     "name": "Bokeh",
+     "xPct": 38.409,
+     "yPct": 31.276,
+     "widthPct": 23.182,
+     "heightPct": 10.669,
+     "rotation": 0,
+     "opacity": 0.9,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 102,
+      "h": 102,
+      "radius": 51,
+      "fill": "#ffd88a",
+      "blur": 3,
+      "inset": 9
+     }
+    },
+    {
+     "id": "tpl-s64",
+     "assetId": "shape:Bokeh",
+     "name": "Bokeh",
+     "xPct": 55.0,
+     "yPct": 32.531,
+     "widthPct": 18.636,
+     "heightPct": 8.577,
+     "rotation": 0,
+     "opacity": 0.9,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 82,
+      "h": 82,
+      "radius": 41,
+      "fill": "#ffe8a0",
+      "blur": 3,
+      "inset": 9
+     }
+    },
+    {
+     "id": "tpl-s65",
+     "assetId": "shape:Bokeh",
+     "name": "Bokeh",
+     "xPct": 38.636,
+     "yPct": 32.95,
+     "widthPct": 15.909,
+     "heightPct": 7.322,
+     "rotation": 0,
+     "opacity": 0.8,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 70,
+      "h": 70,
+      "radius": 35,
+      "fill": "#ffe0a0",
+      "blur": 3,
+      "inset": 9
+     }
+    },
+    {
+     "id": "tpl-s66",
+     "assetId": "shape:Bokeh",
+     "name": "Bokeh",
+     "xPct": 42.955,
+     "yPct": 48.536,
+     "widthPct": 14.091,
+     "heightPct": 6.485,
+     "rotation": 0,
+     "opacity": 0.95,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 62,
+      "h": 62,
+      "radius": 31,
+      "fill": "#ffe58a",
+      "blur": 3,
+      "inset": 9
+     }
+    },
+    {
+     "id": "tpl-s67",
+     "assetId": "shape:Bokeh",
+     "name": "Bokeh",
+     "xPct": 45.227,
+     "yPct": 20.607,
+     "widthPct": 18.636,
+     "heightPct": 8.577,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 82,
+      "h": 82,
+      "radius": 41,
+      "fill": "#e8a050",
+      "blur": 3,
+      "inset": 9
+     }
+    },
+    {
+     "id": "tpl-s68",
+     "assetId": "shape:Bokeh",
+     "name": "Bokeh",
+     "xPct": 26.136,
+     "yPct": 32.427,
+     "widthPct": 15.909,
+     "heightPct": 7.322,
+     "rotation": 0,
+     "opacity": 0.7,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 70,
+      "h": 70,
+      "radius": 35,
+      "fill": "#fff0b0",
+      "blur": 3,
+      "inset": 9
+     }
+    },
+    {
+     "id": "tpl-s69",
+     "assetId": "shape:Bottom fade",
+     "name": "Bottom fade",
+     "xPct": 0.0,
+     "yPct": 58.577,
+     "widthPct": 100.0,
+     "heightPct": 41.423,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 6,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 440,
+      "h": 396,
+      "radius": 0,
+      "gradient": [
+       [
+        0,
+        "#00000000"
+       ],
+       [
+        0.5,
+        "#000000aa"
+       ],
+       [
+        1,
+        "#000000"
+       ]
+      ]
+     }
+    }
+   ],
+   "deviceOne": {
+    "visible": false
+   }
+  }
+ ],
+ "designHeight": 2347,
+ "textColor": "#111111"
+}

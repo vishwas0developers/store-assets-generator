@@ -1,0 +1,2135 @@
+{
+ "version": 1,
+ "id": "dating-live-app",
+ "name": "Dating live app",
+ "category": "social-networking",
+ "description": "Present your live dating platform with our dynamic template. Display real-time matching, video chat features, and live interaction tools in an engaging design that facilitates authentic connections and meaningful relationships.",
+ "devices": [
+  {
+   "deviceId": "apple-iphone-16-pro-max",
+   "label": "apple-iphone-16-pro-max"
+  },
+  {
+   "deviceId": "apple-iphone-13-pro-max",
+   "label": "apple-iphone-13-pro-max"
+  },
+  {
+   "deviceId": "samsung-galaxy-s21-ultra",
+   "label": "samsung-galaxy-s21-ultra"
+  },
+  {
+   "deviceId": "apple-ipad-pro-12-9-inch",
+   "label": "apple-ipad-pro-12-9-inch"
+  },
+  {
+   "deviceId": "samsung-galaxy-tab-s7",
+   "label": "samsung-galaxy-tab-s7"
+  }
+ ],
+ "layout": "single-no-text",
+ "background": {
+  "type": "gradient",
+  "value": "linear-gradient(180deg, #ffffff 0%, #f4f1ef 22%, #e5e7e6 50%, #d8d9de 78%, #0c1226 82%, #050718 100%)"
+ },
+ "panoramic": false,
+ "columnCount": 5,
+ "titles": [
+  "Find Your Match",
+  "Pick Your Favorite Passions",
+  "Browse profiles & connect",
+  "Upload a photo to start dating",
+  "Join the community & match"
+ ],
+ "subtitles": [
+  "So easy to use! I found genuine matches in just a few days. Sofia R.",
+  "",
+  "",
+  "",
+  ""
+ ],
+ "pages": [
+  {
+   "title": "Find Your Match",
+   "subtitle": "So easy to use! I found genuine matches in just a few days. Sofia R.",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #ffffff 0%, #f4f1ef 22%, #e5e7e6 50%, #d8d9de 78%, #0c1226 82%, #050718 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t10",
+     "xPct": 4.545,
+     "yPct": 3.937,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Find\nYour\nMatch",
+      "color": "#db0049",
+      "size": 154.6,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.03,
+      "charSpacing": 45
+     }
+    },
+    {
+     "id": "tpl-t11",
+     "xPct": 4.545,
+     "yPct": 83.306,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Stars",
+     "style": {
+      "text": "★★★★★",
+      "color": "#ffffff",
+      "size": 61.4,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t12",
+     "xPct": 4.545,
+     "yPct": 86.262,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Quote",
+     "style": {
+      "text": "“So easy to use! I found genuine\nmatches in just a few days.”\n— Sofia R. —",
+      "color": "#ffffff",
+      "size": 50.3,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.5,
+      "charSpacing": 30
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s1",
+     "assetId": "shape:Duvet L",
+     "name": "Duvet L",
+     "xPct": -25.0,
+     "yPct": 24.059,
+     "widthPct": 109.091,
+     "heightPct": 50.209,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 480,
+      "h": 480,
+      "radius": 240,
+      "fill": "#f2f2f5",
+      "blur": 30,
+      "inset": 90
+     }
+    },
+    {
+     "id": "tpl-s2",
+     "assetId": "shape:Duvet R",
+     "name": "Duvet R",
+     "xPct": 25.0,
+     "yPct": 18.828,
+     "widthPct": 109.091,
+     "heightPct": 50.209,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 480,
+      "h": 480,
+      "radius": 240,
+      "fill": "#f4f4f7",
+      "blur": 30,
+      "inset": 90
+     }
+    },
+    {
+     "id": "tpl-s3",
+     "assetId": "shape:Hair M",
+     "name": "Hair M",
+     "xPct": 0.455,
+     "yPct": 21.13,
+     "widthPct": 58.182,
+     "heightPct": 26.778,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 256,
+      "h": 256,
+      "radius": 128,
+      "fill": "#2b2530",
+      "blur": 22,
+      "inset": 66
+     }
+    },
+    {
+     "id": "tpl-s4",
+     "assetId": "shape:Skin M",
+     "name": "Skin M",
+     "xPct": 18.864,
+     "yPct": 30.126,
+     "widthPct": 46.364,
+     "heightPct": 21.339,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 204,
+      "h": 204,
+      "radius": 102,
+      "fill": "#c99a80",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s5",
+     "assetId": "shape:Hair W",
+     "name": "Hair W",
+     "xPct": 43.182,
+     "yPct": 28.243,
+     "widthPct": 50.0,
+     "heightPct": 23.013,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 220,
+      "h": 220,
+      "radius": 110,
+      "fill": "#4a2c26",
+      "blur": 20,
+      "inset": 60
+     }
+    },
+    {
+     "id": "tpl-s6",
+     "assetId": "shape:Skin W",
+     "name": "Skin W",
+     "xPct": 47.045,
+     "yPct": 35.774,
+     "widthPct": 40.0,
+     "heightPct": 18.41,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 176,
+      "h": 176,
+      "radius": 88,
+      "fill": "#d3a58c",
+      "blur": 16,
+      "inset": 48
+     }
+    },
+    {
+     "id": "tpl-s7",
+     "assetId": "shape:Shirt M",
+     "name": "Shirt M",
+     "xPct": -22.273,
+     "yPct": 44.142,
+     "widthPct": 85.455,
+     "heightPct": 39.331,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 376,
+      "h": 376,
+      "radius": 188,
+      "fill": "#bfc0c8",
+      "blur": 26,
+      "inset": 78
+     }
+    },
+    {
+     "id": "tpl-s8",
+     "assetId": "shape:Hair W2",
+     "name": "Hair W2",
+     "xPct": 45.909,
+     "yPct": 42.05,
+     "widthPct": 71.818,
+     "heightPct": 33.054,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 316,
+      "h": 316,
+      "radius": 158,
+      "fill": "#5a3a30",
+      "blur": 26,
+      "inset": 78
+     }
+    },
+    {
+     "id": "tpl-s9",
+     "assetId": "shape:Top W",
+     "name": "Top W",
+     "xPct": 45.0,
+     "yPct": 53.138,
+     "widthPct": 64.545,
+     "heightPct": 29.707,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 284,
+      "h": 284,
+      "radius": 142,
+      "fill": "#c9c9cf",
+      "blur": 24,
+      "inset": 72
+     }
+    }
+   ],
+   "deviceOne": {
+    "visible": false
+   }
+  },
+  {
+   "title": "Pick Your Favorite Passions",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(160deg, #fecdd4 0%, #fdeaec 30%, #fffdfe 58%, #fee9ec 78%, #f9c8cd 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t18",
+     "xPct": 10.455,
+     "yPct": 3.616,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Pick Your\nFavorite\nPassions",
+      "color": "#000000",
+      "size": 135.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.07,
+      "charSpacing": 38
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s13",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 0.682,
+     "yPct": 20.816,
+     "widthPct": 98.636,
+     "heightPct": 85.388,
+     "rotation": 0,
+     "opacity": 0.12,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 434,
+      "h": 816.31,
+      "radius": 106.16,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s14",
+     "assetId": "shape:Sparkle",
+     "name": "Sparkle",
+     "xPct": 77.955,
+     "yPct": 4.916,
+     "widthPct": 15.455,
+     "heightPct": 7.741,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 68,
+      "h": 74,
+      "vx": 343,
+      "vy": 47,
+      "path": "M377,48Q379.31,81.48 410,84Q379.31,86.52 377,120Q374.69,86.52 344,84Q374.69,81.48 377,48Z",
+      "fill": "#000000"
+     }
+    },
+    {
+     "id": "tpl-s15",
+     "assetId": "shape:Sparkle",
+     "name": "Sparkle",
+     "xPct": 83.636,
+     "yPct": 14.54,
+     "widthPct": 7.727,
+     "heightPct": 3.975,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 34,
+      "h": 38,
+      "vx": 368,
+      "vy": 139,
+      "path": "M385,140Q386.12,156.74 401,158Q386.12,159.26 385,176Q383.88,159.26 369,158Q383.88,156.74 385,140Z",
+      "fill": "#000000"
+     }
+    },
+    {
+     "id": "tpl-s16",
+     "assetId": "shape:Sparkle",
+     "name": "Sparkle",
+     "xPct": 80.0,
+     "yPct": 17.364,
+     "widthPct": 6.364,
+     "heightPct": 3.347,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 28,
+      "h": 32,
+      "vx": 352,
+      "vy": 166,
+      "path": "M366,167Q366.91,180.95 379,182Q366.91,183.05 366,197Q365.09,183.05 353,182Q365.09,180.95 366,167Z",
+      "fill": "#000000"
+     }
+    },
+    {
+     "id": "tpl-s17",
+     "assetId": "shape:Sparkle",
+     "name": "Sparkle",
+     "xPct": 86.818,
+     "yPct": 18.619,
+     "widthPct": 5.455,
+     "heightPct": 2.929,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 24,
+      "h": 28,
+      "vx": 382,
+      "vy": 178,
+      "path": "M394,179Q394.77,191.09 405,192Q394.77,192.91 394,205Q393.23,192.91 383,192Q393.23,191.09 394,179Z",
+      "fill": "#000000"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 54.56,
+    "x": 0.0,
+    "y": 17.39,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Browse profiles & connect",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#e9004c"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t32",
+     "xPct": 10.455,
+     "yPct": 3.616,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Browse\nprofiles &\nconnect",
+      "color": "#ffffff",
+      "size": 135.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.07,
+      "charSpacing": 38
+     }
+    },
+    {
+     "id": "tpl-t36",
+     "xPct": 23.864,
+     "yPct": 62.659,
+     "widthPct": 18.864,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Reading",
+     "style": {
+      "text": "Reading",
+      "color": "#ffffff",
+      "size": 45.4,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t40",
+     "xPct": 59.545,
+     "yPct": 62.659,
+     "widthPct": 28.864,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Photography",
+     "style": {
+      "text": "Photography",
+      "color": "#111111",
+      "size": 45.4,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t44",
+     "xPct": 13.182,
+     "yPct": 69.981,
+     "widthPct": 19.773,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Gaming",
+     "style": {
+      "text": "Gaming",
+      "color": "#111111",
+      "size": 45.4,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t48",
+     "xPct": 49.773,
+     "yPct": 69.981,
+     "widthPct": 15.455,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Music",
+     "style": {
+      "text": "Music",
+      "color": "#ffffff",
+      "size": 45.4,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t52",
+     "xPct": 82.045,
+     "yPct": 69.981,
+     "widthPct": 15.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Travel",
+     "style": {
+      "text": "Travel",
+      "color": "#111111",
+      "size": 45.4,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t56",
+     "xPct": 28.182,
+     "yPct": 77.303,
+     "widthPct": 19.773,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Painting",
+     "style": {
+      "text": "Painting",
+      "color": "#ffffff",
+      "size": 45.4,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t60",
+     "xPct": 64.773,
+     "yPct": 77.303,
+     "widthPct": 18.182,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Politics",
+     "style": {
+      "text": "Politics",
+      "color": "#111111",
+      "size": 45.4,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t64",
+     "xPct": 13.636,
+     "yPct": 84.626,
+     "widthPct": 17.5,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Charity",
+     "style": {
+      "text": "Charity",
+      "color": "#111111",
+      "size": 45.4,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t68",
+     "xPct": 48.864,
+     "yPct": 84.626,
+     "widthPct": 18.182,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Cooking",
+     "style": {
+      "text": "Cooking",
+      "color": "#111111",
+      "size": 45.4,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t72",
+     "xPct": 85.227,
+     "yPct": 84.626,
+     "widthPct": 12.5,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Pets",
+     "style": {
+      "text": "Pets",
+      "color": "#111111",
+      "size": 45.4,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t76",
+     "xPct": 29.545,
+     "yPct": 91.843,
+     "widthPct": 16.591,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Sports",
+     "style": {
+      "text": "Sports",
+      "color": "#ffffff",
+      "size": 45.4,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t80",
+     "xPct": 62.955,
+     "yPct": 91.843,
+     "widthPct": 18.864,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Fashion",
+     "style": {
+      "text": "Fashion",
+      "color": "#111111",
+      "size": 45.4,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s19",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -0.114,
+     "yPct": 30.544,
+     "widthPct": 100.227,
+     "heightPct": 86.979,
+     "rotation": 0,
+     "opacity": 0.2,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 441,
+      "h": 831.52,
+      "radius": 107.28,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s20",
+     "assetId": "shape:Avatar ring",
+     "name": "Avatar ring",
+     "xPct": 9.091,
+     "yPct": 23.954,
+     "widthPct": 15.455,
+     "heightPct": 7.113,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 12,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 68,
+      "h": 68,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s21",
+     "assetId": "shape:Avatar",
+     "name": "Avatar",
+     "xPct": 9.773,
+     "yPct": 24.268,
+     "widthPct": 14.091,
+     "heightPct": 6.485,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 12,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 62,
+      "h": 62,
+      "fill": "#c9b6a4"
+     }
+    },
+    {
+     "id": "tpl-s22",
+     "assetId": "shape:Avatar ring",
+     "name": "Avatar ring",
+     "xPct": 17.705,
+     "yPct": 23.954,
+     "widthPct": 15.455,
+     "heightPct": 7.113,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 13,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 68,
+      "h": 68,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s23",
+     "assetId": "shape:Avatar",
+     "name": "Avatar",
+     "xPct": 18.386,
+     "yPct": 24.268,
+     "widthPct": 14.091,
+     "heightPct": 6.485,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 13,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 62,
+      "h": 62,
+      "fill": "#5a4032"
+     }
+    },
+    {
+     "id": "tpl-s24",
+     "assetId": "shape:Avatar ring",
+     "name": "Avatar ring",
+     "xPct": 26.318,
+     "yPct": 23.954,
+     "widthPct": 15.455,
+     "heightPct": 7.113,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 14,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 68,
+      "h": 68,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s25",
+     "assetId": "shape:Avatar",
+     "name": "Avatar",
+     "xPct": 27.0,
+     "yPct": 24.268,
+     "widthPct": 14.091,
+     "heightPct": 6.485,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 14,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 62,
+      "h": 62,
+      "fill": "#b58f78"
+     }
+    },
+    {
+     "id": "tpl-s26",
+     "assetId": "shape:Avatar ring",
+     "name": "Avatar ring",
+     "xPct": 34.932,
+     "yPct": 23.954,
+     "widthPct": 15.455,
+     "heightPct": 7.113,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 68,
+      "h": 68,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s27",
+     "assetId": "shape:Avatar",
+     "name": "Avatar",
+     "xPct": 35.614,
+     "yPct": 24.268,
+     "widthPct": 14.091,
+     "heightPct": 6.485,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 62,
+      "h": 62,
+      "fill": "#d8b8a2"
+     }
+    },
+    {
+     "id": "tpl-s28",
+     "assetId": "shape:Avatar ring",
+     "name": "Avatar ring",
+     "xPct": 43.545,
+     "yPct": 23.954,
+     "widthPct": 15.455,
+     "heightPct": 7.113,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 68,
+      "h": 68,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s29",
+     "assetId": "shape:Avatar",
+     "name": "Avatar",
+     "xPct": 44.227,
+     "yPct": 24.268,
+     "widthPct": 14.091,
+     "heightPct": 6.485,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 62,
+      "h": 62,
+      "fill": "#4a382c"
+     }
+    },
+    {
+     "id": "tpl-s30",
+     "assetId": "shape:Avatar ring",
+     "name": "Avatar ring",
+     "xPct": 52.159,
+     "yPct": 23.954,
+     "widthPct": 15.455,
+     "heightPct": 7.113,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 68,
+      "h": 68,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s31",
+     "assetId": "shape:Avatar",
+     "name": "Avatar",
+     "xPct": 52.841,
+     "yPct": 24.268,
+     "widthPct": 14.091,
+     "heightPct": 6.485,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 62,
+      "h": 62,
+      "fill": "#c9a48e"
+     }
+    },
+    {
+     "id": "tpl-s33",
+     "assetId": "shape:Reading pill",
+     "name": "Reading pill",
+     "xPct": 11.364,
+     "yPct": 60.879,
+     "widthPct": 32.5,
+     "heightPct": 5.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 143,
+      "h": 53,
+      "radius": 26.5,
+      "fill": "#e9004c"
+     }
+    },
+    {
+     "id": "tpl-s34",
+     "assetId": "shape:Icon",
+     "name": "Icon",
+     "xPct": 16.023,
+     "yPct": 62.762,
+     "widthPct": 3.864,
+     "heightPct": 1.778,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 17.0,
+      "h": 17.0,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s35",
+     "assetId": "shape:Icon dot",
+     "name": "Icon dot",
+     "xPct": 17.159,
+     "yPct": 63.285,
+     "widthPct": 1.591,
+     "heightPct": 0.732,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 7.0,
+      "h": 7.0,
+      "fill": "#e9004c"
+     }
+    },
+    {
+     "id": "tpl-s37",
+     "assetId": "shape:Photography pill",
+     "name": "Photography pill",
+     "xPct": 47.045,
+     "yPct": 60.879,
+     "widthPct": 42.5,
+     "heightPct": 5.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 187,
+      "h": 53,
+      "radius": 26.5,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s38",
+     "assetId": "shape:Icon",
+     "name": "Icon",
+     "xPct": 51.705,
+     "yPct": 62.762,
+     "widthPct": 3.864,
+     "heightPct": 1.778,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 17.0,
+      "h": 17.0,
+      "fill": "#e9004c"
+     }
+    },
+    {
+     "id": "tpl-s39",
+     "assetId": "shape:Icon dot",
+     "name": "Icon dot",
+     "xPct": 52.841,
+     "yPct": 63.285,
+     "widthPct": 1.591,
+     "heightPct": 0.732,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 7.0,
+      "h": 7.0,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s41",
+     "assetId": "shape:Gaming pill",
+     "name": "Gaming pill",
+     "xPct": 0.682,
+     "yPct": 68.201,
+     "widthPct": 33.409,
+     "heightPct": 5.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 147,
+      "h": 53,
+      "radius": 26.5,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s42",
+     "assetId": "shape:Icon",
+     "name": "Icon",
+     "xPct": 5.341,
+     "yPct": 70.084,
+     "widthPct": 3.864,
+     "heightPct": 1.778,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 17.0,
+      "h": 17.0,
+      "fill": "#e9004c"
+     }
+    },
+    {
+     "id": "tpl-s43",
+     "assetId": "shape:Icon dot",
+     "name": "Icon dot",
+     "xPct": 6.477,
+     "yPct": 70.607,
+     "widthPct": 1.591,
+     "heightPct": 0.732,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 7.0,
+      "h": 7.0,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s45",
+     "assetId": "shape:Music pill",
+     "name": "Music pill",
+     "xPct": 37.273,
+     "yPct": 68.201,
+     "widthPct": 29.091,
+     "heightPct": 5.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 128,
+      "h": 53,
+      "radius": 26.5,
+      "fill": "#e9004c"
+     }
+    },
+    {
+     "id": "tpl-s46",
+     "assetId": "shape:Icon",
+     "name": "Icon",
+     "xPct": 41.932,
+     "yPct": 70.084,
+     "widthPct": 3.864,
+     "heightPct": 1.778,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 17.0,
+      "h": 17.0,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s47",
+     "assetId": "shape:Icon dot",
+     "name": "Icon dot",
+     "xPct": 43.068,
+     "yPct": 70.607,
+     "widthPct": 1.591,
+     "heightPct": 0.732,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 7.0,
+      "h": 7.0,
+      "fill": "#e9004c"
+     }
+    },
+    {
+     "id": "tpl-s49",
+     "assetId": "shape:Travel pill",
+     "name": "Travel pill",
+     "xPct": 69.545,
+     "yPct": 68.201,
+     "widthPct": 29.545,
+     "heightPct": 5.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 130,
+      "h": 53,
+      "radius": 26.5,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s50",
+     "assetId": "shape:Icon",
+     "name": "Icon",
+     "xPct": 74.205,
+     "yPct": 70.084,
+     "widthPct": 3.864,
+     "heightPct": 1.778,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 17.0,
+      "h": 17.0,
+      "fill": "#e9004c"
+     }
+    },
+    {
+     "id": "tpl-s51",
+     "assetId": "shape:Icon dot",
+     "name": "Icon dot",
+     "xPct": 75.341,
+     "yPct": 70.607,
+     "widthPct": 1.591,
+     "heightPct": 0.732,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 7.0,
+      "h": 7.0,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s53",
+     "assetId": "shape:Painting pill",
+     "name": "Painting pill",
+     "xPct": 15.682,
+     "yPct": 75.523,
+     "widthPct": 33.409,
+     "heightPct": 5.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 147,
+      "h": 53,
+      "radius": 26.5,
+      "fill": "#e9004c"
+     }
+    },
+    {
+     "id": "tpl-s54",
+     "assetId": "shape:Icon",
+     "name": "Icon",
+     "xPct": 20.341,
+     "yPct": 77.406,
+     "widthPct": 3.864,
+     "heightPct": 1.778,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 17.0,
+      "h": 17.0,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s55",
+     "assetId": "shape:Icon dot",
+     "name": "Icon dot",
+     "xPct": 21.477,
+     "yPct": 77.929,
+     "widthPct": 1.591,
+     "heightPct": 0.732,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 7.0,
+      "h": 7.0,
+      "fill": "#e9004c"
+     }
+    },
+    {
+     "id": "tpl-s57",
+     "assetId": "shape:Politics pill",
+     "name": "Politics pill",
+     "xPct": 52.273,
+     "yPct": 75.523,
+     "widthPct": 31.818,
+     "heightPct": 5.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 140,
+      "h": 53,
+      "radius": 26.5,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s58",
+     "assetId": "shape:Icon",
+     "name": "Icon",
+     "xPct": 56.932,
+     "yPct": 77.406,
+     "widthPct": 3.864,
+     "heightPct": 1.778,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 17.0,
+      "h": 17.0,
+      "fill": "#e9004c"
+     }
+    },
+    {
+     "id": "tpl-s59",
+     "assetId": "shape:Icon dot",
+     "name": "Icon dot",
+     "xPct": 58.068,
+     "yPct": 77.929,
+     "widthPct": 1.591,
+     "heightPct": 0.732,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 7.0,
+      "h": 7.0,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s61",
+     "assetId": "shape:Charity pill",
+     "name": "Charity pill",
+     "xPct": 1.136,
+     "yPct": 82.845,
+     "widthPct": 31.136,
+     "heightPct": 5.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 137,
+      "h": 53,
+      "radius": 26.5,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s62",
+     "assetId": "shape:Icon",
+     "name": "Icon",
+     "xPct": 5.795,
+     "yPct": 84.728,
+     "widthPct": 3.864,
+     "heightPct": 1.778,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 17.0,
+      "h": 17.0,
+      "fill": "#e9004c"
+     }
+    },
+    {
+     "id": "tpl-s63",
+     "assetId": "shape:Icon dot",
+     "name": "Icon dot",
+     "xPct": 6.932,
+     "yPct": 85.251,
+     "widthPct": 1.591,
+     "heightPct": 0.732,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 7.0,
+      "h": 7.0,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s65",
+     "assetId": "shape:Cooking pill",
+     "name": "Cooking pill",
+     "xPct": 36.364,
+     "yPct": 82.845,
+     "widthPct": 31.818,
+     "heightPct": 5.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 140,
+      "h": 53,
+      "radius": 26.5,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s66",
+     "assetId": "shape:Icon",
+     "name": "Icon",
+     "xPct": 41.023,
+     "yPct": 84.728,
+     "widthPct": 3.864,
+     "heightPct": 1.778,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 17.0,
+      "h": 17.0,
+      "fill": "#e9004c"
+     }
+    },
+    {
+     "id": "tpl-s67",
+     "assetId": "shape:Icon dot",
+     "name": "Icon dot",
+     "xPct": 42.159,
+     "yPct": 85.251,
+     "widthPct": 1.591,
+     "heightPct": 0.732,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 7.0,
+      "h": 7.0,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s69",
+     "assetId": "shape:Pets pill",
+     "name": "Pets pill",
+     "xPct": 72.727,
+     "yPct": 82.845,
+     "widthPct": 26.136,
+     "heightPct": 5.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 115,
+      "h": 53,
+      "radius": 26.5,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s70",
+     "assetId": "shape:Icon",
+     "name": "Icon",
+     "xPct": 77.386,
+     "yPct": 84.728,
+     "widthPct": 3.864,
+     "heightPct": 1.778,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 17.0,
+      "h": 17.0,
+      "fill": "#e9004c"
+     }
+    },
+    {
+     "id": "tpl-s71",
+     "assetId": "shape:Icon dot",
+     "name": "Icon dot",
+     "xPct": 78.523,
+     "yPct": 85.251,
+     "widthPct": 1.591,
+     "heightPct": 0.732,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 7.0,
+      "h": 7.0,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s73",
+     "assetId": "shape:Sports pill",
+     "name": "Sports pill",
+     "xPct": 17.045,
+     "yPct": 90.063,
+     "widthPct": 30.227,
+     "heightPct": 5.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 133,
+      "h": 53,
+      "radius": 26.5,
+      "fill": "#e9004c"
+     }
+    },
+    {
+     "id": "tpl-s74",
+     "assetId": "shape:Icon",
+     "name": "Icon",
+     "xPct": 21.705,
+     "yPct": 91.946,
+     "widthPct": 3.864,
+     "heightPct": 1.778,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 17.0,
+      "h": 17.0,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s75",
+     "assetId": "shape:Icon dot",
+     "name": "Icon dot",
+     "xPct": 22.841,
+     "yPct": 92.469,
+     "widthPct": 1.591,
+     "heightPct": 0.732,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 7.0,
+      "h": 7.0,
+      "fill": "#e9004c"
+     }
+    },
+    {
+     "id": "tpl-s77",
+     "assetId": "shape:Fashion pill",
+     "name": "Fashion pill",
+     "xPct": 50.455,
+     "yPct": 90.063,
+     "widthPct": 32.5,
+     "heightPct": 5.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 143,
+      "h": 53,
+      "radius": 26.5,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s78",
+     "assetId": "shape:Icon",
+     "name": "Icon",
+     "xPct": 55.114,
+     "yPct": 91.946,
+     "widthPct": 3.864,
+     "heightPct": 1.778,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 17.0,
+      "h": 17.0,
+      "fill": "#e9004c"
+     }
+    },
+    {
+     "id": "tpl-s79",
+     "assetId": "shape:Icon dot",
+     "name": "Icon dot",
+     "xPct": 56.25,
+     "yPct": 92.469,
+     "widthPct": 1.591,
+     "heightPct": 0.732,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 7.0,
+      "h": 7.0,
+      "fill": "#ffffff"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 55.73,
+    "x": 0.0,
+    "y": 30.93,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Upload a photo to start dating",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(160deg, #fccfd5 0%, #fffafc 30%, #fffafc 60%, #fdeaec 80%, #fdcfd3 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t90",
+     "xPct": 10.455,
+     "yPct": 3.616,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Upload a\nphoto to\nstart dating",
+      "color": "#000000",
+      "size": 135.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.07,
+      "charSpacing": 38
+     }
+    },
+    {
+     "id": "tpl-t91",
+     "xPct": 9.091,
+     "yPct": 75.894,
+     "widthPct": 54.545,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Name",
+     "style": {
+      "text": "Marcus, 33",
+      "color": "#ffffff",
+      "size": 63.8,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t92",
+     "xPct": 9.091,
+     "yPct": 79.64,
+     "widthPct": 54.545,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Loc",
+     "style": {
+      "text": "MALIBU • 20 KMS AWAY",
+      "color": "#d8d8d8",
+      "size": 24.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s81",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 0.682,
+     "yPct": 20.816,
+     "widthPct": 98.636,
+     "heightPct": 85.388,
+     "rotation": 0,
+     "opacity": 0.12,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 434,
+      "h": 816.31,
+      "radius": 106.16,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s82",
+     "assetId": "shape:Photo card",
+     "name": "Photo card",
+     "xPct": 4.205,
+     "yPct": 47.699,
+     "widthPct": 66.136,
+     "heightPct": 35.356,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 291,
+      "h": 338,
+      "radius": 30,
+      "fill": "#0b1618",
+      "stroke": "#e9004c",
+      "strokeWidth": 4,
+      "inset": 2.0
+     }
+    },
+    {
+     "id": "tpl-s83",
+     "assetId": "shape:Card fill",
+     "name": "Card fill",
+     "xPct": 5.0,
+     "yPct": 48.117,
+     "widthPct": 64.545,
+     "heightPct": 34.519,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 284,
+      "h": 330,
+      "radius": 27,
+      "gradient": [
+       [
+        0,
+        "#3a1010"
+       ],
+       [
+        0.4,
+        "#150c0e"
+       ],
+       [
+        1,
+        "#080f12"
+       ]
+      ]
+     }
+    },
+    {
+     "id": "tpl-s84",
+     "assetId": "shape:Neon orange",
+     "name": "Neon orange",
+     "xPct": -2.727,
+     "yPct": 51.046,
+     "widthPct": 32.727,
+     "heightPct": 15.063,
+     "rotation": 0,
+     "opacity": 0.85,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 144,
+      "h": 144,
+      "radius": 72,
+      "fill": "#ff6a20",
+      "blur": 14,
+      "inset": 42
+     }
+    },
+    {
+     "id": "tpl-s85",
+     "assetId": "shape:Neon cyan",
+     "name": "Neon cyan",
+     "xPct": -5.0,
+     "yPct": 60.46,
+     "widthPct": 28.182,
+     "heightPct": 12.971,
+     "rotation": 0,
+     "opacity": 0.8,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 124,
+      "h": 124,
+      "radius": 62,
+      "fill": "#12c3d8",
+      "blur": 12,
+      "inset": 36
+     }
+    },
+    {
+     "id": "tpl-s86",
+     "assetId": "shape:Neon sign",
+     "name": "Neon sign",
+     "xPct": 42.5,
+     "yPct": 53.033,
+     "widthPct": 28.636,
+     "heightPct": 13.18,
+     "rotation": 0,
+     "opacity": 0.8,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 126,
+      "h": 126,
+      "radius": 63,
+      "fill": "#ff8a30",
+      "blur": 13,
+      "inset": 39
+     }
+    },
+    {
+     "id": "tpl-s87",
+     "assetId": "shape:Red glow",
+     "name": "Red glow",
+     "xPct": 13.409,
+     "yPct": 42.782,
+     "widthPct": 50.455,
+     "heightPct": 23.222,
+     "rotation": 0,
+     "opacity": 0.7,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 222,
+      "h": 222,
+      "radius": 111,
+      "fill": "#e01f2a",
+      "blur": 22,
+      "inset": 66
+     }
+    },
+    {
+     "id": "tpl-s88",
+     "assetId": "shape:Jacket",
+     "name": "Jacket",
+     "xPct": 12.5,
+     "yPct": 54.916,
+     "widthPct": 52.273,
+     "heightPct": 24.059,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 230,
+      "h": 230,
+      "radius": 115,
+      "fill": "#2a1c1a",
+      "blur": 20,
+      "inset": 60
+     }
+    },
+    {
+     "id": "tpl-s89",
+     "assetId": "shape:Head",
+     "name": "Head",
+     "xPct": 21.591,
+     "yPct": 51.255,
+     "widthPct": 31.818,
+     "heightPct": 14.644,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 140,
+      "h": 140,
+      "radius": 70,
+      "fill": "#4a3428",
+      "blur": 12,
+      "inset": 36
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 54.56,
+    "x": 0.0,
+    "y": 17.39,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Join the community & match",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#e9004c"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t97",
+     "xPct": 10.455,
+     "yPct": 3.616,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Join the\ncommunity\n& match",
+      "color": "#ffffff",
+      "size": 135.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.07,
+      "charSpacing": 38
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s93",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -0.114,
+     "yPct": 30.544,
+     "widthPct": 100.227,
+     "heightPct": 86.979,
+     "rotation": 0,
+     "opacity": 0.2,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 441,
+      "h": 831.52,
+      "radius": 107.28,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s94",
+     "assetId": "shape:Heart",
+     "name": "Heart",
+     "xPct": 68.246,
+     "yPct": 23.878,
+     "widthPct": 22.558,
+     "heightPct": 8.507,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 99.26,
+      "h": 81.32,
+      "vx": 300.28,
+      "vy": 228.28,
+      "path": "M355.14,308.6C302.68,283.09 301.28,241.52 323.07,238.46C336.14,236.62 346.08,244.11 347.55,254.57C346.08,244.11 353.57,234.17 366.64,232.34C388.43,229.28 398.54,269.62 355.14,308.6Z",
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s95",
+     "assetId": "shape:Heart edge",
+     "name": "Heart edge",
+     "xPct": 94.406,
+     "yPct": 26.152,
+     "widthPct": 18.037,
+     "heightPct": 6.81,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 79.36,
+      "h": 65.1,
+      "vx": 415.39,
+      "vy": 250.02,
+      "path": "M450.91,314.11C416.39,283.11 424.43,251.02 441.76,253.45C452.16,254.91 458.12,262.82 456.95,271.14C458.12,262.82 466.02,256.86 476.42,258.32C493.75,260.76 492.64,293.82 450.91,314.11Z",
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s96",
+     "assetId": "shape:Heart outline",
+     "name": "Heart outline",
+     "xPct": 87.49,
+     "yPct": 36.509,
+     "widthPct": 20.963,
+     "heightPct": 8.273,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 92.24,
+      "h": 79.09,
+      "vx": 384.96,
+      "vy": 349.02,
+      "path": "M437.76,419.11C397.18,402.78 393.96,371.75 410.1,368.32C419.78,366.26 427.61,371.34 429.26,379.09C427.61,371.34 432.69,363.51 442.38,361.46C458.52,358.02 468.19,387.68 437.76,419.11Z",
+      "stroke": "#ffffff",
+      "strokeWidth": 8,
+      "strokeLinejoin": "round"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 55.73,
+    "x": 0.0,
+    "y": 30.93,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  }
+ ],
+ "designHeight": 2347,
+ "textColor": "#111111"
+}

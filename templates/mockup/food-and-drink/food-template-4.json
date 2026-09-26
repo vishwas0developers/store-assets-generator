@@ -1,0 +1,356 @@
+{
+ "version": 1,
+ "id": "food-template-4",
+ "name": "Food app",
+ "category": "food-and-drink",
+ "description": "Display your food delivery service with our free template. Showcase restaurant listings, ordering features, and delivery tracking in an appetizing design that drives user engagement.",
+ "devices": [
+  {
+   "deviceId": "apple-iphone-16-pro-max",
+   "label": "apple-iphone-16-pro-max"
+  },
+  {
+   "deviceId": "apple-iphone-14-plus",
+   "label": "apple-iphone-14-plus"
+  },
+  {
+   "deviceId": "samsung-galaxy-s21-ultra",
+   "label": "samsung-galaxy-s21-ultra"
+  }
+ ],
+ "layout": "single-no-text",
+ "background": {
+  "type": "solid",
+  "value": "#ff2a85"
+ },
+ "panoramic": true,
+ "columnCount": 4,
+ "titles": [
+  "Order meals, groceries and shopping.",
+  "Check the online menu",
+  "Add your address",
+  "Food is on its way"
+ ],
+ "subtitles": [
+  "free delivery for new customers",
+  "",
+  "",
+  ""
+ ],
+ "pages": [
+  {
+   "title": "Order meals, groceries and shopping.",
+   "subtitle": "free delivery for new customers",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#ff2a85"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t4",
+     "xPct": 2.273,
+     "yPct": 6.441,
+     "widthPct": 95.455,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Order meals,\ngroceries and\nshopping.",
+      "color": "#ffffff",
+      "size": 83.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.18,
+      "charSpacing": 5
+     }
+    },
+    {
+     "id": "tpl-t2",
+     "xPct": 24.545,
+     "yPct": 21.932,
+     "widthPct": 50.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Pill text",
+     "style": {
+      "text": "free delivery for\nnew customers",
+      "color": "#ff2a85",
+      "size": 58.9,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.05,
+      "charSpacing": -10
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s3",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -1.705,
+     "yPct": 30.544,
+     "widthPct": 103.409,
+     "heightPct": 90.161,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 455,
+      "h": 861.94,
+      "radius": 109.52,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s1",
+     "assetId": "shape:Pill",
+     "name": "Pill",
+     "xPct": 24.545,
+     "yPct": 20.607,
+     "widthPct": 50.909,
+     "heightPct": 7.95,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 224,
+      "h": 76,
+      "radius": 26,
+      "fill": "#ffffff"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 58.07,
+    "x": 0.0,
+    "y": 31.7,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Check the online menu",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#ff2a85"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t6",
+     "xPct": 2.273,
+     "yPct": 6.441,
+     "widthPct": 95.455,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Check the\nonline menu",
+      "color": "#ffffff",
+      "size": 83.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.18,
+      "charSpacing": 5
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s5",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -1.705,
+     "yPct": 16.109,
+     "widthPct": 103.409,
+     "heightPct": 90.161,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 455,
+      "h": 861.94,
+      "radius": 109.52,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 58.07,
+    "x": 0.0,
+    "y": 13.39,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Add your address",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#ff2a85"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t8",
+     "xPct": 2.273,
+     "yPct": 6.441,
+     "widthPct": 95.455,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Add your\naddress",
+      "color": "#ffffff",
+      "size": 83.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.18,
+      "charSpacing": 5
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s7",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -1.705,
+     "yPct": 16.109,
+     "widthPct": 103.409,
+     "heightPct": 90.161,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 455,
+      "h": 861.94,
+      "radius": 109.52,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 58.07,
+    "x": 0.0,
+    "y": 13.39,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Food is on its way",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#ff2a85"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t10",
+     "xPct": 2.273,
+     "yPct": 6.441,
+     "widthPct": 95.455,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Food is\non its way",
+      "color": "#ffffff",
+      "size": 83.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.18,
+      "charSpacing": 5
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s9",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -1.705,
+     "yPct": 16.109,
+     "widthPct": 103.409,
+     "heightPct": 90.161,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 455,
+      "h": 861.94,
+      "radius": 109.52,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 58.07,
+    "x": 0.0,
+    "y": 13.39,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  }
+ ],
+ "designHeight": 2347,
+ "textColor": "#111111"
+}

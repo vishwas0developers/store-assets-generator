@@ -1,0 +1,715 @@
+{
+ "version": 1,
+ "id": "investing-stocks-app",
+ "name": "Investing stocks app",
+ "category": "fintech",
+ "description": "Present your investment platform with our premium template. Display real-time stock tracking, portfolio management, and trading features in a sophisticated design that appeals to both novice and experienced investors. Highlight market analysis tools and investment insights.",
+ "devices": [
+  {
+   "deviceId": "apple-iphone-16-pro-max",
+   "label": "iPhone 16 Pro Max"
+  },
+  {
+   "deviceId": "apple-iphone-14-plus",
+   "label": "iPhone 14 Plus"
+  },
+  {
+   "deviceId": "samsung-galaxy-s21-ultra",
+   "label": "Samsung Galaxy S21 Ultra"
+  }
+ ],
+ "layout": "single-no-text",
+ "background": {
+  "type": "gradient",
+  "value": "linear-gradient(160deg, #46893b 0%, #3f8636 100%)"
+ },
+ "panoramic": false,
+ "columnCount": 8,
+ "titles": [
+  "Fidelity Investing Trading Stocks",
+  "Grow your money",
+  "Zero Fees",
+  "Easy to use",
+  "All-in-one",
+  "Low fees",
+  "Invest",
+  "What people are saying about the app"
+ ],
+ "subtitles": [
+  "Experience the best app to invest",
+  "Track goals and invest with ease",
+  "Trade US. stocks and Etfs commissions for free fees.",
+  "With functional shares",
+  "Find, learn and train",
+  "Of all your transactions",
+  "Fast and easy with zero commissions",
+  "It's incredibly secure with features like 2-factor authentication and voice biometrics, and I love how easy it is to use. Starting an account had no fees or minimums, and the commission-free trades are a huge bonus."
+ ],
+ "textColor": "#111111",
+ "pages": [
+  {
+   "title": "Fidelity Investing Trading Stocks",
+   "subtitle": "Experience the best app to invest",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(160deg, #46893b 0%, #3f8636 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t2",
+     "xPct": 10.455,
+     "yPct": 7.387,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Fidelity\nInvesting\nTrading\nStocks",
+      "color": "#ffffff",
+      "size": 194.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.0453400503778336
+     }
+    },
+    {
+     "id": "tpl-t3",
+     "xPct": 10.455,
+     "yPct": 47.928,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Experience\nthe best app\nto invest",
+      "color": "#0c0c0c",
+      "size": 113.4,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.1255411255411254,
+      "charSpacing": -10
+     }
+    },
+    {
+     "id": "tpl-t4",
+     "xPct": 10.455,
+     "yPct": 75.098,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Quote",
+     "style": {
+      "text": "\"Its one of the\nbest I have\ncome across\nso far\"",
+      "color": "#0c0c0c",
+      "size": 116.8,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.0819327731092436,
+      "charSpacing": -10
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s1",
+     "assetId": "shape:Quote band",
+     "name": "Quote band",
+     "xPct": 0.0,
+     "yPct": 70.921,
+     "widthPct": 100.0,
+     "heightPct": 29.079,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 440,
+      "h": 278,
+      "radius": 0,
+      "fill": "#f5f5f5"
+     }
+    }
+   ],
+   "deviceOne": {
+    "visible": false
+   }
+  },
+  {
+   "title": "Grow your money",
+   "subtitle": "Track goals and invest with ease",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#ffffff"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [],
+   "assetLayers": [
+    {
+     "id": "tpl-s5",
+     "assetId": "shape:Green corner",
+     "name": "Green corner",
+     "xPct": 0.0,
+     "yPct": 70.921,
+     "widthPct": 53.409,
+     "heightPct": 29.079,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 235,
+      "h": 278,
+      "radius": 0,
+      "fill": "#44873a"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 62.26,
+    "x": -54.33,
+    "y": 5.78,
+    "rotation": 11,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   },
+   "extraDevices": [
+    {
+     "size": 58.57,
+     "x": 88.85,
+     "y": -48.33,
+     "rotation": 10,
+     "brightness": 100,
+     "frameless": false,
+     "bezelColor": "#060606",
+     "borderColor": "#5e5e5e",
+     "zIndex": 9
+    },
+    {
+     "size": 58.57,
+     "x": 43.58,
+     "y": 60.17,
+     "rotation": 9,
+     "brightness": 100,
+     "frameless": false,
+     "bezelColor": "#060606",
+     "borderColor": "#5e5e5e",
+     "zIndex": 10
+    }
+   ]
+  },
+  {
+   "title": "Zero Fees",
+   "subtitle": "Trade US. stocks and Etfs commissions for free fees.",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#ffffff"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t7",
+     "xPct": 0.0,
+     "yPct": 4.318,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Zero Fees",
+      "color": "#111111",
+      "size": 138.4,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t8",
+     "xPct": 0.0,
+     "yPct": 11.277,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Trade US. stocks and Etfs\ncommissions for free fees.",
+      "color": "#111111",
+      "size": 45.2,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.4673913043478262
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s6",
+     "assetId": "shape:Green band",
+     "name": "Green band",
+     "xPct": 0.0,
+     "yPct": 70.921,
+     "widthPct": 100.0,
+     "heightPct": 29.079,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 440,
+      "h": 278,
+      "radius": 0,
+      "fill": "#44873a"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 65.6,
+    "x": 0.0,
+    "y": 17.59,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Easy to use",
+   "subtitle": "With functional shares",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#44873a"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t10",
+     "xPct": 0.0,
+     "yPct": 4.418,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Easy to use",
+      "color": "#ffffff",
+      "size": 135.7,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t11",
+     "xPct": 0.0,
+     "yPct": 11.49,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "With functional shares",
+      "color": "#ffffff",
+      "size": 58.4,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.134453781512605
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s9",
+     "assetId": "shape:Green band",
+     "name": "Green band",
+     "xPct": 0.0,
+     "yPct": 70.921,
+     "widthPct": 100.0,
+     "heightPct": 29.079,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 440,
+      "h": 278,
+      "radius": 0,
+      "fill": "#f5f5f5"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 65.6,
+    "x": 0.0,
+    "y": 14.78,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#f3f3f3",
+    "borderColor": "#e4e4e4",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "All-in-one",
+   "subtitle": "Find, learn and train",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#ffffff"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t13",
+     "xPct": 0.0,
+     "yPct": 4.318,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "All-in-one",
+      "color": "#111111",
+      "size": 138.4,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t14",
+     "xPct": 0.0,
+     "yPct": 11.381,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Find, learn and train",
+      "color": "#111111",
+      "size": 58.7,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.1297071129707115
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s12",
+     "assetId": "shape:Green band",
+     "name": "Green band",
+     "xPct": 0.0,
+     "yPct": 70.921,
+     "widthPct": 100.0,
+     "heightPct": 29.079,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 440,
+      "h": 278,
+      "radius": 0,
+      "fill": "#44873a"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 65.6,
+    "x": 0.0,
+    "y": 14.78,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Low fees",
+   "subtitle": "Of all your transactions",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#ffffff"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t16",
+     "xPct": 0.0,
+     "yPct": 4.409,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Low fees",
+      "color": "#111111",
+      "size": 136.0,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t17",
+     "xPct": 0.0,
+     "yPct": 11.381,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Of all your transactions",
+      "color": "#111111",
+      "size": 58.7,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.1297071129707115
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s15",
+     "assetId": "shape:Green band",
+     "name": "Green band",
+     "xPct": 0.0,
+     "yPct": 70.921,
+     "widthPct": 100.0,
+     "heightPct": 29.079,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 440,
+      "h": 278,
+      "radius": 0,
+      "fill": "#44873a"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 65.6,
+    "x": 0.0,
+    "y": 14.78,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Invest",
+   "subtitle": "Fast and easy with zero commissions",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#ffffff"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t19",
+     "xPct": 0.0,
+     "yPct": 4.201,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Invest",
+      "color": "#111111",
+      "size": 141.6,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t20",
+     "xPct": 0.0,
+     "yPct": 11.228,
+     "widthPct": 100.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Fast and easy with\nzero commissions",
+      "color": "#111111",
+      "size": 58.4,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.2605042016806722
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s18",
+     "assetId": "shape:Green band",
+     "name": "Green band",
+     "xPct": 0.0,
+     "yPct": 70.921,
+     "widthPct": 100.0,
+     "heightPct": 29.079,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 440,
+      "h": 278,
+      "radius": 0,
+      "fill": "#44873a"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 65.6,
+    "x": 0.0,
+    "y": 18.18,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "What people are saying about the app",
+   "subtitle": "It's incredibly secure with features like 2-factor authentication and voice biometrics, and I love how easy it is to use. Starting an account had no fees or minimums, and the commission-free trades are a huge bonus.",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(160deg, #46893b 0%, #3f8636 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t22",
+     "xPct": 10.455,
+     "yPct": 14.56,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "What\npeople\nare saying\nabout the\napp",
+      "color": "#ffffff",
+      "size": 167.4,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.1143695014662756
+     }
+    },
+    {
+     "id": "tpl-t23",
+     "xPct": 10.0,
+     "yPct": 74.661,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Body",
+     "style": {
+      "text": "It's incredibly secure with features\nlike 2-factor authentication and voice\nbiometrics, and I love how easy it is to\nuse. Starting an account had no fees\nor minimums, and the\ncommission-free trades are a huge\nbonus.",
+      "color": "#0c0c0c",
+      "size": 48.8,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.5075376884422111,
+      "charSpacing": -10
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s21",
+     "assetId": "shape:Quote band",
+     "name": "Quote band",
+     "xPct": 0.0,
+     "yPct": 70.921,
+     "widthPct": 100.0,
+     "heightPct": 29.079,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 440,
+      "h": 278,
+      "radius": 0,
+      "fill": "#f5f5f5"
+     }
+    }
+   ],
+   "deviceOne": {
+    "visible": false
+   }
+  }
+ ],
+ "designHeight": 2347
+}

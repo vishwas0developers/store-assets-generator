@@ -1,0 +1,1354 @@
+{
+ "version": 1,
+ "id": "top-up-cash-and-investments-app",
+ "name": "Top-up cash and investments app",
+ "category": "fintech",
+ "description": "Showcase your financial services app with our professional template. Display mobile top-ups, investment options, and cash management features in a secure design that emphasizes convenience, growth opportunities, and financial accessibility.",
+ "devices": [
+  {
+   "deviceId": "apple-iphone-16-pro-max",
+   "label": "iPhone 16 Pro Max"
+  },
+  {
+   "deviceId": "apple-iphone-13-pro-max",
+   "label": "iPhone 13 Pro Max"
+  },
+  {
+   "deviceId": "samsung-galaxy-s21-ultra",
+   "label": "Samsung Galaxy S21 Ultra"
+  },
+  {
+   "deviceId": "apple-ipad-pro-12-9-inch",
+   "label": "iPad Pro 12.9-inch"
+  },
+  {
+   "deviceId": "samsung-galaxy-tab-s7",
+   "label": "Samsung Galaxy Tab S7"
+  }
+ ],
+ "layout": "single-no-text",
+ "background": {
+  "type": "solid",
+  "value": "#ffffff"
+ },
+ "panoramic": false,
+ "columnCount": 5,
+ "titles": [
+  "Cash Top-Up",
+  "Add Funds",
+  "Start Investing",
+  "Invest in Bitcoin",
+  "Sell Stocks"
+ ],
+ "subtitles": [
+  "Select an amount",
+  "Access your money",
+  "Buy stocks in top companies",
+  "Buy, sell, or send crypto",
+  "Buy, sell, or send stocks"
+ ],
+ "textColor": "#111111",
+ "pages": [
+  {
+   "title": "Cash Top-Up",
+   "subtitle": "Select an amount",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#ffffff"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t2",
+     "xPct": 24.707,
+     "yPct": 4.916,
+     "widthPct": 50.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Cash",
+     "style": {
+      "text": "Cash",
+      "color": "#0a9c3c",
+      "size": 162.0,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -39
+     }
+    },
+    {
+     "id": "tpl-t3",
+     "xPct": 14.78,
+     "yPct": 12.865,
+     "widthPct": 70.227,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Top-Up",
+     "style": {
+      "text": "Top-Up",
+      "color": "#0a9c3c",
+      "size": 162.0,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 1
+     }
+    },
+    {
+     "id": "tpl-t5",
+     "xPct": 24.091,
+     "yPct": 22.28,
+     "widthPct": 57.273,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Select an amount",
+     "style": {
+      "text": "Select an amount",
+      "color": "#ffffff",
+      "size": 54.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 28
+     }
+    },
+    {
+     "id": "tpl-t9",
+     "xPct": 15.0,
+     "yPct": 92.144,
+     "widthPct": 20.455,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "customName": "Bag $",
+     "style": {
+      "text": "$",
+      "color": "#2eb35a",
+      "size": 196.4,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s1",
+     "assetId": "shape:Green panel",
+     "name": "Green panel",
+     "xPct": 39.091,
+     "yPct": 28.347,
+     "widthPct": 68.182,
+     "heightPct": 35.46,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 300,
+      "h": 339,
+      "radius": 56,
+      "fill": "#00d653"
+     }
+    },
+    {
+     "id": "tpl-s4",
+     "assetId": "shape:Subtitle box",
+     "name": "Subtitle box",
+     "xPct": 21.364,
+     "yPct": 21.13,
+     "widthPct": 57.273,
+     "heightPct": 4.498,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 252,
+      "h": 43,
+      "radius": 0,
+      "fill": "#0ab147"
+     }
+    },
+    {
+     "id": "tpl-s6",
+     "assetId": "shape:Bag emoji",
+     "name": "Bag emoji",
+     "xPct": 69.773,
+     "yPct": 22.594,
+     "widthPct": 3.636,
+     "heightPct": 1.674,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 16,
+      "h": 16,
+      "fill": "#d9a441"
+     }
+    },
+    {
+     "id": "tpl-s7",
+     "assetId": "shape:Bag",
+     "name": "Bag",
+     "xPct": 13.409,
+     "yPct": 86.297,
+     "widthPct": 27.727,
+     "heightPct": 13.808,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 14,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 122,
+      "h": 132,
+      "vx": 59,
+      "vy": 825,
+      "path": "M66,950C60,890 80,860 100,848L72,826L120,838L146,826L132,850C165,870 180,910 175,956Z",
+      "fill": "#efd9a0"
+     }
+    },
+    {
+     "id": "tpl-s8",
+     "assetId": "shape:Bag band",
+     "name": "Bag band",
+     "xPct": 16.364,
+     "yPct": 89.749,
+     "widthPct": 15.0,
+     "heightPct": 1.674,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 66,
+      "h": 16,
+      "radius": 8,
+      "fill": "#4a3428"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 83.34,
+    "x": 47.39,
+    "y": 34.47,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 8,
+    "panoramaXPx": 1119.3
+   }
+  },
+  {
+   "title": "Add Funds",
+   "subtitle": "Access your money",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#ffffff"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t12",
+     "xPct": 27.562,
+     "yPct": 4.916,
+     "widthPct": 43.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Add",
+     "style": {
+      "text": "Add",
+      "color": "#0a9c3c",
+      "size": 162.0,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -22
+     }
+    },
+    {
+     "id": "tpl-t13",
+     "xPct": 18.569,
+     "yPct": 12.865,
+     "widthPct": 59.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Funds",
+     "style": {
+      "text": "Funds",
+      "color": "#0a9c3c",
+      "size": 162.0,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -9
+     }
+    },
+    {
+     "id": "tpl-t15",
+     "xPct": 23.182,
+     "yPct": 22.28,
+     "widthPct": 59.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Access your money",
+     "style": {
+      "text": "Access your money",
+      "color": "#ffffff",
+      "size": 54.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s10",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 11.818,
+     "yPct": 45.397,
+     "widthPct": 82.273,
+     "heightPct": 70.496,
+     "rotation": 0,
+     "opacity": 0.25,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 362,
+      "h": 673.95,
+      "radius": 90.56,
+      "fill": "#000000",
+      "blur": 16,
+      "inset": 48
+     }
+    },
+    {
+     "id": "tpl-s11",
+     "assetId": "shape:Green panel",
+     "name": "Green panel",
+     "xPct": -60.909,
+     "yPct": 28.347,
+     "widthPct": 127.727,
+     "heightPct": 35.46,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 562,
+      "h": 339,
+      "radius": 56,
+      "fill": "#00d653"
+     }
+    },
+    {
+     "id": "tpl-s14",
+     "assetId": "shape:Subtitle box",
+     "name": "Subtitle box",
+     "xPct": 20.455,
+     "yPct": 21.13,
+     "widthPct": 59.091,
+     "heightPct": 4.498,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 260,
+      "h": 43,
+      "radius": 0,
+      "fill": "#0ab147"
+     }
+    },
+    {
+     "id": "tpl-s16",
+     "assetId": "shape:Globe emoji",
+     "name": "Globe emoji",
+     "xPct": 71.364,
+     "yPct": 22.594,
+     "widthPct": 3.636,
+     "heightPct": 1.674,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 16,
+      "h": 16,
+      "fill": "#8a8a8a"
+     }
+    },
+    {
+     "id": "tpl-s17",
+     "assetId": "shape:Bill",
+     "name": "Bill",
+     "xPct": 0.909,
+     "yPct": 6.485,
+     "widthPct": 13.636,
+     "heightPct": 4.184,
+     "rotation": 20,
+     "opacity": 1,
+     "zIndex": 14,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 60,
+      "h": 40,
+      "radius": 6,
+      "fill": "#3fbf5f"
+     }
+    },
+    {
+     "id": "tpl-s18",
+     "assetId": "shape:Bill inner",
+     "name": "Bill inner",
+     "xPct": 2.273,
+     "yPct": 7.113,
+     "widthPct": 10.909,
+     "heightPct": 2.929,
+     "rotation": 20,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 48,
+      "h": 28,
+      "radius": 4,
+      "fill": "#d6f2d2"
+     }
+    },
+    {
+     "id": "tpl-s19",
+     "assetId": "shape:Bill coin",
+     "name": "Bill coin",
+     "xPct": 5.227,
+     "yPct": 7.427,
+     "widthPct": 5.0,
+     "heightPct": 2.301,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 22,
+      "h": 22,
+      "fill": "#2fae55"
+     }
+    },
+    {
+     "id": "tpl-s20",
+     "assetId": "shape:Bit1",
+     "name": "Bit1",
+     "xPct": 1.364,
+     "yPct": 4.812,
+     "widthPct": 2.727,
+     "heightPct": 1.255,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 14,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 12,
+      "h": 12,
+      "fill": "#3fbf5f"
+     }
+    },
+    {
+     "id": "tpl-s21",
+     "assetId": "shape:Bit2",
+     "name": "Bit2",
+     "xPct": 11.818,
+     "yPct": 10.146,
+     "widthPct": 2.727,
+     "heightPct": 1.255,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 14,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 12,
+      "h": 12,
+      "fill": "#3fbf5f"
+     }
+    },
+    {
+     "id": "tpl-s22",
+     "assetId": "shape:Badge",
+     "name": "Badge",
+     "xPct": 17.5,
+     "yPct": 51.778,
+     "widthPct": 25.455,
+     "heightPct": 11.715,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 40,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 112,
+      "h": 112,
+      "fill": "#2fb45a",
+      "gradient": [
+       [
+        0,
+        "#4fd071"
+       ],
+       [
+        1,
+        "#1f9a47"
+       ]
+      ]
+     }
+    },
+    {
+     "id": "tpl-s23",
+     "assetId": "shape:Check",
+     "name": "Check",
+     "xPct": 19.545,
+     "yPct": 53.975,
+     "widthPct": 20.0,
+     "heightPct": 7.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 41,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 88,
+      "h": 73,
+      "vx": 86,
+      "vy": 516,
+      "path": "M100,553L126,575L160,530",
+      "stroke": "#f2ead8",
+      "strokeWidth": 13,
+      "strokeLinejoin": "round"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 44.52,
+    "x": 4.89,
+    "y": 49.65,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 14
+   }
+  },
+  {
+   "title": "Start Investing",
+   "subtitle": "Buy stocks in top companies",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #00a43f 0%, #0aad46 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t25",
+     "xPct": 24.134,
+     "yPct": 4.602,
+     "widthPct": 52.273,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Start",
+     "style": {
+      "text": "Start",
+      "color": "#ffffff",
+      "size": 162.0,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 36
+     }
+    },
+    {
+     "id": "tpl-t26",
+     "xPct": 7.4,
+     "yPct": 12.761,
+     "widthPct": 85.455,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Investing",
+     "style": {
+      "text": "Investing",
+      "color": "#ffffff",
+      "size": 162.0,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 17
+     }
+    },
+    {
+     "id": "tpl-t28",
+     "xPct": 14.091,
+     "yPct": 22.28,
+     "widthPct": 77.045,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Buy stocks in top companies",
+     "style": {
+      "text": "Buy stocks in top companies",
+      "color": "#0aa843",
+      "size": 54.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 18
+     }
+    },
+    {
+     "id": "tpl-t33",
+     "xPct": 60.909,
+     "yPct": 79.212,
+     "widthPct": 34.091,
+     "rotation": 10,
+     "opacity": 1,
+     "zIndex": 17,
+     "customName": "Cocacola",
+     "style": {
+      "text": "Coca-Cola",
+      "color": "#ffffff",
+      "size": 58.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -30
+     }
+    },
+    {
+     "id": "tpl-t37",
+     "xPct": 43.409,
+     "yPct": 71.814,
+     "widthPct": 11.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "customName": "GE",
+     "style": {
+      "text": "GE",
+      "color": "#f4f4f4",
+      "size": 63.8,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s24",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 5.909,
+     "yPct": 30.335,
+     "widthPct": 88.182,
+     "heightPct": 74.933,
+     "rotation": 0,
+     "opacity": 0.3,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 388,
+      "h": 716.36,
+      "radius": 98.8,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s27",
+     "assetId": "shape:Subtitle box",
+     "name": "Subtitle box",
+     "xPct": 11.364,
+     "yPct": 21.13,
+     "widthPct": 77.045,
+     "heightPct": 4.498,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 339,
+      "h": 43,
+      "radius": 0,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s29",
+     "assetId": "shape:Card",
+     "name": "Card",
+     "xPct": 5.682,
+     "yPct": 70.816,
+     "widthPct": 34.091,
+     "heightPct": 28.243,
+     "rotation": -12,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 150,
+      "h": 270,
+      "radius": 40,
+      "fill": "#2e2f2b"
+     }
+    },
+    {
+     "id": "tpl-s30",
+     "assetId": "shape:Swoosh",
+     "name": "Swoosh",
+     "xPct": 12.26,
+     "yPct": 79.544,
+     "widthPct": 21.031,
+     "heightPct": 7.142,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 92.54,
+      "h": 68.27,
+      "vx": 53.94,
+      "vy": 760.44,
+      "path": "M54.94,816.47C72.43,802.53 107.4,774.65 145.48,761.44C133.2,799.83 98.23,827.71 54.94,816.47Z",
+      "fill": "#f4f4f4"
+     }
+    },
+    {
+     "id": "tpl-s31",
+     "assetId": "shape:Squiggle",
+     "name": "Squiggle",
+     "xPct": 10.513,
+     "yPct": 91.378,
+     "widthPct": 35.214,
+     "heightPct": 7.45,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 154.94,
+      "h": 71.23,
+      "vx": 46.26,
+      "vy": 873.58,
+      "path": "M55.26,923.74C60.95,900.04 74.65,897.13 89.49,916.47C104.34,935.8 118.03,932.89 123.73,909.19C129.42,885.49 143.12,882.58 157.96,901.91C172.81,921.25 186.5,918.34 192.2,894.64",
+      "stroke": "#f4f4f4",
+      "strokeWidth": 8,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s32",
+     "assetId": "shape:Card",
+     "name": "Card",
+     "xPct": 56.136,
+     "yPct": 69.351,
+     "widthPct": 34.091,
+     "heightPct": 28.243,
+     "rotation": 10,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 150,
+      "h": 270,
+      "radius": 40,
+      "fill": "#e34639"
+     }
+    },
+    {
+     "id": "tpl-s34",
+     "assetId": "shape:Squiggle",
+     "name": "Squiggle",
+     "xPct": 55.999,
+     "yPct": 89.822,
+     "widthPct": 30.949,
+     "heightPct": 8.268,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 136.18,
+      "h": 79.04,
+      "vx": 246.39,
+      "vy": 858.7,
+      "path": "M255.39,887.8C268.08,867.7 279.9,869.78 284.94,893.01C289.98,916.24 301.8,918.32 314.48,898.22C327.17,878.11 338.98,880.2 344.03,903.43C349.07,926.66 360.89,928.74 373.57,908.64",
+      "stroke": "#f4f4f4",
+      "strokeWidth": 8,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s35",
+     "assetId": "shape:Card",
+     "name": "Card",
+     "xPct": 29.205,
+     "yPct": 63.808,
+     "widthPct": 39.773,
+     "heightPct": 32.427,
+     "rotation": -1,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 175,
+      "h": 310,
+      "radius": 40,
+      "fill": "#4168ad"
+     }
+    },
+    {
+     "id": "tpl-s36",
+     "assetId": "shape:GE ring",
+     "name": "GE ring",
+     "xPct": 40.992,
+     "yPct": 69.667,
+     "widthPct": 15.455,
+     "heightPct": 7.113,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 68,
+      "h": 68,
+      "stroke": "#f4f4f4",
+      "strokeWidth": 4,
+      "inset": 2.0
+     }
+    },
+    {
+     "id": "tpl-s38",
+     "assetId": "shape:Squiggle",
+     "name": "Squiggle",
+     "xPct": 27.46,
+     "yPct": 84.253,
+     "widthPct": 43.858,
+     "heightPct": 7.224,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 192.97,
+      "h": 69.06,
+      "vx": 120.82,
+      "vy": 805.46,
+      "path": "M129.82,841.52C142.51,816.29 160.01,815.98 173.57,840.75C187.12,865.52 204.62,865.21 217.31,839.99C230.0,814.76 247.49,814.46 261.05,839.23C274.61,863.99 292.11,863.69 304.8,838.46",
+      "stroke": "#f4f4f4",
+      "strokeWidth": 8,
+      "strokeLinejoin": "round"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 46.86,
+    "x": 0.0,
+    "y": 26.99,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Invest in Bitcoin",
+   "subtitle": "Buy, sell, or send crypto",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #019ed6 0%, #16aee2 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t40",
+     "xPct": 10.582,
+     "yPct": 4.602,
+     "widthPct": 79.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Invest in",
+     "style": {
+      "text": "Invest in",
+      "color": "#ffffff",
+      "size": 162.0,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 17
+     }
+    },
+    {
+     "id": "tpl-t41",
+     "xPct": 16.696,
+     "yPct": 12.761,
+     "widthPct": 66.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Bitcoin",
+     "style": {
+      "text": "Bitcoin",
+      "color": "#ffffff",
+      "size": 162.0,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 14
+     }
+    },
+    {
+     "id": "tpl-t43",
+     "xPct": 20.455,
+     "yPct": 22.28,
+     "widthPct": 64.318,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Buy, sell, or send crypto",
+     "style": {
+      "text": "Buy, sell, or send crypto",
+      "color": "#12a8e0",
+      "size": 54.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 12
+     }
+    },
+    {
+     "id": "tpl-t46",
+     "xPct": 39.773,
+     "yPct": 29.906,
+     "widthPct": 18.182,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "B",
+     "style": {
+      "text": "B",
+      "color": "#f2eedd",
+      "size": 196.4,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s39",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 5.909,
+     "yPct": 30.335,
+     "widthPct": 88.182,
+     "heightPct": 74.933,
+     "rotation": 0,
+     "opacity": 0.3,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 388,
+      "h": 716.36,
+      "radius": 98.8,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s42",
+     "assetId": "shape:Subtitle box",
+     "name": "Subtitle box",
+     "xPct": 17.727,
+     "yPct": 21.13,
+     "widthPct": 64.318,
+     "heightPct": 4.498,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 283,
+      "h": 43,
+      "radius": 0,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s44",
+     "assetId": "shape:Coin rim",
+     "name": "Coin rim",
+     "xPct": 34.773,
+     "yPct": 28.033,
+     "widthPct": 28.182,
+     "heightPct": 12.971,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 124,
+      "h": 124,
+      "fill": "#1a9ed6",
+      "gradient": [
+       [
+        0,
+        "#4cc4ee"
+       ],
+       [
+        1,
+        "#0f86bb"
+       ]
+      ]
+     }
+    },
+    {
+     "id": "tpl-s45",
+     "assetId": "shape:Coin face",
+     "name": "Coin face",
+     "xPct": 37.5,
+     "yPct": 29.289,
+     "widthPct": 22.727,
+     "heightPct": 10.46,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 100,
+      "h": 100,
+      "fill": "#2db0e6"
+     }
+    },
+    {
+     "id": "tpl-s47",
+     "assetId": "shape:Chart tile",
+     "name": "Chart tile",
+     "xPct": 36.364,
+     "yPct": 87.238,
+     "widthPct": 29.545,
+     "heightPct": 11.715,
+     "rotation": -2,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 130,
+      "h": 112,
+      "radius": 22,
+      "fill": "#f2eedd"
+     }
+    },
+    {
+     "id": "tpl-s48",
+     "assetId": "shape:Zigzag",
+     "name": "Zigzag",
+     "xPct": 38.873,
+     "yPct": 88.653,
+     "widthPct": 24.057,
+     "heightPct": 8.686,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 105.85,
+      "h": 83.03,
+      "vx": 171.04,
+      "vy": 847.52,
+      "path": "M181.04,920.55L205.33,899.69L225.77,911.99L254.25,867.97L266.89,857.52",
+      "stroke": "#20b4e8",
+      "strokeWidth": 9,
+      "strokeLinejoin": "round"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 46.86,
+    "x": 0.0,
+    "y": 26.99,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Sell Stocks",
+   "subtitle": "Buy, sell, or send stocks",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #e28928 0%, #eb9840 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t50",
+     "xPct": 29.141,
+     "yPct": 4.602,
+     "widthPct": 42.727,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Sell",
+     "style": {
+      "text": "Sell",
+      "color": "#ffffff",
+      "size": 162.0,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 37
+     }
+    },
+    {
+     "id": "tpl-t51",
+     "xPct": 17.5,
+     "yPct": 12.761,
+     "widthPct": 65.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Stocks",
+     "style": {
+      "text": "Stocks",
+      "color": "#ffffff",
+      "size": 162.0,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t53",
+     "xPct": 20.455,
+     "yPct": 22.28,
+     "widthPct": 64.318,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Buy, sell, or send stocks",
+     "style": {
+      "text": "Buy, sell, or send stocks",
+      "color": "#e8973a",
+      "size": 54.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 10
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s49",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 5.909,
+     "yPct": 30.335,
+     "widthPct": 88.182,
+     "heightPct": 74.933,
+     "rotation": 0,
+     "opacity": 0.3,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 388,
+      "h": 716.36,
+      "radius": 98.8,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s52",
+     "assetId": "shape:Subtitle box",
+     "name": "Subtitle box",
+     "xPct": 17.727,
+     "yPct": 21.13,
+     "widthPct": 64.318,
+     "heightPct": 4.498,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 283,
+      "h": 43,
+      "radius": 0,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s54",
+     "assetId": "shape:Swoosh L",
+     "name": "Swoosh L",
+     "xPct": -5.227,
+     "yPct": 63.703,
+     "widthPct": 28.636,
+     "heightPct": 11.402,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 6,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 126,
+      "h": 109,
+      "vx": -23,
+      "vy": 609,
+      "path": "M0,695C20,655 50,632 80,634",
+      "stroke": "#f4f0ea",
+      "strokeWidth": 22,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s55",
+     "assetId": "shape:Swoosh R",
+     "name": "Swoosh R",
+     "xPct": 77.273,
+     "yPct": 52.824,
+     "widthPct": 29.091,
+     "heightPct": 16.527,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 6,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 128,
+      "h": 158,
+      "vx": 340,
+      "vy": 505,
+      "path": "M363,528C385,575 415,610 445,640",
+      "stroke": "#f4f0ea",
+      "strokeWidth": 22,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s56",
+     "assetId": "shape:Dot",
+     "name": "Dot",
+     "xPct": 87.045,
+     "yPct": 48.326,
+     "widthPct": 5.909,
+     "heightPct": 3.347,
+     "rotation": 25,
+     "opacity": 1,
+     "zIndex": 6,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 26,
+      "h": 32,
+      "radius": 13,
+      "fill": "#f4f0ea"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 46.86,
+    "x": 0.0,
+    "y": 26.99,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  }
+ ],
+ "designHeight": 2347
+}
