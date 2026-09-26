@@ -23,6 +23,7 @@ import {
   ensureMockupTemplates,
   renderMockupTemplateGrid,
   renderMockupTemplateCards,
+  setupMockupTemplateSearchHandlers,
   openMockupTemplateDetail,
   closeMockupTemplateDetail,
   applyTemplate,
@@ -437,6 +438,8 @@ function setupMockupToolbar() {
   }
   // Live Preview/Panoramic refresh 400 ms after any edit while one of those sections is visible.
   setLiveRefreshHook(refreshLiveIfVisible);
+
+  setupMockupTemplateSearchHandlers();
 
   if ($id("mockup-export-template-btn")) {
     $id("mockup-export-template-btn").onclick = () => {
