@@ -736,6 +736,69 @@ html.light .mockup-canvas-viewport {
 
 .range-label { display: flex; justify-content: space-between; font-size: .74rem; color: var(--text-secondary); font-weight: 500; margin-top: 0.35rem; }
 
+/* Template Search Input & Clear Button */
+.template-search-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 220px;
+}
+.template-search-icon {
+  position: absolute;
+  left: 0.55rem;
+  color: var(--text-muted);
+  pointer-events: none;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+.template-search-input {
+  width: 100% !important;
+  padding: 0.35rem 1.8rem 0.35rem 1.85rem !important;
+  font-size: 0.78rem !important;
+  height: 28px !important;
+  box-sizing: border-box !important;
+  border-radius: 6px !important;
+  border: 1px solid var(--border-subtle) !important;
+  background: var(--bg-main) !important;
+  color: var(--text-primary) !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.template-search-input:focus {
+  outline: none !important;
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25) !important;
+}
+.template-search-input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.85;
+}
+.template-search-clear-btn {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+.template-search-clear-btn:hover {
+  color: var(--text-primary);
+  background: rgba(128, 128, 128, 0.18);
+}
+.template-search-clear-btn svg {
+  display: block;
+}
+
 .template-browser { display: flex; gap: 1.25rem; align-items: flex-start; }
 .template-filters { flex: 0 0 150px; display: flex; flex-direction: column; gap: .2rem; position: sticky; top: 0; }
 .filter-item { display: flex; justify-content: space-between; align-items: center; padding: .4rem .55rem; border-radius: 8px; font-size: .8rem; color: var(--text-secondary); cursor: pointer; }
@@ -1665,18 +1728,28 @@ button.xsmall {
 .file-card-badge {
   position: absolute;
   top: 6px;
-  left: 6px;
+  right: 6px;
   font-size: 0.65rem;
   padding: 2px 6px;
   border-radius: 4px;
-  background: rgba(11, 13, 18, 0.85);
-  color: var(--text-secondary);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(4px);
+  background: rgba(15, 23, 42, 0.88);
+  color: #f1f5f9;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(6px);
   text-transform: uppercase;
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: 0.04em;
   pointer-events: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
 }
+
+html.light .file-card-badge {
+  background: rgba(15, 23, 42, 0.85);
+  color: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
 .file-card-body {
   padding: 0.65rem 0.75rem 0.65rem;
   display: flex;
@@ -1707,11 +1780,10 @@ button.xsmall {
 }
 .file-card-footer {
   display: flex;
-  justify-content: flex-end;
-  gap: 0.4rem;
+  justify-content: space-between;
   align-items: center;
-  padding-top: 0.2rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  padding-top: 0.35rem;
+  border-top: 1px solid var(--border-subtle);
 }
 .file-action-icon-btn {
   width: 28px !important;
@@ -1729,15 +1801,28 @@ button.xsmall {
   width: 14px;
   height: 14px;
 }
+
+/* Distinct Action Button Colors */
+.file-action-icon-btn.download-file-btn {
+  color: #3b82f6 !important;
+  border-color: rgba(59, 130, 246, 0.3) !important;
+  background: rgba(59, 130, 246, 0.08) !important;
+}
 .file-action-icon-btn.download-file-btn:hover {
-  background: rgba(59, 130, 246, 0.15) !important;
-  border-color: rgba(59, 130, 246, 0.4) !important;
+  background: rgba(59, 130, 246, 0.2) !important;
+  border-color: #3b82f6 !important;
   color: #60a5fa !important;
 }
-.file-action-icon-btn.delete-btn:hover {
-  background: rgba(239, 68, 68, 0.15) !important;
-  border-color: rgba(239, 68, 68, 0.4) !important;
+
+.file-action-icon-btn.delete-btn {
   color: #ef4444 !important;
+  border-color: rgba(239, 68, 68, 0.3) !important;
+  background: rgba(239, 68, 68, 0.08) !important;
+}
+.file-action-icon-btn.delete-btn:hover {
+  background: rgba(239, 68, 68, 0.2) !important;
+  border-color: #ef4444 !important;
+  color: #f87171 !important;
 }
 
 .file-view-toggle-group .icon-btn.small {

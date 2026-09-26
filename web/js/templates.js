@@ -420,13 +420,30 @@ function escapeHtmlAttr(str) {
     .replace(/>/g, "&gt;");
 }
 
+export let mockupTemplateSearchQuery = "";
+
+export function setMockupTemplateSearchQuery(q) {
+  mockupTemplateSearchQuery = q || "";
+}
+
 export function renderMockupTemplateCards(templates) {
   const grid = document.getElementById("mockup-template-grid");
   if (!grid) return;
-  const filtered = mockupTemplateCategory === "all" ? templates : templates.filter((t) => t.category === mockupTemplateCategory);
+
+  const query = mockupTemplateSearchQuery.trim().toLowerCase();
+  const filtered = templates.filter((t) => {
+    const matchCat = mockupTemplateCategory === "all" || t.category === mockupTemplateCategory;
+    if (!matchCat) return false;
+    if (!query) return true;
+    const nameMatch = t.name && t.name.toLowerCase().includes(query);
+    const catMatch = t.category && (t.category.toLowerCase().includes(query) || (CATEGORY_LABELS[t.category] && CATEGORY_LABELS[t.category].toLowerCase().includes(query)));
+    const descMatch = t.description && t.description.toLowerCase().includes(query);
+    const layoutMatch = t.layout && t.layout.toLowerCase().includes(query);
+    return nameMatch || catMatch || descMatch || layoutMatch;
+  });
 
   if (filtered.length === 0) {
-    grid.innerHTML = `<div class="template-empty" style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: #9aa0a6;">No templates found in this category.</div>`;
+    grid.innerHTML = `<div class="template-empty" style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: #9aa0a6;">${query ? `No templates found matching "${mockupTemplateSearchQuery}".` : "No templates found in this category."}</div>`;
     return;
   }
 
@@ -525,10 +542,41 @@ export function renderTemplateSkeletons(gridId, count = 8) {
     .join("");
 }
 
+let templateSearchHandlersInitialized = false;
+
+export function setupMockupTemplateSearchHandlers() {
+  const searchInput = document.getElementById("mockup-template-search-input");
+  const clearBtn = document.getElementById("mockup-template-search-clear-btn");
+  if (!searchInput || !clearBtn) return;
+
+  if (!templateSearchHandlersInitialized) {
+    templateSearchHandlersInitialized = true;
+
+    searchInput.addEventListener("input", () => {
+      const val = searchInput.value;
+      setMockupTemplateSearchQuery(val);
+      clearBtn.style.display = val.length > 0 ? "inline-flex" : "none";
+      renderMockupTemplateCards(mockupTemplates);
+    });
+
+    clearBtn.addEventListener("click", () => {
+      searchInput.value = "";
+      setMockupTemplateSearchQuery("");
+      clearBtn.style.display = "none";
+      searchInput.focus();
+      renderMockupTemplateCards(mockupTemplates);
+    });
+  } else {
+    // Sync clear button display state with current query
+    clearBtn.style.display = searchInput.value.length > 0 ? "inline-flex" : "none";
+  }
+}
+
 export async function renderMockupTemplateGrid() {
   renderTemplateSkeletons("mockup-template-grid");
   const templates = await ensureMockupTemplates();
   closeMockupTemplateDetail();
+  setupMockupTemplateSearchHandlers();
   renderMockupTemplateFilters(templates);
   renderMockupTemplateCards(templates);
 }

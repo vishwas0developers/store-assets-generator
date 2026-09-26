@@ -13,7 +13,7 @@ import { ICONS } from './icons.js';
 
 let projectSettingsTargetId = null;
 let currentFileFilter = 'all';
-let currentFileViewMode = 'list'; // 'list' | 'grid'
+let currentFileViewMode = 'grid'; // 'list' | 'grid'
 let currentSortField = 'name'; // 'name' | 'size' | 'mtime' | 'type'
 let currentSortOrder = 'asc'; // 'asc' | 'desc'
 
