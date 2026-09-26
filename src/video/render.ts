@@ -1077,12 +1077,8 @@ export function composeStandaloneHtml(project: VideoProject, activeSceneIndex?: 
           };
         }
       }
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', applyPayload);
-      } else {
+      function boot() {
         applyPayload();
-      }
-    })();
 
       // Multi-screenshot timeline: swap each target's src to whichever
       // segment covers the current ABSOLUTE document time. Driven by
@@ -1179,7 +1175,10 @@ export function composeStandaloneHtml(project: VideoProject, activeSceneIndex?: 
           window.goto(${activeSceneIndex});
         }
       }
-    });
+      }
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+      else boot();
+    })();
   </script>
   `;
 
