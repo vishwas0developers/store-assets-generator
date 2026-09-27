@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import { execFile, spawn } from "child_process";
 import { promisify } from "util";
+import type { Browser } from "playwright";
 
 const execFileAsync = promisify(execFile);
 import { resolveTool } from "../toolchain/binaries.js";
@@ -1581,6 +1582,26 @@ async function ensureFfmpegAvailable(): Promise<void> {
   }
 }
 
+/** `browser.close()` waits for a graceful Chromium shutdown, which can hang
+ *  well past any reasonable wait when the browser process is itself under
+ *  heavy load (many concurrent pages, GPU contention) -- exactly the state a
+ *  cancelled render is usually in. That hang was why Cancel could appear to
+ *  do nothing: the abort signal was set correctly, but the render's promise
+ *  chain was stuck awaiting a close that never finished. Race it against a
+ *  timeout and force-kill the underlying process if it doesn't. */
+async function closeBrowserSafely(browser: Browser, timeoutMs = 5000): Promise<void> {
+  // ponytail: a plain chromium.launch() Browser exposes no handle to the OS
+  // process (only launchServer() does), so a close() that never resolves
+  // can't be force-killed from here -- just stop waiting on it so the render
+  // job (and Cancel) isn't held hostage. The orphaned process, if any, is
+  // reaped by the OS/next server restart; upgrade to launchServer() if a
+  // hard kill turns out to be needed.
+  await Promise.race([
+    browser.close().catch(() => {}),
+    new Promise<void>((resolve) => setTimeout(resolve, timeoutMs)),
+  ]);
+}
+
 const BGM_CACHE_DIR = path.join(process.cwd(), "output", ".bgm");
 
 /** The generated (or cached) BGM file for a template id -- lazily rendered
@@ -1602,7 +1623,7 @@ interface EncoderChoice {
 
 let cachedH264Encoder: EncoderChoice | null = null;
 
-async function detectBestH264Encoder(crf: string): Promise<EncoderChoice> {
+export async function detectBestH264Encoder(crf: string): Promise<EncoderChoice> {
   if (cachedH264Encoder) {
     // If cached, return adapted args for crf
     const isNvenc = cachedH264Encoder.codec === "h264_nvenc";
@@ -1748,8 +1769,11 @@ export async function renderVideo(
   const startTime = Date.now();
   let totalRenderedFrames = 0;
 
-  // Maximize concurrency based on available CPU/GPU resources (up to 6 parallel scene workers)
-  const concurrency = Math.min(6, Math.max(1, scenes.length));
+  // Parallel scene workers -- capped at 4, not 6: each worker holds its own
+  // Chromium page/GPU context, and pushing concurrency past what this machine's
+  // single GPU can actually parallelize made throughput collapse over a long
+  // render (started ~40-50fps, fell to ~1fps by the tail) rather than scale.
+  const concurrency = Math.min(4, Math.max(1, scenes.length));
   const isGpu = encoderChoice.codec.includes("nvenc") || encoderChoice.codec.includes("qsv");
   const processorShort = isGpu ? "GPU" : "CPU";
   const acceleratorLabel = `${processorShort} (${encoderChoice.name})`;
@@ -1780,19 +1804,31 @@ export async function renderVideo(
     let windowStartTime = Date.now();
     let dynamicFps = 0;
 
+    // Every distinct device across the whole render, routed once per worker page
+    // instead of once per scene -- see runWorker below.
+    const allDeviceIds = [...new Set(scenes.map((s) => s.device))];
+
     const runWorker = async () => {
-      while (true) {
-        checkAborted();
-        const sIdx = nextSceneIndex++;
-        if (sIdx >= scenes.length) break;
+      // One Chromium page reused for every scene this worker claims, not a fresh
+      // page per scene. Recreating a GPU-accelerated page 10 times over a render
+      // (once per scene) is what made throughput collapse over a long render --
+      // it started around 40-50fps and fell to ~1fps by the tail as page/GPU
+      // context churn piled up. A page's content is simply replaced between
+      // scenes now, the same way the original single-page sequential renderer
+      // did it, just once per concurrent worker instead of once for the whole job.
+      const page = await browser.newPage({ viewport: canvasFor(scenes[0]) });
+      try {
+        await installThreeJsRoutes(page, allDeviceIds);
+        while (true) {
+          checkAborted();
+          const sIdx = nextSceneIndex++;
+          if (sIdx >= scenes.length) break;
 
-        const scene = scenes[sIdx];
-        const sceneFrames = sceneFrameCounts[sIdx];
-        const startIndex = sceneStartIndices[sIdx];
+          const scene = scenes[sIdx];
+          const sceneFrames = sceneFrameCounts[sIdx];
+          const startIndex = sceneStartIndices[sIdx];
 
-        const page = await browser.newPage({ viewport: canvasFor(scene) });
-        try {
-          await installThreeJsRoutes(page, [scene.device]);
+          await page.setViewportSize(canvasFor(scene));
           const html = sceneHtml(
             scene,
             sourceUrisFor(project, scene, resolveUri, false),
@@ -1820,6 +1856,10 @@ export async function renderVideo(
             const globalFrameIndex = startIndex + f;
             const framePath = path.join(framesDir, `frame_${String(globalFrameIndex).padStart(6, "0")}.jpg`);
             await page.screenshot({ path: framePath, type: "jpeg", quality: 90 });
+            // Re-checked right after the slow part of each frame (not just before
+            // it) so Cancel lands within one frame instead of one frame plus
+            // whatever the next scene-claim/setContent would have cost.
+            checkAborted();
 
             totalRenderedFrames++;
             windowFrames++;
@@ -1856,9 +1896,9 @@ export async function renderVideo(
               });
             }
           }
-        } finally {
-          await page.close().catch(() => {});
         }
+      } finally {
+        await page.close().catch(() => {});
       }
     };
 
@@ -1868,12 +1908,13 @@ export async function renderVideo(
 
     await Promise.all(workerPromises);
   } catch (err) {
-    await browser.close().catch(() => {});
     fs.rmSync(framesDir, { recursive: true, force: true });
-    if (err instanceof RenderCancelled) throw err;
     throw err;
   } finally {
-    await browser.close().catch(() => {});
+    // See closeBrowserSafely's doc comment -- a graceful close() can hang when
+    // the browser is under the same load that made frames slow, which is
+    // exactly the moment Cancel needs this to resolve promptly.
+    await closeBrowserSafely(browser);
   }
 
   checkAborted();

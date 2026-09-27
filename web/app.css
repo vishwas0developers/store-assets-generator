@@ -1106,8 +1106,8 @@ html.light .mockup-canvas-viewport {
    no separate browse/detail screens to navigate between. */
 /* Single source of truth for the left (template list) and right (screen
    list + controls) column width -- both must always match exactly. */
-.video-template-shell { --video-side-col: 500px; display: flex; gap: 1.25rem; align-items: flex-start; }
-.video-list-column-wrapper { flex: 0 0 var(--video-side-col); display: flex; flex-direction: column; max-height: calc(100vh - 220px); gap: 0.5rem; }
+.video-template-shell { --video-side-col: clamp(280px, 28vw, 420px); display: flex; gap: 1.25rem; align-items: stretch; position: relative; }
+.video-list-column-wrapper { flex: 0 0 var(--video-side-col); width: var(--video-side-col); min-width: 280px; max-width: 440px; display: flex; flex-direction: column; min-height: 0; max-height: 100%; gap: 0.5rem; align-self: stretch; }
 .video-list-column-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; color: #a1a1aa; letter-spacing: 0.05em; padding-left: 2px; opacity: 0.8; }
 .video-template-list { display: flex; flex-direction: column; gap: .6rem; overflow-y: auto; flex: 1; min-height: 0; }
 .video-list-subtitle { margin: .2rem 0 0; }
@@ -1303,51 +1303,25 @@ html.light .mockup-canvas-viewport {
 .video-scene-dot { width: 26px; height: 4px; border-radius: 2px; background: #2b3040; cursor: pointer; }
 .video-scene-dot.active { background: #3b82f6; }
 
-@media (max-width: 1400px) {
-  .video-template-shell {
-    --video-side-col: 420px;
-    gap: 1rem;
-  }
-}
-
-@media (max-width: 1200px) {
-  .video-template-shell {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .video-list-column-wrapper {
-    flex: 0 0 auto;
-    width: 100%;
-    max-height: 260px;
-  }
-  .video-template-list {
-    flex-direction: row;
-    flex-wrap: wrap;
-    max-height: 240px;
-    width: 100%;
-  }
-  .video-list-card {
-    flex: 1 1 240px;
-  }
-  .video-template-stage {
-    width: 100%;
-  }
+@media (max-width: 1550px) {
   .template-detail-video {
     grid-template-columns: 1fr !important;
-    gap: 1.25rem;
+    gap: 1.5rem;
     justify-items: center;
   }
   .video-detail-main {
     width: 100%;
     align-items: center;
+    order: 1;
   }
   .template-detail-side {
-    width: 100%;
+    width: 100% !important;
     max-width: 680px;
     height: auto !important;
     min-height: 380px;
     max-height: 480px;
     box-sizing: border-box;
+    order: 2;
   }
   .v-player-bar {
     flex-wrap: wrap;
@@ -1364,6 +1338,32 @@ html.light .mockup-canvas-viewport {
     width: 100%;
     justify-content: center;
     flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 992px) {
+  .video-template-shell {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .video-list-column-wrapper {
+    flex: 0 0 auto;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    max-height: 280px;
+  }
+  .video-template-list {
+    flex-direction: row;
+    flex-wrap: wrap;
+    max-height: 250px;
+    width: 100%;
+  }
+  .video-list-card {
+    flex: 1 1 240px;
+  }
+  .video-template-stage {
+    width: 100%;
   }
 }
 
@@ -2813,6 +2813,38 @@ html:not(.light) .export-summary-banner {
   color: #93c5fd;
 }
 
+.export-hardware-box {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 100%;
+  min-height: 2.4rem;
+  background: var(--bg-subtle, rgba(255, 255, 255, 0.04));
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.export-hardware-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #6b7280; /* detecting / CPU */
+  flex-shrink: 0;
+}
+
+.export-hardware-box.gpu .export-hardware-dot {
+  background: #22c55e;
+  box-shadow: 0 0 6px rgba(34, 197, 94, 0.6);
+}
+
+.export-hardware-box.error .export-hardware-dot {
+  background: #ef4444;
+}
+
 /* Advanced Accordion */
 .export-advanced-details summary {
   cursor: pointer;
@@ -2821,10 +2853,35 @@ html:not(.light) .export-summary-banner {
   color: var(--text-secondary);
   transition: color 0.15s;
   user-select: none;
+  list-style: none; /* the ▶/▼ in the markup is the only marker; suppress the browser's own or both show at once */
+}
+
+.export-advanced-details summary::-webkit-details-marker,
+.export-advanced-details summary::marker {
+  display: none;
+}
+
+.export-advanced-details summary::before {
+  content: "▶";
+  display: inline-block;
+  margin-right: 0.4rem;
+  transition: transform 0.15s;
+}
+
+.export-advanced-details[open] summary::before {
+  transform: rotate(90deg);
 }
 
 .export-advanced-details summary:hover {
   color: var(--text-primary);
+}
+
+/* The global `input, select, textarea { width: 100% }` rule (line ~211) stretches
+   a bare checkbox to fill its row, shoving its label off to the side instead of
+   sitting next to it -- this is the fix, scoped to this modal's checkboxes. */
+.export-modal-backdrop input[type="checkbox"] {
+  width: auto;
+  flex-shrink: 0;
 }
 
 /* Rendering View Elements */

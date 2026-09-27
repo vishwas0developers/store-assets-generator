@@ -1497,26 +1497,35 @@
           <p class="hint" style="margin-top:0.3rem; font-size:0.8rem;">Changing orientation from native letterboxes the video canvas.</p>
         </div>
 
-        <!-- Scene Range Selection -->
-        <div class="export-form-group">
-          <label class="export-label">Scenes</label>
-          <div style="display:flex; gap:0.5rem; align-items:center;">
-            <select id="export-range-mode" class="export-select" style="width:140px;">
-              <option value="all" selected>All Scenes</option>
-              <option value="range">Range</option>
-            </select>
-            <div id="export-range-inputs" style="display:none; align-items:center; gap:0.4rem;">
-              <span>From</span>
-              <input type="number" id="export-range-from" class="export-input" min="1" value="1" style="width:65px;" />
-              <span>To</span>
-              <input type="number" id="export-range-to" class="export-input" min="1" value="1" style="width:65px;" />
+        <!-- Scene Range Selection + Render Hardware -->
+        <div style="display:flex; gap:1rem; align-items:flex-start;">
+          <div class="export-form-group" style="flex:0 0 auto;">
+            <label class="export-label">Scenes</label>
+            <div style="display:flex; gap:0.5rem; align-items:center;">
+              <select id="export-range-mode" class="export-select" style="width:140px;">
+                <option value="all" selected>All Scenes</option>
+                <option value="range">Range</option>
+              </select>
+              <div id="export-range-inputs" style="display:none; align-items:center; gap:0.4rem;">
+                <span>From</span>
+                <input type="number" id="export-range-from" class="export-input" min="1" value="1" style="width:65px;" />
+                <span>To</span>
+                <input type="number" id="export-range-to" class="export-input" min="1" value="1" style="width:65px;" />
+              </div>
+            </div>
+          </div>
+          <div class="export-form-group" style="flex:1;">
+            <label class="export-label">Render Hardware</label>
+            <div id="export-hardware-box" class="export-hardware-box">
+              <span id="export-hardware-dot" class="export-hardware-dot"></span>
+              <span id="export-hardware-text">Detecting...</span>
             </div>
           </div>
         </div>
 
         <!-- Advanced Details Accordion -->
         <details class="export-advanced-details">
-          <summary class="export-advanced-summary">&#9654; Advanced Settings</summary>
+          <summary class="export-advanced-summary">Advanced Settings</summary>
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; padding-top:0.4rem;">
             <div>
               <label class="export-label" for="export-fps-select">Frame Rate</label>
