@@ -108,8 +108,10 @@ import {
   saveVideoProject,
   videoDir,
   videoFile,
+  type VideoExportRecord,
 } from "../src/video/project.js";
-import { listSceneAnimations, listSceneLayouts, listVideoBackgrounds, renderVideo, renderVideoTemplateThumbs, sceneHtml, scenePreviewHtml, sourceKindsFor, sourceUrisFor, templatePreviewHtml } from "../src/video/render.js";
+import { listSceneAnimations, listSceneLayouts, listVideoBackgrounds, renderVideo, RenderCancelled, type RenderOptions, type RenderProgress, renderVideoTemplateThumbs, sceneHtml, scenePreviewHtml, sourceKindsFor, sourceUrisFor, templatePreviewHtml } from "../src/video/render.js";
+import { EXPORT_PRESETS } from "../src/video/exportPresets.js";
 import { VIDEO_TEMPLATES, applyVideoTemplate, resolveTemplateId, scratchVideoProject, loadAllTemplates } from "../src/video/templates.js";
 import { BGM_PRESETS, renderBgmWav } from "../src/video/bgm.js";
 import { slotSpecsForScene, validateScene, type SlotIssue } from "../src/video/slots.js";
@@ -148,6 +150,190 @@ async function readJsonBody(req: http.IncomingMessage): Promise<any> {
 }
 
 const MAX_UPLOAD_BYTES = (Number(process.env.SAG_MAX_UPLOAD_MB) || 25) * 1024 * 1024;
+
+interface RenderJob {
+  id: string;
+  projectId: string;
+  configId?: string;
+  state: "running" | "done" | "error" | "cancelled";
+  cancelRequested?: boolean;
+  abortController?: AbortController;
+  progress: RenderProgress;
+  error?: string;
+  outputFile?: string;
+  fileName?: string;
+  format: "mp4" | "webm";
+  sizeBytes?: number;
+  width?: number;
+  height?: number;
+  durationSec?: number;
+  savedPath?: string;
+  options: RenderOptions;
+  startedAt: string;
+  finishedAt?: string;
+}
+
+const renderJobs = new Map<string, RenderJob>();
+
+function cleanupOldRenderJobs() {
+  const oneHourAgo = Date.now() - 60 * 60 * 1000;
+  for (const [id, job] of renderJobs.entries()) {
+    if (job.state !== "running" && new Date(job.startedAt).getTime() < oneHourAgo) {
+      renderJobs.delete(id);
+    }
+  }
+}
+setInterval(cleanupOldRenderJobs, 10 * 60 * 1000);
+
+function getRunningJobForProject(projectId: string): RenderJob | undefined {
+  for (const job of renderJobs.values()) {
+    if (job.projectId === projectId && job.state === "running") return job;
+  }
+  return undefined;
+}
+
+function startRenderJob(project: any, opts: RenderOptions = {}, meta: { configId?: string } = {}): { job: RenderJob; isNew: boolean } {
+  const existing = getRunningJobForProject(project.id);
+  if (existing) {
+    return { job: existing, isNew: false };
+  }
+
+  const jobId = `job_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+  const abortController = new AbortController();
+  const format = opts.format === "webm" ? "webm" : "mp4";
+
+  const job: RenderJob = {
+    id: jobId,
+    projectId: project.id,
+    configId: meta.configId,
+    state: "running",
+    progress: {
+      phase: "preparing",
+      percent: 0,
+      message: "Starting render...",
+    },
+    format,
+    options: { ...opts },
+    abortController,
+    startedAt: new Date().toISOString(),
+  };
+
+  renderJobs.set(jobId, job);
+
+  // Run render asynchronously
+  (async () => {
+    try {
+      const renderOpts: RenderOptions = {
+        ...opts,
+        signal: abortController.signal,
+      };
+
+      const finalVideoPath = await renderVideo(
+        project,
+        renderOpts,
+        (progress) => {
+          job.progress = { ...progress };
+        }
+      );
+
+      job.state = "done";
+      job.outputFile = finalVideoPath;
+      job.finishedAt = new Date().toISOString();
+
+      try {
+        const stats = fs.statSync(finalVideoPath);
+        job.sizeBytes = stats.size;
+        job.fileName = path.basename(finalVideoPath);
+      } catch {}
+
+      // Calculate width, height, durationSec
+      const scenes = opts.sceneRange
+        ? [...project.scenes].sort((a, b) => a.order - b.order).slice(opts.sceneRange[0] - 1, opts.sceneRange[1])
+        : project.scenes;
+      const totalSec = scenes.reduce((s: number, sc: any) => s + Math.max(1, sc.durationSeconds), 0);
+      job.durationSec = Math.round(totalSec * 10) / 10;
+
+      // Handle saveTo if requested
+      if (opts.saveTo) {
+        try {
+          fs.mkdirSync(path.dirname(opts.saveTo), { recursive: true });
+          fs.copyFileSync(finalVideoPath, opts.saveTo);
+          job.savedPath = opts.saveTo;
+        } catch (err: any) {
+          console.warn("Failed to copy rendered video to saveTo location:", err?.message);
+        }
+      }
+
+      // If this was a main project render, update project.outputs.video
+      if (!meta.configId) {
+        try {
+          const freshProj = loadVideoProject(project.id);
+          freshProj.outputs.video = path.relative(videoDir(project.id), finalVideoPath).split(path.sep).join("/");
+
+          // Also record in project export history (up to 20 newest)
+          freshProj.exports = freshProj.exports || [];
+          freshProj.exports.unshift({
+            id: `exp_${Date.now()}`,
+            fileName: path.basename(finalVideoPath),
+            format,
+            width: job.width || (opts.orientation === "landscape" ? 1920 : opts.orientation === "square" ? 1080 : 1080),
+            height: job.height || (opts.orientation === "landscape" ? 1080 : opts.orientation === "square" ? 1080 : 1920),
+            fps: opts.fps || 30,
+            durationSec: job.durationSec || 0,
+            sizeBytes: job.sizeBytes || 0,
+            sceneRange: opts.sceneRange,
+            configId: meta.configId,
+            savedPath: job.savedPath,
+            createdAt: new Date().toISOString(),
+          });
+          freshProj.exports = freshProj.exports.slice(0, 20);
+          saveVideoProject(freshProj);
+        } catch (err) {
+          console.warn("Could not record export in project.json:", err);
+        }
+      } else {
+        // Also copy to config_<cfgId>.<ext> for legacy download compatibility
+        try {
+          const cfgPath = path.join(videoDir(project.id), `config_${meta.configId}.${format}`);
+          fs.copyFileSync(finalVideoPath, cfgPath);
+
+          const freshProj = loadVideoProject(project.id);
+          freshProj.exports = freshProj.exports || [];
+          freshProj.exports.unshift({
+            id: `exp_${Date.now()}`,
+            fileName: path.basename(finalVideoPath),
+            format,
+            width: job.width || 1080,
+            height: job.height || 1920,
+            fps: opts.fps || 30,
+            durationSec: job.durationSec || 0,
+            sizeBytes: job.sizeBytes || 0,
+            sceneRange: opts.sceneRange,
+            configId: meta.configId,
+            savedPath: job.savedPath,
+            createdAt: new Date().toISOString(),
+          });
+          freshProj.exports = freshProj.exports.slice(0, 20);
+          saveVideoProject(freshProj);
+        } catch (err) {
+          console.warn("Could not copy config export:", err);
+        }
+      }
+    } catch (err: any) {
+      if (err instanceof RenderCancelled || abortController.signal.aborted) {
+        job.state = "cancelled";
+        job.progress = { phase: "cancelled", percent: job.progress.percent, message: "Render cancelled." };
+      } else {
+        job.state = "error";
+        job.error = err?.message || String(err);
+        job.progress = { phase: "error", percent: job.progress.percent, message: job.error || "Render error." };
+      }
+      job.finishedAt = new Date().toISOString();
+    }
+  })();
+
+  return { job, isNew: true };
+}
 
 async function readRawBody(req: http.IncomingMessage, maxBytes = MAX_UPLOAD_BYTES): Promise<Buffer> {
   const chunks: Buffer[] = [];
@@ -1934,6 +2120,7 @@ export async function startWebServer(options: { port?: number; host?: string; op
       if (m && method === "POST") {
         const vid = decodeURIComponent(m[1]);
         const cfgId = decodeURIComponent(m[2]);
+        const body = (await readJsonBody(req)) || {};
         const project = loadVideoProject(vid);
         const cfg = (project.savedConfigs ?? []).find((c) => c.id === cfgId);
         if (!cfg) return sendError(res, 404, "Saved configuration not found");
@@ -1948,10 +2135,14 @@ export async function startWebServer(options: { port?: number; host?: string; op
           res.end(JSON.stringify({ error: "Some scenes are missing required content.", ...preflight }));
           return;
         }
-        const rawVideoPath = await renderVideo(overrideProject as any);
-        const configMp4Path = path.join(videoDir(vid), `config_${cfgId}.mp4`);
-        fs.copyFileSync(rawVideoPath, configMp4Path);
-        sendJson(res, 200, { ok: true, configId: cfgId });
+
+        const { job, isNew } = startRenderJob(overrideProject, body, { configId: cfgId });
+        if (!isNew) {
+          res.writeHead(409, { "Content-Type": "application/json; charset=utf-8" });
+          res.end(JSON.stringify({ error: "A render is already running for this project.", jobId: job.id, job }));
+          return;
+        }
+        sendJson(res, 202, { ok: true, jobId: job.id, configId: cfgId });
         return;
       }
     }
@@ -1962,10 +2153,12 @@ export async function startWebServer(options: { port?: number; host?: string; op
         const vid = decodeURIComponent(m[1]);
         const cfgId = decodeURIComponent(m[2]);
         const configMp4Path = path.join(videoDir(vid), `config_${cfgId}.mp4`);
-        if (!fs.existsSync(configMp4Path)) {
+        const configWebmPath = path.join(videoDir(vid), `config_${cfgId}.webm`);
+        const targetPath = fs.existsSync(configMp4Path) ? configMp4Path : fs.existsSync(configWebmPath) ? configWebmPath : null;
+        if (!targetPath) {
           return sendError(res, 404, "Rendered video not found for this template");
         }
-        sendFile(res, configMp4Path, "video/mp4");
+        sendFile(res, targetPath, targetPath.endsWith(".webm") ? "video/webm" : "video/mp4");
         return;
       }
     }
@@ -2078,10 +2271,142 @@ export async function startWebServer(options: { port?: number; host?: string; op
       }
     }
 
+    if (method === "GET" && p === "/api/video-export-presets") {
+      sendJson(res, 200, EXPORT_PRESETS);
+      return;
+    }
+
+    {
+      const m = p.match(/^\/api\/videos\/([^/]+)\/render-jobs\/([^/]+)$/);
+      if (m && method === "GET") {
+        const vid = decodeURIComponent(m[1]);
+        const jobId = decodeURIComponent(m[2]);
+        const job = renderJobs.get(jobId);
+        if (!job || job.projectId !== vid) return sendError(res, 404, "Render job not found");
+        sendJson(res, 200, {
+          id: job.id,
+          projectId: job.projectId,
+          configId: job.configId,
+          state: job.state,
+          progress: job.progress,
+          error: job.error,
+          fileName: job.fileName,
+          format: job.format,
+          sizeBytes: job.sizeBytes,
+          width: job.width,
+          height: job.height,
+          durationSec: job.durationSec,
+          savedPath: job.savedPath,
+          options: job.options,
+          startedAt: job.startedAt,
+          finishedAt: job.finishedAt,
+        });
+        return;
+      }
+    }
+
+    {
+      const m = p.match(/^\/api\/videos\/([^/]+)\/render-jobs\/([^/]+)\/cancel$/);
+      if (m && method === "POST") {
+        const vid = decodeURIComponent(m[1]);
+        const jobId = decodeURIComponent(m[2]);
+        const job = renderJobs.get(jobId);
+        if (!job || job.projectId !== vid) return sendError(res, 404, "Render job not found");
+        if (job.state === "running" && job.abortController) {
+          job.cancelRequested = true;
+          job.abortController.abort();
+        }
+        sendJson(res, 202, { ok: true, state: job.state });
+        return;
+      }
+    }
+
+    {
+      const m = p.match(/^\/api\/videos\/([^/]+)\/render-jobs\/([^/]+)\/file$/);
+      if (m && method === "GET") {
+        const vid = decodeURIComponent(m[1]);
+        const jobId = decodeURIComponent(m[2]);
+        const job = renderJobs.get(jobId);
+        if (!job || job.projectId !== vid || !job.outputFile) return sendError(res, 404, "Render job output not found");
+        if (!fs.existsSync(job.outputFile)) return sendError(res, 404, "Output file does not exist on disk");
+
+        const isDownload = url.searchParams.get("download") === "1";
+        const mimeType = job.format === "webm" ? "video/webm" : "video/mp4";
+        if (isDownload) {
+          const fn = job.fileName || `promo.${job.format}`;
+          res.setHeader("Content-Disposition", `attachment; filename="${fn}"`);
+        }
+        sendFile(res, job.outputFile, mimeType);
+        return;
+      }
+    }
+
+    {
+      const m = p.match(/^\/api\/videos\/([^/]+)\/exports$/);
+      if (m && method === "GET") {
+        const vid = decodeURIComponent(m[1]);
+        const project = loadVideoProject(vid);
+        // Filter out records whose file no longer exists
+        const validExports = (project.exports ?? []).filter((exp) => {
+          const fileP = path.join(videoDir(vid), "exports", exp.fileName);
+          return fs.existsSync(fileP) || (exp.savedPath && fs.existsSync(exp.savedPath));
+        });
+        if (validExports.length !== (project.exports?.length ?? 0)) {
+          project.exports = validExports;
+          saveVideoProject(project);
+        }
+        sendJson(res, 200, validExports);
+        return;
+      }
+    }
+
+    {
+      const m = p.match(/^\/api\/videos\/([^/]+)\/exports\/([^/]+)$/);
+      if (m && method === "DELETE") {
+        const vid = decodeURIComponent(m[1]);
+        const expId = decodeURIComponent(m[2]);
+        const project = loadVideoProject(vid);
+        const exp = (project.exports ?? []).find((e) => e.id === expId);
+        if (exp) {
+          try {
+            const fileP = path.join(videoDir(vid), "exports", exp.fileName);
+            if (fs.existsSync(fileP)) fs.rmSync(fileP, { force: true });
+          } catch {}
+          project.exports = (project.exports ?? []).filter((e) => e.id !== expId);
+          saveVideoProject(project);
+        }
+        sendJson(res, 200, { ok: true });
+        return;
+      }
+    }
+
+    {
+      const m = p.match(/^\/api\/videos\/([^/]+)\/exports\/([^/]+)\/file$/);
+      if (m && method === "GET") {
+        const vid = decodeURIComponent(m[1]);
+        const expId = decodeURIComponent(m[2]);
+        const project = loadVideoProject(vid);
+        const exp = (project.exports ?? []).find((e) => e.id === expId);
+        if (!exp) return sendError(res, 404, "Export record not found");
+        const fileP = path.join(videoDir(vid), "exports", exp.fileName);
+        const targetP = fs.existsSync(fileP) ? fileP : (exp.savedPath && fs.existsSync(exp.savedPath)) ? exp.savedPath : null;
+        if (!targetP) return sendError(res, 404, "Export file not found on disk");
+
+        const isDownload = url.searchParams.get("download") === "1";
+        const mimeType = exp.format === "webm" ? "video/webm" : "video/mp4";
+        if (isDownload) {
+          res.setHeader("Content-Disposition", `attachment; filename="${exp.fileName}"`);
+        }
+        sendFile(res, targetP, mimeType);
+        return;
+      }
+    }
+
     {
       const m = p.match(/^\/api\/videos\/([^/]+)\/render$/);
       if (m && method === "POST") {
         const id = decodeURIComponent(m[1]);
+        const body = (await readJsonBody(req)) || {};
         const project = loadVideoProject(id);
         const preflight = validateProject(project);
         if (!preflight.ready) {
@@ -2089,10 +2414,14 @@ export async function startWebServer(options: { port?: number; host?: string; op
           res.end(JSON.stringify({ error: "Some scenes are missing required content.", ...preflight }));
           return;
         }
-        const videoPath = await renderVideo(project);
-        project.outputs.video = path.relative(videoDir(id), videoPath).split(path.sep).join("/");
-        saveVideoProject(project);
-        sendJson(res, 200, { videoPath: project.outputs.video });
+
+        const { job, isNew } = startRenderJob(project, body);
+        if (!isNew) {
+          res.writeHead(409, { "Content-Type": "application/json; charset=utf-8" });
+          res.end(JSON.stringify({ error: "A render is already running for this project.", jobId: job.id, job }));
+          return;
+        }
+        sendJson(res, 202, { ok: true, jobId: job.id });
         return;
       }
     }
@@ -2100,7 +2429,12 @@ export async function startWebServer(options: { port?: number; host?: string; op
     {
       const m = p.match(/^\/api\/videos\/([^/]+)\/download$/);
       if (m && method === "GET") {
-        sendFile(res, path.join(videoDir(decodeURIComponent(m[1])), "promo.mp4"), "video/mp4");
+        const outD = videoDir(decodeURIComponent(m[1]));
+        const mp4P = path.join(outD, "promo.mp4");
+        const webmP = path.join(outD, "promo.webm");
+        const targetP = fs.existsSync(mp4P) ? mp4P : fs.existsSync(webmP) ? webmP : null;
+        if (!targetP) return sendError(res, 404, "Video file not found");
+        sendFile(res, targetP, targetP.endsWith(".webm") ? "video/webm" : "video/mp4");
         return;
       }
     }

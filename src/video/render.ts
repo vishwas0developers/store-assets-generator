@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { execFile } from "child_process";
+import { execFile, spawn } from "child_process";
 import { promisify } from "util";
 
 const execFileAsync = promisify(execFile);
@@ -27,6 +27,67 @@ import { resolveSlots, resolveImageSequences, slotSpecsForScene } from "./slots.
 import { installThreeJsRoutes, THREE_BRIDGE_SCRIPT } from "../render/three-bridge.js";
 import { resolveDemoAsset } from "./demoAssets.js";
 import { BGM_PRESETS, renderBgmWav } from "./bgm.js";
+export { EXPORT_PRESETS, type ExportPreset } from "./exportPresets.js";
+
+export class RenderCancelled extends Error {
+  constructor(message = "Render cancelled by user") {
+    super(message);
+    this.name = "RenderCancelled";
+  }
+}
+
+export interface RenderOptions {
+  format?: "mp4" | "webm";
+  resolution?: "native" | "1080" | "720" | "480" | { width: number; height: number };
+  orientation?: "native" | "landscape" | "portrait" | "square";
+  fps?: 24 | 30 | 60;
+  quality?: "high" | "standard" | "small";
+  includeAudio?: boolean;
+  audioVolume?: number;
+  fileName?: string;
+  saveTo?: string;
+  sceneRange?: [number, number];
+  signal?: AbortSignal;
+}
+
+export interface RenderProgress {
+  phase: "preparing" | "frames" | "encoding" | "audio" | "done" | "cancelled" | "error";
+  percent: number;
+  message: string;
+  frame?: number;
+  totalFrames?: number;
+  scene?: number;
+  sceneCount?: number;
+  fps?: number;
+  etaSec?: number | null;
+}
+
+export function cleanExportFileName(name?: string, ext = "mp4"): string {
+  const base = (name || "promo")
+    .replace(/\.[a-zA-Z0-9]+$/, "")
+    .replace(/[^a-zA-Z0-9_\-]/g, "_")
+    .replace(/_+/g, "_")
+    .replace(/^_+|_+$/g, "") || "promo";
+  const cleanExt = ext.replace(/^\./, "");
+  return `${base}.${cleanExt}`;
+}
+
+export function clampEven(v: number): number {
+  return Math.max(240, Math.min(3840, Math.floor(v / 2) * 2));
+}
+
+export function buildVfFilter(
+  targetWidth: number,
+  targetHeight: number,
+  baseWidth: number,
+  baseHeight: number,
+  orientation?: string
+): string {
+  if (targetWidth !== baseWidth || targetHeight !== baseHeight || (orientation && orientation !== "native")) {
+    return `scale=${targetWidth}:${targetHeight}:force_original_aspect_ratio=decrease,pad=${targetWidth}:${targetHeight}:(ow-iw)/2:(oh-ih)/2:black`;
+  }
+  return "";
+}
 
 /**
  * Video tab renderer -- one scene per animation beat, independent of
@@ -1477,11 +1538,40 @@ function ensureGeneratedBgm(templateId: string, seconds: number): string {
 /** Renders every scene deterministically via frame-stepped seek(), then
  *  encodes with FFmpeg in one call and muxes BGM (uploaded, or generated
  *  from the project's template preset) with volume + fade in/out. */
-export async function renderVideo(project: VideoProject): Promise<string> {
+export async function renderVideo(
+  project: VideoProject,
+  opts: RenderOptions = {},
+  onProgress?: (p: RenderProgress) => void
+): Promise<string> {
   if (project.scenes.length === 0) throw new Error("No scenes configured -- pick a template first.");
   await ensureFfmpegAvailable();
 
-  const orientations = new Set(project.scenes.map((s) => orientationOf(s)));
+  const signal = opts.signal;
+  const checkAborted = () => {
+    if (signal?.aborted) throw new RenderCancelled();
+  };
+
+  const report = (p: RenderProgress) => {
+    if (onProgress) onProgress(p);
+  };
+
+  report({ phase: "preparing", percent: 1, message: "Preparing render environment..." });
+  checkAborted();
+
+  const format = opts.format || "mp4";
+  const fps = opts.fps || 30;
+  const quality = opts.quality || "standard";
+  const includeAudio = opts.includeAudio !== false;
+  const audioVolume = opts.audioVolume ?? (project.bgmVolume ?? 0.35);
+
+  let scenes = [...project.scenes].sort((a, b) => a.order - b.order);
+  if (opts.sceneRange) {
+    const [from, to] = opts.sceneRange;
+    scenes = scenes.filter((s, idx) => (idx + 1) >= from && (idx + 1) <= to);
+    if (scenes.length === 0) throw new Error("Scene range matches no scenes.");
+  }
+
+  const orientations = new Set(scenes.map((s) => orientationOf(s)));
   if (orientations.size > 1) throw new Error("Mixed-orientation project: every scene must share the same aspect ratio (9:16 or 16:9) before rendering.");
 
   const outDir = videoDir(project.id);
@@ -1492,78 +1582,229 @@ export async function renderVideo(project: VideoProject): Promise<string> {
   const { chromium } = await import("playwright");
   const browser = await chromium.launch({ headless: true });
   let frameIndex = 0;
-  // Uploaded video sources live under the video dir; Live Web/Android captures live at
-  // the project root ("captures/N.png") and are referenced by the same relative path.
+
   const resolveUri = (rel: string) => {
     const abs = videoFile(project.id, rel);
     return dataUri(fs.existsSync(abs) ? abs : projectFile(project.id, rel));
   };
 
+  // Compute total frames up front
+  const sceneFrameCounts = scenes.map((s) => Math.round(Math.max(1, s.durationSeconds) * fps));
+  const totalFrames = sceneFrameCounts.reduce((a, b) => a + b, 0);
+
+  const startTime = Date.now();
+
   try {
-    const scenes = [...project.scenes].sort((a, b) => a.order - b.order);
     const page = await browser.newPage({ viewport: canvasFor(scenes[0] ?? ({} as VideoScene)) });
     await installThreeJsRoutes(page, scenes.map((s) => s.device));
-    for (const scene of scenes) {
+
+    let renderedFrames = 0;
+    for (let sIdx = 0; sIdx < scenes.length; sIdx++) {
+      checkAborted();
+      const scene = scenes[sIdx];
       await page.setViewportSize(canvasFor(scene));
-      // allowDemo=false: template-preview demo photos must never end up baked into an
-      // actual exported video -- a scene with no real screenshot yet falls back to the
-      // neutral placeholder here instead, same as it would with no template applied.
       const html = sceneHtml(scene, sourceUrisFor(project, scene, resolveUri, false), true, sourceKindsFor(project, scene), project, resolveUri, false);
       await page.setContent(html, { waitUntil: "load" });
 
-      const totalFrames = Math.round(Math.max(1, scene.durationSeconds) * FPS);
-      for (let f = 0; f < totalFrames; f++) {
-        const ms = (f / FPS) * 1000;
+      const sceneFrames = sceneFrameCounts[sIdx];
+      for (let f = 0; f < sceneFrames; f++) {
+        checkAborted();
+        const ms = (f / fps) * 1000;
         await page.evaluate((t) => (window as any).seek(t), ms);
         const framePath = path.join(framesDir, `frame_${String(frameIndex).padStart(6, "0")}.png`);
         await page.screenshot({ path: framePath, type: "png" });
         frameIndex++;
+        renderedFrames++;
+
+        const percent = Math.min(85, Math.round(2 + (renderedFrames / totalFrames) * 83));
+        const elapsedSec = (Date.now() - startTime) / 1000;
+        const currentFps = elapsedSec > 0 ? renderedFrames / elapsedSec : 0;
+        const remainingFrames = totalFrames - renderedFrames;
+        const etaSec = currentFps > 0 && renderedFrames > 20 ? Math.round(remainingFrames / currentFps) : null;
+
+        report({
+          phase: "frames",
+          percent,
+          message: `Rendering frame ${renderedFrames} / ${totalFrames} · scene ${sIdx + 1} of ${scenes.length}`,
+          frame: renderedFrames,
+          totalFrames,
+          scene: sIdx + 1,
+          sceneCount: scenes.length,
+          fps: Math.round(currentFps),
+          etaSec,
+        });
       }
     }
+  } catch (err) {
+    await browser.close();
+    fs.rmSync(framesDir, { recursive: true, force: true });
+    if (err instanceof RenderCancelled) throw err;
+    throw err;
   } finally {
     await browser.close();
   }
 
-  const totalSeconds = project.scenes.reduce((sum, s) => sum + Math.max(1, s.durationSeconds), 0);
-  const rawVideoPath = path.join(outDir, "promo_raw.mp4");
-  await execFileAsync(resolveTool("ffmpeg"), [
+  checkAborted();
+  report({ phase: "encoding", percent: 86, message: "Encoding video stream..." });
+
+  const rawVideoPath = path.join(outDir, `promo_raw_${Date.now()}.${format === "webm" ? "webm" : "mp4"}`);
+
+  // Build scale/pad filter based on resolution & orientation options
+  const baseCanvas = canvasFor(scenes[0]);
+  let targetWidth = baseCanvas.width;
+  let targetHeight = baseCanvas.height;
+  const isLandscape = baseCanvas.width > baseCanvas.height;
+
+  const clampEven = (v: number) => Math.max(240, Math.min(3840, Math.floor(v / 2) * 2));
+
+  if (opts.resolution && typeof opts.resolution === "object") {
+    targetWidth = clampEven(opts.resolution.width);
+    targetHeight = clampEven(opts.resolution.height);
+  } else if (opts.resolution === "1080") {
+    targetHeight = isLandscape ? 1080 : 1920;
+    targetWidth = isLandscape ? 1920 : 1080;
+  } else if (opts.resolution === "720") {
+    targetHeight = isLandscape ? 720 : 1280;
+    targetWidth = isLandscape ? 1280 : 720;
+  } else if (opts.resolution === "480") {
+    targetHeight = isLandscape ? 480 : 854;
+    targetWidth = isLandscape ? 854 : 480;
+  }
+
+  if (opts.orientation === "square") {
+    const side = Math.min(targetWidth, targetHeight);
+    targetWidth = side;
+    targetHeight = side;
+  } else if (opts.orientation === "landscape" && targetWidth < targetHeight) {
+    const tmp = targetWidth;
+    targetWidth = targetHeight;
+    targetHeight = tmp;
+  } else if (opts.orientation === "portrait" && targetWidth > targetHeight) {
+    const tmp = targetWidth;
+    targetWidth = targetHeight;
+    targetHeight = tmp;
+  }
+
+  const vfFilter = buildVfFilter(targetWidth, targetHeight, baseCanvas.width, baseCanvas.height, opts.orientation);
+
+  const ffmpegArgs = [
     "-y",
-    "-framerate", String(FPS),
+    "-framerate", String(fps),
     "-i", path.join(framesDir, "frame_%06d.png"),
-    "-c:v", "libx264",
-    "-preset", "veryfast",
-    "-pix_fmt", "yuv420p",
-    rawVideoPath,
-  ]);
+  ];
 
-  const finalVideoPath = path.join(outDir, "promo.mp4");
-  const bgmPath = project.bgm ? videoFile(project.id, project.bgm) : project.template ? ensureGeneratedBgm(project.template, totalSeconds) : null;
+  if (vfFilter) {
+    ffmpegArgs.push("-vf", vfFilter);
+  }
 
-  if (bgmPath) {
-    const volume = project.bgmVolume ?? 0.35;
+  let crf = quality === "high" ? "18" : quality === "small" ? "28" : "23";
+
+  if (format === "webm") {
+    ffmpegArgs.push(
+      "-c:v", "libvpx-vp9",
+      "-crf", crf,
+      "-b:v", "0",
+      "-row-mt", "1",
+      "-pix_fmt", "yuv420p"
+    );
+  } else {
+    ffmpegArgs.push(
+      "-c:v", "libx264",
+      "-preset", "veryfast",
+      "-crf", crf,
+      "-pix_fmt", "yuv420p",
+      "-movflags", "+faststart"
+    );
+  }
+
+  ffmpegArgs.push(rawVideoPath);
+
+  // Run FFmpeg encoding with spawn to allow cancellation & progress tracking
+  await new Promise<void>((resolve, reject) => {
+    const ff = spawn(resolveTool("ffmpeg"), ffmpegArgs);
+    if (signal) {
+      if (signal.aborted) {
+        ff.kill("SIGKILL");
+        return reject(new RenderCancelled());
+      }
+      signal.addEventListener("abort", () => {
+        ff.kill("SIGKILL");
+        reject(new RenderCancelled());
+      }, { once: true });
+    }
+
+    let stderrData = "";
+    ff.stderr.on("data", (chunk) => {
+      stderrData += chunk.toString();
+    });
+
+    ff.on("close", (code) => {
+      if (code === 0) resolve();
+      else reject(new Error(`FFmpeg encoding failed with exit code ${code}: ${stderrData.slice(-300)}`));
+    });
+  });
+
+  checkAborted();
+
+  const totalSeconds = scenes.reduce((sum, s) => sum + Math.max(1, s.durationSeconds), 0);
+  const exportsDir = path.join(outDir, "exports");
+  fs.mkdirSync(exportsDir, { recursive: true });
+
+  const finalFileName = cleanExportFileName(opts.fileName, format);
+  const finalVideoPath = path.join(exportsDir, finalFileName);
+  const defaultPromoPath = path.join(outDir, `promo.${format}`);
+
+  let bgmPath: string | null = null;
+  if (includeAudio) {
+    report({ phase: "audio", percent: 93, message: "Mixing background music & audio..." });
+    bgmPath = project.bgm ? videoFile(project.id, project.bgm) : project.template ? ensureGeneratedBgm(project.template, totalSeconds) : null;
+  }
+
+  if (bgmPath && includeAudio) {
     const fadeInMs = project.bgmFadeInMs ?? 1500;
     const fadeOutMs = project.bgmFadeOutMs ?? 2000;
     const fadeOutStart = Math.max(0, totalSeconds - fadeOutMs / 1000);
-    const filter = `[1:a]volume=${volume},afade=t=in:st=0:d=${(fadeInMs / 1000).toFixed(2)},afade=t=out:st=${fadeOutStart.toFixed(2)}:d=${(fadeOutMs / 1000).toFixed(2)}[a]`;
-    await execFileAsync(resolveTool("ffmpeg"), [
+    const audioFilter = `[1:a]volume=${audioVolume},afade=t=in:st=0:d=${(fadeInMs / 1000).toFixed(2)},afade=t=out:st=${fadeOutStart.toFixed(2)}:d=${(fadeOutMs / 1000).toFixed(2)}[a]`;
+
+    const audioArgs = [
       "-y",
       "-i", rawVideoPath,
       "-stream_loop", "-1",
       "-i", bgmPath,
-      "-filter_complex", filter,
+      "-filter_complex", audioFilter,
       "-map", "0:v",
       "-map", "[a]",
       "-c:v", "copy",
-      "-c:a", "aac",
+      "-c:a", format === "webm" ? "libopus" : "aac",
       "-shortest",
       finalVideoPath,
-    ]);
+    ];
+
+    await new Promise<void>((resolve, reject) => {
+      const ff = spawn(resolveTool("ffmpeg"), audioArgs);
+      if (signal) {
+        signal.addEventListener("abort", () => {
+          ff.kill("SIGKILL");
+          reject(new RenderCancelled());
+        }, { once: true });
+      }
+      ff.on("close", (code) => {
+        if (code === 0) resolve();
+        else reject(new Error(`FFmpeg audio mixing failed with exit code ${code}`));
+      });
+    });
+
     fs.rmSync(rawVideoPath, { force: true });
   } else {
     fs.renameSync(rawVideoPath, finalVideoPath);
   }
 
+  // Also copy/symlink to standard promo.<ext> for backwards compatibility
+  fs.copyFileSync(finalVideoPath, defaultPromoPath);
+
   fs.rmSync(framesDir, { recursive: true, force: true });
+  report({ phase: "done", percent: 100, message: "Export complete!" });
+
   return finalVideoPath;
 }
 

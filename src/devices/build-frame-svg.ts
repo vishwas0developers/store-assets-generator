@@ -9,6 +9,7 @@ import { resolveDeviceFrameGeometry } from "../mockup/layerLayout.js";
  *  `buttons[]` data instead of a hardcoded shape/3-button block. */
 
 function cutoutMarkup(def: DeviceDefinition, geometry: DeviceGeometry): string {
+  if (!def?.cutout || def.cutout.type === "none") return "";
   const cx = geometry.width / 2;
   const size = def.cutout.size ?? { width: 120, height: 36 };
   const offset = def.cutout.offset ?? { x: 0, y: 0 };
@@ -31,7 +32,6 @@ function cutoutMarkup(def: DeviceDefinition, geometry: DeviceGeometry): string {
       const { width: w, height: h } = size;
       return `<rect x="${ox - w / 2}" y="${16 + offset.y}" width="${w}" height="${h}" rx="${h / 2}" fill="#000" />`;
     }
-    case "none":
     default:
       return "";
   }
@@ -63,7 +63,8 @@ function buttonsMarkup(def: DeviceDefinition, geometry: DeviceGeometry, bezelWid
 
 function foldSeamMarkup(def: DeviceDefinition, geometry: DeviceGeometry): string {
   if (def.formFactor !== "foldable" || !def.variants?.length) return "";
-  const variant = def.variants.find((v) => v.fold.state === "unfolded") ?? def.variants[0];
+  const variant = def.variants.find((v) => v.fold?.state === "unfolded") ?? def.variants[0];
+  if (!variant?.fold) return "";
   const { width, height } = geometry;
   if (variant.fold.axis === "horizontal") {
     const y = height / 2;

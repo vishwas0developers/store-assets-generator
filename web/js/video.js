@@ -587,8 +587,21 @@ async function refreshSceneCompleteness() {
     }
     const renderBtn = $("video-render");
     if (renderBtn) {
-      renderBtn.disabled = incomplete > 0;
-      renderBtn.textContent = incomplete > 0 ? `Render Final Video — ${incomplete} scene${incomplete === 1 ? "" : "s"} incomplete` : "Render Final Video";
+      renderBtn.disabled = false;
+      renderBtn.textContent = incomplete > 0 ? `Render Final Video (${incomplete} scene${incomplete === 1 ? "" : "s"} incomplete)` : "Render Final Video";
+      renderBtn.onclick = () => {
+        if (!videoId || !videoProject) {
+          showAlert("Please load a video project first.");
+          return;
+        }
+        openExportModal({
+          title: "Export Video",
+          subject: videoProject.name || "Video Project",
+          startUrl: `/api/videos/${videoId}/render`,
+          project: videoProject,
+          defaultFileName: (videoProject.name || "video-export").toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+        });
+      };
     }
   } catch {
     // validation overlay
@@ -1606,7 +1619,7 @@ export function renderSavedConfigsGrid() {
           <button class="icon-btn small secondary" data-act="reedit-config" data-id="${c.id}" title="Reuse & Re-edit">
             <span class="ico">&#9998;</span>
           </button>
-          <button class="icon-btn small secondary" data-act="export-config" data-id="${c.id}" title="Export Video MP4">
+          <button class="icon-btn small secondary" data-act="export-config" data-id="${c.id}" title="Render / Export Video">
             <span class="ico">&#128229;</span>
           </button>
           <button class="icon-btn small secondary danger" data-act="delete-config" data-id="${c.id}" title="Delete Saved Template">
@@ -1682,35 +1695,20 @@ export function renderSavedConfigsGrid() {
     };
   });
 
-  grid.querySelectorAll('[data-act="export-config"]').forEach((btn) => {
+  grid.querySelectorAll('[data-act="export-config"], [data-act="render-config"]').forEach((btn) => {
     btn.onclick = async () => {
       const id = btn.dataset.id;
       const cfg = savedConfigsCache.find((c) => c.id === id);
       if (!cfg) return;
 
-      const originalHtml = btn.innerHTML;
-      btn.disabled = true;
-      btn.innerHTML = `<span class="ico animate-spin">&#8635;</span>`;
-      showToast("Rendering template video MP4 with your custom scenes & screenshots...", "info");
-
-      try {
-        const renderRes = await api(`/api/videos/${videoId}/configs/${id}/render`, { method: "POST" });
-        if (!renderRes || !renderRes.ok) throw new Error(renderRes?.error || "Render failed");
-
-        showToast("Rendering complete! Downloading MP4 video...", "success");
-
-        const a = document.createElement("a");
-        a.href = `/api/videos/${videoId}/configs/${id}/download?t=${Date.now()}`;
-        a.download = `${(cfg.name || "saved-template").toLowerCase().replace(/[^a-z0-9]+/g, "-")}.mp4`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-      } catch (e) {
-        await showAlert("Could not export template video: " + e.message);
-      } finally {
-        btn.disabled = false;
-        btn.innerHTML = originalHtml;
-      }
+      openExportModal({
+        title: "Export Template Video",
+        subject: `Saved Template: ${savedTemplateDisplayName(cfg)}`,
+        startUrl: `/api/videos/${videoId}/configs/${id}/render`,
+        project: cfg,
+        configId: id,
+        defaultFileName: (cfg.name || "template-export").toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+      });
     };
   });
 
@@ -1959,25 +1957,21 @@ export function renderSavedConfigsGrid() {
 
   const videoRenderBtn = $("video-render");
   if (videoRenderBtn) {
-    videoRenderBtn.onclick = async () => {
-      videoRenderBtn.disabled = true;
-      const resEl = $("video-result");
-      if (resEl) resEl.textContent = "Rendering… this can take a while.";
-      try {
-        const result = await api(`/api/videos/${videoId}/render`, { method: "POST" });
-        if (resEl) resEl.textContent = "Video rendered: " + result.videoPath;
-        const link = $("video-download");
-        if (link) {
-          link.href = `/api/videos/${videoId}/download`;
-          link.style.display = "inline-block";
-        }
-      } catch (e) {
-        if (resEl) resEl.textContent = "Render failed: " + e.message;
-      } finally {
-        videoRenderBtn.disabled = false;
+    videoRenderBtn.onclick = () => {
+      if (!videoId || !videoProject) {
+        showAlert("Please load a video project first.");
+        return;
       }
+      openExportModal({
+        title: "Export Video",
+        subject: videoProject.name || "Video Project",
+        startUrl: `/api/videos/${videoId}/render`,
+        project: videoProject,
+        defaultFileName: (videoProject.name || "video-export").toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+      });
     };
   }
+  refreshRecentExportsList();
 })();
 
 
@@ -2062,4 +2056,630 @@ function savedTemplateDisplayName(cfg) {
   if (!name) return `${base} - ${savedConfigsCache.indexOf(cfg) + 1}`;
   if (/^\d+$/.test(name)) return `${base} - ${name}`;
   return name;
+}
+
+let currentExportJobId = null;
+let currentExportPollTimer = null;
+let exportModalLocked = false;
+let exportModalStartTime = 0;
+
+export function openExportModal({ title, subject, startUrl, project, configId, defaultFileName }) {
+  const backdrop = $("export-video-backdrop");
+  const modal = backdrop?.querySelector(".export-modal");
+  if (!backdrop || !modal) return;
+
+  const isElectron = !!(window.electronNative && window.electronNative.isElectron);
+
+  // Set titles
+  if ($("export-modal-title")) $("export-modal-title").textContent = title || "Export Video";
+  if ($("export-modal-subject")) $("export-modal-subject").textContent = subject || "Project Export";
+
+  // Pre-fill filename
+  const filenameInput = $("export-filename-input");
+  const initialName = defaultFileName || (project?.name || "video-export").toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  if (filenameInput) filenameInput.value = initialName;
+
+  // Save to path (Electron only)
+  const saveToRow = $("export-saveto-row");
+  const saveToInput = $("export-saveto-input");
+  let chosenSaveToPath = "";
+  if (saveToRow) saveToRow.style.display = isElectron ? "block" : "none";
+  if (saveToInput) saveToInput.value = "";
+
+  const saveToBtn = $("export-saveto-btn");
+  if (saveToBtn) {
+    saveToBtn.onclick = async () => {
+      if (!isElectron) return;
+      const fmt = getSelectedFormat();
+      const ext = fmt === "webm" ? "webm" : "mp4";
+      const fn = (filenameInput?.value.trim() || initialName) + "." + ext;
+      try {
+        const selectedPath = await window.electronNative.invoke("choose-save-path", { defaultName: fn, ext });
+        if (selectedPath) {
+          chosenSaveToPath = selectedPath;
+          if (saveToInput) saveToInput.value = selectedPath;
+        }
+      } catch (err) {
+        console.error("Failed to pick save path:", err);
+      }
+    };
+  }
+  const saveToClear = $("export-saveto-clear");
+  if (saveToClear) {
+    saveToClear.onclick = () => {
+      chosenSaveToPath = "";
+      if (saveToInput) saveToInput.value = "";
+    };
+  }
+
+  // Populate presets chips
+  let selectedPreset = "app-store";
+  const presetChips = $("export-preset-chips");
+  const formatSegs = $("export-format-segmented");
+  const resGrid = $("export-res-grid");
+  const customResBox = $("export-custom-res-box");
+  const customW = $("export-custom-w");
+  const customH = $("export-custom-h");
+  const orientationSelect = $("export-orientation-select");
+  const fpsSelect = $("export-fps-select");
+  const qualitySelect = $("export-quality-select");
+  const audioToggle = $("export-audio-toggle");
+  const audioVolume = $("export-audio-volume");
+  const audioVolumeLabel = $("export-audio-volume-label");
+  const rangeModeSelect = $("export-range-mode");
+  const rangeInputs = $("export-range-inputs");
+  const rangeFrom = $("export-range-from");
+  const rangeTo = $("export-range-to");
+
+  const scenes = project?.scenes || [];
+  const sceneCount = scenes.length || 1;
+
+  if (rangeFrom) { rangeFrom.max = sceneCount; rangeFrom.value = 1; }
+  if (rangeTo) { rangeTo.max = sceneCount; rangeTo.value = sceneCount; }
+
+  const updateSummary = () => {
+    const fmt = getSelectedFormat();
+    const extBadge = $("export-ext-badge");
+    if (extBadge) extBadge.textContent = "." + fmt;
+
+    const resCard = resGrid?.querySelector(".export-option-card.active")?.dataset.res || "native";
+    let resText = "Native";
+    if (resCard === "custom") {
+      const w = parseInt(customW?.value || "1080", 10);
+      const h = parseInt(customH?.value || "1920", 10);
+      resText = `${w} × ${h}`;
+    } else if (resCard === "1080") {
+      resText = "1080p FHD";
+    } else if (resCard === "720") {
+      resText = "720p HD";
+    } else {
+      resText = "Native";
+    }
+
+    const ori = orientationSelect?.value || "native";
+    const fps = fpsSelect?.value || "30";
+    const qual = qualitySelect?.value || "standard";
+    const audioOn = audioToggle ? audioToggle.checked : true;
+    const vol = audioVolume ? Math.round(parseFloat(audioVolume.value) * 100) : 35;
+
+    let rangeText = `${sceneCount} scene${sceneCount === 1 ? "" : "s"}`;
+    let selDuration = scenes.reduce((sum, s) => sum + Math.max(1, s.durationSeconds || 5), 0);
+    if (rangeModeSelect?.value === "range") {
+      const f = Math.max(1, parseInt(rangeFrom?.value || "1", 10));
+      const t = Math.min(sceneCount, parseInt(rangeTo?.value || String(sceneCount), 10));
+      const rangeScenes = scenes.slice(f - 1, t);
+      selDuration = rangeScenes.reduce((sum, s) => sum + Math.max(1, s.durationSeconds || 5), 0);
+      rangeText = `Scenes ${f}–${t} (${rangeScenes.length})`;
+    }
+
+    const durationMinSec = `${Math.floor(selDuration / 60)}:${String(Math.floor(selDuration % 60)).padStart(2, "0")}`;
+    const summaryText = `${fmt.toUpperCase()} · ${resText} · ${ori} · ${fps} fps · ${rangeText} (~${durationMinSec}) · ${qual} · Audio: ${audioOn ? `${vol}%` : "Off"}`;
+    if ($("export-summary-text")) $("export-summary-text").textContent = summaryText;
+  };
+
+  function getSelectedFormat() {
+    return formatSegs?.querySelector(".export-segment.active")?.dataset.value || "mp4";
+  }
+
+  function applyPreset(presetId) {
+    selectedPreset = presetId;
+    presetChips?.querySelectorAll(".export-chip").forEach((chip) => {
+      chip.classList.toggle("active", chip.dataset.preset === presetId);
+    });
+
+    if (presetId === "app-store") {
+      setFormat("mp4");
+      setResolution("native");
+      if (orientationSelect) orientationSelect.value = "native";
+      if (fpsSelect) fpsSelect.value = "30";
+      if (qualitySelect) qualitySelect.value = "high";
+    } else if (presetId === "social-square") {
+      setFormat("mp4");
+      setResolution("1080");
+      if (orientationSelect) orientationSelect.value = "square";
+      if (fpsSelect) fpsSelect.value = "30";
+      if (qualitySelect) qualitySelect.value = "high";
+    } else if (presetId === "web-720") {
+      setFormat("webm");
+      setResolution("720");
+      if (orientationSelect) orientationSelect.value = "native";
+      if (fpsSelect) fpsSelect.value = "30";
+      if (qualitySelect) qualitySelect.value = "standard";
+    } else if (presetId === "youtube-1080") {
+      setFormat("mp4");
+      setResolution("1080");
+      if (orientationSelect) orientationSelect.value = "landscape";
+      if (fpsSelect) fpsSelect.value = "30";
+      if (qualitySelect) qualitySelect.value = "high";
+    }
+    updateSummary();
+  }
+
+  function markCustomPreset() {
+    selectedPreset = "custom";
+    presetChips?.querySelectorAll(".export-chip").forEach((chip) => {
+      chip.classList.toggle("active", chip.dataset.preset === "custom");
+    });
+    updateSummary();
+  }
+
+  function setFormat(fmt) {
+    formatSegs?.querySelectorAll(".export-segment").forEach((seg) => {
+      seg.classList.toggle("active", seg.dataset.value === fmt);
+    });
+  }
+
+  function setResolution(res) {
+    resGrid?.querySelectorAll(".export-option-card").forEach((card) => {
+      card.classList.toggle("active", card.dataset.res === res);
+    });
+    if (customResBox) customResBox.style.display = res === "custom" ? "flex" : "none";
+  }
+
+  presetChips?.querySelectorAll(".export-chip").forEach((chip) => {
+    chip.onclick = () => applyPreset(chip.dataset.preset);
+  });
+
+  formatSegs?.querySelectorAll(".export-segment").forEach((seg) => {
+    seg.onclick = () => {
+      setFormat(seg.dataset.value);
+      markCustomPreset();
+    };
+  });
+
+  resGrid?.querySelectorAll(".export-option-card").forEach((card) => {
+    card.onclick = () => {
+      setResolution(card.dataset.res);
+      markCustomPreset();
+    };
+  });
+
+  if (customW) customW.oninput = markCustomPreset;
+  if (customH) customH.oninput = markCustomPreset;
+  if (orientationSelect) orientationSelect.onchange = markCustomPreset;
+  if (fpsSelect) fpsSelect.onchange = markCustomPreset;
+  if (qualitySelect) qualitySelect.onchange = markCustomPreset;
+  if (audioToggle) audioToggle.onchange = markCustomPreset;
+  if (audioVolume) {
+    audioVolume.oninput = () => {
+      if (audioVolumeLabel) audioVolumeLabel.textContent = Math.round(parseFloat(audioVolume.value) * 100) + "%";
+      markCustomPreset();
+    };
+  }
+
+  if (rangeModeSelect) {
+    rangeModeSelect.onchange = () => {
+      const isRange = rangeModeSelect.value === "range";
+      if (rangeInputs) rangeInputs.style.display = isRange ? "flex" : "none";
+      markCustomPreset();
+    };
+  }
+  if (rangeFrom) rangeFrom.oninput = markCustomPreset;
+  if (rangeTo) rangeTo.oninput = markCustomPreset;
+
+  setModalState("config");
+  applyPreset("app-store");
+  backdrop.style.display = "flex";
+  backdrop.classList.add("open");
+  exportModalLocked = false;
+
+  const onKeyDown = (e) => {
+    if (e.key === "Escape") {
+      if (exportModalLocked) {
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
+      tryClose();
+    }
+  };
+  document.addEventListener("keydown", onKeyDown, true);
+
+  const tryClose = () => {
+    if (exportModalLocked) return;
+    if (currentExportPollTimer) clearInterval(currentExportPollTimer);
+    currentExportPollTimer = null;
+    backdrop.style.display = "none";
+    backdrop.classList.remove("open");
+    document.removeEventListener("keydown", onKeyDown, true);
+  };
+
+  const closeBtn = $("export-modal-close");
+  if (closeBtn) closeBtn.onclick = tryClose;
+  const cancelConfigBtn = $("export-btn-cancel-config");
+  if (cancelConfigBtn) cancelConfigBtn.onclick = tryClose;
+  const closeCompleteBtn = $("export-btn-close-complete");
+  if (closeCompleteBtn) closeCompleteBtn.onclick = tryClose;
+  const closeErrorBtn = $("export-btn-close-error");
+  if (closeErrorBtn) closeErrorBtn.onclick = tryClose;
+
+  backdrop.onclick = (e) => {
+    if (e.target === backdrop) tryClose();
+  };
+
+  const startBtn = $("export-btn-start");
+  if (startBtn) {
+    startBtn.onclick = async () => {
+      if (exportModalLocked) return;
+      startBtn.disabled = true;
+
+      const format = getSelectedFormat();
+      const resCard = resGrid?.querySelector(".export-option-card.active")?.dataset.res || "native";
+      let resolution = resCard;
+      if (resCard === "custom") {
+        resolution = {
+          width: parseInt(customW?.value || "1080", 10),
+          height: parseInt(customH?.value || "1920", 10),
+        };
+      }
+
+      const orientation = orientationSelect?.value || "native";
+      const fps = parseInt(fpsSelect?.value || "30", 10);
+      const quality = qualitySelect?.value || "standard";
+      const includeAudio = audioToggle ? audioToggle.checked : true;
+      const audioVol = audioVolume ? parseFloat(audioVolume.value) : 0.35;
+      const fileName = filenameInput?.value.trim() || initialName;
+
+      let sceneRange;
+      if (rangeModeSelect?.value === "range") {
+        const f = Math.max(1, parseInt(rangeFrom?.value || "1", 10));
+        const t = Math.min(sceneCount, parseInt(rangeTo?.value || String(sceneCount), 10));
+        sceneRange = [f, t];
+      }
+
+      const payload = {
+        format,
+        resolution,
+        orientation,
+        fps,
+        quality,
+        includeAudio,
+        audioVolume: audioVol,
+        fileName,
+        sceneRange,
+        saveTo: chosenSaveToPath || undefined,
+      };
+
+      try {
+        const res = await fetch(startUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        if (res.status === 400) {
+          const errData = await res.json();
+          showErrorView(errData.error || "Validation failed before rendering.", errData);
+          return;
+        }
+
+        if (res.status === 409) {
+          const errData = await res.json();
+          startPollingJob(errData.jobId || errData.job?.id);
+          return;
+        }
+
+        if (!res.ok) {
+          const text = await res.text();
+          showErrorView(`Server error (${res.status}): ${text}`);
+          return;
+        }
+
+        const data = await res.json();
+        if (data.jobId) {
+          startPollingJob(data.jobId);
+        } else {
+          showErrorView("Invalid response from render endpoint (missing jobId).");
+        }
+      } catch (err) {
+        showErrorView(`Failed to initiate render: ${err.message}`);
+      } finally {
+        startBtn.disabled = false;
+      }
+    };
+  }
+
+  function startPollingJob(jobId) {
+    currentExportJobId = jobId;
+    exportModalLocked = true;
+    exportModalStartTime = Date.now();
+    const closeBtn = $("export-modal-close");
+    if (closeBtn) {
+      closeBtn.disabled = true;
+      closeBtn.setAttribute("aria-disabled", "true");
+    }
+    setModalState("rendering");
+
+    if (currentExportPollTimer) clearInterval(currentExportPollTimer);
+
+    const cancelBtn = $("export-cancel-btn");
+    if (cancelBtn) {
+      cancelBtn.disabled = false;
+      cancelBtn.textContent = "Cancel Render";
+      cancelBtn.onclick = async () => {
+        const ok = await showConfirm("Stop rendering? Progress will be lost.");
+        if (!ok) return;
+        cancelBtn.disabled = true;
+        cancelBtn.textContent = "Cancelling...";
+        try {
+          await api(`/api/videos/${videoId}/render-jobs/${jobId}/cancel`, { method: "POST" });
+        } catch (e) {
+          console.warn("Cancel request failed:", e);
+        }
+      };
+    }
+
+    currentExportPollTimer = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/videos/${videoId}/render-jobs/${jobId}`);
+        if (res.status === 404) {
+          clearInterval(currentExportPollTimer);
+          currentExportPollTimer = null;
+          showErrorView("Render interrupted (job lost or server restarted).");
+          return;
+        }
+
+        const job = await res.json();
+        updateRenderingView(job);
+
+        if (job.state === "done") {
+          clearInterval(currentExportPollTimer);
+          currentExportPollTimer = null;
+          exportModalLocked = false;
+          showCompleteView(job);
+          refreshRecentExportsList();
+        } else if (job.state === "error") {
+          clearInterval(currentExportPollTimer);
+          currentExportPollTimer = null;
+          exportModalLocked = false;
+          showErrorView(job.error || "Rendering failed.", job);
+        } else if (job.state === "cancelled") {
+          clearInterval(currentExportPollTimer);
+          currentExportPollTimer = null;
+          exportModalLocked = false;
+          showCancelledView(job);
+        }
+      } catch (err) {
+        console.warn("Poll error:", err);
+      }
+    }, 500);
+  }
+
+  function updateRenderingView(job) {
+    const p = job.progress || {};
+    if ($("export-render-phase-msg")) $("export-render-phase-msg").textContent = p.message || "Rendering video...";
+    if ($("export-render-pct")) $("export-render-pct").textContent = `${p.percent || 0}%`;
+    if ($("export-progress-bar-fill")) $("export-progress-bar-fill").style.width = `${p.percent || 0}%`;
+
+    const elapsedSec = Math.floor((Date.now() - exportModalStartTime) / 1000);
+    const elapsedFormatted = `${Math.floor(elapsedSec / 60)}:${String(elapsedSec % 60).padStart(2, "0")}`;
+    if ($("export-metric-elapsed")) $("export-metric-elapsed").textContent = `Elapsed: ${elapsedFormatted}`;
+
+    if (p.etaSec != null) {
+      const etaFormatted = `${Math.floor(p.etaSec / 60)}:${String(p.etaSec % 60).padStart(2, "0")}`;
+      if ($("export-metric-eta")) $("export-metric-eta").textContent = `Remaining: ~${etaFormatted}`;
+    } else {
+      if ($("export-metric-eta")) $("export-metric-eta").textContent = "Remaining: --:--";
+    }
+
+    if (p.fps != null && p.fps > 0) {
+      if ($("export-metric-fps")) $("export-metric-fps").textContent = `Speed: ${p.fps} fps`;
+    } else {
+      if ($("export-metric-fps")) $("export-metric-fps").textContent = "Speed: -- fps";
+    }
+
+    const phases = ["preparing", "frames", "encoding", "audio", "done"];
+    const currentPhaseIdx = phases.indexOf(p.phase);
+    const phasesList = $("export-phases-list");
+
+    if (phasesList) {
+      phasesList.querySelectorAll(".export-phase-item").forEach((item) => {
+        const itemPhase = item.dataset.phase;
+        const itemIdx = phases.indexOf(itemPhase);
+        item.classList.remove("active", "done");
+        if (itemIdx < currentPhaseIdx) {
+          item.classList.add("done");
+        } else if (itemIdx === currentPhaseIdx) {
+          item.classList.add("active");
+        }
+      });
+    }
+  }
+
+  function showCompleteView(job) {
+    exportModalLocked = false;
+    const closeBtn = $("export-modal-close");
+    if (closeBtn) {
+      closeBtn.disabled = false;
+      closeBtn.removeAttribute("aria-disabled");
+    }
+    setModalState("complete");
+    refreshRecentExportsList();
+
+    const player = $("export-preview-player");
+    const fileUrl = `/api/videos/${videoId}/render-jobs/${job.id}/file`;
+    if (player) {
+      player.src = fileUrl;
+    }
+
+    const grid = $("export-complete-meta-grid");
+    if (grid) {
+      const sizeMb = job.sizeBytes ? (job.sizeBytes / (1024 * 1024)).toFixed(2) + " MB" : "Unknown";
+      grid.innerHTML = `
+        <div class="export-meta-item"><span class="export-meta-label">File Name</span><span class="export-meta-value">${job.fileName || "promo." + job.format}</span></div>
+        <div class="export-meta-item"><span class="export-meta-label">Format</span><span class="export-meta-value">${(job.format || "mp4").toUpperCase()}</span></div>
+        <div class="export-meta-item"><span class="export-meta-label">Resolution</span><span class="export-meta-value">${job.width || 1080} × ${job.height || 1920}</span></div>
+        <div class="export-meta-item"><span class="export-meta-label">Duration</span><span class="export-meta-value">${job.durationSec || 0}s</span></div>
+        <div class="export-meta-item"><span class="export-meta-label">File Size</span><span class="export-meta-value">${sizeMb}</span></div>
+        <div class="export-meta-item"><span class="export-meta-label">Save Path</span><span class="export-meta-value">${job.savedPath || "Downloads / Local Storage"}</span></div>
+      `;
+    }
+
+    const downloadBtn = $("export-btn-download");
+    if (downloadBtn) {
+      downloadBtn.onclick = () => {
+        window.open(`${fileUrl}?download=1`, "_blank");
+      };
+    }
+
+    const openTabBtn = $("export-btn-open-tab");
+    if (openTabBtn) {
+      openTabBtn.onclick = () => {
+        window.open(fileUrl, "_blank");
+      };
+    }
+
+    const showFolderBtn = $("export-btn-show-folder");
+    if (showFolderBtn) {
+      if (isElectron && job.savedPath) {
+        showFolderBtn.style.display = "inline-block";
+        showFolderBtn.onclick = () => {
+          window.electronNative.invoke("show-in-folder", job.savedPath);
+        };
+      } else {
+        showFolderBtn.style.display = "none";
+      }
+    }
+  }
+
+  function showErrorView(msg, details) {
+    exportModalLocked = false;
+    const closeBtn = $("export-modal-close");
+    if (closeBtn) {
+      closeBtn.disabled = false;
+      closeBtn.removeAttribute("aria-disabled");
+    }
+    setModalState("error");
+    if ($("export-error-message")) $("export-error-message").textContent = msg;
+    if ($("export-error-stack")) $("export-error-stack").textContent = typeof details === "object" ? JSON.stringify(details, null, 2) : String(details || msg);
+
+    const retryBtn = $("export-btn-retry");
+    if (retryBtn) {
+      retryBtn.onclick = () => setModalState("config");
+    }
+  }
+
+  function showCancelledView(job) {
+    exportModalLocked = false;
+    const closeBtn = $("export-modal-close");
+    if (closeBtn) {
+      closeBtn.disabled = false;
+      closeBtn.removeAttribute("aria-disabled");
+    }
+    setModalState("cancelled");
+    const retryBtn = $("export-btn-retry");
+    if (retryBtn) {
+      retryBtn.onclick = () => setModalState("config");
+    }
+  }
+
+  function setModalState(state) {
+    modal.dataset.state = state;
+    modal.querySelectorAll(".export-view").forEach((view) => {
+      view.style.display = view.classList.contains(`export-view-${state}`) ? "block" : "none";
+    });
+
+    const isConfig = state === "config";
+    const isComplete = state === "complete";
+    const isError = state === "error" || state === "cancelled";
+
+    if ($("export-btn-cancel-config")) $("export-btn-cancel-config").style.display = isConfig ? "inline-block" : "none";
+    if ($("export-btn-start")) $("export-btn-start").style.display = isConfig ? "inline-block" : "none";
+
+    if ($("export-btn-download")) $("export-btn-download").style.display = isComplete ? "inline-block" : "none";
+    if ($("export-btn-open-tab")) $("export-btn-open-tab").style.display = isComplete ? "inline-block" : "none";
+    if ($("export-btn-close-complete")) $("export-btn-close-complete").style.display = isComplete ? "inline-block" : "none";
+
+    if ($("export-btn-retry")) $("export-btn-retry").style.display = isError ? "inline-block" : "none";
+    if ($("export-btn-close-error")) $("export-btn-close-error").style.display = isError ? "inline-block" : "none";
+  }
+}
+
+export async function refreshRecentExportsList() {
+  const card = $("video-recent-exports-card");
+  const list = $("recent-exports-list");
+  const countBadge = $("recent-exports-count");
+  if (!card || !list || !videoId) return;
+
+  try {
+    const exports = await api(`/api/videos/${videoId}/exports`);
+    if (!Array.isArray(exports) || exports.length === 0) {
+      card.style.display = "none";
+      return;
+    }
+
+    card.style.display = "block";
+    if (countBadge) countBadge.textContent = `${exports.length} file${exports.length === 1 ? "" : "s"}`;
+
+    const isElectron = !!(window.electronNative && window.electronNative.isElectron);
+
+    list.innerHTML = exports.map((exp) => {
+      const fileUrl = `/api/videos/${videoId}/exports/${exp.id}/file`;
+      const sizeMb = exp.sizeBytes ? (exp.sizeBytes / (1024 * 1024)).toFixed(2) + " MB" : "";
+      const dateStr = exp.createdAt ? new Date(exp.createdAt).toLocaleDateString() : "";
+
+      return `
+        <div class="recent-export-row" data-export-id="${exp.id}">
+          <div style="display:flex; flex-direction:column; gap:0.15rem; flex:1; min-width:0; padding-right:0.75rem;">
+            <div style="font-weight:600; font-size:0.85rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${exp.fileName}</div>
+            <div class="hint" style="font-size:0.75rem; color:#94a3b8;">
+              ${exp.format.toUpperCase()} · ${exp.width}×${exp.height} · ${exp.fps} fps · ${exp.durationSec}s ${sizeMb ? `· ${sizeMb}` : ""} ${dateStr ? `· ${dateStr}` : ""}
+            </div>
+          </div>
+          <div style="display:flex; gap:0.35rem; align-items:center;">
+            ${isElectron && exp.savedPath ? `<button class="icon-btn small secondary" data-act="show-folder" data-path="${exp.savedPath}" title="Show in Folder">📁</button>` : ""}
+            <button class="icon-btn small secondary" data-act="open-export" data-url="${fileUrl}" title="Open in New Tab">↗</button>
+            <button class="icon-btn small secondary" data-act="download-export" data-url="${fileUrl}?download=1" title="Download File">⬇</button>
+            <button class="icon-btn small secondary danger" data-act="delete-export" data-id="${exp.id}" title="Delete Export">🗑</button>
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    list.querySelectorAll('[data-act="show-folder"]').forEach((btn) => {
+      btn.onclick = () => window.electronNative.invoke("show-in-folder", btn.dataset.path);
+    });
+    list.querySelectorAll('[data-act="open-export"]').forEach((btn) => {
+      btn.onclick = () => window.open(btn.dataset.url, "_blank");
+    });
+    list.querySelectorAll('[data-act="download-export"]').forEach((btn) => {
+      btn.onclick = () => window.open(btn.dataset.url, "_blank");
+    });
+    list.querySelectorAll('[data-act="delete-export"]').forEach((btn) => {
+      btn.onclick = async () => {
+        const id = btn.dataset.id;
+        const ok = await showConfirm("Delete this exported video file?");
+        if (!ok) return;
+        try {
+          await api(`/api/videos/${videoId}/exports/${id}`, { method: "DELETE" });
+          refreshRecentExportsList();
+          showToast("Export deleted.", "success");
+        } catch (e) {
+          await showAlert("Failed to delete export: " + e.message);
+        }
+      };
+    });
+  } catch (err) {
+    console.warn("Failed to load recent exports:", err);
+  }
 }

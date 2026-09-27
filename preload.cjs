@@ -16,7 +16,9 @@ contextBridge.exposeInMainWorld('electronNative', {
     const validChannels = [
       'get-gpu-caps',
       'ensure-binaries',
-      'get-stream-frame'
+      'get-stream-frame',
+      'choose-save-path',
+      'show-in-folder'
     ];
     if (validChannels.includes(channel)) {
       return ipcRenderer.invoke(channel, data);
