@@ -1,7 +1,7 @@
 {
  "version": 1,
  "id": "utility-app-screenshots-template",
- "name": "Utility app",
+ "name": "Utility app-4",
  "category": "utilities",
  "description": "Present your utility tools with our free template. Display app functionality, features, and settings in a clean design that focuses on simplicity and effectiveness.",
  "devices": [
@@ -18,77 +18,1165 @@
    "label": "samsung-galaxy-s21-ultra"
   }
  ],
- "layout": "snapshot-rotated-left-2-title-above",
+ "layout": "single-no-text",
  "background": {
   "type": "gradient",
-  "value": "linear-gradient(135deg, #ffffff, #ffffff)"
+  "value": "linear-gradient(170deg, #16503c 0%, #0f3d2e 60%, #0a2c21 100%)"
  },
  "panoramic": false,
  "columnCount": 5,
  "titles": [
-  "Discover Unique Handcrafted Treasures",
-  "Write your\ntitle here",
-  "Shop \nLocal Art",
-  "Easy\nTracking",
-  "Secure\nShopping"
+  "Your pocket toolkit",
+  "Scan any code",
+  "Free up space",
+  "Convert anything",
+  "Private by design"
  ],
  "subtitles": [
-  "Present your utility tools with our free",
-  "Present your utility tools with our free",
-  "Present your utility tools with our free",
-  "Present your utility tools with our free",
-  "Present your utility tools with our free"
+  "Scan, clean, convert and lock all in one tidy app",
+  "QR codes, barcodes and documents read in under a second",
+  "Find duplicates and large files, then clear them in one tap",
+  "Units, currencies and time zones, works offline too",
+  "Lock notes, photos and files behind Face ID"
  ],
  "pages": [
   {
-   "title": "Discover Unique Handcrafted Treasures",
-   "subtitle": "Present your utility tools with our free",
-   "layout": "snapshot-rotated-left-2-title-above",
-   "background": null,
+   "title": "Your pocket toolkit",
+   "subtitle": "Scan, clean, convert and lock all in one tidy app",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(170deg, #16503c 0%, #0f3d2e 60%, #0a2c21 100%)"
+   },
    "devices": null,
    "decorations": [],
-   "textLayers": [],
-   "assetLayers": []
+   "textLayers": [
+    {
+     "id": "tpl-t7",
+     "xPct": 10.0,
+     "yPct": 8.03,
+     "widthPct": 29.199,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "01  ALL-IN-ONE",
+     "style": {
+      "text": "01  ALL-IN-ONE",
+      "color": "#0f3d2e",
+      "size": 31.9,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 60
+     }
+    },
+    {
+     "id": "tpl-t8",
+     "xPct": 10.0,
+     "yPct": 11.648,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Your pocket\ntoolkit",
+      "color": "#f6efe4",
+      "size": 132.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.0,
+      "charSpacing": -30
+     }
+    },
+    {
+     "id": "tpl-t9",
+     "xPct": 10.0,
+     "yPct": 24.303,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Scan, clean, convert and lock\nall in one tidy app",
+      "color": "#f6efe4",
+      "size": 41.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.35
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s1",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 5.909,
+     "yPct": 26.36,
+     "widthPct": 88.182,
+     "heightPct": 74.933,
+     "rotation": 0,
+     "opacity": 0.28,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 388,
+      "h": 716.36,
+      "radius": 98.8,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s2",
+     "assetId": "shape:Viewfinder corner",
+     "name": "Viewfinder corner",
+     "xPct": 13.182,
+     "yPct": 28.87,
+     "widthPct": 11.818,
+     "heightPct": 5.439,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 52,
+      "h": 52,
+      "vx": 58,
+      "vy": 276,
+      "path": "M64,322L64,282L104,282",
+      "stroke": "#ff8a3d",
+      "strokeWidth": 5,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s3",
+     "assetId": "shape:Viewfinder corner",
+     "name": "Viewfinder corner",
+     "xPct": 75.0,
+     "yPct": 28.87,
+     "widthPct": 11.818,
+     "heightPct": 5.439,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 52,
+      "h": 52,
+      "vx": 330,
+      "vy": 276,
+      "path": "M376,322L376,282L336,282",
+      "stroke": "#ff8a3d",
+      "strokeWidth": 5,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s4",
+     "assetId": "shape:Viewfinder corner",
+     "name": "Viewfinder corner",
+     "xPct": 13.182,
+     "yPct": 91.632,
+     "widthPct": 11.818,
+     "heightPct": 5.439,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 52,
+      "h": 52,
+      "vx": 58,
+      "vy": 876,
+      "path": "M64,882L64,922L104,922",
+      "stroke": "#ff8a3d",
+      "strokeWidth": 5,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s5",
+     "assetId": "shape:Viewfinder corner",
+     "name": "Viewfinder corner",
+     "xPct": 75.0,
+     "yPct": 91.632,
+     "widthPct": 11.818,
+     "heightPct": 5.439,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 52,
+      "h": 52,
+      "vx": 330,
+      "vy": 876,
+      "path": "M376,882L376,922L336,922",
+      "stroke": "#ff8a3d",
+      "strokeWidth": 5,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s6",
+     "assetId": "shape:Badge",
+     "name": "Badge",
+     "xPct": 10.0,
+     "yPct": 7.113,
+     "widthPct": 29.199,
+     "heightPct": 3.243,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 128.48,
+      "h": 31,
+      "radius": 15.5,
+      "fill": "#ff8a3d"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 46.86,
+    "x": 0.0,
+    "y": 20.74,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
   },
   {
-   "title": "Write your\ntitle here",
-   "subtitle": "Present your utility tools with our free",
-   "layout": "snapshot-two-devices-title-above",
-   "background": null,
+   "title": "Scan any code",
+   "subtitle": "QR codes, barcodes and documents read in under a second",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(175deg, #fbf6ee 0%, #f6efe4 100%)"
+   },
    "devices": null,
    "decorations": [],
-   "textLayers": [],
-   "assetLayers": []
+   "textLayers": [
+    {
+     "id": "tpl-t12",
+     "xPct": 10.0,
+     "yPct": 8.03,
+     "widthPct": 26.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "02  SCANNER",
+     "style": {
+      "text": "02  SCANNER",
+      "color": "#f6efe4",
+      "size": 31.9,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 60
+     }
+    },
+    {
+     "id": "tpl-t13",
+     "xPct": 10.0,
+     "yPct": 11.648,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Scan any\ncode",
+      "color": "#0f3d2e",
+      "size": 132.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.0,
+      "charSpacing": -30
+     }
+    },
+    {
+     "id": "tpl-t14",
+     "xPct": 10.0,
+     "yPct": 24.303,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "QR codes, barcodes and documents\nread in under a second",
+      "color": "#0f3d2e",
+      "size": 41.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.35
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s10",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 3.435,
+     "yPct": 25.982,
+     "widthPct": 85.909,
+     "heightPct": 72.661,
+     "rotation": 9,
+     "opacity": 0.28,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 378,
+      "h": 694.64,
+      "radius": 97.2,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s11",
+     "assetId": "shape:Badge",
+     "name": "Badge",
+     "xPct": 10.0,
+     "yPct": 7.113,
+     "widthPct": 26.636,
+     "heightPct": 3.243,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 117.2,
+      "h": 31,
+      "radius": 15.5,
+      "fill": "#0f3d2e"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 45.19,
+    "x": -5.88,
+    "y": 19.04,
+    "rotation": 9,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
   },
   {
-   "title": "Shop \nLocal Art",
-   "subtitle": "Present your utility tools with our free",
-   "layout": "snapshot-single-title-above",
-   "background": null,
+   "title": "Free up space",
+   "subtitle": "Find duplicates and large files, then clear them in one tap",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(170deg, #16503c 0%, #0f3d2e 60%, #0a2c21 100%)"
+   },
    "devices": null,
    "decorations": [],
-   "textLayers": [],
-   "assetLayers": []
+   "textLayers": [
+    {
+     "id": "tpl-t22",
+     "xPct": 10.0,
+     "yPct": 8.03,
+     "widthPct": 25.961,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "03  CLEANER",
+     "style": {
+      "text": "03  CLEANER",
+      "color": "#0f3d2e",
+      "size": 31.9,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 60
+     }
+    },
+    {
+     "id": "tpl-t23",
+     "xPct": 10.0,
+     "yPct": 11.648,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Free up\nspace",
+      "color": "#f6efe4",
+      "size": 132.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.0,
+      "charSpacing": -30
+     }
+    },
+    {
+     "id": "tpl-t24",
+     "xPct": 10.0,
+     "yPct": 24.303,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Find duplicates and large files,\nthen clear them in one tap",
+      "color": "#f6efe4",
+      "size": 41.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.35
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s15",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 2.057,
+     "yPct": 26.22,
+     "widthPct": 75.682,
+     "heightPct": 62.433,
+     "rotation": -6,
+     "opacity": 0.28,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 333,
+      "h": 596.86,
+      "radius": 90.0,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s16",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 23.398,
+     "yPct": 31.45,
+     "widthPct": 75.682,
+     "heightPct": 62.433,
+     "rotation": 6,
+     "opacity": 0.28,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 333,
+      "h": 596.86,
+      "radius": 90.0,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s17",
+     "assetId": "shape:Viewfinder corner",
+     "name": "Viewfinder corner",
+     "xPct": 4.091,
+     "yPct": 29.079,
+     "widthPct": 10.909,
+     "heightPct": 5.021,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 48,
+      "h": 48,
+      "vx": 18,
+      "vy": 278,
+      "path": "M24,320L24,284L60,284",
+      "stroke": "#ff8a3d",
+      "strokeWidth": 5,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s18",
+     "assetId": "shape:Viewfinder corner",
+     "name": "Viewfinder corner",
+     "xPct": 85.0,
+     "yPct": 29.079,
+     "widthPct": 10.909,
+     "heightPct": 5.021,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 48,
+      "h": 48,
+      "vx": 374,
+      "vy": 278,
+      "path": "M416,320L416,284L380,284",
+      "stroke": "#ff8a3d",
+      "strokeWidth": 5,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s19",
+     "assetId": "shape:Viewfinder corner",
+     "name": "Viewfinder corner",
+     "xPct": 4.091,
+     "yPct": 92.259,
+     "widthPct": 10.909,
+     "heightPct": 5.021,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 48,
+      "h": 48,
+      "vx": 18,
+      "vy": 882,
+      "path": "M24,888L24,924L60,924",
+      "stroke": "#ff8a3d",
+      "strokeWidth": 5,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s20",
+     "assetId": "shape:Viewfinder corner",
+     "name": "Viewfinder corner",
+     "xPct": 85.0,
+     "yPct": 92.259,
+     "widthPct": 10.909,
+     "heightPct": 5.021,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 48,
+      "h": 48,
+      "vx": 374,
+      "vy": 882,
+      "path": "M416,888L416,924L380,924",
+      "stroke": "#ff8a3d",
+      "strokeWidth": 5,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s21",
+     "assetId": "shape:Badge",
+     "name": "Badge",
+     "xPct": 10.0,
+     "yPct": 7.113,
+     "widthPct": 25.961,
+     "heightPct": 3.243,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 114.23,
+      "h": 31,
+      "radius": 15.5,
+      "fill": "#ff8a3d"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 37.65,
+    "x": -19.76,
+    "y": 13.32,
+    "rotation": -6,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 9
+   },
+   "extraDevices": [
+    {
+     "size": 37.65,
+     "x": 21.98,
+     "y": 23.54,
+     "rotation": 6,
+     "brightness": 100,
+     "frameless": false,
+     "bezelColor": "#060606",
+     "borderColor": "#5e5e5e",
+     "zIndex": 11
+    }
+   ]
   },
   {
-   "title": "Easy\nTracking",
-   "subtitle": "Present your utility tools with our free",
-   "layout": "snapshot-single-title-above",
-   "background": null,
+   "title": "Convert anything",
+   "subtitle": "Units, currencies and time zones, works offline too",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(175deg, #fbf6ee 0%, #f6efe4 100%)"
+   },
    "devices": null,
    "decorations": [],
-   "textLayers": [],
-   "assetLayers": []
+   "textLayers": [
+    {
+     "id": "tpl-t28",
+     "xPct": 11.818,
+     "yPct": 61.04,
+     "widthPct": 43.182,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "customName": "12 km",
+     "style": {
+      "text": "12 km",
+      "color": "#f6efe4",
+      "size": 63.8,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t29",
+     "xPct": 11.818,
+     "yPct": 65.795,
+     "widthPct": 43.182,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "customName": "= 7.46 miles",
+     "style": {
+      "text": "= 7.46 miles",
+      "color": "#ff8a3d",
+      "size": 54.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -10
+     }
+    },
+    {
+     "id": "tpl-t35",
+     "xPct": 10.0,
+     "yPct": 8.03,
+     "widthPct": 30.57,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "04  CONVERTER",
+     "style": {
+      "text": "04  CONVERTER",
+      "color": "#f6efe4",
+      "size": 31.9,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 60
+     }
+    },
+    {
+     "id": "tpl-t36",
+     "xPct": 10.0,
+     "yPct": 11.648,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Convert\nanything",
+      "color": "#0f3d2e",
+      "size": 132.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.0,
+      "charSpacing": -30
+     }
+    },
+    {
+     "id": "tpl-t37",
+     "xPct": 10.0,
+     "yPct": 24.303,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Units, currencies and time zones,\nworks offline too",
+      "color": "#0f3d2e",
+      "size": 41.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.35
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s25",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 15.0,
+     "yPct": 26.36,
+     "widthPct": 88.182,
+     "heightPct": 74.933,
+     "rotation": 0,
+     "opacity": 0.28,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 388,
+      "h": 716.36,
+      "radius": 98.8,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s26",
+     "assetId": "shape:Card shadow",
+     "name": "Card shadow",
+     "xPct": -1.364,
+     "yPct": 55.439,
+     "widthPct": 70.455,
+     "heightPct": 20.921,
+     "rotation": 0,
+     "opacity": 0.22,
+     "zIndex": 14,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 310,
+      "h": 200,
+      "radius": 62,
+      "fill": "#000000",
+      "blur": 14,
+      "inset": 40
+     }
+    },
+    {
+     "id": "tpl-s27",
+     "assetId": "shape:Convert card",
+     "name": "Convert card",
+     "xPct": 6.818,
+     "yPct": 58.577,
+     "widthPct": 52.273,
+     "heightPct": 12.552,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 230,
+      "h": 120,
+      "radius": 22,
+      "fill": "#0f3d2e"
+     }
+    },
+    {
+     "id": "tpl-s30",
+     "assetId": "shape:Viewfinder corner",
+     "name": "Viewfinder corner",
+     "xPct": 2.955,
+     "yPct": 56.799,
+     "widthPct": 7.273,
+     "heightPct": 3.347,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 32,
+      "h": 32,
+      "vx": 13,
+      "vy": 543,
+      "path": "M18,570L18,548L40,548",
+      "stroke": "#ff8a3d",
+      "strokeWidth": 4,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s31",
+     "assetId": "shape:Viewfinder corner",
+     "name": "Viewfinder corner",
+     "xPct": 55.682,
+     "yPct": 56.799,
+     "widthPct": 7.273,
+     "heightPct": 3.347,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 32,
+      "h": 32,
+      "vx": 245,
+      "vy": 543,
+      "path": "M272,570L272,548L250,548",
+      "stroke": "#ff8a3d",
+      "strokeWidth": 4,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s32",
+     "assetId": "shape:Viewfinder corner",
+     "name": "Viewfinder corner",
+     "xPct": 2.955,
+     "yPct": 69.561,
+     "widthPct": 7.273,
+     "heightPct": 3.347,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 32,
+      "h": 32,
+      "vx": 13,
+      "vy": 665,
+      "path": "M18,670L18,692L40,692",
+      "stroke": "#ff8a3d",
+      "strokeWidth": 4,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s33",
+     "assetId": "shape:Viewfinder corner",
+     "name": "Viewfinder corner",
+     "xPct": 55.682,
+     "yPct": 69.561,
+     "widthPct": 7.273,
+     "heightPct": 3.347,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 32,
+      "h": 32,
+      "vx": 245,
+      "vy": 665,
+      "path": "M272,670L272,692L250,692",
+      "stroke": "#ff8a3d",
+      "strokeWidth": 4,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s34",
+     "assetId": "shape:Badge",
+     "name": "Badge",
+     "xPct": 10.0,
+     "yPct": 7.113,
+     "widthPct": 30.57,
+     "heightPct": 3.243,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 134.51,
+      "h": 31,
+      "radius": 15.5,
+      "fill": "#0f3d2e"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 46.86,
+    "x": 14.29,
+    "y": 20.74,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
   },
   {
-   "title": "Secure\nShopping",
-   "subtitle": "Present your utility tools with our free",
-   "layout": "snapshot-single-title-above",
-   "background": null,
+   "title": "Private by design",
+   "subtitle": "Lock notes, photos and files behind Face ID",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(170deg, #16503c 0%, #0f3d2e 60%, #0a2c21 100%)"
+   },
    "devices": null,
    "decorations": [],
-   "textLayers": [],
-   "assetLayers": []
+   "textLayers": [
+    {
+     "id": "tpl-t44",
+     "xPct": 10.0,
+     "yPct": 75.813,
+     "widthPct": 22.265,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "05  VAULT",
+     "style": {
+      "text": "05  VAULT",
+      "color": "#0f3d2e",
+      "size": 31.9,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 60
+     }
+    },
+    {
+     "id": "tpl-t45",
+     "xPct": 10.0,
+     "yPct": 79.431,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Private by\ndesign",
+      "color": "#f6efe4",
+      "size": 132.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.0,
+      "charSpacing": -30
+     }
+    },
+    {
+     "id": "tpl-t46",
+     "xPct": 10.0,
+     "yPct": 92.086,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Lock notes, photos and files\nbehind Face ID",
+      "color": "#f6efe4",
+      "size": 41.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.35
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s38",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 4.773,
+     "yPct": -0.837,
+     "widthPct": 90.455,
+     "heightPct": 77.206,
+     "rotation": 0,
+     "opacity": 0.28,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 398,
+      "h": 738.09,
+      "radius": 100.4,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s39",
+     "assetId": "shape:Viewfinder corner",
+     "name": "Viewfinder corner",
+     "xPct": 11.818,
+     "yPct": 1.674,
+     "widthPct": 11.818,
+     "heightPct": 5.439,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 52,
+      "h": 52,
+      "vx": 52,
+      "vy": 16,
+      "path": "M58,62L58,22L98,22",
+      "stroke": "#ff8a3d",
+      "strokeWidth": 5,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s40",
+     "assetId": "shape:Viewfinder corner",
+     "name": "Viewfinder corner",
+     "xPct": 76.364,
+     "yPct": 1.674,
+     "widthPct": 11.818,
+     "heightPct": 5.439,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 52,
+      "h": 52,
+      "vx": 336,
+      "vy": 16,
+      "path": "M382,62L382,22L342,22",
+      "stroke": "#ff8a3d",
+      "strokeWidth": 5,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s41",
+     "assetId": "shape:Viewfinder corner",
+     "name": "Viewfinder corner",
+     "xPct": 11.818,
+     "yPct": 67.155,
+     "widthPct": 11.818,
+     "heightPct": 5.439,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 52,
+      "h": 52,
+      "vx": 52,
+      "vy": 642,
+      "path": "M58,648L58,688L98,688",
+      "stroke": "#ff8a3d",
+      "strokeWidth": 5,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s42",
+     "assetId": "shape:Viewfinder corner",
+     "name": "Viewfinder corner",
+     "xPct": 76.364,
+     "yPct": 67.155,
+     "widthPct": 11.818,
+     "heightPct": 5.439,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 52,
+      "h": 52,
+      "vx": 336,
+      "vy": 642,
+      "path": "M382,648L382,688L342,688",
+      "stroke": "#ff8a3d",
+      "strokeWidth": 5,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s43",
+     "assetId": "shape:Badge",
+     "name": "Badge",
+     "xPct": 10.0,
+     "yPct": 74.895,
+     "widthPct": 22.265,
+     "heightPct": 3.243,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 97.96,
+      "h": 31,
+      "radius": 15.5,
+      "fill": "#ff8a3d"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 48.53,
+    "x": 0.0,
+    "y": -19.51,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
   }
- ]
+ ],
+ "designHeight": 2347,
+ "textColor": "#111111"
 }

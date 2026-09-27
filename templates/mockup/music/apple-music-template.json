@@ -1,7 +1,7 @@
 {
  "version": 1,
  "id": "apple-music-template",
- "name": "Music streaming app",
+ "name": "Music streaming app-1",
  "category": "music",
  "description": "Present your music streaming service with our free template. Display music libraries, playlist management, and playback features in an engaging design that enhances the listening experience.",
  "devices": [
@@ -20,217 +20,478 @@
  ],
  "layout": "single-no-text",
  "background": {
-  "type": "gradient",
-  "value": "linear-gradient(160deg, #f0494d 0%, #ab4b85 100%)"
+  "type": "solid",
+  "value": "#f3ede2"
  },
  "panoramic": true,
  "columnCount": 4,
  "titles": [
-  "100+ million songs. all add-free.",
-  "Real-time lyrics. Read, follow, sing.",
-  "Latest music from your favorite artists.",
-  "Discover playlists made just for you."
+  "Every song, your way.",
+  "Lyrics that move with you.",
+  "Mixes for every mood.",
+  "Studio sound in your pocket."
  ],
  "subtitles": [
-  "",
-  "",
-  "",
-  ""
+  "100 million tracks. Never an ad.",
+  "Sing along, line by line, in real time.",
+  "Fresh picks from what you play most.",
+  "Lossless audio, exactly as the artist mixed it."
  ],
  "pages": [
   {
-   "title": "100+ million songs. all add-free.",
-   "subtitle": "",
+   "title": "Every song, your way.",
+   "subtitle": "100 million tracks. Never an ad.",
    "layout": "single-no-text",
    "background": {
-    "type": "gradient",
-    "value": "linear-gradient(160deg, #f0494d 0%, #ab4b85 100%)"
+    "type": "solid",
+    "value": "#f3ede2"
    },
    "devices": null,
    "decorations": [],
    "textLayers": [
     {
-     "id": "tpl-t2",
-     "xPct": 0.0,
-     "yPct": 5.909,
-     "widthPct": 100.0,
+     "id": "tpl-t10",
+     "xPct": 9.091,
+     "yPct": 7.067,
+     "widthPct": 86.364,
      "rotation": 0,
      "opacity": 1,
      "zIndex": 30,
      "customName": "Title",
      "style": {
-      "text": "100+ million songs.\nall add-free.",
-      "color": "#ffffff",
-      "size": 90.8,
-      "align": "center",
+      "text": "Every song,\nyour way.",
+      "color": "#16182e",
+      "size": 122.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.05,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t11",
+     "xPct": 9.091,
+     "yPct": 22.312,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "100 million tracks.\nNever an ad.",
+      "color": "#4a4d66",
+      "size": 44.2,
+      "align": "left",
       "fontFamily": "Inter, sans-serif",
       "fontWeightNum": 400,
-      "lineHeightMultiplier": 1.3
+      "lineHeightMultiplier": 1.35
      }
     }
    ],
    "assetLayers": [
     {
      "id": "tpl-s1",
-     "assetId": "shape:Phone shadow",
-     "name": "Phone shadow",
-     "xPct": -1.136,
-     "yPct": 16.736,
-     "widthPct": 101.818,
-     "heightPct": 88.57,
-     "rotation": 0,
-     "opacity": 0.16,
-     "zIndex": 5,
-     "cropFit": "stretch",
-     "shape": {
-      "type": "roundRect",
-      "w": 448,
-      "h": 846.73,
-      "radius": 108.4,
-      "fill": "#000000",
-      "blur": 18,
-      "inset": 54
-     }
-    }
-   ],
-   "deviceOne": {
-    "size": 56.9,
-    "x": -0.29,
-    "y": 13.45,
-    "rotation": 0,
-    "brightness": 100,
-    "frameless": false,
-    "bezelColor": "#060606",
-    "borderColor": "#5e5e5e",
-    "zIndex": 10
-   }
-  },
-  {
-   "title": "Real-time lyrics. Read, follow, sing.",
-   "subtitle": "",
-   "layout": "single-no-text",
-   "background": {
-    "type": "gradient",
-    "value": "linear-gradient(160deg, #e14b59 0%, #7a4cb0 100%)"
-   },
-   "devices": null,
-   "decorations": [],
-   "textLayers": [
-    {
-     "id": "tpl-t4",
-     "xPct": 0.0,
-     "yPct": 5.909,
-     "widthPct": 100.0,
+     "assetId": "shape:Vinyl",
+     "name": "Vinyl",
+     "xPct": 38.636,
+     "yPct": 40.272,
+     "widthPct": 79.545,
+     "heightPct": 36.611,
      "rotation": 0,
      "opacity": 1,
-     "zIndex": 30,
-     "customName": "Title",
-     "style": {
-      "text": "Real-time lyrics.\nRead, follow, sing.",
-      "color": "#ffffff",
-      "size": 90.8,
-      "align": "center",
-      "fontFamily": "Inter, sans-serif",
-      "fontWeightNum": 400,
-      "lineHeightMultiplier": 1.3
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 350,
+      "h": 350,
+      "fill": "#16182e"
      }
-    }
-   ],
-   "assetLayers": [
+    },
+    {
+     "id": "tpl-s2",
+     "assetId": "shape:Groove",
+     "name": "Groove",
+     "xPct": 42.614,
+     "yPct": 42.103,
+     "widthPct": 71.591,
+     "heightPct": 32.95,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 315.0,
+      "h": 315.0,
+      "stroke": "#3a3d5c",
+      "strokeWidth": 1.4,
+      "inset": 0.7
+     }
+    },
     {
      "id": "tpl-s3",
-     "assetId": "shape:Phone shadow",
-     "name": "Phone shadow",
-     "xPct": -1.136,
-     "yPct": 16.736,
-     "widthPct": 101.818,
-     "heightPct": 88.57,
-     "rotation": 0,
-     "opacity": 0.16,
-     "zIndex": 5,
-     "cropFit": "stretch",
-     "shape": {
-      "type": "roundRect",
-      "w": 448,
-      "h": 846.73,
-      "radius": 108.4,
-      "fill": "#000000",
-      "blur": 18,
-      "inset": 54
-     }
-    }
-   ],
-   "deviceOne": {
-    "size": 56.9,
-    "x": -0.29,
-    "y": 13.45,
-    "rotation": 0,
-    "brightness": 100,
-    "frameless": false,
-    "bezelColor": "#060606",
-    "borderColor": "#5e5e5e",
-    "zIndex": 10
-   }
-  },
-  {
-   "title": "Latest music from your favorite artists.",
-   "subtitle": "",
-   "layout": "single-no-text",
-   "background": {
-    "type": "gradient",
-    "value": "linear-gradient(160deg, #b04c80 0%, #494dd9 100%)"
-   },
-   "devices": null,
-   "decorations": [],
-   "textLayers": [
-    {
-     "id": "tpl-t6",
-     "xPct": 0.0,
-     "yPct": 5.909,
-     "widthPct": 100.0,
+     "assetId": "shape:Groove",
+     "name": "Groove",
+     "xPct": 46.591,
+     "yPct": 43.933,
+     "widthPct": 63.636,
+     "heightPct": 29.289,
      "rotation": 0,
      "opacity": 1,
-     "zIndex": 30,
-     "customName": "Title",
-     "style": {
-      "text": "Latest music from\nyour favorite artists.",
-      "color": "#ffffff",
-      "size": 90.8,
-      "align": "center",
-      "fontFamily": "Inter, sans-serif",
-      "fontWeightNum": 400,
-      "lineHeightMultiplier": 1.3
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 280.0,
+      "h": 280.0,
+      "stroke": "#3a3d5c",
+      "strokeWidth": 1.4,
+      "inset": 0.7
      }
-    }
-   ],
-   "assetLayers": [
+    },
+    {
+     "id": "tpl-s4",
+     "assetId": "shape:Groove",
+     "name": "Groove",
+     "xPct": 50.568,
+     "yPct": 45.764,
+     "widthPct": 55.682,
+     "heightPct": 25.628,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 245.0,
+      "h": 245.0,
+      "stroke": "#3a3d5c",
+      "strokeWidth": 1.4,
+      "inset": 0.7
+     }
+    },
     {
      "id": "tpl-s5",
+     "assetId": "shape:Groove",
+     "name": "Groove",
+     "xPct": 54.545,
+     "yPct": 47.594,
+     "widthPct": 47.727,
+     "heightPct": 21.967,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 210.0,
+      "h": 210.0,
+      "stroke": "#3a3d5c",
+      "strokeWidth": 1.4,
+      "inset": 0.7
+     }
+    },
+    {
+     "id": "tpl-s6",
+     "assetId": "shape:Groove",
+     "name": "Groove",
+     "xPct": 58.523,
+     "yPct": 49.425,
+     "widthPct": 39.773,
+     "heightPct": 18.305,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 175.0,
+      "h": 175.0,
+      "stroke": "#3a3d5c",
+      "strokeWidth": 1.4,
+      "inset": 0.7
+     }
+    },
+    {
+     "id": "tpl-s7",
+     "assetId": "shape:Label",
+     "name": "Label",
+     "xPct": 65.682,
+     "yPct": 52.72,
+     "widthPct": 25.455,
+     "heightPct": 11.715,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 112.0,
+      "h": 112.0,
+      "fill": "#2b3fe0"
+     }
+    },
+    {
+     "id": "tpl-s8",
+     "assetId": "shape:Spindle",
+     "name": "Spindle",
+     "xPct": 76.42,
+     "yPct": 57.662,
+     "widthPct": 3.977,
+     "heightPct": 1.831,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 17.5,
+      "h": 17.5,
+      "fill": "#f3ede2"
+     }
+    },
+    {
+     "id": "tpl-s9",
      "assetId": "shape:Phone shadow",
      "name": "Phone shadow",
-     "xPct": -1.136,
-     "yPct": 16.736,
-     "widthPct": 101.818,
-     "heightPct": 88.57,
-     "rotation": 0,
-     "opacity": 0.16,
+     "xPct": 2.449,
+     "yPct": 26.784,
+     "widthPct": 84.545,
+     "heightPct": 68.353,
+     "rotation": -7,
+     "opacity": 0.25,
      "zIndex": 5,
      "cropFit": "stretch",
      "shape": {
       "type": "roundRect",
-      "w": 448,
-      "h": 846.73,
-      "radius": 108.4,
+      "w": 372,
+      "h": 653.45,
+      "radius": 104.4,
       "fill": "#000000",
-      "blur": 18,
-      "inset": 54
+      "blur": 22,
+      "inset": 66
      }
     }
    ],
    "deviceOne": {
-    "size": 56.9,
-    "x": -0.29,
-    "y": 13.45,
+    "size": 40.17,
+    "x": -9.68,
+    "y": 18.94,
+    "rotation": -7,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Lyrics that move with you.",
+   "subtitle": "Sing along, line by line, in real time.",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#2b3fe0"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t19",
+     "xPct": 9.091,
+     "yPct": 70.945,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Lyrics that\nmove with you.",
+      "color": "#ffffff",
+      "size": 108.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.08,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t20",
+     "xPct": 9.091,
+     "yPct": 86.956,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Sing along, line by line,\nin real time.",
+      "color": "#ffffff",
+      "size": 44.2,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.35
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s12",
+     "assetId": "shape:Ring",
+     "name": "Ring",
+     "xPct": 11.364,
+     "yPct": 18.828,
+     "widthPct": 77.273,
+     "heightPct": 35.565,
+     "rotation": 0,
+     "opacity": 0.35,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 340,
+      "h": 340,
+      "stroke": "#f3ede2",
+      "strokeWidth": 1.5,
+      "inset": 0.75
+     }
+    },
+    {
+     "id": "tpl-s13",
+     "assetId": "shape:Ring",
+     "name": "Ring",
+     "xPct": 3.636,
+     "yPct": 15.272,
+     "widthPct": 92.727,
+     "heightPct": 42.678,
+     "rotation": 0,
+     "opacity": 0.35,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 408,
+      "h": 408,
+      "stroke": "#f3ede2",
+      "strokeWidth": 1.5,
+      "inset": 0.75
+     }
+    },
+    {
+     "id": "tpl-s14",
+     "assetId": "shape:Ring",
+     "name": "Ring",
+     "xPct": -4.091,
+     "yPct": 11.715,
+     "widthPct": 108.182,
+     "heightPct": 49.791,
+     "rotation": 0,
+     "opacity": 0.35,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 476,
+      "h": 476,
+      "stroke": "#f3ede2",
+      "strokeWidth": 1.5,
+      "inset": 0.75
+     }
+    },
+    {
+     "id": "tpl-s15",
+     "assetId": "shape:Ring",
+     "name": "Ring",
+     "xPct": -11.818,
+     "yPct": 8.159,
+     "widthPct": 123.636,
+     "heightPct": 56.904,
+     "rotation": 0,
+     "opacity": 0.35,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 544,
+      "h": 544,
+      "stroke": "#f3ede2",
+      "strokeWidth": 1.5,
+      "inset": 0.75
+     }
+    },
+    {
+     "id": "tpl-s16",
+     "assetId": "shape:Ring",
+     "name": "Ring",
+     "xPct": -19.545,
+     "yPct": 4.603,
+     "widthPct": 139.091,
+     "heightPct": 64.017,
+     "rotation": 0,
+     "opacity": 0.35,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 612,
+      "h": 612,
+      "stroke": "#f3ede2",
+      "strokeWidth": 1.5,
+      "inset": 0.75
+     }
+    },
+    {
+     "id": "tpl-s17",
+     "assetId": "shape:Ring",
+     "name": "Ring",
+     "xPct": -27.273,
+     "yPct": 1.046,
+     "widthPct": 154.545,
+     "heightPct": 71.13,
+     "rotation": 0,
+     "opacity": 0.35,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 680,
+      "h": 680,
+      "stroke": "#f3ede2",
+      "strokeWidth": 1.5,
+      "inset": 0.75
+     }
+    },
+    {
+     "id": "tpl-s18",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 5.227,
+     "yPct": 0.418,
+     "widthPct": 89.545,
+     "heightPct": 73.353,
+     "rotation": 0,
+     "opacity": 0.3,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 394,
+      "h": 701.25,
+      "radius": 107.92,
+      "fill": "#000000",
+      "blur": 22,
+      "inset": 66
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 43.85,
+    "x": 0.0,
+    "y": -22.73,
     "rotation": 0,
     "brightness": 100,
     "frameless": false,
@@ -240,54 +501,258 @@
    }
   },
   {
-   "title": "Discover playlists made just for you.",
-   "subtitle": "",
+   "title": "Mixes for every mood.",
+   "subtitle": "Fresh picks from what you play most.",
    "layout": "single-no-text",
    "background": {
-    "type": "gradient",
-    "value": "linear-gradient(160deg, #824bab 0%, #3d4de5 100%)"
+    "type": "solid",
+    "value": "#f3ede2"
    },
    "devices": null,
    "decorations": [],
    "textLayers": [
     {
-     "id": "tpl-t8",
-     "xPct": 0.0,
-     "yPct": 5.909,
-     "widthPct": 100.0,
+     "id": "tpl-t31",
+     "xPct": 9.091,
+     "yPct": 7.067,
+     "widthPct": 86.364,
      "rotation": 0,
      "opacity": 1,
      "zIndex": 30,
      "customName": "Title",
      "style": {
-      "text": "Discover playlists\nmade just for you.",
-      "color": "#ffffff",
-      "size": 90.8,
-      "align": "center",
+      "text": "Mixes for\nevery mood.",
+      "color": "#16182e",
+      "size": 122.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.05,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t32",
+     "xPct": 9.091,
+     "yPct": 22.312,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Fresh picks from what\nyou play most.",
+      "color": "#4a4d66",
+      "size": 44.2,
+      "align": "left",
       "fontFamily": "Inter, sans-serif",
       "fontWeightNum": 400,
-      "lineHeightMultiplier": 1.3
+      "lineHeightMultiplier": 1.35
      }
     }
    ],
    "assetLayers": [
     {
-     "id": "tpl-s7",
+     "id": "tpl-s21",
+     "assetId": "shape:Vinyl",
+     "name": "Vinyl",
+     "xPct": 77.273,
+     "yPct": 21.339,
+     "widthPct": 26.364,
+     "heightPct": 12.134,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 116,
+      "h": 116,
+      "fill": "#16182e"
+     }
+    },
+    {
+     "id": "tpl-s22",
+     "assetId": "shape:Groove",
+     "name": "Groove",
+     "xPct": 78.591,
+     "yPct": 21.946,
+     "widthPct": 23.727,
+     "heightPct": 10.921,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 104.4,
+      "h": 104.4,
+      "stroke": "#34375a",
+      "strokeWidth": 1.4,
+      "inset": 0.7
+     }
+    },
+    {
+     "id": "tpl-s23",
+     "assetId": "shape:Groove",
+     "name": "Groove",
+     "xPct": 79.909,
+     "yPct": 22.552,
+     "widthPct": 21.091,
+     "heightPct": 9.707,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 92.8,
+      "h": 92.8,
+      "stroke": "#34375a",
+      "strokeWidth": 1.4,
+      "inset": 0.7
+     }
+    },
+    {
+     "id": "tpl-s24",
+     "assetId": "shape:Groove",
+     "name": "Groove",
+     "xPct": 81.227,
+     "yPct": 23.159,
+     "widthPct": 18.455,
+     "heightPct": 8.494,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 81.2,
+      "h": 81.2,
+      "stroke": "#34375a",
+      "strokeWidth": 1.4,
+      "inset": 0.7
+     }
+    },
+    {
+     "id": "tpl-s25",
+     "assetId": "shape:Groove",
+     "name": "Groove",
+     "xPct": 82.545,
+     "yPct": 23.766,
+     "widthPct": 15.818,
+     "heightPct": 7.28,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 69.6,
+      "h": 69.6,
+      "stroke": "#34375a",
+      "strokeWidth": 1.4,
+      "inset": 0.7
+     }
+    },
+    {
+     "id": "tpl-s26",
+     "assetId": "shape:Groove",
+     "name": "Groove",
+     "xPct": 83.864,
+     "yPct": 24.372,
+     "widthPct": 13.182,
+     "heightPct": 6.067,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 58.0,
+      "h": 58.0,
+      "stroke": "#34375a",
+      "strokeWidth": 1.4,
+      "inset": 0.7
+     }
+    },
+    {
+     "id": "tpl-s27",
+     "assetId": "shape:Label",
+     "name": "Label",
+     "xPct": 86.236,
+     "yPct": 25.464,
+     "widthPct": 8.436,
+     "heightPct": 3.883,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 37.12,
+      "h": 37.12,
+      "fill": "#2b3fe0"
+     }
+    },
+    {
+     "id": "tpl-s28",
+     "assetId": "shape:Spindle",
+     "name": "Spindle",
+     "xPct": 89.795,
+     "yPct": 27.103,
+     "widthPct": 1.318,
+     "heightPct": 0.607,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 5.8,
+      "h": 5.8,
+      "fill": "#f3ede2"
+     }
+    },
+    {
+     "id": "tpl-s29",
      "assetId": "shape:Phone shadow",
      "name": "Phone shadow",
-     "xPct": -1.136,
-     "yPct": 16.736,
-     "widthPct": 101.818,
-     "heightPct": 88.57,
-     "rotation": 0,
-     "opacity": 0.16,
+     "xPct": 1.816,
+     "yPct": 30.264,
+     "widthPct": 70.0,
+     "heightPct": 56.752,
+     "rotation": -9,
+     "opacity": 0.22,
      "zIndex": 5,
      "cropFit": "stretch",
      "shape": {
       "type": "roundRect",
-      "w": 448,
-      "h": 846.73,
-      "radius": 108.4,
+      "w": 308,
+      "h": 542.55,
+      "radius": 86.0,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s30",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 30.4,
+     "yPct": 27.394,
+     "widthPct": 70.0,
+     "heightPct": 56.752,
+     "rotation": 8,
+     "opacity": 0.25,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 308,
+      "h": 542.55,
+      "radius": 86.0,
       "fill": "#000000",
       "blur": 18,
       "inset": 54
@@ -295,9 +760,435 @@
     }
    ],
    "deviceOne": {
-    "size": 56.9,
-    "x": -0.29,
-    "y": 13.45,
+    "size": 33.47,
+    "x": -29.01,
+    "y": 17.63,
+    "rotation": -9,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 9
+   },
+   "extraDevices": [
+    {
+     "size": 33.47,
+     "x": 33.88,
+     "y": 11.31,
+     "rotation": 8,
+     "brightness": 100,
+     "frameless": false,
+     "bezelColor": "#060606",
+     "borderColor": "#5e5e5e",
+     "zIndex": 10
+    }
+   ]
+  },
+  {
+   "title": "Studio sound in your pocket.",
+   "subtitle": "Lossless audio, exactly as the artist mixed it.",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#16182e"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t49",
+     "xPct": 9.091,
+     "yPct": 7.439,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Studio sound\nin your pocket.",
+      "color": "#f3ede2",
+      "size": 112.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.05,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t50",
+     "xPct": 9.091,
+     "yPct": 22.312,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Lossless audio, exactly as\nthe artist mixed it.",
+      "color": "#c9c6d6",
+      "size": 44.2,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.35
+     }
+    },
+    {
+     "id": "tpl-t51",
+     "xPct": 13.182,
+     "yPct": 68.638,
+     "widthPct": 38.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "Card label",
+     "style": {
+      "text": "24-bit Lossless",
+      "color": "#ffffff",
+      "size": 39.3,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s33",
+     "assetId": "shape:Ring",
+     "name": "Ring",
+     "xPct": 30.682,
+     "yPct": 47.071,
+     "widthPct": 68.182,
+     "heightPct": 31.381,
+     "rotation": 0,
+     "opacity": 0.18,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 300,
+      "h": 300,
+      "stroke": "#f3ede2",
+      "strokeWidth": 1.5,
+      "inset": 0.75
+     }
+    },
+    {
+     "id": "tpl-s34",
+     "assetId": "shape:Ring",
+     "name": "Ring",
+     "xPct": 23.409,
+     "yPct": 43.724,
+     "widthPct": 82.727,
+     "heightPct": 38.075,
+     "rotation": 0,
+     "opacity": 0.18,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 364,
+      "h": 364,
+      "stroke": "#f3ede2",
+      "strokeWidth": 1.5,
+      "inset": 0.75
+     }
+    },
+    {
+     "id": "tpl-s35",
+     "assetId": "shape:Ring",
+     "name": "Ring",
+     "xPct": 16.136,
+     "yPct": 40.377,
+     "widthPct": 97.273,
+     "heightPct": 44.77,
+     "rotation": 0,
+     "opacity": 0.18,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 428,
+      "h": 428,
+      "stroke": "#f3ede2",
+      "strokeWidth": 1.5,
+      "inset": 0.75
+     }
+    },
+    {
+     "id": "tpl-s36",
+     "assetId": "shape:Ring",
+     "name": "Ring",
+     "xPct": 8.864,
+     "yPct": 37.029,
+     "widthPct": 111.818,
+     "heightPct": 51.464,
+     "rotation": 0,
+     "opacity": 0.18,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 492,
+      "h": 492,
+      "stroke": "#f3ede2",
+      "strokeWidth": 1.5,
+      "inset": 0.75
+     }
+    },
+    {
+     "id": "tpl-s37",
+     "assetId": "shape:Ring",
+     "name": "Ring",
+     "xPct": 1.591,
+     "yPct": 33.682,
+     "widthPct": 126.364,
+     "heightPct": 58.159,
+     "rotation": 0,
+     "opacity": 0.18,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 556,
+      "h": 556,
+      "stroke": "#f3ede2",
+      "strokeWidth": 1.5,
+      "inset": 0.75
+     }
+    },
+    {
+     "id": "tpl-s38",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 21.364,
+     "yPct": 25.105,
+     "widthPct": 86.818,
+     "heightPct": 70.626,
+     "rotation": 0,
+     "opacity": 0.4,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 382,
+      "h": 675.18,
+      "radius": 106.0,
+      "fill": "#000000",
+      "blur": 22,
+      "inset": 66
+     }
+    },
+    {
+     "id": "tpl-s39",
+     "assetId": "shape:Card shadow",
+     "name": "Card shadow",
+     "xPct": 2.727,
+     "yPct": 56.904,
+     "widthPct": 56.364,
+     "heightPct": 18.41,
+     "rotation": 0,
+     "opacity": 0.3,
+     "zIndex": 14,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 248,
+      "h": 176,
+      "radius": 46,
+      "fill": "#000000",
+      "blur": 10,
+      "inset": 24
+     }
+    },
+    {
+     "id": "tpl-s40",
+     "assetId": "shape:Card",
+     "name": "Card",
+     "xPct": 8.182,
+     "yPct": 58.577,
+     "widthPct": 45.455,
+     "heightPct": 13.389,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 200,
+      "h": 128,
+      "radius": 22,
+      "fill": "#2b3fe0"
+     }
+    },
+    {
+     "id": "tpl-s41",
+     "assetId": "shape:EQ bar",
+     "name": "EQ bar",
+     "xPct": 13.182,
+     "yPct": 64.644,
+     "widthPct": 1.818,
+     "heightPct": 2.301,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 8,
+      "h": 22,
+      "radius": 4,
+      "fill": "#f3ede2"
+     }
+    },
+    {
+     "id": "tpl-s42",
+     "assetId": "shape:EQ bar",
+     "name": "EQ bar",
+     "xPct": 16.364,
+     "yPct": 62.762,
+     "widthPct": 1.818,
+     "heightPct": 4.184,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 8,
+      "h": 40,
+      "radius": 4,
+      "fill": "#f3ede2"
+     }
+    },
+    {
+     "id": "tpl-s43",
+     "assetId": "shape:EQ bar",
+     "name": "EQ bar",
+     "xPct": 19.545,
+     "yPct": 63.808,
+     "widthPct": 1.818,
+     "heightPct": 3.138,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 8,
+      "h": 30,
+      "radius": 4,
+      "fill": "#f3ede2"
+     }
+    },
+    {
+     "id": "tpl-s44",
+     "assetId": "shape:EQ bar",
+     "name": "EQ bar",
+     "xPct": 22.727,
+     "yPct": 61.506,
+     "widthPct": 1.818,
+     "heightPct": 5.439,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 8,
+      "h": 52,
+      "radius": 4,
+      "fill": "#f3ede2"
+     }
+    },
+    {
+     "id": "tpl-s45",
+     "assetId": "shape:EQ bar",
+     "name": "EQ bar",
+     "xPct": 25.909,
+     "yPct": 63.18,
+     "widthPct": 1.818,
+     "heightPct": 3.766,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 8,
+      "h": 36,
+      "radius": 4,
+      "fill": "#f3ede2"
+     }
+    },
+    {
+     "id": "tpl-s46",
+     "assetId": "shape:EQ bar",
+     "name": "EQ bar",
+     "xPct": 29.091,
+     "yPct": 62.134,
+     "widthPct": 1.818,
+     "heightPct": 4.812,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 8,
+      "h": 46,
+      "radius": 4,
+      "fill": "#f3ede2"
+     }
+    },
+    {
+     "id": "tpl-s47",
+     "assetId": "shape:EQ bar",
+     "name": "EQ bar",
+     "xPct": 32.273,
+     "yPct": 64.435,
+     "widthPct": 1.818,
+     "heightPct": 2.51,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 8,
+      "h": 24,
+      "radius": 4,
+      "fill": "#f3ede2"
+     }
+    },
+    {
+     "id": "tpl-s48",
+     "assetId": "shape:EQ bar",
+     "name": "EQ bar",
+     "xPct": 35.455,
+     "yPct": 63.389,
+     "widthPct": 1.818,
+     "heightPct": 3.556,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 8,
+      "h": 34,
+      "radius": 4,
+      "fill": "#f3ede2"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 41.84,
+    "x": 26.0,
+    "y": 17.23,
     "rotation": 0,
     "brightness": 100,
     "frameless": false,

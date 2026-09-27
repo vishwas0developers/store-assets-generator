@@ -10,39 +10,894 @@
    "label": "Galaxy S25 Phone"
   }
  ],
- "layout": "tilted-left-caption-below",
+ "layout": "single-no-text",
  "background": {
   "type": "gradient",
-  "value": "sunset"
+  "value": "linear-gradient(170deg, #3a1c14 0%, #24100b 100%)"
  },
  "pages": [
   {
-   "title": "Order Food",
-   "subtitle": "Get dishes from top chefs",
-   "layout": "tilted-left-caption-below",
-   "background": null,
-   "devices": null
+   "title": "Discover Local Gems",
+   "subtitle": "Top-rated restaurants right around the corner",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(170deg, #3a1c14 0%, #24100b 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t7",
+     "xPct": 15.455,
+     "yPct": 5.102,
+     "widthPct": 19.23,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "NEAR YOU",
+     "style": {
+      "text": "NEAR YOU",
+      "color": "#24100b",
+      "size": 31.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 40
+     }
+    },
+    {
+     "id": "tpl-t8",
+     "xPct": 9.091,
+     "yPct": 8.904,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Discover\nLocal Gems",
+      "color": "#fff3e0",
+      "size": 112.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.05,
+      "charSpacing": -30
+     }
+    },
+    {
+     "id": "tpl-t9",
+     "xPct": 9.091,
+     "yPct": 20.895,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Top-rated restaurants\nright around the corner",
+      "color": "#e9cfb4",
+      "size": 44.2,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.3
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s1",
+     "assetId": "shape:Warm glow",
+     "name": "Warm glow",
+     "xPct": 22.727,
+     "yPct": 41.841,
+     "widthPct": 90.909,
+     "heightPct": 41.841,
+     "rotation": 0,
+     "opacity": 0.35,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 400,
+      "h": 400,
+      "fill": "#8a3a1c",
+      "blur": 40
+     }
+    },
+    {
+     "id": "tpl-s2",
+     "assetId": "shape:Plate ring",
+     "name": "Plate ring",
+     "xPct": 17.045,
+     "yPct": 42.887,
+     "widthPct": 81.818,
+     "heightPct": 37.657,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 360,
+      "h": 360,
+      "stroke": "#ffb020",
+      "strokeWidth": 10,
+      "inset": 5.0
+     }
+    },
+    {
+     "id": "tpl-s3",
+     "assetId": "shape:Plate rim",
+     "name": "Plate rim",
+     "xPct": 22.045,
+     "yPct": 45.188,
+     "widthPct": 71.818,
+     "heightPct": 33.054,
+     "rotation": 0,
+     "opacity": 0.45,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 316,
+      "h": 316,
+      "stroke": "#ffb020",
+      "strokeWidth": 2,
+      "inset": 1.0
+     }
+    },
+    {
+     "id": "tpl-s4",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 11.626,
+     "yPct": 23.424,
+     "widthPct": 90.455,
+     "heightPct": 77.206,
+     "rotation": 8,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 398,
+      "h": 738.09,
+      "radius": 100.4,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s5",
+     "assetId": "shape:Badge",
+     "name": "Badge",
+     "xPct": 9.091,
+     "yPct": 4.184,
+     "widthPct": 25.594,
+     "heightPct": 3.138,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 112.61,
+      "h": 30,
+      "radius": 15,
+      "fill": "#ffb020"
+     }
+    },
+    {
+     "id": "tpl-s6",
+     "assetId": "shape:Badge dot",
+     "name": "Badge dot",
+     "xPct": 11.818,
+     "yPct": 5.335,
+     "widthPct": 1.818,
+     "heightPct": 0.837,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 8,
+      "h": 8,
+      "fill": "#24100b"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 48.53,
+    "x": 10.4,
+    "y": 17.3,
+    "rotation": 8,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
   },
   {
-   "title": "Fresh Ingredients",
-   "subtitle": "Sourced from local farms",
-   "layout": "tilted-left-caption-below",
-   "background": null,
-   "devices": null
+   "title": "Book A Table In Seconds",
+   "subtitle": "Pick a time, choose your seat, and you're in",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(170deg, #3a1c14 0%, #24100b 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t16",
+     "xPct": 11.364,
+     "yPct": 68.339,
+     "widthPct": 43.182,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "customName": "Tonight, 8:00 PM",
+     "style": {
+      "text": "Tonight, 8:00 PM",
+      "color": "#24100b",
+      "size": 41.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t17",
+     "xPct": 11.364,
+     "yPct": 71.329,
+     "widthPct": 43.182,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "customName": "Table for 2 · Terrace",
+     "style": {
+      "text": "Table for 2 · Terrace",
+      "color": "#6b4a3a",
+      "size": 34.4,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t19",
+     "xPct": 11.364,
+     "yPct": 74.871,
+     "widthPct": 23.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "customName": "Confirmed",
+     "style": {
+      "text": "Confirmed",
+      "color": "#24100b",
+      "size": 31.9,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t20",
+     "xPct": 9.091,
+     "yPct": 7.23,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Book A Table\nIn Seconds",
+      "color": "#fff3e0",
+      "size": 112.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.05,
+      "charSpacing": -30
+     }
+    },
+    {
+     "id": "tpl-t21",
+     "xPct": 9.091,
+     "yPct": 19.221,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Pick a time, choose your seat,\nand you're in",
+      "color": "#e9cfb4",
+      "size": 44.2,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.3
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s10",
+     "assetId": "shape:Warm glow",
+     "name": "Warm glow",
+     "xPct": -9.091,
+     "yPct": 47.071,
+     "widthPct": 86.364,
+     "heightPct": 39.749,
+     "rotation": 0,
+     "opacity": 0.35,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 380,
+      "h": 380,
+      "fill": "#8a3a1c",
+      "blur": 40
+     }
+    },
+    {
+     "id": "tpl-s11",
+     "assetId": "shape:Plate ring",
+     "name": "Plate ring",
+     "xPct": 2.273,
+     "yPct": 46.025,
+     "widthPct": 54.545,
+     "heightPct": 25.105,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 240,
+      "h": 240,
+      "stroke": "#ffb020",
+      "strokeWidth": 10,
+      "inset": 5.0
+     }
+    },
+    {
+     "id": "tpl-s12",
+     "assetId": "shape:Plate rim",
+     "name": "Plate rim",
+     "xPct": 7.273,
+     "yPct": 48.326,
+     "widthPct": 44.545,
+     "heightPct": 20.502,
+     "rotation": 0,
+     "opacity": 0.45,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 196,
+      "h": 196,
+      "stroke": "#ffb020",
+      "strokeWidth": 2,
+      "inset": 1.0
+     }
+    },
+    {
+     "id": "tpl-s13",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 11.591,
+     "yPct": 22.699,
+     "widthPct": 90.455,
+     "heightPct": 77.206,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 398,
+      "h": 738.09,
+      "radius": 100.4,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s14",
+     "assetId": "shape:Card shadow",
+     "name": "Card shadow",
+     "xPct": -1.364,
+     "yPct": 62.762,
+     "widthPct": 68.182,
+     "heightPct": 20.711,
+     "rotation": 0,
+     "opacity": 0.25,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 300,
+      "h": 198,
+      "radius": 62,
+      "fill": "#000000",
+      "blur": 14,
+      "inset": 40
+     }
+    },
+    {
+     "id": "tpl-s15",
+     "assetId": "shape:Booking card",
+     "name": "Booking card",
+     "xPct": 6.818,
+     "yPct": 66.109,
+     "widthPct": 50.0,
+     "heightPct": 12.343,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 220,
+      "h": 118,
+      "radius": 22,
+      "fill": "#fff3e0"
+     }
+    },
+    {
+     "id": "tpl-s18",
+     "assetId": "shape:Confirm pill",
+     "name": "Confirm pill",
+     "xPct": 11.364,
+     "yPct": 74.059,
+     "widthPct": 23.636,
+     "heightPct": 2.929,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 104,
+      "h": 28,
+      "radius": 14,
+      "fill": "#ffb020"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 48.53,
+    "x": 10.34,
+    "y": 16.2,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
   },
   {
-   "title": "Fast Delivery",
-   "subtitle": "Delivered hot in 20 minutes",
-   "layout": "tilted-left-caption-below",
-   "background": null,
-   "devices": null
+   "title": "Order From Top Chefs",
+   "subtitle": "Signature dishes delivered hot to your door",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(170deg, #3a1c14 0%, #24100b 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t27",
+     "xPct": 9.091,
+     "yPct": 7.23,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Order From\nTop Chefs",
+      "color": "#fff3e0",
+      "size": 112.9,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.05,
+      "charSpacing": -30
+     }
+    },
+    {
+     "id": "tpl-t28",
+     "xPct": 9.091,
+     "yPct": 19.221,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Signature dishes delivered\nhot to your door",
+      "color": "#e9cfb4",
+      "size": 44.2,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.3
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s22",
+     "assetId": "shape:Warm glow",
+     "name": "Warm glow",
+     "xPct": 0.0,
+     "yPct": 43.933,
+     "widthPct": 100.0,
+     "heightPct": 46.025,
+     "rotation": 0,
+     "opacity": 0.35,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 440,
+      "h": 440,
+      "fill": "#8a3a1c",
+      "blur": 40
+     }
+    },
+    {
+     "id": "tpl-s23",
+     "assetId": "shape:Plate ring",
+     "name": "Plate ring",
+     "xPct": 6.818,
+     "yPct": 41.841,
+     "widthPct": 86.364,
+     "heightPct": 39.749,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 380,
+      "h": 380,
+      "stroke": "#ffb020",
+      "strokeWidth": 10,
+      "inset": 5.0
+     }
+    },
+    {
+     "id": "tpl-s24",
+     "assetId": "shape:Plate rim",
+     "name": "Plate rim",
+     "xPct": 11.818,
+     "yPct": 44.142,
+     "widthPct": 76.364,
+     "heightPct": 35.146,
+     "rotation": 0,
+     "opacity": 0.45,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 336,
+      "h": 336,
+      "stroke": "#ffb020",
+      "strokeWidth": 2,
+      "inset": 1.0
+     }
+    },
+    {
+     "id": "tpl-s25",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 1.679,
+     "yPct": 29.342,
+     "widthPct": 81.364,
+     "heightPct": 68.115,
+     "rotation": -6,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 358,
+      "h": 651.18,
+      "radius": 94.0,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s26",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 18.775,
+     "yPct": 26.204,
+     "widthPct": 81.364,
+     "heightPct": 68.115,
+     "rotation": 6,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 358,
+      "h": 651.18,
+      "radius": 94.0,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 41.84,
+    "x": -13.44,
+    "y": 22.48,
+    "rotation": -6,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   },
+   "extraDevices": [
+    {
+     "size": 41.84,
+     "x": 16.64,
+     "y": 16.96,
+     "rotation": 6,
+     "brightness": 100,
+     "frameless": false,
+     "bezelColor": "#060606",
+     "borderColor": "#5e5e5e",
+     "zIndex": 12
+    }
+   ]
   },
   {
-   "title": "Enjoy Meal",
-   "subtitle": "Delicious food at your door",
-   "layout": "tilted-left-caption-below",
-   "background": null,
-   "devices": null
+   "title": "Enjoy Every Bite",
+   "subtitle": "Save favourites and share your best meals",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(170deg, #3a1c14 0%, #24100b 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t35",
+     "xPct": 71.43,
+     "yPct": 5.102,
+     "widthPct": 19.48,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "4.9 RATED",
+     "style": {
+      "text": "4.9 RATED",
+      "color": "#24100b",
+      "size": 31.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 40
+     }
+    },
+    {
+     "id": "tpl-t36",
+     "xPct": 9.091,
+     "yPct": 8.904,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Enjoy\nEvery Bite",
+      "color": "#fff3e0",
+      "size": 112.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.05,
+      "charSpacing": -30
+     }
+    },
+    {
+     "id": "tpl-t37",
+     "xPct": 9.091,
+     "yPct": 20.895,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Save favourites and\nshare your best meals",
+      "color": "#e9cfb4",
+      "size": 44.2,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.3
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s29",
+     "assetId": "shape:Warm glow",
+     "name": "Warm glow",
+     "xPct": -2.273,
+     "yPct": 38.703,
+     "widthPct": 104.545,
+     "heightPct": 48.117,
+     "rotation": 0,
+     "opacity": 0.35,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 460,
+      "h": 460,
+      "fill": "#8a3a1c",
+      "blur": 40
+     }
+    },
+    {
+     "id": "tpl-s30",
+     "assetId": "shape:Plate ring",
+     "name": "Plate ring",
+     "xPct": 5.682,
+     "yPct": 39.749,
+     "widthPct": 88.636,
+     "heightPct": 40.795,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 390,
+      "h": 390,
+      "stroke": "#ffb020",
+      "strokeWidth": 10,
+      "inset": 5.0
+     }
+    },
+    {
+     "id": "tpl-s31",
+     "assetId": "shape:Plate rim",
+     "name": "Plate rim",
+     "xPct": 10.682,
+     "yPct": 42.05,
+     "widthPct": 78.636,
+     "heightPct": 36.192,
+     "rotation": 0,
+     "opacity": 0.45,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 346,
+      "h": 346,
+      "stroke": "#ffb020",
+      "strokeWidth": 2,
+      "inset": 1.0
+     }
+    },
+    {
+     "id": "tpl-s32",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 3.636,
+     "yPct": 21.13,
+     "widthPct": 92.727,
+     "heightPct": 79.479,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 408,
+      "h": 759.82,
+      "radius": 102.0,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s33",
+     "assetId": "shape:Badge",
+     "name": "Badge",
+     "xPct": 65.066,
+     "yPct": 4.184,
+     "widthPct": 25.843,
+     "heightPct": 3.138,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 113.71,
+      "h": 30,
+      "radius": 15,
+      "fill": "#ffb020"
+     }
+    },
+    {
+     "id": "tpl-s34",
+     "assetId": "shape:Badge dot",
+     "name": "Badge dot",
+     "xPct": 67.793,
+     "yPct": 5.335,
+     "widthPct": 1.818,
+     "heightPct": 0.837,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 8,
+      "h": 8,
+      "fill": "#24100b"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 50.21,
+    "x": 0.0,
+    "y": 15.02,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
   }
+ ],
+ "designHeight": 2347,
+ "textColor": "#111111",
+ "columnCount": 4,
+ "titles": [
+  "Discover Local Gems",
+  "Book A Table In Seconds",
+  "Order From Top Chefs",
+  "Enjoy Every Bite"
+ ],
+ "subtitles": [
+  "Top-rated restaurants right around the corner",
+  "Pick a time, choose your seat, and you're in",
+  "Signature dishes delivered hot to your door",
+  "Save favourites and share your best meals"
  ]
 }

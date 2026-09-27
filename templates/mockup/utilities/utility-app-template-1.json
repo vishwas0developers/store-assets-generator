@@ -1,7 +1,7 @@
 {
  "version": 1,
  "id": "utility-app-template-1",
- "name": "Utility app",
+ "name": "Utility app-5",
  "category": "utilities",
  "description": "Showcase your utility app with our free template. Display tools, features, and functionality in an efficient design that emphasizes usability and productivity.",
  "devices": [
@@ -18,65 +18,794 @@
    "label": "samsung-galaxy-s21-ultra"
   }
  ],
- "layout": "snapshot-single-title-above",
+ "layout": "single-no-text",
  "background": {
   "type": "gradient",
-  "value": "linear-gradient(135deg, #0023d4, #499dfc)"
+  "value": "linear-gradient(180deg, #f8f2e6 0%, #efe5d2 100%)"
  },
  "panoramic": false,
  "columnCount": 4,
  "titles": [
-  "Think it.\nMake it.",
-  "Docs, notes,\nfiles & more",
-  "Create a\nto do list",
-  "Capture\nyour ideas"
+  "Every thought, kept.",
+  "Jot it down in seconds",
+  "Lists that get done.",
+  "Never miss an edit."
  ],
  "subtitles": [
-  "Showcase your utility app with our free ",
-  "Showcase your utility app with our free ",
-  "Showcase your utility app with our free ",
-  "Showcase your utility app with our free "
+  "Notes, docs and tasks in one calm notebook",
+  "Quick capture from anywhere, synced the moment you type",
+  "Check things off and watch your day come together",
+  "See who changed what, right as it happens"
  ],
  "pages": [
   {
-   "title": "Think it.\nMake it.",
-   "subtitle": "Showcase your utility app with our free ",
-   "layout": "snapshot-single-title-above",
-   "background": null,
+   "title": "Every thought, kept.",
+   "subtitle": "Notes, docs and tasks in one calm notebook",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #f8f2e6 0%, #efe5d2 100%)"
+   },
    "devices": null,
    "decorations": [],
-   "textLayers": [],
-   "assetLayers": []
+   "textLayers": [
+    {
+     "id": "tpl-t5",
+     "xPct": 10.909,
+     "yPct": 7.721,
+     "widthPct": 89.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Every thought,\nkept.",
+      "color": "#1d1a16",
+      "size": 122.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.04,
+      "charSpacing": -35
+     }
+    },
+    {
+     "id": "tpl-t6",
+     "xPct": 10.909,
+     "yPct": 22.253,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Notes, docs and tasks\nin one calm notebook",
+      "color": "#5b5247",
+      "size": 46.6,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.3
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s1",
+     "assetId": "shape:Ruling",
+     "name": "Ruling",
+     "xPct": -0.5,
+     "yPct": 3.954,
+     "widthPct": 101.0,
+     "heightPct": 92.929,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 444.4,
+      "h": 888.4,
+      "vx": -2.2,
+      "vy": 37.8,
+      "path": "M0,40L440,40M0,74L440,74M0,108L440,108M0,142L440,142M0,176L440,176M0,210L440,210M0,244L440,244M0,278L440,278M0,312L440,312M0,346L440,346M0,380L440,380M0,414L440,414M0,448L440,448M0,482L440,482M0,516L440,516M0,550L440,550M0,584L440,584M0,618L440,618M0,652L440,652M0,686L440,686M0,720L440,720M0,754L440,754M0,788L440,788M0,822L440,822M0,856L440,856M0,890L440,890M0,924L440,924",
+      "stroke": "#e2d6bf",
+      "strokeWidth": 1.2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s2",
+     "assetId": "shape:Margin line",
+     "name": "Margin line",
+     "xPct": 6.273,
+     "yPct": -0.251,
+     "widthPct": 1.091,
+     "heightPct": 100.502,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 4.8,
+      "h": 960.8,
+      "vx": 27.6,
+      "vy": -2.4,
+      "path": "M30,0L30,956",
+      "stroke": "#e9a594",
+      "strokeWidth": 1.4,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s3",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 10.738,
+     "yPct": 28.289,
+     "widthPct": 84.091,
+     "heightPct": 70.843,
+     "rotation": 6,
+     "opacity": 0.22,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 370,
+      "h": 677.25,
+      "radius": 95.92,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s4",
+     "assetId": "shape:Marker swash",
+     "name": "Marker swash",
+     "xPct": 9.091,
+     "yPct": 15.638,
+     "widthPct": 31.544,
+     "heightPct": 2.197,
+     "rotation": -2,
+     "opacity": 1,
+     "zIndex": 29,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 138.79,
+      "h": 21.0,
+      "radius": 5.0,
+      "fill": "#e2553a"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 43.85,
+    "x": 4.67,
+    "y": 21.62,
+    "rotation": 6,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#1d1a16",
+    "borderColor": "#3a352e",
+    "zIndex": 10
+   }
   },
   {
-   "title": "Docs, notes,\nfiles & more",
-   "subtitle": "Showcase your utility app with our free ",
-   "layout": "snapshot-single-title-above",
-   "background": null,
+   "title": "Jot it down in seconds",
+   "subtitle": "Quick capture from anywhere, synced the moment you type",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #24211c 0%, #15130f 100%)"
+   },
    "devices": null,
    "decorations": [],
-   "textLayers": [],
-   "assetLayers": []
+   "textLayers": [
+    {
+     "id": "tpl-t10",
+     "xPct": 10.909,
+     "yPct": 70.113,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Jot it down\nin seconds",
+      "color": "#f8f2e6",
+      "size": 132.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.04,
+      "charSpacing": -35
+     }
+    },
+    {
+     "id": "tpl-t11",
+     "xPct": 10.909,
+     "yPct": 84.805,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Quick capture from anywhere,\nsynced the moment you type",
+      "color": "#d8cdb9",
+      "size": 46.6,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.3
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s7",
+     "assetId": "shape:Warm glow",
+     "name": "Warm glow",
+     "xPct": 6.818,
+     "yPct": 14.644,
+     "widthPct": 86.364,
+     "heightPct": 39.749,
+     "rotation": 0,
+     "opacity": 0.18,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 380,
+      "h": 380,
+      "fill": "#e2553a",
+      "blur": 60
+     }
+    },
+    {
+     "id": "tpl-s8",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 7.955,
+     "yPct": 0.837,
+     "widthPct": 84.091,
+     "heightPct": 69.37,
+     "rotation": 0,
+     "opacity": 0.4,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 370,
+      "h": 663.18,
+      "radius": 100.0,
+      "fill": "#000000",
+      "blur": 20,
+      "inset": 60
+     }
+    },
+    {
+     "id": "tpl-s9",
+     "assetId": "shape:Marker swash",
+     "name": "Marker swash",
+     "xPct": 9.091,
+     "yPct": 78.646,
+     "widthPct": 53.466,
+     "heightPct": 2.372,
+     "rotation": -2,
+     "opacity": 1,
+     "zIndex": 29,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 235.25,
+      "h": 22.68,
+      "radius": 5.4,
+      "fill": "#e2553a"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 41.84,
+    "x": 0.0,
+    "y": -27.32,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#f8f2e6",
+    "borderColor": "#d9ccb4",
+    "zIndex": 10
+   }
   },
   {
-   "title": "Create a\nto do list",
-   "subtitle": "Showcase your utility app with our free ",
-   "layout": "snapshot-single-title-above",
-   "background": null,
+   "title": "Lists that get done.",
+   "subtitle": "Check things off and watch your day come together",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #f8f2e6 0%, #efe5d2 100%)"
+   },
    "devices": null,
    "decorations": [],
-   "textLayers": [],
-   "assetLayers": []
+   "textLayers": [
+    {
+     "id": "tpl-t17",
+     "xPct": 10.909,
+     "yPct": 7.166,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Lists that\nget done.",
+      "color": "#1d1a16",
+      "size": 137.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.04,
+      "charSpacing": -35
+     }
+    },
+    {
+     "id": "tpl-t18",
+     "xPct": 10.909,
+     "yPct": 22.253,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Check things off and watch\nyour day come together",
+      "color": "#5b5247",
+      "size": 46.6,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.3
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s12",
+     "assetId": "shape:Ruling",
+     "name": "Ruling",
+     "xPct": -0.5,
+     "yPct": 3.954,
+     "widthPct": 101.0,
+     "heightPct": 92.929,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 444.4,
+      "h": 888.4,
+      "vx": -2.2,
+      "vy": 37.8,
+      "path": "M0,40L440,40M0,74L440,74M0,108L440,108M0,142L440,142M0,176L440,176M0,210L440,210M0,244L440,244M0,278L440,278M0,312L440,312M0,346L440,346M0,380L440,380M0,414L440,414M0,448L440,448M0,482L440,482M0,516L440,516M0,550L440,550M0,584L440,584M0,618L440,618M0,652L440,652M0,686L440,686M0,720L440,720M0,754L440,754M0,788L440,788M0,822L440,822M0,856L440,856M0,890L440,890M0,924L440,924",
+      "stroke": "#e2d6bf",
+      "strokeWidth": 1.2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s13",
+     "assetId": "shape:Margin line",
+     "name": "Margin line",
+     "xPct": 6.273,
+     "yPct": -0.251,
+     "widthPct": 1.091,
+     "heightPct": 100.502,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 4.8,
+      "h": 960.8,
+      "vx": 27.6,
+      "vy": -2.4,
+      "path": "M30,0L30,956",
+      "stroke": "#e9a594",
+      "strokeWidth": 1.4,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s14",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 3.846,
+     "yPct": 30.143,
+     "widthPct": 73.182,
+     "heightPct": 61.405,
+     "rotation": -7,
+     "opacity": 0.2,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 322,
+      "h": 587.04,
+      "radius": 84.16,
+      "fill": "#000000",
+      "blur": 16,
+      "inset": 48
+     }
+    },
+    {
+     "id": "tpl-s15",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 21.199,
+     "yPct": 32.323,
+     "widthPct": 79.091,
+     "heightPct": 65.843,
+     "rotation": 5,
+     "opacity": 0.25,
+     "zIndex": 11,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 348,
+      "h": 629.45,
+      "radius": 92.4,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s16",
+     "assetId": "shape:Marker swash",
+     "name": "Marker swash",
+     "xPct": 31.843,
+     "yPct": 16.008,
+     "widthPct": 38.311,
+     "heightPct": 2.46,
+     "rotation": -2,
+     "opacity": 1,
+     "zIndex": 29,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 168.57,
+      "h": 23.52,
+      "radius": 5.6,
+      "fill": "#e2553a"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 40.17,
+    "x": 19.7,
+    "y": 26.41,
+    "rotation": 5,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#1d1a16",
+    "borderColor": "#3a352e",
+    "zIndex": 12
+   },
+   "extraDevices": [
+    {
+     "size": 37.82,
+     "x": -18.62,
+     "y": 19.49,
+     "rotation": -7,
+     "brightness": 100,
+     "frameless": false,
+     "bezelColor": "#1d1a16",
+     "borderColor": "#3a352e",
+     "zIndex": 10
+    }
+   ]
   },
   {
-   "title": "Capture\nyour ideas",
-   "subtitle": "Showcase your utility app with our free ",
-   "layout": "snapshot-single-title-above",
-   "background": null,
+   "title": "Never miss an edit.",
+   "subtitle": "See who changed what, right as it happens",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #f8f2e6 0%, #efe5d2 100%)"
+   },
    "devices": null,
    "decorations": [],
-   "textLayers": [],
-   "assetLayers": []
+   "textLayers": [
+    {
+     "id": "tpl-t27",
+     "xPct": 10.909,
+     "yPct": 7.166,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Never miss\nan edit.",
+      "color": "#1d1a16",
+      "size": 137.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.04,
+      "charSpacing": -35
+     }
+    },
+    {
+     "id": "tpl-t28",
+     "xPct": 10.909,
+     "yPct": 22.253,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "See who changed what,\nright as it happens",
+      "color": "#5b5247",
+      "size": 46.6,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.3
+     }
+    },
+    {
+     "id": "tpl-t29",
+     "xPct": 18.224,
+     "yPct": 58.136,
+     "widthPct": 6.106,
+     "rotation": -3,
+     "opacity": 1,
+     "zIndex": 19,
+     "customName": "M",
+     "style": {
+      "text": "M",
+      "color": "#ffffff",
+      "size": 49.1,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t30",
+     "xPct": 28.422,
+     "yPct": 56.89,
+     "widthPct": 42.479,
+     "rotation": -3,
+     "opacity": 1,
+     "zIndex": 19,
+     "customName": "Maya edited Groceries",
+     "style": {
+      "text": "Maya edited Groceries",
+      "color": "#1d1a16",
+      "size": 39.3,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t31",
+     "xPct": 28.728,
+     "yPct": 59.578,
+     "widthPct": 41.752,
+     "rotation": -3,
+     "opacity": 1,
+     "zIndex": 19,
+     "customName": "Added oat milk  ·  just now",
+     "style": {
+      "text": "Added oat milk  ·  just now",
+      "color": "#5b5247",
+      "size": 34.4,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s19",
+     "assetId": "shape:Ruling",
+     "name": "Ruling",
+     "xPct": -0.5,
+     "yPct": 3.954,
+     "widthPct": 101.0,
+     "heightPct": 92.929,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 444.4,
+      "h": 888.4,
+      "vx": -2.2,
+      "vy": 37.8,
+      "path": "M0,40L440,40M0,74L440,74M0,108L440,108M0,142L440,142M0,176L440,176M0,210L440,210M0,244L440,244M0,278L440,278M0,312L440,312M0,346L440,346M0,380L440,380M0,414L440,414M0,448L440,448M0,482L440,482M0,516L440,516M0,550L440,550M0,584L440,584M0,618L440,618M0,652L440,652M0,686L440,686M0,720L440,720M0,754L440,754M0,788L440,788M0,822L440,822M0,856L440,856M0,890L440,890M0,924L440,924",
+      "stroke": "#e2d6bf",
+      "strokeWidth": 1.2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s20",
+     "assetId": "shape:Margin line",
+     "name": "Margin line",
+     "xPct": 6.273,
+     "yPct": -0.251,
+     "widthPct": 1.091,
+     "heightPct": 100.502,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 4.8,
+      "h": 960.8,
+      "vx": 27.6,
+      "vy": -2.4,
+      "path": "M30,0L30,956",
+      "stroke": "#e9a594",
+      "strokeWidth": 1.4,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s21",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 7.955,
+     "yPct": 26.569,
+     "widthPct": 84.091,
+     "heightPct": 70.843,
+     "rotation": 0,
+     "opacity": 0.22,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 370,
+      "h": 677.25,
+      "radius": 95.92,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s22",
+     "assetId": "shape:Marker swash",
+     "name": "Marker swash",
+     "xPct": 26.842,
+     "yPct": 16.008,
+     "widthPct": 30.94,
+     "heightPct": 2.46,
+     "rotation": -2,
+     "opacity": 1,
+     "zIndex": 29,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 136.14,
+      "h": 23.52,
+      "radius": 5.6,
+      "fill": "#e2553a"
+     }
+    },
+    {
+     "id": "tpl-s23",
+     "assetId": "shape:Card shadow",
+     "name": "Card shadow",
+     "xPct": 2.868,
+     "yPct": 50.802,
+     "widthPct": 86.364,
+     "heightPct": 17.992,
+     "rotation": -3,
+     "opacity": 0.18,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 380,
+      "h": 172,
+      "radius": 62,
+      "fill": "#000000",
+      "blur": 14,
+      "inset": 40
+     }
+    },
+    {
+     "id": "tpl-s24",
+     "assetId": "shape:Update card",
+     "name": "Update card",
+     "xPct": 10.455,
+     "yPct": 53.766,
+     "widthPct": 68.182,
+     "heightPct": 9.623,
+     "rotation": -3,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 300,
+      "h": 92,
+      "radius": 22,
+      "fill": "#fffaf1",
+      "stroke": "#e6d9c2",
+      "strokeWidth": 1.5,
+      "inset": 0.75
+     }
+    },
+    {
+     "id": "tpl-s25",
+     "assetId": "shape:Avatar",
+     "name": "Avatar",
+     "xPct": 15.488,
+     "yPct": 56.856,
+     "widthPct": 10.0,
+     "heightPct": 4.603,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 44,
+      "h": 44,
+      "fill": "#e2553a"
+     }
+    },
+    {
+     "id": "tpl-s26",
+     "assetId": "shape:Unread dot",
+     "name": "Unread dot",
+     "xPct": 70.657,
+     "yPct": 55.402,
+     "widthPct": 2.727,
+     "heightPct": 1.255,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 12,
+      "h": 12,
+      "fill": "#e2553a"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 43.85,
+    "x": 0.0,
+    "y": 18.73,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#1d1a16",
+    "borderColor": "#3a352e",
+    "zIndex": 10
+   }
   }
- ]
+ ],
+ "designHeight": 2347,
+ "textColor": "#111111"
 }

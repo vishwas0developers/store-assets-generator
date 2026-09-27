@@ -1,7 +1,7 @@
 {
  "version": 1,
  "id": "foot-app-template-5",
- "name": "Food app",
+ "name": "Food app-3",
  "category": "food-and-drink",
  "description": "Present your food delivery platform with our free template. Display restaurant discovery, menu browsing, and order management in an appealing design that enhances the food ordering experience.",
  "devices": [
@@ -20,197 +20,187 @@
  ],
  "layout": "single-no-text",
  "background": {
-  "type": "solid",
-  "value": "#ffffff"
+  "type": "gradient",
+  "value": "linear-gradient(180deg, #2a1236 0%, #140818 100%)"
  },
  "panoramic": true,
  "columnCount": 4,
  "titles": [
-  "ORDER NOW FROM US",
-  "CHECK THE ONLINE MENU",
-  "CHOOSE YOUR FAVORITE RECIPES",
-  "PAY ONLINE"
+  "Dinner Delivered Hot & Fast",
+  "Browse The Full Menu",
+  "Save Your Favourite Dishes",
+  "Checkout In One Tap"
  ],
  "subtitles": [
-  "Order now from us",
-  "Check the online menu",
-  "Choose your favorite recipes",
-  "Pay online"
+  "Dinner delivered\nhot and fast",
+  "Browse the\nfull menu",
+  "Save your\nfavourite dishes",
+  "Checkout in\none tap"
  ],
  "pages": [
   {
-   "title": "ORDER NOW FROM US",
-   "subtitle": "Order now from us",
+   "title": "Dinner Delivered Hot & Fast",
+   "subtitle": "Dinner delivered\nhot and fast",
    "layout": "single-no-text",
    "background": {
-    "type": "solid",
-    "value": "#ffffff"
-   },
-   "devices": null,
-   "decorations": [],
-   "textLayers": [
-    {
-     "id": "tpl-t2",
-     "xPct": 0.0,
-     "yPct": 9.249,
-     "widthPct": 100.0,
-     "rotation": 0,
-     "opacity": 1,
-     "zIndex": 30,
-     "customName": "Title",
-     "style": {
-      "text": "ORDER NOW\nFROM US",
-      "color": "#3b4d40",
-      "size": 88.4,
-      "align": "center",
-      "fontFamily": "Inter, sans-serif",
-      "fontWeightNum": 800,
-      "lineHeightMultiplier": 1.36,
-      "charSpacing": -40
-     }
-    }
-   ],
-   "assetLayers": [
-    {
-     "id": "tpl-s1",
-     "assetId": "shape:Green hill",
-     "name": "Green hill",
-     "xPct": 0.0,
-     "yPct": 46.862,
-     "widthPct": 100.0,
-     "heightPct": 53.556,
-     "rotation": 0,
-     "opacity": 1,
-     "zIndex": 3,
-     "cropFit": "stretch",
-     "shape": {
-      "type": "path",
-      "w": 440,
-      "h": 512,
-      "vx": 0,
-      "vy": 448,
-      "path": "M0,522L30,503C150,503 300,452 415,452L440,448L440,960L0,960Z",
-      "fill": "#3b4d40"
-     }
-    },
-    {
-     "id": "tpl-s3",
-     "assetId": "shape:Phone shadow",
-     "name": "Phone shadow",
-     "xPct": -6.591,
-     "yPct": 22.699,
-     "widthPct": 113.182,
-     "heightPct": 99.933,
-     "rotation": 0,
-     "opacity": 0.16,
-     "zIndex": 5,
-     "cropFit": "stretch",
-     "shape": {
-      "type": "roundRect",
-      "w": 498,
-      "h": 955.36,
-      "radius": 116.4,
-      "fill": "#000000",
-      "blur": 18,
-      "inset": 54
-     }
-    }
-   ],
-   "deviceOne": {
-    "size": 65.27,
-    "x": 0.0,
-    "y": 24.86,
-    "rotation": 0,
-    "brightness": 100,
-    "frameless": false,
-    "bezelColor": "#060606",
-    "borderColor": "#5e5e5e",
-    "zIndex": 10
-   }
-  },
-  {
-   "title": "CHECK THE ONLINE MENU",
-   "subtitle": "Check the online menu",
-   "layout": "single-no-text",
-   "background": {
-    "type": "solid",
-    "value": "#ffffff"
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #2a1236 0%, #140818 100%)"
    },
    "devices": null,
    "decorations": [],
    "textLayers": [
     {
      "id": "tpl-t5",
-     "xPct": 0.0,
-     "yPct": 9.249,
-     "widthPct": 100.0,
+     "xPct": 9.091,
+     "yPct": 6.186,
+     "widthPct": 21.796,
      "rotation": 0,
      "opacity": 1,
-     "zIndex": 30,
-     "customName": "Title",
+     "zIndex": 31,
+     "customName": "Kicker",
      "style": {
-      "text": "CHECK THE\nONLINE MENU",
-      "color": "#3b4d40",
-      "size": 88.4,
+      "text": "TONIGHT",
+      "color": "#ffb52e",
+      "size": 29.5,
       "align": "center",
       "fontFamily": "Inter, sans-serif",
       "fontWeightNum": 800,
-      "lineHeightMultiplier": 1.36,
-      "charSpacing": -40
+      "lineHeightMultiplier": 1,
+      "charSpacing": 140
+     }
+    },
+    {
+     "id": "tpl-t6",
+     "xPct": 8.636,
+     "yPct": 9.584,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "Title line 1",
+     "style": {
+      "text": "Dinner, delivered",
+      "color": "#fff3de",
+      "size": 103.1,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.1,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t7",
+     "xPct": 8.636,
+     "yPct": 14.605,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "Title line 2",
+     "style": {
+      "text": "hot & fast.",
+      "color": "#ffb52e",
+      "size": 103.1,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.1,
+      "charSpacing": -20
      }
     }
    ],
    "assetLayers": [
     {
-     "id": "tpl-s4",
-     "assetId": "shape:Green hill",
-     "name": "Green hill",
-     "xPct": 0.0,
-     "yPct": 47.803,
-     "widthPct": 100.0,
-     "heightPct": 52.615,
+     "id": "tpl-s1",
+     "assetId": "shape:Plate",
+     "name": "Plate",
+     "xPct": 25.0,
+     "yPct": 42.887,
+     "widthPct": 86.364,
+     "heightPct": 39.749,
      "rotation": 0,
      "opacity": 1,
      "zIndex": 3,
      "cropFit": "stretch",
      "shape": {
-      "type": "path",
-      "w": 440,
-      "h": 503,
-      "vx": 0,
-      "vy": 457,
-      "path": "M0,457L30,480C150,480 300,700 415,700L440,700L440,960L0,960Z",
-      "fill": "#3b4d40"
+      "type": "ellipse",
+      "w": 380,
+      "h": 380,
+      "fill": "#ffb52e"
      }
     },
     {
-     "id": "tpl-s6",
+     "id": "tpl-s2",
+     "assetId": "shape:Plate rim",
+     "name": "Plate rim",
+     "xPct": 33.636,
+     "yPct": 46.862,
+     "widthPct": 69.091,
+     "heightPct": 31.799,
+     "rotation": 0,
+     "opacity": 0.35,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 304.0,
+      "h": 304.0,
+      "stroke": "#2a1236",
+      "strokeWidth": 2.5,
+      "inset": 1.25
+     }
+    },
+    {
+     "id": "tpl-s3",
      "assetId": "shape:Phone shadow",
      "name": "Phone shadow",
-     "xPct": -6.591,
-     "yPct": 22.699,
-     "widthPct": 113.182,
-     "heightPct": 99.933,
-     "rotation": 0,
+     "xPct": 8.228,
+     "yPct": 22.629,
+     "widthPct": 88.182,
+     "heightPct": 74.933,
+     "rotation": 6,
      "opacity": 0.16,
      "zIndex": 5,
      "cropFit": "stretch",
      "shape": {
       "type": "roundRect",
-      "w": 498,
-      "h": 955.36,
-      "radius": 116.4,
+      "w": 388,
+      "h": 716.36,
+      "radius": 98.8,
       "fill": "#000000",
       "blur": 18,
       "inset": 54
      }
+    },
+    {
+     "id": "tpl-s4",
+     "assetId": "shape:Kicker pill",
+     "name": "Kicker pill",
+     "xPct": 9.091,
+     "yPct": 5.439,
+     "widthPct": 21.796,
+     "heightPct": 2.72,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 95.9,
+      "h": 26,
+      "radius": 13,
+      "stroke": "#ffb52e",
+      "strokeWidth": 1.5,
+      "inset": 0.75
+     }
     }
    ],
    "deviceOne": {
-    "size": 65.27,
-    "x": 0.0,
-    "y": 24.86,
-    "rotation": 0,
+    "size": 46.86,
+    "x": 3.64,
+    "y": 14.88,
+    "rotation": 6,
     "brightness": 100,
     "frameless": false,
     "bezelColor": "#060606",
@@ -219,87 +209,247 @@
    }
   },
   {
-   "title": "CHOOSE YOUR FAVORITE RECIPES",
-   "subtitle": "Choose your favorite recipes",
+   "title": "Browse The Full Menu",
+   "subtitle": "Browse the\nfull menu",
    "layout": "single-no-text",
    "background": {
-    "type": "solid",
-    "value": "#ffffff"
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #2a1236 0%, #140818 100%)"
    },
    "devices": null,
    "decorations": [],
    "textLayers": [
     {
-     "id": "tpl-t8",
-     "xPct": 0.0,
-     "yPct": 9.249,
-     "widthPct": 100.0,
+     "id": "tpl-t16",
+     "xPct": 9.091,
+     "yPct": 6.186,
+     "widthPct": 16.198,
      "rotation": 0,
      "opacity": 1,
-     "zIndex": 30,
-     "customName": "Title",
+     "zIndex": 31,
+     "customName": "Kicker",
      "style": {
-      "text": "CHOOSE YOUR\nFAVORITE RECIPES",
-      "color": "#3b4d40",
-      "size": 88.4,
+      "text": "MENU",
+      "color": "#ffb52e",
+      "size": 29.5,
       "align": "center",
       "fontFamily": "Inter, sans-serif",
       "fontWeightNum": 800,
-      "lineHeightMultiplier": 1.36,
-      "charSpacing": -40
+      "lineHeightMultiplier": 1,
+      "charSpacing": 140
+     }
+    },
+    {
+     "id": "tpl-t17",
+     "xPct": 8.636,
+     "yPct": 9.584,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "Title line 1",
+     "style": {
+      "text": "Every dish,",
+      "color": "#fff3de",
+      "size": 103.1,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.1,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t18",
+     "xPct": 8.636,
+     "yPct": 14.605,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "Title line 2",
+     "style": {
+      "text": "one scroll.",
+      "color": "#ffb52e",
+      "size": 103.1,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.1,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t13",
+     "xPct": 9.871,
+     "yPct": 47.971,
+     "widthPct": 17.669,
+     "rotation": -6,
+     "opacity": 1,
+     "zIndex": 21,
+     "customName": "CHEF'S PICK",
+     "style": {
+      "text": "CHEF'S PICK",
+      "color": "#8a3b00",
+      "size": 27.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t14",
+     "xPct": 10.352,
+     "yPct": 50.075,
+     "widthPct": 32.762,
+     "rotation": -6,
+     "opacity": 1,
+     "zIndex": 21,
+     "customName": "Smoky ramen",
+     "style": {
+      "text": "Smoky ramen",
+      "color": "#2a1236",
+      "size": 49.1,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
      }
     }
    ],
    "assetLayers": [
     {
-     "id": "tpl-s7",
-     "assetId": "shape:Green hill",
-     "name": "Green hill",
-     "xPct": 0.0,
-     "yPct": 42.05,
-     "widthPct": 100.0,
-     "heightPct": 58.368,
+     "id": "tpl-s8",
+     "assetId": "shape:Plate",
+     "name": "Plate",
+     "xPct": -13.636,
+     "yPct": 67.992,
+     "widthPct": 77.273,
+     "heightPct": 35.565,
      "rotation": 0,
      "opacity": 1,
      "zIndex": 3,
      "cropFit": "stretch",
      "shape": {
-      "type": "path",
-      "w": 440,
-      "h": 558,
-      "vx": 0,
-      "vy": 402,
-      "path": "M0,692L30,699C150,699 300,402 415,402L440,402L440,960L0,960Z",
-      "fill": "#3b4d40"
+      "type": "ellipse",
+      "w": 340,
+      "h": 340,
+      "fill": "#ffb52e"
      }
     },
     {
      "id": "tpl-s9",
+     "assetId": "shape:Plate rim",
+     "name": "Plate rim",
+     "xPct": -5.909,
+     "yPct": 71.548,
+     "widthPct": 61.818,
+     "heightPct": 28.452,
+     "rotation": 0,
+     "opacity": 0.35,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 272.0,
+      "h": 272.0,
+      "stroke": "#2a1236",
+      "strokeWidth": 2.5,
+      "inset": 1.25
+     }
+    },
+    {
+     "id": "tpl-s10",
      "assetId": "shape:Phone shadow",
      "name": "Phone shadow",
-     "xPct": -6.591,
-     "yPct": 22.699,
-     "widthPct": 113.182,
-     "heightPct": 99.933,
+     "xPct": 10.455,
+     "yPct": 22.385,
+     "widthPct": 92.727,
+     "heightPct": 79.479,
      "rotation": 0,
      "opacity": 0.16,
      "zIndex": 5,
      "cropFit": "stretch",
      "shape": {
       "type": "roundRect",
-      "w": 498,
-      "h": 955.36,
-      "radius": 116.4,
+      "w": 408,
+      "h": 759.82,
+      "radius": 102.0,
       "fill": "#000000",
       "blur": 18,
       "inset": 54
      }
+    },
+    {
+     "id": "tpl-s11",
+     "assetId": "shape:Card shadow",
+     "name": "Card shadow",
+     "xPct": -2.045,
+     "yPct": 41.318,
+     "widthPct": 55.0,
+     "heightPct": 15.69,
+     "rotation": -6,
+     "opacity": 0.3,
+     "zIndex": 14,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 242,
+      "h": 150,
+      "radius": 54,
+      "fill": "#000000",
+      "blur": 12,
+      "inset": 36
+     }
+    },
+    {
+     "id": "tpl-s12",
+     "assetId": "shape:Chef card",
+     "name": "Chef card",
+     "xPct": 6.136,
+     "yPct": 45.084,
+     "widthPct": 38.636,
+     "heightPct": 8.159,
+     "rotation": -6,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 170,
+      "h": 78,
+      "radius": 18,
+      "fill": "#fff3de"
+     }
+    },
+    {
+     "id": "tpl-s15",
+     "assetId": "shape:Kicker pill",
+     "name": "Kicker pill",
+     "xPct": 9.091,
+     "yPct": 5.439,
+     "widthPct": 16.198,
+     "heightPct": 2.72,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 71.27,
+      "h": 26,
+      "radius": 13,
+      "stroke": "#ffb52e",
+      "strokeWidth": 1.5,
+      "inset": 0.75
+     }
     }
    ],
    "deviceOne": {
-    "size": 65.27,
-    "x": 0.0,
-    "y": 24.86,
+    "size": 50.21,
+    "x": 10.0,
+    "y": 16.86,
     "rotation": 0,
     "brightness": 100,
     "frameless": false,
@@ -309,88 +459,472 @@
    }
   },
   {
-   "title": "PAY ONLINE",
-   "subtitle": "Pay online",
+   "title": "Save Your Favourite Dishes",
+   "subtitle": "Save your\nfavourite dishes",
    "layout": "single-no-text",
    "background": {
-    "type": "solid",
-    "value": "#ffffff"
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #2a1236 0%, #140818 100%)"
    },
    "devices": null,
    "decorations": [],
    "textLayers": [
     {
-     "id": "tpl-t11",
-     "xPct": 0.0,
-     "yPct": 9.249,
-     "widthPct": 100.0,
+     "id": "tpl-t24",
+     "xPct": 9.091,
+     "yPct": 6.186,
+     "widthPct": 27.961,
      "rotation": 0,
      "opacity": 1,
-     "zIndex": 30,
-     "customName": "Title",
+     "zIndex": 31,
+     "customName": "Kicker",
      "style": {
-      "text": "PAY\nONLINE",
-      "color": "#3b4d40",
-      "size": 88.4,
+      "text": "FAVOURITES",
+      "color": "#ffb52e",
+      "size": 29.5,
       "align": "center",
       "fontFamily": "Inter, sans-serif",
       "fontWeightNum": 800,
-      "lineHeightMultiplier": 1.36,
-      "charSpacing": -40
+      "lineHeightMultiplier": 1,
+      "charSpacing": 140
+     }
+    },
+    {
+     "id": "tpl-t25",
+     "xPct": 8.636,
+     "yPct": 9.584,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "Title line 1",
+     "style": {
+      "text": "Your go-to",
+      "color": "#fff3de",
+      "size": 103.1,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.1,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t26",
+     "xPct": 8.636,
+     "yPct": 14.605,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "Title line 2",
+     "style": {
+      "text": "orders, saved.",
+      "color": "#ffb52e",
+      "size": 103.1,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.1,
+      "charSpacing": -20
      }
     }
    ],
    "assetLayers": [
     {
-     "id": "tpl-s10",
-     "assetId": "shape:Green hill",
-     "name": "Green hill",
-     "xPct": 0.0,
-     "yPct": 41.841,
-     "widthPct": 100.0,
-     "heightPct": 58.577,
+     "id": "tpl-s19",
+     "assetId": "shape:Plate",
+     "name": "Plate",
+     "xPct": 15.909,
+     "yPct": 42.887,
+     "widthPct": 68.182,
+     "heightPct": 31.381,
      "rotation": 0,
      "opacity": 1,
      "zIndex": 3,
      "cropFit": "stretch",
      "shape": {
-      "type": "path",
-      "w": 440,
-      "h": 560,
-      "vx": 0,
-      "vy": 400,
-      "path": "M0,400L30,402C150,402 300,536 415,536L440,542L440,960L0,960Z",
-      "fill": "#3b4d40"
+      "type": "ellipse",
+      "w": 300,
+      "h": 300,
+      "fill": "#ffb52e"
      }
     },
     {
-     "id": "tpl-s12",
+     "id": "tpl-s20",
+     "assetId": "shape:Plate rim",
+     "name": "Plate rim",
+     "xPct": 22.727,
+     "yPct": 46.025,
+     "widthPct": 54.545,
+     "heightPct": 25.105,
+     "rotation": 0,
+     "opacity": 0.35,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 240.0,
+      "h": 240.0,
+      "stroke": "#2a1236",
+      "strokeWidth": 2.5,
+      "inset": 1.25
+     }
+    },
+    {
+     "id": "tpl-s21",
      "assetId": "shape:Phone shadow",
      "name": "Phone shadow",
-     "xPct": -6.591,
-     "yPct": 22.699,
-     "widthPct": 113.182,
-     "heightPct": 99.933,
-     "rotation": 0,
+     "xPct": 2.0,
+     "yPct": 25.037,
+     "widthPct": 81.364,
+     "heightPct": 68.115,
+     "rotation": -8,
      "opacity": 0.16,
      "zIndex": 5,
      "cropFit": "stretch",
      "shape": {
       "type": "roundRect",
-      "w": 498,
-      "h": 955.36,
-      "radius": 116.4,
+      "w": 358,
+      "h": 651.18,
+      "radius": 94.0,
       "fill": "#000000",
       "blur": 18,
       "inset": 54
      }
+    },
+    {
+     "id": "tpl-s22",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 21.048,
+     "yPct": 29.342,
+     "widthPct": 81.364,
+     "heightPct": 68.115,
+     "rotation": 6,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 358,
+      "h": 651.18,
+      "radius": 94.0,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s23",
+     "assetId": "shape:Kicker pill",
+     "name": "Kicker pill",
+     "xPct": 9.091,
+     "yPct": 5.439,
+     "widthPct": 27.961,
+     "heightPct": 2.72,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 123.03,
+      "h": 26,
+      "radius": 13,
+      "stroke": "#ffb52e",
+      "strokeWidth": 1.5,
+      "inset": 0.75
+     }
     }
    ],
    "deviceOne": {
-    "size": 65.27,
-    "x": 0.0,
-    "y": 24.86,
-    "rotation": 0,
+    "size": 41.84,
+    "x": -12.88,
+    "y": 14.9,
+    "rotation": -8,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 9
+   },
+   "extraDevices": [
+    {
+     "size": 41.84,
+     "x": 20.64,
+     "y": 22.48,
+     "rotation": 6,
+     "brightness": 100,
+     "frameless": false,
+     "bezelColor": "#060606",
+     "borderColor": "#5e5e5e",
+     "zIndex": 11
+    }
+   ]
+  },
+  {
+   "title": "Checkout In One Tap",
+   "subtitle": "Checkout in\none tap",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #2a1236 0%, #140818 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t36",
+     "xPct": 9.091,
+     "yPct": 6.186,
+     "widthPct": 25.129,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Kicker",
+     "style": {
+      "text": "CHECKOUT",
+      "color": "#ffb52e",
+      "size": 29.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 140
+     }
+    },
+    {
+     "id": "tpl-t37",
+     "xPct": 8.636,
+     "yPct": 9.584,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "Title line 1",
+     "style": {
+      "text": "Pay once,",
+      "color": "#fff3de",
+      "size": 103.1,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.1,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t38",
+     "xPct": 8.636,
+     "yPct": 14.605,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "Title line 2",
+     "style": {
+      "text": "eat sooner.",
+      "color": "#ffb52e",
+      "size": 103.1,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.1,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t33",
+     "xPct": 60.0,
+     "yPct": 62.99,
+     "widthPct": 1.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "customName": "✓",
+     "style": {
+      "text": "✓",
+      "color": "#ffb52e",
+      "size": 39.3,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t34",
+     "xPct": 65.909,
+     "yPct": 62.913,
+     "widthPct": 27.564,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "customName": "Paid  $24.80",
+     "style": {
+      "text": "Paid  $24.80",
+      "color": "#2a1236",
+      "size": 44.2,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s27",
+     "assetId": "shape:Plate",
+     "name": "Plate",
+     "xPct": 54.545,
+     "yPct": 21.967,
+     "widthPct": 54.545,
+     "heightPct": 25.105,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 240,
+      "h": 240,
+      "fill": "#ffb52e"
+     }
+    },
+    {
+     "id": "tpl-s28",
+     "assetId": "shape:Plate rim",
+     "name": "Plate rim",
+     "xPct": 60.0,
+     "yPct": 24.477,
+     "widthPct": 43.636,
+     "heightPct": 20.084,
+     "rotation": 0,
+     "opacity": 0.35,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 192.0,
+      "h": 192.0,
+      "stroke": "#2a1236",
+      "strokeWidth": 2.5,
+      "inset": 1.25
+     }
+    },
+    {
+     "id": "tpl-s29",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 4.258,
+     "yPct": 22.302,
+     "widthPct": 92.727,
+     "heightPct": 79.479,
+     "rotation": -4,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 408,
+      "h": 759.82,
+      "radius": 102.0,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s30",
+     "assetId": "shape:Chip shadow",
+     "name": "Chip shadow",
+     "xPct": 45.0,
+     "yPct": 57.113,
+     "widthPct": 54.545,
+     "heightPct": 13.389,
+     "rotation": 0,
+     "opacity": 0.3,
+     "zIndex": 14,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 240,
+      "h": 128,
+      "radius": 64,
+      "fill": "#000000",
+      "blur": 12,
+      "inset": 36
+     }
+    },
+    {
+     "id": "tpl-s31",
+     "assetId": "shape:Paid chip",
+     "name": "Paid chip",
+     "xPct": 53.182,
+     "yPct": 60.879,
+     "widthPct": 38.182,
+     "heightPct": 5.858,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 168,
+      "h": 56,
+      "radius": 28,
+      "fill": "#ffb52e"
+     }
+    },
+    {
+     "id": "tpl-s32",
+     "assetId": "shape:Tick disc",
+     "name": "Tick disc",
+     "xPct": 56.364,
+     "yPct": 62.134,
+     "widthPct": 7.273,
+     "heightPct": 3.347,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 32,
+      "h": 32,
+      "fill": "#2a1236"
+     }
+    },
+    {
+     "id": "tpl-s35",
+     "assetId": "shape:Kicker pill",
+     "name": "Kicker pill",
+     "xPct": 9.091,
+     "yPct": 5.439,
+     "widthPct": 25.129,
+     "heightPct": 2.72,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 110.57,
+      "h": 26,
+      "radius": 13,
+      "stroke": "#ffb52e",
+      "strokeWidth": 1.5,
+      "inset": 0.75
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 50.21,
+    "x": 0.91,
+    "y": 16.74,
+    "rotation": -4,
     "brightness": 100,
     "frameless": false,
     "bezelColor": "#060606",

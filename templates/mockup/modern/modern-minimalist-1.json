@@ -10,46 +10,896 @@
    "label": "6.7 Inch Phone"
   }
  ],
- "layout": "rotated-left-1-title-above",
+ "layout": "single-no-text",
  "background": {
-  "type": "pattern",
-  "value": "mesh"
+  "type": "gradient",
+  "value": "linear-gradient(180deg, #f8f6f1 0%, #f1eee7 100%)"
  },
  "pages": [
   {
-   "title": "Next-Gen Experience",
-   "subtitle": "Engineered for seamless productivity",
-   "layout": "rotated-left-1-title-above",
-   "background": null,
-   "devices": null
+   "title": "Less noise. More focus.",
+   "subtitle": "A quiet workspace built for the work that matters",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #f8f6f1 0%, #f1eee7 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t1",
+     "xPct": 9.091,
+     "yPct": 6.238,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "Kicker",
+     "style": {
+      "text": "01  —  FOCUS",
+      "color": "#c2361d",
+      "size": 29.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 180
+     }
+    },
+    {
+     "id": "tpl-t3",
+     "xPct": 9.091,
+     "yPct": 10.807,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Less noise.\nMore focus.",
+      "color": "#141417",
+      "size": 122.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.06,
+      "charSpacing": -45
+     }
+    },
+    {
+     "id": "tpl-t4",
+     "xPct": 9.091,
+     "yPct": 23.78,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "A quiet workspace built for\nthe work that matters",
+      "color": "#56565c",
+      "size": 41.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.35
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s2",
+     "assetId": "shape:Rule",
+     "name": "Rule",
+     "xPct": 9.091,
+     "yPct": 8.787,
+     "widthPct": 81.818,
+     "heightPct": 0.126,
+     "rotation": 0,
+     "opacity": 0.85,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 360,
+      "h": 1.2,
+      "radius": 0,
+      "fill": "#141417"
+     }
+    },
+    {
+     "id": "tpl-s5",
+     "assetId": "shape:Accent disc",
+     "name": "Accent disc",
+     "xPct": 56.136,
+     "yPct": 38.18,
+     "widthPct": 47.727,
+     "heightPct": 21.967,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 210,
+      "h": 210,
+      "fill": "#c2361d"
+     }
+    },
+    {
+     "id": "tpl-s6",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 2.273,
+     "yPct": 27.197,
+     "widthPct": 88.636,
+     "heightPct": 75.388,
+     "rotation": 0,
+     "opacity": 0.14,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 390,
+      "h": 720.71,
+      "radius": 99.12,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 47.19,
+    "x": -5.32,
+    "y": 22.25,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
   },
   {
-   "title": "Fluid Interface",
-   "subtitle": "Intuitive gestures and smooth motion",
-   "layout": "rotated-left-1-title-above",
-   "background": null,
-   "devices": null
+   "title": "Fluid by design.",
+   "subtitle": "Every swipe and tap feels effortless and natural",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #f8f6f1 0%, #f1eee7 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t7",
+     "xPct": 9.091,
+     "yPct": 6.238,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "Kicker",
+     "style": {
+      "text": "02  —  MOTION",
+      "color": "#c2361d",
+      "size": 29.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 180
+     }
+    },
+    {
+     "id": "tpl-t9",
+     "xPct": 9.091,
+     "yPct": 10.807,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Fluid by\ndesign.",
+      "color": "#141417",
+      "size": 122.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.06,
+      "charSpacing": -45
+     }
+    },
+    {
+     "id": "tpl-t10",
+     "xPct": 9.091,
+     "yPct": 23.78,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Every swipe and tap feels\neffortless and natural",
+      "color": "#56565c",
+      "size": 41.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.35
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s8",
+     "assetId": "shape:Rule",
+     "name": "Rule",
+     "xPct": 9.091,
+     "yPct": 8.787,
+     "widthPct": 81.818,
+     "heightPct": 0.126,
+     "rotation": 0,
+     "opacity": 0.85,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 360,
+      "h": 1.2,
+      "radius": 0,
+      "fill": "#141417"
+     }
+    },
+    {
+     "id": "tpl-s11",
+     "assetId": "shape:Accent disc",
+     "name": "Accent disc",
+     "xPct": 0.455,
+     "yPct": 64.017,
+     "widthPct": 40.0,
+     "heightPct": 18.41,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 176,
+      "h": 176,
+      "fill": "#c2361d"
+     }
+    },
+    {
+     "id": "tpl-s12",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 4.586,
+     "yPct": 27.944,
+     "widthPct": 85.909,
+     "heightPct": 72.661,
+     "rotation": 8,
+     "opacity": 0.14,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 378,
+      "h": 694.64,
+      "radius": 97.2,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 45.19,
+    "x": -4.01,
+    "y": 22.24,
+    "rotation": 8,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
   },
   {
-   "title": "Dark Mode First",
-   "subtitle": "Designed to reduce eye strain",
-   "layout": "rotated-left-1-title-above",
-   "background": null,
-   "devices": null
+   "title": "Every device, in sync.",
+   "subtitle": "Your work follows you, updated in real time",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #f8f6f1 0%, #f1eee7 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t13",
+     "xPct": 9.091,
+     "yPct": 6.238,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "Kicker",
+     "style": {
+      "text": "03  —  SYNC",
+      "color": "#c2361d",
+      "size": 29.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 180
+     }
+    },
+    {
+     "id": "tpl-t15",
+     "xPct": 9.091,
+     "yPct": 10.807,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Every device,\nin sync.",
+      "color": "#141417",
+      "size": 122.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.06,
+      "charSpacing": -45
+     }
+    },
+    {
+     "id": "tpl-t16",
+     "xPct": 9.091,
+     "yPct": 23.78,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Your work follows you,\nupdated in real time",
+      "color": "#56565c",
+      "size": 41.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.35
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s14",
+     "assetId": "shape:Rule",
+     "name": "Rule",
+     "xPct": 9.091,
+     "yPct": 8.787,
+     "widthPct": 81.818,
+     "heightPct": 0.126,
+     "rotation": 0,
+     "opacity": 0.85,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 360,
+      "h": 1.2,
+      "radius": 0,
+      "fill": "#141417"
+     }
+    },
+    {
+     "id": "tpl-s17",
+     "assetId": "shape:Accent disc",
+     "name": "Accent disc",
+     "xPct": 63.636,
+     "yPct": 75.314,
+     "widthPct": 45.455,
+     "heightPct": 20.921,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 200,
+      "h": 200,
+      "fill": "#c2361d"
+     }
+    },
+    {
+     "id": "tpl-s18",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -0.29,
+     "yPct": 28.139,
+     "widthPct": 79.091,
+     "heightPct": 65.843,
+     "rotation": -5,
+     "opacity": 0.12,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 348,
+      "h": 629.45,
+      "radius": 92.4,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s19",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 21.654,
+     "yPct": 32.532,
+     "widthPct": 79.091,
+     "heightPct": 65.843,
+     "rotation": 5,
+     "opacity": 0.14,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 348,
+      "h": 629.45,
+      "radius": 92.4,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 40.17,
+    "x": -19.7,
+    "y": 19.13,
+    "rotation": -5,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 9
+   },
+   "extraDevices": [
+    {
+     "size": 40.17,
+     "x": 20.53,
+     "y": 27.18,
+     "rotation": 5,
+     "brightness": 100,
+     "frameless": false,
+     "bezelColor": "#060606",
+     "borderColor": "#5e5e5e",
+     "zIndex": 11
+    }
+   ]
   },
   {
-   "title": "Instant Sync",
-   "subtitle": "Realtime cloud updates across devices",
-   "layout": "rotated-left-1-title-above",
-   "background": null,
-   "devices": null
+   "title": "Notes that stay quiet.",
+   "subtitle": "Capture ideas without the clutter",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #f8f6f1 0%, #f1eee7 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t20",
+     "xPct": 9.091,
+     "yPct": 6.238,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "Kicker",
+     "style": {
+      "text": "04  —  NOTES",
+      "color": "#c2361d",
+      "size": 29.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 180
+     }
+    },
+    {
+     "id": "tpl-t22",
+     "xPct": 9.091,
+     "yPct": 10.807,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Notes that\nstay quiet.",
+      "color": "#141417",
+      "size": 122.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.06,
+      "charSpacing": -45
+     }
+    },
+    {
+     "id": "tpl-t23",
+     "xPct": 9.091,
+     "yPct": 23.78,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Capture ideas without\nthe clutter",
+      "color": "#56565c",
+      "size": 41.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.35
+     }
+    },
+    {
+     "id": "tpl-t29",
+     "xPct": 58.182,
+     "yPct": 61.768,
+     "widthPct": 31.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "TODAY",
+     "style": {
+      "text": "TODAY",
+      "color": "#c2361d",
+      "size": 27.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 160
+     }
+    },
+    {
+     "id": "tpl-t30",
+     "xPct": 58.182,
+     "yPct": 64.047,
+     "widthPct": 34.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "3 notes,",
+     "style": {
+      "text": "3 notes,\nzero noise.",
+      "color": "#141417",
+      "size": 51.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.15,
+      "charSpacing": -30
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s21",
+     "assetId": "shape:Rule",
+     "name": "Rule",
+     "xPct": 9.091,
+     "yPct": 8.787,
+     "widthPct": 81.818,
+     "heightPct": 0.126,
+     "rotation": 0,
+     "opacity": 0.85,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 360,
+      "h": 1.2,
+      "radius": 0,
+      "fill": "#141417"
+     }
+    },
+    {
+     "id": "tpl-s24",
+     "assetId": "shape:Accent disc",
+     "name": "Accent disc",
+     "xPct": 70.455,
+     "yPct": 30.335,
+     "widthPct": 31.818,
+     "heightPct": 14.644,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 140,
+      "h": 140,
+      "fill": "#c2361d"
+     }
+    },
+    {
+     "id": "tpl-s25",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -2.273,
+     "yPct": 27.406,
+     "widthPct": 86.364,
+     "heightPct": 73.115,
+     "rotation": 0,
+     "opacity": 0.14,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 380,
+      "h": 698.98,
+      "radius": 97.52,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s26",
+     "assetId": "shape:Card shadow",
+     "name": "Card shadow",
+     "xPct": 44.545,
+     "yPct": 53.975,
+     "widthPct": 59.545,
+     "heightPct": 22.176,
+     "rotation": 0,
+     "opacity": 0.12,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 262,
+      "h": 212,
+      "radius": 60,
+      "fill": "#000000",
+      "blur": 14,
+      "inset": 40
+     }
+    },
+    {
+     "id": "tpl-s27",
+     "assetId": "shape:Card",
+     "name": "Card",
+     "xPct": 53.636,
+     "yPct": 57.531,
+     "widthPct": 41.364,
+     "heightPct": 13.808,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 182,
+      "h": 132,
+      "radius": 20,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s28",
+     "assetId": "shape:Card accent",
+     "name": "Card accent",
+     "xPct": 58.182,
+     "yPct": 59.833,
+     "widthPct": 6.364,
+     "heightPct": 0.418,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 28,
+      "h": 4,
+      "radius": 2,
+      "fill": "#c2361d"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 45.52,
+    "x": -14.71,
+    "y": 21.57,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
   },
   {
-   "title": "Pure Focus",
-   "subtitle": "Distraction-free environment",
-   "layout": "rotated-left-1-title-above",
-   "background": null,
-   "devices": null
+   "title": "Pure focus, every day.",
+   "subtitle": "Silence the rest and finish what you start",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #f8f6f1 0%, #f1eee7 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t31",
+     "xPct": 9.091,
+     "yPct": 6.238,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "Kicker",
+     "style": {
+      "text": "05  —  DEEP WORK",
+      "color": "#c2361d",
+      "size": 29.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 180
+     }
+    },
+    {
+     "id": "tpl-t33",
+     "xPct": 9.091,
+     "yPct": 10.807,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Pure focus,\nevery day.",
+      "color": "#141417",
+      "size": 122.7,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.06,
+      "charSpacing": -45
+     }
+    },
+    {
+     "id": "tpl-t34",
+     "xPct": 9.091,
+     "yPct": 23.78,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Silence the rest and\nfinish what you start",
+      "color": "#56565c",
+      "size": 41.7,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.35
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s32",
+     "assetId": "shape:Rule",
+     "name": "Rule",
+     "xPct": 9.091,
+     "yPct": 8.787,
+     "widthPct": 81.818,
+     "heightPct": 0.126,
+     "rotation": 0,
+     "opacity": 0.85,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 360,
+      "h": 1.2,
+      "radius": 0,
+      "fill": "#141417"
+     }
+    },
+    {
+     "id": "tpl-s35",
+     "assetId": "shape:Accent band",
+     "name": "Accent band",
+     "xPct": 0.0,
+     "yPct": 73.222,
+     "widthPct": 100.0,
+     "heightPct": 26.778,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 440,
+      "h": 256,
+      "radius": 0,
+      "fill": "#c2361d"
+     }
+    },
+    {
+     "id": "tpl-s36",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 6.477,
+     "yPct": 27.929,
+     "widthPct": 87.045,
+     "heightPct": 73.797,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 383,
+      "h": 705.5,
+      "radius": 98.0,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 46.02,
+    "x": 0.0,
+    "y": 22.72,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
   }
+ ],
+ "designHeight": 2347,
+ "textColor": "#111111",
+ "columnCount": 5,
+ "titles": [
+  "Less noise. More focus.",
+  "Fluid by design.",
+  "Every device, in sync.",
+  "Notes that stay quiet.",
+  "Pure focus, every day."
+ ],
+ "subtitles": [
+  "A quiet workspace built for the work that matters",
+  "Every swipe and tap feels effortless and natural",
+  "Your work follows you, updated in real time",
+  "Capture ideas without the clutter",
+  "Silence the rest and finish what you start"
  ]
 }

@@ -10,46 +10,1598 @@
    "label": "6.9 Inch Phone"
   }
  ],
- "layout": "tilted-right-title-above",
+ "layout": "single-no-text",
  "background": {
-  "type": "pattern",
-  "value": "blueprint-hud"
+  "type": "gradient",
+  "value": "linear-gradient(180deg, #060a13 0%, #0a1526 55%, #0d1d33 100%)"
  },
  "pages": [
   {
-   "title": "Trade Instantly",
-   "subtitle": "Buy and sell 200+ crypto assets",
-   "layout": "tilted-right-title-above",
-   "background": null,
-   "devices": null
+   "title": "Trade crypto instantly",
+   "subtitle": "Buy and sell 200+ assets in a single tap",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #060a13 0%, #0a1526 55%, #0d1d33 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t5",
+     "xPct": 9.091,
+     "yPct": 5.593,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "Kicker",
+     "style": {
+      "text": "// SPOT TRADING",
+      "color": "#c6ff3d",
+      "size": 31.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": 180
+     }
+    },
+    {
+     "id": "tpl-t6",
+     "xPct": 9.091,
+     "yPct": 7.347,
+     "widthPct": 84.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Trade crypto\ninstantly",
+      "color": "#f3f7ff",
+      "size": 108.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.08,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t7",
+     "xPct": 9.091,
+     "yPct": 18.496,
+     "widthPct": 84.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Buy and sell 200+ assets\nin a single tap",
+      "color": "#a9b8cf",
+      "size": 44.2,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.35
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s1",
+     "assetId": "shape:Blueprint grid",
+     "name": "Blueprint grid",
+     "xPct": 0.0,
+     "yPct": 0.0,
+     "widthPct": 100.0,
+     "heightPct": 100.0,
+     "rotation": 0,
+     "opacity": 0.07,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 440,
+      "h": 956,
+      "vx": 0,
+      "vy": 0,
+      "path": "M40,0L40,956M80,0L80,956M120,0L120,956M160,0L160,956M200,0L200,956M240,0L240,956M280,0L280,956M320,0L320,956M360,0L360,956M400,0L400,956M0,40L440,40M0,80L440,80M0,120L440,120M0,160L440,160M0,200L440,200M0,240L440,240M0,280L440,280M0,320L440,320M0,360L440,360M0,400L440,400M0,440L440,440M0,480L440,480M0,520L440,520M0,560L440,560M0,600L440,600M0,640L440,640M0,680L440,680M0,720L440,720M0,760L440,760M0,800L440,800M0,840L440,840M0,880L440,880M0,920L440,920",
+      "stroke": "#3fd4ff",
+      "strokeWidth": 0.5,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s2",
+     "assetId": "shape:Glow",
+     "name": "Glow",
+     "xPct": -46.591,
+     "yPct": 16.213,
+     "widthPct": 193.182,
+     "heightPct": 88.912,
+     "rotation": 0,
+     "opacity": 0.35,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 850.0,
+      "h": 850.0,
+      "radius": 425.0,
+      "fill": "#3fd4ff",
+      "blur": 85.0,
+      "inset": 255.0
+     }
+    },
+    {
+     "id": "tpl-s3",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 3.864,
+     "yPct": 24.477,
+     "widthPct": 92.273,
+     "heightPct": 74.608,
+     "rotation": 0,
+     "opacity": 0.5,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 406,
+      "h": 713.25,
+      "radius": 113.92,
+      "fill": "#000000",
+      "blur": 24,
+      "inset": 72
+     }
+    },
+    {
+     "id": "tpl-s4",
+     "assetId": "shape:HUD brackets",
+     "name": "HUD brackets",
+     "xPct": 15.864,
+     "yPct": 29.372,
+     "widthPct": 68.273,
+     "heightPct": 63.562,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 300.4,
+      "h": 607.65,
+      "vx": 69.8,
+      "vy": 280.8,
+      "path": "M73.0,302L73.0,284L91.0,284M367.0,302L367.0,284L349.0,284M73.0,867.25L73.0,885.25L91.0,885.25M367.0,867.25L367.0,885.25L349.0,885.25",
+      "stroke": "#c6ff3d",
+      "strokeWidth": 2.2,
+      "strokeLinejoin": "miter"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 43.85,
+    "x": 0.0,
+    "y": 18.73,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
   },
   {
-   "title": "Live Markets",
-   "subtitle": "Realtime order book & candlestick charts",
-   "layout": "tilted-right-title-above",
-   "background": null,
-   "devices": null
+   "title": "Live markets, zero lag",
+   "subtitle": "Realtime order books and candlestick charts",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #060a13 0%, #0a1526 55%, #0d1d33 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t25",
+     "xPct": 9.091,
+     "yPct": 5.593,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "Kicker",
+     "style": {
+      "text": "// MARKET DATA",
+      "color": "#c6ff3d",
+      "size": 31.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": 180
+     }
+    },
+    {
+     "id": "tpl-t26",
+     "xPct": 9.091,
+     "yPct": 7.347,
+     "widthPct": 84.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Live markets,\nzero lag",
+      "color": "#f3f7ff",
+      "size": 108.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.08,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t27",
+     "xPct": 9.091,
+     "yPct": 18.496,
+     "widthPct": 84.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Realtime order books\nand candlestick charts",
+      "color": "#a9b8cf",
+      "size": 44.2,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.35
+     }
+    },
+    {
+     "id": "tpl-t23",
+     "xPct": 10.455,
+     "yPct": 66.154,
+     "widthPct": 33.182,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "Card label",
+     "style": {
+      "text": "BTC / USDT",
+      "color": "#a9b8cf",
+      "size": 29.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": 120
+     }
+    },
+    {
+     "id": "tpl-t24",
+     "xPct": 10.455,
+     "yPct": 68.627,
+     "widthPct": 33.182,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "Card value",
+     "style": {
+      "text": "+4.82%",
+      "color": "#c6ff3d",
+      "size": 58.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s8",
+     "assetId": "shape:Blueprint grid",
+     "name": "Blueprint grid",
+     "xPct": 0.0,
+     "yPct": 0.0,
+     "widthPct": 100.0,
+     "heightPct": 100.0,
+     "rotation": 0,
+     "opacity": 0.07,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 440,
+      "h": 956,
+      "vx": 0,
+      "vy": 0,
+      "path": "M40,0L40,956M80,0L80,956M120,0L120,956M160,0L160,956M200,0L200,956M240,0L240,956M280,0L280,956M320,0L320,956M360,0L360,956M400,0L400,956M0,40L440,40M0,80L440,80M0,120L440,120M0,160L440,160M0,200L440,200M0,240L440,240M0,280L440,280M0,320L440,320M0,360L440,360M0,400L440,400M0,440L440,440M0,480L440,480M0,520L440,520M0,560L440,560M0,600L440,600M0,640L440,640M0,680L440,680M0,720L440,720M0,760L440,760M0,800L440,800M0,840L440,840M0,880L440,880M0,920L440,920",
+      "stroke": "#3fd4ff",
+      "strokeWidth": 0.5,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s9",
+     "assetId": "shape:Glow",
+     "name": "Glow",
+     "xPct": -43.182,
+     "yPct": 15.69,
+     "widthPct": 204.545,
+     "heightPct": 94.142,
+     "rotation": 0,
+     "opacity": 0.12,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 900.0,
+      "h": 900.0,
+      "radius": 450.0,
+      "fill": "#c6ff3d",
+      "blur": 90.0,
+      "inset": 270.0
+     }
+    },
+    {
+     "id": "tpl-s10",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 4.406,
+     "yPct": 24.187,
+     "widthPct": 92.273,
+     "heightPct": 74.608,
+     "rotation": 8,
+     "opacity": 0.5,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 406,
+      "h": 713.25,
+      "radius": 113.92,
+      "fill": "#000000",
+      "blur": 24,
+      "inset": 72
+     }
+    },
+    {
+     "id": "tpl-s11",
+     "assetId": "shape:Card shadow",
+     "name": "Card shadow",
+     "xPct": 0.909,
+     "yPct": 48.326,
+     "widthPct": 47.273,
+     "heightPct": 17.155,
+     "rotation": 0,
+     "opacity": 0.45,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 208,
+      "h": 164,
+      "radius": 38,
+      "fill": "#000000",
+      "blur": 12,
+      "inset": 24
+     }
+    },
+    {
+     "id": "tpl-s12",
+     "assetId": "shape:Chart card",
+     "name": "Chart card",
+     "xPct": 6.364,
+     "yPct": 50.209,
+     "widthPct": 36.364,
+     "heightPct": 12.134,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 160,
+      "h": 116,
+      "radius": 14,
+      "fill": "#0f1c30",
+      "stroke": "#2c4666",
+      "strokeWidth": 1.2,
+      "inset": 0.6
+     }
+    },
+    {
+     "id": "tpl-s13",
+     "assetId": "shape:Candle",
+     "name": "Candle",
+     "xPct": 10.455,
+     "yPct": 56.485,
+     "widthPct": 2.273,
+     "heightPct": 2.72,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 10,
+      "h": 26,
+      "radius": 2,
+      "fill": "#c6ff3d"
+     }
+    },
+    {
+     "id": "tpl-s14",
+     "assetId": "shape:Candle",
+     "name": "Candle",
+     "xPct": 14.773,
+     "yPct": 57.322,
+     "widthPct": 2.273,
+     "heightPct": 2.301,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 10,
+      "h": 22,
+      "radius": 2,
+      "fill": "#ff6b86"
+     }
+    },
+    {
+     "id": "tpl-s15",
+     "assetId": "shape:Candle",
+     "name": "Candle",
+     "xPct": 19.091,
+     "yPct": 55.021,
+     "widthPct": 2.273,
+     "heightPct": 3.556,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 10,
+      "h": 34,
+      "radius": 2,
+      "fill": "#c6ff3d"
+     }
+    },
+    {
+     "id": "tpl-s16",
+     "assetId": "shape:Candle",
+     "name": "Candle",
+     "xPct": 23.409,
+     "yPct": 55.439,
+     "widthPct": 2.273,
+     "heightPct": 1.883,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 10,
+      "h": 18,
+      "radius": 2,
+      "fill": "#ff6b86"
+     }
+    },
+    {
+     "id": "tpl-s17",
+     "assetId": "shape:Candle",
+     "name": "Candle",
+     "xPct": 27.727,
+     "yPct": 53.347,
+     "widthPct": 2.273,
+     "heightPct": 3.138,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 10,
+      "h": 30,
+      "radius": 2,
+      "fill": "#c6ff3d"
+     }
+    },
+    {
+     "id": "tpl-s18",
+     "assetId": "shape:Candle",
+     "name": "Candle",
+     "xPct": 32.045,
+     "yPct": 53.766,
+     "widthPct": 2.273,
+     "heightPct": 1.046,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 10,
+      "h": 10,
+      "radius": 2,
+      "fill": "#ff6b86"
+     }
+    },
+    {
+     "id": "tpl-s19",
+     "assetId": "shape:Candle",
+     "name": "Candle",
+     "xPct": 36.364,
+     "yPct": 52.301,
+     "widthPct": 2.273,
+     "heightPct": 2.092,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 10,
+      "h": 20,
+      "radius": 2,
+      "fill": "#c6ff3d"
+     }
+    },
+    {
+     "id": "tpl-s20",
+     "assetId": "shape:Card shadow",
+     "name": "Card shadow",
+     "xPct": 0.909,
+     "yPct": 62.552,
+     "widthPct": 50.909,
+     "heightPct": 13.389,
+     "rotation": 0,
+     "opacity": 0.45,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 224,
+      "h": 128,
+      "radius": 38,
+      "fill": "#000000",
+      "blur": 12,
+      "inset": 24
+     }
+    },
+    {
+     "id": "tpl-s21",
+     "assetId": "shape:Card",
+     "name": "Card",
+     "xPct": 6.364,
+     "yPct": 64.435,
+     "widthPct": 40.0,
+     "heightPct": 8.368,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 176,
+      "h": 80,
+      "radius": 14,
+      "fill": "#0f1c30",
+      "stroke": "#2c4666",
+      "strokeWidth": 1.2,
+      "inset": 0.6
+     }
+    },
+    {
+     "id": "tpl-s22",
+     "assetId": "shape:Card accent",
+     "name": "Card accent",
+     "xPct": 6.364,
+     "yPct": 65.9,
+     "widthPct": 0.909,
+     "heightPct": 5.439,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 4,
+      "h": 52,
+      "radius": 2,
+      "fill": "#c6ff3d"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 43.85,
+    "x": 0.91,
+    "y": 18.24,
+    "rotation": 8,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
   },
   {
-   "title": "DeFi Staking",
-   "subtitle": "Earn up to 12% APY on stablecoins",
-   "layout": "tilted-right-title-above",
-   "background": null,
-   "devices": null
+   "title": "Stake and earn up to 12% APY",
+   "subtitle": "Put idle stablecoins to work with daily payouts",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #060a13 0%, #0a1526 55%, #0d1d33 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t36",
+     "xPct": 9.091,
+     "yPct": 5.593,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "Kicker",
+     "style": {
+      "text": "// DEFI YIELD",
+      "color": "#c6ff3d",
+      "size": 31.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": 180
+     }
+    },
+    {
+     "id": "tpl-t37",
+     "xPct": 9.091,
+     "yPct": 7.347,
+     "widthPct": 84.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Stake and earn\nup to 12% APY",
+      "color": "#f3f7ff",
+      "size": 108.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.08,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t38",
+     "xPct": 9.091,
+     "yPct": 18.496,
+     "widthPct": 84.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Put idle stablecoins to work\nwith daily payouts",
+      "color": "#a9b8cf",
+      "size": 44.2,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.35
+     }
+    },
+    {
+     "id": "tpl-t34",
+     "xPct": 72.273,
+     "yPct": 35.783,
+     "widthPct": 22.727,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "APY value",
+     "style": {
+      "text": "12%",
+      "color": "#0b1322",
+      "size": 73.6,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t35",
+     "xPct": 72.273,
+     "yPct": 39.502,
+     "widthPct": 22.727,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "APY label",
+     "style": {
+      "text": "APY",
+      "color": "#0b1322",
+      "size": 29.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 160
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s28",
+     "assetId": "shape:Blueprint grid",
+     "name": "Blueprint grid",
+     "xPct": 0.0,
+     "yPct": 0.0,
+     "widthPct": 100.0,
+     "heightPct": 100.0,
+     "rotation": 0,
+     "opacity": 0.07,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 440,
+      "h": 956,
+      "vx": 0,
+      "vy": 0,
+      "path": "M40,0L40,956M80,0L80,956M120,0L120,956M160,0L160,956M200,0L200,956M240,0L240,956M280,0L280,956M320,0L320,956M360,0L360,956M400,0L400,956M0,40L440,40M0,80L440,80M0,120L440,120M0,160L440,160M0,200L440,200M0,240L440,240M0,280L440,280M0,320L440,320M0,360L440,360M0,400L440,400M0,440L440,440M0,480L440,480M0,520L440,520M0,560L440,560M0,600L440,600M0,640L440,640M0,680L440,680M0,720L440,720M0,760L440,760M0,800L440,800M0,840L440,840M0,880L440,880M0,920L440,920",
+      "stroke": "#3fd4ff",
+      "strokeWidth": 0.5,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s29",
+     "assetId": "shape:Glow",
+     "name": "Glow",
+     "xPct": -57.955,
+     "yPct": 17.259,
+     "widthPct": 215.909,
+     "heightPct": 99.372,
+     "rotation": 0,
+     "opacity": 0.25,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 950.0,
+      "h": 950.0,
+      "radius": 475.0,
+      "fill": "#3fd4ff",
+      "blur": 95.0,
+      "inset": 285.0
+     }
+    },
+    {
+     "id": "tpl-s30",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -0.67,
+     "yPct": 28.103,
+     "widthPct": 81.136,
+     "heightPct": 64.944,
+     "rotation": -6,
+     "opacity": 0.45,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 357,
+      "h": 620.86,
+      "radius": 102.0,
+      "fill": "#000000",
+      "blur": 22,
+      "inset": 66
+     }
+    },
+    {
+     "id": "tpl-s31",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 17.912,
+     "yPct": 32.699,
+     "widthPct": 86.136,
+     "heightPct": 68.472,
+     "rotation": 6,
+     "opacity": 0.5,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 379,
+      "h": 654.59,
+      "radius": 109.6,
+      "fill": "#000000",
+      "blur": 24,
+      "inset": 72
+     }
+    },
+    {
+     "id": "tpl-s32",
+     "assetId": "shape:Badge shadow",
+     "name": "Badge shadow",
+     "xPct": 73.182,
+     "yPct": 33.682,
+     "widthPct": 22.727,
+     "heightPct": 10.46,
+     "rotation": 0,
+     "opacity": 0.4,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 100,
+      "h": 100,
+      "fill": "#000000",
+      "blur": 12
+     }
+    },
+    {
+     "id": "tpl-s33",
+     "assetId": "shape:APY badge",
+     "name": "APY badge",
+     "xPct": 72.273,
+     "yPct": 32.845,
+     "widthPct": 22.727,
+     "heightPct": 10.46,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 100,
+      "h": 100,
+      "fill": "#c6ff3d"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 37.65,
+    "x": -19.76,
+    "y": 19.45,
+    "rotation": -6,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 9
+   },
+   "extraDevices": [
+    {
+     "size": 39.33,
+     "x": 20.56,
+     "y": 30.53,
+     "rotation": 6,
+     "brightness": 100,
+     "frameless": false,
+     "bezelColor": "#060606",
+     "borderColor": "#5e5e5e",
+     "zIndex": 11
+    }
+   ]
   },
   {
-   "title": "Cold Vault",
-   "subtitle": "Hardware key protection for funds",
-   "layout": "tilted-right-title-above",
-   "background": null,
-   "devices": null
+   "title": "Cold vault security",
+   "subtitle": "Hardware-key protection for every asset you hold",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #060a13 0%, #0a1526 55%, #0d1d33 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t50",
+     "xPct": 9.091,
+     "yPct": 5.593,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "Kicker",
+     "style": {
+      "text": "// SELF-CUSTODY",
+      "color": "#c6ff3d",
+      "size": 31.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": 180
+     }
+    },
+    {
+     "id": "tpl-t51",
+     "xPct": 9.091,
+     "yPct": 7.347,
+     "widthPct": 84.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Cold vault\nsecurity",
+      "color": "#f3f7ff",
+      "size": 108.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.08,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t52",
+     "xPct": 9.091,
+     "yPct": 18.496,
+     "widthPct": 84.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Hardware-key protection\nfor every asset you hold",
+      "color": "#a9b8cf",
+      "size": 44.2,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.35
+     }
+    },
+    {
+     "id": "tpl-t47",
+     "xPct": 27.273,
+     "yPct": 70.778,
+     "widthPct": 36.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "Card title",
+     "style": {
+      "text": "Vault locked",
+      "color": "#f3f7ff",
+      "size": 46.6,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.1
+     }
+    },
+    {
+     "id": "tpl-t48",
+     "xPct": 27.273,
+     "yPct": 73.794,
+     "widthPct": 36.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "Card sub",
+     "style": {
+      "text": "2 of 3 keys required",
+      "color": "#a9b8cf",
+      "size": 31.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.2
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s39",
+     "assetId": "shape:Blueprint grid",
+     "name": "Blueprint grid",
+     "xPct": 0.0,
+     "yPct": 0.0,
+     "widthPct": 100.0,
+     "heightPct": 100.0,
+     "rotation": 0,
+     "opacity": 0.07,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 440,
+      "h": 956,
+      "vx": 0,
+      "vy": 0,
+      "path": "M40,0L40,956M80,0L80,956M120,0L120,956M160,0L160,956M200,0L200,956M240,0L240,956M280,0L280,956M320,0L320,956M360,0L360,956M400,0L400,956M0,40L440,40M0,80L440,80M0,120L440,120M0,160L440,160M0,200L440,200M0,240L440,240M0,280L440,280M0,320L440,320M0,360L440,360M0,400L440,400M0,440L440,440M0,480L440,480M0,520L440,520M0,560L440,560M0,600L440,600M0,640L440,640M0,680L440,680M0,720L440,720M0,760L440,760M0,800L440,800M0,840L440,840M0,880L440,880M0,920L440,920",
+      "stroke": "#3fd4ff",
+      "strokeWidth": 0.5,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s40",
+     "assetId": "shape:Glow",
+     "name": "Glow",
+     "xPct": -42.045,
+     "yPct": 18.305,
+     "widthPct": 193.182,
+     "heightPct": 88.912,
+     "rotation": 0,
+     "opacity": 0.25,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 850.0,
+      "h": 850.0,
+      "radius": 425.0,
+      "fill": "#3fd4ff",
+      "blur": 85.0,
+      "inset": 255.0
+     }
+    },
+    {
+     "id": "tpl-s41",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 10.682,
+     "yPct": 24.477,
+     "widthPct": 92.273,
+     "heightPct": 74.608,
+     "rotation": 0,
+     "opacity": 0.5,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 406,
+      "h": 713.25,
+      "radius": 113.92,
+      "fill": "#000000",
+      "blur": 24,
+      "inset": 72
+     }
+    },
+    {
+     "id": "tpl-s42",
+     "assetId": "shape:Card shadow",
+     "name": "Card shadow",
+     "xPct": 1.364,
+     "yPct": 65.9,
+     "widthPct": 69.545,
+     "heightPct": 15.9,
+     "rotation": 0,
+     "opacity": 0.5,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 306,
+      "h": 152,
+      "radius": 46,
+      "fill": "#000000",
+      "blur": 14,
+      "inset": 28
+     }
+    },
+    {
+     "id": "tpl-s43",
+     "assetId": "shape:Vault card",
+     "name": "Vault card",
+     "xPct": 7.727,
+     "yPct": 67.992,
+     "widthPct": 56.818,
+     "heightPct": 10.042,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 250,
+      "h": 96,
+      "radius": 18,
+      "fill": "#0f1c30",
+      "stroke": "#2c4666",
+      "strokeWidth": 1.2,
+      "inset": 0.6
+     }
+    },
+    {
+     "id": "tpl-s44",
+     "assetId": "shape:Lock disc",
+     "name": "Lock disc",
+     "xPct": 12.273,
+     "yPct": 70.293,
+     "widthPct": 11.818,
+     "heightPct": 5.439,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 52,
+      "h": 52,
+      "fill": "#c6ff3d"
+     }
+    },
+    {
+     "id": "tpl-s45",
+     "assetId": "shape:Lock body",
+     "name": "Lock body",
+     "xPct": 15.909,
+     "yPct": 72.803,
+     "widthPct": 4.545,
+     "heightPct": 1.674,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 20,
+      "h": 16,
+      "radius": 3,
+      "fill": "#0b1322"
+     }
+    },
+    {
+     "id": "tpl-s46",
+     "assetId": "shape:Lock shackle",
+     "name": "Lock shackle",
+     "xPct": 15.909,
+     "yPct": 70.921,
+     "widthPct": 4.545,
+     "heightPct": 2.406,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 20,
+      "h": 23,
+      "vx": 70,
+      "vy": 678,
+      "path": "M74,697L74,691C74,682 86,682 86,691L86,697",
+      "stroke": "#0b1322",
+      "strokeWidth": 3,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s49",
+     "assetId": "shape:HUD brackets",
+     "name": "HUD brackets",
+     "xPct": 4.727,
+     "yPct": 66.611,
+     "widthPct": 62.818,
+     "heightPct": 12.803,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 276.4,
+      "h": 122.4,
+      "vx": 20.8,
+      "vy": 636.8,
+      "path": "M24,654L24,640L38,640M294,654L294,640L280,640M24,742L24,756L38,756M294,742L294,756L280,756",
+      "stroke": "#c6ff3d",
+      "strokeWidth": 2.2,
+      "strokeLinejoin": "miter"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 43.85,
+    "x": 11.45,
+    "y": 18.73,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
   },
   {
-   "title": "Zero Slippage",
-   "subtitle": "Institutional grade execution speed",
-   "layout": "tilted-right-title-above",
-   "background": null,
-   "devices": null
+   "title": "Zero slippage execution",
+   "subtitle": "Institutional-grade speed on every order",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #060a13 0%, #0a1526 55%, #0d1d33 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t66",
+     "xPct": 9.091,
+     "yPct": 5.593,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "Kicker",
+     "style": {
+      "text": "// PRO EXECUTION",
+      "color": "#c6ff3d",
+      "size": 31.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": 180
+     }
+    },
+    {
+     "id": "tpl-t67",
+     "xPct": 9.091,
+     "yPct": 7.347,
+     "widthPct": 84.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Zero slippage\nexecution",
+      "color": "#f3f7ff",
+      "size": 108.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.08,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t68",
+     "xPct": 9.091,
+     "yPct": 18.496,
+     "widthPct": 84.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Institutional-grade speed\non every order",
+      "color": "#a9b8cf",
+      "size": 44.2,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.35
+     }
+    },
+    {
+     "id": "tpl-t59",
+     "xPct": 63.636,
+     "yPct": 56.112,
+     "widthPct": 27.273,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "Card label",
+     "style": {
+      "text": "FILL TIME",
+      "color": "#a9b8cf",
+      "size": 29.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": 120
+     }
+    },
+    {
+     "id": "tpl-t60",
+     "xPct": 63.636,
+     "yPct": 58.585,
+     "widthPct": 27.273,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "Card value",
+     "style": {
+      "text": "12 ms",
+      "color": "#c6ff3d",
+      "size": 58.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.1
+     }
+    },
+    {
+     "id": "tpl-t64",
+     "xPct": 63.636,
+     "yPct": 66.573,
+     "widthPct": 27.273,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "Card label",
+     "style": {
+      "text": "SLIPPAGE",
+      "color": "#a9b8cf",
+      "size": 29.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.2,
+      "charSpacing": 120
+     }
+    },
+    {
+     "id": "tpl-t65",
+     "xPct": 63.636,
+     "yPct": 69.045,
+     "widthPct": 27.273,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "Card value",
+     "style": {
+      "text": "0.00%",
+      "color": "#3fd4ff",
+      "size": 58.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s53",
+     "assetId": "shape:Blueprint grid",
+     "name": "Blueprint grid",
+     "xPct": 0.0,
+     "yPct": 0.0,
+     "widthPct": 100.0,
+     "heightPct": 100.0,
+     "rotation": 0,
+     "opacity": 0.07,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 440,
+      "h": 956,
+      "vx": 0,
+      "vy": 0,
+      "path": "M40,0L40,956M80,0L80,956M120,0L120,956M160,0L160,956M200,0L200,956M240,0L240,956M280,0L280,956M320,0L320,956M360,0L360,956M400,0L400,956M0,40L440,40M0,80L440,80M0,120L440,120M0,160L440,160M0,200L440,200M0,240L440,240M0,280L440,280M0,320L440,320M0,360L440,360M0,400L440,400M0,440L440,440M0,480L440,480M0,520L440,520M0,560L440,560M0,600L440,600M0,640L440,640M0,680L440,680M0,720L440,720M0,760L440,760M0,800L440,800M0,840L440,840M0,880L440,880M0,920L440,920",
+      "stroke": "#3fd4ff",
+      "strokeWidth": 0.5,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s54",
+     "assetId": "shape:Glow",
+     "name": "Glow",
+     "xPct": -56.818,
+     "yPct": 17.782,
+     "widthPct": 204.545,
+     "heightPct": 94.142,
+     "rotation": 0,
+     "opacity": 0.12,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 900.0,
+      "h": 900.0,
+      "radius": 450.0,
+      "fill": "#c6ff3d",
+      "blur": 90.0,
+      "inset": 270.0
+     }
+    },
+    {
+     "id": "tpl-s55",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 3.776,
+     "yPct": 24.187,
+     "widthPct": 92.273,
+     "heightPct": 74.608,
+     "rotation": -8,
+     "opacity": 0.5,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 406,
+      "h": 713.25,
+      "radius": 113.92,
+      "fill": "#000000",
+      "blur": 24,
+      "inset": 72
+     }
+    },
+    {
+     "id": "tpl-s56",
+     "assetId": "shape:Card shadow",
+     "name": "Card shadow",
+     "xPct": 54.091,
+     "yPct": 52.51,
+     "widthPct": 45.0,
+     "heightPct": 13.389,
+     "rotation": 0,
+     "opacity": 0.45,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 198,
+      "h": 128,
+      "radius": 38,
+      "fill": "#000000",
+      "blur": 12,
+      "inset": 24
+     }
+    },
+    {
+     "id": "tpl-s57",
+     "assetId": "shape:Card",
+     "name": "Card",
+     "xPct": 59.545,
+     "yPct": 54.393,
+     "widthPct": 34.091,
+     "heightPct": 8.368,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 150,
+      "h": 80,
+      "radius": 14,
+      "fill": "#0f1c30",
+      "stroke": "#2c4666",
+      "strokeWidth": 1.2,
+      "inset": 0.6
+     }
+    },
+    {
+     "id": "tpl-s58",
+     "assetId": "shape:Card accent",
+     "name": "Card accent",
+     "xPct": 59.545,
+     "yPct": 55.858,
+     "widthPct": 0.909,
+     "heightPct": 5.439,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 4,
+      "h": 52,
+      "radius": 2,
+      "fill": "#c6ff3d"
+     }
+    },
+    {
+     "id": "tpl-s61",
+     "assetId": "shape:Card shadow",
+     "name": "Card shadow",
+     "xPct": 54.091,
+     "yPct": 62.971,
+     "widthPct": 45.0,
+     "heightPct": 13.389,
+     "rotation": 0,
+     "opacity": 0.45,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 198,
+      "h": 128,
+      "radius": 38,
+      "fill": "#000000",
+      "blur": 12,
+      "inset": 24
+     }
+    },
+    {
+     "id": "tpl-s62",
+     "assetId": "shape:Card",
+     "name": "Card",
+     "xPct": 59.545,
+     "yPct": 64.854,
+     "widthPct": 34.091,
+     "heightPct": 8.368,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 150,
+      "h": 80,
+      "radius": 14,
+      "fill": "#0f1c30",
+      "stroke": "#2c4666",
+      "strokeWidth": 1.2,
+      "inset": 0.6
+     }
+    },
+    {
+     "id": "tpl-s63",
+     "assetId": "shape:Card accent",
+     "name": "Card accent",
+     "xPct": 59.545,
+     "yPct": 66.318,
+     "widthPct": 0.909,
+     "heightPct": 5.439,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 4,
+      "h": 52,
+      "radius": 2,
+      "fill": "#3fd4ff"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 43.85,
+    "x": -0.15,
+    "y": 18.24,
+    "rotation": -8,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
   }
+ ],
+ "designHeight": 2347,
+ "textColor": "#111111",
+ "columnCount": 5,
+ "titles": [
+  "Trade crypto instantly",
+  "Live markets, zero lag",
+  "Stake and earn up to 12% APY",
+  "Cold vault security",
+  "Zero slippage execution"
+ ],
+ "subtitles": [
+  "Buy and sell 200+ assets in a single tap",
+  "Realtime order books and candlestick charts",
+  "Put idle stablecoins to work with daily payouts",
+  "Hardware-key protection for every asset you hold",
+  "Institutional-grade speed on every order"
  ]
 }

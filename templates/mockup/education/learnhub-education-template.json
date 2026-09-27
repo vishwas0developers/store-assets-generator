@@ -10,46 +10,1221 @@
    "label": "6.9 Inch Phone"
   }
  ],
- "layout": "right-side-title-above",
+ "layout": "single-no-text",
  "background": {
   "type": "gradient",
-  "value": "citrus"
+  "value": "linear-gradient(180deg, #FDF9F1 0%, #F6EEDD 100%)"
  },
  "pages": [
   {
-   "title": "Learn Anything",
+   "title": "Learn anything, anytime",
    "subtitle": "Thousands of courses across every subject",
-   "layout": "right-side-title-above",
-   "background": null,
-   "devices": null
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #FDF9F1 0%, #F6EEDD 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t4",
+     "xPct": 9.091,
+     "yPct": 6.719,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Learn anything,\nanytime",
+      "color": "#16204A",
+      "size": 108.0,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.08,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t5",
+     "xPct": 9.091,
+     "yPct": 17.4,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Thousands of courses\nacross every subject",
+      "color": "#4A5275",
+      "size": 41.7,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.35
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s1",
+     "assetId": "shape:Glow",
+     "name": "Glow",
+     "xPct": -20.455,
+     "yPct": 30.335,
+     "widthPct": 140.909,
+     "heightPct": 64.854,
+     "rotation": 0,
+     "opacity": 0.35,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 620,
+      "h": 620,
+      "radius": 310,
+      "fill": "#7FE3BC",
+      "blur": 40,
+      "inset": 120
+     }
+    },
+    {
+     "id": "tpl-s2",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 0.909,
+     "yPct": 19.874,
+     "widthPct": 98.182,
+     "heightPct": 81.989,
+     "rotation": 0,
+     "opacity": 0.2,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 432,
+      "h": 783.82,
+      "radius": 114.0,
+      "fill": "#000000",
+      "blur": 22,
+      "inset": 66
+     }
+    },
+    {
+     "id": "tpl-s3",
+     "assetId": "shape:Highlighter",
+     "name": "Highlighter",
+     "xPct": 39.708,
+     "yPct": 8.946,
+     "widthPct": 44.998,
+     "heightPct": 2.301,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 29,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 197.99,
+      "h": 22.0,
+      "vx": 174.71,
+      "vy": 85.52,
+      "path": "M178.71,88.52L372.71,85.52L368.71,105.52L174.71,107.52Z",
+      "fill": "#7FE3BC"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 50.21,
+    "x": 0.0,
+    "y": 15.02,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
   },
   {
-   "title": "Expert-Led Courses",
+   "title": "Courses by real experts",
    "subtitle": "Taught by industry professionals",
-   "layout": "right-side-title-above",
-   "background": null,
-   "devices": null
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #1C2759 0%, #121A3E 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t11",
+     "xPct": 9.091,
+     "yPct": 6.51,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Courses by\nreal experts",
+      "color": "#FBF6EC",
+      "size": 108.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.08,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t12",
+     "xPct": 9.091,
+     "yPct": 19.701,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Taught by industry\nprofessionals",
+      "color": "#C9CEE6",
+      "size": 41.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.35
+     }
+    },
+    {
+     "id": "tpl-t13",
+     "xPct": 12.273,
+     "yPct": 75.171,
+     "widthPct": 20.455,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "Rating",
+     "style": {
+      "text": "4.9",
+      "color": "#16204A",
+      "size": 83.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t14",
+     "xPct": 27.273,
+     "yPct": 76.051,
+     "widthPct": 22.727,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "Stars",
+     "style": {
+      "text": "★★★★★",
+      "color": "#E0A100",
+      "size": 36.8,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t15",
+     "xPct": 27.273,
+     "yPct": 78.533,
+     "widthPct": 25.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "Learners",
+     "style": {
+      "text": "from 12k learners",
+      "color": "#4A5275",
+      "size": 31.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s6",
+     "assetId": "shape:Glow",
+     "name": "Glow",
+     "xPct": 2.273,
+     "yPct": 25.105,
+     "widthPct": 145.455,
+     "heightPct": 66.946,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 640,
+      "h": 640,
+      "radius": 320,
+      "fill": "#3B4BA0",
+      "blur": 50,
+      "inset": 150
+     }
+    },
+    {
+     "id": "tpl-s7",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 1.649,
+     "yPct": 20.901,
+     "widthPct": 94.091,
+     "heightPct": 76.426,
+     "rotation": 7,
+     "opacity": 0.4,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 414,
+      "h": 730.64,
+      "radius": 115.2,
+      "fill": "#000000",
+      "blur": 24,
+      "inset": 72
+     }
+    },
+    {
+     "id": "tpl-s8",
+     "assetId": "shape:Highlighter",
+     "name": "Highlighter",
+     "xPct": 28.955,
+     "yPct": 16.423,
+     "widthPct": 38.396,
+     "heightPct": 0.941,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 29,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 168.94,
+      "h": 9,
+      "vx": 127.4,
+      "vy": 157,
+      "path": "M131.4,160L296.34,157L292.34,164L127.4,166Z",
+      "fill": "#7FE3BC"
+     }
+    },
+    {
+     "id": "tpl-s9",
+     "assetId": "shape:Card shadow",
+     "name": "Card shadow",
+     "xPct": -1.364,
+     "yPct": 69.665,
+     "widthPct": 62.727,
+     "heightPct": 17.992,
+     "rotation": 0,
+     "opacity": 0.18,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 276,
+      "h": 172,
+      "radius": 60,
+      "fill": "#000000",
+      "blur": 14,
+      "inset": 40
+     }
+    },
+    {
+     "id": "tpl-s10",
+     "assetId": "shape:Card",
+     "name": "Card",
+     "xPct": 7.727,
+     "yPct": 73.222,
+     "widthPct": 44.545,
+     "heightPct": 9.623,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 196,
+      "h": 92,
+      "radius": 20,
+      "fill": "#FFFFFF"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 45.19,
+    "x": -2.13,
+    "y": 13.83,
+    "rotation": 7,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
   },
   {
-   "title": "Track Your Progress",
+   "title": "Watch your skills grow",
    "subtitle": "Certificates and skill milestones",
-   "layout": "right-side-title-above",
-   "background": null,
-   "devices": null
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #FDF9F1 0%, #F6EEDD 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t25",
+     "xPct": 9.091,
+     "yPct": 6.51,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Watch your\nskills grow",
+      "color": "#16204A",
+      "size": 108.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.08,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t26",
+     "xPct": 9.091,
+     "yPct": 19.701,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Certificates and\nskill milestones",
+      "color": "#4A5275",
+      "size": 41.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.35
+     }
+    },
+    {
+     "id": "tpl-t27",
+     "xPct": 59.545,
+     "yPct": 49.686,
+     "widthPct": 34.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 23,
+     "customName": "Percent",
+     "style": {
+      "text": "78%",
+      "color": "#16204A",
+      "size": 54.0,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t28",
+     "xPct": 59.545,
+     "yPct": 57.403,
+     "widthPct": 34.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "Progress label",
+     "style": {
+      "text": "Course progress",
+      "color": "#4A5275",
+      "size": 31.9,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 600,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t29",
+     "xPct": 59.545,
+     "yPct": 59.495,
+     "widthPct": 34.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "Streak",
+     "style": {
+      "text": "12 day streak",
+      "color": "#1E8F67",
+      "size": 31.9,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t30",
+     "xPct": 63.182,
+     "yPct": 67.682,
+     "widthPct": 29.545,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "Certificate",
+     "style": {
+      "text": "Certificate",
+      "color": "#FBF6EC",
+      "size": 36.8,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t31",
+     "xPct": 63.182,
+     "yPct": 70.464,
+     "widthPct": 29.545,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "Earned",
+     "style": {
+      "text": "UX Design · earned",
+      "color": "#C9CEE6",
+      "size": 29.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s16",
+     "assetId": "shape:Glow",
+     "name": "Glow",
+     "xPct": -38.636,
+     "yPct": 36.611,
+     "widthPct": 131.818,
+     "heightPct": 60.669,
+     "rotation": 0,
+     "opacity": 0.3,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 580,
+      "h": 580,
+      "radius": 290,
+      "fill": "#7FE3BC",
+      "blur": 40,
+      "inset": 120
+     }
+    },
+    {
+     "id": "tpl-s17",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -6.136,
+     "yPct": 21.13,
+     "widthPct": 89.545,
+     "heightPct": 73.353,
+     "rotation": 0,
+     "opacity": 0.2,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 394,
+      "h": 701.25,
+      "radius": 107.92,
+      "fill": "#000000",
+      "blur": 22,
+      "inset": 66
+     }
+    },
+    {
+     "id": "tpl-s18",
+     "assetId": "shape:Highlighter",
+     "name": "Highlighter",
+     "xPct": 35.019,
+     "yPct": 13.757,
+     "widthPct": 26.394,
+     "heightPct": 2.301,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 29,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 116.13,
+      "h": 22.0,
+      "vx": 154.08,
+      "vy": 131.52,
+      "path": "M158.08,134.52L270.21,131.52L266.21,151.52L154.08,153.52Z",
+      "fill": "#7FE3BC"
+     }
+    },
+    {
+     "id": "tpl-s19",
+     "assetId": "shape:Card shadow",
+     "name": "Card shadow",
+     "xPct": 50.455,
+     "yPct": 40.377,
+     "widthPct": 52.273,
+     "heightPct": 26.778,
+     "rotation": 0,
+     "opacity": 0.18,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 230,
+      "h": 256,
+      "radius": 60,
+      "fill": "#000000",
+      "blur": 14,
+      "inset": 40
+     }
+    },
+    {
+     "id": "tpl-s20",
+     "assetId": "shape:Card",
+     "name": "Card",
+     "xPct": 59.545,
+     "yPct": 43.933,
+     "widthPct": 34.091,
+     "heightPct": 18.41,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 150,
+      "h": 176,
+      "radius": 20,
+      "fill": "#FFFFFF"
+     }
+    },
+    {
+     "id": "tpl-s21",
+     "assetId": "shape:Ring track",
+     "name": "Ring track",
+     "xPct": 67.5,
+     "yPct": 46.653,
+     "widthPct": 18.182,
+     "heightPct": 8.368,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 80,
+      "h": 80,
+      "stroke": "#E7ECF5",
+      "strokeWidth": 9,
+      "inset": 4.5
+     }
+    },
+    {
+     "id": "tpl-s22",
+     "assetId": "shape:Progress ring",
+     "name": "Progress ring",
+     "xPct": 65.227,
+     "yPct": 45.607,
+     "widthPct": 22.727,
+     "heightPct": 10.46,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 100.0,
+      "h": 100.0,
+      "vx": 287.0,
+      "vy": 436.0,
+      "path": "M337.0,446.0L341.18,446.22L345.32,446.87L349.36,447.96L353.27,449.46L357.0,451.36L360.51,453.64L363.77,456.27L366.73,459.23L369.36,462.49L371.64,466.0L373.54,469.73L375.04,473.64L376.13,477.68L376.78,481.82L377.0,486.0L376.78,490.18L376.13,494.32L375.04,498.36L373.54,502.27L371.64,506.0L369.36,509.51L366.73,512.77L363.77,515.73L360.51,518.36L357.0,520.64L353.27,522.54L349.36,524.04L345.32,525.13L341.18,525.78L337.0,526.0L332.82,525.78L328.68,525.13L324.64,524.04L320.73,522.54L317.0,520.64L313.49,518.36L310.23,515.73L307.27,512.77L304.64,509.51L302.36,506.0L300.46,502.27L298.96,498.36L297.87,494.32L297.22,490.18L297.0,486.0L297.22,481.82",
+      "stroke": "#2FB888",
+      "strokeWidth": 9,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s23",
+     "assetId": "shape:Card shadow",
+     "name": "Card shadow",
+     "xPct": 50.455,
+     "yPct": 61.715,
+     "widthPct": 52.273,
+     "heightPct": 17.364,
+     "rotation": 0,
+     "opacity": 0.18,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 230,
+      "h": 166,
+      "radius": 60,
+      "fill": "#000000",
+      "blur": 14,
+      "inset": 40
+     }
+    },
+    {
+     "id": "tpl-s24",
+     "assetId": "shape:Card",
+     "name": "Card",
+     "xPct": 59.545,
+     "yPct": 65.272,
+     "widthPct": 34.091,
+     "heightPct": 8.996,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 150,
+      "h": 86,
+      "radius": 20,
+      "fill": "#16204A"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 43.85,
+    "x": -19.08,
+    "y": 12.06,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
   },
   {
-   "title": "Learn Offline",
+   "title": "Study offline, anywhere",
    "subtitle": "Download lessons for any connection",
-   "layout": "right-side-title-above",
-   "background": null,
-   "devices": null
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #1C2759 0%, #121A3E 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t37",
+     "xPct": 9.091,
+     "yPct": 6.51,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Study offline,\nanywhere",
+      "color": "#FBF6EC",
+      "size": 108.0,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.08,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t38",
+     "xPct": 9.091,
+     "yPct": 19.701,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Download lessons for\nany connection",
+      "color": "#C9CEE6",
+      "size": 41.7,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.35
+     }
+    },
+    {
+     "id": "tpl-t39",
+     "xPct": 34.091,
+     "yPct": 26.036,
+     "widthPct": 31.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "Pill label",
+     "style": {
+      "text": "Saved offline",
+      "color": "#16204A",
+      "size": 34.4,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s32",
+     "assetId": "shape:Glow",
+     "name": "Glow",
+     "xPct": -29.545,
+     "yPct": 28.243,
+     "widthPct": 159.091,
+     "heightPct": 73.222,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 700,
+      "h": 700,
+      "radius": 350,
+      "fill": "#3B4BA0",
+      "blur": 50,
+      "inset": 150
+     }
+    },
+    {
+     "id": "tpl-s33",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -0.326,
+     "yPct": 27.997,
+     "widthPct": 80.455,
+     "heightPct": 64.262,
+     "rotation": -8,
+     "opacity": 0.4,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 354,
+      "h": 614.35,
+      "radius": 101.52,
+      "fill": "#000000",
+      "blur": 22,
+      "inset": 66
+     }
+    },
+    {
+     "id": "tpl-s34",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 17.12,
+     "yPct": 25.624,
+     "widthPct": 89.545,
+     "heightPct": 71.881,
+     "rotation": 5,
+     "opacity": 0.45,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 394,
+      "h": 687.18,
+      "radius": 112.0,
+      "fill": "#000000",
+      "blur": 24,
+      "inset": 72
+     }
+    },
+    {
+     "id": "tpl-s35",
+     "assetId": "shape:Highlighter",
+     "name": "Highlighter",
+     "xPct": 25.072,
+     "yPct": 16.423,
+     "widthPct": 49.856,
+     "heightPct": 0.941,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 29,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 219.37,
+      "h": 9,
+      "vx": 110.32,
+      "vy": 157,
+      "path": "M114.32,160L329.68,157L325.68,164L110.32,166Z",
+      "fill": "#7FE3BC"
+     }
+    },
+    {
+     "id": "tpl-s36",
+     "assetId": "shape:Offline pill",
+     "name": "Offline pill",
+     "xPct": 34.091,
+     "yPct": 24.895,
+     "widthPct": 31.818,
+     "heightPct": 3.556,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 140,
+      "h": 34,
+      "radius": 17,
+      "fill": "#7FE3BC"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 41.84,
+    "x": 20.93,
+    "y": 19.25,
+    "rotation": 5,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 11
+   },
+   "extraDevices": [
+    {
+     "size": 37.15,
+     "x": -20.02,
+     "y": 18.83,
+     "rotation": -8,
+     "brightness": 100,
+     "frameless": false,
+     "bezelColor": "#060606",
+     "borderColor": "#5e5e5e",
+     "zIndex": 8
+    }
+   ]
   },
   {
-   "title": "Join the Community",
+   "title": "Learn together, live",
    "subtitle": "Study groups and live Q&A sessions",
-   "layout": "right-side-title-above",
-   "background": null,
-   "devices": null
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #FDF9F1 0%, #F6EEDD 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t48",
+     "xPct": 10.909,
+     "yPct": 27.829,
+     "widthPct": 22.727,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "Chip 1",
+     "style": {
+      "text": "Study group",
+      "color": "#16204A",
+      "size": 36.8,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t49",
+     "xPct": 68.182,
+     "yPct": 43.519,
+     "widthPct": 29.545,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "Chip 2",
+     "style": {
+      "text": "Live Q&A",
+      "color": "#FBF6EC",
+      "size": 36.8,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t50",
+     "xPct": 9.091,
+     "yPct": 69.062,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Learn together,\nlive",
+      "color": "#16204A",
+      "size": 108.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.08,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t51",
+     "xPct": 9.091,
+     "yPct": 82.253,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Study groups and\nlive Q&A sessions",
+      "color": "#4A5275",
+      "size": 41.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.35
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s40",
+     "assetId": "shape:Glow",
+     "name": "Glow",
+     "xPct": -18.182,
+     "yPct": 3.138,
+     "widthPct": 136.364,
+     "heightPct": 62.762,
+     "rotation": 0,
+     "opacity": 0.3,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 600,
+      "h": 600,
+      "radius": 300,
+      "fill": "#7FE3BC",
+      "blur": 40,
+      "inset": 120
+     }
+    },
+    {
+     "id": "tpl-s41",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 6.591,
+     "yPct": -0.628,
+     "widthPct": 86.818,
+     "heightPct": 70.626,
+     "rotation": 0,
+     "opacity": 0.2,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 382,
+      "h": 675.18,
+      "radius": 106.0,
+      "fill": "#000000",
+      "blur": 22,
+      "inset": 66
+     }
+    },
+    {
+     "id": "tpl-s42",
+     "assetId": "shape:Card shadow",
+     "name": "Card shadow",
+     "xPct": -6.364,
+     "yPct": 22.594,
+     "widthPct": 48.182,
+     "heightPct": 13.18,
+     "rotation": 0,
+     "opacity": 0.18,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 212,
+      "h": 126,
+      "radius": 60,
+      "fill": "#000000",
+      "blur": 14,
+      "inset": 40
+     }
+    },
+    {
+     "id": "tpl-s43",
+     "assetId": "shape:Card",
+     "name": "Card",
+     "xPct": 2.727,
+     "yPct": 26.151,
+     "widthPct": 30.0,
+     "heightPct": 4.812,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 132,
+      "h": 46,
+      "radius": 20,
+      "fill": "#FFFFFF"
+     }
+    },
+    {
+     "id": "tpl-s44",
+     "assetId": "shape:Card shadow",
+     "name": "Card shadow",
+     "xPct": 59.091,
+     "yPct": 38.285,
+     "widthPct": 47.727,
+     "heightPct": 13.18,
+     "rotation": 0,
+     "opacity": 0.18,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 210,
+      "h": 126,
+      "radius": 60,
+      "fill": "#000000",
+      "blur": 14,
+      "inset": 40
+     }
+    },
+    {
+     "id": "tpl-s45",
+     "assetId": "shape:Card",
+     "name": "Card",
+     "xPct": 68.182,
+     "yPct": 41.841,
+     "widthPct": 29.545,
+     "heightPct": 4.812,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 130,
+      "h": 46,
+      "radius": 20,
+      "fill": "#16204A"
+     }
+    },
+    {
+     "id": "tpl-s46",
+     "assetId": "shape:Live dot",
+     "name": "Live dot",
+     "xPct": 6.136,
+     "yPct": 27.824,
+     "widthPct": 3.182,
+     "heightPct": 1.464,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 14,
+      "h": 14,
+      "fill": "#2FB888"
+     }
+    },
+    {
+     "id": "tpl-s47",
+     "assetId": "shape:Highlighter",
+     "name": "Highlighter",
+     "xPct": 37.035,
+     "yPct": 71.289,
+     "widthPct": 43.436,
+     "heightPct": 2.301,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 29,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 191.12,
+      "h": 22.0,
+      "vx": 162.95,
+      "vy": 681.52,
+      "path": "M166.95,684.52L354.07,681.52L350.07,701.52L162.95,703.52Z",
+      "fill": "#7FE3BC"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 41.84,
+    "x": 0.0,
+    "y": -28.06,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
   }
+ ],
+ "designHeight": 2347,
+ "textColor": "#111111",
+ "columnCount": 5,
+ "titles": [
+  "Learn anything, anytime",
+  "Courses by real experts",
+  "Watch your skills grow",
+  "Study offline, anywhere",
+  "Learn together, live"
+ ],
+ "subtitles": [
+  "Thousands of courses across every subject",
+  "Taught by industry professionals",
+  "Certificates and skill milestones",
+  "Download lessons for any connection",
+  "Study groups and live Q&A sessions"
  ]
 }

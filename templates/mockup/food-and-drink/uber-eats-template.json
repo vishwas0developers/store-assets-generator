@@ -1,7 +1,7 @@
 {
  "version": 1,
  "id": "uber-eats-template",
- "name": "Food app",
+ "name": "Food app-4",
  "category": "food-and-drink",
  "description": "Showcase your food delivery service app with a clean and modern design.",
  "devices": [
@@ -20,569 +20,1836 @@
  ],
  "layout": "single-no-text",
  "background": {
-  "type": "solid",
-  "value": "#06c167"
+  "type": "gradient",
+  "value": "radial-gradient(circle at 80% 18%, #25306a 0%, #13183a 55%, #0c1029 100%)"
  },
  "panoramic": false,
  "columnCount": 8,
  "titles": [
-  "Hungry?\nOrder Now",
-  "Crave It?\nGet It",
-  "Food Your\nWay",
-  "Delicious\nJust Arrived",
-  "Satisfy\nAny Craving",
-  "Local Eats\nDelivered",
-  "Order\nWith Ease",
-  "Fresh\nFood Fast"
+  "Dinner, at your door",
+  "Browse by craving",
+  "Build the perfect order",
+  "Track it live",
+  "Checkout in one tap",
+  "Group orders, made easy",
+  "Deals worth waiting for",
+  "Rate & reorder"
  ],
  "subtitles": [
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  ""
+  "Hundreds of local kitchens, one tap away",
+  "Pizza, ramen, tacos - filtered in seconds",
+  "Customize every dish exactly how you like it",
+  "Watch your courier turn every corner",
+  "Saved cards and split bills with friends",
+  "Everyone adds their own, one delivery",
+  "Daily offers from your favorite spots",
+  "Your go-to meals, saved for next time"
  ],
  "pages": [
   {
-   "title": "Hungry?\nOrder Now",
-   "subtitle": "",
+   "title": "Dinner, at your door",
+   "subtitle": "Hundreds of local kitchens, one tap away",
    "layout": "single-no-text",
    "background": {
-    "type": "solid",
-    "value": "#06c167"
+    "type": "gradient",
+    "value": "radial-gradient(circle at 80% 18%, #25306a 0%, #13183a 55%, #0c1029 100%)"
    },
    "devices": null,
    "decorations": [],
    "textLayers": [
+    {
+     "id": "tpl-t1",
+     "xPct": 9.091,
+     "yPct": 11.6,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Dinner,\nat your door",
+      "color": "#ffffff",
+      "size": 108.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.05,
+      "charSpacing": -25
+     }
+    },
     {
      "id": "tpl-t2",
-     "xPct": 6.364,
-     "yPct": 2.925,
-     "widthPct": 87.273,
+     "xPct": 9.091,
+     "yPct": 22.718,
+     "widthPct": 81.818,
      "rotation": 0,
      "opacity": 1,
      "zIndex": 30,
-     "customName": "Title",
+     "customName": "Subtitle",
      "style": {
-      "text": "Hungry?\nOrder Now",
-      "color": "#000000",
-      "size": 78.5,
-      "align": "center",
-      "fontFamily": "Poppins, sans-serif",
+      "text": "Hundreds of local kitchens,\none tap away",
+      "color": "#c3cbee",
+      "size": 39.3,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
       "fontWeightNum": 500,
-      "lineHeightMultiplier": 1.15
+      "lineHeightMultiplier": 1.4
+     }
+    },
+    {
+     "id": "tpl-t11",
+     "xPct": 9.091,
+     "yPct": 7.081,
+     "widthPct": 23.271,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Kicker",
+     "style": {
+      "text": "01  NEARBY",
+      "color": "#2fe0b8",
+      "size": 27.0,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 120
      }
     }
    ],
    "assetLayers": [
     {
-     "id": "tpl-s1",
-     "assetId": "shape:Phone shadow",
-     "name": "Phone shadow",
-     "xPct": -13.977,
-     "yPct": 4.916,
-     "widthPct": 127.955,
-     "heightPct": 107.346,
+     "id": "tpl-s4",
+     "assetId": "shape:Route",
+     "name": "Route",
+     "xPct": 3.591,
+     "yPct": 39.31,
+     "widthPct": 22.364,
+     "heightPct": 60.502,
      "rotation": 0,
-     "opacity": 0.14,
-     "zIndex": 5,
+     "opacity": 1,
+     "zIndex": 3,
      "cropFit": "stretch",
      "shape": {
-      "type": "roundRect",
-      "w": 563,
-      "h": 1026.23,
-      "radius": 147.2,
-      "fill": "#000000",
-      "blur": 28,
-      "inset": 84
+      "type": "path",
+      "w": 98.4,
+      "h": 578.4,
+      "vx": 15.8,
+      "vy": 375.8,
+      "path": "M20,950L20.98,946.75L21.91,943.51L22.8,940.27M23.64,937.03M24.45,933.8M25.21,930.58L25.93,927.35L26.61,924.14L27.25,920.92M27.86,917.71M28.43,914.51M28.96,911.31L29.46,908.11L29.92,904.92L30.35,901.74M30.75,898.56M31.12,895.38M31.45,892.21L31.76,889.04L32.04,885.88L32.29,882.72M32.51,879.57M32.71,876.42M32.88,873.28L33.03,870.14L33.15,867.01L33.26,863.88M33.34,860.76M33.4,857.64M33.44,854.53L33.46,851.42L33.46,848.32L33.45,845.23M33.42,842.14M33.38,839.05M33.32,835.97L33.25,832.9L33.16,829.83L33.07,826.76M32.96,823.7M32.85,820.65M32.72,817.6L32.59,814.56L32.45,811.53L32.3,808.5M32.15,805.47M32.0,802.45M31.84,799.44L31.68,796.43L31.52,793.43L31.35,790.44M31.19,787.45M31.03,784.46M30.87,781.49L30.71,778.51L30.56,775.55L30.41,772.59L30.27,769.64M30.13,766.69M30.0,763.75M29.88,760.82L29.77,757.89L29.67,754.97L29.58,752.05L29.5,749.14M29.43,746.24M29.38,743.34M29.34,740.45L29.32,737.57L29.32,734.69L29.33,731.82L29.36,728.96M29.41,726.1M29.48,723.25M29.57,720.41L29.68,717.57L29.82,714.74L29.98,711.92L30.16,709.11M30.37,706.3M30.61,703.49M30.87,700.7L31.16,697.91L31.48,695.13L31.83,692.36L32.21,689.59M32.62,686.83M33.07,684.08M33.55,681.33L34.06,678.59L34.61,675.86L35.2,673.14L35.82,670.42M36.48,667.71M37.18,665.01M37.92,662.32L38.7,659.63L39.52,656.96L40.39,654.28L41.3,651.62M42.25,648.96M43.25,646.32M44.29,643.68L45.38,641.04L46.52,638.42L47.71,635.8L48.95,633.19M50.24,630.59M51.58,628.0M52.97,625.41L54.42,622.83L55.92,620.26L57.48,617.7L59.09,615.15M60.76,612.6M62.49,610.07M64.28,607.54L66.12,605.02L68.03,602.5L70.0,600.0M71.47,598.0M72.88,596.0M74.22,594.0M75.51,592.0L76.74,590.0L77.91,588.0L79.03,586.0L80.09,584.01M81.1,582.01M82.05,580.01M82.96,578.02M83.81,576.02L84.61,574.03L85.37,572.03L86.07,570.04L86.73,568.05L87.35,566.06M87.92,564.07M88.45,562.08M88.94,560.09M89.38,558.11L89.79,556.12L90.15,554.14L90.48,552.16L90.77,550.18L91.03,548.2M91.25,546.23M91.44,544.25M91.59,542.28M91.72,540.31M91.81,538.34L91.88,536.38L91.92,534.42L91.93,532.45L91.91,530.5L91.87,528.54M91.81,526.59M91.72,524.64M91.61,522.69M91.48,520.74M91.33,518.8L91.17,516.86L90.98,514.92L90.78,512.99L90.57,511.05L90.34,509.13M90.09,507.2M89.84,505.28M89.57,503.36M89.3,501.45M89.02,499.54L88.72,497.63L88.43,495.72L88.12,493.82L87.82,491.93L87.51,490.03M87.19,488.14M86.88,486.26M86.56,484.38M86.25,482.5M85.94,480.63L85.63,478.76L85.33,476.89L85.03,475.03L84.74,473.18L84.45,471.33M84.18,469.48M83.91,467.64M83.65,465.8M83.41,463.97M83.18,462.14L82.96,460.32L82.76,458.5L82.57,456.69L82.4,454.88L82.25,453.08M82.12,451.28M82.01,449.49M81.92,447.71M81.85,445.93M81.81,444.15L81.79,442.38L81.8,440.62L81.83,438.86L81.89,437.11L81.98,435.36L82.1,433.62M82.25,431.89M82.44,430.16M82.66,428.44M82.91,426.72M83.2,425.01L83.52,423.31L83.88,421.61L84.28,419.92L84.72,418.24L85.2,416.56L85.72,414.89M86.29,413.23M86.9,411.57M87.55,409.92M88.25,408.28M89.0,406.65L89.8,405.02L90.64,403.4L91.54,401.78L92.49,400.18L93.49,398.58M94.54,396.99M95.65,395.41M96.82,393.83M98.04,392.26M99.32,390.7L100.66,389.15L102.06,387.6L103.52,386.07L105.05,384.54L106.63,383.02M108.28,381.5M110.0,380.0",
+      "stroke": "#2fe0b8",
+      "strokeWidth": 3.2,
+      "strokeLinejoin": "round"
      }
-    }
-   ],
-   "deviceOne": {
-    "size": 66.11,
-    "x": 0.0,
-    "y": 8.87,
-    "rotation": 0,
-    "brightness": 100,
-    "frameless": false,
-    "bezelColor": "#ffffff",
-    "borderColor": "#ffffff",
-    "zIndex": 10
-   }
-  },
-  {
-   "title": "Crave It?\nGet It",
-   "subtitle": "",
-   "layout": "single-no-text",
-   "background": {
-    "type": "solid",
-    "value": "#fed2c7"
-   },
-   "devices": null,
-   "decorations": [],
-   "textLayers": [
-    {
-     "id": "tpl-t4",
-     "xPct": 6.364,
-     "yPct": 2.925,
-     "widthPct": 87.273,
-     "rotation": 0,
-     "opacity": 1,
-     "zIndex": 30,
-     "customName": "Title",
-     "style": {
-      "text": "Crave It?\nGet It",
-      "color": "#000000",
-      "size": 78.5,
-      "align": "center",
-      "fontFamily": "Poppins, sans-serif",
-      "fontWeightNum": 500,
-      "lineHeightMultiplier": 1.15
-     }
-    }
-   ],
-   "assetLayers": [
+    },
     {
      "id": "tpl-s3",
      "assetId": "shape:Phone shadow",
      "name": "Phone shadow",
-     "xPct": -13.977,
-     "yPct": 4.916,
-     "widthPct": 127.955,
-     "heightPct": 107.346,
+     "xPct": 13.864,
+     "yPct": 27.406,
+     "widthPct": 91.364,
+     "heightPct": 75.171,
      "rotation": 0,
-     "opacity": 0.14,
+     "opacity": 0.28,
      "zIndex": 5,
      "cropFit": "stretch",
      "shape": {
       "type": "roundRect",
-      "w": 563,
-      "h": 1026.23,
-      "radius": 147.2,
+      "w": 402,
+      "h": 718.64,
+      "radius": 109.2,
       "fill": "#000000",
-      "blur": 28,
-      "inset": 84
+      "blur": 22,
+      "inset": 66
      }
-    }
-   ],
-   "deviceOne": {
-    "size": 66.11,
-    "x": 0.0,
-    "y": 8.87,
-    "rotation": 0,
-    "brightness": 100,
-    "frameless": false,
-    "bezelColor": "#ffffff",
-    "borderColor": "#ffffff",
-    "zIndex": 10
-   }
-  },
-  {
-   "title": "Food Your\nWay",
-   "subtitle": "",
-   "layout": "single-no-text",
-   "background": {
-    "type": "solid",
-    "value": "#ff6937"
-   },
-   "devices": null,
-   "decorations": [],
-   "textLayers": [
-    {
-     "id": "tpl-t6",
-     "xPct": 6.364,
-     "yPct": 2.925,
-     "widthPct": 87.273,
-     "rotation": 0,
-     "opacity": 1,
-     "zIndex": 30,
-     "customName": "Title",
-     "style": {
-      "text": "Food Your\nWay",
-      "color": "#000000",
-      "size": 78.5,
-      "align": "center",
-      "fontFamily": "Poppins, sans-serif",
-      "fontWeightNum": 500,
-      "lineHeightMultiplier": 1.15
-     }
-    }
-   ],
-   "assetLayers": [
+    },
     {
      "id": "tpl-s5",
-     "assetId": "shape:Phone shadow",
-     "name": "Phone shadow",
-     "xPct": -13.977,
-     "yPct": 4.916,
-     "widthPct": 127.955,
-     "heightPct": 107.346,
+     "assetId": "shape:Pin halo",
+     "name": "Pin halo",
+     "xPct": 19.545,
+     "yPct": 37.238,
+     "widthPct": 10.909,
+     "heightPct": 5.021,
      "rotation": 0,
-     "opacity": 0.14,
-     "zIndex": 5,
+     "opacity": 0.22,
+     "zIndex": 6,
      "cropFit": "stretch",
      "shape": {
-      "type": "roundRect",
-      "w": 563,
-      "h": 1026.23,
-      "radius": 147.2,
-      "fill": "#000000",
-      "blur": 28,
-      "inset": 84
+      "type": "ellipse",
+      "w": 48,
+      "h": 48,
+      "fill": "#2fe0b8"
      }
-    }
-   ],
-   "deviceOne": {
-    "size": 66.11,
-    "x": 0.0,
-    "y": 8.87,
-    "rotation": 0,
-    "brightness": 100,
-    "frameless": false,
-    "bezelColor": "#ffffff",
-    "borderColor": "#ffffff",
-    "zIndex": 10
-   }
-  },
-  {
-   "title": "Delicious\nJust Arrived",
-   "subtitle": "",
-   "layout": "single-no-text",
-   "background": {
-    "type": "solid",
-    "value": "#ffc043"
-   },
-   "devices": null,
-   "decorations": [],
-   "textLayers": [
+    },
     {
-     "id": "tpl-t8",
-     "xPct": 6.364,
-     "yPct": 2.925,
-     "widthPct": 87.273,
+     "id": "tpl-s6",
+     "assetId": "shape:Pin",
+     "name": "Pin",
+     "xPct": 21.591,
+     "yPct": 38.18,
+     "widthPct": 6.818,
+     "heightPct": 3.138,
      "rotation": 0,
      "opacity": 1,
-     "zIndex": 30,
-     "customName": "Title",
-     "style": {
-      "text": "Delicious\nJust Arrived",
-      "color": "#000000",
-      "size": 78.5,
-      "align": "center",
-      "fontFamily": "Poppins, sans-serif",
-      "fontWeightNum": 500,
-      "lineHeightMultiplier": 1.15
+     "zIndex": 7,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 30,
+      "h": 30,
+      "fill": "#2fe0b8"
      }
-    }
-   ],
-   "assetLayers": [
+    },
     {
      "id": "tpl-s7",
-     "assetId": "shape:Phone shadow",
-     "name": "Phone shadow",
-     "xPct": -13.977,
-     "yPct": 4.916,
-     "widthPct": 127.955,
-     "heightPct": 107.346,
+     "assetId": "shape:Pin core",
+     "name": "Pin core",
+     "xPct": 23.773,
+     "yPct": 39.184,
+     "widthPct": 2.455,
+     "heightPct": 1.13,
      "rotation": 0,
-     "opacity": 0.14,
-     "zIndex": 5,
+     "opacity": 1,
+     "zIndex": 8,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 10.8,
+      "h": 10.8,
+      "fill": "#13183a"
+     }
+    },
+    {
+     "id": "tpl-s8",
+     "assetId": "shape:Kicker pill",
+     "name": "Kicker pill",
+     "xPct": 9.091,
+     "yPct": 6.276,
+     "widthPct": 23.271,
+     "heightPct": 2.72,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
      "cropFit": "stretch",
      "shape": {
       "type": "roundRect",
-      "w": 563,
-      "h": 1026.23,
-      "radius": 147.2,
-      "fill": "#000000",
-      "blur": 28,
-      "inset": 84
+      "w": 102.39,
+      "h": 26,
+      "radius": 13,
+      "fill": "#232b5c"
      }
     }
    ],
    "deviceOne": {
-    "size": 66.11,
-    "x": 0.0,
-    "y": 8.87,
+    "size": 45.19,
+    "x": 15.56,
+    "y": 22.73,
     "rotation": 0,
     "brightness": 100,
     "frameless": false,
-    "bezelColor": "#ffffff",
-    "borderColor": "#ffffff",
+    "bezelColor": "#0b0b0f",
+    "borderColor": "#3a3f5c",
     "zIndex": 10
    }
   },
   {
-   "title": "Satisfy\nAny Craving",
-   "subtitle": "",
+   "title": "Browse by craving",
+   "subtitle": "Pizza, ramen, tacos - filtered in seconds",
    "layout": "single-no-text",
    "background": {
-    "type": "solid",
-    "value": "#06c167"
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #f1f5ff 0%, #e6edff 100%)"
    },
    "devices": null,
    "decorations": [],
    "textLayers": [
     {
-     "id": "tpl-t10",
-     "xPct": 6.364,
-     "yPct": 2.925,
-     "widthPct": 87.273,
+     "id": "tpl-t13",
+     "xPct": 9.091,
+     "yPct": 75.826,
+     "widthPct": 81.818,
      "rotation": 0,
      "opacity": 1,
      "zIndex": 30,
      "customName": "Title",
      "style": {
-      "text": "Satisfy\nAny Craving",
-      "color": "#000000",
-      "size": 78.5,
+      "text": "Browse by\ncraving",
+      "color": "#13183a",
+      "size": 108.0,
       "align": "center",
-      "fontFamily": "Poppins, sans-serif",
-      "fontWeightNum": 500,
-      "lineHeightMultiplier": 1.15
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.05,
+      "charSpacing": -25
      }
-    }
-   ],
-   "assetLayers": [
-    {
-     "id": "tpl-s9",
-     "assetId": "shape:Phone shadow",
-     "name": "Phone shadow",
-     "xPct": -13.977,
-     "yPct": 4.916,
-     "widthPct": 127.955,
-     "heightPct": 107.346,
-     "rotation": 0,
-     "opacity": 0.14,
-     "zIndex": 5,
-     "cropFit": "stretch",
-     "shape": {
-      "type": "roundRect",
-      "w": 563,
-      "h": 1026.23,
-      "radius": 147.2,
-      "fill": "#000000",
-      "blur": 28,
-      "inset": 84
-     }
-    }
-   ],
-   "deviceOne": {
-    "size": 66.11,
-    "x": 0.0,
-    "y": 8.87,
-    "rotation": 0,
-    "brightness": 100,
-    "frameless": false,
-    "bezelColor": "#ffffff",
-    "borderColor": "#ffffff",
-    "zIndex": 10
-   }
-  },
-  {
-   "title": "Local Eats\nDelivered",
-   "subtitle": "",
-   "layout": "single-no-text",
-   "background": {
-    "type": "solid",
-    "value": "#fed2c7"
-   },
-   "devices": null,
-   "decorations": [],
-   "textLayers": [
-    {
-     "id": "tpl-t12",
-     "xPct": 6.364,
-     "yPct": 2.925,
-     "widthPct": 87.273,
-     "rotation": 0,
-     "opacity": 1,
-     "zIndex": 30,
-     "customName": "Title",
-     "style": {
-      "text": "Local Eats\nDelivered",
-      "color": "#000000",
-      "size": 78.5,
-      "align": "center",
-      "fontFamily": "Poppins, sans-serif",
-      "fontWeightNum": 500,
-      "lineHeightMultiplier": 1.15
-     }
-    }
-   ],
-   "assetLayers": [
-    {
-     "id": "tpl-s11",
-     "assetId": "shape:Phone shadow",
-     "name": "Phone shadow",
-     "xPct": -13.977,
-     "yPct": 4.916,
-     "widthPct": 127.955,
-     "heightPct": 107.346,
-     "rotation": 0,
-     "opacity": 0.14,
-     "zIndex": 5,
-     "cropFit": "stretch",
-     "shape": {
-      "type": "roundRect",
-      "w": 563,
-      "h": 1026.23,
-      "radius": 147.2,
-      "fill": "#000000",
-      "blur": 28,
-      "inset": 84
-     }
-    }
-   ],
-   "deviceOne": {
-    "size": 66.11,
-    "x": 0.0,
-    "y": 8.87,
-    "rotation": 0,
-    "brightness": 100,
-    "frameless": false,
-    "bezelColor": "#ffffff",
-    "borderColor": "#ffffff",
-    "zIndex": 10
-   }
-  },
-  {
-   "title": "Order\nWith Ease",
-   "subtitle": "",
-   "layout": "single-no-text",
-   "background": {
-    "type": "solid",
-    "value": "#ff6937"
-   },
-   "devices": null,
-   "decorations": [],
-   "textLayers": [
+    },
     {
      "id": "tpl-t14",
-     "xPct": 6.364,
-     "yPct": 2.925,
-     "widthPct": 87.273,
+     "xPct": 9.091,
+     "yPct": 86.944,
+     "widthPct": 81.818,
      "rotation": 0,
      "opacity": 1,
      "zIndex": 30,
-     "customName": "Title",
+     "customName": "Subtitle",
      "style": {
-      "text": "Order\nWith Ease",
-      "color": "#000000",
-      "size": 78.5,
+      "text": "Pizza, ramen, tacos -\nfiltered in seconds",
+      "color": "#3a4372",
+      "size": 39.3,
       "align": "center",
-      "fontFamily": "Poppins, sans-serif",
+      "fontFamily": "Inter, sans-serif",
       "fontWeightNum": 500,
-      "lineHeightMultiplier": 1.15
+      "lineHeightMultiplier": 1.4
+     }
+    },
+    {
+     "id": "tpl-t16",
+     "xPct": 37.431,
+     "yPct": 70.68,
+     "widthPct": 25.138,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Kicker",
+     "style": {
+      "text": "02  EXPLORE",
+      "color": "#0b7a63",
+      "size": 27.0,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 120
      }
     }
    ],
    "assetLayers": [
     {
-     "id": "tpl-s13",
+     "id": "tpl-s17",
+     "assetId": "shape:Route",
+     "name": "Route",
+     "xPct": -3.227,
+     "yPct": 64.414,
+     "widthPct": 106.455,
+     "heightPct": 4.23,
+     "rotation": 0,
+     "opacity": 0.7,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 468.4,
+      "h": 40.44,
+      "vx": -14.2,
+      "vy": 615.8,
+      "path": "M-10,640L-6.74,639.03L-3.44,638.12L-0.12,637.26M3.23,636.45M6.6,635.71M10.01,635.01L13.44,634.37L16.89,633.77L20.37,633.23M23.88,632.73M27.41,632.28M30.96,631.88L34.54,631.52L38.14,631.21L41.76,630.94M45.4,630.71M49.07,630.52M52.75,630.37L56.46,630.26L60.19,630.19L63.93,630.15M67.7,630.14M71.48,630.18M75.28,630.24L79.1,630.34L82.93,630.46L86.79,630.62M90.65,630.8M94.54,631.01M98.44,631.25L102.35,631.51L106.28,631.8L110.22,632.11M114.17,632.44M118.14,632.79M122.12,633.16L126.11,633.55L130.11,633.96L134.13,634.38M138.15,634.81M142.18,635.27L146.22,635.73L150.27,636.21L154.33,636.69M158.4,637.19M162.47,637.69L166.55,638.2L170.64,638.72L174.73,639.24M178.83,639.77M182.93,640.3L187.04,640.83L191.15,641.36L195.27,641.89M199.39,642.42M203.51,642.95L207.63,643.47L211.75,643.98L215.88,644.5M220.0,645.0M224.12,645.5L228.25,645.98L232.37,646.46L236.49,646.92M240.61,647.37M244.73,647.81L248.85,648.23L252.96,648.64L257.07,649.03M261.17,649.4M265.27,649.75L269.36,650.08L273.45,650.39L277.53,650.68M281.6,650.94M285.67,651.17L289.73,651.39L293.78,651.57L297.82,651.73M301.85,651.85M305.87,651.95L309.89,652.01L313.89,652.04L317.88,652.04M321.86,652.0M325.83,651.93M329.78,651.82L333.72,651.67L337.65,651.48L341.56,651.25M345.46,650.98M349.35,650.67M353.21,650.31L357.07,649.9L360.9,649.46L364.72,648.96M368.52,648.42M372.3,647.82M376.07,647.18L379.81,646.48L383.54,645.73L387.25,644.93M390.93,644.07M394.6,643.16M398.24,642.19L401.86,641.16L405.46,640.07L409.04,638.92M412.59,637.71M416.12,636.44M419.63,635.1L423.11,633.69L426.56,632.23L429.99,630.69M433.4,629.09M436.77,627.41M440.12,625.67L443.44,623.85L446.74,621.96L450.0,620.0",
+      "stroke": "#0b7a63",
+      "strokeWidth": 3.2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s12",
      "assetId": "shape:Phone shadow",
      "name": "Phone shadow",
-     "xPct": -13.977,
-     "yPct": 4.916,
-     "widthPct": 127.955,
-     "heightPct": 107.346,
-     "rotation": 0,
-     "opacity": 0.14,
+     "xPct": -1.679,
+     "yPct": -0.574,
+     "widthPct": 86.818,
+     "heightPct": 70.626,
+     "rotation": 6,
+     "opacity": 0.28,
      "zIndex": 5,
      "cropFit": "stretch",
      "shape": {
       "type": "roundRect",
-      "w": 563,
-      "h": 1026.23,
-      "radius": 147.2,
+      "w": 382,
+      "h": 675.18,
+      "radius": 106.0,
       "fill": "#000000",
-      "blur": 28,
-      "inset": 84
+      "blur": 22,
+      "inset": 66
+     }
+    },
+    {
+     "id": "tpl-s15",
+     "assetId": "shape:Kicker pill",
+     "name": "Kicker pill",
+     "xPct": 37.431,
+     "yPct": 69.874,
+     "widthPct": 25.138,
+     "heightPct": 2.72,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 110.61,
+      "h": 26,
+      "radius": 13,
+      "fill": "#ffffff"
      }
     }
    ],
    "deviceOne": {
-    "size": 66.11,
-    "x": 0.0,
-    "y": 8.87,
-    "rotation": 0,
+    "size": 41.84,
+    "x": -14.56,
+    "y": -28.7,
+    "rotation": 6,
     "brightness": 100,
     "frameless": false,
-    "bezelColor": "#ffffff",
-    "borderColor": "#ffffff",
+    "bezelColor": "#0b0b0f",
+    "borderColor": "#3a3f5c",
     "zIndex": 10
    }
   },
   {
-   "title": "Fresh\nFood Fast",
-   "subtitle": "",
+   "title": "Build the perfect order",
+   "subtitle": "Customize every dish exactly how you like it",
    "layout": "single-no-text",
    "background": {
-    "type": "solid",
-    "value": "#ffc043"
+    "type": "gradient",
+    "value": "radial-gradient(circle at 80% 18%, #25306a 0%, #13183a 55%, #0c1029 100%)"
    },
    "devices": null,
    "decorations": [],
    "textLayers": [
     {
-     "id": "tpl-t16",
-     "xPct": 6.364,
-     "yPct": 2.925,
-     "widthPct": 87.273,
+     "id": "tpl-t18",
+     "xPct": 9.091,
+     "yPct": 11.6,
+     "widthPct": 81.818,
      "rotation": 0,
      "opacity": 1,
      "zIndex": 30,
      "customName": "Title",
      "style": {
-      "text": "Fresh\nFood Fast",
-      "color": "#000000",
-      "size": 78.5,
-      "align": "center",
-      "fontFamily": "Poppins, sans-serif",
+      "text": "Build the\nperfect order",
+      "color": "#ffffff",
+      "size": 108.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.05,
+      "charSpacing": -25
+     }
+    },
+    {
+     "id": "tpl-t19",
+     "xPct": 9.091,
+     "yPct": 22.718,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Customize every dish\nexactly how you like it",
+      "color": "#c3cbee",
+      "size": 39.3,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
       "fontWeightNum": 500,
-      "lineHeightMultiplier": 1.15
+      "lineHeightMultiplier": 1.4
+     }
+    },
+    {
+     "id": "tpl-t21",
+     "xPct": 9.091,
+     "yPct": 7.081,
+     "widthPct": 29.414,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Kicker",
+     "style": {
+      "text": "03  CUSTOMIZE",
+      "color": "#2fe0b8",
+      "size": 27.0,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 120
      }
     }
    ],
    "assetLayers": [
     {
-     "id": "tpl-s15",
+     "id": "tpl-s24",
+     "assetId": "shape:Route",
+     "name": "Route",
+     "xPct": 80.864,
+     "yPct": 26.757,
+     "widthPct": 22.364,
+     "heightPct": 8.201,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 98.4,
+      "h": 78.4,
+      "vx": 355.8,
+      "vy": 255.8,
+      "path": "M450,330L448.27,329.99L446.59,329.98L444.95,329.94L443.36,329.9L441.81,329.85L440.3,329.78M438.83,329.7M437.4,329.61M436.02,329.5M434.67,329.39M433.36,329.26M432.09,329.12L430.86,328.97L429.66,328.81L428.5,328.63L427.37,328.45L426.28,328.25L425.22,328.04L424.19,327.82L423.19,327.59M422.23,327.35M421.3,327.1M420.39,326.83M419.52,326.56M418.67,326.27M417.86,325.98M417.06,325.67M416.3,325.35M415.56,325.03L414.84,324.69L414.15,324.34L413.48,323.98L412.84,323.61L412.22,323.23L411.61,322.84L411.03,322.44L410.47,322.03L409.92,321.61L409.4,321.18L408.89,320.74L408.4,320.29L407.92,319.83M407.46,319.36M407.01,318.89M406.58,318.4M406.16,317.9M405.76,317.4M405.36,316.88M404.98,316.36M404.6,315.82M404.24,315.28M403.88,314.73M403.53,314.17M403.19,313.6M402.85,313.02L402.52,312.43L402.2,311.84L401.88,311.23L401.56,310.62L401.25,310.0L400.94,309.37L400.63,308.73L400.32,308.09L400.01,307.43L399.7,306.77L399.39,306.1L399.07,305.42L398.75,304.74M398.43,304.05M398.11,303.34M397.78,302.64M397.44,301.92M397.1,301.2M396.75,300.47M396.39,299.73M396.02,298.98M395.64,298.23M395.25,297.47L394.85,296.7L394.44,295.93L394.02,295.14L393.59,294.36L393.13,293.56L392.67,292.76L392.19,291.95L391.69,291.14L391.18,290.32L390.65,289.49M390.1,288.65M389.53,287.81M388.94,286.97M388.33,286.11M387.7,285.25M387.05,284.39M386.38,283.52M385.68,282.64L384.96,281.76L384.21,280.87L383.44,279.97L382.64,279.07L381.81,278.17L380.96,277.26L380.08,276.34L379.16,275.42M378.22,274.49M377.25,273.56M376.25,272.62M375.21,271.68M374.14,270.73M373.04,269.78L371.9,268.82L370.73,267.86L369.52,266.89L368.28,265.92L366.99,264.95L365.67,263.97M364.32,262.98M362.92,261.99M361.48,261.0M360.0,260.0",
+      "stroke": "#2fe0b8",
+      "strokeWidth": 3.2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s22",
      "assetId": "shape:Phone shadow",
      "name": "Phone shadow",
-     "xPct": -13.977,
-     "yPct": 4.916,
-     "widthPct": 127.955,
-     "heightPct": 107.346,
-     "rotation": 0,
-     "opacity": 0.14,
+     "xPct": 0.293,
+     "yPct": 29.307,
+     "widthPct": 81.136,
+     "heightPct": 64.944,
+     "rotation": -7,
+     "opacity": 0.28,
      "zIndex": 5,
      "cropFit": "stretch",
      "shape": {
       "type": "roundRect",
-      "w": 563,
-      "h": 1026.23,
-      "radius": 147.2,
+      "w": 357,
+      "h": 620.86,
+      "radius": 102.0,
       "fill": "#000000",
-      "blur": 28,
-      "inset": 84
+      "blur": 22,
+      "inset": 66
+     }
+    },
+    {
+     "id": "tpl-s23",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 25.341,
+     "yPct": 33.054,
+     "widthPct": 85.682,
+     "heightPct": 69.489,
+     "rotation": 0,
+     "opacity": 0.28,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 377,
+      "h": 664.32,
+      "radius": 105.2,
+      "fill": "#000000",
+      "blur": 22,
+      "inset": 66
+     }
+    },
+    {
+     "id": "tpl-s20",
+     "assetId": "shape:Kicker pill",
+     "name": "Kicker pill",
+     "xPct": 9.091,
+     "yPct": 6.276,
+     "widthPct": 29.414,
+     "heightPct": 2.72,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 129.42,
+      "h": 26,
+      "radius": 13,
+      "fill": "#232b5c"
+     }
+    },
+    {
+     "id": "tpl-s25",
+     "assetId": "shape:Pin halo",
+     "name": "Pin halo",
+     "xPct": 77.273,
+     "yPct": 25.105,
+     "widthPct": 9.091,
+     "heightPct": 4.184,
+     "rotation": 0,
+     "opacity": 0.22,
+     "zIndex": 6,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 40,
+      "h": 40,
+      "fill": "#2fe0b8"
+     }
+    },
+    {
+     "id": "tpl-s26",
+     "assetId": "shape:Pin",
+     "name": "Pin",
+     "xPct": 79.318,
+     "yPct": 26.046,
+     "widthPct": 5.0,
+     "heightPct": 2.301,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 7,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 22,
+      "h": 22,
+      "fill": "#2fe0b8"
+     }
+    },
+    {
+     "id": "tpl-s27",
+     "assetId": "shape:Pin core",
+     "name": "Pin core",
+     "xPct": 80.918,
+     "yPct": 26.782,
+     "widthPct": 1.8,
+     "heightPct": 0.828,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 8,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 7.92,
+      "h": 7.92,
+      "fill": "#13183a"
      }
     }
    ],
    "deviceOne": {
-    "size": 66.11,
-    "x": 0.0,
-    "y": 8.87,
+    "size": 41.0,
+    "x": 32.65,
+    "y": 30.09,
     "rotation": 0,
     "brightness": 100,
     "frameless": false,
-    "bezelColor": "#ffffff",
-    "borderColor": "#ffffff",
+    "bezelColor": "#0b0b0f",
+    "borderColor": "#3a3f5c",
+    "zIndex": 10
+   },
+   "extraDevices": [
+    {
+     "size": 37.65,
+     "x": -17.87,
+     "y": 20.99,
+     "rotation": -7,
+     "brightness": 100,
+     "frameless": false,
+     "bezelColor": "#0b0b0f",
+     "borderColor": "#3a3f5c",
+     "zIndex": 8
+    }
+   ]
+  },
+  {
+   "title": "Track it live",
+   "subtitle": "Watch your courier turn every corner",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #f1f5ff 0%, #e6edff 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t28",
+     "xPct": 9.091,
+     "yPct": 11.6,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Track it\nlive",
+      "color": "#13183a",
+      "size": 108.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.05,
+      "charSpacing": -25
+     }
+    },
+    {
+     "id": "tpl-t29",
+     "xPct": 9.091,
+     "yPct": 22.718,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Watch your courier\nturn every corner",
+      "color": "#3a4372",
+      "size": 39.3,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.4
+     }
+    },
+    {
+     "id": "tpl-t31",
+     "xPct": 9.091,
+     "yPct": 7.081,
+     "widthPct": 27.378,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Kicker",
+     "style": {
+      "text": "04  TRACKING",
+      "color": "#0b7a63",
+      "size": 27.0,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 120
+     }
+    },
+    {
+     "id": "tpl-t37",
+     "xPct": 19.091,
+     "yPct": 64.858,
+     "widthPct": 44.545,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "Card heading",
+     "style": {
+      "text": "Courier is 4 min away",
+      "color": "#13183a",
+      "size": 36.8,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t38",
+     "xPct": 19.091,
+     "yPct": 67.117,
+     "widthPct": 44.545,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "Card line",
+     "style": {
+      "text": "Turning onto Maple Avenue",
+      "color": "#3a4372",
+      "size": 29.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s39",
+     "assetId": "shape:Route",
+     "name": "Route",
+     "xPct": 3.591,
+     "yPct": 72.782,
+     "widthPct": 11.0,
+     "heightPct": 27.029,
+     "rotation": 0,
+     "opacity": 0.8,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 48.4,
+      "h": 258.4,
+      "vx": 15.8,
+      "vy": 695.8,
+      "path": "M20,950L21.72,948.24L23.38,946.48L24.97,944.69L26.51,942.9M27.99,941.1M29.41,939.28M30.77,937.45M32.08,935.61L33.34,933.76L34.54,931.9L35.68,930.03L36.78,928.15L37.82,926.26M38.82,924.35M39.77,922.44M40.66,920.52M41.51,918.59L42.32,916.64L43.08,914.69L43.8,912.73L44.47,910.76L45.1,908.78M45.69,906.8M46.24,904.8M46.75,902.8M47.22,900.78L47.66,898.76L48.06,896.74L48.42,894.7L48.75,892.66L49.05,890.61M49.31,888.55M49.54,886.48M49.74,884.41M49.92,882.33L50.06,880.25L50.18,878.16L50.27,876.06L50.33,873.96L50.37,871.85M50.39,869.74M50.38,867.62M50.35,865.49M50.3,863.36L50.23,861.23L50.15,859.09L50.04,856.95L49.92,854.8L49.78,852.65M49.63,850.49M49.46,848.33M49.28,846.17M49.09,844.0L48.89,841.83L48.68,839.66L48.46,837.48L48.23,835.3L47.99,833.12M47.75,830.94M47.5,828.75M47.25,826.56M46.99,824.37L46.74,822.18L46.48,819.99L46.22,817.79L45.96,815.59L45.7,813.4M45.45,811.2M45.2,809.0M44.95,806.8M44.71,804.6L44.48,802.4L44.25,800.2L44.04,798.0L43.83,795.8L43.63,793.6M43.44,791.4M43.27,789.21M43.11,787.01M42.96,784.81L42.83,782.62L42.72,780.43L42.62,778.24L42.54,776.05L42.48,773.86M42.44,771.68M42.42,769.5M42.42,767.32M42.45,765.14L42.5,762.97L42.58,760.8L42.68,758.63L42.8,756.47L42.96,754.31M43.15,752.15M43.36,750.0M43.61,747.85M43.88,745.71L44.19,743.57L44.54,741.44L44.92,739.31L45.33,737.18L45.78,735.06M46.27,732.95M46.8,730.84M47.36,728.74M47.97,726.64L48.62,724.55L49.31,722.47L50.05,720.39L50.83,718.32L51.65,716.25M52.52,714.19M53.44,712.14M54.41,710.1M55.42,708.06L56.49,706.04L57.61,704.02L58.78,702.0L60.0,700.0",
+      "stroke": "#0b7a63",
+      "strokeWidth": 3.2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s32",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 15.795,
+     "yPct": 27.406,
+     "widthPct": 90.227,
+     "heightPct": 74.035,
+     "rotation": 0,
+     "opacity": 0.28,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 397,
+      "h": 707.77,
+      "radius": 108.4,
+      "fill": "#000000",
+      "blur": 22,
+      "inset": 66
+     }
+    },
+    {
+     "id": "tpl-s30",
+     "assetId": "shape:Kicker pill",
+     "name": "Kicker pill",
+     "xPct": 9.091,
+     "yPct": 6.276,
+     "widthPct": 27.378,
+     "heightPct": 2.72,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 120.46,
+      "h": 26,
+      "radius": 13,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s33",
+     "assetId": "shape:Card shadow",
+     "name": "Card shadow",
+     "xPct": -2.727,
+     "yPct": 59.205,
+     "widthPct": 77.727,
+     "heightPct": 15.9,
+     "rotation": 0,
+     "opacity": 0.22,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 342,
+      "h": 152,
+      "radius": 58,
+      "fill": "#0a0f2a",
+      "blur": 14,
+      "inset": 40
+     }
+    },
+    {
+     "id": "tpl-s34",
+     "assetId": "shape:Card",
+     "name": "Card",
+     "xPct": 6.364,
+     "yPct": 62.762,
+     "widthPct": 59.545,
+     "heightPct": 7.531,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 262,
+      "h": 72,
+      "radius": 18,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s35",
+     "assetId": "shape:Card icon",
+     "name": "Card icon",
+     "xPct": 9.773,
+     "yPct": 64.958,
+     "widthPct": 6.818,
+     "heightPct": 3.138,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 30,
+      "h": 30,
+      "fill": "#2fe0b8"
+     }
+    },
+    {
+     "id": "tpl-s36",
+     "assetId": "shape:Card icon core",
+     "name": "Card icon core",
+     "xPct": 11.932,
+     "yPct": 65.952,
+     "widthPct": 2.5,
+     "heightPct": 1.151,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 11.0,
+      "h": 11.0,
+      "fill": "#13183a"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 44.35,
+    "x": 18.11,
+    "y": 22.21,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#0b0b0f",
+    "borderColor": "#3a3f5c",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Checkout in one tap",
+   "subtitle": "Saved cards and split bills with friends",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "radial-gradient(circle at 80% 18%, #25306a 0%, #13183a 55%, #0c1029 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t41",
+     "xPct": 9.091,
+     "yPct": 74.571,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Checkout\nin one tap",
+      "color": "#ffffff",
+      "size": 108.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.05,
+      "charSpacing": -25
+     }
+    },
+    {
+     "id": "tpl-t42",
+     "xPct": 9.091,
+     "yPct": 85.688,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Saved cards and split\nbills with friends",
+      "color": "#c3cbee",
+      "size": 39.3,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.4
+     }
+    },
+    {
+     "id": "tpl-t44",
+     "xPct": 9.091,
+     "yPct": 69.843,
+     "widthPct": 28.242,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Kicker",
+     "style": {
+      "text": "05  CHECKOUT",
+      "color": "#2fe0b8",
+      "size": 27.0,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 120
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s45",
+     "assetId": "shape:Route",
+     "name": "Route",
+     "xPct": 67.227,
+     "yPct": 72.681,
+     "widthPct": 33.727,
+     "heightPct": 11.44,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 148.4,
+      "h": 109.37,
+      "vx": 295.8,
+      "vy": 694.83,
+      "path": "M300,700L301.98,699.77L303.92,699.57L305.82,699.4L307.67,699.26L309.49,699.16M311.27,699.09M313.02,699.04M314.73,699.03M316.4,699.05M318.03,699.1L319.63,699.18L321.2,699.29L322.73,699.43L324.23,699.59L325.7,699.79L327.14,700.01M328.55,700.25M329.92,700.53M331.27,700.83M332.59,701.16M333.88,701.51M335.15,701.89L336.39,702.29L337.6,702.72L338.79,703.17L339.95,703.65L341.09,704.15L342.21,704.67L343.3,705.21L344.38,705.78M345.43,706.37M346.46,706.98M347.47,707.61M348.47,708.26M349.44,708.94M350.4,709.63M351.34,710.34L352.27,711.07L353.18,711.82L354.07,712.59L354.96,713.38L355.82,714.18L356.68,715.01L357.53,715.84L358.36,716.7M359.18,717.57M360.0,718.46M360.8,719.36M361.6,720.28M362.38,721.21M363.17,722.16M363.94,723.12L364.71,724.09L365.48,725.08L366.24,726.08L366.99,727.09L367.75,728.11L368.5,729.15L369.25,730.19L370.0,731.25M370.75,732.32M371.5,733.4M372.25,734.48M373.01,735.58M373.76,736.68M374.53,737.8M375.29,738.92L376.06,740.05L376.83,741.19L377.62,742.33L378.4,743.48L379.2,744.64L380.0,745.8L380.82,746.97M381.64,748.14M382.47,749.32M383.32,750.5M384.17,751.69M385.04,752.88M385.93,754.07L386.82,755.27L387.73,756.47L388.66,757.67L389.6,758.87L390.56,760.07L391.53,761.28M392.53,762.48M393.54,763.69M394.57,764.89M395.62,766.09M396.7,767.3M397.79,768.5L398.91,769.7L400.05,770.89L401.21,772.09L402.4,773.28L403.61,774.47L404.85,775.65M406.12,776.83M407.41,778.01M408.73,779.18M410.07,780.35M411.45,781.51L412.86,782.66L414.3,783.81L415.77,784.95L417.27,786.08L418.8,787.21M420.37,788.33M421.97,789.44M423.6,790.54M425.27,791.63M426.98,792.72L428.72,793.79L430.51,794.85L432.33,795.9L434.18,796.95L436.08,797.98M438.02,798.99M440.0,800.0",
+      "stroke": "#2fe0b8",
+      "strokeWidth": 3.2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s40",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 9.33,
+     "yPct": -0.073,
+     "widthPct": 87.955,
+     "heightPct": 71.762,
+     "rotation": -8,
+     "opacity": 0.28,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 387,
+      "h": 686.05,
+      "radius": 106.8,
+      "fill": "#000000",
+      "blur": 22,
+      "inset": 66
+     }
+    },
+    {
+     "id": "tpl-s43",
+     "assetId": "shape:Kicker pill",
+     "name": "Kicker pill",
+     "xPct": 9.091,
+     "yPct": 69.038,
+     "widthPct": 28.242,
+     "heightPct": 2.72,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 124.26,
+      "h": 26,
+      "radius": 13,
+      "fill": "#232b5c"
+     }
+    },
+    {
+     "id": "tpl-s46",
+     "assetId": "shape:Pin halo",
+     "name": "Pin halo",
+     "xPct": 63.636,
+     "yPct": 71.13,
+     "widthPct": 9.091,
+     "heightPct": 4.184,
+     "rotation": 0,
+     "opacity": 0.22,
+     "zIndex": 6,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 40,
+      "h": 40,
+      "fill": "#2fe0b8"
+     }
+    },
+    {
+     "id": "tpl-s47",
+     "assetId": "shape:Pin",
+     "name": "Pin",
+     "xPct": 65.682,
+     "yPct": 72.071,
+     "widthPct": 5.0,
+     "heightPct": 2.301,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 7,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 22,
+      "h": 22,
+      "fill": "#2fe0b8"
+     }
+    },
+    {
+     "id": "tpl-s48",
+     "assetId": "shape:Pin core",
+     "name": "Pin core",
+     "xPct": 67.282,
+     "yPct": 72.808,
+     "widthPct": 1.8,
+     "heightPct": 0.828,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 8,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 7.92,
+      "h": 7.92,
+      "fill": "#13183a"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 42.68,
+    "x": 5.71,
+    "y": -26.29,
+    "rotation": -8,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#0b0b0f",
+    "borderColor": "#3a3f5c",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Group orders, made easy",
+   "subtitle": "Everyone adds their own, one delivery",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #f1f5ff 0%, #e6edff 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t49",
+     "xPct": 6.818,
+     "yPct": 11.6,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Group orders,\nmade easy",
+      "color": "#13183a",
+      "size": 108.0,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.05,
+      "charSpacing": -25
+     }
+    },
+    {
+     "id": "tpl-t50",
+     "xPct": 6.818,
+     "yPct": 22.718,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Everyone adds their own,\none delivery",
+      "color": "#3a4372",
+      "size": 39.3,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.4
+     }
+    },
+    {
+     "id": "tpl-t52",
+     "xPct": 36.155,
+     "yPct": 7.081,
+     "widthPct": 27.689,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Kicker",
+     "style": {
+      "text": "06  TOGETHER",
+      "color": "#0b7a63",
+      "size": 27.0,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 120
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s55",
+     "assetId": "shape:Route",
+     "name": "Route",
+     "xPct": 26.773,
+     "yPct": 82.197,
+     "widthPct": 46.455,
+     "heightPct": 10.308,
+     "rotation": 0,
+     "opacity": 0.8,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 204.4,
+      "h": 98.55,
+      "vx": 117.8,
+      "vy": 785.8,
+      "path": "M122,840L123.21,841.49L124.44,842.95L125.7,844.39L126.97,845.8L128.26,847.18M129.58,848.54M130.91,849.88M132.26,851.19M133.63,852.47M135.02,853.72L136.43,854.95L137.86,856.15L139.3,857.32L140.76,858.47L142.23,859.59M143.73,860.68M145.24,861.75M146.76,862.78M148.3,863.79M149.85,864.77L151.42,865.72L153.0,866.64L154.6,867.54L156.21,868.4L157.83,869.24M159.47,870.04M161.11,870.82M162.77,871.56M164.44,872.28M166.12,872.97L167.82,873.63L169.52,874.25L171.23,874.85L172.96,875.41L174.69,875.95M176.43,876.45M178.18,876.92M179.94,877.36M181.71,877.77M183.48,878.15L185.26,878.49L187.05,878.81L188.85,879.09L190.65,879.34L192.45,879.55M194.27,879.73M196.08,879.88M197.9,880.0M199.73,880.08M201.56,880.13L203.39,880.15L205.23,880.13L207.07,880.08L208.91,879.99L210.76,879.87M212.6,879.72M214.45,879.53M216.3,879.3M218.15,879.04M220.0,878.75L221.85,878.42L223.7,878.05L225.55,877.65L227.4,877.21L229.24,876.74M231.09,876.23M232.93,875.68M234.77,875.1M236.61,874.48M238.44,873.83L240.27,873.13L242.1,872.4L243.92,871.63L245.73,870.82L247.55,869.98M249.35,869.1M251.15,868.18M252.95,867.22M254.74,866.22L256.52,865.19L258.29,864.11L260.06,863.0L261.82,861.84L263.57,860.65M265.31,859.42M267.04,858.15M268.77,856.83M270.48,855.48L272.18,854.09L273.88,852.66L275.56,851.18L277.23,849.67L278.89,848.11M280.53,846.52M282.17,844.88M283.79,843.2M285.4,841.48L287.0,839.72L288.58,837.91L290.15,836.06L291.7,834.18M293.24,832.24M294.76,830.27M296.27,828.25M297.77,826.19L299.24,824.09L300.7,821.94L302.14,819.75L303.57,817.52M304.98,815.24M306.37,812.91M307.74,810.55L309.09,808.14L310.42,805.68L311.74,803.18L313.03,800.64M314.3,798.04M315.56,795.41M316.79,792.73L318.0,790.0",
+      "stroke": "#0b7a63",
+      "strokeWidth": 3.2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s53",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -8.864,
+     "yPct": 33.054,
+     "widthPct": 73.182,
+     "heightPct": 56.989,
+     "rotation": 0,
+     "opacity": 0.28,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 322,
+      "h": 544.82,
+      "radius": 96.4,
+      "fill": "#000000",
+      "blur": 22,
+      "inset": 66
+     }
+    },
+    {
+     "id": "tpl-s54",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 35.682,
+     "yPct": 28.661,
+     "widthPct": 73.182,
+     "heightPct": 56.989,
+     "rotation": 0,
+     "opacity": 0.28,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 322,
+      "h": 544.82,
+      "radius": 96.4,
+      "fill": "#000000",
+      "blur": 22,
+      "inset": 66
+     }
+    },
+    {
+     "id": "tpl-s51",
+     "assetId": "shape:Kicker pill",
+     "name": "Kicker pill",
+     "xPct": 36.155,
+     "yPct": 6.276,
+     "widthPct": 27.689,
+     "heightPct": 2.72,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 121.83,
+      "h": 26,
+      "radius": 13,
+      "fill": "#ffffff"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 31.8,
+    "x": 51.58,
+    "y": 14.15,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#0b0b0f",
+    "borderColor": "#3a3f5c",
+    "zIndex": 10
+   },
+   "extraDevices": [
+    {
+     "size": 31.8,
+     "x": -51.58,
+     "y": 24.32,
+     "rotation": 0,
+     "brightness": 100,
+     "frameless": false,
+     "bezelColor": "#0b0b0f",
+     "borderColor": "#3a3f5c",
+     "zIndex": 9
+    }
+   ]
+  },
+  {
+   "title": "Deals worth waiting for",
+   "subtitle": "Daily offers from your favorite spots",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "radial-gradient(circle at 80% 18%, #25306a 0%, #13183a 55%, #0c1029 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t56",
+     "xPct": 6.818,
+     "yPct": 11.6,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Deals worth\nwaiting for",
+      "color": "#ffffff",
+      "size": 108.0,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.05,
+      "charSpacing": -25
+     }
+    },
+    {
+     "id": "tpl-t57",
+     "xPct": 6.818,
+     "yPct": 22.718,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Daily offers from\nyour favorite spots",
+      "color": "#c3cbee",
+      "size": 39.3,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.4
+     }
+    },
+    {
+     "id": "tpl-t59",
+     "xPct": 38.554,
+     "yPct": 7.081,
+     "widthPct": 22.891,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Kicker",
+     "style": {
+      "text": "07  OFFERS",
+      "color": "#2fe0b8",
+      "size": 27.0,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 120
+     }
+    },
+    {
+     "id": "tpl-t65",
+     "xPct": 63.182,
+     "yPct": 46.03,
+     "widthPct": 29.545,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "Card heading",
+     "style": {
+      "text": "40% off tonight",
+      "color": "#13183a",
+      "size": 36.8,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t66",
+     "xPct": 63.182,
+     "yPct": 48.288,
+     "widthPct": 29.545,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "Card line",
+     "style": {
+      "text": "At 12 kitchens nearby",
+      "color": "#3a4372",
+      "size": 29.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s67",
+     "assetId": "shape:Route",
+     "name": "Route",
+     "xPct": -3.227,
+     "yPct": 34.079,
+     "widthPct": 29.182,
+     "heightPct": 18.661,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 128.4,
+      "h": 178.4,
+      "vx": -14.2,
+      "vy": 325.8,
+      "path": "M-10,500L-7.78,499.24L-5.62,498.45L-3.53,497.64L-1.49,496.8M0.49,495.94M2.41,495.06M4.28,494.16M6.09,493.23L7.85,492.28L9.55,491.31L11.2,490.31L12.8,489.3L14.35,488.26M15.85,487.21M17.3,486.13M18.71,485.04M20.07,483.92M21.39,482.79L22.66,481.63L23.89,480.46L25.08,479.27L26.22,478.07L27.33,476.84L28.4,475.6M29.43,474.34M30.43,473.07M31.39,471.78M32.31,470.47M33.2,469.15L34.06,467.81L34.89,466.46L35.69,465.1L36.46,463.72L37.2,462.32L37.91,460.92M38.6,459.5M39.26,458.07M39.9,456.63M40.52,455.17M41.11,453.7M41.68,452.23L42.24,450.74L42.77,449.24L43.29,447.73L43.79,446.21L44.27,444.68L44.74,443.15M45.2,441.6M45.64,440.05M46.08,438.48M46.5,436.91M46.91,435.34L47.32,433.75L47.71,432.16L48.1,430.57L48.49,428.96L48.87,427.35L49.25,425.74M49.62,424.12M50.0,422.5M50.38,420.87M50.75,419.24M51.13,417.61L51.51,415.97L51.9,414.33L52.29,412.69L52.68,411.04L53.09,409.4L53.5,407.75M53.92,406.1M54.36,404.45M54.8,402.8M55.26,401.15M55.73,399.5L56.21,397.85L56.71,396.2L57.23,394.56L57.76,392.91L58.32,391.27L58.89,389.63M59.48,387.99M60.1,386.36M60.74,384.73M61.4,383.1M62.09,381.48L62.8,379.86L63.54,378.25L64.31,376.64L65.11,375.03L65.94,373.44L66.8,371.85M67.69,370.26M68.61,368.69M69.57,367.12M70.57,365.55M71.6,364.0L72.67,362.45L73.78,360.92L74.92,359.39L76.11,357.87L77.34,356.36M78.61,354.86M79.93,353.37M81.29,351.9M82.7,350.43M84.15,348.97L85.65,347.53L87.2,346.1L88.8,344.68L90.45,343.28L92.15,341.88M93.91,340.5M95.72,339.14M97.59,337.79M99.51,336.45L101.49,335.13L103.53,333.82L105.62,332.53L107.78,331.26M110.0,330.0",
+      "stroke": "#2fe0b8",
+      "strokeWidth": 3.2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s60",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 4.091,
+     "yPct": 27.406,
+     "widthPct": 91.818,
+     "heightPct": 75.626,
+     "rotation": 0,
+     "opacity": 0.28,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 404,
+      "h": 722.98,
+      "radius": 109.52,
+      "fill": "#000000",
+      "blur": 22,
+      "inset": 66
+     }
+    },
+    {
+     "id": "tpl-s58",
+     "assetId": "shape:Kicker pill",
+     "name": "Kicker pill",
+     "xPct": 38.554,
+     "yPct": 6.276,
+     "widthPct": 22.891,
+     "heightPct": 2.72,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 100.72,
+      "h": 26,
+      "radius": 13,
+      "fill": "#232b5c"
+     }
+    },
+    {
+     "id": "tpl-s61",
+     "assetId": "shape:Card shadow",
+     "name": "Card shadow",
+     "xPct": 41.364,
+     "yPct": 40.377,
+     "widthPct": 62.727,
+     "heightPct": 15.9,
+     "rotation": 0,
+     "opacity": 0.22,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 276,
+      "h": 152,
+      "radius": 58,
+      "fill": "#0a0f2a",
+      "blur": 14,
+      "inset": 40
+     }
+    },
+    {
+     "id": "tpl-s62",
+     "assetId": "shape:Card",
+     "name": "Card",
+     "xPct": 50.455,
+     "yPct": 43.933,
+     "widthPct": 44.545,
+     "heightPct": 7.531,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 196,
+      "h": 72,
+      "radius": 18,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s63",
+     "assetId": "shape:Card icon",
+     "name": "Card icon",
+     "xPct": 53.864,
+     "yPct": 46.13,
+     "widthPct": 6.818,
+     "heightPct": 3.138,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 30,
+      "h": 30,
+      "fill": "#2fe0b8"
+     }
+    },
+    {
+     "id": "tpl-s64",
+     "assetId": "shape:Card icon core",
+     "name": "Card icon core",
+     "xPct": 56.023,
+     "yPct": 47.123,
+     "widthPct": 2.5,
+     "heightPct": 1.151,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 11.0,
+      "h": 11.0,
+      "fill": "#13183a"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 45.52,
+    "x": 0.0,
+    "y": 22.93,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#0b0b0f",
+    "borderColor": "#3a3f5c",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Rate & reorder",
+   "subtitle": "Your go-to meals, saved for next time",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #f1f5ff 0%, #e6edff 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t69",
+     "xPct": 9.091,
+     "yPct": 74.571,
+     "widthPct": 56.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Rate &\nreorder",
+      "color": "#13183a",
+      "size": 108.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.05,
+      "charSpacing": -25
+     }
+    },
+    {
+     "id": "tpl-t70",
+     "xPct": 9.091,
+     "yPct": 85.688,
+     "widthPct": 56.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Your go-to meals,\nsaved for next time",
+      "color": "#3a4372",
+      "size": 39.3,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.4
+     }
+    },
+    {
+     "id": "tpl-t72",
+     "xPct": 9.091,
+     "yPct": 69.843,
+     "widthPct": 28.601,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Kicker",
+     "style": {
+      "text": "08  FAVORITES",
+      "color": "#0b7a63",
+      "size": 27.0,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 120
+     }
+    },
+    {
+     "id": "tpl-t77",
+     "xPct": 46.818,
+     "yPct": 58.582,
+     "widthPct": 39.545,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "Card heading",
+     "style": {
+      "text": "Rated 4.9 by neighbors",
+      "color": "#ffffff",
+      "size": 36.8,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t78",
+     "xPct": 46.818,
+     "yPct": 60.84,
+     "widthPct": 39.545,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "Card line",
+     "style": {
+      "text": "Reorder last Friday's pick",
+      "color": "#c3cbee",
+      "size": 29.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s79",
+     "assetId": "shape:Route",
+     "name": "Route",
+     "xPct": 67.227,
+     "yPct": 79.059,
+     "widthPct": 33.727,
+     "heightPct": 13.431,
+     "rotation": 0,
+     "opacity": 0.8,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 148.4,
+      "h": 128.4,
+      "vx": 295.8,
+      "vy": 755.8,
+      "path": "M300,760L301.48,760.51L302.93,761.06L304.35,761.63L305.74,762.23L307.1,762.85L308.43,763.51M309.72,764.18M310.99,764.89M312.23,765.62M313.45,766.37M314.64,767.15M315.8,767.95L316.94,768.77L318.05,769.62L319.14,770.49L320.21,771.38L321.25,772.29L322.27,773.22L323.28,774.17M324.26,775.14M325.22,776.13M326.17,777.13M327.09,778.16M328.0,779.2M328.89,780.26L329.77,781.33L330.63,782.42L331.47,783.53L332.31,784.65L333.12,785.78L333.93,786.93L334.73,788.09M335.51,789.26M336.28,790.45M337.05,791.64M337.8,792.85M338.55,794.07M339.28,795.3L340.02,796.53L340.74,797.78L341.46,799.03L342.17,800.29L342.89,801.56L343.59,802.84L344.3,804.12M345.0,805.41M345.7,806.7M346.4,808.0M347.1,809.3M347.8,810.61M348.5,811.92L349.21,813.23L349.91,814.54L350.63,815.86L351.34,817.17L352.06,818.49L352.78,819.81L353.52,821.12M354.25,822.44M355.0,823.75M355.75,825.06M356.52,826.37M357.29,827.68M358.07,828.98L358.87,830.28L359.68,831.57L360.49,832.86L361.33,834.14L362.17,835.41L363.03,836.68M363.91,837.95M364.8,839.2M365.71,840.45M366.63,841.68M367.58,842.91M368.54,844.13L369.52,845.33L370.52,846.53L371.55,847.72L372.59,848.89L373.66,850.05L374.75,851.2M375.86,852.33M377.0,853.45M378.16,854.56M379.35,855.65M380.57,856.72L381.81,857.78L383.08,858.82L384.38,859.84L385.7,860.85L387.06,861.84L388.45,862.81M389.87,863.76M391.32,864.69M392.8,865.6M394.32,866.49M395.87,867.36L397.45,868.2L399.07,869.03L400.73,869.83L402.43,870.61L404.16,871.36M405.93,872.09M407.73,872.79M409.58,873.47M411.47,874.12M413.4,874.75L415.37,875.35L417.38,875.92L419.44,876.46L421.54,876.98L423.69,877.46M425.88,877.92M428.11,878.34M430.39,878.74M432.72,879.1L435.1,879.43L437.52,879.73L440.0,880.0",
+      "stroke": "#0b7a63",
+      "strokeWidth": 3.2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s68",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 17.391,
+     "yPct": 1.357,
+     "widthPct": 86.364,
+     "heightPct": 70.171,
+     "rotation": 5,
+     "opacity": 0.28,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 380,
+      "h": 670.84,
+      "radius": 105.68,
+      "fill": "#000000",
+      "blur": 22,
+      "inset": 66
+     }
+    },
+    {
+     "id": "tpl-s71",
+     "assetId": "shape:Kicker pill",
+     "name": "Kicker pill",
+     "xPct": 9.091,
+     "yPct": 69.038,
+     "widthPct": 28.601,
+     "heightPct": 2.72,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 125.84,
+      "h": 26,
+      "radius": 13,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s73",
+     "assetId": "shape:Card shadow",
+     "name": "Card shadow",
+     "xPct": 25.0,
+     "yPct": 52.929,
+     "widthPct": 72.727,
+     "heightPct": 15.9,
+     "rotation": 0,
+     "opacity": 0.22,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 320,
+      "h": 152,
+      "radius": 58,
+      "fill": "#0a0f2a",
+      "blur": 14,
+      "inset": 40
+     }
+    },
+    {
+     "id": "tpl-s74",
+     "assetId": "shape:Card",
+     "name": "Card",
+     "xPct": 34.091,
+     "yPct": 56.485,
+     "widthPct": 54.545,
+     "heightPct": 7.531,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 240,
+      "h": 72,
+      "radius": 18,
+      "fill": "#13183a"
+     }
+    },
+    {
+     "id": "tpl-s75",
+     "assetId": "shape:Card icon",
+     "name": "Card icon",
+     "xPct": 37.5,
+     "yPct": 58.682,
+     "widthPct": 6.818,
+     "heightPct": 3.138,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 30,
+      "h": 30,
+      "fill": "#2fe0b8"
+     }
+    },
+    {
+     "id": "tpl-s76",
+     "assetId": "shape:Card icon core",
+     "name": "Card icon core",
+     "xPct": 39.659,
+     "yPct": 59.676,
+     "widthPct": 2.5,
+     "heightPct": 1.151,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 11.0,
+      "h": 11.0,
+      "fill": "#13183a"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 41.5,
+    "x": 18.76,
+    "y": -25.91,
+    "rotation": 5,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#0b0b0f",
+    "borderColor": "#3a3f5c",
     "zIndex": 10
    }
   }
  ],
  "designHeight": 2347,
- "textColor": "#000000"
+ "textColor": "#111111"
 }

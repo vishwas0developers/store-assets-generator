@@ -14,46 +14,1503 @@
    "label": "6.5 Inch Phone"
   }
  ],
- "layout": "two-devices-connected-right-title-below",
+ "layout": "single-no-text",
  "background": {
   "type": "gradient",
-  "value": "sunset"
+  "value": "linear-gradient(180deg, #1b0e22 0%, #24102b 50%, #34122a 100%)"
  },
  "pages": [
   {
-   "title": "Track Workouts",
-   "subtitle": "Log sets, reps, and personal bests",
-   "layout": "two-devices-connected-right-title-below",
-   "background": null,
-   "devices": null
+   "title": "Train Smarter",
+   "subtitle": "Your pocket coach for every set, rep and personal best",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #1b0e22 0%, #24102b 50%, #34122a 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t6",
+     "xPct": 4.545,
+     "yPct": 6.418,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Train",
+      "color": "#ffffff",
+      "size": 132.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t8",
+     "xPct": 4.545,
+     "yPct": 12.857,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Title line 2",
+     "style": {
+      "text": "Smarter",
+      "color": "#1b0e22",
+      "size": 132.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t9",
+     "xPct": 9.091,
+     "yPct": 21.789,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Your pocket coach for every\nset, rep and personal best",
+      "color": "#f2e4ec",
+      "size": 46.6,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.3
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s1",
+     "assetId": "shape:Coral glow",
+     "name": "Coral glow",
+     "xPct": -34.091,
+     "yPct": 28.243,
+     "widthPct": 168.182,
+     "heightPct": 77.406,
+     "rotation": 0,
+     "opacity": 0.5,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 740,
+      "h": 740,
+      "radius": 370,
+      "fill": "#ff5a3c",
+      "blur": 60,
+      "inset": 180
+     }
+    },
+    {
+     "id": "tpl-s2",
+     "assetId": "shape:Amber glow",
+     "name": "Amber glow",
+     "xPct": 5.114,
+     "yPct": 48.274,
+     "widthPct": 120.0,
+     "heightPct": 55.23,
+     "rotation": 0,
+     "opacity": 0.4,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 528.0,
+      "h": 528.0,
+      "radius": 264.0,
+      "fill": "#ffb347",
+      "blur": 50,
+      "inset": 150
+     }
+    },
+    {
+     "id": "tpl-s3",
+     "assetId": "shape:Ring",
+     "name": "Ring",
+     "xPct": 4.545,
+     "yPct": 41.841,
+     "widthPct": 90.909,
+     "heightPct": 41.841,
+     "rotation": 0,
+     "opacity": 0.9,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 400,
+      "h": 400,
+      "stroke": "#ff5a3c",
+      "strokeWidth": 6.0,
+      "inset": 3.0
+     }
+    },
+    {
+     "id": "tpl-s4",
+     "assetId": "shape:Ring",
+     "name": "Ring",
+     "xPct": 17.273,
+     "yPct": 47.699,
+     "widthPct": 65.455,
+     "heightPct": 30.126,
+     "rotation": 0,
+     "opacity": 0.6,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 288.0,
+      "h": 288.0,
+      "stroke": "#ff5a3c",
+      "strokeWidth": 4.5,
+      "inset": 2.25
+     }
+    },
+    {
+     "id": "tpl-s5",
+     "assetId": "shape:Ring",
+     "name": "Ring",
+     "xPct": 30.0,
+     "yPct": 53.556,
+     "widthPct": 40.0,
+     "heightPct": 18.41,
+     "rotation": 0,
+     "opacity": 0.35,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 176.0,
+      "h": 176.0,
+      "stroke": "#ff5a3c",
+      "strokeWidth": 3.0,
+      "inset": 1.5
+     }
+    },
+    {
+     "id": "tpl-s7",
+     "assetId": "shape:Title tape",
+     "name": "Title tape",
+     "xPct": 20.924,
+     "yPct": 12.54,
+     "widthPct": 58.151,
+     "heightPct": 6.326,
+     "rotation": -3,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 255.87,
+      "h": 60.48,
+      "radius": 10,
+      "fill": "#ff5a3c"
+     }
+    },
+    {
+     "id": "tpl-s10",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 1.932,
+     "yPct": 24.268,
+     "widthPct": 96.136,
+     "heightPct": 82.888,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 423,
+      "h": 792.41,
+      "radius": 104.4,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 52.72,
+    "x": 0.0,
+    "y": 21.07,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
   },
   {
-   "title": "Heart Rate Monitor",
-   "subtitle": "Sync with smartwatch sensors",
-   "layout": "two-devices-connected-right-title-below",
-   "background": null,
-   "devices": null
+   "title": "Heart Rate Live",
+   "subtitle": "Sync your smartwatch and train in the right zone",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #1b0e22 0%, #24102b 50%, #34122a 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t16",
+     "xPct": 4.545,
+     "yPct": 6.418,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Heart Rate",
+      "color": "#ffffff",
+      "size": 132.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t18",
+     "xPct": 4.545,
+     "yPct": 12.857,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Title line 2",
+     "style": {
+      "text": "Live",
+      "color": "#1b0e22",
+      "size": 132.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t19",
+     "xPct": 9.091,
+     "yPct": 21.789,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Sync your smartwatch and\ntrain in the right zone",
+      "color": "#f2e4ec",
+      "size": 46.6,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.3
+     }
+    },
+    {
+     "id": "tpl-t24",
+     "xPct": 17.727,
+     "yPct": 70.635,
+     "widthPct": 26.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "142 BPM",
+     "style": {
+      "text": "142 BPM",
+      "color": "#1b0e22",
+      "size": 58.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t25",
+     "xPct": 17.727,
+     "yPct": 73.721,
+     "widthPct": 26.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "Fat-burn zone",
+     "style": {
+      "text": "Fat-burn zone",
+      "color": "#5b4a60",
+      "size": 31.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s11",
+     "assetId": "shape:Coral glow",
+     "name": "Coral glow",
+     "xPct": -25.0,
+     "yPct": 27.197,
+     "widthPct": 163.636,
+     "heightPct": 75.314,
+     "rotation": 0,
+     "opacity": 0.5,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 720,
+      "h": 720,
+      "radius": 360,
+      "fill": "#ff5a3c",
+      "blur": 60,
+      "inset": 180
+     }
+    },
+    {
+     "id": "tpl-s12",
+     "assetId": "shape:Amber glow",
+     "name": "Amber glow",
+     "xPct": 12.5,
+     "yPct": 46.339,
+     "widthPct": 117.273,
+     "heightPct": 53.975,
+     "rotation": 0,
+     "opacity": 0.4,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 516.0,
+      "h": 516.0,
+      "radius": 258.0,
+      "fill": "#ffb347",
+      "blur": 50,
+      "inset": 150
+     }
+    },
+    {
+     "id": "tpl-s13",
+     "assetId": "shape:Ring",
+     "name": "Ring",
+     "xPct": 50.0,
+     "yPct": 37.657,
+     "widthPct": 50.0,
+     "heightPct": 23.013,
+     "rotation": 0,
+     "opacity": 0.9,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 220,
+      "h": 220,
+      "stroke": "#ff5a3c",
+      "strokeWidth": 6.0,
+      "inset": 3.0
+     }
+    },
+    {
+     "id": "tpl-s14",
+     "assetId": "shape:Ring",
+     "name": "Ring",
+     "xPct": 57.0,
+     "yPct": 40.879,
+     "widthPct": 36.0,
+     "heightPct": 16.569,
+     "rotation": 0,
+     "opacity": 0.6,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 158.4,
+      "h": 158.4,
+      "stroke": "#ff5a3c",
+      "strokeWidth": 4.5,
+      "inset": 2.25
+     }
+    },
+    {
+     "id": "tpl-s15",
+     "assetId": "shape:Ring",
+     "name": "Ring",
+     "xPct": 64.0,
+     "yPct": 44.1,
+     "widthPct": 22.0,
+     "heightPct": 10.126,
+     "rotation": 0,
+     "opacity": 0.35,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 96.8,
+      "h": 96.8,
+      "stroke": "#ff5a3c",
+      "strokeWidth": 3.0,
+      "inset": 1.5
+     }
+    },
+    {
+     "id": "tpl-s17",
+     "assetId": "shape:Title tape",
+     "name": "Title tape",
+     "xPct": 32.828,
+     "yPct": 12.54,
+     "widthPct": 34.343,
+     "heightPct": 6.326,
+     "rotation": -3,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 151.11,
+      "h": 60.48,
+      "radius": 10,
+      "fill": "#ff5a3c"
+     }
+    },
+    {
+     "id": "tpl-s20",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 0.439,
+     "yPct": 24.604,
+     "widthPct": 92.727,
+     "heightPct": 79.479,
+     "rotation": 6,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 408,
+      "h": 759.82,
+      "radius": 102.0,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s21",
+     "assetId": "shape:Card shadow",
+     "name": "Card shadow",
+     "xPct": -3.636,
+     "yPct": 65.69,
+     "widthPct": 58.636,
+     "heightPct": 16.318,
+     "rotation": 0,
+     "opacity": 0.25,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 258,
+      "h": 156,
+      "radius": 62,
+      "fill": "#000000",
+      "blur": 14,
+      "inset": 40
+     }
+    },
+    {
+     "id": "tpl-s22",
+     "assetId": "shape:Card",
+     "name": "Card",
+     "xPct": 5.455,
+     "yPct": 69.038,
+     "widthPct": 40.455,
+     "heightPct": 7.95,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 178,
+      "h": 76,
+      "radius": 22,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s23",
+     "assetId": "shape:Card dot",
+     "name": "Card dot",
+     "xPct": 9.091,
+     "yPct": 71.548,
+     "widthPct": 6.364,
+     "heightPct": 2.929,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 28,
+      "h": 28,
+      "fill": "#ff5a3c"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 50.21,
+    "x": -4.69,
+    "y": 20.12,
+    "rotation": 6,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
   },
   {
    "title": "Custom Routines",
-   "subtitle": "AI generated training programs",
-   "layout": "two-devices-connected-right-title-below",
-   "background": null,
-   "devices": null
+   "subtitle": "AI-built training plans that adapt as you grow",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #1b0e22 0%, #24102b 50%, #34122a 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t28",
+     "xPct": 4.545,
+     "yPct": 6.418,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Custom",
+      "color": "#ffffff",
+      "size": 132.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t30",
+     "xPct": 4.545,
+     "yPct": 12.857,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Title line 2",
+     "style": {
+      "text": "Routines",
+      "color": "#1b0e22",
+      "size": 132.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t31",
+     "xPct": 9.091,
+     "yPct": 21.789,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "AI-built training plans\nthat adapt as you grow",
+      "color": "#f2e4ec",
+      "size": 46.6,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.3
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s26",
+     "assetId": "shape:Coral glow",
+     "name": "Coral glow",
+     "xPct": -36.364,
+     "yPct": 29.289,
+     "widthPct": 172.727,
+     "heightPct": 79.498,
+     "rotation": 0,
+     "opacity": 0.5,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 760,
+      "h": 760,
+      "radius": 380,
+      "fill": "#ff5a3c",
+      "blur": 60,
+      "inset": 180
+     }
+    },
+    {
+     "id": "tpl-s27",
+     "assetId": "shape:Amber glow",
+     "name": "Amber glow",
+     "xPct": 4.545,
+     "yPct": 50.209,
+     "widthPct": 122.727,
+     "heightPct": 56.485,
+     "rotation": 0,
+     "opacity": 0.4,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 540.0,
+      "h": 540.0,
+      "radius": 270.0,
+      "fill": "#ffb347",
+      "blur": 50,
+      "inset": 150
+     }
+    },
+    {
+     "id": "tpl-s29",
+     "assetId": "shape:Title tape",
+     "name": "Title tape",
+     "xPct": 18.505,
+     "yPct": 12.54,
+     "widthPct": 62.99,
+     "heightPct": 6.326,
+     "rotation": -3,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 277.16,
+      "h": 60.48,
+      "radius": 10,
+      "fill": "#ff5a3c"
+     }
+    },
+    {
+     "id": "tpl-s32",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -2.808,
+     "yPct": 26.25,
+     "widthPct": 82.5,
+     "heightPct": 69.252,
+     "rotation": -5,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 363,
+      "h": 662.05,
+      "radius": 94.8,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s33",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 19.638,
+     "yPct": 31.475,
+     "widthPct": 84.773,
+     "heightPct": 71.524,
+     "rotation": 5,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 373,
+      "h": 683.77,
+      "radius": 96.4,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 44.35,
+    "x": 19.97,
+    "y": 27.58,
+    "rotation": 5,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   },
+   "extraDevices": [
+    {
+     "size": 42.68,
+     "x": -19.94,
+     "y": 17.68,
+     "rotation": -5,
+     "brightness": 100,
+     "frameless": false,
+     "bezelColor": "#060606",
+     "borderColor": "#5e5e5e",
+     "zIndex": 9
+    }
+   ]
   },
   {
-   "title": "Meal Planner",
-   "subtitle": "Macro-counted delicious recipes",
-   "layout": "two-devices-connected-right-title-below",
-   "background": null,
-   "devices": null
+   "title": "Fuel Your Gains",
+   "subtitle": "Macro-counted meals planned around your training",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #1b0e22 0%, #24102b 50%, #34122a 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t36",
+     "xPct": 4.545,
+     "yPct": 6.418,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Fuel Your",
+      "color": "#ffffff",
+      "size": 132.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t38",
+     "xPct": 4.545,
+     "yPct": 12.857,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Title line 2",
+     "style": {
+      "text": "Gains",
+      "color": "#1b0e22",
+      "size": 132.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t39",
+     "xPct": 9.091,
+     "yPct": 21.789,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Macro-counted meals\nplanned around your training",
+      "color": "#f2e4ec",
+      "size": 46.6,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.3
+     }
+    },
+    {
+     "id": "tpl-t44",
+     "xPct": 69.545,
+     "yPct": 51.806,
+     "widthPct": 25.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "32 g",
+     "style": {
+      "text": "32 g",
+      "color": "#1b0e22",
+      "size": 58.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t45",
+     "xPct": 69.545,
+     "yPct": 54.892,
+     "widthPct": 25.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "Protein left",
+     "style": {
+      "text": "Protein left",
+      "color": "#5b4a60",
+      "size": 31.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t49",
+     "xPct": 16.364,
+     "yPct": 69.589,
+     "widthPct": 25.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "1,850",
+     "style": {
+      "text": "1,850",
+      "color": "#1b0e22",
+      "size": 58.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t50",
+     "xPct": 16.364,
+     "yPct": 72.675,
+     "widthPct": 25.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "kcal today",
+     "style": {
+      "text": "kcal today",
+      "color": "#5b4a60",
+      "size": 31.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s34",
+     "assetId": "shape:Coral glow",
+     "name": "Coral glow",
+     "xPct": -31.818,
+     "yPct": 29.289,
+     "widthPct": 163.636,
+     "heightPct": 75.314,
+     "rotation": 0,
+     "opacity": 0.5,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 720,
+      "h": 720,
+      "radius": 360,
+      "fill": "#ff5a3c",
+      "blur": 60,
+      "inset": 180
+     }
+    },
+    {
+     "id": "tpl-s35",
+     "assetId": "shape:Amber glow",
+     "name": "Amber glow",
+     "xPct": 5.682,
+     "yPct": 48.431,
+     "widthPct": 117.273,
+     "heightPct": 53.975,
+     "rotation": 0,
+     "opacity": 0.4,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 516.0,
+      "h": 516.0,
+      "radius": 258.0,
+      "fill": "#ffb347",
+      "blur": 50,
+      "inset": 150
+     }
+    },
+    {
+     "id": "tpl-s37",
+     "assetId": "shape:Title tape",
+     "name": "Title tape",
+     "xPct": 28.11,
+     "yPct": 12.54,
+     "widthPct": 43.781,
+     "heightPct": 6.326,
+     "rotation": -3,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 192.64,
+      "h": 60.48,
+      "radius": 10,
+      "fill": "#ff5a3c"
+     }
+    },
+    {
+     "id": "tpl-s40",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 3.636,
+     "yPct": 24.791,
+     "widthPct": 92.727,
+     "heightPct": 79.479,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 408,
+      "h": 759.82,
+      "radius": 102.0,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s41",
+     "assetId": "shape:Card shadow",
+     "name": "Card shadow",
+     "xPct": 48.182,
+     "yPct": 46.862,
+     "widthPct": 56.818,
+     "heightPct": 16.318,
+     "rotation": 0,
+     "opacity": 0.25,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 250,
+      "h": 156,
+      "radius": 62,
+      "fill": "#000000",
+      "blur": 14,
+      "inset": 40
+     }
+    },
+    {
+     "id": "tpl-s42",
+     "assetId": "shape:Card",
+     "name": "Card",
+     "xPct": 57.273,
+     "yPct": 50.209,
+     "widthPct": 38.636,
+     "heightPct": 7.95,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 170,
+      "h": 76,
+      "radius": 22,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s43",
+     "assetId": "shape:Card dot",
+     "name": "Card dot",
+     "xPct": 60.909,
+     "yPct": 52.72,
+     "widthPct": 6.364,
+     "heightPct": 2.929,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 28,
+      "h": 28,
+      "fill": "#ff5a3c"
+     }
+    },
+    {
+     "id": "tpl-s46",
+     "assetId": "shape:Card shadow",
+     "name": "Card shadow",
+     "xPct": -5.0,
+     "yPct": 64.644,
+     "widthPct": 56.818,
+     "heightPct": 16.318,
+     "rotation": 0,
+     "opacity": 0.25,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 250,
+      "h": 156,
+      "radius": 62,
+      "fill": "#000000",
+      "blur": 14,
+      "inset": 40
+     }
+    },
+    {
+     "id": "tpl-s47",
+     "assetId": "shape:Card",
+     "name": "Card",
+     "xPct": 4.091,
+     "yPct": 67.992,
+     "widthPct": 38.636,
+     "heightPct": 7.95,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 170,
+      "h": 76,
+      "radius": 22,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s48",
+     "assetId": "shape:Card dot",
+     "name": "Card dot",
+     "xPct": 7.727,
+     "yPct": 70.502,
+     "widthPct": 6.364,
+     "heightPct": 2.929,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 28,
+      "h": 28,
+      "fill": "#ffb347"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 50.21,
+    "x": 0.0,
+    "y": 20.39,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
   },
   {
-   "title": "Achieve Goals",
-   "subtitle": "Stay motivated with daily streaks",
-   "layout": "two-devices-connected-right-title-below",
-   "background": null,
-   "devices": null
+   "title": "Crush Your Goals",
+   "subtitle": "Daily streaks and badges keep you moving forward",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #1b0e22 0%, #24102b 50%, #34122a 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t56",
+     "xPct": 4.545,
+     "yPct": 6.418,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Crush Your",
+      "color": "#ffffff",
+      "size": 132.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t58",
+     "xPct": 4.545,
+     "yPct": 12.857,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Title line 2",
+     "style": {
+      "text": "Goals",
+      "color": "#1b0e22",
+      "size": 132.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t59",
+     "xPct": 9.091,
+     "yPct": 21.789,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Daily streaks and badges\nkeep you moving forward",
+      "color": "#f2e4ec",
+      "size": 46.6,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.3
+     }
+    },
+    {
+     "id": "tpl-t64",
+     "xPct": 65.909,
+     "yPct": 76.911,
+     "widthPct": 27.727,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "21 days",
+     "style": {
+      "text": "21 days",
+      "color": "#1b0e22",
+      "size": 58.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t65",
+     "xPct": 65.909,
+     "yPct": 79.997,
+     "widthPct": 27.727,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "Workout streak",
+     "style": {
+      "text": "Workout streak",
+      "color": "#5b4a60",
+      "size": 31.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s51",
+     "assetId": "shape:Coral glow",
+     "name": "Coral glow",
+     "xPct": -38.636,
+     "yPct": 29.289,
+     "widthPct": 168.182,
+     "heightPct": 77.406,
+     "rotation": 0,
+     "opacity": 0.5,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 740,
+      "h": 740,
+      "radius": 370,
+      "fill": "#ff5a3c",
+      "blur": 60,
+      "inset": 180
+     }
+    },
+    {
+     "id": "tpl-s52",
+     "assetId": "shape:Amber glow",
+     "name": "Amber glow",
+     "xPct": 0.568,
+     "yPct": 49.32,
+     "widthPct": 120.0,
+     "heightPct": 55.23,
+     "rotation": 0,
+     "opacity": 0.4,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 528.0,
+      "h": 528.0,
+      "radius": 264.0,
+      "fill": "#ffb347",
+      "blur": 50,
+      "inset": 150
+     }
+    },
+    {
+     "id": "tpl-s53",
+     "assetId": "shape:Ring",
+     "name": "Ring",
+     "xPct": 2.273,
+     "yPct": 38.703,
+     "widthPct": 45.455,
+     "heightPct": 20.921,
+     "rotation": 0,
+     "opacity": 0.9,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 200,
+      "h": 200,
+      "stroke": "#ff5a3c",
+      "strokeWidth": 6.0,
+      "inset": 3.0
+     }
+    },
+    {
+     "id": "tpl-s54",
+     "assetId": "shape:Ring",
+     "name": "Ring",
+     "xPct": 8.636,
+     "yPct": 41.632,
+     "widthPct": 32.727,
+     "heightPct": 15.063,
+     "rotation": 0,
+     "opacity": 0.6,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 144.0,
+      "h": 144.0,
+      "stroke": "#ff5a3c",
+      "strokeWidth": 4.5,
+      "inset": 2.25
+     }
+    },
+    {
+     "id": "tpl-s55",
+     "assetId": "shape:Ring",
+     "name": "Ring",
+     "xPct": 15.0,
+     "yPct": 44.561,
+     "widthPct": 20.0,
+     "heightPct": 9.205,
+     "rotation": 0,
+     "opacity": 0.35,
+     "zIndex": 4,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 88.0,
+      "h": 88.0,
+      "stroke": "#ff5a3c",
+      "strokeWidth": 3.0,
+      "inset": 1.5
+     }
+    },
+    {
+     "id": "tpl-s57",
+     "assetId": "shape:Title tape",
+     "name": "Title tape",
+     "xPct": 28.256,
+     "yPct": 12.54,
+     "widthPct": 43.487,
+     "heightPct": 6.326,
+     "rotation": -3,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 191.34,
+      "h": 60.48,
+      "radius": 10,
+      "fill": "#ff5a3c"
+     }
+    },
+    {
+     "id": "tpl-s60",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 10.242,
+     "yPct": 24.604,
+     "widthPct": 92.727,
+     "heightPct": 79.479,
+     "rotation": -6,
+     "opacity": 0.16,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 408,
+      "h": 759.82,
+      "radius": 102.0,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s61",
+     "assetId": "shape:Card shadow",
+     "name": "Card shadow",
+     "xPct": 44.545,
+     "yPct": 71.967,
+     "widthPct": 59.545,
+     "heightPct": 16.318,
+     "rotation": 0,
+     "opacity": 0.25,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 262,
+      "h": 156,
+      "radius": 62,
+      "fill": "#000000",
+      "blur": 14,
+      "inset": 40
+     }
+    },
+    {
+     "id": "tpl-s62",
+     "assetId": "shape:Card",
+     "name": "Card",
+     "xPct": 53.636,
+     "yPct": 75.314,
+     "widthPct": 41.364,
+     "heightPct": 7.95,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 182,
+      "h": 76,
+      "radius": 22,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s63",
+     "assetId": "shape:Card dot",
+     "name": "Card dot",
+     "xPct": 57.273,
+     "yPct": 77.824,
+     "widthPct": 6.364,
+     "heightPct": 2.929,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 28,
+      "h": 28,
+      "fill": "#ff5a3c"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 50.21,
+    "x": 9.69,
+    "y": 20.12,
+    "rotation": -6,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
   }
+ ],
+ "designHeight": 2347,
+ "textColor": "#111111",
+ "columnCount": 5,
+ "titles": [
+  "Train Smarter",
+  "Heart Rate Live",
+  "Custom Routines",
+  "Fuel Your Gains",
+  "Crush Your Goals"
+ ],
+ "subtitles": [
+  "Your pocket coach for every set, rep and personal best",
+  "Sync your smartwatch and train in the right zone",
+  "AI-built training plans that adapt as you grow",
+  "Macro-counted meals planned around your training",
+  "Daily streaks and badges keep you moving forward"
  ]
 }

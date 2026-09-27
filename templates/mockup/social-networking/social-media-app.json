@@ -1,378 +1,378 @@
 {
- "id": "social-media-app",
- "name": "Social media app",
- "description": "Display your social platform with our free template. Showcase social networking features, content sharing, and user interactions in an engaging design that promotes community connection.",
- "category": "social-networking",
- "devices": [
-  "apple-iphone-16-pro-max",
-  "apple-iphone-14-plus",
-  "samsung-galaxy-s21-ultra"
- ],
- "isPaid": false,
- "designHeight": 2347,
- "layout": "single-no-text",
- "background": {
-  "type": "gradient",
-  "value": "linear-gradient(135deg, #fffc00 0%, #ffdb00 100%)"
- },
- "textColor": "#000000",
- "columnCount": 4,
- "pages": [
-  {
-   "title": "Snap",
-   "subtitle": "Share the moment",
-   "layout": "single-no-text",
-   "background": {
+  "id": "social-media-app",
+  "name": "Social media app-2",
+  "description": "Display your social platform with our free template. Showcase social networking features, content sharing, and user interactions in an engaging design that promotes community connection.",
+  "category": "social-networking",
+  "devices": [
+    "apple-iphone-16-pro-max",
+    "apple-iphone-14-plus",
+    "samsung-galaxy-s21-ultra"
+  ],
+  "isPaid": false,
+  "designHeight": 2347,
+  "layout": "single-no-text",
+  "background": {
     "type": "gradient",
     "value": "linear-gradient(135deg, #fffc00 0%, #ffdb00 100%)"
-   },
-   "devices": null,
-   "decorations": [],
-   "textLayers": [
-    {
-     "id": "tpl-t2",
-     "xPct": 4.545,
-     "yPct": 1.752,
-     "widthPct": 90.909,
-     "rotation": 0,
-     "opacity": 1,
-     "zIndex": 30,
-     "customName": "Title",
-     "style": {
-      "text": "Snap",
-      "color": "#000000",
-      "size": 88.4,
-      "align": "center",
-      "fontFamily": "Inter, sans-serif",
-      "fontWeightNum": 800,
-      "lineHeightMultiplier": 1.12
-     }
-    },
-    {
-     "id": "tpl-t3",
-     "xPct": 4.545,
-     "yPct": 8.444,
-     "widthPct": 90.909,
-     "rotation": 0,
-     "opacity": 1,
-     "zIndex": 30,
-     "customName": "Subtitle",
-     "style": {
-      "text": "Share the moment",
-      "color": "rgba(0,0,0,0.8)",
-      "size": 49.1,
-      "align": "center",
-      "fontFamily": "Inter, sans-serif",
-      "fontWeightNum": 500,
-      "lineHeightMultiplier": 1.2
-     }
-    }
-   ],
-   "assetLayers": [
-    {
-     "id": "tpl-s1",
-     "assetId": "shape:Phone shadow",
-     "name": "Phone shadow",
-     "xPct": -20.227,
-     "yPct": 12.762,
-     "widthPct": 140.455,
-     "heightPct": 119.846,
-     "rotation": 0,
-     "opacity": 0.22,
-     "zIndex": 5,
-     "cropFit": "stretch",
-     "shape": {
-      "type": "roundRect",
-      "w": 618,
-      "h": 1145.73,
-      "radius": 156.0,
-      "fill": "#000000",
-      "blur": 28,
-      "inset": 84
-     }
-    }
-   ],
-   "deviceOne": {
-    "size": 75.31,
-    "x": 0.0,
-    "y": 21.57,
-    "rotation": 0,
-    "brightness": 100,
-    "frameless": false,
-    "bezelColor": "#000000",
-    "borderColor": "#000000",
-    "zIndex": 10
-   }
   },
-  {
-   "title": "Chat",
-   "subtitle": "With real friends",
-   "layout": "single-no-text",
-   "background": {
-    "type": "gradient",
-    "value": "linear-gradient(135deg, #ffdb00 0%, #ffb700 100%)"
-   },
-   "devices": null,
-   "decorations": [],
-   "textLayers": [
+  "textColor": "#000000",
+  "columnCount": 4,
+  "pages": [
     {
-     "id": "tpl-t5",
-     "xPct": 4.545,
-     "yPct": 1.752,
-     "widthPct": 90.909,
-     "rotation": 0,
-     "opacity": 1,
-     "zIndex": 30,
-     "customName": "Title",
-     "style": {
-      "text": "Chat",
-      "color": "#000000",
-      "size": 88.4,
-      "align": "center",
-      "fontFamily": "Inter, sans-serif",
-      "fontWeightNum": 800,
-      "lineHeightMultiplier": 1.12
-     }
+      "title": "Snap",
+      "subtitle": "Share the moment",
+      "layout": "single-no-text",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #fffc00 0%, #ffdb00 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [
+        {
+          "id": "tpl-t2",
+          "xPct": 4.545,
+          "yPct": 1.752,
+          "widthPct": 90.909,
+          "rotation": 0,
+          "opacity": 1,
+          "zIndex": 30,
+          "customName": "Title",
+          "style": {
+            "text": "Snap",
+            "color": "#000000",
+            "size": 88.4,
+            "align": "center",
+            "fontFamily": "Inter, sans-serif",
+            "fontWeightNum": 800,
+            "lineHeightMultiplier": 1.12
+          }
+        },
+        {
+          "id": "tpl-t3",
+          "xPct": 4.545,
+          "yPct": 8.444,
+          "widthPct": 90.909,
+          "rotation": 0,
+          "opacity": 1,
+          "zIndex": 30,
+          "customName": "Subtitle",
+          "style": {
+            "text": "Share the moment",
+            "color": "rgba(0,0,0,0.8)",
+            "size": 49.1,
+            "align": "center",
+            "fontFamily": "Inter, sans-serif",
+            "fontWeightNum": 500,
+            "lineHeightMultiplier": 1.2
+          }
+        }
+      ],
+      "assetLayers": [
+        {
+          "id": "tpl-s1",
+          "assetId": "shape:Phone shadow",
+          "name": "Phone shadow",
+          "xPct": -20.227,
+          "yPct": 12.762,
+          "widthPct": 140.455,
+          "heightPct": 119.846,
+          "rotation": 0,
+          "opacity": 0.22,
+          "zIndex": 5,
+          "cropFit": "stretch",
+          "shape": {
+            "type": "roundRect",
+            "w": 618,
+            "h": 1145.73,
+            "radius": 156,
+            "fill": "#000000",
+            "blur": 28,
+            "inset": 84
+          }
+        }
+      ],
+      "deviceOne": {
+        "size": 75.31,
+        "x": 0,
+        "y": 21.57,
+        "rotation": 0,
+        "brightness": 100,
+        "frameless": false,
+        "bezelColor": "#000000",
+        "borderColor": "#000000",
+        "zIndex": 10
+      }
     },
     {
-     "id": "tpl-t6",
-     "xPct": 4.545,
-     "yPct": 8.444,
-     "widthPct": 90.909,
-     "rotation": 0,
-     "opacity": 1,
-     "zIndex": 30,
-     "customName": "Subtitle",
-     "style": {
-      "text": "With real friends",
-      "color": "rgba(0,0,0,0.8)",
-      "size": 49.1,
-      "align": "center",
-      "fontFamily": "Inter, sans-serif",
-      "fontWeightNum": 500,
-      "lineHeightMultiplier": 1.2
-     }
-    }
-   ],
-   "assetLayers": [
-    {
-     "id": "tpl-s4",
-     "assetId": "shape:Phone shadow",
-     "name": "Phone shadow",
-     "xPct": -20.227,
-     "yPct": 12.762,
-     "widthPct": 140.455,
-     "heightPct": 119.846,
-     "rotation": 0,
-     "opacity": 0.22,
-     "zIndex": 5,
-     "cropFit": "stretch",
-     "shape": {
-      "type": "roundRect",
-      "w": 618,
-      "h": 1145.73,
-      "radius": 156.0,
-      "fill": "#000000",
-      "blur": 28,
-      "inset": 84
-     }
-    }
-   ],
-   "deviceOne": {
-    "size": 75.31,
-    "x": 0.0,
-    "y": 21.57,
-    "rotation": 0,
-    "brightness": 100,
-    "frameless": false,
-    "bezelColor": "#000000",
-    "borderColor": "#000000",
-    "zIndex": 10
-   }
-  },
-  {
-   "title": "Have Fun",
-   "subtitle": "Reimagine your world",
-   "layout": "single-no-text",
-   "background": {
-    "type": "gradient",
-    "value": "linear-gradient(135deg, #ffb700 0%, #ff9100 100%)"
-   },
-   "devices": null,
-   "decorations": [],
-   "textLayers": [
-    {
-     "id": "tpl-t8",
-     "xPct": 4.545,
-     "yPct": 1.752,
-     "widthPct": 90.909,
-     "rotation": 0,
-     "opacity": 1,
-     "zIndex": 30,
-     "customName": "Title",
-     "style": {
-      "text": "Have Fun",
-      "color": "#000000",
-      "size": 88.4,
-      "align": "center",
-      "fontFamily": "Inter, sans-serif",
-      "fontWeightNum": 800,
-      "lineHeightMultiplier": 1.12
-     }
+      "title": "Chat",
+      "subtitle": "With real friends",
+      "layout": "single-no-text",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #ffdb00 0%, #ffb700 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [
+        {
+          "id": "tpl-t5",
+          "xPct": 4.545,
+          "yPct": 1.752,
+          "widthPct": 90.909,
+          "rotation": 0,
+          "opacity": 1,
+          "zIndex": 30,
+          "customName": "Title",
+          "style": {
+            "text": "Chat",
+            "color": "#000000",
+            "size": 88.4,
+            "align": "center",
+            "fontFamily": "Inter, sans-serif",
+            "fontWeightNum": 800,
+            "lineHeightMultiplier": 1.12
+          }
+        },
+        {
+          "id": "tpl-t6",
+          "xPct": 4.545,
+          "yPct": 8.444,
+          "widthPct": 90.909,
+          "rotation": 0,
+          "opacity": 1,
+          "zIndex": 30,
+          "customName": "Subtitle",
+          "style": {
+            "text": "With real friends",
+            "color": "rgba(0,0,0,0.8)",
+            "size": 49.1,
+            "align": "center",
+            "fontFamily": "Inter, sans-serif",
+            "fontWeightNum": 500,
+            "lineHeightMultiplier": 1.2
+          }
+        }
+      ],
+      "assetLayers": [
+        {
+          "id": "tpl-s4",
+          "assetId": "shape:Phone shadow",
+          "name": "Phone shadow",
+          "xPct": -20.227,
+          "yPct": 12.762,
+          "widthPct": 140.455,
+          "heightPct": 119.846,
+          "rotation": 0,
+          "opacity": 0.22,
+          "zIndex": 5,
+          "cropFit": "stretch",
+          "shape": {
+            "type": "roundRect",
+            "w": 618,
+            "h": 1145.73,
+            "radius": 156,
+            "fill": "#000000",
+            "blur": 28,
+            "inset": 84
+          }
+        }
+      ],
+      "deviceOne": {
+        "size": 75.31,
+        "x": 0,
+        "y": 21.57,
+        "rotation": 0,
+        "brightness": 100,
+        "frameless": false,
+        "bezelColor": "#000000",
+        "borderColor": "#000000",
+        "zIndex": 10
+      }
     },
     {
-     "id": "tpl-t9",
-     "xPct": 4.545,
-     "yPct": 8.444,
-     "widthPct": 90.909,
-     "rotation": 0,
-     "opacity": 1,
-     "zIndex": 30,
-     "customName": "Subtitle",
-     "style": {
-      "text": "Reimagine your world",
-      "color": "rgba(0,0,0,0.8)",
-      "size": 49.1,
-      "align": "center",
-      "fontFamily": "Inter, sans-serif",
-      "fontWeightNum": 500,
-      "lineHeightMultiplier": 1.2
-     }
-    }
-   ],
-   "assetLayers": [
-    {
-     "id": "tpl-s7",
-     "assetId": "shape:Phone shadow",
-     "name": "Phone shadow",
-     "xPct": -20.227,
-     "yPct": 12.762,
-     "widthPct": 140.455,
-     "heightPct": 119.846,
-     "rotation": 0,
-     "opacity": 0.22,
-     "zIndex": 5,
-     "cropFit": "stretch",
-     "shape": {
-      "type": "roundRect",
-      "w": 618,
-      "h": 1145.73,
-      "radius": 156.0,
-      "fill": "#000000",
-      "blur": 28,
-      "inset": 84
-     }
-    }
-   ],
-   "deviceOne": {
-    "size": 75.31,
-    "x": 0.0,
-    "y": 21.57,
-    "rotation": 0,
-    "brightness": 100,
-    "frameless": false,
-    "bezelColor": "#000000",
-    "borderColor": "#000000",
-    "zIndex": 10
-   }
-  },
-  {
-   "title": "Discover",
-   "subtitle": "Stories and original shows",
-   "layout": "single-no-text",
-   "background": {
-    "type": "gradient",
-    "value": "linear-gradient(135deg, #ff9100 0%, #ff6b00 100%)"
-   },
-   "devices": null,
-   "decorations": [],
-   "textLayers": [
-    {
-     "id": "tpl-t11",
-     "xPct": 4.545,
-     "yPct": 1.752,
-     "widthPct": 90.909,
-     "rotation": 0,
-     "opacity": 1,
-     "zIndex": 30,
-     "customName": "Title",
-     "style": {
-      "text": "Discover",
-      "color": "#000000",
-      "size": 88.4,
-      "align": "center",
-      "fontFamily": "Inter, sans-serif",
-      "fontWeightNum": 800,
-      "lineHeightMultiplier": 1.12
-     }
+      "title": "Have Fun",
+      "subtitle": "Reimagine your world",
+      "layout": "single-no-text",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #ffb700 0%, #ff9100 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [
+        {
+          "id": "tpl-t8",
+          "xPct": 4.545,
+          "yPct": 1.752,
+          "widthPct": 90.909,
+          "rotation": 0,
+          "opacity": 1,
+          "zIndex": 30,
+          "customName": "Title",
+          "style": {
+            "text": "Have Fun",
+            "color": "#000000",
+            "size": 88.4,
+            "align": "center",
+            "fontFamily": "Inter, sans-serif",
+            "fontWeightNum": 800,
+            "lineHeightMultiplier": 1.12
+          }
+        },
+        {
+          "id": "tpl-t9",
+          "xPct": 4.545,
+          "yPct": 8.444,
+          "widthPct": 90.909,
+          "rotation": 0,
+          "opacity": 1,
+          "zIndex": 30,
+          "customName": "Subtitle",
+          "style": {
+            "text": "Reimagine your world",
+            "color": "rgba(0,0,0,0.8)",
+            "size": 49.1,
+            "align": "center",
+            "fontFamily": "Inter, sans-serif",
+            "fontWeightNum": 500,
+            "lineHeightMultiplier": 1.2
+          }
+        }
+      ],
+      "assetLayers": [
+        {
+          "id": "tpl-s7",
+          "assetId": "shape:Phone shadow",
+          "name": "Phone shadow",
+          "xPct": -20.227,
+          "yPct": 12.762,
+          "widthPct": 140.455,
+          "heightPct": 119.846,
+          "rotation": 0,
+          "opacity": 0.22,
+          "zIndex": 5,
+          "cropFit": "stretch",
+          "shape": {
+            "type": "roundRect",
+            "w": 618,
+            "h": 1145.73,
+            "radius": 156,
+            "fill": "#000000",
+            "blur": 28,
+            "inset": 84
+          }
+        }
+      ],
+      "deviceOne": {
+        "size": 75.31,
+        "x": 0,
+        "y": 21.57,
+        "rotation": 0,
+        "brightness": 100,
+        "frameless": false,
+        "bezelColor": "#000000",
+        "borderColor": "#000000",
+        "zIndex": 10
+      }
     },
     {
-     "id": "tpl-t12",
-     "xPct": 4.545,
-     "yPct": 8.444,
-     "widthPct": 90.909,
-     "rotation": 0,
-     "opacity": 1,
-     "zIndex": 30,
-     "customName": "Subtitle",
-     "style": {
-      "text": "Stories and original shows",
-      "color": "rgba(0,0,0,0.8)",
-      "size": 49.1,
-      "align": "center",
-      "fontFamily": "Inter, sans-serif",
-      "fontWeightNum": 500,
-      "lineHeightMultiplier": 1.2
-     }
+      "title": "Discover",
+      "subtitle": "Stories and original shows",
+      "layout": "single-no-text",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #ff9100 0%, #ff6b00 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [
+        {
+          "id": "tpl-t11",
+          "xPct": 4.545,
+          "yPct": 1.752,
+          "widthPct": 90.909,
+          "rotation": 0,
+          "opacity": 1,
+          "zIndex": 30,
+          "customName": "Title",
+          "style": {
+            "text": "Discover",
+            "color": "#000000",
+            "size": 88.4,
+            "align": "center",
+            "fontFamily": "Inter, sans-serif",
+            "fontWeightNum": 800,
+            "lineHeightMultiplier": 1.12
+          }
+        },
+        {
+          "id": "tpl-t12",
+          "xPct": 4.545,
+          "yPct": 8.444,
+          "widthPct": 90.909,
+          "rotation": 0,
+          "opacity": 1,
+          "zIndex": 30,
+          "customName": "Subtitle",
+          "style": {
+            "text": "Stories and original shows",
+            "color": "rgba(0,0,0,0.8)",
+            "size": 49.1,
+            "align": "center",
+            "fontFamily": "Inter, sans-serif",
+            "fontWeightNum": 500,
+            "lineHeightMultiplier": 1.2
+          }
+        }
+      ],
+      "assetLayers": [
+        {
+          "id": "tpl-s10",
+          "assetId": "shape:Phone shadow",
+          "name": "Phone shadow",
+          "xPct": -20.227,
+          "yPct": 12.762,
+          "widthPct": 140.455,
+          "heightPct": 119.846,
+          "rotation": 0,
+          "opacity": 0.22,
+          "zIndex": 5,
+          "cropFit": "stretch",
+          "shape": {
+            "type": "roundRect",
+            "w": 618,
+            "h": 1145.73,
+            "radius": 156,
+            "fill": "#000000",
+            "blur": 28,
+            "inset": 84
+          }
+        }
+      ],
+      "deviceOne": {
+        "size": 75.31,
+        "x": 0,
+        "y": 21.57,
+        "rotation": 0,
+        "brightness": 100,
+        "frameless": false,
+        "bezelColor": "#000000",
+        "borderColor": "#000000",
+        "zIndex": 10
+      }
     }
-   ],
-   "assetLayers": [
-    {
-     "id": "tpl-s10",
-     "assetId": "shape:Phone shadow",
-     "name": "Phone shadow",
-     "xPct": -20.227,
-     "yPct": 12.762,
-     "widthPct": 140.455,
-     "heightPct": 119.846,
-     "rotation": 0,
-     "opacity": 0.22,
-     "zIndex": 5,
-     "cropFit": "stretch",
-     "shape": {
-      "type": "roundRect",
-      "w": 618,
-      "h": 1145.73,
-      "radius": 156.0,
-      "fill": "#000000",
-      "blur": 28,
-      "inset": 84
-     }
-    }
-   ],
-   "deviceOne": {
-    "size": 75.31,
-    "x": 0.0,
-    "y": 21.57,
-    "rotation": 0,
-    "brightness": 100,
-    "frameless": false,
-    "bezelColor": "#000000",
-    "borderColor": "#000000",
-    "zIndex": 10
-   }
-  }
- ],
- "titles": [
-  "Snap",
-  "Chat",
-  "Have Fun",
-  "Discover"
- ],
- "subtitles": [
-  "Share the moment",
-  "With real friends",
-  "Reimagine your world",
-  "Stories and original shows"
- ]
+  ],
+  "titles": [
+    "Snap",
+    "Chat",
+    "Have Fun",
+    "Discover"
+  ],
+  "subtitles": [
+    "Share the moment",
+    "With real friends",
+    "Reimagine your world",
+    "Stories and original shows"
+  ]
 }

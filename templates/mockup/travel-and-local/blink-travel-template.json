@@ -10,46 +10,1913 @@
    "label": "Galaxy Phone"
   }
  ],
- "layout": "the-airbnb-right-2-title-above",
+ "layout": "single-no-text",
  "background": {
   "type": "gradient",
-  "value": "aurora"
+  "value": "linear-gradient(180deg, #1B2B4F 0%, #14213D 100%)"
  },
  "pages": [
   {
-   "title": "Find Stays",
-   "subtitle": "Discover unique cabins & homes",
-   "layout": "the-airbnb-right-2-title-above",
-   "background": null,
-   "devices": null
+   "title": "Trips planned in a blink",
+   "subtitle": "Stays, maps and tickets in one calm itinerary",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #1B2B4F 0%, #14213D 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t21",
+     "xPct": 9.091,
+     "yPct": 5.882,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Trips planned\nin a blink",
+      "color": "#FFFFFF",
+      "size": 108.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.08,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t22",
+     "xPct": 9.091,
+     "yPct": 17.288,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Stays, maps and tickets\nin one calm itinerary",
+      "color": "#C9D1E4",
+      "size": 44.2,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.3
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s1",
+     "assetId": "shape:Route dot",
+     "name": "Route dot",
+     "xPct": 6.227,
+     "yPct": 62.49,
+     "widthPct": 1.182,
+     "heightPct": 0.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 5.2,
+      "h": 5.2,
+      "fill": "#FF6B4A"
+     }
+    },
+    {
+     "id": "tpl-s2",
+     "assetId": "shape:Route dot",
+     "name": "Route dot",
+     "xPct": 6.815,
+     "yPct": 58.674,
+     "widthPct": 1.182,
+     "heightPct": 0.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 5.2,
+      "h": 5.2,
+      "fill": "#FF6B4A"
+     }
+    },
+    {
+     "id": "tpl-s3",
+     "assetId": "shape:Route dot",
+     "name": "Route dot",
+     "xPct": 8.01,
+     "yPct": 55.073,
+     "widthPct": 1.182,
+     "heightPct": 0.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 5.2,
+      "h": 5.2,
+      "fill": "#FF6B4A"
+     }
+    },
+    {
+     "id": "tpl-s4",
+     "assetId": "shape:Route dot",
+     "name": "Route dot",
+     "xPct": 9.812,
+     "yPct": 51.685,
+     "widthPct": 1.182,
+     "heightPct": 0.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 5.2,
+      "h": 5.2,
+      "fill": "#FF6B4A"
+     }
+    },
+    {
+     "id": "tpl-s5",
+     "assetId": "shape:Route dot",
+     "name": "Route dot",
+     "xPct": 12.222,
+     "yPct": 48.512,
+     "widthPct": 1.182,
+     "heightPct": 0.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 5.2,
+      "h": 5.2,
+      "fill": "#FF6B4A"
+     }
+    },
+    {
+     "id": "tpl-s6",
+     "assetId": "shape:Route dot",
+     "name": "Route dot",
+     "xPct": 15.238,
+     "yPct": 45.553,
+     "widthPct": 1.182,
+     "heightPct": 0.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 5.2,
+      "h": 5.2,
+      "fill": "#FF6B4A"
+     }
+    },
+    {
+     "id": "tpl-s7",
+     "assetId": "shape:Route dot",
+     "name": "Route dot",
+     "xPct": 18.862,
+     "yPct": 42.808,
+     "widthPct": 1.182,
+     "heightPct": 0.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 5.2,
+      "h": 5.2,
+      "fill": "#FF6B4A"
+     }
+    },
+    {
+     "id": "tpl-s8",
+     "assetId": "shape:Route dot",
+     "name": "Route dot",
+     "xPct": 23.093,
+     "yPct": 40.277,
+     "widthPct": 1.182,
+     "heightPct": 0.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 5.2,
+      "h": 5.2,
+      "fill": "#FF6B4A"
+     }
+    },
+    {
+     "id": "tpl-s9",
+     "assetId": "shape:Route dot",
+     "name": "Route dot",
+     "xPct": 27.932,
+     "yPct": 37.96,
+     "widthPct": 1.182,
+     "heightPct": 0.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 5.2,
+      "h": 5.2,
+      "fill": "#FF6B4A"
+     }
+    },
+    {
+     "id": "tpl-s10",
+     "assetId": "shape:Route dot",
+     "name": "Route dot",
+     "xPct": 33.377,
+     "yPct": 35.858,
+     "widthPct": 1.182,
+     "heightPct": 0.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 5.2,
+      "h": 5.2,
+      "fill": "#FF6B4A"
+     }
+    },
+    {
+     "id": "tpl-s11",
+     "assetId": "shape:Route dot",
+     "name": "Route dot",
+     "xPct": 39.43,
+     "yPct": 33.969,
+     "widthPct": 1.182,
+     "heightPct": 0.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 5.2,
+      "h": 5.2,
+      "fill": "#FF6B4A"
+     }
+    },
+    {
+     "id": "tpl-s12",
+     "assetId": "shape:Route dot",
+     "name": "Route dot",
+     "xPct": 46.091,
+     "yPct": 32.295,
+     "widthPct": 1.182,
+     "heightPct": 0.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 5.2,
+      "h": 5.2,
+      "fill": "#FF6B4A"
+     }
+    },
+    {
+     "id": "tpl-s13",
+     "assetId": "shape:Route dot",
+     "name": "Route dot",
+     "xPct": 53.358,
+     "yPct": 30.834,
+     "widthPct": 1.182,
+     "heightPct": 0.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 5.2,
+      "h": 5.2,
+      "fill": "#FF6B4A"
+     }
+    },
+    {
+     "id": "tpl-s14",
+     "assetId": "shape:Route dot",
+     "name": "Route dot",
+     "xPct": 61.233,
+     "yPct": 29.588,
+     "widthPct": 1.182,
+     "heightPct": 0.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 5.2,
+      "h": 5.2,
+      "fill": "#FF6B4A"
+     }
+    },
+    {
+     "id": "tpl-s15",
+     "assetId": "shape:Route dot",
+     "name": "Route dot",
+     "xPct": 69.714,
+     "yPct": 28.556,
+     "widthPct": 1.182,
+     "heightPct": 0.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 5.2,
+      "h": 5.2,
+      "fill": "#FF6B4A"
+     }
+    },
+    {
+     "id": "tpl-s16",
+     "assetId": "shape:Route dot",
+     "name": "Route dot",
+     "xPct": 78.804,
+     "yPct": 27.738,
+     "widthPct": 1.182,
+     "heightPct": 0.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 5.2,
+      "h": 5.2,
+      "fill": "#FF6B4A"
+     }
+    },
+    {
+     "id": "tpl-s17",
+     "assetId": "shape:Route dot",
+     "name": "Route dot",
+     "xPct": 88.5,
+     "yPct": 27.134,
+     "widthPct": 1.182,
+     "heightPct": 0.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 5.2,
+      "h": 5.2,
+      "fill": "#FF6B4A"
+     }
+    },
+    {
+     "id": "tpl-s18",
+     "assetId": "shape:Pin ring",
+     "name": "Pin ring",
+     "xPct": 86.591,
+     "yPct": 26.255,
+     "widthPct": 5.0,
+     "heightPct": 2.301,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 22,
+      "h": 22,
+      "stroke": "#FF6B4A",
+      "strokeWidth": 3,
+      "inset": 1.5
+     }
+    },
+    {
+     "id": "tpl-s19",
+     "assetId": "shape:Pin",
+     "name": "Pin",
+     "xPct": 87.955,
+     "yPct": 26.883,
+     "widthPct": 2.273,
+     "heightPct": 1.046,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 10,
+      "h": 10,
+      "fill": "#FF6B4A"
+     }
+    },
+    {
+     "id": "tpl-s20",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 4.773,
+     "yPct": 26.36,
+     "widthPct": 90.455,
+     "heightPct": 77.206,
+     "rotation": 0,
+     "opacity": 0.4,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 398,
+      "h": 738.09,
+      "radius": 100.4,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 48.53,
+    "x": 0.0,
+    "y": 21.75,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
   },
   {
-   "title": "Local Guides",
-   "subtitle": "Handpicked recommendations",
-   "layout": "the-airbnb-right-2-title-above",
-   "background": null,
-   "devices": null
+   "title": "Stays you'll love",
+   "subtitle": "Cabins, lofts and seaside homes handpicked for every trip",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #FBF6EE 0%, #F2E8D8 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t38",
+     "xPct": 9.091,
+     "yPct": 5.882,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Stays you'll\nlove",
+      "color": "#14213D",
+      "size": 108.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.08,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t39",
+     "xPct": 9.091,
+     "yPct": 17.288,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Cabins, lofts and seaside homes\nhandpicked for every trip",
+      "color": "#3E4A66",
+      "size": 44.2,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.3
+     }
+    },
+    {
+     "id": "tpl-t40",
+     "xPct": 25.632,
+     "yPct": 69.964,
+     "widthPct": 20.794,
+     "rotation": -4,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Pine Cabin",
+     "style": {
+      "text": "Pine Cabin",
+      "color": "#14213D",
+      "size": 39.3,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t41",
+     "xPct": 26.021,
+     "yPct": 72.53,
+     "widthPct": 20.32,
+     "rotation": -4,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "4.9 · 2 nights",
+     "style": {
+      "text": "4.9 · 2 nights",
+      "color": "#3E4A66",
+      "size": 31.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s23",
+     "assetId": "shape:Route dot",
+     "name": "Route dot",
+     "xPct": 74.409,
+     "yPct": 25.879,
+     "widthPct": 1.182,
+     "heightPct": 0.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 5.2,
+      "h": 5.2,
+      "fill": "#FF6B4A"
+     }
+    },
+    {
+     "id": "tpl-s24",
+     "assetId": "shape:Route dot",
+     "name": "Route dot",
+     "xPct": 79.114,
+     "yPct": 24.506,
+     "widthPct": 1.182,
+     "heightPct": 0.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 5.2,
+      "h": 5.2,
+      "fill": "#FF6B4A"
+     }
+    },
+    {
+     "id": "tpl-s25",
+     "assetId": "shape:Route dot",
+     "name": "Route dot",
+     "xPct": 83.003,
+     "yPct": 23.002,
+     "widthPct": 1.182,
+     "heightPct": 0.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 5.2,
+      "h": 5.2,
+      "fill": "#FF6B4A"
+     }
+    },
+    {
+     "id": "tpl-s26",
+     "assetId": "shape:Route dot",
+     "name": "Route dot",
+     "xPct": 86.075,
+     "yPct": 21.368,
+     "widthPct": 1.182,
+     "heightPct": 0.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 5.2,
+      "h": 5.2,
+      "fill": "#FF6B4A"
+     }
+    },
+    {
+     "id": "tpl-s27",
+     "assetId": "shape:Route dot",
+     "name": "Route dot",
+     "xPct": 88.33,
+     "yPct": 19.603,
+     "widthPct": 1.182,
+     "heightPct": 0.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 5.2,
+      "h": 5.2,
+      "fill": "#FF6B4A"
+     }
+    },
+    {
+     "id": "tpl-s28",
+     "assetId": "shape:Route dot",
+     "name": "Route dot",
+     "xPct": 89.768,
+     "yPct": 17.707,
+     "widthPct": 1.182,
+     "heightPct": 0.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 5.2,
+      "h": 5.2,
+      "fill": "#FF6B4A"
+     }
+    },
+    {
+     "id": "tpl-s29",
+     "assetId": "shape:Route dot",
+     "name": "Route dot",
+     "xPct": 90.389,
+     "yPct": 15.68,
+     "widthPct": 1.182,
+     "heightPct": 0.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 5.2,
+      "h": 5.2,
+      "fill": "#FF6B4A"
+     }
+    },
+    {
+     "id": "tpl-s30",
+     "assetId": "shape:Route dot",
+     "name": "Route dot",
+     "xPct": 90.194,
+     "yPct": 13.522,
+     "widthPct": 1.182,
+     "heightPct": 0.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 5.2,
+      "h": 5.2,
+      "fill": "#FF6B4A"
+     }
+    },
+    {
+     "id": "tpl-s31",
+     "assetId": "shape:Route dot",
+     "name": "Route dot",
+     "xPct": 89.182,
+     "yPct": 11.234,
+     "widthPct": 1.182,
+     "heightPct": 0.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 5.2,
+      "h": 5.2,
+      "fill": "#FF6B4A"
+     }
+    },
+    {
+     "id": "tpl-s32",
+     "assetId": "shape:Pin ring",
+     "name": "Pin ring",
+     "xPct": 87.273,
+     "yPct": 10.356,
+     "widthPct": 5.0,
+     "heightPct": 2.301,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 22,
+      "h": 22,
+      "stroke": "#FF6B4A",
+      "strokeWidth": 3,
+      "inset": 1.5
+     }
+    },
+    {
+     "id": "tpl-s33",
+     "assetId": "shape:Pin",
+     "name": "Pin",
+     "xPct": 88.636,
+     "yPct": 10.983,
+     "widthPct": 2.273,
+     "heightPct": 1.046,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 10,
+      "h": 10,
+      "fill": "#FF6B4A"
+     }
+    },
+    {
+     "id": "tpl-s34",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 5.501,
+     "yPct": 25.14,
+     "widthPct": 88.182,
+     "heightPct": 74.933,
+     "rotation": 6,
+     "opacity": 0.22,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 388,
+      "h": 716.36,
+      "radius": 98.8,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s35",
+     "assetId": "shape:Card shadow",
+     "name": "Card shadow",
+     "xPct": -2.727,
+     "yPct": 62.762,
+     "widthPct": 61.364,
+     "heightPct": 17.992,
+     "rotation": -4,
+     "opacity": 0.18,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 270,
+      "h": 172,
+      "radius": 58,
+      "fill": "#000000",
+      "blur": 14,
+      "inset": 40
+     }
+    },
+    {
+     "id": "tpl-s36",
+     "assetId": "shape:Card",
+     "name": "Card",
+     "xPct": 6.364,
+     "yPct": 66.946,
+     "widthPct": 43.182,
+     "heightPct": 9.623,
+     "rotation": -4,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 190,
+      "h": 92,
+      "radius": 18,
+      "fill": "#FFFFFF"
+     }
+    },
+    {
+     "id": "tpl-s37",
+     "assetId": "shape:Stay thumb",
+     "name": "Stay thumb",
+     "xPct": 9.574,
+     "yPct": 68.991,
+     "widthPct": 13.636,
+     "heightPct": 6.276,
+     "rotation": -4,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 60,
+      "h": 60,
+      "radius": 12,
+      "gradient": [
+       [
+        0,
+        "#FFB199"
+       ],
+       [
+        1,
+        "#FF6B4A"
+       ]
+      ]
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 46.86,
+    "x": -0.64,
+    "y": 18.82,
+    "rotation": 6,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
   },
   {
-   "title": "Realtime Maps",
-   "subtitle": "Interactive offline maps",
-   "layout": "the-airbnb-right-2-title-above",
-   "background": null,
-   "devices": null
+   "title": "Maps that work offline",
+   "subtitle": "Save cities before you fly, navigate without signal",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #1B2B4F 0%, #14213D 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t55",
+     "xPct": 9.091,
+     "yPct": 5.882,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Maps that work\noffline",
+      "color": "#FFFFFF",
+      "size": 108.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.08,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t56",
+     "xPct": 9.091,
+     "yPct": 17.288,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Save cities before you fly,\nnavigate without signal",
+      "color": "#C9D1E4",
+      "size": 44.2,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.3
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s42",
+     "assetId": "shape:Route dot",
+     "name": "Route dot",
+     "xPct": 56.227,
+     "yPct": 25.879,
+     "widthPct": 1.182,
+     "heightPct": 0.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 5.2,
+      "h": 5.2,
+      "fill": "#FF6B4A"
+     }
+    },
+    {
+     "id": "tpl-s43",
+     "assetId": "shape:Route dot",
+     "name": "Route dot",
+     "xPct": 65.247,
+     "yPct": 25.421,
+     "widthPct": 1.182,
+     "heightPct": 0.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 5.2,
+      "h": 5.2,
+      "fill": "#FF6B4A"
+     }
+    },
+    {
+     "id": "tpl-s44",
+     "assetId": "shape:Route dot",
+     "name": "Route dot",
+     "xPct": 72.989,
+     "yPct": 24.571,
+     "widthPct": 1.182,
+     "heightPct": 0.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 5.2,
+      "h": 5.2,
+      "fill": "#FF6B4A"
+     }
+    },
+    {
+     "id": "tpl-s45",
+     "assetId": "shape:Route dot",
+     "name": "Route dot",
+     "xPct": 79.452,
+     "yPct": 23.329,
+     "widthPct": 1.182,
+     "heightPct": 0.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 5.2,
+      "h": 5.2,
+      "fill": "#FF6B4A"
+     }
+    },
+    {
+     "id": "tpl-s46",
+     "assetId": "shape:Route dot",
+     "name": "Route dot",
+     "xPct": 84.636,
+     "yPct": 21.695,
+     "widthPct": 1.182,
+     "heightPct": 0.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 5.2,
+      "h": 5.2,
+      "fill": "#FF6B4A"
+     }
+    },
+    {
+     "id": "tpl-s47",
+     "assetId": "shape:Route dot",
+     "name": "Route dot",
+     "xPct": 88.543,
+     "yPct": 19.668,
+     "widthPct": 1.182,
+     "heightPct": 0.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 5.2,
+      "h": 5.2,
+      "fill": "#FF6B4A"
+     }
+    },
+    {
+     "id": "tpl-s48",
+     "assetId": "shape:Route dot",
+     "name": "Route dot",
+     "xPct": 91.17,
+     "yPct": 17.249,
+     "widthPct": 1.182,
+     "heightPct": 0.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 5.2,
+      "h": 5.2,
+      "fill": "#FF6B4A"
+     }
+    },
+    {
+     "id": "tpl-s49",
+     "assetId": "shape:Route dot",
+     "name": "Route dot",
+     "xPct": 92.52,
+     "yPct": 14.438,
+     "widthPct": 1.182,
+     "heightPct": 0.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 5.2,
+      "h": 5.2,
+      "fill": "#FF6B4A"
+     }
+    },
+    {
+     "id": "tpl-s50",
+     "assetId": "shape:Route dot",
+     "name": "Route dot",
+     "xPct": 92.591,
+     "yPct": 11.234,
+     "widthPct": 1.182,
+     "heightPct": 0.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 5.2,
+      "h": 5.2,
+      "fill": "#FF6B4A"
+     }
+    },
+    {
+     "id": "tpl-s51",
+     "assetId": "shape:Pin ring",
+     "name": "Pin ring",
+     "xPct": 90.682,
+     "yPct": 10.356,
+     "widthPct": 5.0,
+     "heightPct": 2.301,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 22,
+      "h": 22,
+      "stroke": "#FF6B4A",
+      "strokeWidth": 3,
+      "inset": 1.5
+     }
+    },
+    {
+     "id": "tpl-s52",
+     "assetId": "shape:Pin",
+     "name": "Pin",
+     "xPct": 92.045,
+     "yPct": 10.983,
+     "widthPct": 2.273,
+     "heightPct": 1.046,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 10,
+      "h": 10,
+      "fill": "#FF6B4A"
+     }
+    },
+    {
+     "id": "tpl-s53",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 24.028,
+     "yPct": 30.13,
+     "widthPct": 79.091,
+     "heightPct": 65.843,
+     "rotation": 10,
+     "opacity": 0.4,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 348,
+      "h": 629.45,
+      "radius": 92.4,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s54",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -0.139,
+     "yPct": 26.204,
+     "widthPct": 81.364,
+     "heightPct": 68.115,
+     "rotation": -6,
+     "opacity": 0.4,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 358,
+      "h": 651.18,
+      "radius": 94.0,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 41.84,
+    "x": -16.64,
+    "y": 16.96,
+    "rotation": -6,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 11
+   },
+   "extraDevices": [
+    {
+     "size": 40.17,
+     "x": 24.89,
+     "y": 22.78,
+     "rotation": 10,
+     "brightness": 100,
+     "frameless": false,
+     "bezelColor": "#060606",
+     "borderColor": "#5e5e5e",
+     "zIndex": 9
+    }
+   ]
   },
   {
-   "title": "Book Tickets",
-   "subtitle": "Seamless booking for flights",
-   "layout": "the-airbnb-right-2-title-above",
-   "background": null,
-   "devices": null
+   "title": "Book flights in seconds",
+   "subtitle": "Compare fares and keep every boarding pass in one place",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #FBF6EE 0%, #F2E8D8 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t70",
+     "xPct": 9.091,
+     "yPct": 5.882,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Book flights\nin seconds",
+      "color": "#14213D",
+      "size": 108.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.08,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t71",
+     "xPct": 9.091,
+     "yPct": 17.288,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Compare fares and keep every\nboarding pass in one place",
+      "color": "#3E4A66",
+      "size": 44.2,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.3
+     }
+    },
+    {
+     "id": "tpl-t72",
+     "xPct": 10.455,
+     "yPct": 74.543,
+     "widthPct": 24.607,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "BOARDING PASS",
+     "style": {
+      "text": "BOARDING PASS",
+      "color": "#14213D",
+      "size": 29.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t73",
+     "xPct": 10.455,
+     "yPct": 79.06,
+     "widthPct": 11.507,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "LIS",
+     "style": {
+      "text": "LIS",
+      "color": "#14213D",
+      "size": 68.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t74",
+     "xPct": 40.866,
+     "yPct": 79.06,
+     "widthPct": 16.407,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "NYC",
+     "style": {
+      "text": "NYC",
+      "color": "#14213D",
+      "size": 68.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t75",
+     "xPct": 10.455,
+     "yPct": 83.016,
+     "widthPct": 23.403,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Gate B12 · 09:40",
+     "style": {
+      "text": "Gate B12 · 09:40",
+      "color": "#3E4A66",
+      "size": 29.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s57",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 12.727,
+     "yPct": 26.36,
+     "widthPct": 88.182,
+     "heightPct": 74.933,
+     "rotation": 0,
+     "opacity": 0.22,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 388,
+      "h": 716.36,
+      "radius": 98.8,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s58",
+     "assetId": "shape:Card shadow",
+     "name": "Card shadow",
+     "xPct": -2.273,
+     "yPct": 69.038,
+     "widthPct": 70.455,
+     "heightPct": 20.502,
+     "rotation": 0,
+     "opacity": 0.18,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 310,
+      "h": 196,
+      "radius": 58,
+      "fill": "#000000",
+      "blur": 14,
+      "inset": 40
+     }
+    },
+    {
+     "id": "tpl-s59",
+     "assetId": "shape:Card",
+     "name": "Card",
+     "xPct": 6.818,
+     "yPct": 73.222,
+     "widthPct": 52.273,
+     "heightPct": 12.134,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 230,
+      "h": 116,
+      "radius": 18,
+      "fill": "#FFFFFF"
+     }
+    },
+    {
+     "id": "tpl-s60",
+     "assetId": "shape:Pass header",
+     "name": "Pass header",
+     "xPct": 6.818,
+     "yPct": 73.222,
+     "widthPct": 52.273,
+     "heightPct": 3.556,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 230,
+      "h": 34,
+      "radius": 18,
+      "fill": "#FF6B4A"
+     }
+    },
+    {
+     "id": "tpl-s61",
+     "assetId": "shape:Pass header base",
+     "name": "Pass header base",
+     "xPct": 6.818,
+     "yPct": 75.105,
+     "widthPct": 52.273,
+     "heightPct": 1.674,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 230,
+      "h": 16,
+      "radius": 0,
+      "fill": "#FF6B4A"
+     }
+    },
+    {
+     "id": "tpl-s62",
+     "assetId": "shape:Notch",
+     "name": "Notch",
+     "xPct": 5.0,
+     "yPct": 80.126,
+     "widthPct": 3.636,
+     "heightPct": 1.674,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 16,
+      "h": 16,
+      "fill": "#F4EBDD"
+     }
+    },
+    {
+     "id": "tpl-s63",
+     "assetId": "shape:Notch",
+     "name": "Notch",
+     "xPct": 57.273,
+     "yPct": 80.126,
+     "widthPct": 3.636,
+     "heightPct": 1.674,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 16,
+      "h": 16,
+      "fill": "#F4EBDD"
+     }
+    },
+    {
+     "id": "tpl-s64",
+     "assetId": "shape:Route dot",
+     "name": "Route dot",
+     "xPct": 28.0,
+     "yPct": 80.146,
+     "widthPct": 0.818,
+     "heightPct": 0.377,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 3.6,
+      "h": 3.6,
+      "fill": "#FF6B4A"
+     }
+    },
+    {
+     "id": "tpl-s65",
+     "assetId": "shape:Route dot",
+     "name": "Route dot",
+     "xPct": 29.818,
+     "yPct": 80.146,
+     "widthPct": 0.818,
+     "heightPct": 0.377,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 3.6,
+      "h": 3.6,
+      "fill": "#FF6B4A"
+     }
+    },
+    {
+     "id": "tpl-s66",
+     "assetId": "shape:Route dot",
+     "name": "Route dot",
+     "xPct": 31.636,
+     "yPct": 80.146,
+     "widthPct": 0.818,
+     "heightPct": 0.377,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 3.6,
+      "h": 3.6,
+      "fill": "#FF6B4A"
+     }
+    },
+    {
+     "id": "tpl-s67",
+     "assetId": "shape:Route dot",
+     "name": "Route dot",
+     "xPct": 33.455,
+     "yPct": 80.146,
+     "widthPct": 0.818,
+     "heightPct": 0.377,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 3.6,
+      "h": 3.6,
+      "fill": "#FF6B4A"
+     }
+    },
+    {
+     "id": "tpl-s68",
+     "assetId": "shape:Route dot",
+     "name": "Route dot",
+     "xPct": 35.273,
+     "yPct": 80.146,
+     "widthPct": 0.818,
+     "heightPct": 0.377,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 3.6,
+      "h": 3.6,
+      "fill": "#FF6B4A"
+     }
+    },
+    {
+     "id": "tpl-s69",
+     "assetId": "shape:Route dot",
+     "name": "Route dot",
+     "xPct": 37.091,
+     "yPct": 80.146,
+     "widthPct": 0.818,
+     "heightPct": 0.377,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 3.6,
+      "h": 3.6,
+      "fill": "#FF6B4A"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 46.86,
+    "x": 10.71,
+    "y": 20.74,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
   },
   {
-   "title": "Share Trip",
-   "subtitle": "Plan with friends in real time",
-   "layout": "the-airbnb-right-2-title-above",
-   "background": null,
-   "devices": null
+   "title": "Plan it together",
+   "subtitle": "Share the trip and vote on plans with friends in real time",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #FF7D5E 0%, #FF6B4A 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t88",
+     "xPct": 9.091,
+     "yPct": 5.882,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Plan it\ntogether",
+      "color": "#14213D",
+      "size": 108.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.08,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t89",
+     "xPct": 9.091,
+     "yPct": 17.288,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Share the trip and vote on\nplans with friends in real time",
+      "color": "#14213D",
+      "size": 44.2,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.3
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s76",
+     "assetId": "shape:Route dot",
+     "name": "Route dot",
+     "xPct": 67.591,
+     "yPct": 25.879,
+     "widthPct": 1.182,
+     "heightPct": 0.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 5.2,
+      "h": 5.2,
+      "fill": "#14213D"
+     }
+    },
+    {
+     "id": "tpl-s77",
+     "assetId": "shape:Route dot",
+     "name": "Route dot",
+     "xPct": 73.912,
+     "yPct": 25.192,
+     "widthPct": 1.182,
+     "heightPct": 0.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 5.2,
+      "h": 5.2,
+      "fill": "#14213D"
+     }
+    },
+    {
+     "id": "tpl-s78",
+     "assetId": "shape:Route dot",
+     "name": "Route dot",
+     "xPct": 79.239,
+     "yPct": 24.179,
+     "widthPct": 1.182,
+     "heightPct": 0.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 5.2,
+      "h": 5.2,
+      "fill": "#14213D"
+     }
+    },
+    {
+     "id": "tpl-s79",
+     "assetId": "shape:Route dot",
+     "name": "Route dot",
+     "xPct": 83.571,
+     "yPct": 22.839,
+     "widthPct": 1.182,
+     "heightPct": 0.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 5.2,
+      "h": 5.2,
+      "fill": "#14213D"
+     }
+    },
+    {
+     "id": "tpl-s80",
+     "assetId": "shape:Route dot",
+     "name": "Route dot",
+     "xPct": 86.909,
+     "yPct": 21.172,
+     "widthPct": 1.182,
+     "heightPct": 0.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 5.2,
+      "h": 5.2,
+      "fill": "#14213D"
+     }
+    },
+    {
+     "id": "tpl-s81",
+     "assetId": "shape:Route dot",
+     "name": "Route dot",
+     "xPct": 89.253,
+     "yPct": 19.178,
+     "widthPct": 1.182,
+     "heightPct": 0.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 5.2,
+      "h": 5.2,
+      "fill": "#14213D"
+     }
+    },
+    {
+     "id": "tpl-s82",
+     "assetId": "shape:Route dot",
+     "name": "Route dot",
+     "xPct": 90.602,
+     "yPct": 16.857,
+     "widthPct": 1.182,
+     "heightPct": 0.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 5.2,
+      "h": 5.2,
+      "fill": "#14213D"
+     }
+    },
+    {
+     "id": "tpl-s83",
+     "assetId": "shape:Route dot",
+     "name": "Route dot",
+     "xPct": 90.957,
+     "yPct": 14.209,
+     "widthPct": 1.182,
+     "heightPct": 0.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 5.2,
+      "h": 5.2,
+      "fill": "#14213D"
+     }
+    },
+    {
+     "id": "tpl-s84",
+     "assetId": "shape:Route dot",
+     "name": "Route dot",
+     "xPct": 90.318,
+     "yPct": 11.234,
+     "widthPct": 1.182,
+     "heightPct": 0.544,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 5.2,
+      "h": 5.2,
+      "fill": "#14213D"
+     }
+    },
+    {
+     "id": "tpl-s85",
+     "assetId": "shape:Pin ring",
+     "name": "Pin ring",
+     "xPct": 88.409,
+     "yPct": 10.356,
+     "widthPct": 5.0,
+     "heightPct": 2.301,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 22,
+      "h": 22,
+      "stroke": "#14213D",
+      "strokeWidth": 3,
+      "inset": 1.5
+     }
+    },
+    {
+     "id": "tpl-s86",
+     "assetId": "shape:Pin",
+     "name": "Pin",
+     "xPct": 89.773,
+     "yPct": 10.983,
+     "widthPct": 2.273,
+     "heightPct": 1.046,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 10,
+      "h": 10,
+      "fill": "#14213D"
+     }
+    },
+    {
+     "id": "tpl-s87",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 8.59,
+     "yPct": 27.232,
+     "widthPct": 88.182,
+     "heightPct": 74.933,
+     "rotation": -6,
+     "opacity": 0.25,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 388,
+      "h": 716.36,
+      "radius": 98.8,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 46.86,
+    "x": 4.21,
+    "y": 22.11,
+    "rotation": -6,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
   }
+ ],
+ "designHeight": 2347,
+ "textColor": "#111111",
+ "columnCount": 5,
+ "titles": [
+  "Trips planned in a blink",
+  "Stays you'll love",
+  "Maps that work offline",
+  "Book flights in seconds",
+  "Plan it together"
+ ],
+ "subtitles": [
+  "Stays, maps and tickets in one calm itinerary",
+  "Cabins, lofts and seaside homes handpicked for every trip",
+  "Save cities before you fly, navigate without signal",
+  "Compare fares and keep every boarding pass in one place",
+  "Share the trip and vote on plans with friends in real time"
  ]
 }
