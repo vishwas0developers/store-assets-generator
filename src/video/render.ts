@@ -60,6 +60,10 @@ export interface RenderProgress {
   sceneCount?: number;
   fps?: number;
   etaSec?: number | null;
+  accelerator?: string;
+  encoder?: string;
+  width?: number;
+  height?: number;
 }
 
 export function cleanExportFileName(name?: string, ext = "mp4"): string {
@@ -1077,6 +1081,20 @@ export function composeStandaloneHtml(project: VideoProject, activeSceneIndex?: 
   }
   const uriFor = resolveUri ?? previewResolveUri(project.id);
 
+  // Resolve the same BGM renderVideo would mix into the export -- a real
+  // upload if one is set, else the template's own generated track -- so the
+  // interactive preview (this function) can actually play it too, instead of
+  // background music only ever being audible in the final rendered file.
+  let bgmUrl: string | null = null;
+  if (project.bgm) {
+    const candidate = videoFile(project.id, project.bgm);
+    if (fs.existsSync(candidate)) bgmUrl = uriFor(project.bgm);
+  }
+  if (!bgmUrl && BGM_PRESETS[templateId]) {
+    bgmUrl = `/api/bgm-presets/${encodeURIComponent(templateId)}`;
+  }
+  const bgmVolume = project.bgmVolume ?? 0.35;
+
   // Calculate scene offset if activeSceneIndex is set
   let sceneStartMs = 0;
   const activeSceneDurMs = activeSceneIndex === undefined ? 0
@@ -1235,6 +1253,47 @@ export function composeStandaloneHtml(project: VideoProject, activeSceneIndex?: 
         if (typeof window.goto === 'function') {
           window.goto(${activeSceneIndex});
         }
+      }
+
+      // Background music -- wraps the now-fully-adapted play/pause/seek (defined
+      // above and, for a single-scene preview, by the activeSceneIndex block) so
+      // this fires last regardless of which mode is active. The existing mute
+      // button already toggles every <audio>/<video> element's .muted, so no
+      // change was needed there.
+      const bgmUrl = ${JSON.stringify(bgmUrl)};
+      if (bgmUrl) {
+        const bgmAudio = document.createElement('audio');
+        bgmAudio.src = bgmUrl;
+        bgmAudio.loop = true;
+        bgmAudio.preload = 'auto';
+        bgmAudio.volume = ${JSON.stringify(bgmVolume)};
+        bgmAudio.style.display = 'none';
+        document.body.appendChild(bgmAudio);
+        // The Studio editor's own scene transport (frame-stepping, scrubbing, speed
+        // control) drives playback by calling only .seek() on a manual interval --
+        // never .play()/.pause(), since those would start this document's own
+        // animation-frame loop fighting that manual stepping. It starts/stops this
+        // audio element directly instead; expose it for that purpose.
+        window.__bgmAudio = bgmAudio;
+
+        const beforePlay = window.play;
+        window.play = function () {
+          bgmAudio.play().catch(() => {});
+          return typeof beforePlay === 'function' ? beforePlay.apply(this, arguments) : undefined;
+        };
+        const beforePause = window.pause;
+        window.pause = function () {
+          bgmAudio.pause();
+          return typeof beforePause === 'function' ? beforePause.apply(this, arguments) : undefined;
+        };
+        const beforeBgmSeek = window.seek;
+        window.seek = function (ms) {
+          if (bgmAudio.duration) {
+            const t = (ms / 1000) % bgmAudio.duration;
+            if (Math.abs(bgmAudio.currentTime - t) > 0.25) bgmAudio.currentTime = t;
+          }
+          return typeof beforeBgmSeek === 'function' ? beforeBgmSeek.apply(this, arguments) : undefined;
+        };
       }
       }
       if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
@@ -1526,7 +1585,7 @@ const BGM_CACHE_DIR = path.join(process.cwd(), "output", ".bgm");
 
 /** The generated (or cached) BGM file for a template id -- lazily rendered
  *  once, same pattern as the template-thumbnail cache below. */
-function ensureGeneratedBgm(templateId: string, seconds: number): string {
+export function ensureGeneratedBgm(templateId: string, seconds: number): string {
   const preset = BGM_PRESETS[templateId];
   if (!preset) throw new Error(`No BGM preset for template '${templateId}'.`);
   fs.mkdirSync(BGM_CACHE_DIR, { recursive: true });
@@ -1535,9 +1594,87 @@ function ensureGeneratedBgm(templateId: string, seconds: number): string {
   return wavPath;
 }
 
-/** Renders every scene deterministically via frame-stepped seek(), then
- *  encodes with FFmpeg in one call and muxes BGM (uploaded, or generated
- *  from the project's template preset) with volume + fade in/out. */
+interface EncoderChoice {
+  codec: string;
+  name: string;
+  args: string[];
+}
+
+let cachedH264Encoder: EncoderChoice | null = null;
+
+async function detectBestH264Encoder(crf: string): Promise<EncoderChoice> {
+  if (cachedH264Encoder) {
+    // If cached, return adapted args for crf
+    const isNvenc = cachedH264Encoder.codec === "h264_nvenc";
+    const isQsv = cachedH264Encoder.codec === "h264_qsv";
+    if (isNvenc) {
+      return {
+        codec: "h264_nvenc",
+        name: "NVIDIA NVENC (GPU)",
+        args: ["-c:v", "h264_nvenc", "-preset", "p4", "-cq", crf, "-pix_fmt", "yuv420p"],
+      };
+    } else if (isQsv) {
+      return {
+        codec: "h264_qsv",
+        name: "Intel QuickSync (GPU)",
+        args: ["-c:v", "h264_qsv", "-global_quality", crf, "-pix_fmt", "nv12"],
+      };
+    } else {
+      return {
+        codec: "libx264",
+        name: "libx264 (CPU)",
+        args: ["-c:v", "libx264", "-preset", "veryfast", "-crf", crf, "-pix_fmt", "yuv420p"],
+      };
+    }
+  }
+
+  // Probe NVENC first
+  try {
+    await execFileAsync(resolveTool("ffmpeg"), [
+      "-y",
+      "-f", "lavfi",
+      "-i", "color=c=black:s=256x256:d=0.04",
+      "-c:v", "h264_nvenc",
+      "-f", "null",
+      "-",
+    ]);
+    cachedH264Encoder = {
+      codec: "h264_nvenc",
+      name: "NVIDIA NVENC (GPU)",
+      args: ["-c:v", "h264_nvenc", "-preset", "p4", "-cq", crf, "-pix_fmt", "yuv420p"],
+    };
+    return cachedH264Encoder;
+  } catch {}
+
+  // Probe Intel QSV next
+  try {
+    await execFileAsync(resolveTool("ffmpeg"), [
+      "-y",
+      "-f", "lavfi",
+      "-i", "color=c=black:s=256x256:d=0.04",
+      "-c:v", "h264_qsv",
+      "-f", "null",
+      "-",
+    ]);
+    cachedH264Encoder = {
+      codec: "h264_qsv",
+      name: "Intel QuickSync (GPU)",
+      args: ["-c:v", "h264_qsv", "-global_quality", crf, "-pix_fmt", "nv12"],
+    };
+    return cachedH264Encoder;
+  } catch {}
+
+  // Fallback to CPU libx264
+  cachedH264Encoder = {
+    codec: "libx264",
+    name: "libx264 (CPU)",
+    args: ["-c:v", "libx264", "-preset", "veryfast", "-crf", crf, "-pix_fmt", "yuv420p"],
+  };
+  return cachedH264Encoder;
+}
+
+/** Renders every scene deterministically with GPU acceleration,
+ *  multi-page scene parallelism, fast frame streaming, and hardware NVENC encoding. */
 export async function renderVideo(
   project: VideoProject,
   opts: RenderOptions = {},
@@ -1555,7 +1692,7 @@ export async function renderVideo(
     if (onProgress) onProgress(p);
   };
 
-  report({ phase: "preparing", percent: 1, message: "Preparing render environment..." });
+  report({ phase: "preparing", percent: 1, message: "Preparing GPU render environment..." });
   checkAborted();
 
   const format = opts.format || "mp4";
@@ -1579,73 +1716,174 @@ export async function renderVideo(
   fs.rmSync(framesDir, { recursive: true, force: true });
   fs.mkdirSync(framesDir, { recursive: true });
 
-  const { chromium } = await import("playwright");
-  const browser = await chromium.launch({ headless: true });
-  let frameIndex = 0;
-
   const resolveUri = (rel: string) => {
     const abs = videoFile(project.id, rel);
     return dataUri(fs.existsSync(abs) ? abs : projectFile(project.id, rel));
   };
 
-  // Compute total frames up front
+  // Compute total frames up front and scene offsets
   const sceneFrameCounts = scenes.map((s) => Math.round(Math.max(1, s.durationSeconds) * fps));
   const totalFrames = sceneFrameCounts.reduce((a, b) => a + b, 0);
 
+  const sceneStartIndices: number[] = [];
+  let runningStart = 0;
+  for (let i = 0; i < scenes.length; i++) {
+    sceneStartIndices.push(runningStart);
+    runningStart += sceneFrameCounts[i];
+  }
+
+  // Detect encoder choice
+  let crf = quality === "high" ? "18" : quality === "small" ? "28" : "23";
+  let encoderChoice: EncoderChoice;
+  if (format === "webm") {
+    encoderChoice = {
+      codec: "libvpx-vp9",
+      name: "libvpx-vp9",
+      args: ["-c:v", "libvpx-vp9", "-crf", crf, "-b:v", "0", "-row-mt", "1", "-pix_fmt", "yuv420p"],
+    };
+  } else {
+    encoderChoice = await detectBestH264Encoder(crf);
+  }
+
   const startTime = Date.now();
+  let totalRenderedFrames = 0;
+
+  // Maximize concurrency based on available CPU/GPU resources (up to 6 parallel scene workers)
+  const concurrency = Math.min(6, Math.max(1, scenes.length));
+  const isGpu = encoderChoice.codec.includes("nvenc") || encoderChoice.codec.includes("qsv");
+  const processorShort = isGpu ? "GPU" : "CPU";
+  const acceleratorLabel = `${processorShort} (${encoderChoice.name})`;
+
+  const { chromium } = await import("playwright");
+  const browser = await chromium.launch({
+    headless: true,
+    args: [
+      "--enable-gpu",
+      "--use-gl=angle",
+      "--use-angle=d3d11",
+      "--enable-accelerated-2d-canvas",
+      "--enable-accelerated-video-decode",
+      "--gpu-rasterization-msaa-sample-count=0",
+      "--disable-background-timer-throttling",
+      "--disable-renderer-backgrounding",
+      "--disable-backgrounding-occluded-windows",
+      "--no-sandbox",
+    ],
+  });
 
   try {
-    const page = await browser.newPage({ viewport: canvasFor(scenes[0] ?? ({} as VideoScene)) });
-    await installThreeJsRoutes(page, scenes.map((s) => s.device));
+    // Process scenes with concurrency pool
+    let nextSceneIndex = 0;
+    const workerPromises: Promise<void>[] = [];
+    let lastReportTime = 0;
+    let windowFrames = 0;
+    let windowStartTime = Date.now();
+    let dynamicFps = 0;
 
-    let renderedFrames = 0;
-    for (let sIdx = 0; sIdx < scenes.length; sIdx++) {
-      checkAborted();
-      const scene = scenes[sIdx];
-      await page.setViewportSize(canvasFor(scene));
-      const html = sceneHtml(scene, sourceUrisFor(project, scene, resolveUri, false), true, sourceKindsFor(project, scene), project, resolveUri, false);
-      await page.setContent(html, { waitUntil: "load" });
-
-      const sceneFrames = sceneFrameCounts[sIdx];
-      for (let f = 0; f < sceneFrames; f++) {
+    const runWorker = async () => {
+      while (true) {
         checkAborted();
-        const ms = (f / fps) * 1000;
-        await page.evaluate((t) => (window as any).seek(t), ms);
-        const framePath = path.join(framesDir, `frame_${String(frameIndex).padStart(6, "0")}.png`);
-        await page.screenshot({ path: framePath, type: "png" });
-        frameIndex++;
-        renderedFrames++;
+        const sIdx = nextSceneIndex++;
+        if (sIdx >= scenes.length) break;
 
-        const percent = Math.min(85, Math.round(2 + (renderedFrames / totalFrames) * 83));
-        const elapsedSec = (Date.now() - startTime) / 1000;
-        const currentFps = elapsedSec > 0 ? renderedFrames / elapsedSec : 0;
-        const remainingFrames = totalFrames - renderedFrames;
-        const etaSec = currentFps > 0 && renderedFrames > 20 ? Math.round(remainingFrames / currentFps) : null;
+        const scene = scenes[sIdx];
+        const sceneFrames = sceneFrameCounts[sIdx];
+        const startIndex = sceneStartIndices[sIdx];
 
-        report({
-          phase: "frames",
-          percent,
-          message: `Rendering frame ${renderedFrames} / ${totalFrames} · scene ${sIdx + 1} of ${scenes.length}`,
-          frame: renderedFrames,
-          totalFrames,
-          scene: sIdx + 1,
-          sceneCount: scenes.length,
-          fps: Math.round(currentFps),
-          etaSec,
-        });
+        const page = await browser.newPage({ viewport: canvasFor(scene) });
+        try {
+          await installThreeJsRoutes(page, [scene.device]);
+          const html = sceneHtml(
+            scene,
+            sourceUrisFor(project, scene, resolveUri, false),
+            true,
+            sourceKindsFor(project, scene),
+            project,
+            resolveUri,
+            false
+          );
+          await page.setContent(html, { waitUntil: "load" });
+          // Every template's own template.html already ships a `body.rendering
+          // .v-player-bar { display: none !important; }` rule for exactly this
+          // (its standalone play/pause/scrubber/scene-chip overlay must never end
+          // up baked into the exported frames) -- it just needs this class to
+          // actually fire. Without it every frame captured the live player chrome,
+          // which is what showed up as "flicker" (the scrubber/timer/active-chip
+          // changing frame to frame) over the actual scene content.
+          await page.evaluate(() => document.body.classList.add("rendering")).catch(() => {});
+
+          for (let f = 0; f < sceneFrames; f++) {
+            checkAborted();
+            const ms = (f / fps) * 1000;
+            await page.evaluate((t) => (window as any).seek(t), ms);
+
+            const globalFrameIndex = startIndex + f;
+            const framePath = path.join(framesDir, `frame_${String(globalFrameIndex).padStart(6, "0")}.jpg`);
+            await page.screenshot({ path: framePath, type: "jpeg", quality: 90 });
+
+            totalRenderedFrames++;
+            windowFrames++;
+
+            const now = Date.now();
+            if (now - windowStartTime >= 1000) {
+              dynamicFps = Math.round((windowFrames * 1000) / (now - windowStartTime));
+              windowFrames = 0;
+              windowStartTime = now;
+            }
+
+            // Report at most every 250ms or on the final frame
+            if (now - lastReportTime > 250 || totalRenderedFrames === totalFrames) {
+              lastReportTime = now;
+              const percent = Math.min(85, Math.round(2 + (totalRenderedFrames / totalFrames) * 83));
+              const elapsedSec = (now - startTime) / 1000;
+              const overallFps = elapsedSec > 0 ? Math.round(totalRenderedFrames / elapsedSec) : 0;
+              const activeFps = dynamicFps > 0 ? dynamicFps : overallFps;
+              const remainingFrames = totalFrames - totalRenderedFrames;
+              const etaSec = activeFps > 0 ? Math.round(remainingFrames / activeFps) : null;
+
+              report({
+                phase: "frames",
+                percent,
+                message: `Rendering frame ${totalRenderedFrames} / ${totalFrames} · scene ${sIdx + 1} of ${scenes.length}`,
+                frame: totalRenderedFrames,
+                totalFrames,
+                scene: sIdx + 1,
+                sceneCount: scenes.length,
+                fps: activeFps,
+                etaSec,
+                accelerator: processorShort,
+                encoder: encoderChoice.name,
+              });
+            }
+          }
+        } finally {
+          await page.close().catch(() => {});
+        }
       }
+    };
+
+    for (let w = 0; w < concurrency; w++) {
+      workerPromises.push(runWorker());
     }
+
+    await Promise.all(workerPromises);
   } catch (err) {
-    await browser.close();
+    await browser.close().catch(() => {});
     fs.rmSync(framesDir, { recursive: true, force: true });
     if (err instanceof RenderCancelled) throw err;
     throw err;
   } finally {
-    await browser.close();
+    await browser.close().catch(() => {});
   }
 
   checkAborted();
-  report({ phase: "encoding", percent: 86, message: "Encoding video stream..." });
+  report({
+    phase: "encoding",
+    percent: 86,
+    message: `Encoding video via ${encoderChoice.name}...`,
+    accelerator: acceleratorLabel,
+    encoder: encoderChoice.name,
+  });
 
   const rawVideoPath = path.join(outDir, `promo_raw_${Date.now()}.${format === "webm" ? "webm" : "mp4"}`);
 
@@ -1690,33 +1928,17 @@ export async function renderVideo(
   const ffmpegArgs = [
     "-y",
     "-framerate", String(fps),
-    "-i", path.join(framesDir, "frame_%06d.png"),
+    "-i", path.join(framesDir, "frame_%06d.jpg"),
   ];
 
   if (vfFilter) {
     ffmpegArgs.push("-vf", vfFilter);
   }
 
-  let crf = quality === "high" ? "18" : quality === "small" ? "28" : "23";
-
-  if (format === "webm") {
-    ffmpegArgs.push(
-      "-c:v", "libvpx-vp9",
-      "-crf", crf,
-      "-b:v", "0",
-      "-row-mt", "1",
-      "-pix_fmt", "yuv420p"
-    );
-  } else {
-    ffmpegArgs.push(
-      "-c:v", "libx264",
-      "-preset", "veryfast",
-      "-crf", crf,
-      "-pix_fmt", "yuv420p",
-      "-movflags", "+faststart"
-    );
+  ffmpegArgs.push(...encoderChoice.args);
+  if (format === "mp4") {
+    ffmpegArgs.push("-movflags", "+faststart");
   }
-
   ffmpegArgs.push(rawVideoPath);
 
   // Run FFmpeg encoding with spawn to allow cancellation & progress tracking
@@ -1757,7 +1979,17 @@ export async function renderVideo(
   let bgmPath: string | null = null;
   if (includeAudio) {
     report({ phase: "audio", percent: 93, message: "Mixing background music & audio..." });
-    bgmPath = project.bgm ? videoFile(project.id, project.bgm) : project.template ? ensureGeneratedBgm(project.template, totalSeconds) : null;
+    if (project.bgm) {
+      const candidate = videoFile(project.id, project.bgm);
+      if (fs.existsSync(candidate)) {
+        bgmPath = candidate;
+      }
+    }
+    if (!bgmPath && project.template && BGM_PRESETS[project.template]) {
+      try {
+        bgmPath = ensureGeneratedBgm(project.template, totalSeconds);
+      } catch {}
+    }
   }
 
   if (bgmPath && includeAudio) {
@@ -1788,9 +2020,13 @@ export async function renderVideo(
           reject(new RenderCancelled());
         }, { once: true });
       }
+      let audioStderr = "";
+      ff.stderr.on("data", (chunk) => {
+        audioStderr += chunk.toString();
+      });
       ff.on("close", (code) => {
         if (code === 0) resolve();
-        else reject(new Error(`FFmpeg audio mixing failed with exit code ${code}`));
+        else reject(new Error(`FFmpeg audio mixing failed with exit code ${code}: ${audioStderr.slice(-300)}`));
       });
     });
 
@@ -1803,7 +2039,7 @@ export async function renderVideo(
   fs.copyFileSync(finalVideoPath, defaultPromoPath);
 
   fs.rmSync(framesDir, { recursive: true, force: true });
-  report({ phase: "done", percent: 100, message: "Export complete!" });
+  report({ phase: "done", percent: 100, message: "Export complete!", width: targetWidth, height: targetHeight });
 
   return finalVideoPath;
 }

@@ -174,6 +174,14 @@ export interface SavedTemplateConfig {
   name: string;
   template: string;
   scenes: VideoScene[];
+  /** BGM state snapshotted at save time, so this config always plays/renders
+   *  with whatever audio was in effect when it was saved -- the default
+   *  template BGM unless the user had explicitly changed it -- regardless
+   *  of what the live project's own `bgm` later becomes. */
+  bgm?: string | null;
+  bgmVolume?: number;
+  bgmFadeInMs?: number;
+  bgmFadeOutMs?: number;
   savedAt: string;
 }
 
