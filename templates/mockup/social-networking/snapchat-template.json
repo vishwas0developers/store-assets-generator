@@ -1,0 +1,48 @@
+{
+ "version": 1,
+ "id": "snapchat-template",
+ "name": "Stories & Camera",
+ "category": "social-networking",
+ "description": "Tilted playful layout for a camera-first social app.",
+ "devices": [
+  {
+   "deviceId": "apple-iphone-16-pro-max",
+   "label": "6.9 Inch Phone"
+  }
+ ],
+ "layout": "tilted-right-title-above",
+ "background": {
+  "type": "gradient",
+  "value": "citrus"
+ },
+ "pages": [
+  {
+   "title": "Capture Moments",
+   "subtitle": "Snap and send in seconds",
+   "layout": "tilted-right-title-above",
+   "background": null,
+   "devices": null
+  },
+  {
+   "title": "Add Filters",
+   "subtitle": "Fun effects and lenses",
+   "layout": "tilted-right-title-above",
+   "background": null,
+   "devices": null
+  },
+  {
+   "title": "Share Stories",
+   "subtitle": "24-hour disappearing posts",
+   "layout": "tilted-right-title-above",
+   "background": null,
+   "devices": null
+  },
+  {
+   "title": "Chat Live",
+   "subtitle": "Message friends instantly",
+   "layout": "tilted-right-title-above",
+   "background": null,
+   "devices": null
+  }
+ ]
+}

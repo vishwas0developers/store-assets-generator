@@ -1,0 +1,52 @@
+{
+ "version": 1,
+ "id": "entertainment-app-template-1",
+ "name": "Entertainment App Template 1",
+ "category": "entertainment",
+ "description": "Two-device layout for a games and entertainment hub.",
+ "devices": [
+  {
+   "deviceId": "samsung-galaxy-s25",
+   "label": "Galaxy S25 Phone"
+  },
+  {
+   "deviceId": "apple-iphone-15-pro",
+   "label": "6.5 Inch Phone"
+  }
+ ],
+ "layout": "two-devices-connected-right-title-below",
+ "background": {
+  "type": "gradient",
+  "value": "candy"
+ },
+ "pages": [
+  {
+   "title": "Play Games",
+   "subtitle": "Hundreds of titles to explore",
+   "layout": "two-devices-connected-right-title-below",
+   "background": null,
+   "devices": null
+  },
+  {
+   "title": "Watch Clips",
+   "subtitle": "Bite-sized entertainment",
+   "layout": "two-devices-connected-right-title-below",
+   "background": null,
+   "devices": null
+  },
+  {
+   "title": "Leaderboards",
+   "subtitle": "Compete with friends",
+   "layout": "two-devices-connected-right-title-below",
+   "background": null,
+   "devices": null
+  },
+  {
+   "title": "Daily Rewards",
+   "subtitle": "Log in and earn every day",
+   "layout": "two-devices-connected-right-title-below",
+   "background": null,
+   "devices": null
+  }
+ ]
+}

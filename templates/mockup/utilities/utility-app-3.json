@@ -1,0 +1,371 @@
+{
+ "id": "utility-app-3",
+ "name": "Utility app",
+ "description": "Present your utility tools with our free template. Display app functionality, features, and settings in a clean design that focuses on simplicity and effectiveness.",
+ "category": "utilities",
+ "devices": [
+  "apple-iphone-16-pro-max",
+  "apple-iphone-14-plus",
+  "samsung-galaxy-s21-ultra"
+ ],
+ "isPaid": false,
+ "designHeight": 2347,
+ "layout": "single-no-text",
+ "background": {
+  "type": "gradient",
+  "value": "linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)"
+ },
+ "textColor": "#0f172a",
+ "columnCount": 5,
+ "pages": [
+  {
+   "title": "Discover Unique Handcrafted Treasures",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t2",
+     "xPct": 4.545,
+     "yPct": 3.657,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Discover Unique\nHandcrafted Treasures",
+      "color": "#0f172a",
+      "size": 78.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.15
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s1",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -17.5,
+     "yPct": 14.017,
+     "widthPct": 135.0,
+     "heightPct": 117.335,
+     "rotation": 0,
+     "opacity": 0.15,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 594,
+      "h": 1121.73,
+      "radius": 144.0,
+      "fill": "#000000",
+      "blur": 24,
+      "inset": 72
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 75.31,
+    "x": 0.0,
+    "y": 21.57,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#0f172a",
+    "borderColor": "#0f172a",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Curated Collections",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t4",
+     "xPct": 4.545,
+     "yPct": 3.461,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Curated Collections\nFor Every Style",
+      "color": "#0f172a",
+      "size": 83.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.15
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s3",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -17.5,
+     "yPct": 14.017,
+     "widthPct": 135.0,
+     "heightPct": 117.335,
+     "rotation": 0,
+     "opacity": 0.15,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 594,
+      "h": 1121.73,
+      "radius": 144.0,
+      "fill": "#000000",
+      "blur": 24,
+      "inset": 72
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 75.31,
+    "x": 0.0,
+    "y": 21.57,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#0f172a",
+    "borderColor": "#0f172a",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Shop Local Art",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t6",
+     "xPct": 4.545,
+     "yPct": 3.461,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Shop\nLocal Art",
+      "color": "#0f172a",
+      "size": 83.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.15
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s5",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -17.5,
+     "yPct": 14.017,
+     "widthPct": 135.0,
+     "heightPct": 117.335,
+     "rotation": 0,
+     "opacity": 0.15,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 594,
+      "h": 1121.73,
+      "radius": 144.0,
+      "fill": "#000000",
+      "blur": 24,
+      "inset": 72
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 75.31,
+    "x": 0.0,
+    "y": 21.57,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#0f172a",
+    "borderColor": "#0f172a",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Easy Tracking",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t8",
+     "xPct": 4.545,
+     "yPct": 3.461,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Easy\nTracking",
+      "color": "#0f172a",
+      "size": 83.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.15
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s7",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -17.5,
+     "yPct": 14.017,
+     "widthPct": 135.0,
+     "heightPct": 117.335,
+     "rotation": 0,
+     "opacity": 0.15,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 594,
+      "h": 1121.73,
+      "radius": 144.0,
+      "fill": "#000000",
+      "blur": 24,
+      "inset": 72
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 75.31,
+    "x": 0.0,
+    "y": 21.57,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#0f172a",
+    "borderColor": "#0f172a",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Secure Shopping",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t10",
+     "xPct": 4.545,
+     "yPct": 3.461,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Secure\nShopping",
+      "color": "#0f172a",
+      "size": 83.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.15
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s9",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -17.5,
+     "yPct": 14.017,
+     "widthPct": 135.0,
+     "heightPct": 117.335,
+     "rotation": 0,
+     "opacity": 0.15,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 594,
+      "h": 1121.73,
+      "radius": 144.0,
+      "fill": "#000000",
+      "blur": 24,
+      "inset": 72
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 75.31,
+    "x": 0.0,
+    "y": 21.57,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#0f172a",
+    "borderColor": "#0f172a",
+    "zIndex": 10
+   }
+  }
+ ],
+ "titles": [
+  "Discover Unique Handcrafted Treasures",
+  "Curated Collections",
+  "Shop Local Art",
+  "Easy Tracking",
+  "Secure Shopping"
+ ],
+ "subtitles": [
+  "",
+  "",
+  "",
+  "",
+  ""
+ ]
+}

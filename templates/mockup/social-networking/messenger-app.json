@@ -1,0 +1,299 @@
+{
+ "id": "messenger-app",
+ "name": "Messenger App",
+ "category": "social-networking",
+ "description": "Modern social messaging app store screenshots with vibrant continuous gradient background.",
+ "devices": [
+  "apple-iphone-16-pro-max"
+ ],
+ "columnCount": 4,
+ "pages": [
+  {
+   "title": "Useful.\nSocial.\nExpressive.",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(135deg, #2b6bf5 0%, #4362f6 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t2",
+     "xPct": 6.818,
+     "yPct": 3.127,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Useful.\nSocial.\nExpressive.",
+      "color": "#ffffff",
+      "size": 93.3,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.12
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s1",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -20.227,
+     "yPct": 22.176,
+     "widthPct": 140.455,
+     "heightPct": 119.846,
+     "rotation": 0,
+     "opacity": 0.22,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 618,
+      "h": 1145.73,
+      "radius": 156.0,
+      "fill": "#000000",
+      "blur": 28,
+      "inset": 84
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 75.31,
+    "x": 0.0,
+    "y": 30.77,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#ffffff",
+    "borderColor": "#ffffff",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Bring your vibe\nto your chats",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(135deg, #4b5df7 0%, #6f4ff7 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t4",
+     "xPct": 4.545,
+     "yPct": 3.461,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Bring your vibe\nto your chats",
+      "color": "#ffffff",
+      "size": 83.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.15
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s3",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -20.227,
+     "yPct": 12.762,
+     "widthPct": 140.455,
+     "heightPct": 119.846,
+     "rotation": 0,
+     "opacity": 0.22,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 618,
+      "h": 1145.73,
+      "radius": 156.0,
+      "fill": "#000000",
+      "blur": 28,
+      "inset": 84
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 75.31,
+    "x": 0.0,
+    "y": 21.57,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#ffffff",
+    "borderColor": "#ffffff",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Hang out anytime,\nanywhere",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(135deg, #744df8 0%, #a13bf7 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t6",
+     "xPct": 4.545,
+     "yPct": 3.461,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Hang out anytime,\nanywhere",
+      "color": "#ffffff",
+      "size": 83.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.15
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s5",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -20.227,
+     "yPct": 12.762,
+     "widthPct": 140.455,
+     "heightPct": 119.846,
+     "rotation": 0,
+     "opacity": 0.22,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 618,
+      "h": 1145.73,
+      "radius": 156.0,
+      "fill": "#000000",
+      "blur": 28,
+      "inset": 84
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 75.31,
+    "x": 0.0,
+    "y": 21.57,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#ffffff",
+    "borderColor": "#ffffff",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Get instant answers\nwith your AI assistant",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(135deg, #a73af7 0%, #cc2ef6 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t8",
+     "xPct": 4.545,
+     "yPct": 3.461,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Get instant answers\nwith your AI assistant",
+      "color": "#ffffff",
+      "size": 83.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.15
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s7",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -20.227,
+     "yPct": 12.762,
+     "widthPct": 140.455,
+     "heightPct": 119.846,
+     "rotation": 0,
+     "opacity": 0.22,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 618,
+      "h": 1145.73,
+      "radius": 156.0,
+      "fill": "#000000",
+      "blur": 28,
+      "inset": 84
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 75.31,
+    "x": 0.0,
+    "y": 21.57,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#ffffff",
+    "borderColor": "#ffffff",
+    "zIndex": 10
+   }
+  }
+ ],
+ "designHeight": 2347,
+ "layout": "single-no-text",
+ "background": {
+  "type": "gradient",
+  "value": "linear-gradient(135deg, #2b6bf5 0%, #4362f6 100%)"
+ },
+ "textColor": "#111111",
+ "titles": [
+  "Useful.\nSocial.\nExpressive.",
+  "Bring your vibe\nto your chats",
+  "Hang out anytime,\nanywhere",
+  "Get instant answers\nwith your AI assistant"
+ ],
+ "subtitles": [
+  "",
+  "",
+  "",
+  ""
+ ]
+}

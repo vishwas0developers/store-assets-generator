@@ -1,0 +1,130 @@
+{
+ "version": 1,
+ "id": "books-app-template-1",
+ "name": "Books app",
+ "category": "books",
+ "description": "Present your reading app with our free template. Display your digital library, reading features, and book collections in an elegant design that enhances the reading experience.",
+ "devices": [
+  {
+   "deviceId": "apple-iphone-16-pro-max",
+   "label": "apple-iphone-16-pro-max"
+  },
+  {
+   "deviceId": "apple-iphone-14-plus",
+   "label": "apple-iphone-14-plus"
+  },
+  {
+   "deviceId": "samsung-galaxy-s21-ultra",
+   "label": "samsung-galaxy-s21-ultra"
+  }
+ ],
+ "layout": "snapshot-single-title-above",
+ "background": {
+  "type": "gradient",
+  "value": "linear-gradient(135deg, #ece9e6, #ded7d3)"
+ },
+ "panoramic": false,
+ "columnCount": 8,
+ "titles": [
+  "Write your\ntitle here",
+  "Write your\ntitle here",
+  "Write your\ntitle here",
+  "Write your\ntitle here",
+  "Write your\ntitle here",
+  "Write your\ntitle here",
+  "Write your\ntitle here",
+  "Write your\ntitle here"
+ ],
+ "subtitles": [
+  "Present your reading app with our free t",
+  "Present your reading app with our free t",
+  "Present your reading app with our free t",
+  "Present your reading app with our free t",
+  "Present your reading app with our free t",
+  "Present your reading app with our free t",
+  "Present your reading app with our free t",
+  "Present your reading app with our free t"
+ ],
+ "pages": [
+  {
+   "title": "Write your\ntitle here",
+   "subtitle": "Present your reading app with our free t",
+   "layout": "snapshot-single-title-above",
+   "background": null,
+   "devices": null,
+   "decorations": [],
+   "textLayers": [],
+   "assetLayers": []
+  },
+  {
+   "title": "Write your\ntitle here",
+   "subtitle": "Present your reading app with our free t",
+   "layout": "snapshot-single-title-above",
+   "background": null,
+   "devices": null,
+   "decorations": [],
+   "textLayers": [],
+   "assetLayers": []
+  },
+  {
+   "title": "Write your\ntitle here",
+   "subtitle": "Present your reading app with our free t",
+   "layout": "snapshot-single-title-above",
+   "background": null,
+   "devices": null,
+   "decorations": [],
+   "textLayers": [],
+   "assetLayers": []
+  },
+  {
+   "title": "Write your\ntitle here",
+   "subtitle": "Present your reading app with our free t",
+   "layout": "snapshot-single-title-above",
+   "background": null,
+   "devices": null,
+   "decorations": [],
+   "textLayers": [],
+   "assetLayers": []
+  },
+  {
+   "title": "Write your\ntitle here",
+   "subtitle": "Present your reading app with our free t",
+   "layout": "snapshot-single-title-above",
+   "background": null,
+   "devices": null,
+   "decorations": [],
+   "textLayers": [],
+   "assetLayers": []
+  },
+  {
+   "title": "Write your\ntitle here",
+   "subtitle": "Present your reading app with our free t",
+   "layout": "snapshot-single-title-above",
+   "background": null,
+   "devices": null,
+   "decorations": [],
+   "textLayers": [],
+   "assetLayers": []
+  },
+  {
+   "title": "Write your\ntitle here",
+   "subtitle": "Present your reading app with our free t",
+   "layout": "snapshot-single-title-above",
+   "background": null,
+   "devices": null,
+   "decorations": [],
+   "textLayers": [],
+   "assetLayers": []
+  },
+  {
+   "title": "Write your\ntitle here",
+   "subtitle": "Present your reading app with our free t",
+   "layout": "snapshot-single-title-above",
+   "background": null,
+   "devices": null,
+   "decorations": [],
+   "textLayers": [],
+   "assetLayers": []
+  }
+ ]
+}

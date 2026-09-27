@@ -1,0 +1,55 @@
+{
+ "version": 1,
+ "id": "netflix-template",
+ "name": "Streaming Video",
+ "category": "entertainment",
+ "description": "Bold dark layout for a video/movie streaming app.",
+ "devices": [
+  {
+   "deviceId": "ipad-pro-12-9",
+   "label": "12.9 Inch Tablet"
+  }
+ ],
+ "layout": "single-title-above",
+ "background": {
+  "type": "solid",
+  "value": "solid-indigo"
+ },
+ "pages": [
+  {
+   "title": "Watch Anywhere",
+   "subtitle": "Stream on any screen",
+   "layout": "single-title-above",
+   "background": null,
+   "devices": null
+  },
+  {
+   "title": "New Releases",
+   "subtitle": "Fresh titles every week",
+   "layout": "single-title-above",
+   "background": null,
+   "devices": null
+  },
+  {
+   "title": "Download Offline",
+   "subtitle": "Take shows on the go",
+   "layout": "single-title-above",
+   "background": null,
+   "devices": null
+  },
+  {
+   "title": "Multiple Profiles",
+   "subtitle": "One account, every viewer",
+   "layout": "single-title-above",
+   "background": null,
+   "devices": null
+  },
+  {
+   "title": "4K Streaming",
+   "subtitle": "Crisp picture, every time",
+   "layout": "single-title-above",
+   "background": null,
+   "devices": null
+  }
+ ]
+}

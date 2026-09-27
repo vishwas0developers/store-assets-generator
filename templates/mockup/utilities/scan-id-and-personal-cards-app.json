@@ -1,0 +1,111 @@
+{
+ "version": 1,
+ "id": "scan-id-and-personal-cards-app",
+ "name": "Scan ID and personal cards app",
+ "category": "utilities",
+ "description": "Showcase your document scanning app with our secure template. Display ID card scanning, document digitization, and secure storage features in a professional design that emphasizes privacy, accuracy, and digital organization.",
+ "devices": [
+  {
+   "deviceId": "apple-iphone-16-pro-max",
+   "label": "apple-iphone-16-pro-max"
+  },
+  {
+   "deviceId": "apple-iphone-13-pro-max",
+   "label": "apple-iphone-13-pro-max"
+  },
+  {
+   "deviceId": "samsung-galaxy-s21-ultra",
+   "label": "samsung-galaxy-s21-ultra"
+  },
+  {
+   "deviceId": "apple-ipad-pro-12-9-inch",
+   "label": "apple-ipad-pro-12-9-inch"
+  },
+  {
+   "deviceId": "samsung-galaxy-tab-s7",
+   "label": "samsung-galaxy-tab-s7"
+  }
+ ],
+ "layout": "the-airbnb-left-1-title-above",
+ "background": {
+  "type": "gradient",
+  "value": "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)"
+ },
+ "panoramic": false,
+ "columnCount": 5,
+ "titles": [
+  "Front of card",
+  "connect and control your",
+  "Capture moments with",
+  "Advanced document",
+  "© comproiggy [0] COMPANY"
+ ],
+ "subtitles": [
+  "re ana rama ay cover &",
+  "home accessories",
+  "interactive filters & lenses",
+  "scanning for reliable identity",
+  "=) Junie frvpnae"
+ ],
+ "pages": [
+  {
+   "title": "Front of card",
+   "subtitle": "re ana rama ay cover &",
+   "layout": "the-airbnb-left-1-title-above",
+   "background": null,
+   "devices": null,
+   "decorations": [],
+   "textLayers": [],
+   "assetLayers": []
+  },
+  {
+   "title": "connect and control your",
+   "subtitle": "home accessories",
+   "layout": "tilted-right-title-above",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [],
+   "assetLayers": []
+  },
+  {
+   "title": "Capture moments with",
+   "subtitle": "interactive filters & lenses",
+   "layout": "single-title-above",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [],
+   "assetLayers": []
+  },
+  {
+   "title": "Advanced document",
+   "subtitle": "scanning for reliable identity",
+   "layout": "rotated-left-1-title-above",
+   "background": null,
+   "devices": null,
+   "decorations": [],
+   "textLayers": [],
+   "assetLayers": []
+  },
+  {
+   "title": "© comproiggy [0] COMPANY",
+   "subtitle": "=) Junie frvpnae",
+   "layout": "two-devices-title-above",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [],
+   "assetLayers": []
+  }
+ ]
+}
