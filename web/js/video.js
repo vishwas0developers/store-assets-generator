@@ -2198,6 +2198,35 @@ export function openExportModal({ title, subject, startUrl, project, configId, d
     return formatSegs?.querySelector(".export-segment.active")?.dataset.value || "mp4";
   }
 
+  // Shows which GPU/CPU will actually do the encoding for the currently selected
+  // format -- not a forced choice, just what renderVideo's own hardware probe
+  // (NVENC -> QSV -> libx264) finds, mirrored via /api/render-hardware. WebM has
+  // no hardware path here (always software libvpx-vp9), so that one resolves
+  // instantly with no probe; MP4 probes real hardware, which the server caches
+  // after its first call.
+  let hardwareReqId = 0;
+  async function refreshHardwareBox() {
+    const box = $("export-hardware-box");
+    const text = $("export-hardware-text");
+    if (!box) return;
+    const fmt = getSelectedFormat();
+    const reqId = ++hardwareReqId;
+    box.classList.remove("gpu", "error");
+    if (text) text.textContent = "Detecting...";
+    try {
+      const res = await fetch(`/api/render-hardware?format=${fmt}`);
+      if (reqId !== hardwareReqId) return; // format changed again before this resolved
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || "Detection failed");
+      box.classList.toggle("gpu", data.accelerator === "GPU");
+      if (text) text.textContent = `${data.accelerator} — ${data.encoder}`;
+    } catch (e) {
+      if (reqId !== hardwareReqId) return;
+      box.classList.add("error");
+      if (text) text.textContent = "Could not detect (will fall back to CPU)";
+    }
+  }
+
   function applyPreset(presetId) {
     selectedPreset = presetId;
     presetChips?.querySelectorAll(".export-chip").forEach((chip) => {
@@ -2261,6 +2290,7 @@ export function openExportModal({ title, subject, startUrl, project, configId, d
     seg.onclick = () => {
       setFormat(seg.dataset.value);
       markCustomPreset();
+      refreshHardwareBox();
     };
   });
 
@@ -2296,6 +2326,7 @@ export function openExportModal({ title, subject, startUrl, project, configId, d
 
   setModalState("config");
   applyPreset("app-store");
+  refreshHardwareBox();
   backdrop.style.display = "flex";
   backdrop.classList.add("open");
   exportModalLocked = false;

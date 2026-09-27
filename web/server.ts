@@ -110,7 +110,7 @@ import {
   videoFile,
   type VideoExportRecord,
 } from "../src/video/project.js";
-import { ensureGeneratedBgm, listSceneAnimations, listSceneLayouts, listVideoBackgrounds, renderVideo, RenderCancelled, type RenderOptions, type RenderProgress, renderVideoTemplateThumbs, sceneHtml, scenePreviewHtml, sourceKindsFor, sourceUrisFor, templatePreviewHtml } from "../src/video/render.js";
+import { detectBestH264Encoder, ensureGeneratedBgm, listSceneAnimations, listSceneLayouts, listVideoBackgrounds, renderVideo, RenderCancelled, type RenderOptions, type RenderProgress, renderVideoTemplateThumbs, sceneHtml, scenePreviewHtml, sourceKindsFor, sourceUrisFor, templatePreviewHtml } from "../src/video/render.js";
 import { EXPORT_PRESETS } from "../src/video/exportPresets.js";
 import { VIDEO_TEMPLATES, applyVideoTemplate, resolveTemplateId, scratchVideoProject, loadAllTemplates } from "../src/video/templates.js";
 import { BGM_PRESETS, renderBgmWav } from "../src/video/bgm.js";
@@ -2309,6 +2309,23 @@ export async function startWebServer(options: { port?: number; host?: string; op
         sendJson(res, 200, { ok: true, bgm: relPath });
         return;
       }
+    }
+
+    if (method === "GET" && p === "/api/render-hardware") {
+      // Same probe renderVideo itself runs (NVENC -> QSV -> libx264), cached after
+      // the first call -- lets the export modal show which GPU/CPU will actually
+      // do the work before the user commits to starting a render. WebM has no
+      // hardware path in this renderer (always libvpx-vp9, software), so it's
+      // answered directly without a probe.
+      const format = url.searchParams.get("format") === "webm" ? "webm" : "mp4";
+      if (format === "webm") {
+        sendJson(res, 200, { accelerator: "CPU", encoder: "libvpx-vp9 (CPU)" });
+        return;
+      }
+      const choice = await detectBestH264Encoder("23");
+      const accelerator = choice.codec.includes("nvenc") || choice.codec.includes("qsv") ? "GPU" : "CPU";
+      sendJson(res, 200, { accelerator, encoder: choice.name });
+      return;
     }
 
     if (method === "GET" && p === "/api/video-export-presets") {
