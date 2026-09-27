@@ -768,6 +768,11 @@ function scTransportStop() {
   scTransport.playing = false;
   if (scTransport.timer) clearInterval(scTransport.timer);
   scTransport.timer = null;
+  try {
+    $("sc-preview")?.contentWindow?.__bgmAudio?.pause();
+  } catch {
+    // Frame loading or cross-origin
+  }
   const btn = $("sc-tr-play");
   if (btn) {
     if (scTransport.elapsedMs >= scTransport.durationMs) {
@@ -787,6 +792,18 @@ function scTransportPlay() {
   if (btn) {
     btn.innerHTML = "&#9208;";
     btn.title = "Pause";
+  }
+  // This transport drives the scene by calling only .seek() on its own manual
+  // interval below (never the iframe's .play(), which would start that document's
+  // own animation loop fighting this frame-stepping) -- so the scene's background
+  // music has to be started here directly instead. .seek() already keeps its
+  // currentTime in sync (see composeStandaloneHtml's window.seek wrapper), so once
+  // started it plays in step with the scene for exactly the scene's own duration,
+  // and scTransportStop() (reached at the scene's end or on pause) stops it again.
+  try {
+    $("sc-preview")?.contentWindow?.__bgmAudio?.play().catch(() => {});
+  } catch {
+    // Frame loading or cross-origin
   }
   const stepMs = 1000 / 30;
   let lastTime = performance.now();
@@ -2488,6 +2505,13 @@ export function openExportModal({ title, subject, startUrl, project, configId, d
       if ($("export-metric-fps")) $("export-metric-fps").textContent = "Speed: -- fps";
     }
 
+    if ($("export-metric-accelerator")) {
+      const acc = (p.accelerator || "GPU").toUpperCase();
+      const shortBadge = acc.includes("CPU") ? "CPU" : "GPU";
+      $("export-metric-accelerator").textContent = shortBadge;
+      $("export-metric-accelerator").title = p.accelerator || shortBadge;
+    }
+
     const phases = ["preparing", "frames", "encoding", "audio", "done"];
     const currentPhaseIdx = phases.indexOf(p.phase);
     const phasesList = $("export-phases-list");
@@ -2535,18 +2559,35 @@ export function openExportModal({ title, subject, startUrl, project, configId, d
       `;
     }
 
+    const triggerDownload = (url, name) => {
+      const a = document.createElement("a");
+      a.href = url;
+      if (name) a.download = name;
+      a.style.display = "none";
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => a.remove(), 100);
+    };
+
     const downloadBtn = $("export-btn-download");
     if (downloadBtn) {
       downloadBtn.onclick = () => {
-        window.open(`${fileUrl}?download=1`, "_blank");
+        triggerDownload(`${fileUrl}?download=1`, job.fileName || `promo.${job.format || "mp4"}`);
+        showToast("Video downloaded successfully.", "success");
+        tryClose();
       };
     }
 
     const openTabBtn = $("export-btn-open-tab");
     if (openTabBtn) {
-      openTabBtn.onclick = () => {
-        window.open(fileUrl, "_blank");
-      };
+      if (isElectron) {
+        openTabBtn.style.display = "none";
+      } else {
+        openTabBtn.style.display = "inline-block";
+        openTabBtn.onclick = () => {
+          window.open(fileUrl, "_blank");
+        };
+      }
     }
 
     const showFolderBtn = $("export-btn-show-folder");
@@ -2660,10 +2701,21 @@ export async function refreshRecentExportsList() {
       btn.onclick = () => window.electronNative.invoke("show-in-folder", btn.dataset.path);
     });
     list.querySelectorAll('[data-act="open-export"]').forEach((btn) => {
-      btn.onclick = () => window.open(btn.dataset.url, "_blank");
+      if (isElectron) {
+        btn.style.display = "none";
+      } else {
+        btn.onclick = () => window.open(btn.dataset.url, "_blank");
+      }
     });
     list.querySelectorAll('[data-act="download-export"]').forEach((btn) => {
-      btn.onclick = () => window.open(btn.dataset.url, "_blank");
+      btn.onclick = () => {
+        const a = document.createElement("a");
+        a.href = btn.dataset.url;
+        a.style.display = "none";
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => a.remove(), 100);
+      };
     });
     list.querySelectorAll('[data-act="delete-export"]').forEach((btn) => {
       btn.onclick = async () => {

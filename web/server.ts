@@ -110,7 +110,7 @@ import {
   videoFile,
   type VideoExportRecord,
 } from "../src/video/project.js";
-import { listSceneAnimations, listSceneLayouts, listVideoBackgrounds, renderVideo, RenderCancelled, type RenderOptions, type RenderProgress, renderVideoTemplateThumbs, sceneHtml, scenePreviewHtml, sourceKindsFor, sourceUrisFor, templatePreviewHtml } from "../src/video/render.js";
+import { ensureGeneratedBgm, listSceneAnimations, listSceneLayouts, listVideoBackgrounds, renderVideo, RenderCancelled, type RenderOptions, type RenderProgress, renderVideoTemplateThumbs, sceneHtml, scenePreviewHtml, sourceKindsFor, sourceUrisFor, templatePreviewHtml } from "../src/video/render.js";
 import { EXPORT_PRESETS } from "../src/video/exportPresets.js";
 import { VIDEO_TEMPLATES, applyVideoTemplate, resolveTemplateId, scratchVideoProject, loadAllTemplates } from "../src/video/templates.js";
 import { BGM_PRESETS, renderBgmWav } from "../src/video/bgm.js";
@@ -233,6 +233,8 @@ function startRenderJob(project: any, opts: RenderOptions = {}, meta: { configId
         renderOpts,
         (progress) => {
           job.progress = { ...progress };
+          if (progress.width) job.width = progress.width;
+          if (progress.height) job.height = progress.height;
         }
       );
 
@@ -1833,6 +1835,24 @@ export async function startWebServer(options: { port?: number; host?: string; op
       }
     }
 
+    {
+      // Deterministic, per-template generated BGM track -- the same one renderVideo
+      // falls back to when a project has no BGM upload of its own. Purely a function
+      // of the template id (no project/ownership scoping needed): serves the cached
+      // wav, generating it on first request. This is what lets the interactive
+      // preview (Editing section / Saved Templates / Template picker) actually play
+      // the default background music instead of the export-only ffmpeg mix being the
+      // only place it's ever heard.
+      const m = p.match(/^\/api\/bgm-presets\/([^/]+)$/);
+      if (m && method === "GET") {
+        const templateId = decodeURIComponent(m[1]);
+        if (!BGM_PRESETS[templateId]) return sendError(res, 404, `No BGM preset for template '${templateId}'.`);
+        const wavPath = ensureGeneratedBgm(templateId, 60);
+        sendFileRanged(req, res, wavPath, "audio/wav");
+        return;
+      }
+    }
+
     if (method === "GET" && p === "/api/videos/templates") {
       loadAllTemplates();
       sendJson(res, 200, { templates: VIDEO_TEMPLATES });
@@ -2057,6 +2077,14 @@ export async function startWebServer(options: { port?: number; host?: string; op
           name,
           template: project.template,
           scenes: JSON.parse(JSON.stringify(project.scenes)),
+          // Snapshot whatever BGM is in effect right now -- the template's own
+          // default if the user never touched it, or their explicit choice if
+          // they did -- so this saved config keeps that audio forever, even if
+          // the live project's bgm changes later.
+          bgm: project.bgm,
+          bgmVolume: project.bgmVolume,
+          bgmFadeInMs: project.bgmFadeInMs,
+          bgmFadeOutMs: project.bgmFadeOutMs,
           savedAt: new Date().toISOString(),
         };
         if (existing) {
@@ -2079,6 +2107,10 @@ export async function startWebServer(options: { port?: number; host?: string; op
         if (!cfg) return sendError(res, 404, "Saved configuration not found");
         project.template = cfg.template;
         project.scenes = JSON.parse(JSON.stringify(cfg.scenes));
+        project.bgm = cfg.bgm ?? null;
+        project.bgmVolume = cfg.bgmVolume;
+        project.bgmFadeInMs = cfg.bgmFadeInMs;
+        project.bgmFadeOutMs = cfg.bgmFadeOutMs;
         saveVideoProject(project);
         sendJson(res, 200, project);
         return;
@@ -2108,6 +2140,10 @@ export async function startWebServer(options: { port?: number; host?: string; op
           ...project,
           template: cfg.template,
           scenes: JSON.parse(JSON.stringify(cfg.scenes)),
+          bgm: cfg.bgm ?? null,
+          bgmVolume: cfg.bgmVolume,
+          bgmFadeInMs: cfg.bgmFadeInMs,
+          bgmFadeOutMs: cfg.bgmFadeOutMs,
         };
         res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
         res.end(templatePreviewHtml(overrideProject));
@@ -2128,6 +2164,10 @@ export async function startWebServer(options: { port?: number; host?: string; op
           ...project,
           template: cfg.template,
           scenes: JSON.parse(JSON.stringify(cfg.scenes)),
+          bgm: cfg.bgm ?? null,
+          bgmVolume: cfg.bgmVolume,
+          bgmFadeInMs: cfg.bgmFadeInMs,
+          bgmFadeOutMs: cfg.bgmFadeOutMs,
         };
         const preflight = validateProject(overrideProject as any);
         if (!preflight.ready) {

@@ -98,6 +98,16 @@ function createWindow() {
 
   mainWindow.loadURL(`http://127.0.0.1:${serverPort}`);
 
+  // Prevent window.open or target="_blank" from spawning blank native windows
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      if (!url.startsWith(`http://127.0.0.1:${serverPort}`)) {
+        shell.openExternal(url);
+      }
+    }
+    return { action: 'deny' };
+  });
+
   mainWindow.on('closed', () => {
     mainWindow = null;
   });

@@ -164,9 +164,10 @@ export function applyVideoTemplate(project: VideoProject, templateId: string): v
   const isLandscape = template.aspectRatio === "16:9";
 
   project.template = resolvedId;
-  if (!project.bgm) {
-    project.bgm = "bgm_chill";
-  }
+  // ponytail: leave project.bgm unset here -- render/preview already fall back to
+  // the template's own generated BGM preset (BGM_PRESETS) whenever it's null, so
+  // there's nothing to default it to here. A prior "bgm_chill" sentinel did not
+  // correspond to any real file or preset id and only obscured that fallback.
 
   project.scenes = template.scenes.map((s, i): VideoScene => {
     const count = isDevicePreset && s.screenCount && s.screenCount > 1 ? s.screenCount : 1;
