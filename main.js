@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, session } from 'electron';
+import { app, BrowserWindow, ipcMain, session, dialog, shell } from 'electron';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
@@ -118,6 +118,27 @@ app.whenReady().then(async () => {
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
+  });
+
+  ipcMain.handle('choose-save-path', async (event, { defaultName, ext } = {}) => {
+    if (!mainWindow) return null;
+    const filters = ext === 'webm'
+      ? [{ name: 'WebM Video', extensions: ['webm'] }]
+      : [{ name: 'MP4 Video', extensions: ['mp4'] }];
+    const result = await dialog.showSaveDialog(mainWindow, {
+      defaultPath: defaultName || `video.${ext || 'mp4'}`,
+      filters,
+    });
+    if (result.canceled || !result.filePath) return null;
+    return result.filePath;
+  });
+
+  ipcMain.handle('show-in-folder', async (event, targetPath) => {
+    if (targetPath && typeof targetPath === 'string') {
+      shell.showItemInFolder(targetPath);
+      return true;
+    }
+    return false;
   });
 });
 

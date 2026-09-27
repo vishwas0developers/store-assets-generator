@@ -120,6 +120,21 @@ export type SlotValue =
    *  and in the frame-captured final video. */
   | { kind: "imageSequence"; segments: { sourceId: string | null; durationSec: number }[] };
 
+export interface VideoExportRecord {
+  id: string;
+  fileName: string;
+  format: "mp4" | "webm";
+  width: number;
+  height: number;
+  fps: number;
+  durationSec: number;
+  sizeBytes: number;
+  sceneRange?: [number, number];
+  configId?: string;
+  savedPath?: string;
+  createdAt: string;
+}
+
 export interface VideoProject {
   id: string;
   createdAt: string;
@@ -150,6 +165,8 @@ export interface VideoProject {
    *  someone keep several fully-configured variants of a project side by
    *  side without losing whichever one is currently loaded. */
   savedConfigs?: SavedTemplateConfig[];
+  /** Recent video exports history (up to 20 newest). */
+  exports?: VideoExportRecord[];
 }
 
 export interface SavedTemplateConfig {

@@ -118,11 +118,38 @@ html.light {
   --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.12);
 }
 
-* { box-sizing: border-box; }
-html, body { margin: 0; height: 100%; font-family: -apple-system, Segoe UI, Roboto, sans-serif; background: var(--bg-main); color: var(--text-primary); transition: background-color 0.2s, color 0.2s; }
+* {
+  box-sizing: border-box;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+*::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+html, body {
+  margin: 0;
+  height: 100%;
+  font-family: -apple-system, Segoe UI, Roboto, sans-serif;
+  background: var(--bg-main);
+  color: var(--text-primary);
+  transition: background-color 0.2s, color 0.2s;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
 
 /* Desktop + large-tablet only -- this is a workstation app, not a phone app. */
-body { min-width: 1180px; overflow-x: auto; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+body {
+  min-width: 1180px;
+  overflow-x: auto;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
 
 /* ---------- Top bar (always visible, 3 tabs + icon buttons) ---------- */
 .topbar {
@@ -244,22 +271,13 @@ pre { background: var(--bg-main); border: 1px solid var(--border-subtle); border
   min-height: 0;
   height: 0;
   margin-top: 0.5rem;
-  scrollbar-width: thin;
-  scrollbar-color: var(--border-subtle) transparent;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 .mockup-page-previews-scroll::-webkit-scrollbar {
-  height: 6px;
-  display: block !important;
-}
-.mockup-page-previews-scroll::-webkit-scrollbar-track {
-  background: transparent;
-}
-.mockup-page-previews-scroll::-webkit-scrollbar-thumb {
-  background: var(--border-subtle);
-  border-radius: 4px;
-}
-.mockup-page-previews-scroll::-webkit-scrollbar-thumb:hover {
-  background: var(--text-secondary);
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }
 .matrix { border-collapse: separate; border-spacing: 0; min-width: 100%; width: max-content; }
 .matrix th, .matrix td { border-right: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle); vertical-align: middle; text-align: center; }
@@ -2446,6 +2464,525 @@ html.light .custom-app-select option {
   0% { opacity: 1; transform: translate(-50%, -50%) scale(0.2); }
   100% { opacity: 0; transform: translate(-50%, -50%) scale(1.4); }
 }
+
+/* ==========================================================================
+   VIDEO EXPORT MODAL STYLES (Theme-adaptive & Software-styled)
+   ========================================================================== */
+
+/* ── Export modal backdrop: override base .modal-backdrop which has
+   overflow-y:auto / align-items:flex-start — those are the root cause
+   of the visible OS scrollbar on the right side of the screen. ── */
+.export-modal-backdrop {
+  position: fixed !important;
+  inset: 0 !important;
+  overflow: hidden !important;        /* ← kills the scrollbar */
+  align-items: center !important;     /* ← centres the modal vertically */
+  justify-content: center !important;
+  padding: 0 !important;              /* ← no padding that could cause overflow */
+  z-index: 1200 !important;
+  /* display is controlled by .open below */
+}
+
+.export-modal-backdrop:not(.open) {
+  display: none !important;
+}
+
+.export-modal-backdrop.open {
+  display: flex !important;
+}
+
+/* Hide any hypothetical scrollbar on the backdrop or modal itself */
+.export-modal-backdrop::-webkit-scrollbar,
+.export-modal::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+.export-modal {
+  max-width: 640px !important;
+  width: calc(100% - 2rem) !important;
+  max-height: calc(100vh - 4rem) !important; /* keep the modal within the viewport */
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-medium) !important;
+  border-radius: 12px !important;
+  box-shadow: var(--shadow-lg) !important;
+  color: var(--text-primary) !important;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden !important;          /* clips children — never scrolls */
+}
+
+.export-modal .modal-header {
+  padding: 1.1rem 1.25rem 0.75rem 1.25rem !important;
+  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: 0 !important;
+  flex-shrink: 0;
+}
+
+.export-modal #export-modal-title {
+  color: var(--text-primary);
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.export-modal #export-modal-subject {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  margin: 0.2rem 0 0 0;
+}
+
+.export-modal .close-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1.35rem;
+  line-height: 1;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  margin: 0;
+  padding: 0;
+}
+
+.export-modal .close-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+/* Scrollable body — hidden scrollbar so mouse-wheel / trackpad still work */
+.export-modal-body {
+  padding: 1.25rem !important;
+  flex: 1 1 auto;                     /* fill remaining modal height */
+  min-height: 0;                      /* required for flex overflow to work */
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+.export-modal-body::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+.export-form-group {
+  margin-bottom: 1.1rem;
+}
+
+.export-label {
+  display: block;
+  font-weight: 700;
+  font-size: 0.76rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.45rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.export-input,
+.export-select {
+  width: 100%;
+  padding: 0.55rem 0.75rem;
+  background: var(--bg-input);
+  border: 1px solid var(--border-medium);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.export-input:focus,
+.export-select:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 2px var(--accent-subtle);
+}
+
+.export-input::placeholder {
+  color: var(--text-muted);
+}
+
+.export-ext-badge {
+  background: var(--accent-subtle);
+  color: var(--accent-active-text, #2563eb);
+  border: 1px solid var(--accent-subtle);
+  font-weight: 700;
+  font-family: monospace;
+  font-size: 0.9rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  user-select: none;
+}
+
+/* Preset Chips */
+.export-presets-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.export-chip {
+  background: var(--chip-bg);
+  border: 1px solid var(--chip-border);
+  color: var(--chip-text);
+  padding: 0.35rem 0.8rem;
+  border-radius: 16px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.export-chip:hover {
+  background: var(--chip-hover-bg);
+  border-color: var(--border-medium);
+  color: var(--text-primary);
+}
+
+.export-chip.active {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Segmented Control */
+.export-segmented {
+  display: flex;
+  background: var(--bg-surface-secondary);
+  padding: 3px;
+  border-radius: 8px;
+  border: 1px solid var(--border-subtle);
+}
+
+.export-segment {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.export-segment:hover {
+  color: var(--text-primary);
+}
+
+.export-segment.active {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Option Cards (Resolution Grid) */
+.export-grid-options {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+}
+
+.export-option-card {
+  background: var(--card-inner-bg);
+  border: 1px solid var(--card-inner-border);
+  border-radius: 8px;
+  padding: 0.65rem 0.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.export-option-card:hover {
+  border-color: var(--border-medium);
+  background: var(--bg-hover);
+}
+
+.export-option-card.active {
+  border-color: var(--accent-primary);
+  background: var(--accent-subtle);
+}
+
+.export-card-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.export-card-sub {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.export-option-card.active .export-card-title {
+  color: var(--accent-active-text, var(--accent-primary));
+}
+
+.export-summary-banner {
+  background: var(--accent-subtle);
+  border: 1px solid var(--accent-subtle);
+  border-radius: 8px;
+  padding: 0.65rem 0.9rem;
+  font-size: 0.84rem;
+  color: var(--accent-active-text, #1d4ed8);
+  font-weight: 500;
+  margin-top: 1rem;
+}
+
+html:not(.light) .export-summary-banner {
+  color: #93c5fd;
+}
+
+/* Advanced Accordion */
+.export-advanced-details summary {
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  transition: color 0.15s;
+  user-select: none;
+}
+
+.export-advanced-details summary:hover {
+  color: var(--text-primary);
+}
+
+/* Rendering View Elements */
+.export-rendering-header {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  margin-bottom: 1.2rem;
+}
+
+.export-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--accent-subtle);
+  border-top-color: var(--accent-primary);
+  border-radius: 50%;
+  animation: sag-spin 0.75s linear infinite;
+  flex-shrink: 0;
+}
+
+.export-render-pct-badge {
+  margin-left: auto;
+  font-size: 1.3rem;
+  font-weight: 800;
+  font-family: monospace;
+  color: var(--accent-primary);
+}
+
+.export-progress-bar-wrap {
+  width: 100%;
+  height: 8px;
+  background: var(--bg-surface-secondary);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 0.6rem;
+}
+
+.export-progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-primary), #60a5fa);
+  transition: width 0.2s ease-out;
+}
+
+.export-metrics-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  font-family: monospace;
+  margin-bottom: 1.2rem;
+}
+
+.export-phases-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  background: var(--card-inner-bg);
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--card-inner-border);
+}
+
+.export-phase-item {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: color 0.15s;
+}
+
+.export-phase-item.active {
+  color: var(--accent-primary);
+  font-weight: 600;
+}
+
+.export-phase-item.done {
+  color: #16a34a;
+}
+
+.export-phase-item.done .phase-icon::before {
+  content: "✓";
+}
+
+.export-phase-item.done .phase-icon {
+  font-weight: 800;
+}
+
+/* Complete View Elements */
+.export-video-player-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #000000;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+  border: 1px solid var(--border-subtle);
+}
+
+.export-complete-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+  background: var(--card-inner-bg);
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--card-inner-border);
+}
+
+.export-meta-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.export-meta-label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.export-meta-value {
+  font-size: 0.88rem;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+/* Error Details */
+.export-error-details {
+  background: var(--card-inner-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.export-error-summary {
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  user-select: none;
+}
+
+.export-error-summary:hover {
+  color: var(--text-secondary);
+}
+
+.export-error-stack {
+  margin: 0.5rem 0 0 0;
+  padding: 0.6rem;
+  background: var(--bg-surface-secondary);
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.76rem;
+  color: var(--text-secondary);
+  white-space: pre-wrap;
+  word-break: break-all;
+  max-height: 140px;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.export-error-stack::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* Modal Footer */
+.export-modal-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.9rem 1.25rem !important;
+  border-top: 1px solid var(--border-subtle) !important;
+  background: var(--bg-card) !important;
+}
+
+/* Recent exports list inside main video tab */
+.recent-exports-card {
+  margin-top: 1.2rem;
+  background: var(--card-inner-bg);
+  border: 1px solid var(--card-inner-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.recent-exports-header {
+  padding: 0.6rem 0.85rem;
+  background: var(--bg-surface-secondary);
+  font-weight: 600;
+  font-size: 0.88rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--card-inner-border);
+}
+
+.recent-exports-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.recent-export-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.55rem 0.85rem;
+  border-bottom: 1px solid var(--card-inner-border);
+  font-size: 0.85rem;
+  color: var(--text-primary);
+}
+
+.recent-export-row:last-child {
+  border-bottom: none;
+}
+
 
 /* Screen recording button + active (pulsing red) state */
 .record-btn.recording {

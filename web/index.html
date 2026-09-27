@@ -925,6 +925,15 @@
                 <span id="video-result" class="hint" style="font-size: 0.85rem; color: #94a3b8;"></span>
               </div>
             </div>
+
+            <!-- Recent Exports Section -->
+            <div id="video-recent-exports-card" class="recent-exports-card" style="display:none;">
+              <div class="recent-exports-header">
+                <span>Recent Exports</span>
+                <span id="recent-exports-count" class="hint" style="font-size:0.8rem;">0 files</span>
+              </div>
+              <div id="recent-exports-list" class="recent-exports-list"></div>
+            </div>
           </div>
 
           <div class="card video-scenes-editor-card scene-editor-container" id="video-scenes-editor-card">
@@ -1389,6 +1398,260 @@
     <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 0.5rem;">
       <button class="secondary" id="modal-add-svg-cancel" type="button">Cancel</button>
       <button class="btn-primary-glow" id="modal-add-svg-submit" type="button">Save &amp; Add Device</button>
+    </div>
+  </div>
+</div>
+
+<!-- Video Export / Render Modal -->
+<div id="export-video-backdrop" class="modal-backdrop export-modal-backdrop">
+  <div class="modal export-modal" data-state="config">
+    <div class="modal-header">
+      <div>
+        <h3 id="export-modal-title" style="margin:0; font-size:1.2rem; font-weight:700;">Export Video</h3>
+        <p id="export-modal-subject" class="hint" style="margin: 0.2rem 0 0 0; font-size: 0.85rem;">Project export</p>
+      </div>
+      <button class="close-btn" id="export-modal-close" type="button" aria-label="Close dialog">&times;</button>
+    </div>
+
+    <div class="modal-body export-modal-body">
+      <!-- CONFIG VIEW -->
+      <div class="export-view export-view-config">
+        <!-- Preset Selector -->
+        <div class="export-form-group">
+          <label class="export-label">Preset</label>
+          <div class="export-presets-row" id="export-preset-chips">
+            <button type="button" class="export-chip active" data-preset="app-store">App Store / Play</button>
+            <button type="button" class="export-chip" data-preset="social-square">Social Square</button>
+            <button type="button" class="export-chip" data-preset="web-720">Web 720p</button>
+            <button type="button" class="export-chip" data-preset="youtube-1080">YouTube 1080p</button>
+            <button type="button" class="export-chip" data-preset="custom">Custom</button>
+          </div>
+        </div>
+
+        <!-- File Name & Destination -->
+        <div class="export-form-group">
+          <label class="export-label" for="export-filename-input">File Name</label>
+          <div style="display:flex; align-items:center; gap:0.5rem;">
+            <input type="text" id="export-filename-input" class="export-input" placeholder="video-export" style="flex:1;" />
+            <span id="export-ext-badge" class="export-ext-badge">.mp4</span>
+          </div>
+        </div>
+
+        <div id="export-saveto-row" class="export-form-group" style="display:none;">
+          <label class="export-label">Save To (Local Disk)</label>
+          <div style="display:flex; gap:0.5rem; align-items:center;">
+            <input type="text" id="export-saveto-input" class="export-input" readonly placeholder="Default Downloads / Output" style="flex:1; font-size:0.85rem;" />
+            <button type="button" id="export-saveto-btn" class="secondary small">Choose...</button>
+            <button type="button" id="export-saveto-clear" class="secondary small" title="Clear path">&times;</button>
+          </div>
+        </div>
+
+        <!-- Format Selector -->
+        <div class="export-form-group">
+          <label class="export-label">Format</label>
+          <div class="export-segmented" id="export-format-segmented">
+            <button type="button" class="export-segment active" data-value="mp4">MP4 (H.264 / AAC)</button>
+            <button type="button" class="export-segment" data-value="webm">WebM (VP9 / Opus)</button>
+          </div>
+        </div>
+
+        <!-- Resolution Presets / Cards -->
+        <div class="export-form-group">
+          <label class="export-label">Resolution</label>
+          <div class="export-grid-options" id="export-res-grid">
+            <div class="export-option-card active" data-res="native">
+              <span class="export-card-title">Native</span>
+              <span class="export-card-sub" id="export-res-native-label">1080 × 1920</span>
+            </div>
+            <div class="export-option-card" data-res="1080">
+              <span class="export-card-title">1080p</span>
+              <span class="export-card-sub" id="export-res-1080-label">1080p FHD</span>
+            </div>
+            <div class="export-option-card" data-res="720">
+              <span class="export-card-title">720p</span>
+              <span class="export-card-sub" id="export-res-720-label">720p HD</span>
+            </div>
+            <div class="export-option-card" data-res="custom">
+              <span class="export-card-title">Custom</span>
+              <span class="export-card-sub">Width × Height</span>
+            </div>
+          </div>
+          <!-- Custom Resolution Inputs -->
+          <div id="export-custom-res-box" style="display:none; margin-top:0.6rem; align-items:center; gap:0.5rem;">
+            <input type="number" id="export-custom-w" class="export-input" placeholder="1080" min="240" max="3840" step="2" style="width:110px;" />
+            <span>&times;</span>
+            <input type="number" id="export-custom-h" class="export-input" placeholder="1920" min="240" max="3840" step="2" style="width:110px;" />
+            <span class="hint" style="font-size:0.8rem;">(even numbers, 240–3840)</span>
+          </div>
+        </div>
+
+        <!-- Orientation -->
+        <div class="export-form-group">
+          <label class="export-label">Orientation</label>
+          <select id="export-orientation-select" class="export-select">
+            <option value="native" selected>Native (Match Scene Canvas)</option>
+            <option value="landscape">Landscape (16:9 Letterbox)</option>
+            <option value="portrait">Portrait (9:16 Letterbox)</option>
+            <option value="square">Square (1:1 Letterbox)</option>
+          </select>
+          <p class="hint" style="margin-top:0.3rem; font-size:0.8rem;">Changing orientation from native letterboxes the video canvas.</p>
+        </div>
+
+        <!-- Scene Range Selection -->
+        <div class="export-form-group">
+          <label class="export-label">Scenes</label>
+          <div style="display:flex; gap:0.5rem; align-items:center;">
+            <select id="export-range-mode" class="export-select" style="width:140px;">
+              <option value="all" selected>All Scenes</option>
+              <option value="range">Range</option>
+            </select>
+            <div id="export-range-inputs" style="display:none; align-items:center; gap:0.4rem;">
+              <span>From</span>
+              <input type="number" id="export-range-from" class="export-input" min="1" value="1" style="width:65px;" />
+              <span>To</span>
+              <input type="number" id="export-range-to" class="export-input" min="1" value="1" style="width:65px;" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Advanced Details Accordion -->
+        <details class="export-advanced-details">
+          <summary class="export-advanced-summary">&#9654; Advanced Settings</summary>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; padding-top:0.4rem;">
+            <div>
+              <label class="export-label" for="export-fps-select">Frame Rate</label>
+              <select id="export-fps-select" class="export-select">
+                <option value="24">24 fps (Cinema)</option>
+                <option value="30" selected>30 fps (Standard)</option>
+                <option value="60">60 fps (Smooth)</option>
+              </select>
+            </div>
+            <div>
+              <label class="export-label" for="export-quality-select">Quality</label>
+              <select id="export-quality-select" class="export-select">
+                <option value="high">High (CRF 18)</option>
+                <option value="standard" selected>Standard (CRF 23)</option>
+                <option value="small">Small File (CRF 28)</option>
+              </select>
+            </div>
+          </div>
+          <div style="margin-top:0.8rem;">
+            <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+              <input type="checkbox" id="export-audio-toggle" checked />
+              <span style="font-weight:600; font-size:0.9rem;">Include Background Music / Audio</span>
+            </label>
+            <div id="export-audio-volume-row" style="margin-top:0.5rem; display:flex; align-items:center; gap:0.8rem;">
+              <span class="hint" style="font-size:0.85rem; width:60px;">Volume:</span>
+              <input type="range" id="export-audio-volume" min="0" max="1" step="0.05" value="0.35" style="flex:1;" />
+              <span id="export-audio-volume-label" style="font-family:monospace; font-size:0.85rem; width:40px;">35%</span>
+            </div>
+          </div>
+        </details>
+
+        <!-- Summary Banner -->
+        <div class="export-summary-banner" id="export-summary-text">
+          MP4 · 1080 × 1920 · 30 fps · Standard Quality · Audio On
+        </div>
+      </div>
+
+      <!-- RENDERING VIEW -->
+      <div class="export-view export-view-rendering" style="display:none;">
+        <div class="export-rendering-header">
+          <div class="export-spinner"></div>
+          <div>
+            <h4 id="export-render-phase-msg" style="margin:0; font-size:1.1rem; font-weight:700;">Rendering video...</h4>
+            <p id="export-render-detail-msg" class="hint" style="margin:0.2rem 0 0; font-size:0.85rem;">Processing frames deterministically</p>
+          </div>
+          <div id="export-render-pct" class="export-render-pct-badge">0%</div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="export-progress-bar-wrap">
+          <div id="export-progress-bar-fill" class="export-progress-bar-fill" style="width:0%;"></div>
+        </div>
+
+        <!-- Live Metrics / ETA -->
+        <div class="export-metrics-row">
+          <span id="export-metric-elapsed">Elapsed: 00:00</span>
+          <span id="export-metric-eta">Remaining: --:--</span>
+          <span id="export-metric-fps">Speed: -- fps</span>
+        </div>
+
+        <!-- Phase Checklist -->
+        <div class="export-phases-list" id="export-phases-list">
+          <div class="export-phase-item" data-phase="preparing"><span class="phase-icon">&#9675;</span> 1. Preparing render environment</div>
+          <div class="export-phase-item" data-phase="frames"><span class="phase-icon">&#9675;</span> 2. Rendering scene frames</div>
+          <div class="export-phase-item" data-phase="encoding"><span class="phase-icon">&#9675;</span> 3. Encoding video stream</div>
+          <div class="export-phase-item" data-phase="audio"><span class="phase-icon">&#9675;</span> 4. Mixing background audio</div>
+          <div class="export-phase-item" data-phase="done"><span class="phase-icon">&#9675;</span> 5. Finalizing output file</div>
+        </div>
+
+        <!-- Cancel Render Button -->
+        <div style="margin-top:1.2rem; display:flex; justify-content:center;">
+          <button type="button" id="export-cancel-btn" class="secondary" style="color:#ef4444; border-color:rgba(239,68,68,0.4);">
+            Cancel Render
+          </button>
+        </div>
+      </div>
+
+      <!-- COMPLETE VIEW -->
+      <div class="export-view export-view-complete" style="display:none;">
+        <div style="display:flex; align-items:center; gap:0.6rem; color:#10b981; margin-bottom:0.8rem;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <strong style="font-size:1.1rem;">Export Complete!</strong>
+        </div>
+
+        <!-- Video Player Preview -->
+        <div class="export-video-player-container">
+          <video id="export-preview-player" controls preload="metadata" style="max-width:100%; max-height:280px; border-radius:6px; background:#000;"></video>
+        </div>
+
+        <div class="export-complete-details" id="export-complete-meta-grid">
+          <!-- Meta items injected dynamically -->
+        </div>
+      </div>
+
+      <!-- ERROR VIEW -->
+      <div class="export-view export-view-error" style="display:none;">
+        <div style="display:flex; align-items:center; gap:0.6rem; color:#ef4444; margin-bottom:0.8rem;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+          <strong style="font-size:1.1rem;" id="export-error-title">Render Failed</strong>
+        </div>
+        <p id="export-error-message" style="color:#f87171; font-size:0.95rem; margin-bottom:0.8rem;"></p>
+        <details id="export-error-details" class="export-error-details">
+          <summary class="export-error-summary">Technical details</summary>
+          <pre id="export-error-stack" class="export-error-stack"></pre>
+        </details>
+      </div>
+
+      <!-- CANCELLED VIEW -->
+      <div class="export-view export-view-cancelled" style="display:none;">
+        <div style="display:flex; align-items:center; gap:0.6rem; color:#f59e0b; margin-bottom:0.8rem;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          <strong style="font-size:1.1rem;">Render Cancelled</strong>
+        </div>
+        <p class="hint" style="font-size:0.9rem;">The rendering operation was cancelled. All temporary files have been cleaned up.</p>
+      </div>
+    </div>
+
+    <!-- FOOTER ACTIONS -->
+    <div class="modal-footer export-modal-footer">
+      <div class="export-footer-left"></div>
+      <div class="export-footer-right" style="display:flex; gap:0.5rem;">
+        <!-- Config buttons -->
+        <button type="button" id="export-btn-cancel-config" class="secondary">Cancel</button>
+        <button type="button" id="export-btn-start" class="btn-primary-glow">Start Render</button>
+
+        <!-- Complete buttons -->
+        <button type="button" id="export-btn-show-folder" class="secondary" style="display:none;">Show in Folder</button>
+        <button type="button" id="export-btn-open-tab" class="secondary" style="display:none;">Open in Tab</button>
+        <button type="button" id="export-btn-download" class="btn-primary-glow" style="display:none;">Download Video</button>
+        <button type="button" id="export-btn-close-complete" class="secondary" style="display:none;">Close</button>
+
+        <!-- Error & Cancelled buttons -->
+        <button type="button" id="export-btn-retry" class="btn-primary-glow" style="display:none;">Retry</button>
+        <button type="button" id="export-btn-close-error" class="secondary" style="display:none;">Close</button>
+      </div>
     </div>
   </div>
 </div>

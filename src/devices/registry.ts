@@ -171,6 +171,7 @@ export function listDevices(filter: ListDevicesFilter = {}): DeviceModel[] {
 /** Resolve a device + optional variant id to the geometry that should
  *  actually be rendered (foldables select folded/unfolded here). */
 export function resolveGeometry(device: DeviceModel, variantId?: string): DeviceGeometry {
+  if (!device) return { width: 1080, height: 1920, screenInset: { top: 0, left: 0, width: 1080, height: 1920 } };
   if (!variantId) return device.geometry;
   const variant = device.variants?.find((v) => v.id === variantId);
   return variant?.geometry ?? device.geometry;
@@ -180,6 +181,7 @@ export function resolveGeometry(device: DeviceModel, variantId?: string): Device
  *  screenInset + fold metadata) — used by the GLB/3D path where the compat
  *  `DeviceGeometry` isn't enough. Falls back to the base definition. */
 export function resolveVariantDefinition(device: DeviceModel, variantId?: string): { geometry: DeviceDefinition["geometry"]; screenInset: DeviceDefinition["screenInset"] } {
+  if (!device) return { geometry: { width: 1080, height: 1920, thickness: 10, cornerRadius: 0 }, screenInset: { top: 0, left: 0, width: 1080, height: 1920 } };
   if (!variantId) return { geometry: device.definition.geometry, screenInset: device.definition.screenInset };
   const variant = device.definition.variants?.find((v) => v.id === variantId);
   return variant ? { geometry: variant.geometry, screenInset: variant.screenInset } : { geometry: device.definition.geometry, screenInset: device.definition.screenInset };
@@ -189,6 +191,7 @@ export function resolveVariantDefinition(device: DeviceModel, variantId?: string
  *  is built once from the *base* geometry, so a foldable's folded/unfolded
  *  variant needs its own frame or the bezel stretches to fit the wrong shape. */
 export function frameSvgFor(device: DeviceModel, variantId?: string, overrides?: { borderColor?: string; bezelColor?: string; showCamera?: boolean; borderThickness?: number; bezelThickness?: number }): string {
+  if (!device) return "";
   if (overrides?.borderColor || overrides?.bezelColor || overrides?.showCamera === false || overrides?.borderThickness != null || overrides?.bezelThickness != null) {
     const geometry = resolveGeometry(device, variantId);
     const geom = { width: geometry.width, height: geometry.height, thickness: device.definition.geometry.thickness, cornerRadius: geometry.cornerRadius ?? 0 };

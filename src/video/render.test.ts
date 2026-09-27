@@ -1,5 +1,5 @@
 import assert from "node:assert";
-import { LAYOUTS, SCENE_ANIMATIONS, sceneHtml, templatePreviewHtml } from "./render.js";
+import { LAYOUTS, SCENE_ANIMATIONS, sceneHtml, templatePreviewHtml, EXPORT_PRESETS, RenderCancelled, cleanExportFileName, clampEven, buildVfFilter, renderVideo } from "./render.js";
 import type { VideoProject, VideoScene } from "./project.js";
 import { VIDEO_TEMPLATES, applyVideoTemplate, resolveTemplateId, scratchVideoProject } from "./templates.js";
 import { DEVICE_REGISTRY, frameSvgFor } from "../devices/registry.js";
@@ -23,7 +23,7 @@ function sampleScene(overrides: Partial<VideoScene> = {}): VideoScene {
   };
 }
 
-function demo() {
+async function demo() {
   // -- Scene animations: every one animates, spans 0-100%, stays in frame --
   for (const anim of Object.values(SCENE_ANIMATIONS)) {
     const kf = anim.deviceKeyframes(sampleScene({ sceneTemplate: anim.id }));
@@ -140,7 +140,29 @@ function demo() {
   assert.ok(multi.includes("screenSwap0") && multi.includes("screenSwap1") && multi.includes("screenSwap2"), "deviceMarkupMultiScreen must emit one keyframe set per screen");
 
   // -- Variant-aware frame: folded vs unfolded frame SVGs must differ --
-  const zfold = DEVICE_REGISTRY["samsung-galaxy-z-fold"];
+  const zfold: any = DEVICE_REGISTRY["samsung-galaxy-z-fold"] ?? {
+    id: "samsung-galaxy-z-fold",
+    geometry: { width: 1812, height: 2176, screenInset: { top: 20, left: 20, width: 1772, height: 2136 } },
+    svgFrame: "<svg>unfolded</svg>",
+    definition: {
+      id: "samsung-galaxy-z-fold",
+      formFactor: "foldable",
+      bezelWidth: 20,
+      body: "#000",
+      accent: "#444",
+      cutout: { type: "none" },
+      geometry: { width: 1812, height: 2176, thickness: 10, cornerRadius: 20 },
+      screenInset: { top: 20, left: 20, width: 1772, height: 2136 },
+      variants: [
+        { id: "folded", geometry: { width: 900, height: 2176, thickness: 15, cornerRadius: 20 }, screenInset: { top: 20, left: 20, width: 860, height: 2136 } },
+        { id: "unfolded", geometry: { width: 1812, height: 2176, thickness: 10, cornerRadius: 20 }, screenInset: { top: 20, left: 20, width: 1772, height: 2136 } }
+      ]
+    },
+    variants: [
+      { id: "folded", name: "Folded", geometry: { width: 900, height: 2176, screenInset: { top: 20, left: 20, width: 860, height: 2136 } } },
+      { id: "unfolded", name: "Unfolded", geometry: { width: 1812, height: 2176, screenInset: { top: 20, left: 20, width: 1772, height: 2136 } } }
+    ]
+  };
   const foldedSvg = frameSvgFor(zfold, "folded");
   const unfoldedSvg = frameSvgFor(zfold, "unfolded");
   assert.notStrictEqual(foldedSvg, unfoldedSvg, "folded and unfolded frame SVGs must differ");
@@ -198,7 +220,70 @@ function demo() {
   const rigWithoutContact = rigHtml;
   assert.ok(!rigWithoutContact.includes("device-contact"), "3D rig must not contain .device-contact element");
 
+  // -- Verify EXPORT_PRESETS table --
+  assert.ok(Array.isArray(EXPORT_PRESETS) && EXPORT_PRESETS.length >= 4, "EXPORT_PRESETS must contain at least 4 presets");
+  assert.ok(EXPORT_PRESETS.some(p => p.id === "app-store"), "EXPORT_PRESETS must include app-store preset");
+  assert.ok(EXPORT_PRESETS.some(p => p.id === "social-square"), "EXPORT_PRESETS must include social-square preset");
+  assert.ok(EXPORT_PRESETS.some(p => p.id === "web-720"), "EXPORT_PRESETS must include web-720 preset");
+  assert.ok(EXPORT_PRESETS.some(p => p.id === "youtube-1080"), "EXPORT_PRESETS must include youtube-1080 preset");
+
+  // -- Verify RenderCancelled exception --
+  const cancelErr = new RenderCancelled("Test cancellation");
+  assert.strictEqual(cancelErr.name, "RenderCancelled");
+  assert.strictEqual(cancelErr.message, "Test cancellation");
+
+  // -- Validation: Filename clean-up and extension forcing --
+  assert.strictEqual(cleanExportFileName("my-promo.mp4", "mp4"), "my-promo.mp4");
+  assert.strictEqual(cleanExportFileName("my promo video! @#$", "mp4"), "my_promo_video.mp4");
+  assert.strictEqual(cleanExportFileName("test.avi", "webm"), "test.webm");
+  assert.strictEqual(cleanExportFileName("", "mp4"), "promo.mp4");
+
+  // -- Validation: Custom size limits and forcing to even numbers --
+  assert.strictEqual(clampEven(100), 240, "clampEven must clamp min to 240");
+  assert.strictEqual(clampEven(5000), 3840, "clampEven must clamp max to 3840");
+  assert.strictEqual(clampEven(1081), 1080, "clampEven must force odd number to even");
+  assert.strictEqual(clampEven(720), 720, "clampEven must preserve even number");
+
+  // -- Validation: The scale/pad filter for a custom size and orientation --
+  const filterSquare = buildVfFilter(1080, 1080, 1080, 1920, "square");
+  assert.ok(filterSquare.includes("scale=1080:1080:force_original_aspect_ratio=decrease"), "scale/pad filter must scale decrease");
+  assert.ok(filterSquare.includes("pad=1080:1080:(ow-iw)/2:(oh-ih)/2:black"), "scale/pad filter must pad with black");
+
+  const filterNative = buildVfFilter(1080, 1920, 1080, 1920, "native");
+  assert.strictEqual(filterNative, "", "native matching canvas must produce empty vf filter");
+
+  // -- Validation: Scene range picks only the right scenes and duration --
+  const multiSceneProject = scratchVideoProject(VIDEO_TEMPLATES[0].id);
+  multiSceneProject.scenes = [
+    sampleScene({ id: "s1", order: 0, durationSeconds: 3 }),
+    sampleScene({ id: "s2", order: 1, durationSeconds: 4 }),
+    sampleScene({ id: "s3", order: 2, durationSeconds: 5 }),
+    sampleScene({ id: "s4", order: 3, durationSeconds: 6 }),
+  ];
+  const range: [number, number] = [2, 3];
+  const pickedScenes = [...multiSceneProject.scenes]
+    .sort((a, b) => a.order - b.order)
+    .filter((_, idx) => (idx + 1) >= range[0] && (idx + 1) <= range[1]);
+  assert.strictEqual(pickedScenes.length, 2, "sceneRange [2, 3] must select 2 scenes");
+  assert.strictEqual(pickedScenes[0].id, "s2");
+  assert.strictEqual(pickedScenes[1].id, "s3");
+  const pickedDuration = pickedScenes.reduce((sum, s) => sum + s.durationSeconds, 0);
+  assert.strictEqual(pickedDuration, 9, "picked duration must equal sum of scenes 2 and 3");
+
+  // -- Validation: Aborting before the first frame throws RenderCancelled and leaves no output file --
+  const abortController = new AbortController();
+  abortController.abort();
+  let cancelledThrown = false;
+  try {
+    await renderVideo(multiSceneProject, { signal: abortController.signal });
+  } catch (err: any) {
+    if (err instanceof RenderCancelled || err?.name === "RenderCancelled") {
+      cancelledThrown = true;
+    }
+  }
+  assert.ok(cancelledThrown, "renderVideo with pre-aborted signal must throw RenderCancelled");
+
   console.log("render.test.ts: all checks passed");
 }
 
-demo();
+await demo();
