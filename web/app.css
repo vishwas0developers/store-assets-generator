@@ -3478,9 +3478,9 @@ html.light .saved-template-card:hover {
   font-weight: 600;
   color: var(--text-primary);
   width: 100%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
   text-align: center;
 }
 
@@ -3546,10 +3546,12 @@ html.light .saved-template-badge {
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
   border: none;
+  transform-origin: 0 0;
 }
+/* Native canvas size; scaled to the card width by fitSavedPreview() in video.js. */
+.saved-template-preview-wrapper.landscape .saved-template-preview-iframe { width: 1920px; height: 1080px; }
+.saved-template-preview-wrapper.portrait .saved-template-preview-iframe { width: 1080px; height: 1920px; }
 
 /* Zone 3: Action Buttons (Centered Row) */
 .saved-template-card-actions {
@@ -3599,3 +3601,21 @@ html.light .saved-template-badge {
 }
 
 
+
+/* Saved template player popup */
+.saved-player-overlay {
+  position: fixed; inset: 0; z-index: 10000;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.saved-player-box { display: flex; flex-direction: column; gap: 10px; }
+.saved-player-bar { display: flex; align-items: center; gap: 8px; color: #fff; font-weight: 600; }
+.saved-player-bar span { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.saved-player-stage {
+  position: relative; overflow: hidden; background: #000;
+  border-radius: 12px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+.saved-player-stage:fullscreen { border-radius: 0; }
+.saved-player-stage iframe { position: absolute; top: 0; left: 0; border: none; transform-origin: 0 0; }
