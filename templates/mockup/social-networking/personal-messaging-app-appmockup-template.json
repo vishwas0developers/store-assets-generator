@@ -1,0 +1,359 @@
+{
+ "id": "personal-messaging-app-appmockup-template",
+ "name": "Personal messaging app",
+ "description": "Showcase your messaging app with our free template. Display private chats, message features, and personal communication tools in a secure design that prioritizes privacy.",
+ "category": "social-networking",
+ "devices": [
+  "apple-iphone-16-pro-max",
+  "apple-iphone-14-plus",
+  "samsung-galaxy-s21-ultra"
+ ],
+ "isPaid": false,
+ "designHeight": 2347,
+ "layout": "single-no-text",
+ "background": {
+  "type": "gradient",
+  "value": "linear-gradient(135deg, #112f31 0%, #1a4a4d 100%)"
+ },
+ "textColor": "#ffffff",
+ "columnCount": 4,
+ "pages": [
+  {
+   "title": "Simple.\nReliable.\nPrivate.",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(135deg, #112f31 0%, #1a4a4d 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t2",
+     "xPct": 6.818,
+     "yPct": 3.127,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Simple.\nReliable.\nPrivate.",
+      "color": "#ffffff",
+      "size": 93.3,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.12
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s1",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -20.227,
+     "yPct": 22.176,
+     "widthPct": 140.455,
+     "heightPct": 119.846,
+     "rotation": 0,
+     "opacity": 0.22,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 618,
+      "h": 1145.73,
+      "radius": 156.0,
+      "fill": "#000000",
+      "blur": 28,
+      "inset": 84
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 75.31,
+    "x": 0.0,
+    "y": 30.77,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#ffffff",
+    "borderColor": "#ffffff",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Message privately with",
+   "subtitle": "end-to-end encryption",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(135deg, #112f31 0%, #1a4a4d 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t4",
+     "xPct": 4.545,
+     "yPct": 1.891,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Message privately with",
+      "color": "#ffffff",
+      "size": 83.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.15
+     }
+    },
+    {
+     "id": "tpl-t5",
+     "xPct": 4.545,
+     "yPct": 8.444,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "end-to-end encryption",
+      "color": "rgba(255,255,255,0.8)",
+      "size": 49.1,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.2
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s3",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -20.227,
+     "yPct": 12.762,
+     "widthPct": 140.455,
+     "heightPct": 119.846,
+     "rotation": 0,
+     "opacity": 0.22,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 618,
+      "h": 1145.73,
+      "radius": 156.0,
+      "fill": "#000000",
+      "blur": 28,
+      "inset": 84
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 75.31,
+    "x": 0.0,
+    "y": 21.57,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#ffffff",
+    "borderColor": "#ffffff",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Make calls",
+   "subtitle": "across the world",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(135deg, #112f31 0%, #1a4a4d 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t7",
+     "xPct": 4.545,
+     "yPct": 1.891,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Make calls",
+      "color": "#ffffff",
+      "size": 83.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.15
+     }
+    },
+    {
+     "id": "tpl-t8",
+     "xPct": 4.545,
+     "yPct": 8.444,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "across the world",
+      "color": "rgba(255,255,255,0.8)",
+      "size": 49.1,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.2
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s6",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -20.227,
+     "yPct": 12.762,
+     "widthPct": 140.455,
+     "heightPct": 119.846,
+     "rotation": 0,
+     "opacity": 0.22,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 618,
+      "h": 1145.73,
+      "radius": 156.0,
+      "fill": "#000000",
+      "blur": 28,
+      "inset": 84
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 75.31,
+    "x": 0.0,
+    "y": 21.57,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#ffffff",
+    "borderColor": "#ffffff",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Group chat with",
+   "subtitle": "friends and family",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(135deg, #112f31 0%, #1a4a4d 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t10",
+     "xPct": 4.545,
+     "yPct": 1.891,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Group chat with",
+      "color": "#ffffff",
+      "size": 83.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.15
+     }
+    },
+    {
+     "id": "tpl-t11",
+     "xPct": 4.545,
+     "yPct": 8.444,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "friends and family",
+      "color": "rgba(255,255,255,0.8)",
+      "size": 49.1,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.2
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s9",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -20.227,
+     "yPct": 12.762,
+     "widthPct": 140.455,
+     "heightPct": 119.846,
+     "rotation": 0,
+     "opacity": 0.22,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 618,
+      "h": 1145.73,
+      "radius": 156.0,
+      "fill": "#000000",
+      "blur": 28,
+      "inset": 84
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 75.31,
+    "x": 0.0,
+    "y": 21.57,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#ffffff",
+    "borderColor": "#ffffff",
+    "zIndex": 10
+   }
+  }
+ ],
+ "titles": [
+  "Simple.\nReliable.\nPrivate.",
+  "Message privately with",
+  "Make calls",
+  "Group chat with"
+ ],
+ "subtitles": [
+  "",
+  "end-to-end encryption",
+  "across the world",
+  "friends and family"
+ ]
+}

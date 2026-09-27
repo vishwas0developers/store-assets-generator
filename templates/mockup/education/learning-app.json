@@ -1,0 +1,1123 @@
+{
+ "version": 1,
+ "id": "learning-app",
+ "name": "Learning app",
+ "category": "education",
+ "description": "Showcase your learning app with our engaging template. Highlight interactive lessons, progress tracking, and user achievements in a visually appealing design that motivates users to enhance their skills and knowledge.",
+ "devices": [
+  {
+   "deviceId": "apple-iphone-16-pro-max",
+   "label": "apple-iphone-16-pro-max"
+  },
+  {
+   "deviceId": "apple-iphone-13-pro-max",
+   "label": "apple-iphone-13-pro-max"
+  },
+  {
+   "deviceId": "samsung-galaxy-s21-ultra",
+   "label": "samsung-galaxy-s21-ultra"
+  },
+  {
+   "deviceId": "apple-ipad-pro-12-9-inch",
+   "label": "apple-ipad-pro-12-9-inch"
+  },
+  {
+   "deviceId": "samsung-galaxy-tab-s7",
+   "label": "samsung-galaxy-tab-s7"
+  }
+ ],
+ "layout": "single-no-text",
+ "background": {
+  "type": "solid",
+  "value": "#0088e8"
+ },
+ "panoramic": false,
+ "columnCount": 8,
+ "titles": [
+  "Replace\nScrolling\nWith\nLearning",
+  "15min book\nsummaries",
+  "Challenge\nyou & grow",
+  "Enjoy daily\ncontent",
+  "Choose any\nformat",
+  "Keep the\nstreak",
+  "Curated\nfor you",
+  "What our users say"
+ ],
+ "subtitles": [
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  ""
+ ],
+ "pages": [
+  {
+   "title": "Replace\nScrolling\nWith\nLearning",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#0088e8"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t16",
+     "xPct": 11.364,
+     "yPct": 8.356,
+     "widthPct": 25.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 25,
+     "customName": "Logo-Text",
+     "style": {
+      "text": "LY",
+      "color": "#0088e8",
+      "size": 127.6,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.2
+     }
+    },
+    {
+     "id": "tpl-t17",
+     "xPct": 10.227,
+     "yPct": 19.945,
+     "widthPct": 79.545,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Replace\nScrolling\nWith\nLearning",
+      "color": "#ffffff",
+      "size": 108.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.06
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s1",
+     "assetId": "shape:Logo-Bg",
+     "name": "Logo-Bg",
+     "xPct": 11.364,
+     "yPct": 5.23,
+     "widthPct": 25.0,
+     "heightPct": 11.506,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 110,
+      "h": 110,
+      "radius": 20,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s2",
+     "assetId": "shape:Dot-0",
+     "name": "Dot-0",
+     "xPct": 7.5,
+     "yPct": 8.159,
+     "widthPct": 0.909,
+     "heightPct": 0.418,
+     "rotation": 0,
+     "opacity": 0.7,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 4,
+      "h": 4,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s3",
+     "assetId": "shape:Dot-1",
+     "name": "Dot-1",
+     "xPct": 17.841,
+     "yPct": 4.55,
+     "widthPct": 0.682,
+     "heightPct": 0.314,
+     "rotation": 0,
+     "opacity": 0.7,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 3.0,
+      "h": 3.0,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s4",
+     "assetId": "shape:Dot-2",
+     "name": "Dot-2",
+     "xPct": 85.909,
+     "yPct": 7.113,
+     "widthPct": 0.909,
+     "heightPct": 0.418,
+     "rotation": 0,
+     "opacity": 0.7,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 4,
+      "h": 4,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s5",
+     "assetId": "shape:Dot-3",
+     "name": "Dot-3",
+     "xPct": 90.568,
+     "yPct": 14.487,
+     "widthPct": 0.682,
+     "heightPct": 0.314,
+     "rotation": 0,
+     "opacity": 0.7,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 3.0,
+      "h": 3.0,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s6",
+     "assetId": "shape:Dot-4",
+     "name": "Dot-4",
+     "xPct": 10.909,
+     "yPct": 25.941,
+     "widthPct": 0.909,
+     "heightPct": 0.418,
+     "rotation": 0,
+     "opacity": 0.7,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 4,
+      "h": 4,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s7",
+     "assetId": "shape:Dot-5",
+     "name": "Dot-5",
+     "xPct": 88.295,
+     "yPct": 30.178,
+     "widthPct": 0.682,
+     "heightPct": 0.314,
+     "rotation": 0,
+     "opacity": 0.7,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 3.0,
+      "h": 3.0,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s8",
+     "assetId": "shape:Dot-6",
+     "name": "Dot-6",
+     "xPct": 8.636,
+     "yPct": 41.632,
+     "widthPct": 0.909,
+     "heightPct": 0.418,
+     "rotation": 0,
+     "opacity": 0.7,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 4,
+      "h": 4,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s9",
+     "assetId": "shape:Dot-7",
+     "name": "Dot-7",
+     "xPct": 15.568,
+     "yPct": 50.052,
+     "widthPct": 0.682,
+     "heightPct": 0.314,
+     "rotation": 0,
+     "opacity": 0.7,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 3.0,
+      "h": 3.0,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s10",
+     "assetId": "shape:Planet",
+     "name": "Planet",
+     "xPct": 64.318,
+     "yPct": 57.845,
+     "widthPct": 10.0,
+     "heightPct": 4.603,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 6,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 44,
+      "h": 44,
+      "fill": "#fcd34d"
+     }
+    },
+    {
+     "id": "tpl-s11",
+     "assetId": "shape:Crater-1",
+     "name": "Crater-1",
+     "xPct": 66.818,
+     "yPct": 58.996,
+     "widthPct": 1.818,
+     "heightPct": 0.837,
+     "rotation": 0,
+     "opacity": 0.6,
+     "zIndex": 7,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 8,
+      "h": 8,
+      "fill": "#f59e0b"
+     }
+    },
+    {
+     "id": "tpl-s12",
+     "assetId": "shape:Crater-2",
+     "name": "Crater-2",
+     "xPct": 70.682,
+     "yPct": 60.565,
+     "widthPct": 1.364,
+     "heightPct": 0.628,
+     "rotation": 0,
+     "opacity": 0.6,
+     "zIndex": 7,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 6,
+      "h": 6,
+      "fill": "#f59e0b"
+     }
+    },
+    {
+     "id": "tpl-s13",
+     "assetId": "shape:Planet-Ring",
+     "name": "Planet-Ring",
+     "xPct": 61.136,
+     "yPct": 58.996,
+     "widthPct": 16.364,
+     "heightPct": 3.87,
+     "rotation": 0,
+     "opacity": 0.85,
+     "zIndex": 8,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 72,
+      "h": 37,
+      "vx": 269,
+      "vy": 564,
+      "path": "M270,585Q305,600 340,565Q305,588 270,585Z",
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s14",
+     "assetId": "shape:Float-Book-1",
+     "name": "Float-Book-1",
+     "xPct": 51.136,
+     "yPct": 47.594,
+     "widthPct": 3.636,
+     "heightPct": 2.092,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 6,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 16,
+      "h": 20,
+      "radius": 2,
+      "fill": "#1e293b"
+     }
+    },
+    {
+     "id": "tpl-s15",
+     "assetId": "shape:Float-Book-2",
+     "name": "Float-Book-2",
+     "xPct": 84.091,
+     "yPct": 80.544,
+     "widthPct": 4.091,
+     "heightPct": 2.51,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 6,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 18,
+      "h": 24,
+      "radius": 2,
+      "fill": "#0f172a"
+     }
+    }
+   ],
+   "deviceOne": {
+    "visible": false
+   }
+  },
+  {
+   "title": "15min book\nsummaries",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#ffffff"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t19",
+     "xPct": 4.545,
+     "yPct": 1.389,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "15min book\nsummaries",
+      "color": "#1a1a1a",
+      "size": 93.3,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s18",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -15.682,
+     "yPct": 16.946,
+     "widthPct": 131.364,
+     "heightPct": 110.755,
+     "rotation": 0,
+     "opacity": 0.22,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 578,
+      "h": 1058.82,
+      "radius": 149.6,
+      "fill": "#000000",
+      "blur": 28,
+      "inset": 84
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 68.62,
+    "x": 0.0,
+    "y": 23.28,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#111111",
+    "borderColor": "#444444",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Challenge\nyou & grow",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#ffffff"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t21",
+     "xPct": 4.545,
+     "yPct": 1.389,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Challenge\nyou & grow",
+      "color": "#1a1a1a",
+      "size": 93.3,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s20",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -15.682,
+     "yPct": 16.946,
+     "widthPct": 131.364,
+     "heightPct": 110.755,
+     "rotation": 0,
+     "opacity": 0.22,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 578,
+      "h": 1058.82,
+      "radius": 149.6,
+      "fill": "#000000",
+      "blur": 28,
+      "inset": 84
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 68.62,
+    "x": 0.0,
+    "y": 23.28,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#111111",
+    "borderColor": "#444444",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Enjoy daily\ncontent",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#ffffff"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t23",
+     "xPct": 4.545,
+     "yPct": 1.389,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Enjoy daily\ncontent",
+      "color": "#1a1a1a",
+      "size": 93.3,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s22",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -15.682,
+     "yPct": 16.946,
+     "widthPct": 131.364,
+     "heightPct": 110.755,
+     "rotation": 0,
+     "opacity": 0.22,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 578,
+      "h": 1058.82,
+      "radius": 149.6,
+      "fill": "#000000",
+      "blur": 28,
+      "inset": 84
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 68.62,
+    "x": 0.0,
+    "y": 23.28,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#111111",
+    "borderColor": "#444444",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Choose any\nformat",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#ffffff"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t25",
+     "xPct": 4.545,
+     "yPct": 1.389,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Choose any\nformat",
+      "color": "#1a1a1a",
+      "size": 93.3,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s24",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -15.682,
+     "yPct": 16.946,
+     "widthPct": 131.364,
+     "heightPct": 110.755,
+     "rotation": 0,
+     "opacity": 0.22,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 578,
+      "h": 1058.82,
+      "radius": 149.6,
+      "fill": "#000000",
+      "blur": 28,
+      "inset": 84
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 68.62,
+    "x": 0.0,
+    "y": 23.28,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#111111",
+    "borderColor": "#444444",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Keep the\nstreak",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#ffffff"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t27",
+     "xPct": 4.545,
+     "yPct": 1.389,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Keep the\nstreak",
+      "color": "#1a1a1a",
+      "size": 93.3,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s26",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -15.682,
+     "yPct": 16.946,
+     "widthPct": 131.364,
+     "heightPct": 110.755,
+     "rotation": 0,
+     "opacity": 0.22,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 578,
+      "h": 1058.82,
+      "radius": 149.6,
+      "fill": "#000000",
+      "blur": 28,
+      "inset": 84
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 68.62,
+    "x": 0.0,
+    "y": 23.28,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#111111",
+    "borderColor": "#444444",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Curated\nfor you",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#ffffff"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t29",
+     "xPct": 4.545,
+     "yPct": 1.389,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Curated\nfor you",
+      "color": "#1a1a1a",
+      "size": 93.3,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s28",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -15.682,
+     "yPct": 16.946,
+     "widthPct": 131.364,
+     "heightPct": 110.755,
+     "rotation": 0,
+     "opacity": 0.22,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 578,
+      "h": 1058.82,
+      "radius": 149.6,
+      "fill": "#000000",
+      "blur": 28,
+      "inset": 84
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 68.62,
+    "x": 0.0,
+    "y": 23.28,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#111111",
+    "borderColor": "#444444",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "What our users say",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#0088e8"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t40",
+     "xPct": 88.636,
+     "yPct": 14.178,
+     "widthPct": 9.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "R1-Score",
+     "style": {
+      "text": "4/5",
+      "color": "rgba(255,255,255,0.85)",
+      "size": 36.8,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 600,
+      "lineHeightMultiplier": 1.2
+     }
+    },
+    {
+     "id": "tpl-t41",
+     "xPct": 5.682,
+     "yPct": 16.655,
+     "widthPct": 88.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Review-1",
+     "style": {
+      "text": "I can quickly get the key\npoints from each chapter.\nIt's helped me improve my\ngrades and understand\nthe material much better.",
+      "color": "#ffffff",
+      "size": 49.1,
+      "align": "right",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 600,
+      "lineHeightMultiplier": 1.35
+     }
+    },
+    {
+     "id": "tpl-t42",
+     "xPct": 36.364,
+     "yPct": 68.572,
+     "widthPct": 9.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "R2-Score",
+     "style": {
+      "text": "5/5",
+      "color": "rgba(255,255,255,0.85)",
+      "size": 36.8,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 600,
+      "lineHeightMultiplier": 1.2
+     }
+    },
+    {
+     "id": "tpl-t43",
+     "xPct": 5.682,
+     "yPct": 71.049,
+     "widthPct": 88.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Review-2",
+     "style": {
+      "text": "This app has been a\nlifesaver for my studies.\nInstead of struggling to\nfinish textbooks, I can\nquickly get the key points\nfrom each chapter.",
+      "color": "#ffffff",
+      "size": 49.1,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 600,
+      "lineHeightMultiplier": 1.35
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s30",
+     "assetId": "shape:Star-1",
+     "name": "Star-1",
+     "xPct": 68.409,
+     "yPct": 14.226,
+     "widthPct": 4.091,
+     "heightPct": 1.849,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 18.0,
+      "h": 17.68,
+      "vx": 301.0,
+      "vy": 136.0,
+      "path": "M310.0,137.0L312.4,142.6L318.0,143.08L314.0,146.92L315.12,152.68L310.0,149.48L304.88,152.68L306.0,146.92L302.0,143.08L307.6,142.6Z",
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s31",
+     "assetId": "shape:Star-2",
+     "name": "Star-2",
+     "xPct": 72.955,
+     "yPct": 14.226,
+     "widthPct": 4.091,
+     "heightPct": 1.849,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 18.0,
+      "h": 17.68,
+      "vx": 321.0,
+      "vy": 136.0,
+      "path": "M330.0,137.0L332.4,142.6L338.0,143.08L334.0,146.92L335.12,152.68L330.0,149.48L324.88,152.68L326.0,146.92L322.0,143.08L327.6,142.6Z",
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s32",
+     "assetId": "shape:Star-3",
+     "name": "Star-3",
+     "xPct": 77.5,
+     "yPct": 14.226,
+     "widthPct": 4.091,
+     "heightPct": 1.849,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 18.0,
+      "h": 17.68,
+      "vx": 341.0,
+      "vy": 136.0,
+      "path": "M350.0,137.0L352.4,142.6L358.0,143.08L354.0,146.92L355.12,152.68L350.0,149.48L344.88,152.68L346.0,146.92L342.0,143.08L347.6,142.6Z",
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s33",
+     "assetId": "shape:Star-4",
+     "name": "Star-4",
+     "xPct": 82.045,
+     "yPct": 14.226,
+     "widthPct": 4.091,
+     "heightPct": 1.849,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 18.0,
+      "h": 17.68,
+      "vx": 361.0,
+      "vy": 136.0,
+      "path": "M370.0,137.0L372.4,142.6L378.0,143.08L374.0,146.92L375.12,152.68L370.0,149.48L364.88,152.68L366.0,146.92L362.0,143.08L367.6,142.6Z",
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s34",
+     "assetId": "shape:Star-5",
+     "name": "Star-5",
+     "xPct": 86.591,
+     "yPct": 14.226,
+     "widthPct": 4.091,
+     "heightPct": 1.849,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 18.0,
+      "h": 17.68,
+      "vx": 381.0,
+      "vy": 136.0,
+      "path": "M390.0,137.0L392.4,142.6L398.0,143.08L394.0,146.92L395.12,152.68L390.0,149.48L384.88,152.68L386.0,146.92L382.0,143.08L387.6,142.6Z",
+      "fill": "rgba(255,255,255,0.35)"
+     }
+    },
+    {
+     "id": "tpl-s35",
+     "assetId": "shape:Star-1",
+     "name": "Star-1",
+     "xPct": 11.591,
+     "yPct": 68.619,
+     "widthPct": 4.091,
+     "heightPct": 1.849,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 18.0,
+      "h": 17.68,
+      "vx": 51.0,
+      "vy": 656.0,
+      "path": "M60.0,657.0L62.4,662.6L68.0,663.08L64.0,666.92L65.12,672.68L60.0,669.48L54.88,672.68L56.0,666.92L52.0,663.08L57.6,662.6Z",
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s36",
+     "assetId": "shape:Star-2",
+     "name": "Star-2",
+     "xPct": 16.136,
+     "yPct": 68.619,
+     "widthPct": 4.091,
+     "heightPct": 1.849,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 18.0,
+      "h": 17.68,
+      "vx": 71.0,
+      "vy": 656.0,
+      "path": "M80.0,657.0L82.4,662.6L88.0,663.08L84.0,666.92L85.12,672.68L80.0,669.48L74.88,672.68L76.0,666.92L72.0,663.08L77.6,662.6Z",
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s37",
+     "assetId": "shape:Star-3",
+     "name": "Star-3",
+     "xPct": 20.682,
+     "yPct": 68.619,
+     "widthPct": 4.091,
+     "heightPct": 1.849,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 18.0,
+      "h": 17.68,
+      "vx": 91.0,
+      "vy": 656.0,
+      "path": "M100.0,657.0L102.4,662.6L108.0,663.08L104.0,666.92L105.12,672.68L100.0,669.48L94.88,672.68L96.0,666.92L92.0,663.08L97.6,662.6Z",
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s38",
+     "assetId": "shape:Star-4",
+     "name": "Star-4",
+     "xPct": 25.227,
+     "yPct": 68.619,
+     "widthPct": 4.091,
+     "heightPct": 1.849,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 18.0,
+      "h": 17.68,
+      "vx": 111.0,
+      "vy": 656.0,
+      "path": "M120.0,657.0L122.4,662.6L128.0,663.08L124.0,666.92L125.12,672.68L120.0,669.48L114.88,672.68L116.0,666.92L112.0,663.08L117.6,662.6Z",
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s39",
+     "assetId": "shape:Star-5",
+     "name": "Star-5",
+     "xPct": 29.773,
+     "yPct": 68.619,
+     "widthPct": 4.091,
+     "heightPct": 1.849,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 18.0,
+      "h": 17.68,
+      "vx": 131.0,
+      "vy": 656.0,
+      "path": "M140.0,657.0L142.4,662.6L148.0,663.08L144.0,666.92L145.12,672.68L140.0,669.48L134.88,672.68L136.0,666.92L132.0,663.08L137.6,662.6Z",
+      "fill": "#ffffff"
+     }
+    }
+   ],
+   "deviceOne": {
+    "visible": false
+   }
+  }
+ ],
+ "designHeight": 2347,
+ "textColor": "#111111"
+}

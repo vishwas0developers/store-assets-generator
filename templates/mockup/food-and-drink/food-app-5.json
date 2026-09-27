@@ -1,0 +1,401 @@
+{
+ "version": 1,
+ "id": "food-app-5",
+ "name": "Food App 5",
+ "category": "food-and-drink",
+ "description": "Present your food delivery app with our professional template. Showcase restaurant listings, menu browsing, and order tracking in an appealing design that makes food ordering seamless and engaging.",
+ "devices": [
+  {
+   "deviceId": "apple-iphone-16-pro-max",
+   "label": "apple-iphone-16-pro-max"
+  },
+  {
+   "deviceId": "apple-iphone-14-plus",
+   "label": "apple-iphone-14-plus"
+  },
+  {
+   "deviceId": "samsung-galaxy-s21-ultra",
+   "label": "samsung-galaxy-s21-ultra"
+  }
+ ],
+ "layout": "single-no-text",
+ "background": {
+  "type": "solid",
+  "value": "#fbf8f5"
+ },
+ "panoramic": false,
+ "columnCount": 4,
+ "titles": [
+  "ORDER NOW\nFROM US",
+  "CHECK THE\nONLINE MENU",
+  "CHOOSE YOUR\nFAVORITE RECIPES",
+  "PAY\nONLINE"
+ ],
+ "subtitles": [
+  "",
+  "",
+  "",
+  ""
+ ],
+ "pages": [
+  {
+   "title": "ORDER NOW\nFROM US",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#fbf8f5"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t3",
+     "xPct": 6.364,
+     "yPct": 4.278,
+     "widthPct": 87.273,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "ORDER NOW\nFROM US",
+      "color": "#3c5141",
+      "size": 108.0,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.05
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s1",
+     "assetId": "shape:Wave",
+     "name": "Wave",
+     "xPct": 0.0,
+     "yPct": 37.73,
+     "widthPct": 100.0,
+     "heightPct": 62.27,
+     "rotation": 0,
+     "opacity": 1.0,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 440.0,
+      "h": 595.3,
+      "vx": 0.0,
+      "vy": 360.7,
+      "path": "M0.0,512.7L10.0,504.3L20.0,495.9L30.0,487.5L40.0,479.1L50.0,469.9L60.0,460.1L70.0,451.0L80.0,442.6L90.0,432.8L100.0,424.4L110.0,416.0L120.0,407.6L130.0,399.9L140.0,392.9L150.0,386.6L160.0,380.3L170.0,375.4L180.0,371.2L190.0,367.0L200.0,364.2L210.0,362.1L220.0,360.7L230.0,360.7L240.0,360.7L250.0,361.4L260.0,362.8L270.0,364.9L280.0,367.7L290.0,370.5L300.0,374.0L310.0,378.9L320.0,383.1L330.0,388.0L340.0,393.6L350.0,399.2L360.0,405.5L370.0,411.8L380.0,418.1L390.0,425.1L400.0,431.4L410.0,438.4L420.0,445.4L430.0,453.1L440.0,460.1L440.0,956.0L0.0,956.0Z",
+      "fill": "#3c5141"
+     }
+    },
+    {
+     "id": "tpl-s2",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -12.273,
+     "yPct": 19.561,
+     "widthPct": 124.545,
+     "heightPct": 103.937,
+     "rotation": 0,
+     "opacity": 0.18,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 548,
+      "h": 993.64,
+      "radius": 144.8,
+      "fill": "#000000",
+      "blur": 28,
+      "inset": 84
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 63.6,
+    "x": 0.0,
+    "y": 24.2,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#111111",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "CHECK THE\nONLINE MENU",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#fbf8f5"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t6",
+     "xPct": 6.364,
+     "yPct": 4.278,
+     "widthPct": 87.273,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "CHECK THE\nONLINE MENU",
+      "color": "#3c5141",
+      "size": 108.0,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.05
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s4",
+     "assetId": "shape:Wave",
+     "name": "Wave",
+     "xPct": 0.0,
+     "yPct": 48.128,
+     "widthPct": 100.0,
+     "heightPct": 51.872,
+     "rotation": 0,
+     "opacity": 1.0,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 440.0,
+      "h": 495.9,
+      "vx": 0.0,
+      "vy": 460.1,
+      "path": "M0.0,460.1L10.0,467.8L20.0,474.8L30.0,481.9L40.0,489.6L50.0,497.3L60.0,505.0L70.0,512.7L80.0,519.7L90.0,528.1L100.0,535.1L110.0,542.8L120.0,550.5L130.0,558.2L140.0,565.2L150.0,572.2L160.0,579.9L170.0,586.9L180.0,593.9L190.0,601.6L200.0,607.9L210.0,614.9L220.0,621.2L230.0,627.5L240.0,633.8L250.0,639.4L260.0,645.0L270.0,651.3L280.0,656.2L290.0,661.1L300.0,666.0L310.0,670.3L320.0,674.5L330.0,678.0L340.0,682.2L350.0,685.0L360.0,687.8L370.0,689.9L380.0,692.0L390.0,693.4L400.0,694.1L410.0,694.8L420.0,695.5L430.0,694.8L440.0,693.4L440.0,956.0L0.0,956.0Z",
+      "fill": "#3c5141"
+     }
+    },
+    {
+     "id": "tpl-s5",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -12.273,
+     "yPct": 19.561,
+     "widthPct": 124.545,
+     "heightPct": 103.937,
+     "rotation": 0,
+     "opacity": 0.18,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 548,
+      "h": 993.64,
+      "radius": 144.8,
+      "fill": "#000000",
+      "blur": 28,
+      "inset": 84
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 63.6,
+    "x": 0.0,
+    "y": 24.2,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#111111",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "CHOOSE YOUR\nFAVORITE RECIPES",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#fbf8f5"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t9",
+     "xPct": 6.364,
+     "yPct": 4.278,
+     "widthPct": 87.273,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "CHOOSE YOUR\nFAVORITE RECIPES",
+      "color": "#3c5141",
+      "size": 108.0,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.05
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s7",
+     "assetId": "shape:Wave",
+     "name": "Wave",
+     "xPct": 0.0,
+     "yPct": 42.05,
+     "widthPct": 100.0,
+     "heightPct": 57.95,
+     "rotation": 0,
+     "opacity": 1.0,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 440.0,
+      "h": 554.0,
+      "vx": 0.0,
+      "vy": 402.0,
+      "path": "M0.0,693.4L10.0,692.0L20.0,690.6L30.0,687.8L40.0,684.3L50.0,680.1L60.0,675.9L70.0,670.3L80.0,663.9L90.0,657.6L100.0,649.9L110.0,641.5L120.0,632.4L130.0,621.9L140.0,611.4L150.0,598.8L160.0,586.2L170.0,572.9L180.0,559.6L190.0,547.7L200.0,536.5L210.0,526.0L220.0,514.8L230.0,505.7L240.0,496.6L250.0,488.2L260.0,479.8L270.0,472.7L280.0,465.7L290.0,458.7L300.0,452.4L310.0,446.1L320.0,441.2L330.0,435.6L340.0,431.4L350.0,427.2L360.0,423.0L370.0,419.5L380.0,416.0L390.0,413.2L400.0,409.7L410.0,407.6L420.0,405.5L430.0,403.4L440.0,402.0L440.0,956.0L0.0,956.0Z",
+      "fill": "#3c5141"
+     }
+    },
+    {
+     "id": "tpl-s8",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -12.273,
+     "yPct": 19.561,
+     "widthPct": 124.545,
+     "heightPct": 103.937,
+     "rotation": 0,
+     "opacity": 0.18,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 548,
+      "h": 993.64,
+      "radius": 144.8,
+      "fill": "#000000",
+      "blur": 28,
+      "inset": 84
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 63.6,
+    "x": 0.0,
+    "y": 24.2,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#111111",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "PAY\nONLINE",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#fbf8f5"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t12",
+     "xPct": 6.364,
+     "yPct": 4.278,
+     "widthPct": 87.273,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "PAY\nONLINE",
+      "color": "#3c5141",
+      "size": 108.0,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.05
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s10",
+     "assetId": "shape:Wave",
+     "name": "Wave",
+     "xPct": 0.0,
+     "yPct": 41.611,
+     "widthPct": 100.0,
+     "heightPct": 58.389,
+     "rotation": 0,
+     "opacity": 1.0,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 440.0,
+      "h": 558.2,
+      "vx": 0.0,
+      "vy": 397.8,
+      "path": "M0.0,402.0L10.0,400.6L20.0,399.9L30.0,399.2L40.0,398.5L50.0,397.8L60.0,397.8L70.0,398.5L80.0,398.5L90.0,399.2L100.0,399.9L110.0,401.3L120.0,402.0L130.0,403.4L140.0,405.5L150.0,407.6L160.0,409.0L170.0,411.1L180.0,413.9L190.0,416.7L200.0,419.5L210.0,422.3L220.0,425.1L230.0,428.6L240.0,432.1L250.0,435.6L260.0,439.1L270.0,443.3L280.0,447.5L290.0,451.7L300.0,455.9L310.0,460.8L320.0,465.7L330.0,470.6L340.0,474.8L350.0,480.5L360.0,486.1L370.0,491.0L380.0,496.6L390.0,502.2L400.0,508.5L410.0,514.1L420.0,520.4L430.0,526.7L440.0,533.0L440.0,956.0L0.0,956.0Z",
+      "fill": "#3c5141"
+     }
+    },
+    {
+     "id": "tpl-s11",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -12.273,
+     "yPct": 19.561,
+     "widthPct": 124.545,
+     "heightPct": 103.937,
+     "rotation": 0,
+     "opacity": 0.18,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 548,
+      "h": 993.64,
+      "radius": 144.8,
+      "fill": "#000000",
+      "blur": 28,
+      "inset": 84
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 63.6,
+    "x": 0.0,
+    "y": 24.2,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#111111",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  }
+ ],
+ "designHeight": 2347,
+ "textColor": "#111111",
+ "fontFamily": "Barlow Condensed"
+}

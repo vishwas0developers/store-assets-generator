@@ -1,0 +1,302 @@
+{
+ "id": "travel-app",
+ "name": "Travel app",
+ "description": "Present your travel app with our free template. Display trip planning, booking features, and travel information in an inspiring design that makes journey planning exciting.",
+ "category": "travel-and-local",
+ "devices": [
+  "apple-iphone-16-pro-max",
+  "apple-iphone-14-plus",
+  "samsung-galaxy-s21-ultra"
+ ],
+ "isPaid": false,
+ "designHeight": 2347,
+ "layout": "single-no-text",
+ "background": {
+  "type": "gradient",
+  "value": "linear-gradient(135deg, #0284c7 0%, #0369a1 100%)"
+ },
+ "textColor": "#ffffff",
+ "columnCount": 4,
+ "pages": [
+  {
+   "title": "Plan your next adventure with one finger",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(135deg, #0284c7 0%, #0369a1 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t2",
+     "xPct": 6.818,
+     "yPct": 3.321,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Plan your\nnext adventure\nwith one finger",
+      "color": "#ffffff",
+      "size": 88.4,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.12
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s1",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -20.227,
+     "yPct": 22.176,
+     "widthPct": 140.455,
+     "heightPct": 119.846,
+     "rotation": 0,
+     "opacity": 0.22,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 618,
+      "h": 1145.73,
+      "radius": 156.0,
+      "fill": "#000000",
+      "blur": 28,
+      "inset": 84
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 75.31,
+    "x": 0.0,
+    "y": 30.77,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#ffffff",
+    "borderColor": "#ffffff",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Discover more than 75 destinations",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(135deg, #0284c7 0%, #0369a1 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t4",
+     "xPct": 4.545,
+     "yPct": 3.461,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Discover more than\n75 destinations",
+      "color": "#ffffff",
+      "size": 83.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.15
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s3",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -20.227,
+     "yPct": 12.762,
+     "widthPct": 140.455,
+     "heightPct": 119.846,
+     "rotation": 0,
+     "opacity": 0.22,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 618,
+      "h": 1145.73,
+      "radius": 156.0,
+      "fill": "#000000",
+      "blur": 28,
+      "inset": 84
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 75.31,
+    "x": 0.0,
+    "y": 21.57,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#ffffff",
+    "borderColor": "#ffffff",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Explore attractions and food nearby",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(135deg, #0284c7 0%, #0369a1 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t6",
+     "xPct": 4.545,
+     "yPct": 3.461,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Explore attractions\nand food nearby",
+      "color": "#ffffff",
+      "size": 83.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.15
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s5",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -20.227,
+     "yPct": 12.762,
+     "widthPct": 140.455,
+     "heightPct": 119.846,
+     "rotation": 0,
+     "opacity": 0.22,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 618,
+      "h": 1145.73,
+      "radius": 156.0,
+      "fill": "#000000",
+      "blur": 28,
+      "inset": 84
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 75.31,
+    "x": 0.0,
+    "y": 21.57,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#ffffff",
+    "borderColor": "#ffffff",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Exciting guides and itineraries",
+   "subtitle": "",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(135deg, #0284c7 0%, #0369a1 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t8",
+     "xPct": 4.545,
+     "yPct": 3.461,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Exciting guides\nand itineraries 🎒",
+      "color": "#ffffff",
+      "size": 83.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.15
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s7",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -20.227,
+     "yPct": 12.762,
+     "widthPct": 140.455,
+     "heightPct": 119.846,
+     "rotation": 0,
+     "opacity": 0.22,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 618,
+      "h": 1145.73,
+      "radius": 156.0,
+      "fill": "#000000",
+      "blur": 28,
+      "inset": 84
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 75.31,
+    "x": 0.0,
+    "y": 21.57,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#ffffff",
+    "borderColor": "#ffffff",
+    "zIndex": 10
+   }
+  }
+ ],
+ "titles": [
+  "Plan your next adventure with one finger",
+  "Discover more than 75 destinations",
+  "Explore attractions and food nearby",
+  "Exciting guides and itineraries"
+ ],
+ "subtitles": [
+  "",
+  "",
+  "",
+  ""
+ ]
+}

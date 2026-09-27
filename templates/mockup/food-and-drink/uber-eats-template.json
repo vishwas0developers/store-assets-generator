@@ -3,7 +3,7 @@
  "id": "uber-eats-template",
  "name": "Food app",
  "category": "food-and-drink",
- "description": "Showcase your food service app with our free template. Display restaurant exploration, meal ordering, and delivery features in a vibrant design that makes food discovery exciting.",
+ "description": "Showcase your food delivery service app with a clean and modern design.",
  "devices": [
   {
    "deviceId": "apple-iphone-16-pro-max",
@@ -26,14 +26,14 @@
  "panoramic": false,
  "columnCount": 8,
  "titles": [
-  "Hungry? Order Now",
-  "Crave It? Get It",
-  "Food Your Way",
-  "Delicious Just Arrived",
-  "Satisfy Any Craving",
-  "Local Eats Delivered",
-  "Order With Ease",
-  "Fresh Food Fast"
+  "Hungry?\nOrder Now",
+  "Crave It?\nGet It",
+  "Food Your\nWay",
+  "Delicious\nJust Arrived",
+  "Satisfy\nAny Craving",
+  "Local Eats\nDelivered",
+  "Order\nWith Ease",
+  "Fresh\nFood Fast"
  ],
  "subtitles": [
   "",
@@ -47,7 +47,7 @@
  ],
  "pages": [
   {
-   "title": "Hungry? Order Now",
+   "title": "Hungry?\nOrder Now",
    "subtitle": "",
    "layout": "single-no-text",
    "background": {
@@ -58,10 +58,10 @@
    "decorations": [],
    "textLayers": [
     {
-     "id": "tpl-t1",
-     "xPct": 4.545,
-     "yPct": 8.478,
-     "widthPct": 90.909,
+     "id": "tpl-t2",
+     "xPct": 6.364,
+     "yPct": 2.925,
+     "widthPct": 87.273,
      "rotation": 0,
      "opacity": 1,
      "zIndex": 30,
@@ -69,43 +69,42 @@
      "style": {
       "text": "Hungry?\nOrder Now",
       "color": "#000000",
-      "size": 98.2,
+      "size": 78.5,
       "align": "center",
-      "fontFamily": "Inter, sans-serif",
-      "fontWeightNum": 700,
-      "lineHeightMultiplier": 1.12,
-      "charSpacing": -5
+      "fontFamily": "Poppins, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.15
      }
     }
    ],
    "assetLayers": [
     {
-     "id": "tpl-s2",
+     "id": "tpl-s1",
      "assetId": "shape:Phone shadow",
      "name": "Phone shadow",
-     "xPct": -8.182,
-     "yPct": 20.711,
-     "widthPct": 116.364,
-     "heightPct": 103.115,
+     "xPct": -13.977,
+     "yPct": 4.916,
+     "widthPct": 127.955,
+     "heightPct": 107.346,
      "rotation": 0,
-     "opacity": 0.16,
+     "opacity": 0.14,
      "zIndex": 5,
      "cropFit": "stretch",
      "shape": {
       "type": "roundRect",
-      "w": 512,
-      "h": 985.78,
-      "radius": 118.64,
+      "w": 563,
+      "h": 1026.23,
+      "radius": 147.2,
       "fill": "#000000",
-      "blur": 18,
-      "inset": 54
+      "blur": 28,
+      "inset": 84
      }
     }
    ],
    "deviceOne": {
-    "size": 67.61,
+    "size": 66.11,
     "x": 0.0,
-    "y": 23.57,
+    "y": 8.87,
     "rotation": 0,
     "brightness": 100,
     "frameless": false,
@@ -115,21 +114,21 @@
    }
   },
   {
-   "title": "Crave It? Get It",
+   "title": "Crave It?\nGet It",
    "subtitle": "",
    "layout": "single-no-text",
    "background": {
     "type": "solid",
-    "value": "#ffd8d3"
+    "value": "#fed2c7"
    },
    "devices": null,
    "decorations": [],
    "textLayers": [
     {
-     "id": "tpl-t3",
-     "xPct": 4.545,
-     "yPct": 8.478,
-     "widthPct": 90.909,
+     "id": "tpl-t4",
+     "xPct": 6.364,
+     "yPct": 2.925,
+     "widthPct": 87.273,
      "rotation": 0,
      "opacity": 1,
      "zIndex": 30,
@@ -137,67 +136,66 @@
      "style": {
       "text": "Crave It?\nGet It",
       "color": "#000000",
-      "size": 98.2,
+      "size": 78.5,
       "align": "center",
-      "fontFamily": "Inter, sans-serif",
-      "fontWeightNum": 700,
-      "lineHeightMultiplier": 1.12,
-      "charSpacing": -5
+      "fontFamily": "Poppins, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.15
      }
     }
    ],
    "assetLayers": [
     {
-     "id": "tpl-s4",
+     "id": "tpl-s3",
      "assetId": "shape:Phone shadow",
      "name": "Phone shadow",
-     "xPct": -8.182,
-     "yPct": 20.711,
-     "widthPct": 116.364,
-     "heightPct": 103.115,
+     "xPct": -13.977,
+     "yPct": 4.916,
+     "widthPct": 127.955,
+     "heightPct": 107.346,
      "rotation": 0,
-     "opacity": 0.16,
+     "opacity": 0.14,
      "zIndex": 5,
      "cropFit": "stretch",
      "shape": {
       "type": "roundRect",
-      "w": 512,
-      "h": 985.78,
-      "radius": 118.64,
+      "w": 563,
+      "h": 1026.23,
+      "radius": 147.2,
       "fill": "#000000",
-      "blur": 18,
-      "inset": 54
+      "blur": 28,
+      "inset": 84
      }
     }
    ],
    "deviceOne": {
-    "size": 67.61,
+    "size": 66.11,
     "x": 0.0,
-    "y": 23.57,
+    "y": 8.87,
     "rotation": 0,
     "brightness": 100,
     "frameless": false,
-    "bezelColor": "#ffd8d3",
-    "borderColor": "#ffd8d3",
+    "bezelColor": "#ffffff",
+    "borderColor": "#ffffff",
     "zIndex": 10
    }
   },
   {
-   "title": "Food Your Way",
+   "title": "Food Your\nWay",
    "subtitle": "",
    "layout": "single-no-text",
    "background": {
     "type": "solid",
-    "value": "#ff6a38"
+    "value": "#ff6937"
    },
    "devices": null,
    "decorations": [],
    "textLayers": [
     {
-     "id": "tpl-t5",
-     "xPct": 4.545,
-     "yPct": 8.478,
-     "widthPct": 90.909,
+     "id": "tpl-t6",
+     "xPct": 6.364,
+     "yPct": 2.925,
+     "widthPct": 87.273,
      "rotation": 0,
      "opacity": 1,
      "zIndex": 30,
@@ -205,67 +203,66 @@
      "style": {
       "text": "Food Your\nWay",
       "color": "#000000",
-      "size": 98.2,
+      "size": 78.5,
       "align": "center",
-      "fontFamily": "Inter, sans-serif",
-      "fontWeightNum": 700,
-      "lineHeightMultiplier": 1.12,
-      "charSpacing": -5
+      "fontFamily": "Poppins, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.15
      }
     }
    ],
    "assetLayers": [
     {
-     "id": "tpl-s6",
+     "id": "tpl-s5",
      "assetId": "shape:Phone shadow",
      "name": "Phone shadow",
-     "xPct": -8.182,
-     "yPct": 20.711,
-     "widthPct": 116.364,
-     "heightPct": 103.115,
+     "xPct": -13.977,
+     "yPct": 4.916,
+     "widthPct": 127.955,
+     "heightPct": 107.346,
      "rotation": 0,
-     "opacity": 0.16,
+     "opacity": 0.14,
      "zIndex": 5,
      "cropFit": "stretch",
      "shape": {
       "type": "roundRect",
-      "w": 512,
-      "h": 985.78,
-      "radius": 118.64,
+      "w": 563,
+      "h": 1026.23,
+      "radius": 147.2,
       "fill": "#000000",
-      "blur": 18,
-      "inset": 54
+      "blur": 28,
+      "inset": 84
      }
     }
    ],
    "deviceOne": {
-    "size": 67.61,
+    "size": 66.11,
     "x": 0.0,
-    "y": 23.57,
+    "y": 8.87,
     "rotation": 0,
     "brightness": 100,
     "frameless": false,
-    "bezelColor": "#ff6a38",
-    "borderColor": "#ff6a38",
+    "bezelColor": "#ffffff",
+    "borderColor": "#ffffff",
     "zIndex": 10
    }
   },
   {
-   "title": "Delicious Just Arrived",
+   "title": "Delicious\nJust Arrived",
    "subtitle": "",
    "layout": "single-no-text",
    "background": {
     "type": "solid",
-    "value": "#ffc044"
+    "value": "#ffc043"
    },
    "devices": null,
    "decorations": [],
    "textLayers": [
     {
-     "id": "tpl-t7",
-     "xPct": 4.545,
-     "yPct": 8.478,
-     "widthPct": 90.909,
+     "id": "tpl-t8",
+     "xPct": 6.364,
+     "yPct": 2.925,
+     "widthPct": 87.273,
      "rotation": 0,
      "opacity": 1,
      "zIndex": 30,
@@ -273,53 +270,52 @@
      "style": {
       "text": "Delicious\nJust Arrived",
       "color": "#000000",
-      "size": 98.2,
+      "size": 78.5,
       "align": "center",
-      "fontFamily": "Inter, sans-serif",
-      "fontWeightNum": 700,
-      "lineHeightMultiplier": 1.12,
-      "charSpacing": -5
+      "fontFamily": "Poppins, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.15
      }
     }
    ],
    "assetLayers": [
     {
-     "id": "tpl-s8",
+     "id": "tpl-s7",
      "assetId": "shape:Phone shadow",
      "name": "Phone shadow",
-     "xPct": -8.182,
-     "yPct": 20.711,
-     "widthPct": 116.364,
-     "heightPct": 103.115,
+     "xPct": -13.977,
+     "yPct": 4.916,
+     "widthPct": 127.955,
+     "heightPct": 107.346,
      "rotation": 0,
-     "opacity": 0.16,
+     "opacity": 0.14,
      "zIndex": 5,
      "cropFit": "stretch",
      "shape": {
       "type": "roundRect",
-      "w": 512,
-      "h": 985.78,
-      "radius": 118.64,
+      "w": 563,
+      "h": 1026.23,
+      "radius": 147.2,
       "fill": "#000000",
-      "blur": 18,
-      "inset": 54
+      "blur": 28,
+      "inset": 84
      }
     }
    ],
    "deviceOne": {
-    "size": 67.61,
+    "size": 66.11,
     "x": 0.0,
-    "y": 23.57,
+    "y": 8.87,
     "rotation": 0,
     "brightness": 100,
     "frameless": false,
-    "bezelColor": "#ffc044",
-    "borderColor": "#ffc044",
+    "bezelColor": "#ffffff",
+    "borderColor": "#ffffff",
     "zIndex": 10
    }
   },
   {
-   "title": "Satisfy Any Craving",
+   "title": "Satisfy\nAny Craving",
    "subtitle": "",
    "layout": "single-no-text",
    "background": {
@@ -330,10 +326,10 @@
    "decorations": [],
    "textLayers": [
     {
-     "id": "tpl-t9",
-     "xPct": 4.545,
-     "yPct": 8.478,
-     "widthPct": 90.909,
+     "id": "tpl-t10",
+     "xPct": 6.364,
+     "yPct": 2.925,
+     "widthPct": 87.273,
      "rotation": 0,
      "opacity": 1,
      "zIndex": 30,
@@ -341,67 +337,66 @@
      "style": {
       "text": "Satisfy\nAny Craving",
       "color": "#000000",
-      "size": 98.2,
+      "size": 78.5,
       "align": "center",
-      "fontFamily": "Inter, sans-serif",
-      "fontWeightNum": 700,
-      "lineHeightMultiplier": 1.12,
-      "charSpacing": -5
+      "fontFamily": "Poppins, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.15
      }
     }
    ],
    "assetLayers": [
     {
-     "id": "tpl-s10",
+     "id": "tpl-s9",
      "assetId": "shape:Phone shadow",
      "name": "Phone shadow",
-     "xPct": -8.182,
-     "yPct": 20.711,
-     "widthPct": 116.364,
-     "heightPct": 103.115,
+     "xPct": -13.977,
+     "yPct": 4.916,
+     "widthPct": 127.955,
+     "heightPct": 107.346,
      "rotation": 0,
-     "opacity": 0.16,
+     "opacity": 0.14,
      "zIndex": 5,
      "cropFit": "stretch",
      "shape": {
       "type": "roundRect",
-      "w": 512,
-      "h": 985.78,
-      "radius": 118.64,
+      "w": 563,
+      "h": 1026.23,
+      "radius": 147.2,
       "fill": "#000000",
-      "blur": 18,
-      "inset": 54
+      "blur": 28,
+      "inset": 84
      }
     }
    ],
    "deviceOne": {
-    "size": 67.61,
+    "size": 66.11,
     "x": 0.0,
-    "y": 23.57,
+    "y": 8.87,
     "rotation": 0,
     "brightness": 100,
     "frameless": false,
-    "bezelColor": "#06c167",
-    "borderColor": "#06c167",
+    "bezelColor": "#ffffff",
+    "borderColor": "#ffffff",
     "zIndex": 10
    }
   },
   {
-   "title": "Local Eats Delivered",
+   "title": "Local Eats\nDelivered",
    "subtitle": "",
    "layout": "single-no-text",
    "background": {
     "type": "solid",
-    "value": "#ffd8d3"
+    "value": "#fed2c7"
    },
    "devices": null,
    "decorations": [],
    "textLayers": [
     {
-     "id": "tpl-t11",
-     "xPct": 4.545,
-     "yPct": 8.478,
-     "widthPct": 90.909,
+     "id": "tpl-t12",
+     "xPct": 6.364,
+     "yPct": 2.925,
+     "widthPct": 87.273,
      "rotation": 0,
      "opacity": 1,
      "zIndex": 30,
@@ -409,67 +404,66 @@
      "style": {
       "text": "Local Eats\nDelivered",
       "color": "#000000",
-      "size": 98.2,
+      "size": 78.5,
       "align": "center",
-      "fontFamily": "Inter, sans-serif",
-      "fontWeightNum": 700,
-      "lineHeightMultiplier": 1.12,
-      "charSpacing": -5
+      "fontFamily": "Poppins, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.15
      }
     }
    ],
    "assetLayers": [
     {
-     "id": "tpl-s12",
+     "id": "tpl-s11",
      "assetId": "shape:Phone shadow",
      "name": "Phone shadow",
-     "xPct": -8.182,
-     "yPct": 20.711,
-     "widthPct": 116.364,
-     "heightPct": 103.115,
+     "xPct": -13.977,
+     "yPct": 4.916,
+     "widthPct": 127.955,
+     "heightPct": 107.346,
      "rotation": 0,
-     "opacity": 0.16,
+     "opacity": 0.14,
      "zIndex": 5,
      "cropFit": "stretch",
      "shape": {
       "type": "roundRect",
-      "w": 512,
-      "h": 985.78,
-      "radius": 118.64,
+      "w": 563,
+      "h": 1026.23,
+      "radius": 147.2,
       "fill": "#000000",
-      "blur": 18,
-      "inset": 54
+      "blur": 28,
+      "inset": 84
      }
     }
    ],
    "deviceOne": {
-    "size": 67.61,
+    "size": 66.11,
     "x": 0.0,
-    "y": 23.57,
+    "y": 8.87,
     "rotation": 0,
     "brightness": 100,
     "frameless": false,
-    "bezelColor": "#ffd8d3",
-    "borderColor": "#ffd8d3",
+    "bezelColor": "#ffffff",
+    "borderColor": "#ffffff",
     "zIndex": 10
    }
   },
   {
-   "title": "Order With Ease",
+   "title": "Order\nWith Ease",
    "subtitle": "",
    "layout": "single-no-text",
    "background": {
     "type": "solid",
-    "value": "#ff6a38"
+    "value": "#ff6937"
    },
    "devices": null,
    "decorations": [],
    "textLayers": [
     {
-     "id": "tpl-t13",
-     "xPct": 4.545,
-     "yPct": 8.478,
-     "widthPct": 90.909,
+     "id": "tpl-t14",
+     "xPct": 6.364,
+     "yPct": 2.925,
+     "widthPct": 87.273,
      "rotation": 0,
      "opacity": 1,
      "zIndex": 30,
@@ -477,67 +471,66 @@
      "style": {
       "text": "Order\nWith Ease",
       "color": "#000000",
-      "size": 98.2,
+      "size": 78.5,
       "align": "center",
-      "fontFamily": "Inter, sans-serif",
-      "fontWeightNum": 700,
-      "lineHeightMultiplier": 1.12,
-      "charSpacing": -5
+      "fontFamily": "Poppins, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.15
      }
     }
    ],
    "assetLayers": [
     {
-     "id": "tpl-s14",
+     "id": "tpl-s13",
      "assetId": "shape:Phone shadow",
      "name": "Phone shadow",
-     "xPct": -8.182,
-     "yPct": 20.711,
-     "widthPct": 116.364,
-     "heightPct": 103.115,
+     "xPct": -13.977,
+     "yPct": 4.916,
+     "widthPct": 127.955,
+     "heightPct": 107.346,
      "rotation": 0,
-     "opacity": 0.16,
+     "opacity": 0.14,
      "zIndex": 5,
      "cropFit": "stretch",
      "shape": {
       "type": "roundRect",
-      "w": 512,
-      "h": 985.78,
-      "radius": 118.64,
+      "w": 563,
+      "h": 1026.23,
+      "radius": 147.2,
       "fill": "#000000",
-      "blur": 18,
-      "inset": 54
+      "blur": 28,
+      "inset": 84
      }
     }
    ],
    "deviceOne": {
-    "size": 67.61,
+    "size": 66.11,
     "x": 0.0,
-    "y": 23.57,
+    "y": 8.87,
     "rotation": 0,
     "brightness": 100,
     "frameless": false,
-    "bezelColor": "#ff6a38",
-    "borderColor": "#ff6a38",
+    "bezelColor": "#ffffff",
+    "borderColor": "#ffffff",
     "zIndex": 10
    }
   },
   {
-   "title": "Fresh Food Fast",
+   "title": "Fresh\nFood Fast",
    "subtitle": "",
    "layout": "single-no-text",
    "background": {
     "type": "solid",
-    "value": "#ffc044"
+    "value": "#ffc043"
    },
    "devices": null,
    "decorations": [],
    "textLayers": [
     {
-     "id": "tpl-t15",
-     "xPct": 4.545,
-     "yPct": 8.478,
-     "widthPct": 90.909,
+     "id": "tpl-t16",
+     "xPct": 6.364,
+     "yPct": 2.925,
+     "widthPct": 87.273,
      "rotation": 0,
      "opacity": 1,
      "zIndex": 30,
@@ -545,52 +538,51 @@
      "style": {
       "text": "Fresh\nFood Fast",
       "color": "#000000",
-      "size": 98.2,
+      "size": 78.5,
       "align": "center",
-      "fontFamily": "Inter, sans-serif",
-      "fontWeightNum": 700,
-      "lineHeightMultiplier": 1.12,
-      "charSpacing": -5
+      "fontFamily": "Poppins, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.15
      }
     }
    ],
    "assetLayers": [
     {
-     "id": "tpl-s16",
+     "id": "tpl-s15",
      "assetId": "shape:Phone shadow",
      "name": "Phone shadow",
-     "xPct": -8.182,
-     "yPct": 20.711,
-     "widthPct": 116.364,
-     "heightPct": 103.115,
+     "xPct": -13.977,
+     "yPct": 4.916,
+     "widthPct": 127.955,
+     "heightPct": 107.346,
      "rotation": 0,
-     "opacity": 0.16,
+     "opacity": 0.14,
      "zIndex": 5,
      "cropFit": "stretch",
      "shape": {
       "type": "roundRect",
-      "w": 512,
-      "h": 985.78,
-      "radius": 118.64,
+      "w": 563,
+      "h": 1026.23,
+      "radius": 147.2,
       "fill": "#000000",
-      "blur": 18,
-      "inset": 54
+      "blur": 28,
+      "inset": 84
      }
     }
    ],
    "deviceOne": {
-    "size": 67.61,
+    "size": 66.11,
     "x": 0.0,
-    "y": 23.57,
+    "y": 8.87,
     "rotation": 0,
     "brightness": 100,
     "frameless": false,
-    "bezelColor": "#ffc044",
-    "borderColor": "#ffc044",
+    "bezelColor": "#ffffff",
+    "borderColor": "#ffffff",
     "zIndex": 10
    }
   }
  ],
  "designHeight": 2347,
- "textColor": "#111111"
+ "textColor": "#000000"
 }

@@ -1,0 +1,82 @@
+{
+ "version": 1,
+ "id": "travel-app-screenshots-template",
+ "name": "Travel app",
+ "category": "travel-and-local",
+ "description": "Present your travel app with our free template. Display trip planning, booking features, and travel information in an inspiring design that makes journey planning exciting.",
+ "devices": [
+  {
+   "deviceId": "apple-iphone-16-pro-max",
+   "label": "apple-iphone-16-pro-max"
+  },
+  {
+   "deviceId": "apple-iphone-14-plus",
+   "label": "apple-iphone-14-plus"
+  },
+  {
+   "deviceId": "samsung-galaxy-s21-ultra",
+   "label": "samsung-galaxy-s21-ultra"
+  }
+ ],
+ "layout": "single-title-above",
+ "background": {
+  "type": "gradient",
+  "value": "linear-gradient(135deg, #ffffff, #ffffff)"
+ },
+ "panoramic": false,
+ "columnCount": 4,
+ "titles": [
+  "Plan your\nnext adventure\nwith one finger",
+  "Discover more than\n75 destinations",
+  "Explore attractions\nand food nearby",
+  "Exciting guides\nand itineraries 🎒"
+ ],
+ "subtitles": [
+  "Present your travel app with our free te",
+  "Present your travel app with our free te",
+  "Present your travel app with our free te",
+  "Present your travel app with our free te"
+ ],
+ "pages": [
+  {
+   "title": "Plan your\nnext adventure\nwith one finger",
+   "subtitle": "Present your travel app with our free te",
+   "layout": "single-title-above",
+   "background": null,
+   "devices": null,
+   "decorations": [],
+   "textLayers": [],
+   "assetLayers": []
+  },
+  {
+   "title": "Discover more than\n75 destinations",
+   "subtitle": "Present your travel app with our free te",
+   "layout": "single-title-above",
+   "background": null,
+   "devices": null,
+   "decorations": [],
+   "textLayers": [],
+   "assetLayers": []
+  },
+  {
+   "title": "Explore attractions\nand food nearby",
+   "subtitle": "Present your travel app with our free te",
+   "layout": "single-title-above",
+   "background": null,
+   "devices": null,
+   "decorations": [],
+   "textLayers": [],
+   "assetLayers": []
+  },
+  {
+   "title": "Exciting guides\nand itineraries 🎒",
+   "subtitle": "Present your travel app with our free te",
+   "layout": "single-title-above",
+   "background": null,
+   "devices": null,
+   "decorations": [],
+   "textLayers": [],
+   "assetLayers": []
+  }
+ ]
+}

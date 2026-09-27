@@ -1,0 +1,3472 @@
+{
+ "version": 1,
+ "id": "ai-translator-language-app",
+ "name": "AI translator language app",
+ "category": "utilities",
+ "description": "Showcase your translation app with our intelligent template. Display AI-powered translation, voice recognition, and multi-language support in a sophisticated design that breaks down language barriers and facilitates global communication.",
+ "devices": [
+  {
+   "deviceId": "apple-iphone-16-pro-max",
+   "label": "apple-iphone-16-pro-max"
+  },
+  {
+   "deviceId": "apple-iphone-13-pro-max",
+   "label": "apple-iphone-13-pro-max"
+  },
+  {
+   "deviceId": "samsung-galaxy-s21-ultra",
+   "label": "samsung-galaxy-s21-ultra"
+  },
+  {
+   "deviceId": "apple-ipad-pro-12-9-inch",
+   "label": "apple-ipad-pro-12-9-inch"
+  },
+  {
+   "deviceId": "samsung-galaxy-tab-s7",
+   "label": "samsung-galaxy-tab-s7"
+  }
+ ],
+ "layout": "single-no-text",
+ "background": {
+  "type": "solid",
+  "value": "#ffffff"
+ },
+ "panoramic": false,
+ "columnCount": 5,
+ "titles": [
+  "Speak Any\nLanguage",
+  "Learn Faster\nSmarter",
+  "Your Words,\nEverywhere",
+  "Track Your\nGrowth",
+  "This AI translation app is"
+ ],
+ "subtitles": [
+  "Real-time AI-powered translation",
+  "Personalized lessons & feedback",
+  "Translate text, speech, or images",
+  "Progress stats and daily streaks",
+  "The real-time voice and"
+ ],
+ "pages": [
+  {
+   "title": "Speak Any\nLanguage",
+   "subtitle": "Real-time AI-powered translation",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#ffffff"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t56",
+     "xPct": 4.545,
+     "yPct": 3.831,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Speak Any\nLanguage",
+      "color": "#000000",
+      "size": 103.1,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.1
+     }
+    },
+    {
+     "id": "tpl-t57",
+     "xPct": 4.545,
+     "yPct": 17.638,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Real-time AI-powered translation",
+      "color": "#333333",
+      "size": 41.7,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.2
+     }
+    },
+    {
+     "id": "tpl-t58",
+     "xPct": 19.318,
+     "yPct": 26.308,
+     "widthPct": 38.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "Txt-ES",
+     "style": {
+      "text": "Hola, ¿cómo estás?",
+      "color": "#ffffff",
+      "size": 34.4,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.2
+     }
+    },
+    {
+     "id": "tpl-t59",
+     "xPct": 26.136,
+     "yPct": 33.216,
+     "widthPct": 31.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "Txt-AR",
+     "style": {
+      "text": "مرحبا، كيف حالك؟",
+      "color": "#ffffff",
+      "size": 36.8,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.2
+     }
+    },
+    {
+     "id": "tpl-t60",
+     "xPct": 25.0,
+     "yPct": 40.015,
+     "widthPct": 32.955,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "Txt-ZH",
+     "style": {
+      "text": "你好，你好吗？",
+      "color": "#ffffff",
+      "size": 36.8,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.2
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s1",
+     "assetId": "shape:Bubble-ES",
+     "name": "Bubble-ES",
+     "xPct": 19.318,
+     "yPct": 24.582,
+     "widthPct": 38.636,
+     "heightPct": 5.021,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 10,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 170,
+      "h": 48,
+      "radius": 24,
+      "fill": "#007aff"
+     }
+    },
+    {
+     "id": "tpl-s2",
+     "assetId": "shape:Bubble-AR",
+     "name": "Bubble-AR",
+     "xPct": 26.136,
+     "yPct": 31.904,
+     "widthPct": 31.818,
+     "heightPct": 4.393,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 10,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 140,
+      "h": 42,
+      "radius": 21,
+      "fill": "#007aff"
+     }
+    },
+    {
+     "id": "tpl-s3",
+     "assetId": "shape:Bubble-ZH",
+     "name": "Bubble-ZH",
+     "xPct": 25.0,
+     "yPct": 38.703,
+     "widthPct": 32.955,
+     "heightPct": 4.393,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 10,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 145,
+      "h": 42,
+      "radius": 21,
+      "fill": "#007aff"
+     }
+    },
+    {
+     "id": "tpl-s4",
+     "assetId": "shape:Wave-0",
+     "name": "Wave-0",
+     "xPct": 17.045,
+     "yPct": 54.498,
+     "widthPct": 1.136,
+     "heightPct": 1.883,
+     "rotation": 0,
+     "opacity": 0.75,
+     "zIndex": 12,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 5,
+      "h": 18,
+      "radius": 2.5,
+      "fill": "#007aff"
+     }
+    },
+    {
+     "id": "tpl-s5",
+     "assetId": "shape:Wave-1",
+     "name": "Wave-1",
+     "xPct": 20.114,
+     "yPct": 53.766,
+     "widthPct": 1.136,
+     "heightPct": 3.347,
+     "rotation": 0,
+     "opacity": 0.75,
+     "zIndex": 12,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 5,
+      "h": 32,
+      "radius": 2.5,
+      "fill": "#007aff"
+     }
+    },
+    {
+     "id": "tpl-s6",
+     "assetId": "shape:Wave-2",
+     "name": "Wave-2",
+     "xPct": 23.182,
+     "yPct": 54.184,
+     "widthPct": 1.136,
+     "heightPct": 2.51,
+     "rotation": 0,
+     "opacity": 0.75,
+     "zIndex": 12,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 5,
+      "h": 24,
+      "radius": 2.5,
+      "fill": "#007aff"
+     }
+    },
+    {
+     "id": "tpl-s7",
+     "assetId": "shape:Wave-3",
+     "name": "Wave-3",
+     "xPct": 26.25,
+     "yPct": 52.929,
+     "widthPct": 1.136,
+     "heightPct": 5.021,
+     "rotation": 0,
+     "opacity": 0.75,
+     "zIndex": 12,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 5,
+      "h": 48,
+      "radius": 2.5,
+      "fill": "#007aff"
+     }
+    },
+    {
+     "id": "tpl-s8",
+     "assetId": "shape:Wave-4",
+     "name": "Wave-4",
+     "xPct": 29.318,
+     "yPct": 51.674,
+     "widthPct": 1.136,
+     "heightPct": 7.531,
+     "rotation": 0,
+     "opacity": 0.75,
+     "zIndex": 12,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 5,
+      "h": 72,
+      "radius": 2.5,
+      "fill": "#007aff"
+     }
+    },
+    {
+     "id": "tpl-s9",
+     "assetId": "shape:Wave-5",
+     "name": "Wave-5",
+     "xPct": 32.386,
+     "yPct": 53.243,
+     "widthPct": 1.136,
+     "heightPct": 4.393,
+     "rotation": 0,
+     "opacity": 0.75,
+     "zIndex": 12,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 5,
+      "h": 42,
+      "radius": 2.5,
+      "fill": "#007aff"
+     }
+    },
+    {
+     "id": "tpl-s10",
+     "assetId": "shape:Wave-6",
+     "name": "Wave-6",
+     "xPct": 35.455,
+     "yPct": 50.994,
+     "widthPct": 1.136,
+     "heightPct": 8.891,
+     "rotation": 0,
+     "opacity": 0.75,
+     "zIndex": 12,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 5,
+      "h": 85,
+      "radius": 2.5,
+      "fill": "#007aff"
+     }
+    },
+    {
+     "id": "tpl-s11",
+     "assetId": "shape:Wave-7",
+     "name": "Wave-7",
+     "xPct": 38.523,
+     "yPct": 52.406,
+     "widthPct": 1.136,
+     "heightPct": 6.067,
+     "rotation": 0,
+     "opacity": 0.75,
+     "zIndex": 12,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 5,
+      "h": 58,
+      "radius": 2.5,
+      "fill": "#007aff"
+     }
+    },
+    {
+     "id": "tpl-s12",
+     "assetId": "shape:Wave-8",
+     "name": "Wave-8",
+     "xPct": 41.591,
+     "yPct": 50.314,
+     "widthPct": 1.136,
+     "heightPct": 10.251,
+     "rotation": 0,
+     "opacity": 0.75,
+     "zIndex": 12,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 5,
+      "h": 98,
+      "radius": 2.5,
+      "fill": "#007aff"
+     }
+    },
+    {
+     "id": "tpl-s13",
+     "assetId": "shape:Wave-9",
+     "name": "Wave-9",
+     "xPct": 44.659,
+     "yPct": 52.092,
+     "widthPct": 1.136,
+     "heightPct": 6.695,
+     "rotation": 0,
+     "opacity": 0.75,
+     "zIndex": 12,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 5,
+      "h": 64,
+      "radius": 2.5,
+      "fill": "#007aff"
+     }
+    },
+    {
+     "id": "tpl-s14",
+     "assetId": "shape:Wave-10",
+     "name": "Wave-10",
+     "xPct": 47.727,
+     "yPct": 50.837,
+     "widthPct": 1.136,
+     "heightPct": 9.205,
+     "rotation": 0,
+     "opacity": 0.75,
+     "zIndex": 12,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 5,
+      "h": 88,
+      "radius": 2.5,
+      "fill": "#007aff"
+     }
+    },
+    {
+     "id": "tpl-s15",
+     "assetId": "shape:Wave-11",
+     "name": "Wave-11",
+     "xPct": 50.795,
+     "yPct": 53.452,
+     "widthPct": 1.136,
+     "heightPct": 3.975,
+     "rotation": 0,
+     "opacity": 0.75,
+     "zIndex": 12,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 5,
+      "h": 38,
+      "radius": 2.5,
+      "fill": "#007aff"
+     }
+    },
+    {
+     "id": "tpl-s16",
+     "assetId": "shape:Wave-12",
+     "name": "Wave-12",
+     "xPct": 53.864,
+     "yPct": 51.883,
+     "widthPct": 1.136,
+     "heightPct": 7.113,
+     "rotation": 0,
+     "opacity": 0.75,
+     "zIndex": 12,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 5,
+      "h": 68,
+      "radius": 2.5,
+      "fill": "#007aff"
+     }
+    },
+    {
+     "id": "tpl-s17",
+     "assetId": "shape:Wave-13",
+     "name": "Wave-13",
+     "xPct": 56.932,
+     "yPct": 53.87,
+     "widthPct": 1.136,
+     "heightPct": 3.138,
+     "rotation": 0,
+     "opacity": 0.75,
+     "zIndex": 12,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 5,
+      "h": 30,
+      "radius": 2.5,
+      "fill": "#007aff"
+     }
+    },
+    {
+     "id": "tpl-s18",
+     "assetId": "shape:Wave-14",
+     "name": "Wave-14",
+     "xPct": 60.0,
+     "yPct": 53.086,
+     "widthPct": 1.136,
+     "heightPct": 4.707,
+     "rotation": 0,
+     "opacity": 0.75,
+     "zIndex": 12,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 5,
+      "h": 45,
+      "radius": 2.5,
+      "fill": "#007aff"
+     }
+    },
+    {
+     "id": "tpl-s19",
+     "assetId": "shape:Wave-15",
+     "name": "Wave-15",
+     "xPct": 63.068,
+     "yPct": 54.289,
+     "widthPct": 1.136,
+     "heightPct": 2.301,
+     "rotation": 0,
+     "opacity": 0.75,
+     "zIndex": 12,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 5,
+      "h": 22,
+      "radius": 2.5,
+      "fill": "#007aff"
+     }
+    },
+    {
+     "id": "tpl-s20",
+     "assetId": "shape:Flag-us-Border",
+     "name": "Flag-us-Border",
+     "xPct": 17.159,
+     "yPct": 79.55,
+     "widthPct": 11.136,
+     "heightPct": 5.126,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 49.0,
+      "h": 49.0,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s21",
+     "assetId": "shape:Flag-us-Base",
+     "name": "Flag-us-Base",
+     "xPct": 17.727,
+     "yPct": 79.812,
+     "widthPct": 10.0,
+     "heightPct": 4.603,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 44,
+      "h": 44,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s22",
+     "assetId": "shape:US-Red",
+     "name": "US-Red",
+     "xPct": 17.727,
+     "yPct": 79.812,
+     "widthPct": 10.0,
+     "heightPct": 0.46,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 44,
+      "h": 4.4,
+      "radius": 0,
+      "fill": "#b22234"
+     }
+    },
+    {
+     "id": "tpl-s23",
+     "assetId": "shape:US-Red",
+     "name": "US-Red",
+     "xPct": 17.727,
+     "yPct": 80.732,
+     "widthPct": 10.0,
+     "heightPct": 0.46,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 44,
+      "h": 4.4,
+      "radius": 0,
+      "fill": "#b22234"
+     }
+    },
+    {
+     "id": "tpl-s24",
+     "assetId": "shape:US-Red",
+     "name": "US-Red",
+     "xPct": 17.727,
+     "yPct": 81.653,
+     "widthPct": 10.0,
+     "heightPct": 0.46,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 44,
+      "h": 4.4,
+      "radius": 0,
+      "fill": "#b22234"
+     }
+    },
+    {
+     "id": "tpl-s25",
+     "assetId": "shape:US-Red",
+     "name": "US-Red",
+     "xPct": 17.727,
+     "yPct": 82.573,
+     "widthPct": 10.0,
+     "heightPct": 0.46,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 44,
+      "h": 4.4,
+      "radius": 0,
+      "fill": "#b22234"
+     }
+    },
+    {
+     "id": "tpl-s26",
+     "assetId": "shape:US-Red",
+     "name": "US-Red",
+     "xPct": 17.727,
+     "yPct": 83.494,
+     "widthPct": 10.0,
+     "heightPct": 0.46,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 44,
+      "h": 4.4,
+      "radius": 0,
+      "fill": "#b22234"
+     }
+    },
+    {
+     "id": "tpl-s27",
+     "assetId": "shape:US-Blue",
+     "name": "US-Blue",
+     "xPct": 17.727,
+     "yPct": 79.812,
+     "widthPct": 5.0,
+     "heightPct": 2.301,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 22,
+      "h": 22,
+      "radius": 0,
+      "fill": "#3c3b6e"
+     }
+    },
+    {
+     "id": "tpl-s28",
+     "assetId": "shape:Flag-us-Ring",
+     "name": "Flag-us-Ring",
+     "xPct": 17.727,
+     "yPct": 79.812,
+     "widthPct": 10.0,
+     "heightPct": 4.603,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 44,
+      "h": 44,
+      "stroke": "#ffffff",
+      "strokeWidth": 3,
+      "inset": 1.5
+     }
+    },
+    {
+     "id": "tpl-s29",
+     "assetId": "shape:Flag-fr-Border",
+     "name": "Flag-fr-Border",
+     "xPct": 28.523,
+     "yPct": 79.55,
+     "widthPct": 11.136,
+     "heightPct": 5.126,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 49.0,
+      "h": 49.0,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s30",
+     "assetId": "shape:Flag-fr-Base",
+     "name": "Flag-fr-Base",
+     "xPct": 29.091,
+     "yPct": 79.812,
+     "widthPct": 10.0,
+     "heightPct": 4.603,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 44,
+      "h": 44,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s31",
+     "assetId": "shape:FR-Blue",
+     "name": "FR-Blue",
+     "xPct": 29.091,
+     "yPct": 79.812,
+     "widthPct": 3.5,
+     "heightPct": 4.603,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 15.4,
+      "h": 44,
+      "radius": 0,
+      "fill": "#002395"
+     }
+    },
+    {
+     "id": "tpl-s32",
+     "assetId": "shape:FR-Red",
+     "name": "FR-Red",
+     "xPct": 35.591,
+     "yPct": 79.812,
+     "widthPct": 3.5,
+     "heightPct": 4.603,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 15.4,
+      "h": 44,
+      "radius": 0,
+      "fill": "#ed2939"
+     }
+    },
+    {
+     "id": "tpl-s33",
+     "assetId": "shape:Flag-fr-Ring",
+     "name": "Flag-fr-Ring",
+     "xPct": 29.091,
+     "yPct": 79.812,
+     "widthPct": 10.0,
+     "heightPct": 4.603,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 44,
+      "h": 44,
+      "stroke": "#ffffff",
+      "strokeWidth": 3,
+      "inset": 1.5
+     }
+    },
+    {
+     "id": "tpl-s34",
+     "assetId": "shape:Flag-es-Border",
+     "name": "Flag-es-Border",
+     "xPct": 39.886,
+     "yPct": 79.55,
+     "widthPct": 11.136,
+     "heightPct": 5.126,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 49.0,
+      "h": 49.0,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s35",
+     "assetId": "shape:Flag-es-Base",
+     "name": "Flag-es-Base",
+     "xPct": 40.455,
+     "yPct": 79.812,
+     "widthPct": 10.0,
+     "heightPct": 4.603,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 44,
+      "h": 44,
+      "fill": "#ffc400"
+     }
+    },
+    {
+     "id": "tpl-s36",
+     "assetId": "shape:ES-RedTop",
+     "name": "ES-RedTop",
+     "xPct": 40.455,
+     "yPct": 79.812,
+     "widthPct": 10.0,
+     "heightPct": 1.266,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 44,
+      "h": 12.1,
+      "radius": 0,
+      "fill": "#c60b1e"
+     }
+    },
+    {
+     "id": "tpl-s37",
+     "assetId": "shape:ES-RedBot",
+     "name": "ES-RedBot",
+     "xPct": 40.455,
+     "yPct": 83.149,
+     "widthPct": 10.0,
+     "heightPct": 1.266,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 44,
+      "h": 12.1,
+      "radius": 0,
+      "fill": "#c60b1e"
+     }
+    },
+    {
+     "id": "tpl-s38",
+     "assetId": "shape:Flag-es-Ring",
+     "name": "Flag-es-Ring",
+     "xPct": 40.455,
+     "yPct": 79.812,
+     "widthPct": 10.0,
+     "heightPct": 4.603,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 44,
+      "h": 44,
+      "stroke": "#ffffff",
+      "strokeWidth": 3,
+      "inset": 1.5
+     }
+    },
+    {
+     "id": "tpl-s39",
+     "assetId": "shape:Flag-uk-Border",
+     "name": "Flag-uk-Border",
+     "xPct": 17.159,
+     "yPct": 85.303,
+     "widthPct": 11.136,
+     "heightPct": 5.126,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 49.0,
+      "h": 49.0,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s40",
+     "assetId": "shape:Flag-uk-Base",
+     "name": "Flag-uk-Base",
+     "xPct": 17.727,
+     "yPct": 85.565,
+     "widthPct": 10.0,
+     "heightPct": 4.603,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 44,
+      "h": 44,
+      "fill": "#012169"
+     }
+    },
+    {
+     "id": "tpl-s41",
+     "assetId": "shape:UK-WhiteH",
+     "name": "UK-WhiteH",
+     "xPct": 17.727,
+     "yPct": 87.176,
+     "widthPct": 10.0,
+     "heightPct": 1.381,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 44,
+      "h": 13.2,
+      "radius": 0,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s42",
+     "assetId": "shape:UK-WhiteV",
+     "name": "UK-WhiteV",
+     "xPct": 21.227,
+     "yPct": 85.565,
+     "widthPct": 3.0,
+     "heightPct": 4.603,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 13.2,
+      "h": 44,
+      "radius": 0,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s43",
+     "assetId": "shape:UK-RedH",
+     "name": "UK-RedH",
+     "xPct": 17.727,
+     "yPct": 87.452,
+     "widthPct": 10.0,
+     "heightPct": 0.828,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 44,
+      "h": 7.92,
+      "radius": 0,
+      "fill": "#c8102e"
+     }
+    },
+    {
+     "id": "tpl-s44",
+     "assetId": "shape:UK-RedV",
+     "name": "UK-RedV",
+     "xPct": 21.827,
+     "yPct": 85.565,
+     "widthPct": 1.8,
+     "heightPct": 4.603,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 7.92,
+      "h": 44,
+      "radius": 0,
+      "fill": "#c8102e"
+     }
+    },
+    {
+     "id": "tpl-s45",
+     "assetId": "shape:Flag-uk-Ring",
+     "name": "Flag-uk-Ring",
+     "xPct": 17.727,
+     "yPct": 85.565,
+     "widthPct": 10.0,
+     "heightPct": 4.603,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 44,
+      "h": 44,
+      "stroke": "#ffffff",
+      "strokeWidth": 3,
+      "inset": 1.5
+     }
+    },
+    {
+     "id": "tpl-s46",
+     "assetId": "shape:Flag-ru-Border",
+     "name": "Flag-ru-Border",
+     "xPct": 28.523,
+     "yPct": 85.303,
+     "widthPct": 11.136,
+     "heightPct": 5.126,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 49.0,
+      "h": 49.0,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s47",
+     "assetId": "shape:Flag-ru-Base",
+     "name": "Flag-ru-Base",
+     "xPct": 29.091,
+     "yPct": 85.565,
+     "widthPct": 10.0,
+     "heightPct": 4.603,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 44,
+      "h": 44,
+      "fill": "#0039a6"
+     }
+    },
+    {
+     "id": "tpl-s48",
+     "assetId": "shape:RU-White",
+     "name": "RU-White",
+     "xPct": 29.091,
+     "yPct": 85.565,
+     "widthPct": 10.0,
+     "heightPct": 1.496,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 44,
+      "h": 14.3,
+      "radius": 0,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s49",
+     "assetId": "shape:RU-Red",
+     "name": "RU-Red",
+     "xPct": 29.091,
+     "yPct": 88.672,
+     "widthPct": 10.0,
+     "heightPct": 1.496,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 44,
+      "h": 14.3,
+      "radius": 0,
+      "fill": "#d52b1e"
+     }
+    },
+    {
+     "id": "tpl-s50",
+     "assetId": "shape:Flag-ru-Ring",
+     "name": "Flag-ru-Ring",
+     "xPct": 29.091,
+     "yPct": 85.565,
+     "widthPct": 10.0,
+     "heightPct": 4.603,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 44,
+      "h": 44,
+      "stroke": "#ffffff",
+      "strokeWidth": 3,
+      "inset": 1.5
+     }
+    },
+    {
+     "id": "tpl-s51",
+     "assetId": "shape:Flag-it-Border",
+     "name": "Flag-it-Border",
+     "xPct": 39.886,
+     "yPct": 85.303,
+     "widthPct": 11.136,
+     "heightPct": 5.126,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 49.0,
+      "h": 49.0,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s52",
+     "assetId": "shape:Flag-it-Base",
+     "name": "Flag-it-Base",
+     "xPct": 40.455,
+     "yPct": 85.565,
+     "widthPct": 10.0,
+     "heightPct": 4.603,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 44,
+      "h": 44,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s53",
+     "assetId": "shape:IT-Green",
+     "name": "IT-Green",
+     "xPct": 40.455,
+     "yPct": 85.565,
+     "widthPct": 3.5,
+     "heightPct": 4.603,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 15.4,
+      "h": 44,
+      "radius": 0,
+      "fill": "#008c45"
+     }
+    },
+    {
+     "id": "tpl-s54",
+     "assetId": "shape:IT-Red",
+     "name": "IT-Red",
+     "xPct": 46.955,
+     "yPct": 85.565,
+     "widthPct": 3.5,
+     "heightPct": 4.603,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 15.4,
+      "h": 44,
+      "radius": 0,
+      "fill": "#cd212a"
+     }
+    },
+    {
+     "id": "tpl-s55",
+     "assetId": "shape:Flag-it-Ring",
+     "name": "Flag-it-Ring",
+     "xPct": 40.455,
+     "yPct": 85.565,
+     "widthPct": 10.0,
+     "heightPct": 4.603,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 44,
+      "h": 44,
+      "stroke": "#ffffff",
+      "strokeWidth": 3,
+      "inset": 1.5
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 0,
+    "x": 0,
+    "y": 0,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": true,
+    "visible": false
+   }
+  },
+  {
+   "title": "Learn Faster\nSmarter",
+   "subtitle": "Personalized lessons & feedback",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#ffffff"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t99",
+     "xPct": 4.545,
+     "yPct": 3.831,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Learn Faster\nSmarter",
+      "color": "#000000",
+      "size": 103.1,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.1
+     }
+    },
+    {
+     "id": "tpl-t100",
+     "xPct": 4.545,
+     "yPct": 17.638,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Personalized lessons & feedback",
+      "color": "#333333",
+      "size": 41.7,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.2
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s61",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 19.111,
+     "yPct": 32.714,
+     "widthPct": 126.818,
+     "heightPct": 106.21,
+     "rotation": -12,
+     "opacity": 0.18,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 558,
+      "h": 1015.36,
+      "radius": 146.4,
+      "fill": "#000000",
+      "blur": 28,
+      "inset": 84
+     }
+    },
+    {
+     "id": "tpl-s62",
+     "assetId": "shape:Curved-Arrow",
+     "name": "Curved-Arrow",
+     "xPct": 5.455,
+     "yPct": 22.385,
+     "widthPct": 20.909,
+     "heightPct": 14.854,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 92,
+      "h": 142,
+      "vx": 24,
+      "vy": 214,
+      "path": "M70,220C40,260 50,310 85,330L80,305L115,335L85,355L85,340C40,320 25,260 55,215Z",
+      "fill": "#0099ff"
+     }
+    },
+    {
+     "id": "tpl-s63",
+     "assetId": "shape:Flag-ru-Border",
+     "name": "Flag-ru-Border",
+     "xPct": 23.75,
+     "yPct": 24.529,
+     "widthPct": 13.864,
+     "heightPct": 6.381,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 61.0,
+      "h": 61.0,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s64",
+     "assetId": "shape:Flag-ru-Base",
+     "name": "Flag-ru-Base",
+     "xPct": 24.318,
+     "yPct": 24.791,
+     "widthPct": 12.727,
+     "heightPct": 5.858,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 56,
+      "h": 56,
+      "fill": "#0039a6"
+     }
+    },
+    {
+     "id": "tpl-s65",
+     "assetId": "shape:RU-White",
+     "name": "RU-White",
+     "xPct": 24.318,
+     "yPct": 24.791,
+     "widthPct": 12.727,
+     "heightPct": 1.904,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 56,
+      "h": 18.2,
+      "radius": 0,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s66",
+     "assetId": "shape:RU-Red",
+     "name": "RU-Red",
+     "xPct": 24.318,
+     "yPct": 28.745,
+     "widthPct": 12.727,
+     "heightPct": 1.904,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 56,
+      "h": 18.2,
+      "radius": 0,
+      "fill": "#d52b1e"
+     }
+    },
+    {
+     "id": "tpl-s67",
+     "assetId": "shape:Flag-ru-Ring",
+     "name": "Flag-ru-Ring",
+     "xPct": 24.318,
+     "yPct": 24.791,
+     "widthPct": 12.727,
+     "heightPct": 5.858,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 56,
+      "h": 56,
+      "stroke": "#ffffff",
+      "strokeWidth": 3,
+      "inset": 1.5
+     }
+    },
+    {
+     "id": "tpl-s68",
+     "assetId": "shape:Flag-es-Border",
+     "name": "Flag-es-Border",
+     "xPct": 32.841,
+     "yPct": 26.098,
+     "widthPct": 13.864,
+     "heightPct": 6.381,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 61.0,
+      "h": 61.0,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s69",
+     "assetId": "shape:Flag-es-Base",
+     "name": "Flag-es-Base",
+     "xPct": 33.409,
+     "yPct": 26.36,
+     "widthPct": 12.727,
+     "heightPct": 5.858,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 56,
+      "h": 56,
+      "fill": "#ffc400"
+     }
+    },
+    {
+     "id": "tpl-s70",
+     "assetId": "shape:ES-RedTop",
+     "name": "ES-RedTop",
+     "xPct": 33.409,
+     "yPct": 26.36,
+     "widthPct": 12.727,
+     "heightPct": 1.611,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 56,
+      "h": 15.4,
+      "radius": 0,
+      "fill": "#c60b1e"
+     }
+    },
+    {
+     "id": "tpl-s71",
+     "assetId": "shape:ES-RedBot",
+     "name": "ES-RedBot",
+     "xPct": 33.409,
+     "yPct": 30.607,
+     "widthPct": 12.727,
+     "heightPct": 1.611,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 56,
+      "h": 15.4,
+      "radius": 0,
+      "fill": "#c60b1e"
+     }
+    },
+    {
+     "id": "tpl-s72",
+     "assetId": "shape:Flag-es-Ring",
+     "name": "Flag-es-Ring",
+     "xPct": 33.409,
+     "yPct": 26.36,
+     "widthPct": 12.727,
+     "heightPct": 5.858,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 56,
+      "h": 56,
+      "stroke": "#ffffff",
+      "strokeWidth": 3,
+      "inset": 1.5
+     }
+    },
+    {
+     "id": "tpl-s73",
+     "assetId": "shape:Flag-uk-Border",
+     "name": "Flag-uk-Border",
+     "xPct": 41.932,
+     "yPct": 27.667,
+     "widthPct": 13.864,
+     "heightPct": 6.381,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 61.0,
+      "h": 61.0,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s74",
+     "assetId": "shape:Flag-uk-Base",
+     "name": "Flag-uk-Base",
+     "xPct": 42.5,
+     "yPct": 27.929,
+     "widthPct": 12.727,
+     "heightPct": 5.858,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 56,
+      "h": 56,
+      "fill": "#012169"
+     }
+    },
+    {
+     "id": "tpl-s75",
+     "assetId": "shape:UK-WhiteH",
+     "name": "UK-WhiteH",
+     "xPct": 42.5,
+     "yPct": 29.979,
+     "widthPct": 12.727,
+     "heightPct": 1.757,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 56,
+      "h": 16.8,
+      "radius": 0,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s76",
+     "assetId": "shape:UK-WhiteV",
+     "name": "UK-WhiteV",
+     "xPct": 46.955,
+     "yPct": 27.929,
+     "widthPct": 3.818,
+     "heightPct": 5.858,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 16.8,
+      "h": 56,
+      "radius": 0,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s77",
+     "assetId": "shape:UK-RedH",
+     "name": "UK-RedH",
+     "xPct": 42.5,
+     "yPct": 30.331,
+     "widthPct": 12.727,
+     "heightPct": 1.054,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 56,
+      "h": 10.08,
+      "radius": 0,
+      "fill": "#c8102e"
+     }
+    },
+    {
+     "id": "tpl-s78",
+     "assetId": "shape:UK-RedV",
+     "name": "UK-RedV",
+     "xPct": 47.718,
+     "yPct": 27.929,
+     "widthPct": 2.291,
+     "heightPct": 5.858,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 10.08,
+      "h": 56,
+      "radius": 0,
+      "fill": "#c8102e"
+     }
+    },
+    {
+     "id": "tpl-s79",
+     "assetId": "shape:Flag-uk-Ring",
+     "name": "Flag-uk-Ring",
+     "xPct": 42.5,
+     "yPct": 27.929,
+     "widthPct": 12.727,
+     "heightPct": 5.858,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 56,
+      "h": 56,
+      "stroke": "#ffffff",
+      "strokeWidth": 3,
+      "inset": 1.5
+     }
+    },
+    {
+     "id": "tpl-s80",
+     "assetId": "shape:Flag-de-Border",
+     "name": "Flag-de-Border",
+     "xPct": 51.023,
+     "yPct": 28.713,
+     "widthPct": 13.864,
+     "heightPct": 6.381,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 61.0,
+      "h": 61.0,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s81",
+     "assetId": "shape:Flag-de-Base",
+     "name": "Flag-de-Base",
+     "xPct": 51.591,
+     "yPct": 28.975,
+     "widthPct": 12.727,
+     "heightPct": 5.858,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 56,
+      "h": 56,
+      "fill": "#dd0000"
+     }
+    },
+    {
+     "id": "tpl-s82",
+     "assetId": "shape:DE-Black",
+     "name": "DE-Black",
+     "xPct": 51.591,
+     "yPct": 28.975,
+     "widthPct": 12.727,
+     "heightPct": 1.904,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 56,
+      "h": 18.2,
+      "radius": 0,
+      "fill": "#000000"
+     }
+    },
+    {
+     "id": "tpl-s83",
+     "assetId": "shape:DE-Gold",
+     "name": "DE-Gold",
+     "xPct": 51.591,
+     "yPct": 32.929,
+     "widthPct": 12.727,
+     "heightPct": 1.904,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 56,
+      "h": 18.2,
+      "radius": 0,
+      "fill": "#ffce00"
+     }
+    },
+    {
+     "id": "tpl-s84",
+     "assetId": "shape:Flag-de-Ring",
+     "name": "Flag-de-Ring",
+     "xPct": 51.591,
+     "yPct": 28.975,
+     "widthPct": 12.727,
+     "heightPct": 5.858,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 23,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 56,
+      "h": 56,
+      "stroke": "#ffffff",
+      "strokeWidth": 3,
+      "inset": 1.5
+     }
+    },
+    {
+     "id": "tpl-s85",
+     "assetId": "shape:Flag-fr-Border",
+     "name": "Flag-fr-Border",
+     "xPct": 60.114,
+     "yPct": 29.759,
+     "widthPct": 13.864,
+     "heightPct": 6.381,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 61.0,
+      "h": 61.0,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s86",
+     "assetId": "shape:Flag-fr-Base",
+     "name": "Flag-fr-Base",
+     "xPct": 60.682,
+     "yPct": 30.021,
+     "widthPct": 12.727,
+     "heightPct": 5.858,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 56,
+      "h": 56,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s87",
+     "assetId": "shape:FR-Blue",
+     "name": "FR-Blue",
+     "xPct": 60.682,
+     "yPct": 30.021,
+     "widthPct": 4.455,
+     "heightPct": 5.858,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 19.6,
+      "h": 56,
+      "radius": 0,
+      "fill": "#002395"
+     }
+    },
+    {
+     "id": "tpl-s88",
+     "assetId": "shape:FR-Red",
+     "name": "FR-Red",
+     "xPct": 68.955,
+     "yPct": 30.021,
+     "widthPct": 4.455,
+     "heightPct": 5.858,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 19.6,
+      "h": 56,
+      "radius": 0,
+      "fill": "#ed2939"
+     }
+    },
+    {
+     "id": "tpl-s89",
+     "assetId": "shape:Flag-fr-Ring",
+     "name": "Flag-fr-Ring",
+     "xPct": 60.682,
+     "yPct": 30.021,
+     "widthPct": 12.727,
+     "heightPct": 5.858,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 24,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 56,
+      "h": 56,
+      "stroke": "#ffffff",
+      "strokeWidth": 3,
+      "inset": 1.5
+     }
+    },
+    {
+     "id": "tpl-s90",
+     "assetId": "shape:Flag-us-Border",
+     "name": "Flag-us-Border",
+     "xPct": 69.205,
+     "yPct": 30.805,
+     "widthPct": 13.864,
+     "heightPct": 6.381,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 61.0,
+      "h": 61.0,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s91",
+     "assetId": "shape:Flag-us-Base",
+     "name": "Flag-us-Base",
+     "xPct": 69.773,
+     "yPct": 31.067,
+     "widthPct": 12.727,
+     "heightPct": 5.858,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 56,
+      "h": 56,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s92",
+     "assetId": "shape:US-Red",
+     "name": "US-Red",
+     "xPct": 69.773,
+     "yPct": 31.067,
+     "widthPct": 12.727,
+     "heightPct": 0.586,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 23,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 56,
+      "h": 5.6,
+      "radius": 0,
+      "fill": "#b22234"
+     }
+    },
+    {
+     "id": "tpl-s93",
+     "assetId": "shape:US-Red",
+     "name": "US-Red",
+     "xPct": 69.773,
+     "yPct": 32.238,
+     "widthPct": 12.727,
+     "heightPct": 0.586,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 23,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 56,
+      "h": 5.6,
+      "radius": 0,
+      "fill": "#b22234"
+     }
+    },
+    {
+     "id": "tpl-s94",
+     "assetId": "shape:US-Red",
+     "name": "US-Red",
+     "xPct": 69.773,
+     "yPct": 33.41,
+     "widthPct": 12.727,
+     "heightPct": 0.586,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 23,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 56,
+      "h": 5.6,
+      "radius": 0,
+      "fill": "#b22234"
+     }
+    },
+    {
+     "id": "tpl-s95",
+     "assetId": "shape:US-Red",
+     "name": "US-Red",
+     "xPct": 69.773,
+     "yPct": 34.582,
+     "widthPct": 12.727,
+     "heightPct": 0.586,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 23,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 56,
+      "h": 5.6,
+      "radius": 0,
+      "fill": "#b22234"
+     }
+    },
+    {
+     "id": "tpl-s96",
+     "assetId": "shape:US-Red",
+     "name": "US-Red",
+     "xPct": 69.773,
+     "yPct": 35.753,
+     "widthPct": 12.727,
+     "heightPct": 0.586,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 23,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 56,
+      "h": 5.6,
+      "radius": 0,
+      "fill": "#b22234"
+     }
+    },
+    {
+     "id": "tpl-s97",
+     "assetId": "shape:US-Blue",
+     "name": "US-Blue",
+     "xPct": 69.773,
+     "yPct": 31.067,
+     "widthPct": 6.364,
+     "heightPct": 2.929,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 24,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 28,
+      "h": 28,
+      "radius": 0,
+      "fill": "#3c3b6e"
+     }
+    },
+    {
+     "id": "tpl-s98",
+     "assetId": "shape:Flag-us-Ring",
+     "name": "Flag-us-Ring",
+     "xPct": 69.773,
+     "yPct": 31.067,
+     "widthPct": 12.727,
+     "heightPct": 5.858,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 25,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 56,
+      "h": 56,
+      "stroke": "#ffffff",
+      "strokeWidth": 3,
+      "inset": 1.5
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 65.27,
+    "x": 36.69,
+    "y": 39.7,
+    "rotation": -12,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#000000",
+    "borderColor": "#333333",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Your Words,\nEverywhere",
+   "subtitle": "Translate text, speech, or images",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#ffffff"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t106",
+     "xPct": 4.545,
+     "yPct": 3.831,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Your Words,\nEverywhere",
+      "color": "#000000",
+      "size": 103.1,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.1
+     }
+    },
+    {
+     "id": "tpl-t107",
+     "xPct": 4.545,
+     "yPct": 17.638,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Translate text, speech, or images",
+      "color": "#333333",
+      "size": 41.7,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.2
+     }
+    },
+    {
+     "id": "tpl-t108",
+     "xPct": 15.909,
+     "yPct": 46.194,
+     "widthPct": 54.545,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "Txt-Green-Title",
+     "style": {
+      "text": "Video Conversations",
+      "color": "#ffffff",
+      "size": 41.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.2
+     }
+    },
+    {
+     "id": "tpl-t109",
+     "xPct": 15.909,
+     "yPct": 49.332,
+     "widthPct": 54.545,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "Txt-Green-Desc",
+     "style": {
+      "text": "Video Lights, camera, action! Watch a fun movie\nclip and answer questions based on the dialogue.",
+      "color": "rgba(255,255,255,0.88)",
+      "size": 25.8,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.25
+     }
+    },
+    {
+     "id": "tpl-t110",
+     "xPct": 15.909,
+     "yPct": 60.316,
+     "widthPct": 54.545,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "Txt-Dark-Title",
+     "style": {
+      "text": "Pronunciation Test",
+      "color": "#ffffff",
+      "size": 41.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.2
+     }
+    },
+    {
+     "id": "tpl-t111",
+     "xPct": 15.909,
+     "yPct": 63.454,
+     "widthPct": 54.545,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "Txt-Dark-Desc",
+     "style": {
+      "text": "Practice your pronunciation skills by speaking\nand recording phrases aloud.",
+      "color": "rgba(255,255,255,0.75)",
+      "size": 25.8,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.25
+     }
+    },
+    {
+     "id": "tpl-t112",
+     "xPct": 15.909,
+     "yPct": 74.437,
+     "widthPct": 54.545,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "Txt-Blue-Title",
+     "style": {
+      "text": "Numbers Games",
+      "color": "#ffffff",
+      "size": 41.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.2
+     }
+    },
+    {
+     "id": "tpl-t113",
+     "xPct": 15.909,
+     "yPct": 77.575,
+     "widthPct": 54.545,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "Txt-Blue-Desc",
+     "style": {
+      "text": "Test your numerical skills with a fun numbers\ngame. Learn numbers in your language of\nChoice",
+      "color": "rgba(255,255,255,0.85)",
+      "size": 25.8,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.25
+     }
+    },
+    {
+     "id": "tpl-t114",
+     "xPct": 73.864,
+     "yPct": 75.182,
+     "widthPct": 13.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "Txt-10",
+     "style": {
+      "text": "10",
+      "color": "rgba(255,255,255,0.22)",
+      "size": 117.8,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.2
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s101",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -13.409,
+     "yPct": 21.653,
+     "widthPct": 126.818,
+     "heightPct": 106.21,
+     "rotation": 0,
+     "opacity": 0.18,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 558,
+      "h": 1015.36,
+      "radius": 146.4,
+      "fill": "#000000",
+      "blur": 28,
+      "inset": 84
+     }
+    },
+    {
+     "id": "tpl-s102",
+     "assetId": "shape:Card-Green",
+     "name": "Card-Green",
+     "xPct": 11.364,
+     "yPct": 44.979,
+     "widthPct": 77.273,
+     "heightPct": 11.506,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 340,
+      "h": 110,
+      "radius": 18,
+      "fill": "#2ec486"
+     }
+    },
+    {
+     "id": "tpl-s103",
+     "assetId": "shape:Card-Dark",
+     "name": "Card-Dark",
+     "xPct": 11.364,
+     "yPct": 59.1,
+     "widthPct": 77.273,
+     "heightPct": 11.506,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 340,
+      "h": 110,
+      "radius": 18,
+      "fill": "#1e242b"
+     }
+    },
+    {
+     "id": "tpl-s104",
+     "assetId": "shape:Card-Blue",
+     "name": "Card-Blue",
+     "xPct": 11.364,
+     "yPct": 73.222,
+     "widthPct": 77.273,
+     "heightPct": 11.506,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 340,
+      "h": 110,
+      "radius": 18,
+      "fill": "#1139ad"
+     }
+    },
+    {
+     "id": "tpl-s105",
+     "assetId": "shape:Star-Icon",
+     "name": "Star-Icon",
+     "xPct": 72.045,
+     "yPct": 48.013,
+     "widthPct": 12.727,
+     "heightPct": 5.439,
+     "rotation": 0,
+     "opacity": 0.22,
+     "zIndex": 22,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 56,
+      "h": 52,
+      "vx": 317,
+      "vy": 459,
+      "path": "M345,460L353,477L372,479L358,492L362,510L345,500L328,510L332,492L318,479L337,477Z",
+      "fill": "#ffffff"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 65.27,
+    "x": 0.0,
+    "y": 27.22,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#000000",
+    "borderColor": "#333333",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Track Your\nGrowth",
+   "subtitle": "Progress stats and daily streaks",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#ffffff"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t116",
+     "xPct": 4.545,
+     "yPct": 3.831,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Track Your\nGrowth",
+      "color": "#000000",
+      "size": 103.1,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.1
+     }
+    },
+    {
+     "id": "tpl-t117",
+     "xPct": 4.545,
+     "yPct": 17.638,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Progress stats and daily streaks",
+      "color": "#333333",
+      "size": 41.7,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.2
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s115",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -13.409,
+     "yPct": 21.653,
+     "widthPct": 126.818,
+     "heightPct": 106.21,
+     "rotation": 0,
+     "opacity": 0.18,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 558,
+      "h": 1015.36,
+      "radius": 146.4,
+      "fill": "#000000",
+      "blur": 28,
+      "inset": 84
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 65.27,
+    "x": 0.0,
+    "y": 27.22,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#000000",
+    "borderColor": "#333333",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "This AI translation app is",
+   "subtitle": "The real-time voice and",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#007aff"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t164",
+     "xPct": 4.545,
+     "yPct": 12.865,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Review-Top",
+     "style": {
+      "text": "This AI translation app is\na game changer for\nanyone looking to learn\na new language or\ncommunicate instantly.",
+      "color": "#ffffff",
+      "size": 63.8,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.35
+     }
+    },
+    {
+     "id": "tpl-t165",
+     "xPct": 4.545,
+     "yPct": 74.581,
+     "widthPct": 90.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Review-Bottom",
+     "style": {
+      "text": "The real-time voice and\ntext translation is super\naccurate, and the\ninterface is clean and\neasy to use.",
+      "color": "#ffffff",
+      "size": 63.8,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 400,
+      "lineHeightMultiplier": 1.35
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s118",
+     "assetId": "shape:Star-85-0",
+     "name": "Star-85-0",
+     "xPct": 36.136,
+     "yPct": 7.741,
+     "widthPct": 5.0,
+     "heightPct": 2.249,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 22,
+      "h": 21.5,
+      "vx": 159,
+      "vy": 74,
+      "path": "M170,75L173,82L180,82.5L175,87.5L176.5,94.5L170,90.5L163.5,94.5L165,87.5L160,82.5L167,82Z",
+      "fill": "#ffcc00"
+     }
+    },
+    {
+     "id": "tpl-s119",
+     "assetId": "shape:Star-85-1",
+     "name": "Star-85-1",
+     "xPct": 41.818,
+     "yPct": 7.741,
+     "widthPct": 5.0,
+     "heightPct": 2.249,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 22,
+      "h": 21.5,
+      "vx": 184,
+      "vy": 74,
+      "path": "M195,75L198,82L205,82.5L200,87.5L201.5,94.5L195,90.5L188.5,94.5L190,87.5L185,82.5L192,82Z",
+      "fill": "#ffcc00"
+     }
+    },
+    {
+     "id": "tpl-s120",
+     "assetId": "shape:Star-85-2",
+     "name": "Star-85-2",
+     "xPct": 47.5,
+     "yPct": 7.741,
+     "widthPct": 5.0,
+     "heightPct": 2.249,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 22,
+      "h": 21.5,
+      "vx": 209,
+      "vy": 74,
+      "path": "M220,75L223,82L230,82.5L225,87.5L226.5,94.5L220,90.5L213.5,94.5L215,87.5L210,82.5L217,82Z",
+      "fill": "#ffcc00"
+     }
+    },
+    {
+     "id": "tpl-s121",
+     "assetId": "shape:Star-85-3",
+     "name": "Star-85-3",
+     "xPct": 53.182,
+     "yPct": 7.741,
+     "widthPct": 5.0,
+     "heightPct": 2.249,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 22,
+      "h": 21.5,
+      "vx": 234,
+      "vy": 74,
+      "path": "M245,75L248,82L255,82.5L250,87.5L251.5,94.5L245,90.5L238.5,94.5L240,87.5L235,82.5L242,82Z",
+      "fill": "#ffcc00"
+     }
+    },
+    {
+     "id": "tpl-s122",
+     "assetId": "shape:Star-85-4",
+     "name": "Star-85-4",
+     "xPct": 58.864,
+     "yPct": 7.741,
+     "widthPct": 5.0,
+     "heightPct": 2.249,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 22,
+      "h": 21.5,
+      "vx": 259,
+      "vy": 74,
+      "path": "M270,75L273,82L280,82.5L275,87.5L276.5,94.5L270,90.5L263.5,94.5L265,87.5L260,82.5L267,82Z",
+      "fill": "#ffcc00"
+     }
+    },
+    {
+     "id": "tpl-s123",
+     "assetId": "shape:Flag-us-Border",
+     "name": "Flag-us-Border",
+     "xPct": 14.659,
+     "yPct": 49.634,
+     "widthPct": 13.864,
+     "heightPct": 6.381,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 61.0,
+      "h": 61.0,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s124",
+     "assetId": "shape:Flag-us-Base",
+     "name": "Flag-us-Base",
+     "xPct": 15.227,
+     "yPct": 49.895,
+     "widthPct": 12.727,
+     "heightPct": 5.858,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 56,
+      "h": 56,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s125",
+     "assetId": "shape:US-Red",
+     "name": "US-Red",
+     "xPct": 15.227,
+     "yPct": 49.895,
+     "widthPct": 12.727,
+     "heightPct": 0.586,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 56,
+      "h": 5.6,
+      "radius": 0,
+      "fill": "#b22234"
+     }
+    },
+    {
+     "id": "tpl-s126",
+     "assetId": "shape:US-Red",
+     "name": "US-Red",
+     "xPct": 15.227,
+     "yPct": 51.067,
+     "widthPct": 12.727,
+     "heightPct": 0.586,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 56,
+      "h": 5.6,
+      "radius": 0,
+      "fill": "#b22234"
+     }
+    },
+    {
+     "id": "tpl-s127",
+     "assetId": "shape:US-Red",
+     "name": "US-Red",
+     "xPct": 15.227,
+     "yPct": 52.238,
+     "widthPct": 12.727,
+     "heightPct": 0.586,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 56,
+      "h": 5.6,
+      "radius": 0,
+      "fill": "#b22234"
+     }
+    },
+    {
+     "id": "tpl-s128",
+     "assetId": "shape:US-Red",
+     "name": "US-Red",
+     "xPct": 15.227,
+     "yPct": 53.41,
+     "widthPct": 12.727,
+     "heightPct": 0.586,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 56,
+      "h": 5.6,
+      "radius": 0,
+      "fill": "#b22234"
+     }
+    },
+    {
+     "id": "tpl-s129",
+     "assetId": "shape:US-Red",
+     "name": "US-Red",
+     "xPct": 15.227,
+     "yPct": 54.582,
+     "widthPct": 12.727,
+     "heightPct": 0.586,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 56,
+      "h": 5.6,
+      "radius": 0,
+      "fill": "#b22234"
+     }
+    },
+    {
+     "id": "tpl-s130",
+     "assetId": "shape:US-Blue",
+     "name": "US-Blue",
+     "xPct": 15.227,
+     "yPct": 49.895,
+     "widthPct": 6.364,
+     "heightPct": 2.929,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 28,
+      "h": 28,
+      "radius": 0,
+      "fill": "#3c3b6e"
+     }
+    },
+    {
+     "id": "tpl-s131",
+     "assetId": "shape:Flag-us-Ring",
+     "name": "Flag-us-Ring",
+     "xPct": 15.227,
+     "yPct": 49.895,
+     "widthPct": 12.727,
+     "heightPct": 5.858,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 56,
+      "h": 56,
+      "stroke": "#ffffff",
+      "strokeWidth": 3,
+      "inset": 1.5
+     }
+    },
+    {
+     "id": "tpl-s132",
+     "assetId": "shape:Flag-fr-Border",
+     "name": "Flag-fr-Border",
+     "xPct": 26.023,
+     "yPct": 49.634,
+     "widthPct": 13.864,
+     "heightPct": 6.381,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 61.0,
+      "h": 61.0,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s133",
+     "assetId": "shape:Flag-fr-Base",
+     "name": "Flag-fr-Base",
+     "xPct": 26.591,
+     "yPct": 49.895,
+     "widthPct": 12.727,
+     "heightPct": 5.858,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 56,
+      "h": 56,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s134",
+     "assetId": "shape:FR-Blue",
+     "name": "FR-Blue",
+     "xPct": 26.591,
+     "yPct": 49.895,
+     "widthPct": 4.455,
+     "heightPct": 5.858,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 19.6,
+      "h": 56,
+      "radius": 0,
+      "fill": "#002395"
+     }
+    },
+    {
+     "id": "tpl-s135",
+     "assetId": "shape:FR-Red",
+     "name": "FR-Red",
+     "xPct": 34.864,
+     "yPct": 49.895,
+     "widthPct": 4.455,
+     "heightPct": 5.858,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 19.6,
+      "h": 56,
+      "radius": 0,
+      "fill": "#ed2939"
+     }
+    },
+    {
+     "id": "tpl-s136",
+     "assetId": "shape:Flag-fr-Ring",
+     "name": "Flag-fr-Ring",
+     "xPct": 26.591,
+     "yPct": 49.895,
+     "widthPct": 12.727,
+     "heightPct": 5.858,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 56,
+      "h": 56,
+      "stroke": "#ffffff",
+      "strokeWidth": 3,
+      "inset": 1.5
+     }
+    },
+    {
+     "id": "tpl-s137",
+     "assetId": "shape:Flag-es-Border",
+     "name": "Flag-es-Border",
+     "xPct": 37.386,
+     "yPct": 49.634,
+     "widthPct": 13.864,
+     "heightPct": 6.381,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 61.0,
+      "h": 61.0,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s138",
+     "assetId": "shape:Flag-es-Base",
+     "name": "Flag-es-Base",
+     "xPct": 37.955,
+     "yPct": 49.895,
+     "widthPct": 12.727,
+     "heightPct": 5.858,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 56,
+      "h": 56,
+      "fill": "#ffc400"
+     }
+    },
+    {
+     "id": "tpl-s139",
+     "assetId": "shape:ES-RedTop",
+     "name": "ES-RedTop",
+     "xPct": 37.955,
+     "yPct": 49.895,
+     "widthPct": 12.727,
+     "heightPct": 1.611,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 56,
+      "h": 15.4,
+      "radius": 0,
+      "fill": "#c60b1e"
+     }
+    },
+    {
+     "id": "tpl-s140",
+     "assetId": "shape:ES-RedBot",
+     "name": "ES-RedBot",
+     "xPct": 37.955,
+     "yPct": 54.142,
+     "widthPct": 12.727,
+     "heightPct": 1.611,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 56,
+      "h": 15.4,
+      "radius": 0,
+      "fill": "#c60b1e"
+     }
+    },
+    {
+     "id": "tpl-s141",
+     "assetId": "shape:Flag-es-Ring",
+     "name": "Flag-es-Ring",
+     "xPct": 37.955,
+     "yPct": 49.895,
+     "widthPct": 12.727,
+     "heightPct": 5.858,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 56,
+      "h": 56,
+      "stroke": "#ffffff",
+      "strokeWidth": 3,
+      "inset": 1.5
+     }
+    },
+    {
+     "id": "tpl-s142",
+     "assetId": "shape:Flag-uk-Border",
+     "name": "Flag-uk-Border",
+     "xPct": 48.75,
+     "yPct": 49.634,
+     "widthPct": 13.864,
+     "heightPct": 6.381,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 61.0,
+      "h": 61.0,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s143",
+     "assetId": "shape:Flag-uk-Base",
+     "name": "Flag-uk-Base",
+     "xPct": 49.318,
+     "yPct": 49.895,
+     "widthPct": 12.727,
+     "heightPct": 5.858,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 56,
+      "h": 56,
+      "fill": "#012169"
+     }
+    },
+    {
+     "id": "tpl-s144",
+     "assetId": "shape:UK-WhiteH",
+     "name": "UK-WhiteH",
+     "xPct": 49.318,
+     "yPct": 51.946,
+     "widthPct": 12.727,
+     "heightPct": 1.757,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 56,
+      "h": 16.8,
+      "radius": 0,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s145",
+     "assetId": "shape:UK-WhiteV",
+     "name": "UK-WhiteV",
+     "xPct": 53.773,
+     "yPct": 49.895,
+     "widthPct": 3.818,
+     "heightPct": 5.858,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 16.8,
+      "h": 56,
+      "radius": 0,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s146",
+     "assetId": "shape:UK-RedH",
+     "name": "UK-RedH",
+     "xPct": 49.318,
+     "yPct": 52.297,
+     "widthPct": 12.727,
+     "heightPct": 1.054,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 56,
+      "h": 10.08,
+      "radius": 0,
+      "fill": "#c8102e"
+     }
+    },
+    {
+     "id": "tpl-s147",
+     "assetId": "shape:UK-RedV",
+     "name": "UK-RedV",
+     "xPct": 54.536,
+     "yPct": 49.895,
+     "widthPct": 2.291,
+     "heightPct": 5.858,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 10.08,
+      "h": 56,
+      "radius": 0,
+      "fill": "#c8102e"
+     }
+    },
+    {
+     "id": "tpl-s148",
+     "assetId": "shape:Flag-uk-Ring",
+     "name": "Flag-uk-Ring",
+     "xPct": 49.318,
+     "yPct": 49.895,
+     "widthPct": 12.727,
+     "heightPct": 5.858,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 56,
+      "h": 56,
+      "stroke": "#ffffff",
+      "strokeWidth": 3,
+      "inset": 1.5
+     }
+    },
+    {
+     "id": "tpl-s149",
+     "assetId": "shape:Flag-de-Border",
+     "name": "Flag-de-Border",
+     "xPct": 60.114,
+     "yPct": 49.634,
+     "widthPct": 13.864,
+     "heightPct": 6.381,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 61.0,
+      "h": 61.0,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s150",
+     "assetId": "shape:Flag-de-Base",
+     "name": "Flag-de-Base",
+     "xPct": 60.682,
+     "yPct": 49.895,
+     "widthPct": 12.727,
+     "heightPct": 5.858,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 56,
+      "h": 56,
+      "fill": "#dd0000"
+     }
+    },
+    {
+     "id": "tpl-s151",
+     "assetId": "shape:DE-Black",
+     "name": "DE-Black",
+     "xPct": 60.682,
+     "yPct": 49.895,
+     "widthPct": 12.727,
+     "heightPct": 1.904,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 56,
+      "h": 18.2,
+      "radius": 0,
+      "fill": "#000000"
+     }
+    },
+    {
+     "id": "tpl-s152",
+     "assetId": "shape:DE-Gold",
+     "name": "DE-Gold",
+     "xPct": 60.682,
+     "yPct": 53.849,
+     "widthPct": 12.727,
+     "heightPct": 1.904,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 56,
+      "h": 18.2,
+      "radius": 0,
+      "fill": "#ffce00"
+     }
+    },
+    {
+     "id": "tpl-s153",
+     "assetId": "shape:Flag-de-Ring",
+     "name": "Flag-de-Ring",
+     "xPct": 60.682,
+     "yPct": 49.895,
+     "widthPct": 12.727,
+     "heightPct": 5.858,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 23,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 56,
+      "h": 56,
+      "stroke": "#ffffff",
+      "strokeWidth": 3,
+      "inset": 1.5
+     }
+    },
+    {
+     "id": "tpl-s154",
+     "assetId": "shape:Flag-ru-Border",
+     "name": "Flag-ru-Border",
+     "xPct": 71.477,
+     "yPct": 49.634,
+     "widthPct": 13.864,
+     "heightPct": 6.381,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 61.0,
+      "h": 61.0,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s155",
+     "assetId": "shape:Flag-ru-Base",
+     "name": "Flag-ru-Base",
+     "xPct": 72.045,
+     "yPct": 49.895,
+     "widthPct": 12.727,
+     "heightPct": 5.858,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 56,
+      "h": 56,
+      "fill": "#0039a6"
+     }
+    },
+    {
+     "id": "tpl-s156",
+     "assetId": "shape:RU-White",
+     "name": "RU-White",
+     "xPct": 72.045,
+     "yPct": 49.895,
+     "widthPct": 12.727,
+     "heightPct": 1.904,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 56,
+      "h": 18.2,
+      "radius": 0,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s157",
+     "assetId": "shape:RU-Red",
+     "name": "RU-Red",
+     "xPct": 72.045,
+     "yPct": 53.849,
+     "widthPct": 12.727,
+     "heightPct": 1.904,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 56,
+      "h": 18.2,
+      "radius": 0,
+      "fill": "#d52b1e"
+     }
+    },
+    {
+     "id": "tpl-s158",
+     "assetId": "shape:Flag-ru-Ring",
+     "name": "Flag-ru-Ring",
+     "xPct": 72.045,
+     "yPct": 49.895,
+     "widthPct": 12.727,
+     "heightPct": 5.858,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 24,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 56,
+      "h": 56,
+      "stroke": "#ffffff",
+      "strokeWidth": 3,
+      "inset": 1.5
+     }
+    },
+    {
+     "id": "tpl-s159",
+     "assetId": "shape:Star-680-0",
+     "name": "Star-680-0",
+     "xPct": 36.136,
+     "yPct": 69.979,
+     "widthPct": 5.0,
+     "heightPct": 2.249,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 22,
+      "h": 21.5,
+      "vx": 159,
+      "vy": 669,
+      "path": "M170,670L173,677L180,677.5L175,682.5L176.5,689.5L170,685.5L163.5,689.5L165,682.5L160,677.5L167,677Z",
+      "fill": "#ffcc00"
+     }
+    },
+    {
+     "id": "tpl-s160",
+     "assetId": "shape:Star-680-1",
+     "name": "Star-680-1",
+     "xPct": 41.818,
+     "yPct": 69.979,
+     "widthPct": 5.0,
+     "heightPct": 2.249,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 22,
+      "h": 21.5,
+      "vx": 184,
+      "vy": 669,
+      "path": "M195,670L198,677L205,677.5L200,682.5L201.5,689.5L195,685.5L188.5,689.5L190,682.5L185,677.5L192,677Z",
+      "fill": "#ffcc00"
+     }
+    },
+    {
+     "id": "tpl-s161",
+     "assetId": "shape:Star-680-2",
+     "name": "Star-680-2",
+     "xPct": 47.5,
+     "yPct": 69.979,
+     "widthPct": 5.0,
+     "heightPct": 2.249,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 22,
+      "h": 21.5,
+      "vx": 209,
+      "vy": 669,
+      "path": "M220,670L223,677L230,677.5L225,682.5L226.5,689.5L220,685.5L213.5,689.5L215,682.5L210,677.5L217,677Z",
+      "fill": "#ffcc00"
+     }
+    },
+    {
+     "id": "tpl-s162",
+     "assetId": "shape:Star-680-3",
+     "name": "Star-680-3",
+     "xPct": 53.182,
+     "yPct": 69.979,
+     "widthPct": 5.0,
+     "heightPct": 2.249,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 22,
+      "h": 21.5,
+      "vx": 234,
+      "vy": 669,
+      "path": "M245,670L248,677L255,677.5L250,682.5L251.5,689.5L245,685.5L238.5,689.5L240,682.5L235,677.5L242,677Z",
+      "fill": "#ffcc00"
+     }
+    },
+    {
+     "id": "tpl-s163",
+     "assetId": "shape:Star-680-4",
+     "name": "Star-680-4",
+     "xPct": 58.864,
+     "yPct": 69.979,
+     "widthPct": 5.0,
+     "heightPct": 2.249,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 22,
+      "h": 21.5,
+      "vx": 259,
+      "vy": 669,
+      "path": "M270,670L273,677L280,677.5L275,682.5L276.5,689.5L270,685.5L263.5,689.5L265,682.5L260,677.5L267,677Z",
+      "fill": "#ffcc00"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 0,
+    "x": 0,
+    "y": 0,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": true,
+    "visible": false
+   }
+  }
+ ],
+ "designHeight": 2347,
+ "textColor": "#111111"
+}

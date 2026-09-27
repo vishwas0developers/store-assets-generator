@@ -1,0 +1,55 @@
+{
+ "version": 1,
+ "id": "blink-travel-template",
+ "name": "Travel Planner",
+ "category": "travel-and-local",
+ "description": "Airy gradient layout for an itinerary and trip-planning app.",
+ "devices": [
+  {
+   "deviceId": "samsung-galaxy-s24",
+   "label": "Galaxy Phone"
+  }
+ ],
+ "layout": "the-airbnb-right-2-title-above",
+ "background": {
+  "type": "gradient",
+  "value": "aurora"
+ },
+ "pages": [
+  {
+   "title": "Find Stays",
+   "subtitle": "Discover unique cabins & homes",
+   "layout": "the-airbnb-right-2-title-above",
+   "background": null,
+   "devices": null
+  },
+  {
+   "title": "Local Guides",
+   "subtitle": "Handpicked recommendations",
+   "layout": "the-airbnb-right-2-title-above",
+   "background": null,
+   "devices": null
+  },
+  {
+   "title": "Realtime Maps",
+   "subtitle": "Interactive offline maps",
+   "layout": "the-airbnb-right-2-title-above",
+   "background": null,
+   "devices": null
+  },
+  {
+   "title": "Book Tickets",
+   "subtitle": "Seamless booking for flights",
+   "layout": "the-airbnb-right-2-title-above",
+   "background": null,
+   "devices": null
+  },
+  {
+   "title": "Share Trip",
+   "subtitle": "Plan with friends in real time",
+   "layout": "the-airbnb-right-2-title-above",
+   "background": null,
+   "devices": null
+  }
+ ]
+}
