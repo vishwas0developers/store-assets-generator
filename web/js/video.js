@@ -1572,7 +1572,7 @@ export function renderSavedConfigsGrid() {
   }
 
   grid.innerHTML = savedConfigsCache.map((c) => {
-    const displayName = (c.name && c.name !== "1" && c.name.trim() !== "") ? c.name : (c.template ? `${c.template} Template` : "Saved Template");
+    const displayName = savedTemplateDisplayName(c);
     const firstScene = c.scenes[0] || {};
     const aspect = firstScene.aspectRatio === "16:9" ? "16:9" : "9:16";
     const isPortrait = aspect === "9:16";
@@ -1594,8 +1594,7 @@ export function renderSavedConfigsGrid() {
         <div class="saved-template-preview-wrapper ${isPortrait ? "portrait" : "landscape"}">
           <iframe class="saved-template-preview-iframe"
                   id="saved-template-iframe-${c.id}"
-                  src="${previewUrl}"
-                  loading="lazy"
+                  src="${previewUrl}?t=${Date.now()}"
                   title="Preview ${displayName}"></iframe>
         </div>
 
@@ -1623,74 +1622,32 @@ export function renderSavedConfigsGrid() {
     `;
   }).join("");
 
+  // Template pages are fixed-size canvases (1920x1080 / 1080x1920): scale them to the card.
+  const fitSavedPreview = (wrap) => {
+    const f = wrap.querySelector("iframe");
+    if (f) f.style.transform = `scale(${wrap.clientWidth / f.offsetWidth})`;
+  };
+  const ro = new ResizeObserver((entries) => entries.forEach((e) => fitSavedPreview(e.target)));
+  grid.querySelectorAll(".saved-template-preview-wrapper").forEach((w) => { fitSavedPreview(w); ro.observe(w); });
+
   // Action button handlers
-  grid.querySelectorAll('[data-act="preview-config"]').forEach((btn) => {
-    const id = btn.dataset.id;
-    const iframe = $(`saved-template-iframe-${id}`);
-
-    const syncState = (state) => {
-      if (state === "playing") {
-        btn.innerHTML = '<span class="ico">&#10074;&#10074;</span>';
-        btn.title = "Pause Preview";
-      } else {
-        btn.innerHTML = '<span class="ico">&#9654;</span>';
-        btn.title = state === "ended" ? "Replay Preview" : "Play Preview";
-      }
+  // Card frames are still thumbnails: park each on a frame past the opening fade so it shows content.
+  grid.querySelectorAll(".saved-template-preview-iframe").forEach((f) => {
+    const park = () => {
+      try {
+        const w = f.contentWindow;
+        const total = w.__videoPreview?.totalDuration || 3000;
+        if (typeof w.seek === "function") w.seek(Math.min(1500, total / 2));
+      } catch (_) {}
     };
+    f.addEventListener("load", park);
+    park();
+  });
 
-    if (iframe) {
-      iframe.onload = () => {
-        try {
-          const win = iframe.contentWindow;
-          if (win && win.__videoPreview) {
-            win.__videoPreview.onState = (evt) => syncState(evt.state);
-          }
-        } catch (_) {}
-      };
-    }
-
+  grid.querySelectorAll('[data-act="preview-config"]').forEach((btn) => {
     btn.onclick = () => {
-      if (!iframe || !iframe.contentWindow) return;
-      const win = iframe.contentWindow;
-      const player = win.__videoPreview;
-
-      // Pause other template previews so only one plays at a time
-      grid.querySelectorAll('iframe').forEach((otherFrame) => {
-        if (otherFrame !== iframe && otherFrame.contentWindow?.__videoPreview?.pause) {
-          try {
-            otherFrame.contentWindow.__videoPreview.pause();
-            const otherCard = otherFrame.closest('.saved-template-card');
-            const otherPlayBtn = otherCard?.querySelector('[data-act="preview-config"]');
-            if (otherPlayBtn) {
-              otherPlayBtn.innerHTML = '<span class="ico">&#9654;</span>';
-              otherPlayBtn.title = "Play Preview";
-            }
-          } catch (_) {}
-        }
-      });
-
-      if (player) {
-        const state = typeof player.currentState === "function" ? player.currentState() : (player.isPaused && player.isPaused() ? "paused" : "playing");
-        if (state === "playing") {
-          player.pause();
-          syncState("paused");
-        } else if (state === "ended") {
-          if (typeof player.replay === "function") player.replay();
-          else if (typeof player.play === "function") player.play();
-          syncState("playing");
-        } else {
-          if (typeof player.play === "function") player.play();
-          syncState("playing");
-        }
-      } else if (typeof win.play === "function") {
-        if (win.playState === "playing") {
-          win.pause();
-          syncState("paused");
-        } else {
-          win.play();
-          syncState("playing");
-        }
-      }
+      const cfg = savedConfigsCache.find((c) => c.id === btn.dataset.id);
+      if (cfg) openSavedTemplatePlayer(cfg);
     };
   });
 
@@ -1969,10 +1926,10 @@ export function renderSavedConfigsGrid() {
         showAlert("Load a template first.");
         return;
       }
-      if ($("save-config-name")) $("save-config-name").value = "";
+      if ($("save-config-name")) $("save-config-name").value = nextSavedTemplateName();
       if ($("save-config-warning")) $("save-config-warning").style.display = "none";
       $("save-config-backdrop")?.classList.add("open");
-      $("save-config-name")?.focus();
+      $("save-config-name")?.select();
     };
   }
 
@@ -2022,3 +1979,87 @@ export function renderSavedConfigsGrid() {
     };
   }
 })();
+
+
+/** Blurred-backdrop popup that plays a saved template scaled to fit the viewport,
+ *  with an optional true-fullscreen toggle. */
+function openSavedTemplatePlayer(cfg) {
+  const landscape = (cfg.scenes[0] || {}).aspectRatio === "16:9";
+  const W = landscape ? 1920 : 1080, H = landscape ? 1080 : 1920;
+  const overlay = document.createElement("div");
+  overlay.className = "saved-player-overlay";
+  overlay.innerHTML = `
+    <div class="saved-player-box">
+      <div class="saved-player-bar">
+        <span>${savedTemplateDisplayName(cfg)}</span>
+        <button class="icon-btn small secondary" data-sp="fs" title="Fullscreen">&#x26F6;</button>
+        <button class="icon-btn small secondary" data-sp="close" title="Close">&#10005;</button>
+      </div>
+      <div class="saved-player-stage">
+        <iframe src="/api/videos/${videoId}/configs/${cfg.id}/preview?t=${Date.now()}" style="width:${W}px;height:${H}px" title="Saved template player"></iframe>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  const stage = overlay.querySelector(".saved-player-stage");
+  const frame = overlay.querySelector("iframe");
+
+  const fit = () => {
+    const full = document.fullscreenElement === stage;
+    const maxW = full ? innerWidth : innerWidth * 0.9, maxH = full ? innerHeight : innerHeight * 0.82;
+    const k = Math.min(maxW / W, maxH / H);
+    stage.style.width = `${W * k}px`;
+    stage.style.height = `${H * k}px`;
+    frame.style.transform = `scale(${k})`;
+    // The browser forces a fullscreen element to fill the screen, so centre the frame inside it.
+    frame.style.left = full ? `${(innerWidth - W * k) / 2}px` : "0";
+    frame.style.top = full ? `${(innerHeight - H * k) / 2}px` : "0";
+  };
+  fit();
+  addEventListener("resize", fit);
+  document.addEventListener("fullscreenchange", fit);
+
+  const close = () => {
+    try { frame.contentWindow.__videoPreview?.pause(); } catch (_) {}
+    if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+    removeEventListener("resize", fit);
+    document.removeEventListener("fullscreenchange", fit);
+    removeEventListener("keydown", onKey);
+    overlay.remove();
+  };
+  const onKey = (e) => { if (e.key === "Escape" && !document.fullscreenElement) close(); };
+  addEventListener("keydown", onKey);
+
+  overlay.addEventListener("click", (e) => { if (e.target === overlay) close(); });
+  overlay.querySelector('[data-sp="close"]').onclick = close;
+  overlay.querySelector('[data-sp="fs"]').onclick = () => {
+    if (document.fullscreenElement) document.exitFullscreen();
+    else stage.requestFullscreen?.().catch(() => {});
+  };
+  frame.addEventListener("load", () => {
+    try { frame.contentWindow.__videoPreview?.replay?.() ?? frame.contentWindow.__videoPreview?.play(); } catch (_) {}
+  });
+}
+
+/** Human name of a template id ("galaxy-s25-landscape" -> its catalog name, else the id). */
+function templateLabel(id) {
+  return videoTemplates.find((t) => t.id === id)?.name || id || "Template";
+}
+
+/** "<Template name> - 1", "- 2", ... first number not already taken. */
+function nextSavedTemplateName() {
+  const base = templateLabel(videoProject?.template);
+  const taken = new Set(savedConfigsCache.map((c) => (c.name || "").trim().toLowerCase()));
+  for (let n = 1; ; n++) {
+    const name = `${base} - ${n}`;
+    if (!taken.has(name.toLowerCase())) return name;
+  }
+}
+
+/** Card/popup title. Bare numbers ("1") and blank names from older saves read as "<Template name> - N". */
+function savedTemplateDisplayName(cfg) {
+  const name = (cfg.name || "").trim();
+  const base = templateLabel(cfg.template);
+  if (!name) return `${base} - ${savedConfigsCache.indexOf(cfg) + 1}`;
+  if (/^\d+$/.test(name)) return `${base} - ${name}`;
+  return name;
+}
