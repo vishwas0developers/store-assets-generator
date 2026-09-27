@@ -1,7 +1,7 @@
 {
  "version": 1,
  "id": "messenger-template",
- "name": "Messenger app",
+ "name": "Messenger App-2",
  "category": "social-networking",
  "description": "Present your messaging platform with our free template. Display chat interfaces, multimedia sharing, and communication features in an engaging design that promotes user connection.",
  "devices": [
@@ -21,217 +21,221 @@
  "layout": "single-no-text",
  "background": {
   "type": "gradient",
-  "value": "linear-gradient(120deg,#426fff 0%,#4a6cfb 45%,#7c60e2 100%)"
+  "value": "linear-gradient(165deg,#ff7a52 0%,#ff5a3d 55%,#f2453a 100%)"
  },
  "panoramic": true,
  "columnCount": 4,
  "titles": [
-  "Useful. Social. Expressive.",
-  "Bring your vibe to your chats",
-  "Hang out anytime, anywhere",
-  "Get instant answers with your AI assistant"
+  "Talk like you mean it",
+  "Voice notes in a tap",
+  "Group chats, sorted",
+  "Private by default"
  ],
  "subtitles": [
-  "",
-  "",
-  "",
-  ""
+  "Chats that sound like you",
+  "Hold, speak, send",
+  "Pin, mute and reply in threads",
+  "End-to-end encrypted chats"
  ],
  "pages": [
   {
-   "title": "Useful. Social. Expressive.",
-   "subtitle": "",
+   "title": "Talk like you mean it",
+   "subtitle": "Chats that sound like you",
    "layout": "single-no-text",
    "background": {
     "type": "gradient",
-    "value": "linear-gradient(120deg,#426fff 0%,#4a6cfb 45%,#7c60e2 100%)"
-   },
-   "devices": null,
-   "decorations": [],
-   "textLayers": [
-    {
-     "id": "tpl-t1",
-     "xPct": 15.455,
-     "yPct": 6.115,
-     "widthPct": 77.273,
-     "rotation": 0,
-     "opacity": 1,
-     "zIndex": 30,
-     "customName": "Title",
-     "style": {
-      "text": "Useful.\nSocial.\nExpressive.",
-      "color": "#ffffff",
-      "size": 117.8,
-      "align": "left",
-      "fontFamily": "Inter, sans-serif",
-      "fontWeightNum": 400,
-      "lineHeightMultiplier": 1.17,
-      "charSpacing": -8
-     }
-    }
-   ],
-   "assetLayers": [
-    {
-     "id": "tpl-s2",
-     "assetId": "shape:Phone shadow",
-     "name": "Phone shadow",
-     "xPct": -7.273,
-     "yPct": 24.582,
-     "widthPct": 114.545,
-     "heightPct": 101.297,
-     "rotation": 0,
-     "opacity": 0.16,
-     "zIndex": 5,
-     "cropFit": "stretch",
-     "shape": {
-      "type": "roundRect",
-      "w": 504,
-      "h": 968.4,
-      "radius": 117.36,
-      "fill": "#000000",
-      "blur": 18,
-      "inset": 54
-     }
-    }
-   ],
-   "deviceOne": {
-    "size": 66.27,
-    "x": 0.0,
-    "y": 27.34,
-    "rotation": 0,
-    "brightness": 100,
-    "frameless": false,
-    "bezelColor": "#060606",
-    "borderColor": "#5e5e5e",
-    "zIndex": 10
-   }
-  },
-  {
-   "title": "Bring your vibe to your chats",
-   "subtitle": "",
-   "layout": "single-no-text",
-   "background": {
-    "type": "gradient",
-    "value": "linear-gradient(120deg,#4f6bfc 0%,#6666ef 45%,#a755ce 100%)"
+    "value": "linear-gradient(165deg,#ff7a52 0%,#ff5a3d 55%,#f2453a 100%)"
    },
    "devices": null,
    "decorations": [],
    "textLayers": [
     {
      "id": "tpl-t3",
-     "xPct": 4.545,
-     "yPct": 6.515,
-     "widthPct": 90.909,
+     "xPct": 14.545,
+     "yPct": 8.405,
+     "widthPct": 66.634,
      "rotation": 0,
      "opacity": 1,
      "zIndex": 30,
      "customName": "Title",
      "style": {
-      "text": "Bring your vibe\nto your chats",
-      "color": "#ffffff",
-      "size": 78.5,
-      "align": "center",
+      "text": "Talk like\nyou mean it",
+      "color": "#1d1230",
+      "size": 108.0,
+      "align": "left",
       "fontFamily": "Inter, sans-serif",
-      "fontWeightNum": 400,
-      "lineHeightMultiplier": 1.13
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.08,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t9",
+     "xPct": 9.545,
+     "yPct": 24.935,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Chats that sound like you,\nwith every emoji and GIF.",
+      "color": "#1d1230",
+      "size": 46.6,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.3
      }
     }
    ],
    "assetLayers": [
+    {
+     "id": "tpl-s1",
+     "assetId": "shape:Title bubble",
+     "name": "Title bubble",
+     "xPct": 9.091,
+     "yPct": 6.695,
+     "widthPct": 69.816,
+     "heightPct": 13.351,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 307.19,
+      "h": 127.64,
+      "radius": 30,
+      "fill": "#fff3e6"
+     }
+    },
+    {
+     "id": "tpl-s2",
+     "assetId": "shape:Bubble tail",
+     "name": "Bubble tail",
+     "xPct": 11.591,
+     "yPct": 19.732,
+     "widthPct": 9.545,
+     "heightPct": 2.72,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 42,
+      "h": 26.0,
+      "vx": 51,
+      "vy": 188.64,
+      "path": "M66,189.64L52,213.64L92,189.64Z",
+      "fill": "#fff3e6"
+     }
+    },
     {
      "id": "tpl-s4",
      "assetId": "shape:Phone shadow",
      "name": "Phone shadow",
-     "xPct": -4.318,
-     "yPct": 15.272,
-     "widthPct": 108.636,
-     "heightPct": 95.388,
+     "xPct": 12.045,
+     "yPct": 25.105,
+     "widthPct": 95.0,
+     "heightPct": 78.808,
      "rotation": 0,
-     "opacity": 0.16,
+     "opacity": 0.25,
      "zIndex": 5,
      "cropFit": "stretch",
      "shape": {
       "type": "roundRect",
-      "w": 478,
-      "h": 911.91,
-      "radius": 113.2,
+      "w": 418,
+      "h": 753.4,
+      "radius": 111.76,
       "fill": "#000000",
-      "blur": 18,
-      "inset": 54
+      "blur": 22,
+      "inset": 66
      }
-    }
-   ],
-   "deviceOne": {
-    "size": 61.92,
-    "x": 0.0,
-    "y": 14.67,
-    "rotation": 0,
-    "brightness": 100,
-    "frameless": false,
-    "bezelColor": "#060606",
-    "borderColor": "#5e5e5e",
-    "zIndex": 10
-   }
-  },
-  {
-   "title": "Hang out anytime, anywhere",
-   "subtitle": "",
-   "layout": "single-no-text",
-   "background": {
-    "type": "gradient",
-    "value": "linear-gradient(120deg,#7762e4 0%,#8e5cda 45%,#cf4bb7 100%)"
-   },
-   "devices": null,
-   "decorations": [],
-   "textLayers": [
+    },
     {
-     "id": "tpl-t5",
-     "xPct": 4.545,
-     "yPct": 6.515,
-     "widthPct": 90.909,
+     "id": "tpl-s5",
+     "assetId": "shape:Typing pill",
+     "name": "Typing pill",
+     "xPct": 9.091,
+     "yPct": 50.0,
+     "widthPct": 19.091,
+     "heightPct": 4.603,
      "rotation": 0,
      "opacity": 1,
-     "zIndex": 30,
-     "customName": "Title",
-     "style": {
-      "text": "Hang out anytime,\nanywhere",
-      "color": "#ffffff",
-      "size": 78.5,
-      "align": "center",
-      "fontFamily": "Inter, sans-serif",
-      "fontWeightNum": 400,
-      "lineHeightMultiplier": 1.13
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 84,
+      "h": 44,
+      "radius": 22,
+      "fill": "#fff3e6"
      }
-    }
-   ],
-   "assetLayers": [
+    },
     {
      "id": "tpl-s6",
-     "assetId": "shape:Phone shadow",
-     "name": "Phone shadow",
-     "xPct": -4.318,
-     "yPct": 15.272,
-     "widthPct": 108.636,
-     "heightPct": 95.388,
+     "assetId": "shape:Typing dot",
+     "name": "Typing dot",
+     "xPct": 12.727,
+     "yPct": 51.674,
+     "widthPct": 2.727,
+     "heightPct": 1.255,
      "rotation": 0,
-     "opacity": 0.16,
-     "zIndex": 5,
+     "opacity": 1,
+     "zIndex": 19,
      "cropFit": "stretch",
      "shape": {
-      "type": "roundRect",
-      "w": 478,
-      "h": 911.91,
-      "radius": 113.2,
-      "fill": "#000000",
-      "blur": 18,
-      "inset": 54
+      "type": "ellipse",
+      "w": 12,
+      "h": 12,
+      "fill": "#1d1230"
+     }
+    },
+    {
+     "id": "tpl-s7",
+     "assetId": "shape:Typing dot",
+     "name": "Typing dot",
+     "xPct": 17.273,
+     "yPct": 51.674,
+     "widthPct": 2.727,
+     "heightPct": 1.255,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 12,
+      "h": 12,
+      "fill": "#1d1230"
+     }
+    },
+    {
+     "id": "tpl-s8",
+     "assetId": "shape:Typing dot",
+     "name": "Typing dot",
+     "xPct": 21.818,
+     "yPct": 51.674,
+     "widthPct": 2.727,
+     "heightPct": 1.255,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 12,
+      "h": 12,
+      "fill": "#1d1230"
      }
     }
    ],
    "deviceOne": {
-    "size": 61.92,
-    "x": 0.0,
-    "y": 14.67,
+    "size": 47.86,
+    "x": 14.69,
+    "y": 21.36,
     "rotation": 0,
     "brightness": 100,
     "frameless": false,
@@ -241,64 +245,737 @@
    }
   },
   {
-   "title": "Get instant answers with your AI assistant",
-   "subtitle": "",
+   "title": "Voice notes in a tap",
+   "subtitle": "Hold, speak, send",
    "layout": "single-no-text",
    "background": {
     "type": "gradient",
-    "value": "linear-gradient(120deg,#a156cf 0%,#b851c3 45%,#da47b1 100%)"
+    "value": "linear-gradient(195deg,#ff8a5c 0%,#ff5f40 60%,#f04a3a 100%)"
    },
    "devices": null,
    "decorations": [],
    "textLayers": [
     {
-     "id": "tpl-t7",
-     "xPct": 4.545,
-     "yPct": 6.515,
-     "widthPct": 90.909,
+     "id": "tpl-t15",
+     "xPct": 27.343,
+     "yPct": 9.069,
+     "widthPct": 65.839,
      "rotation": 0,
      "opacity": 1,
      "zIndex": 30,
      "customName": "Title",
      "style": {
-      "text": "Get instant answers\nwith your AI assistant",
-      "color": "#ffffff",
-      "size": 78.5,
-      "align": "center",
+      "text": "Voice notes\nin a tap",
+      "color": "#1d1230",
+      "size": 103.1,
+      "align": "left",
       "fontFamily": "Inter, sans-serif",
-      "fontWeightNum": 400,
-      "lineHeightMultiplier": 1.13
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.08,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t26",
+     "xPct": 9.091,
+     "yPct": 25.184,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Hold, speak, send.\nNo typing needed.",
+      "color": "#1d1230",
+      "size": 46.6,
+      "align": "right",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.3
      }
     }
    ],
    "assetLayers": [
     {
-     "id": "tpl-s8",
+     "id": "tpl-s13",
+     "assetId": "shape:Title bubble",
+     "name": "Title bubble",
+     "xPct": 21.888,
+     "yPct": 7.322,
+     "widthPct": 69.021,
+     "heightPct": 12.973,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 303.69,
+      "h": 124.02,
+      "radius": 30,
+      "fill": "#fff3e6"
+     }
+    },
+    {
+     "id": "tpl-s14",
+     "assetId": "shape:Bubble tail",
+     "name": "Bubble tail",
+     "xPct": 78.864,
+     "yPct": 19.981,
+     "widthPct": 9.545,
+     "heightPct": 2.72,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 42.0,
+      "h": 26.0,
+      "vx": 347.0,
+      "vy": 191.02,
+      "path": "M374.0,192.02L388.0,216.02L348.0,192.02Z",
+      "fill": "#fff3e6"
+     }
+    },
+    {
+     "id": "tpl-s16",
      "assetId": "shape:Phone shadow",
      "name": "Phone shadow",
-     "xPct": -4.318,
-     "yPct": 15.272,
-     "widthPct": 108.636,
-     "heightPct": 95.388,
-     "rotation": 0,
-     "opacity": 0.16,
+     "xPct": 2.866,
+     "yPct": 26.07,
+     "widthPct": 89.545,
+     "heightPct": 73.353,
+     "rotation": -8,
+     "opacity": 0.25,
      "zIndex": 5,
      "cropFit": "stretch",
      "shape": {
       "type": "roundRect",
-      "w": 478,
-      "h": 911.91,
-      "radius": 113.2,
+      "w": 394,
+      "h": 701.25,
+      "radius": 107.92,
       "fill": "#000000",
-      "blur": 18,
-      "inset": 54
+      "blur": 22,
+      "inset": 66
+     }
+    },
+    {
+     "id": "tpl-s17",
+     "assetId": "shape:Voice pill",
+     "name": "Voice pill",
+     "xPct": 59.545,
+     "yPct": 73.222,
+     "widthPct": 31.818,
+     "heightPct": 5.439,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 140,
+      "h": 52,
+      "radius": 26,
+      "fill": "#fff3e6"
+     }
+    },
+    {
+     "id": "tpl-s18",
+     "assetId": "shape:Wave bar",
+     "name": "Wave bar",
+     "xPct": 64.091,
+     "yPct": 75.418,
+     "widthPct": 1.364,
+     "heightPct": 1.046,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 6,
+      "h": 10,
+      "radius": 3,
+      "fill": "#1d1230"
+     }
+    },
+    {
+     "id": "tpl-s19",
+     "assetId": "shape:Wave bar",
+     "name": "Wave bar",
+     "xPct": 67.045,
+     "yPct": 74.791,
+     "widthPct": 1.364,
+     "heightPct": 2.301,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 6,
+      "h": 22,
+      "radius": 3,
+      "fill": "#1d1230"
+     }
+    },
+    {
+     "id": "tpl-s20",
+     "assetId": "shape:Wave bar",
+     "name": "Wave bar",
+     "xPct": 70.0,
+     "yPct": 74.372,
+     "widthPct": 1.364,
+     "heightPct": 3.138,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 6,
+      "h": 30,
+      "radius": 3,
+      "fill": "#1d1230"
+     }
+    },
+    {
+     "id": "tpl-s21",
+     "assetId": "shape:Wave bar",
+     "name": "Wave bar",
+     "xPct": 72.955,
+     "yPct": 75.105,
+     "widthPct": 1.364,
+     "heightPct": 1.674,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 6,
+      "h": 16,
+      "radius": 3,
+      "fill": "#1d1230"
+     }
+    },
+    {
+     "id": "tpl-s22",
+     "assetId": "shape:Wave bar",
+     "name": "Wave bar",
+     "xPct": 75.909,
+     "yPct": 74.582,
+     "widthPct": 1.364,
+     "heightPct": 2.72,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 6,
+      "h": 26,
+      "radius": 3,
+      "fill": "#1d1230"
+     }
+    },
+    {
+     "id": "tpl-s23",
+     "assetId": "shape:Wave bar",
+     "name": "Wave bar",
+     "xPct": 78.864,
+     "yPct": 75.314,
+     "widthPct": 1.364,
+     "heightPct": 1.255,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 6,
+      "h": 12,
+      "radius": 3,
+      "fill": "#1d1230"
+     }
+    },
+    {
+     "id": "tpl-s24",
+     "assetId": "shape:Wave bar",
+     "name": "Wave bar",
+     "xPct": 81.818,
+     "yPct": 74.895,
+     "widthPct": 1.364,
+     "heightPct": 2.092,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 6,
+      "h": 20,
+      "radius": 3,
+      "fill": "#1d1230"
+     }
+    },
+    {
+     "id": "tpl-s25",
+     "assetId": "shape:Wave bar",
+     "name": "Wave bar",
+     "xPct": 84.773,
+     "yPct": 75.523,
+     "widthPct": 1.364,
+     "heightPct": 0.837,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 6,
+      "h": 8,
+      "radius": 3,
+      "fill": "#1d1230"
      }
     }
    ],
    "deviceOne": {
-    "size": 61.92,
+    "size": 43.85,
+    "x": -3.96,
+    "y": 20.35,
+    "rotation": -8,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
+  },
+  {
+   "title": "Group chats, sorted",
+   "subtitle": "Pin, mute and reply in threads",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(165deg,#ff7a52 0%,#ff5a3d 55%,#f2453a 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t32",
+     "xPct": 18.443,
+     "yPct": 8.023,
+     "widthPct": 70.84,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Group chats,\nsorted",
+      "color": "#1d1230",
+      "size": 103.1,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.08,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t35",
+     "xPct": 9.091,
+     "yPct": 23.72,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Pin, mute and reply in threads.",
+      "color": "#1d1230",
+      "size": 46.6,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.3
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s30",
+     "assetId": "shape:Title bubble",
+     "name": "Title bubble",
+     "xPct": 12.989,
+     "yPct": 6.276,
+     "widthPct": 74.022,
+     "heightPct": 12.973,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 325.7,
+      "h": 124.02,
+      "radius": 30,
+      "fill": "#fff3e6"
+     }
+    },
+    {
+     "id": "tpl-s31",
+     "assetId": "shape:Bubble tail",
+     "name": "Bubble tail",
+     "xPct": 15.489,
+     "yPct": 18.935,
+     "widthPct": 9.545,
+     "heightPct": 2.72,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 42.0,
+      "h": 26.0,
+      "vx": 68.15,
+      "vy": 181.02,
+      "path": "M83.15,182.02L69.15,206.02L109.15,182.02Z",
+      "fill": "#fff3e6"
+     }
+    },
+    {
+     "id": "tpl-s33",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -1.913,
+     "yPct": 35.082,
+     "widthPct": 80.0,
+     "heightPct": 65.28,
+     "rotation": -4,
+     "opacity": 0.22,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 352,
+      "h": 624.07,
+      "radius": 97.12,
+      "fill": "#000000",
+      "blur": 20,
+      "inset": 60
+     }
+    },
+    {
+     "id": "tpl-s34",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 21.913,
+     "yPct": 31.944,
+     "widthPct": 80.0,
+     "heightPct": 65.28,
+     "rotation": 4,
+     "opacity": 0.25,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 352,
+      "h": 624.07,
+      "radius": 97.12,
+      "fill": "#000000",
+      "blur": 20,
+      "inset": 60
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 38.83,
+    "x": -22.59,
+    "y": 32.42,
+    "rotation": -4,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 9
+   },
+   "extraDevices": [
+    {
+     "size": 38.83,
+     "x": 22.59,
+     "y": 26.47,
+     "rotation": 4,
+     "brightness": 100,
+     "frameless": false,
+     "bezelColor": "#060606",
+     "borderColor": "#5e5e5e",
+     "zIndex": 11
+    }
+   ]
+  },
+  {
+   "title": "Private by default",
+   "subtitle": "End-to-end encrypted chats",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(170deg,#241638 0%,#1a0f2b 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t38",
+     "xPct": 14.545,
+     "yPct": 8.369,
+     "widthPct": 61.91,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Private\nby default",
+      "color": "#1d1230",
+      "size": 112.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.08,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t46",
+     "xPct": 7.727,
+     "yPct": 73.792,
+     "widthPct": 29.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "Pop text",
+     "style": {
+      "text": "Sent  ✓✓",
+      "color": "#1d1230",
+      "size": 44.2,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t47",
+     "xPct": 9.545,
+     "yPct": 25.314,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Only you and your people\ncan read what you send.",
+      "color": "#fff3e6",
+      "size": 46.6,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.3
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s36",
+     "assetId": "shape:Title bubble",
+     "name": "Title bubble",
+     "xPct": 9.091,
+     "yPct": 6.695,
+     "widthPct": 65.091,
+     "heightPct": 13.73,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 286.4,
+      "h": 131.26,
+      "radius": 30,
+      "fill": "#ff5a3d"
+     }
+    },
+    {
+     "id": "tpl-s37",
+     "assetId": "shape:Bubble tail",
+     "name": "Bubble tail",
+     "xPct": 11.591,
+     "yPct": 20.111,
+     "widthPct": 9.545,
+     "heightPct": 2.72,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 42,
+      "h": 26.0,
+      "vx": 51,
+      "vy": 192.26,
+      "path": "M66,193.26L52,217.26L92,193.26Z",
+      "fill": "#ff5a3d"
+     }
+    },
+    {
+     "id": "tpl-s39",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 1.591,
+     "yPct": 26.987,
+     "widthPct": 96.818,
+     "heightPct": 77.682,
+     "rotation": 0,
+     "opacity": 0.45,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 426,
+      "h": 742.64,
+      "radius": 121.2,
+      "fill": "#000000",
+      "blur": 26,
+      "inset": 78
+     }
+    },
+    {
+     "id": "tpl-s40",
+     "assetId": "shape:Typing pill",
+     "name": "Typing pill",
+     "xPct": 71.364,
+     "yPct": 56.276,
+     "widthPct": 19.091,
+     "heightPct": 4.603,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 84,
+      "h": 44,
+      "radius": 22,
+      "fill": "#fff3e6"
+     }
+    },
+    {
+     "id": "tpl-s41",
+     "assetId": "shape:Typing dot",
+     "name": "Typing dot",
+     "xPct": 75.0,
+     "yPct": 57.95,
+     "widthPct": 2.727,
+     "heightPct": 1.255,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 12,
+      "h": 12,
+      "fill": "#1d1230"
+     }
+    },
+    {
+     "id": "tpl-s42",
+     "assetId": "shape:Typing dot",
+     "name": "Typing dot",
+     "xPct": 79.545,
+     "yPct": 57.95,
+     "widthPct": 2.727,
+     "heightPct": 1.255,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 12,
+      "h": 12,
+      "fill": "#1d1230"
+     }
+    },
+    {
+     "id": "tpl-s43",
+     "assetId": "shape:Typing dot",
+     "name": "Typing dot",
+     "xPct": 84.091,
+     "yPct": 57.95,
+     "widthPct": 2.727,
+     "heightPct": 1.255,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 12,
+      "h": 12,
+      "fill": "#1d1230"
+     }
+    },
+    {
+     "id": "tpl-s44",
+     "assetId": "shape:Pop bubble",
+     "name": "Pop bubble",
+     "xPct": 7.727,
+     "yPct": 72.176,
+     "widthPct": 29.091,
+     "heightPct": 5.021,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 128,
+      "h": 48,
+      "radius": 24,
+      "fill": "#fff3e6"
+     }
+    },
+    {
+     "id": "tpl-s45",
+     "assetId": "shape:Pop tail",
+     "name": "Pop tail",
+     "xPct": 8.864,
+     "yPct": 76.883,
+     "widthPct": 7.727,
+     "heightPct": 2.301,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 34,
+      "h": 22,
+      "vx": 39,
+      "vy": 735,
+      "path": "M50,736L40,756L72,736Z",
+      "fill": "#fff3e6"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 45.19,
     "x": 0.0,
-    "y": 14.67,
+    "y": 24.77,
     "rotation": 0,
     "brightness": 100,
     "frameless": false,

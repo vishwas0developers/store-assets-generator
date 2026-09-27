@@ -10,46 +10,1854 @@
    "label": "Pixel Phone"
   }
  ],
- "layout": "tilted-left-title-above",
+ "layout": "single-no-text",
  "background": {
   "type": "gradient",
-  "value": "aurora"
+  "value": "radial-gradient(circle at 85% 15%, rgba(59,232,255,0.28) 0%, rgba(59,232,255,0) 45%), radial-gradient(circle at 15% 90%, rgba(124,92,255,0.35) 0%, rgba(124,92,255,0) 50%), linear-gradient(180deg, #060a1f 0%, #0a1233 100%)"
  },
  "pages": [
   {
-   "title": "AI Copilot",
-   "subtitle": "Ask questions and generate answers",
-   "layout": "tilted-left-title-above",
-   "background": null,
-   "devices": null
+   "title": "Your AI Copilot",
+   "subtitle": "Ask anything and get clear answers instantly",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "radial-gradient(circle at 85% 15%, rgba(59,232,255,0.28) 0%, rgba(59,232,255,0) 45%), radial-gradient(circle at 15% 90%, rgba(124,92,255,0.35) 0%, rgba(124,92,255,0) 50%), linear-gradient(180deg, #060a1f 0%, #0a1233 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t10",
+     "xPct": 15.455,
+     "yPct": 6.775,
+     "widthPct": 32.958,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Chip label",
+     "style": {
+      "text": "01 · COPILOT",
+      "color": "#3be8ff",
+      "size": 31.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 120
+     }
+    },
+    {
+     "id": "tpl-t11",
+     "xPct": 9.091,
+     "yPct": 10.519,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Your AI\nCopilot",
+      "color": "#ffffff",
+      "size": 122.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.05,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t12",
+     "xPct": 9.091,
+     "yPct": 23.038,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Ask anything and get\nclear answers instantly",
+      "color": "#b9c3e6",
+      "size": 46.6,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.3
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s2",
+     "assetId": "shape:Glow",
+     "name": "Glow",
+     "xPct": 4.545,
+     "yPct": 8.368,
+     "widthPct": 154.545,
+     "heightPct": 71.13,
+     "rotation": 0,
+     "opacity": 0.35,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 680,
+      "h": 680,
+      "radius": 340,
+      "fill": "#3be8ff",
+      "blur": 60,
+      "inset": 180
+     }
+    },
+    {
+     "id": "tpl-s3",
+     "assetId": "shape:Glow",
+     "name": "Glow",
+     "xPct": -61.364,
+     "yPct": 54.393,
+     "widthPct": 150.0,
+     "heightPct": 69.038,
+     "rotation": 0,
+     "opacity": 0.4,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 660,
+      "h": 660,
+      "radius": 330,
+      "fill": "#7c5cff",
+      "blur": 60,
+      "inset": 180
+     }
+    },
+    {
+     "id": "tpl-s4",
+     "assetId": "shape:Trace",
+     "name": "Trace",
+     "xPct": -0.682,
+     "yPct": 31.067,
+     "widthPct": 35.455,
+     "heightPct": 13.18,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 156,
+      "h": 126,
+      "vx": -3,
+      "vy": 297,
+      "path": "M0,300L120,300L150,330L150,420",
+      "stroke": "#3be8ff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s5",
+     "assetId": "shape:Node",
+     "name": "Node",
+     "xPct": 32.727,
+     "yPct": 43.305,
+     "widthPct": 2.727,
+     "heightPct": 1.255,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 12,
+      "h": 12,
+      "fill": "#060a1f",
+      "stroke": "#3be8ff",
+      "strokeWidth": 2,
+      "inset": 1.0
+     }
+    },
+    {
+     "id": "tpl-s6",
+     "assetId": "shape:Trace",
+     "name": "Trace",
+     "xPct": 90.227,
+     "yPct": 18.515,
+     "widthPct": 10.455,
+     "heightPct": 7.95,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 46,
+      "h": 76,
+      "vx": 397,
+      "vy": 177,
+      "path": "M440,250L400,250L400,180",
+      "stroke": "#3be8ff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s7",
+     "assetId": "shape:Node",
+     "name": "Node",
+     "xPct": 89.545,
+     "yPct": 18.201,
+     "widthPct": 2.727,
+     "heightPct": 1.255,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 12,
+      "h": 12,
+      "fill": "#060a1f",
+      "stroke": "#3be8ff",
+      "strokeWidth": 2,
+      "inset": 1.0
+     }
+    },
+    {
+     "id": "tpl-s8",
+     "assetId": "shape:Chip",
+     "name": "Chip",
+     "xPct": 9.091,
+     "yPct": 5.858,
+     "widthPct": 32.958,
+     "heightPct": 3.138,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 145.01,
+      "h": 30,
+      "radius": 15,
+      "fill": "#0d1a3f",
+      "stroke": "#3be8ff",
+      "strokeWidth": 1.5,
+      "inset": 0.75
+     }
+    },
+    {
+     "id": "tpl-s9",
+     "assetId": "shape:Chip dot",
+     "name": "Chip dot",
+     "xPct": 11.932,
+     "yPct": 6.956,
+     "widthPct": 2.045,
+     "heightPct": 0.941,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 9.0,
+      "h": 9.0,
+      "fill": "#3be8ff"
+     }
+    },
+    {
+     "id": "tpl-s1",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 5.0,
+     "yPct": 26.046,
+     "widthPct": 103.636,
+     "heightPct": 85.972,
+     "rotation": 0,
+     "opacity": 0.5,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 456.0,
+      "h": 821.89,
+      "radius": 121.92,
+      "fill": "#000000",
+      "blur": 24,
+      "inset": 72
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 52.21,
+    "x": 9.62,
+    "y": 25.95,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#05070f",
+    "borderColor": "#2b3a6b",
+    "zIndex": 10
+   }
   },
   {
-   "title": "Smart Voice",
-   "subtitle": "Natural speech-to-action engine",
-   "layout": "tilted-left-title-above",
-   "background": null,
-   "devices": null
+   "title": "Talk. It Acts.",
+   "subtitle": "Natural speech turns into real actions",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "radial-gradient(circle at 15% 60%, rgba(59,232,255,0.28) 0%, rgba(59,232,255,0) 45%), radial-gradient(circle at 85% 90%, rgba(124,92,255,0.35) 0%, rgba(124,92,255,0) 50%), linear-gradient(180deg, #060a1f 0%, #0a1233 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t38",
+     "xPct": 15.455,
+     "yPct": 6.775,
+     "widthPct": 29.225,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Chip label",
+     "style": {
+      "text": "02 · VOICE",
+      "color": "#3be8ff",
+      "size": 31.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 120
+     }
+    },
+    {
+     "id": "tpl-t39",
+     "xPct": 9.091,
+     "yPct": 10.519,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Talk.\nIt Acts.",
+      "color": "#ffffff",
+      "size": 122.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.05,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t40",
+     "xPct": 9.091,
+     "yPct": 23.038,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Natural speech turns\ninto real actions",
+      "color": "#b9c3e6",
+      "size": 46.6,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.3
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s14",
+     "assetId": "shape:Glow",
+     "name": "Glow",
+     "xPct": -13.636,
+     "yPct": 20.921,
+     "widthPct": 163.636,
+     "heightPct": 75.314,
+     "rotation": 0,
+     "opacity": 0.35,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 720,
+      "h": 720,
+      "radius": 360,
+      "fill": "#3be8ff",
+      "blur": 60,
+      "inset": 180
+     }
+    },
+    {
+     "id": "tpl-s15",
+     "assetId": "shape:Glow",
+     "name": "Glow",
+     "xPct": 27.273,
+     "yPct": -18.828,
+     "widthPct": 136.364,
+     "heightPct": 62.762,
+     "rotation": 0,
+     "opacity": 0.4,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 600,
+      "h": 600,
+      "radius": 300,
+      "fill": "#7c5cff",
+      "blur": 60,
+      "inset": 180
+     }
+    },
+    {
+     "id": "tpl-s16",
+     "assetId": "shape:Trace",
+     "name": "Trace",
+     "xPct": 85.682,
+     "yPct": 27.929,
+     "widthPct": 15.0,
+     "heightPct": 6.904,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 66,
+      "h": 66,
+      "vx": 377,
+      "vy": 267,
+      "path": "M440,330L380,330L380,270",
+      "stroke": "#3be8ff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s17",
+     "assetId": "shape:Node",
+     "name": "Node",
+     "xPct": 85.0,
+     "yPct": 27.615,
+     "widthPct": 2.727,
+     "heightPct": 1.255,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 12,
+      "h": 12,
+      "fill": "#060a1f",
+      "stroke": "#3be8ff",
+      "strokeWidth": 2,
+      "inset": 1.0
+     }
+    },
+    {
+     "id": "tpl-s18",
+     "assetId": "shape:Card shadow",
+     "name": "Card shadow",
+     "xPct": -2.273,
+     "yPct": 67.992,
+     "widthPct": 68.182,
+     "heightPct": 18.41,
+     "rotation": -4,
+     "opacity": 0.35,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 300,
+      "h": 176,
+      "radius": 58,
+      "fill": "#000000",
+      "blur": 14,
+      "inset": 40
+     }
+    },
+    {
+     "id": "tpl-s19",
+     "assetId": "shape:Card",
+     "name": "Card",
+     "xPct": 6.818,
+     "yPct": 72.176,
+     "widthPct": 50.0,
+     "heightPct": 10.042,
+     "rotation": -4,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 220,
+      "h": 96,
+      "radius": 18,
+      "fill": "#0e1a44",
+      "stroke": "#3be8ff",
+      "strokeWidth": 1.5,
+      "inset": 0.75
+     }
+    },
+    {
+     "id": "tpl-s20",
+     "assetId": "shape:Mic",
+     "name": "Mic",
+     "xPct": 11.401,
+     "yPct": 75.392,
+     "widthPct": 10.0,
+     "heightPct": 4.603,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 44,
+      "h": 44,
+      "fill": "#3be8ff"
+     }
+    },
+    {
+     "id": "tpl-s21",
+     "assetId": "shape:Mic head",
+     "name": "Mic head",
+     "xPct": 15.186,
+     "yPct": 76.23,
+     "widthPct": 2.273,
+     "heightPct": 1.883,
+     "rotation": -4,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 10,
+      "h": 18,
+      "radius": 5,
+      "fill": "#060a1f"
+     }
+    },
+    {
+     "id": "tpl-s22",
+     "assetId": "shape:Mic stem",
+     "name": "Mic stem",
+     "xPct": 16.333,
+     "yPct": 78.318,
+     "widthPct": 0.455,
+     "heightPct": 0.837,
+     "rotation": -4,
+     "opacity": 1,
+     "zIndex": 19,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 2,
+      "h": 8,
+      "radius": 1,
+      "fill": "#060a1f"
+     }
+    },
+    {
+     "id": "tpl-s23",
+     "assetId": "shape:Wave bar",
+     "name": "Wave bar",
+     "xPct": 25.015,
+     "yPct": 76.874,
+     "widthPct": 1.136,
+     "heightPct": 1.046,
+     "rotation": -4,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 5,
+      "h": 10,
+      "radius": 2.5,
+      "fill": "#3be8ff"
+     }
+    },
+    {
+     "id": "tpl-s24",
+     "assetId": "shape:Wave bar",
+     "name": "Wave bar",
+     "xPct": 27.282,
+     "yPct": 76.174,
+     "widthPct": 1.136,
+     "heightPct": 2.301,
+     "rotation": -4,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 5,
+      "h": 22,
+      "radius": 2.5,
+      "fill": "#3be8ff"
+     }
+    },
+    {
+     "id": "tpl-s25",
+     "assetId": "shape:Wave bar",
+     "name": "Wave bar",
+     "xPct": 29.55,
+     "yPct": 75.473,
+     "widthPct": 1.136,
+     "heightPct": 3.556,
+     "rotation": -4,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 5,
+      "h": 34,
+      "radius": 2.5,
+      "fill": "#3be8ff"
+     }
+    },
+    {
+     "id": "tpl-s26",
+     "assetId": "shape:Wave bar",
+     "name": "Wave bar",
+     "xPct": 31.817,
+     "yPct": 76.237,
+     "widthPct": 1.136,
+     "heightPct": 1.883,
+     "rotation": -4,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 5,
+      "h": 18,
+      "radius": 2.5,
+      "fill": "#3be8ff"
+     }
+    },
+    {
+     "id": "tpl-s27",
+     "assetId": "shape:Wave bar",
+     "name": "Wave bar",
+     "xPct": 34.084,
+     "yPct": 75.013,
+     "widthPct": 1.136,
+     "heightPct": 4.184,
+     "rotation": -4,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 5,
+      "h": 40,
+      "radius": 2.5,
+      "fill": "#3be8ff"
+     }
+    },
+    {
+     "id": "tpl-s28",
+     "assetId": "shape:Wave bar",
+     "name": "Wave bar",
+     "xPct": 36.351,
+     "yPct": 75.568,
+     "widthPct": 1.136,
+     "heightPct": 2.929,
+     "rotation": -4,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 5,
+      "h": 28,
+      "radius": 2.5,
+      "fill": "#3be8ff"
+     }
+    },
+    {
+     "id": "tpl-s29",
+     "assetId": "shape:Wave bar",
+     "name": "Wave bar",
+     "xPct": 38.618,
+     "yPct": 76.227,
+     "widthPct": 1.136,
+     "heightPct": 1.464,
+     "rotation": -4,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 5,
+      "h": 14,
+      "radius": 2.5,
+      "fill": "#3be8ff"
+     }
+    },
+    {
+     "id": "tpl-s30",
+     "assetId": "shape:Wave bar",
+     "name": "Wave bar",
+     "xPct": 40.886,
+     "yPct": 75.004,
+     "widthPct": 1.136,
+     "heightPct": 3.766,
+     "rotation": -4,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 5,
+      "h": 36,
+      "radius": 2.5,
+      "fill": "#3be8ff"
+     }
+    },
+    {
+     "id": "tpl-s31",
+     "assetId": "shape:Wave bar",
+     "name": "Wave bar",
+     "xPct": 43.153,
+     "yPct": 75.558,
+     "widthPct": 1.136,
+     "heightPct": 2.51,
+     "rotation": -4,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 5,
+      "h": 24,
+      "radius": 2.5,
+      "fill": "#4a5a8a"
+     }
+    },
+    {
+     "id": "tpl-s32",
+     "assetId": "shape:Wave bar",
+     "name": "Wave bar",
+     "xPct": 45.42,
+     "yPct": 76.113,
+     "widthPct": 1.136,
+     "heightPct": 1.255,
+     "rotation": -4,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 5,
+      "h": 12,
+      "radius": 2.5,
+      "fill": "#4a5a8a"
+     }
+    },
+    {
+     "id": "tpl-s33",
+     "assetId": "shape:Wave bar",
+     "name": "Wave bar",
+     "xPct": 47.687,
+     "yPct": 75.099,
+     "widthPct": 1.136,
+     "heightPct": 3.138,
+     "rotation": -4,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 5,
+      "h": 30,
+      "radius": 2.5,
+      "fill": "#4a5a8a"
+     }
+    },
+    {
+     "id": "tpl-s34",
+     "assetId": "shape:Wave bar",
+     "name": "Wave bar",
+     "xPct": 49.954,
+     "yPct": 75.549,
+     "widthPct": 1.136,
+     "heightPct": 2.092,
+     "rotation": -4,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 5,
+      "h": 20,
+      "radius": 2.5,
+      "fill": "#4a5a8a"
+     }
+    },
+    {
+     "id": "tpl-s35",
+     "assetId": "shape:Wave bar",
+     "name": "Wave bar",
+     "xPct": 52.222,
+     "yPct": 76.103,
+     "widthPct": 1.136,
+     "heightPct": 0.837,
+     "rotation": -4,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 5,
+      "h": 8,
+      "radius": 2.5,
+      "fill": "#4a5a8a"
+     }
+    },
+    {
+     "id": "tpl-s36",
+     "assetId": "shape:Chip",
+     "name": "Chip",
+     "xPct": 9.091,
+     "yPct": 5.858,
+     "widthPct": 29.225,
+     "heightPct": 3.138,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 128.59,
+      "h": 30,
+      "radius": 15,
+      "fill": "#0d1a3f",
+      "stroke": "#3be8ff",
+      "strokeWidth": 1.5,
+      "inset": 0.75
+     }
+    },
+    {
+     "id": "tpl-s37",
+     "assetId": "shape:Chip dot",
+     "name": "Chip dot",
+     "xPct": 11.932,
+     "yPct": 6.956,
+     "widthPct": 2.045,
+     "heightPct": 0.941,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 9.0,
+      "h": 9.0,
+      "fill": "#3be8ff"
+     }
+    },
+    {
+     "id": "tpl-s13",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -2.893,
+     "yPct": 26.837,
+     "widthPct": 101.273,
+     "heightPct": 83.608,
+     "rotation": 7,
+     "opacity": 0.5,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 445.6,
+      "h": 799.29,
+      "radius": 120.26,
+      "fill": "#000000",
+      "blur": 24,
+      "inset": 72
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 50.47,
+    "x": -3.29,
+    "y": 26.28,
+    "rotation": 7,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#05070f",
+    "borderColor": "#2b3a6b",
+    "zIndex": 10
+   }
   },
   {
-   "title": "Document Search",
-   "subtitle": "Extract insights from any PDF",
-   "layout": "tilted-left-title-above",
-   "background": null,
-   "devices": null
+   "title": "Search Any Document",
+   "subtitle": "Pull key insights from PDFs in seconds",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "radial-gradient(circle at 80% 40%, rgba(59,232,255,0.28) 0%, rgba(59,232,255,0) 45%), radial-gradient(circle at 20% 90%, rgba(124,92,255,0.35) 0%, rgba(124,92,255,0) 50%), linear-gradient(180deg, #060a1f 0%, #0a1233 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t49",
+     "xPct": 15.455,
+     "yPct": 6.775,
+     "widthPct": 28.402,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Chip label",
+     "style": {
+      "text": "03 · DOCS",
+      "color": "#3be8ff",
+      "size": 31.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 120
+     }
+    },
+    {
+     "id": "tpl-t50",
+     "xPct": 9.091,
+     "yPct": 10.519,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Search Any\nDocument",
+      "color": "#ffffff",
+      "size": 122.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.05,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t51",
+     "xPct": 9.091,
+     "yPct": 23.038,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Pull key insights from\nPDFs in seconds",
+      "color": "#b9c3e6",
+      "size": 46.6,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.3
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s43",
+     "assetId": "shape:Glow",
+     "name": "Glow",
+     "xPct": -36.364,
+     "yPct": 23.013,
+     "widthPct": 172.727,
+     "heightPct": 79.498,
+     "rotation": 0,
+     "opacity": 0.35,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 760,
+      "h": 760,
+      "radius": 380,
+      "fill": "#3be8ff",
+      "blur": 60,
+      "inset": 180
+     }
+    },
+    {
+     "id": "tpl-s44",
+     "assetId": "shape:Glow",
+     "name": "Glow",
+     "xPct": 20.455,
+     "yPct": 61.715,
+     "widthPct": 140.909,
+     "heightPct": 64.854,
+     "rotation": 0,
+     "opacity": 0.45,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 620,
+      "h": 620,
+      "radius": 310,
+      "fill": "#7c5cff",
+      "blur": 60,
+      "inset": 180
+     }
+    },
+    {
+     "id": "tpl-s45",
+     "assetId": "shape:Trace",
+     "name": "Trace",
+     "xPct": 92.5,
+     "yPct": 20.607,
+     "widthPct": 8.182,
+     "heightPct": 11.088,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 36,
+      "h": 106,
+      "vx": 407,
+      "vy": 197,
+      "path": "M440,200L410,200L410,300",
+      "stroke": "#3be8ff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s46",
+     "assetId": "shape:Node",
+     "name": "Node",
+     "xPct": 91.818,
+     "yPct": 30.753,
+     "widthPct": 2.727,
+     "heightPct": 1.255,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 12,
+      "h": 12,
+      "fill": "#060a1f",
+      "stroke": "#3be8ff",
+      "strokeWidth": 2,
+      "inset": 1.0
+     }
+    },
+    {
+     "id": "tpl-s47",
+     "assetId": "shape:Chip",
+     "name": "Chip",
+     "xPct": 9.091,
+     "yPct": 5.858,
+     "widthPct": 28.402,
+     "heightPct": 3.138,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 124.97,
+      "h": 30,
+      "radius": 15,
+      "fill": "#0d1a3f",
+      "stroke": "#3be8ff",
+      "strokeWidth": 1.5,
+      "inset": 0.75
+     }
+    },
+    {
+     "id": "tpl-s48",
+     "assetId": "shape:Chip dot",
+     "name": "Chip dot",
+     "xPct": 11.932,
+     "yPct": 6.956,
+     "widthPct": 2.045,
+     "heightPct": 0.941,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 9.0,
+      "h": 9.0,
+      "fill": "#3be8ff"
+     }
+    },
+    {
+     "id": "tpl-s41",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -5.108,
+     "yPct": 32.16,
+     "widthPct": 91.818,
+     "heightPct": 74.154,
+     "rotation": -6,
+     "opacity": 0.5,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 404.0,
+      "h": 708.91,
+      "radius": 113.6,
+      "fill": "#000000",
+      "blur": 24,
+      "inset": 72
+     }
+    },
+    {
+     "id": "tpl-s42",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 15.563,
+     "yPct": 27.976,
+     "widthPct": 91.818,
+     "heightPct": 74.154,
+     "rotation": 6,
+     "opacity": 0.5,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 404.0,
+      "h": 708.91,
+      "radius": 113.6,
+      "fill": "#000000",
+      "blur": 24,
+      "inset": 72
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 43.51,
+    "x": -15.57,
+    "y": 31.49,
+    "rotation": -6,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#05070f",
+    "borderColor": "#2b3a6b",
+    "zIndex": 10
+   },
+   "extraDevices": [
+    {
+     "size": 43.51,
+     "x": 19.41,
+     "y": 24.41,
+     "rotation": 6,
+     "brightness": 100,
+     "frameless": false,
+     "bezelColor": "#05070f",
+     "borderColor": "#2b3a6b",
+     "zIndex": 11
+    }
+   ]
   },
   {
-   "title": "Auto Workflow",
-   "subtitle": "Automate tedious daily tasks",
-   "layout": "tilted-left-title-above",
-   "background": null,
-   "devices": null
+   "title": "Workflows on Autopilot",
+   "subtitle": "Hand off repetitive daily tasks to AI",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "radial-gradient(circle at 20% 20%, rgba(59,232,255,0.28) 0%, rgba(59,232,255,0) 45%), radial-gradient(circle at 80% 90%, rgba(124,92,255,0.35) 0%, rgba(124,92,255,0) 50%), linear-gradient(180deg, #060a1f 0%, #0a1233 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t68",
+     "xPct": 15.455,
+     "yPct": 6.775,
+     "widthPct": 38.64,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Chip label",
+     "style": {
+      "text": "04 · AUTOMATE",
+      "color": "#3be8ff",
+      "size": 31.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 120
+     }
+    },
+    {
+     "id": "tpl-t69",
+     "xPct": 9.091,
+     "yPct": 10.519,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Workflows on\nAutopilot",
+      "color": "#ffffff",
+      "size": 122.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.05,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t70",
+     "xPct": 9.091,
+     "yPct": 23.038,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Hand off repetitive\ndaily tasks to AI",
+      "color": "#b9c3e6",
+      "size": 46.6,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.3
+     }
+    },
+    {
+     "id": "tpl-t59",
+     "xPct": 16.818,
+     "yPct": 51.902,
+     "widthPct": 21.518,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "customName": "Read inbox",
+     "style": {
+      "text": "Read inbox",
+      "color": "#ffffff",
+      "size": 39.3,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t62",
+     "xPct": 16.818,
+     "yPct": 57.55,
+     "widthPct": 23.789,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "customName": "Draft replies",
+     "style": {
+      "text": "Draft replies",
+      "color": "#ffffff",
+      "size": 39.3,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t64",
+     "xPct": 16.818,
+     "yPct": 63.199,
+     "widthPct": 25.16,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "customName": "Update tasks",
+     "style": {
+      "text": "Update tasks",
+      "color": "#b9c3e6",
+      "size": 39.3,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s53",
+     "assetId": "shape:Glow",
+     "name": "Glow",
+     "xPct": -4.545,
+     "yPct": 26.151,
+     "widthPct": 159.091,
+     "heightPct": 73.222,
+     "rotation": 0,
+     "opacity": 0.35,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 700,
+      "h": 700,
+      "radius": 350,
+      "fill": "#3be8ff",
+      "blur": 60,
+      "inset": 180
+     }
+    },
+    {
+     "id": "tpl-s54",
+     "assetId": "shape:Glow",
+     "name": "Glow",
+     "xPct": -56.818,
+     "yPct": 1.046,
+     "widthPct": 131.818,
+     "heightPct": 60.669,
+     "rotation": 0,
+     "opacity": 0.4,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 580,
+      "h": 580,
+      "radius": 290,
+      "fill": "#7c5cff",
+      "blur": 60,
+      "inset": 180
+     }
+    },
+    {
+     "id": "tpl-s55",
+     "assetId": "shape:Card shadow",
+     "name": "Card shadow",
+     "xPct": -3.636,
+     "yPct": 44.979,
+     "widthPct": 61.364,
+     "heightPct": 26.778,
+     "rotation": 0,
+     "opacity": 0.35,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 270,
+      "h": 256,
+      "radius": 58,
+      "fill": "#000000",
+      "blur": 14,
+      "inset": 40
+     }
+    },
+    {
+     "id": "tpl-s56",
+     "assetId": "shape:Card",
+     "name": "Card",
+     "xPct": 5.455,
+     "yPct": 49.163,
+     "widthPct": 43.182,
+     "heightPct": 18.41,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 190,
+      "h": 176,
+      "radius": 18,
+      "fill": "#0e1a44",
+      "stroke": "#3be8ff",
+      "strokeWidth": 1.5,
+      "inset": 0.75
+     }
+    },
+    {
+     "id": "tpl-s57",
+     "assetId": "shape:Step node",
+     "name": "Step node",
+     "xPct": 9.318,
+     "yPct": 51.569,
+     "widthPct": 5.0,
+     "heightPct": 2.301,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 22,
+      "h": 22,
+      "fill": "#3be8ff",
+      "stroke": "#3be8ff",
+      "strokeWidth": 2,
+      "inset": 1.0
+     }
+    },
+    {
+     "id": "tpl-s58",
+     "assetId": "shape:Step link",
+     "name": "Step link",
+     "xPct": 11.591,
+     "yPct": 53.975,
+     "widthPct": 0.455,
+     "heightPct": 3.138,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 2,
+      "h": 30,
+      "radius": 1,
+      "fill": "#3be8ff"
+     }
+    },
+    {
+     "id": "tpl-s60",
+     "assetId": "shape:Step node",
+     "name": "Step node",
+     "xPct": 9.318,
+     "yPct": 57.218,
+     "widthPct": 5.0,
+     "heightPct": 2.301,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 22,
+      "h": 22,
+      "fill": "#3be8ff",
+      "stroke": "#3be8ff",
+      "strokeWidth": 2,
+      "inset": 1.0
+     }
+    },
+    {
+     "id": "tpl-s61",
+     "assetId": "shape:Step link",
+     "name": "Step link",
+     "xPct": 11.591,
+     "yPct": 59.623,
+     "widthPct": 0.455,
+     "heightPct": 3.138,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 2,
+      "h": 30,
+      "radius": 1,
+      "fill": "#3be8ff"
+     }
+    },
+    {
+     "id": "tpl-s63",
+     "assetId": "shape:Step node",
+     "name": "Step node",
+     "xPct": 9.318,
+     "yPct": 62.866,
+     "widthPct": 5.0,
+     "heightPct": 2.301,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 22,
+      "h": 22,
+      "fill": "#060a1f",
+      "stroke": "#3be8ff",
+      "strokeWidth": 2,
+      "inset": 1.0
+     }
+    },
+    {
+     "id": "tpl-s65",
+     "assetId": "shape:Trace",
+     "name": "Trace",
+     "xPct": -0.682,
+     "yPct": 58.264,
+     "widthPct": 6.818,
+     "heightPct": 0.628,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 30,
+      "h": 6,
+      "vx": -3,
+      "vy": 557,
+      "path": "M0,560L24,560",
+      "stroke": "#3be8ff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s66",
+     "assetId": "shape:Chip",
+     "name": "Chip",
+     "xPct": 9.091,
+     "yPct": 5.858,
+     "widthPct": 38.64,
+     "heightPct": 3.138,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 170.02,
+      "h": 30,
+      "radius": 15,
+      "fill": "#0d1a3f",
+      "stroke": "#3be8ff",
+      "strokeWidth": 1.5,
+      "inset": 0.75
+     }
+    },
+    {
+     "id": "tpl-s67",
+     "assetId": "shape:Chip dot",
+     "name": "Chip dot",
+     "xPct": 11.932,
+     "yPct": 6.956,
+     "widthPct": 2.045,
+     "heightPct": 0.941,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 9.0,
+      "h": 9.0,
+      "fill": "#3be8ff"
+     }
+    },
+    {
+     "id": "tpl-s52",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 14.136,
+     "yPct": 27.092,
+     "widthPct": 101.273,
+     "heightPct": 83.608,
+     "rotation": 0,
+     "opacity": 0.5,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 445.6,
+      "h": 799.29,
+      "radius": 120.26,
+      "fill": "#000000",
+      "blur": 24,
+      "inset": 72
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 50.47,
+    "x": 21.55,
+    "y": 26.65,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#05070f",
+    "borderColor": "#2b3a6b",
+    "zIndex": 10
+   }
   },
   {
-   "title": "Infinite Possibilities",
-   "subtitle": "Powered by state-of-the-art LLMs",
-   "layout": "tilted-left-title-above",
-   "background": null,
-   "devices": null
+   "title": "Endless Possibilities",
+   "subtitle": "Powered by state-of-the-art language models",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "radial-gradient(circle at 50% 70%, rgba(59,232,255,0.28) 0%, rgba(59,232,255,0) 45%), radial-gradient(circle at 50% 90%, rgba(124,92,255,0.35) 0%, rgba(124,92,255,0) 50%), linear-gradient(180deg, #060a1f 0%, #0a1233 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t78",
+     "xPct": 15.455,
+     "yPct": 6.775,
+     "widthPct": 32.88,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Chip label",
+     "style": {
+      "text": "05 · INFINITE",
+      "color": "#3be8ff",
+      "size": 31.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 120
+     }
+    },
+    {
+     "id": "tpl-t79",
+     "xPct": 9.091,
+     "yPct": 10.519,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Endless\nPossibilities",
+      "color": "#ffffff",
+      "size": 122.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.05,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t80",
+     "xPct": 9.091,
+     "yPct": 23.038,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Powered by state-of-the-art\nlanguage models",
+      "color": "#b9c3e6",
+      "size": 46.6,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.3
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s72",
+     "assetId": "shape:Glow",
+     "name": "Glow",
+     "xPct": -43.182,
+     "yPct": 21.967,
+     "widthPct": 186.364,
+     "heightPct": 85.774,
+     "rotation": 0,
+     "opacity": 0.4,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 820,
+      "h": 820,
+      "radius": 410,
+      "fill": "#3be8ff",
+      "blur": 60,
+      "inset": 180
+     }
+    },
+    {
+     "id": "tpl-s73",
+     "assetId": "shape:Glow",
+     "name": "Glow",
+     "xPct": 22.727,
+     "yPct": 6.276,
+     "widthPct": 145.455,
+     "heightPct": 66.946,
+     "rotation": 0,
+     "opacity": 0.5,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 640,
+      "h": 640,
+      "radius": 320,
+      "fill": "#7c5cff",
+      "blur": 60,
+      "inset": 180
+     }
+    },
+    {
+     "id": "tpl-s74",
+     "assetId": "shape:Trace",
+     "name": "Trace",
+     "xPct": -0.682,
+     "yPct": 37.343,
+     "widthPct": 8.182,
+     "heightPct": 11.088,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 36,
+      "h": 106,
+      "vx": -3,
+      "vy": 357,
+      "path": "M0,360L30,360L30,460",
+      "stroke": "#3be8ff",
+      "strokeWidth": 2,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s75",
+     "assetId": "shape:Node",
+     "name": "Node",
+     "xPct": 5.455,
+     "yPct": 47.49,
+     "widthPct": 2.727,
+     "heightPct": 1.255,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 12,
+      "h": 12,
+      "fill": "#060a1f",
+      "stroke": "#3be8ff",
+      "strokeWidth": 2,
+      "inset": 1.0
+     }
+    },
+    {
+     "id": "tpl-s76",
+     "assetId": "shape:Chip",
+     "name": "Chip",
+     "xPct": 9.091,
+     "yPct": 5.858,
+     "widthPct": 32.88,
+     "heightPct": 3.138,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 144.67,
+      "h": 30,
+      "radius": 15,
+      "fill": "#0d1a3f",
+      "stroke": "#3be8ff",
+      "strokeWidth": 1.5,
+      "inset": 0.75
+     }
+    },
+    {
+     "id": "tpl-s77",
+     "assetId": "shape:Chip dot",
+     "name": "Chip dot",
+     "xPct": 11.932,
+     "yPct": 6.956,
+     "widthPct": 2.045,
+     "heightPct": 0.941,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 9.0,
+      "h": 9.0,
+      "fill": "#3be8ff"
+     }
+    },
+    {
+     "id": "tpl-s71",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 8.179,
+     "yPct": 27.799,
+     "widthPct": 102.455,
+     "heightPct": 84.79,
+     "rotation": -8,
+     "opacity": 0.5,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 450.8,
+      "h": 810.59,
+      "radius": 121.09,
+      "fill": "#000000",
+      "blur": 24,
+      "inset": 72
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 51.34,
+    "x": 13.49,
+    "y": 28.06,
+    "rotation": -8,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#05070f",
+    "borderColor": "#2b3a6b",
+    "zIndex": 10
+   }
   }
+ ],
+ "designHeight": 2347,
+ "textColor": "#111111",
+ "columnCount": 5,
+ "titles": [
+  "Your AI Copilot",
+  "Talk. It Acts.",
+  "Search Any Document",
+  "Workflows on Autopilot",
+  "Endless Possibilities"
+ ],
+ "subtitles": [
+  "Ask anything and get clear answers instantly",
+  "Natural speech turns into real actions",
+  "Pull key insights from PDFs in seconds",
+  "Hand off repetitive daily tasks to AI",
+  "Powered by state-of-the-art language models"
  ]
 }

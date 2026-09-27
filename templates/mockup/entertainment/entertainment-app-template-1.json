@@ -14,39 +14,1122 @@
    "label": "6.5 Inch Phone"
   }
  ],
- "layout": "two-devices-connected-right-title-below",
+ "layout": "single-no-text",
  "background": {
   "type": "gradient",
-  "value": "candy"
+  "value": "linear-gradient(180deg, #221a52 0%, #150f33 55%, #0e0a24 100%)"
  },
  "pages": [
   {
-   "title": "Play Games",
-   "subtitle": "Hundreds of titles to explore",
-   "layout": "two-devices-connected-right-title-below",
-   "background": null,
-   "devices": null
+   "title": "Play Games Anytime",
+   "subtitle": "Hundreds of titles to explore, no downloads needed",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #221a52 0%, #150f33 55%, #0e0a24 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t6",
+     "xPct": 6.818,
+     "yPct": 9.996,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Play Games\nAnytime",
+      "color": "#ffffff",
+      "size": 122.7,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.05,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t7",
+     "xPct": 6.818,
+     "yPct": 22.305,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Hundreds of titles to explore,\nno downloads needed",
+      "color": "#c9c3ec",
+      "size": 46.6,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.3
+     }
+    },
+    {
+     "id": "tpl-t9",
+     "xPct": 35.802,
+     "yPct": 7.194,
+     "widthPct": 28.396,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 33,
+     "customName": "Badge label",
+     "style": {
+      "text": "500+ GAMES",
+      "color": "#150f33",
+      "size": 31.9,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 80
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s1",
+     "assetId": "shape:Glow",
+     "name": "Glow",
+     "xPct": 13.636,
+     "yPct": 23.013,
+     "widthPct": 136.364,
+     "heightPct": 62.762,
+     "rotation": 0,
+     "opacity": 0.45,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 600,
+      "h": 600,
+      "radius": 300,
+      "fill": "#ff5a7e",
+      "blur": 50,
+      "inset": 150
+     }
+    },
+    {
+     "id": "tpl-s2",
+     "assetId": "shape:Glow",
+     "name": "Glow",
+     "xPct": -50.0,
+     "yPct": 53.347,
+     "widthPct": 131.818,
+     "heightPct": 60.669,
+     "rotation": 0,
+     "opacity": 0.5,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 580,
+      "h": 580,
+      "radius": 290,
+      "fill": "#6a4cff",
+      "blur": 50,
+      "inset": 150
+     }
+    },
+    {
+     "id": "tpl-s3",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -0.455,
+     "yPct": 27.615,
+     "widthPct": 100.909,
+     "heightPct": 83.245,
+     "rotation": 0,
+     "opacity": 0.4,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 444,
+      "h": 795.82,
+      "radius": 120.0,
+      "fill": "#000000",
+      "blur": 24,
+      "inset": 72
+     }
+    },
+    {
+     "id": "tpl-s4",
+     "assetId": "shape:Spark",
+     "name": "Spark",
+     "xPct": 84.318,
+     "yPct": 31.067,
+     "widthPct": 9.545,
+     "heightPct": 4.393,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 42,
+      "h": 42,
+      "vx": 371,
+      "vy": 297,
+      "path": "M392,298Q396.4,313.6 412,318Q396.4,322.4 392,338Q387.6,322.4 372,318Q387.6,313.6 392,298Z",
+      "fill": "#c8ff3a"
+     }
+    },
+    {
+     "id": "tpl-s5",
+     "assetId": "shape:Spark",
+     "name": "Spark",
+     "xPct": 8.864,
+     "yPct": 40.69,
+     "widthPct": 5.909,
+     "heightPct": 2.72,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 26,
+      "h": 26,
+      "vx": 39,
+      "vy": 389,
+      "path": "M52,390Q54.64,399.36 64,402Q54.64,404.64 52,414Q49.36,404.64 40,402Q49.36,399.36 52,390Z",
+      "fill": "#ff5a7e"
+     }
+    },
+    {
+     "id": "tpl-s8",
+     "assetId": "shape:Badge",
+     "name": "Badge",
+     "xPct": 35.802,
+     "yPct": 6.276,
+     "widthPct": 28.396,
+     "heightPct": 3.138,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 124.94,
+      "h": 30,
+      "radius": 15,
+      "fill": "#c8ff3a"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 50.21,
+    "x": 0.0,
+    "y": 27.29,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
   },
   {
-   "title": "Watch Clips",
-   "subtitle": "Bite-sized entertainment",
-   "layout": "two-devices-connected-right-title-below",
-   "background": null,
-   "devices": null
+   "title": "Watch Clips That Hit",
+   "subtitle": "Bite-sized entertainment, fresh every hour",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #221a52 0%, #150f33 55%, #0e0a24 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t19",
+     "xPct": 6.818,
+     "yPct": 9.996,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Watch Clips\nThat Hit",
+      "color": "#ffffff",
+      "size": 122.7,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.05,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t20",
+     "xPct": 6.818,
+     "yPct": 22.305,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Bite-sized entertainment,\nfresh every hour",
+      "color": "#c9c3ec",
+      "size": 46.6,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.3
+     }
+    },
+    {
+     "id": "tpl-t21",
+     "xPct": 21.258,
+     "yPct": 71.575,
+     "widthPct": 26.777,
+     "rotation": -5,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Trending now",
+     "style": {
+      "text": "Trending now",
+      "color": "#150f33",
+      "size": 39.3,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t22",
+     "xPct": 21.745,
+     "yPct": 74.137,
+     "widthPct": 26.958,
+     "rotation": -5,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "2.4M views today",
+     "style": {
+      "text": "2.4M views today",
+      "color": "#5b5577",
+      "size": 31.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t24",
+     "xPct": 31.594,
+     "yPct": 7.194,
+     "widthPct": 36.812,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 33,
+     "customName": "Badge label",
+     "style": {
+      "text": "NEW EVERY HOUR",
+      "color": "#150f33",
+      "size": 31.9,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 80
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s10",
+     "assetId": "shape:Glow",
+     "name": "Glow",
+     "xPct": -50.0,
+     "yPct": 26.151,
+     "widthPct": 140.909,
+     "heightPct": 64.854,
+     "rotation": 0,
+     "opacity": 0.5,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 620,
+      "h": 620,
+      "radius": 310,
+      "fill": "#6a4cff",
+      "blur": 50,
+      "inset": 150
+     }
+    },
+    {
+     "id": "tpl-s11",
+     "assetId": "shape:Glow",
+     "name": "Glow",
+     "xPct": 22.727,
+     "yPct": 60.669,
+     "widthPct": 127.273,
+     "heightPct": 58.577,
+     "rotation": 0,
+     "opacity": 0.45,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 560,
+      "h": 560,
+      "radius": 280,
+      "fill": "#ff5a7e",
+      "blur": 50,
+      "inset": 150
+     }
+    },
+    {
+     "id": "tpl-s12",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -1.226,
+     "yPct": 27.892,
+     "widthPct": 98.636,
+     "heightPct": 80.972,
+     "rotation": 7,
+     "opacity": 0.4,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 434,
+      "h": 774.09,
+      "radius": 118.4,
+      "fill": "#000000",
+      "blur": 24,
+      "inset": 72
+     }
+    },
+    {
+     "id": "tpl-s13",
+     "assetId": "shape:Card shadow",
+     "name": "Card shadow",
+     "xPct": -3.745,
+     "yPct": 65.688,
+     "widthPct": 61.364,
+     "heightPct": 16.318,
+     "rotation": -5,
+     "opacity": 0.35,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 270,
+      "h": 156,
+      "radius": 60,
+      "fill": "#000000",
+      "blur": 14,
+      "inset": 40
+     }
+    },
+    {
+     "id": "tpl-s14",
+     "assetId": "shape:Card",
+     "name": "Card",
+     "xPct": 5.227,
+     "yPct": 69.247,
+     "widthPct": 43.182,
+     "heightPct": 7.95,
+     "rotation": -5,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 190,
+      "h": 76,
+      "radius": 20,
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s15",
+     "assetId": "shape:Play dot",
+     "name": "Play dot",
+     "xPct": 8.913,
+     "yPct": 71.44,
+     "widthPct": 10.0,
+     "heightPct": 4.603,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 44,
+      "h": 44,
+      "fill": "#ff5a7e"
+     }
+    },
+    {
+     "id": "tpl-s16",
+     "assetId": "shape:Play icon",
+     "name": "Play icon",
+     "xPct": 12.109,
+     "yPct": 72.545,
+     "widthPct": 4.748,
+     "heightPct": 2.502,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 20.89,
+      "h": 23.92,
+      "vx": 53.28,
+      "vy": 693.53,
+      "path": "M54.28,694.53L73.17,703.92L56.2,716.45Z",
+      "fill": "#ffffff"
+     }
+    },
+    {
+     "id": "tpl-s17",
+     "assetId": "shape:Spark",
+     "name": "Spark",
+     "xPct": 86.591,
+     "yPct": 29.603,
+     "widthPct": 7.727,
+     "heightPct": 3.556,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 34,
+      "h": 34,
+      "vx": 381,
+      "vy": 283,
+      "path": "M398,284Q401.52,296.48 414,300Q401.52,303.52 398,316Q394.48,303.52 382,300Q394.48,296.48 398,284Z",
+      "fill": "#c8ff3a"
+     }
+    },
+    {
+     "id": "tpl-s18",
+     "assetId": "shape:Spark",
+     "name": "Spark",
+     "xPct": 6.591,
+     "yPct": 42.782,
+     "widthPct": 5.0,
+     "heightPct": 2.301,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 22,
+      "h": 22,
+      "vx": 29,
+      "vy": 409,
+      "path": "M40,410Q42.2,417.8 50,420Q42.2,422.2 40,430Q37.8,422.2 30,420Q37.8,417.8 40,410Z",
+      "fill": "#ff5a7e"
+     }
+    },
+    {
+     "id": "tpl-s23",
+     "assetId": "shape:Badge",
+     "name": "Badge",
+     "xPct": 31.594,
+     "yPct": 6.276,
+     "widthPct": 36.812,
+     "heightPct": 3.138,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 161.97,
+      "h": 30,
+      "radius": 15,
+      "fill": "#c8ff3a"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 48.53,
+    "x": -2.89,
+    "y": 26.93,
+    "rotation": 7,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
   },
   {
-   "title": "Leaderboards",
-   "subtitle": "Compete with friends",
-   "layout": "two-devices-connected-right-title-below",
-   "background": null,
-   "devices": null
+   "title": "Climb the Leaderboards",
+   "subtitle": "Compete with friends and top the weekly charts",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #221a52 0%, #150f33 55%, #0e0a24 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t31",
+     "xPct": 6.818,
+     "yPct": 9.996,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Climb the\nLeaderboards",
+      "color": "#ffffff",
+      "size": 122.7,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.05,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t32",
+     "xPct": 6.818,
+     "yPct": 22.305,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Compete with friends\nand top the weekly charts",
+      "color": "#c9c3ec",
+      "size": 46.6,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.3
+     }
+    },
+    {
+     "id": "tpl-t34",
+     "xPct": 26.103,
+     "yPct": 7.194,
+     "widthPct": 47.794,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 33,
+     "customName": "Badge label",
+     "style": {
+      "text": "WEEKLY TOURNAMENTS",
+      "color": "#150f33",
+      "size": 31.9,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 80
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s25",
+     "assetId": "shape:Glow",
+     "name": "Glow",
+     "xPct": 6.818,
+     "yPct": 15.69,
+     "widthPct": 136.364,
+     "heightPct": 62.762,
+     "rotation": 0,
+     "opacity": 0.45,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 600,
+      "h": 600,
+      "radius": 300,
+      "fill": "#ff5a7e",
+      "blur": 50,
+      "inset": 150
+     }
+    },
+    {
+     "id": "tpl-s26",
+     "assetId": "shape:Glow",
+     "name": "Glow",
+     "xPct": -47.727,
+     "yPct": 57.531,
+     "widthPct": 136.364,
+     "heightPct": 62.762,
+     "rotation": 0,
+     "opacity": 0.5,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 600,
+      "h": 600,
+      "radius": 300,
+      "fill": "#6a4cff",
+      "blur": 50,
+      "inset": 150
+     }
+    },
+    {
+     "id": "tpl-s27",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 18.321,
+     "yPct": 31.225,
+     "widthPct": 86.818,
+     "heightPct": 70.626,
+     "rotation": 6,
+     "opacity": 0.35,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 382,
+      "h": 675.18,
+      "radius": 106.0,
+      "fill": "#000000",
+      "blur": 22,
+      "inset": 66
+     }
+    },
+    {
+     "id": "tpl-s28",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -7.822,
+     "yPct": 34.864,
+     "widthPct": 92.955,
+     "heightPct": 75.29,
+     "rotation": -4,
+     "opacity": 0.45,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 409,
+      "h": 719.77,
+      "radius": 114.4,
+      "fill": "#000000",
+      "blur": 24,
+      "inset": 72
+     }
+    },
+    {
+     "id": "tpl-s29",
+     "assetId": "shape:Spark",
+     "name": "Spark",
+     "xPct": 87.5,
+     "yPct": 31.276,
+     "widthPct": 8.636,
+     "heightPct": 3.975,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 38,
+      "h": 38,
+      "vx": 385,
+      "vy": 299,
+      "path": "M404,300Q407.96,314.04 422,318Q407.96,321.96 404,336Q400.04,321.96 386,318Q400.04,314.04 404,300Z",
+      "fill": "#c8ff3a"
+     }
+    },
+    {
+     "id": "tpl-s30",
+     "assetId": "shape:Spark",
+     "name": "Spark",
+     "xPct": 5.455,
+     "yPct": 36.402,
+     "widthPct": 5.455,
+     "heightPct": 2.51,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 24,
+      "h": 24,
+      "vx": 24,
+      "vy": 348,
+      "path": "M36,349Q38.42,357.58 47,360Q38.42,362.42 36,371Q33.58,362.42 25,360Q33.58,357.58 36,349Z",
+      "fill": "#ff5a7e"
+     }
+    },
+    {
+     "id": "tpl-s33",
+     "assetId": "shape:Badge",
+     "name": "Badge",
+     "xPct": 26.103,
+     "yPct": 6.276,
+     "widthPct": 47.794,
+     "heightPct": 3.138,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 210.29,
+      "h": 30,
+      "radius": 15,
+      "fill": "#c8ff3a"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 44.35,
+    "x": -18.84,
+    "y": 36.33,
+    "rotation": -4,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 11
+   },
+   "extraDevices": [
+    {
+     "size": 41.84,
+     "x": 20.64,
+     "y": 28.0,
+     "rotation": 6,
+     "brightness": 100,
+     "frameless": false,
+     "bezelColor": "#060606",
+     "borderColor": "#5e5e5e",
+     "zIndex": 8
+    }
+   ]
   },
   {
-   "title": "Daily Rewards",
-   "subtitle": "Log in and earn every day",
-   "layout": "two-devices-connected-right-title-below",
-   "background": null,
-   "devices": null
+   "title": "Daily Rewards Unlocked",
+   "subtitle": "Log in, keep your streak and earn every day",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #221a52 0%, #150f33 55%, #0e0a24 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t40",
+     "xPct": 6.818,
+     "yPct": 9.996,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Daily Rewards\nUnlocked",
+      "color": "#ffffff",
+      "size": 122.7,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.05,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t41",
+     "xPct": 6.818,
+     "yPct": 22.305,
+     "widthPct": 86.364,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Log in, keep your streak\nand earn every day",
+      "color": "#c9c3ec",
+      "size": 46.6,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.3
+     }
+    },
+    {
+     "id": "tpl-t42",
+     "xPct": 50.444,
+     "yPct": 63.729,
+     "widthPct": 22.086,
+     "rotation": 4,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "DAY 7 BONUS",
+     "style": {
+      "text": "DAY 7 BONUS",
+      "color": "#150f33",
+      "size": 31.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t43",
+     "xPct": 50.079,
+     "yPct": 66.134,
+     "widthPct": 38.232,
+     "rotation": 4,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "+500 coins",
+     "style": {
+      "text": "+500 coins",
+      "color": "#150f33",
+      "size": 68.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t47",
+     "xPct": 34.116,
+     "yPct": 7.194,
+     "widthPct": 31.769,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 33,
+     "customName": "Badge label",
+     "style": {
+      "text": "7-DAY STREAK",
+      "color": "#150f33",
+      "size": 31.9,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 80
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s35",
+     "assetId": "shape:Glow",
+     "name": "Glow",
+     "xPct": -50.0,
+     "yPct": 18.828,
+     "widthPct": 136.364,
+     "heightPct": 62.762,
+     "rotation": 0,
+     "opacity": 0.4,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 600,
+      "h": 600,
+      "radius": 300,
+      "fill": "#ff5a7e",
+      "blur": 50,
+      "inset": 150
+     }
+    },
+    {
+     "id": "tpl-s36",
+     "assetId": "shape:Glow",
+     "name": "Glow",
+     "xPct": 15.909,
+     "yPct": 54.393,
+     "widthPct": 136.364,
+     "heightPct": 62.762,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 600,
+      "h": 600,
+      "radius": 300,
+      "fill": "#6a4cff",
+      "blur": 50,
+      "inset": 150
+     }
+    },
+    {
+     "id": "tpl-s37",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 0.682,
+     "yPct": 28.661,
+     "widthPct": 98.636,
+     "heightPct": 80.972,
+     "rotation": 0,
+     "opacity": 0.4,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 434,
+      "h": 774.09,
+      "radius": 118.4,
+      "fill": "#000000",
+      "blur": 24,
+      "inset": 72
+     }
+    },
+    {
+     "id": "tpl-s38",
+     "assetId": "shape:Card shadow",
+     "name": "Card shadow",
+     "xPct": 36.237,
+     "yPct": 58.575,
+     "widthPct": 63.636,
+     "heightPct": 18.41,
+     "rotation": 4,
+     "opacity": 0.35,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 280,
+      "h": 176,
+      "radius": 62,
+      "fill": "#000000",
+      "blur": 14,
+      "inset": 40
+     }
+    },
+    {
+     "id": "tpl-s39",
+     "assetId": "shape:Reward card",
+     "name": "Reward card",
+     "xPct": 45.455,
+     "yPct": 61.925,
+     "widthPct": 45.455,
+     "heightPct": 10.042,
+     "rotation": 4,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 200,
+      "h": 96,
+      "radius": 22,
+      "fill": "#c8ff3a"
+     }
+    },
+    {
+     "id": "tpl-s44",
+     "assetId": "shape:Spark",
+     "name": "Spark",
+     "xPct": 86.591,
+     "yPct": 29.393,
+     "widthPct": 8.636,
+     "heightPct": 3.975,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 38,
+      "h": 38,
+      "vx": 381,
+      "vy": 281,
+      "path": "M400,282Q403.96,296.04 418,300Q403.96,303.96 400,318Q396.04,303.96 382,300Q396.04,296.04 400,282Z",
+      "fill": "#c8ff3a"
+     }
+    },
+    {
+     "id": "tpl-s45",
+     "assetId": "shape:Spark",
+     "name": "Spark",
+     "xPct": 7.5,
+     "yPct": 78.138,
+     "widthPct": 5.909,
+     "heightPct": 2.72,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 26,
+      "h": 26,
+      "vx": 33,
+      "vy": 747,
+      "path": "M46,748Q48.64,757.36 58,760Q48.64,762.64 46,772Q43.36,762.64 34,760Q43.36,757.36 46,748Z",
+      "fill": "#ff5a7e"
+     }
+    },
+    {
+     "id": "tpl-s46",
+     "assetId": "shape:Badge",
+     "name": "Badge",
+     "xPct": 34.116,
+     "yPct": 6.276,
+     "widthPct": 31.769,
+     "heightPct": 3.138,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 139.78,
+      "h": 30,
+      "radius": 15,
+      "fill": "#c8ff3a"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 48.53,
+    "x": 0.0,
+    "y": 28.1,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
   }
+ ],
+ "designHeight": 2347,
+ "textColor": "#111111",
+ "columnCount": 4,
+ "titles": [
+  "Play Games Anytime",
+  "Watch Clips That Hit",
+  "Climb the Leaderboards",
+  "Daily Rewards Unlocked"
+ ],
+ "subtitles": [
+  "Hundreds of titles to explore, no downloads needed",
+  "Bite-sized entertainment, fresh every hour",
+  "Compete with friends and top the weekly charts",
+  "Log in, keep your streak and earn every day"
  ]
 }

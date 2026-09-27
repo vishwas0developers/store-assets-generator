@@ -14,46 +14,1366 @@
    "label": "6.5 Inch Phone"
   }
  ],
- "layout": "two-devices-connected-left-title-above",
+ "layout": "single-no-text",
  "background": {
-  "type": "pattern",
-  "value": "grid"
+  "type": "gradient",
+  "value": "linear-gradient(180deg, #f8fafd 0%, #eef2f8 100%)"
  },
  "pages": [
   {
-   "title": "Enterprise Command",
-   "subtitle": "Manage operations from one hub",
-   "layout": "two-devices-connected-left-title-above",
-   "background": null,
-   "devices": null
+   "title": "Enterprise Command Hub",
+   "subtitle": "Every operation, one trusted dashboard",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #f8fafd 0%, #eef2f8 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t3",
+     "xPct": 9.091,
+     "yPct": 7.536,
+     "widthPct": 7.727,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Index",
+     "style": {
+      "text": "01",
+      "color": "#ffffff",
+      "size": 36.8,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t4",
+     "xPct": 19.545,
+     "yPct": 7.612,
+     "widthPct": 68.182,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Section label",
+     "style": {
+      "text": "OVERVIEW",
+      "color": "#1f5bd8",
+      "size": 31.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 140
+     }
+    },
+    {
+     "id": "tpl-t6",
+     "xPct": 9.091,
+     "yPct": 12.577,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Enterprise\nCommand Hub",
+      "color": "#0b1f3a",
+      "size": 108.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.08,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t7",
+     "xPct": 9.091,
+     "yPct": 25.917,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Every operation, one\ntrusted dashboard",
+      "color": "#4a5a72",
+      "size": 46.6,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.35
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s8",
+     "assetId": "shape:Grid",
+     "name": "Grid",
+     "xPct": 0.0,
+     "yPct": 0.0,
+     "widthPct": 100.0,
+     "heightPct": 100.0,
+     "rotation": 0,
+     "opacity": 0.9,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 440,
+      "h": 956,
+      "vx": 0,
+      "vy": 0,
+      "path": "M40,0L40,956M80,0L80,956M120,0L120,956M160,0L160,956M200,0L200,956M240,0L240,956M280,0L280,956M320,0L320,956M360,0L360,956M400,0L400,956M0,40L440,40M0,80L440,80M0,120L440,120M0,160L440,160M0,200L440,200M0,240L440,240M0,280L440,280M0,320L440,320M0,360L440,360M0,400L440,400M0,440L440,440M0,480L440,480M0,520L440,520M0,560L440,560M0,600L440,600M0,640L440,640M0,680L440,680M0,720L440,720M0,760L440,760M0,800L440,800M0,840L440,840M0,880L440,880M0,920L440,920",
+      "stroke": "#dde3ec",
+      "strokeWidth": 1,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s9",
+     "assetId": "shape:Glow",
+     "name": "Glow",
+     "xPct": -20.455,
+     "yPct": 38.703,
+     "widthPct": 140.909,
+     "heightPct": 77.406,
+     "rotation": 0,
+     "opacity": 0.1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 620,
+      "h": 740,
+      "radius": 190,
+      "fill": "#1f5bd8",
+      "blur": 50,
+      "inset": 150
+     }
+    },
+    {
+     "id": "tpl-s1",
+     "assetId": "shape:Device shadow",
+     "name": "Device shadow",
+     "xPct": -3.636,
+     "yPct": 32.636,
+     "widthPct": 107.273,
+     "heightPct": 61.25,
+     "rotation": 0,
+     "opacity": 0.22,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 472,
+      "h": 585.55,
+      "radius": 83.0,
+      "fill": "#0b1f3a",
+      "blur": 22,
+      "inset": 66
+     }
+    },
+    {
+     "id": "tpl-s2",
+     "assetId": "shape:Index box",
+     "name": "Index box",
+     "xPct": 9.091,
+     "yPct": 6.485,
+     "widthPct": 7.727,
+     "heightPct": 3.556,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 34,
+      "h": 34,
+      "radius": 6,
+      "fill": "#0b1f3a"
+     }
+    },
+    {
+     "id": "tpl-s5",
+     "assetId": "shape:Accent rule",
+     "name": "Accent rule",
+     "xPct": 9.091,
+     "yPct": 24.006,
+     "widthPct": 10.909,
+     "heightPct": 0.523,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 48,
+      "h": 5,
+      "radius": 2.5,
+      "fill": "#1f5bd8"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 36.67,
+    "x": 0.0,
+    "y": 26.63,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#0b1f3a",
+    "borderColor": "#8a96a8",
+    "zIndex": 10
+   }
   },
   {
    "title": "Team Workspaces",
-   "subtitle": "Collaborate seamlessly across units",
-   "layout": "two-devices-connected-left-title-above",
-   "background": null,
-   "devices": null
+   "subtitle": "Every department aligned in shared spaces",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #f8fafd 0%, #eef2f8 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t13",
+     "xPct": 9.091,
+     "yPct": 7.536,
+     "widthPct": 7.727,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Index",
+     "style": {
+      "text": "02",
+      "color": "#ffffff",
+      "size": 36.8,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t14",
+     "xPct": 19.545,
+     "yPct": 7.612,
+     "widthPct": 68.182,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Section label",
+     "style": {
+      "text": "COLLABORATION",
+      "color": "#1f5bd8",
+      "size": 31.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 140
+     }
+    },
+    {
+     "id": "tpl-t16",
+     "xPct": 9.091,
+     "yPct": 12.577,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Team\nWorkspaces",
+      "color": "#0b1f3a",
+      "size": 108.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.08,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t17",
+     "xPct": 9.091,
+     "yPct": 25.917,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Every department aligned\nin shared spaces",
+      "color": "#4a5a72",
+      "size": 46.6,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.35
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s18",
+     "assetId": "shape:Grid",
+     "name": "Grid",
+     "xPct": 0.0,
+     "yPct": 0.0,
+     "widthPct": 100.0,
+     "heightPct": 100.0,
+     "rotation": 0,
+     "opacity": 0.9,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 440,
+      "h": 956,
+      "vx": 0,
+      "vy": 0,
+      "path": "M40,0L40,956M80,0L80,956M120,0L120,956M160,0L160,956M200,0L200,956M240,0L240,956M280,0L280,956M320,0L320,956M360,0L360,956M400,0L400,956M0,40L440,40M0,80L440,80M0,120L440,120M0,160L440,160M0,200L440,200M0,240L440,240M0,280L440,280M0,320L440,320M0,360L440,360M0,400L440,400M0,440L440,440M0,480L440,480M0,520L440,520M0,560L440,560M0,600L440,600M0,640L440,640M0,680L440,680M0,720L440,720M0,760L440,760M0,800L440,800M0,840L440,840M0,880L440,880M0,920L440,920",
+      "stroke": "#dde3ec",
+      "strokeWidth": 1,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s10",
+     "assetId": "shape:Device shadow",
+     "name": "Device shadow",
+     "xPct": -5.75,
+     "yPct": 42.848,
+     "widthPct": 82.273,
+     "heightPct": 45.901,
+     "rotation": -4,
+     "opacity": 0.22,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 362,
+      "h": 438.82,
+      "radius": 77.5,
+      "fill": "#0b1f3a",
+      "blur": 22,
+      "inset": 66
+     }
+    },
+    {
+     "id": "tpl-s11",
+     "assetId": "shape:Device shadow",
+     "name": "Device shadow",
+     "xPct": 24.159,
+     "yPct": 35.526,
+     "widthPct": 82.273,
+     "heightPct": 45.901,
+     "rotation": 4,
+     "opacity": 0.22,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 362,
+      "h": 438.82,
+      "radius": 77.5,
+      "fill": "#0b1f3a",
+      "blur": 22,
+      "inset": 66
+     }
+    },
+    {
+     "id": "tpl-s12",
+     "assetId": "shape:Index box",
+     "name": "Index box",
+     "xPct": 9.091,
+     "yPct": 6.485,
+     "widthPct": 7.727,
+     "heightPct": 3.556,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 34,
+      "h": 34,
+      "radius": 6,
+      "fill": "#0b1f3a"
+     }
+    },
+    {
+     "id": "tpl-s15",
+     "assetId": "shape:Accent rule",
+     "name": "Accent rule",
+     "xPct": 9.091,
+     "yPct": 24.006,
+     "widthPct": 10.909,
+     "heightPct": 0.523,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 48,
+      "h": 5,
+      "radius": 2.5,
+      "fill": "#1f5bd8"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 24.81,
+    "x": -27.96,
+    "y": 47.27,
+    "rotation": -4,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#0b1f3a",
+    "borderColor": "#8a96a8",
+    "zIndex": 10
+   },
+   "extraDevices": [
+    {
+     "size": 24.81,
+     "x": 29.26,
+     "y": 24.46,
+     "rotation": 4,
+     "brightness": 100,
+     "frameless": false,
+     "bezelColor": "#0b1f3a",
+     "borderColor": "#8a96a8",
+     "zIndex": 11
+    }
+   ]
   },
   {
-   "title": "Advanced Security",
-   "subtitle": "Bank-grade encryption & compliance",
-   "layout": "two-devices-connected-left-title-above",
-   "background": null,
-   "devices": null
+   "title": "Bank-Grade Security",
+   "subtitle": "Encrypted, audited and compliance ready",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #f8fafd 0%, #eef2f8 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t21",
+     "xPct": 9.091,
+     "yPct": 7.536,
+     "widthPct": 7.727,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Index",
+     "style": {
+      "text": "03",
+      "color": "#ffffff",
+      "size": 36.8,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t22",
+     "xPct": 19.545,
+     "yPct": 7.612,
+     "widthPct": 68.182,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Section label",
+     "style": {
+      "text": "SECURITY",
+      "color": "#1f5bd8",
+      "size": 31.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 140
+     }
+    },
+    {
+     "id": "tpl-t24",
+     "xPct": 9.091,
+     "yPct": 12.577,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Bank-Grade\nSecurity",
+      "color": "#0b1f3a",
+      "size": 108.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.08,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t25",
+     "xPct": 9.091,
+     "yPct": 25.917,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Encrypted, audited and\ncompliance ready",
+      "color": "#4a5a72",
+      "size": 46.6,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.35
+     }
+    },
+    {
+     "id": "tpl-t30",
+     "xPct": 23.182,
+     "yPct": 74.615,
+     "widthPct": 27.222,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "customName": "SOC 2 Type II",
+     "style": {
+      "text": "SOC 2 Type II",
+      "color": "#0b1f3a",
+      "size": 41.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t31",
+     "xPct": 23.182,
+     "yPct": 77.277,
+     "widthPct": 30.419,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "customName": "AES-256 encryption",
+     "style": {
+      "text": "AES-256 encryption",
+      "color": "#4a5a72",
+      "size": 31.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s32",
+     "assetId": "shape:Grid",
+     "name": "Grid",
+     "xPct": 0.0,
+     "yPct": 0.0,
+     "widthPct": 100.0,
+     "heightPct": 100.0,
+     "rotation": 0,
+     "opacity": 0.9,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 440,
+      "h": 956,
+      "vx": 0,
+      "vy": 0,
+      "path": "M40,0L40,956M80,0L80,956M120,0L120,956M160,0L160,956M200,0L200,956M240,0L240,956M280,0L280,956M320,0L320,956M360,0L360,956M400,0L400,956M0,40L440,40M0,80L440,80M0,120L440,120M0,160L440,160M0,200L440,200M0,240L440,240M0,280L440,280M0,320L440,320M0,360L440,360M0,400L440,400M0,440L440,440M0,480L440,480M0,520L440,520M0,560L440,560M0,600L440,600M0,640L440,640M0,680L440,680M0,720L440,720M0,760L440,760M0,800L440,800M0,840L440,840M0,880L440,880M0,920L440,920",
+      "stroke": "#dde3ec",
+      "strokeWidth": 1,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s19",
+     "assetId": "shape:Device shadow",
+     "name": "Device shadow",
+     "xPct": 2.974,
+     "yPct": 35.45,
+     "widthPct": 98.182,
+     "heightPct": 55.669,
+     "rotation": 6,
+     "opacity": 0.22,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 432,
+      "h": 532.2,
+      "radius": 81.0,
+      "fill": "#0b1f3a",
+      "blur": 22,
+      "inset": 66
+     }
+    },
+    {
+     "id": "tpl-s20",
+     "assetId": "shape:Index box",
+     "name": "Index box",
+     "xPct": 9.091,
+     "yPct": 6.485,
+     "widthPct": 7.727,
+     "heightPct": 3.556,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 34,
+      "h": 34,
+      "radius": 6,
+      "fill": "#0b1f3a"
+     }
+    },
+    {
+     "id": "tpl-s23",
+     "assetId": "shape:Accent rule",
+     "name": "Accent rule",
+     "xPct": 9.091,
+     "yPct": 24.006,
+     "widthPct": 10.909,
+     "heightPct": 0.523,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 48,
+      "h": 5,
+      "radius": 2.5,
+      "fill": "#1f5bd8"
+     }
+    },
+    {
+     "id": "tpl-s26",
+     "assetId": "shape:Card shadow",
+     "name": "Card shadow",
+     "xPct": -3.182,
+     "yPct": 67.992,
+     "widthPct": 68.636,
+     "heightPct": 17.155,
+     "rotation": 0,
+     "opacity": 0.16,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 302,
+      "h": 164,
+      "radius": 56,
+      "fill": "#0b1f3a",
+      "blur": 14,
+      "inset": 40
+     }
+    },
+    {
+     "id": "tpl-s27",
+     "assetId": "shape:Card",
+     "name": "Card",
+     "xPct": 5.909,
+     "yPct": 72.176,
+     "widthPct": 50.455,
+     "heightPct": 8.787,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 222,
+      "h": 84,
+      "radius": 16,
+      "fill": "#ffffff",
+      "stroke": "#dde3ec",
+      "strokeWidth": 1,
+      "inset": 0.5
+     }
+    },
+    {
+     "id": "tpl-s28",
+     "assetId": "shape:Badge",
+     "name": "Badge",
+     "xPct": 10.455,
+     "yPct": 74.268,
+     "widthPct": 10.0,
+     "heightPct": 4.603,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 44,
+      "h": 44,
+      "fill": "#1f5bd8"
+     }
+    },
+    {
+     "id": "tpl-s29",
+     "assetId": "shape:Check",
+     "name": "Check",
+     "xPct": 12.045,
+     "yPct": 75.209,
+     "widthPct": 7.045,
+     "heightPct": 2.72,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 31.0,
+      "h": 26.0,
+      "vx": 53.0,
+      "vy": 719.0,
+      "path": "M58.0,732.0L65.0,740.0L79.0,724.0",
+      "stroke": "#ffffff",
+      "strokeWidth": 4,
+      "strokeLinejoin": "round"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 32.36,
+    "x": 3.03,
+    "y": 30.24,
+    "rotation": 6,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#0b1f3a",
+    "borderColor": "#8a96a8",
+    "zIndex": 10
+   }
   },
   {
    "title": "Custom Reports",
    "subtitle": "Automated PDF and Excel exports",
-   "layout": "two-devices-connected-left-title-above",
-   "background": null,
-   "devices": null
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #f8fafd 0%, #eef2f8 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t35",
+     "xPct": 9.091,
+     "yPct": 7.536,
+     "widthPct": 7.727,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Index",
+     "style": {
+      "text": "04",
+      "color": "#ffffff",
+      "size": 36.8,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t36",
+     "xPct": 19.545,
+     "yPct": 7.612,
+     "widthPct": 68.182,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Section label",
+     "style": {
+      "text": "ANALYTICS",
+      "color": "#1f5bd8",
+      "size": 31.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 140
+     }
+    },
+    {
+     "id": "tpl-t38",
+     "xPct": 9.091,
+     "yPct": 12.577,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Custom\nReports",
+      "color": "#0b1f3a",
+      "size": 108.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.08,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t39",
+     "xPct": 9.091,
+     "yPct": 25.917,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Automated PDF and\nExcel exports",
+      "color": "#4a5a72",
+      "size": 46.6,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.35
+     }
+    },
+    {
+     "id": "tpl-t47",
+     "xPct": 9.168,
+     "yPct": 65.405,
+     "widthPct": 20.743,
+     "rotation": -4,
+     "opacity": 1,
+     "zIndex": 21,
+     "customName": "Q3 Revenue",
+     "style": {
+      "text": "Q3 Revenue",
+      "color": "#4a5a72",
+      "size": 34.4,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t48",
+     "xPct": 29.559,
+     "yPct": 64.658,
+     "widthPct": 15.651,
+     "rotation": -4,
+     "opacity": 1,
+     "zIndex": 21,
+     "customName": "+24.8%",
+     "style": {
+      "text": "+24.8%",
+      "color": "#1f5bd8",
+      "size": 36.8,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s49",
+     "assetId": "shape:Grid",
+     "name": "Grid",
+     "xPct": 0.0,
+     "yPct": 0.0,
+     "widthPct": 100.0,
+     "heightPct": 100.0,
+     "rotation": 0,
+     "opacity": 0.9,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 440,
+      "h": 956,
+      "vx": 0,
+      "vy": 0,
+      "path": "M40,0L40,956M80,0L80,956M120,0L120,956M160,0L160,956M200,0L200,956M240,0L240,956M280,0L280,956M320,0L320,956M360,0L360,956M400,0L400,956M0,40L440,40M0,80L440,80M0,120L440,120M0,160L440,160M0,200L440,200M0,240L440,240M0,280L440,280M0,320L440,320M0,360L440,360M0,400L440,400M0,440L440,440M0,480L440,480M0,520L440,520M0,560L440,560M0,600L440,600M0,640L440,640M0,680L440,680M0,720L440,720M0,760L440,760M0,800L440,800M0,840L440,840M0,880L440,880M0,920L440,920",
+      "stroke": "#dde3ec",
+      "strokeWidth": 1,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s33",
+     "assetId": "shape:Device shadow",
+     "name": "Device shadow",
+     "xPct": 10.455,
+     "yPct": 35.565,
+     "widthPct": 98.182,
+     "heightPct": 55.669,
+     "rotation": 0,
+     "opacity": 0.22,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 432,
+      "h": 532.2,
+      "radius": 81.0,
+      "fill": "#0b1f3a",
+      "blur": 22,
+      "inset": 66
+     }
+    },
+    {
+     "id": "tpl-s34",
+     "assetId": "shape:Index box",
+     "name": "Index box",
+     "xPct": 9.091,
+     "yPct": 6.485,
+     "widthPct": 7.727,
+     "heightPct": 3.556,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 34,
+      "h": 34,
+      "radius": 6,
+      "fill": "#0b1f3a"
+     }
+    },
+    {
+     "id": "tpl-s37",
+     "assetId": "shape:Accent rule",
+     "name": "Accent rule",
+     "xPct": 9.091,
+     "yPct": 24.006,
+     "widthPct": 10.909,
+     "heightPct": 0.523,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 48,
+      "h": 5,
+      "radius": 2.5,
+      "fill": "#1f5bd8"
+     }
+    },
+    {
+     "id": "tpl-s40",
+     "assetId": "shape:Card shadow",
+     "name": "Card shadow",
+     "xPct": -3.636,
+     "yPct": 58.577,
+     "widthPct": 61.364,
+     "heightPct": 24.059,
+     "rotation": -4,
+     "opacity": 0.16,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 270,
+      "h": 230,
+      "radius": 56,
+      "fill": "#0b1f3a",
+      "blur": 14,
+      "inset": 40
+     }
+    },
+    {
+     "id": "tpl-s41",
+     "assetId": "shape:Card",
+     "name": "Card",
+     "xPct": 5.455,
+     "yPct": 62.762,
+     "widthPct": 43.182,
+     "heightPct": 15.69,
+     "rotation": -4,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 190,
+      "h": 150,
+      "radius": 16,
+      "fill": "#ffffff",
+      "stroke": "#dde3ec",
+      "strokeWidth": 1,
+      "inset": 0.5
+     }
+    },
+    {
+     "id": "tpl-s42",
+     "assetId": "shape:Bar",
+     "name": "Bar",
+     "xPct": 12.89,
+     "yPct": 72.784,
+     "widthPct": 4.091,
+     "heightPct": 4.184,
+     "rotation": -4,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 18,
+      "h": 40,
+      "radius": 4,
+      "fill": "#c9d6ef"
+     }
+    },
+    {
+     "id": "tpl-s43",
+     "assetId": "shape:Bar",
+     "name": "Bar",
+     "xPct": 19.518,
+     "yPct": 70.267,
+     "widthPct": 4.091,
+     "heightPct": 6.485,
+     "rotation": -4,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 18,
+      "h": 62,
+      "radius": 4,
+      "fill": "#c9d6ef"
+     }
+    },
+    {
+     "id": "tpl-s44",
+     "assetId": "shape:Bar",
+     "name": "Bar",
+     "xPct": 26.414,
+     "yPct": 71.302,
+     "widthPct": 4.091,
+     "heightPct": 5.23,
+     "rotation": -4,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 18,
+      "h": 50,
+      "radius": 4,
+      "fill": "#c9d6ef"
+     }
+    },
+    {
+     "id": "tpl-s45",
+     "assetId": "shape:Bar",
+     "name": "Bar",
+     "xPct": 32.978,
+     "yPct": 67.948,
+     "widthPct": 4.091,
+     "heightPct": 8.368,
+     "rotation": -4,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 18,
+      "h": 80,
+      "radius": 4,
+      "fill": "#c9d6ef"
+     }
+    },
+    {
+     "id": "tpl-s46",
+     "assetId": "shape:Bar",
+     "name": "Bar",
+     "xPct": 39.653,
+     "yPct": 66.058,
+     "widthPct": 4.091,
+     "heightPct": 10.042,
+     "rotation": -4,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 18,
+      "h": 96,
+      "radius": 4,
+      "fill": "#1f5bd8"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 32.36,
+    "x": 14.0,
+    "y": 30.51,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#0b1f3a",
+    "borderColor": "#8a96a8",
+    "zIndex": 10
+   }
   },
   {
-   "title": "24/7 Priority",
-   "subtitle": "Dedicated account management",
-   "layout": "two-devices-connected-left-title-above",
-   "background": null,
-   "devices": null
+   "title": "24/7 Priority Support",
+   "subtitle": "A dedicated account team, always on",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #f8fafd 0%, #eef2f8 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t52",
+     "xPct": 34.091,
+     "yPct": 7.536,
+     "widthPct": 7.727,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Index",
+     "style": {
+      "text": "05",
+      "color": "#ffffff",
+      "size": 36.8,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t53",
+     "xPct": 44.545,
+     "yPct": 7.612,
+     "widthPct": 68.182,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Section label",
+     "style": {
+      "text": "SUPPORT",
+      "color": "#1f5bd8",
+      "size": 31.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1,
+      "charSpacing": 140
+     }
+    },
+    {
+     "id": "tpl-t55",
+     "xPct": 9.091,
+     "yPct": 12.577,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "24/7 Priority\nSupport",
+      "color": "#0b1f3a",
+      "size": 108.0,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.08,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t56",
+     "xPct": 9.091,
+     "yPct": 25.917,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "A dedicated account\nteam, always on",
+      "color": "#4a5a72",
+      "size": 46.6,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.35
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s57",
+     "assetId": "shape:Grid",
+     "name": "Grid",
+     "xPct": 0.0,
+     "yPct": 0.0,
+     "widthPct": 100.0,
+     "heightPct": 100.0,
+     "rotation": 0,
+     "opacity": 0.9,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 440,
+      "h": 956,
+      "vx": 0,
+      "vy": 0,
+      "path": "M40,0L40,956M80,0L80,956M120,0L120,956M160,0L160,956M200,0L200,956M240,0L240,956M280,0L280,956M320,0L320,956M360,0L360,956M400,0L400,956M0,40L440,40M0,80L440,80M0,120L440,120M0,160L440,160M0,200L440,200M0,240L440,240M0,280L440,280M0,320L440,320M0,360L440,360M0,400L440,400M0,440L440,440M0,480L440,480M0,520L440,520M0,560L440,560M0,600L440,600M0,640L440,640M0,680L440,680M0,720L440,720M0,760L440,760M0,800L440,800M0,840L440,840M0,880L440,880M0,920L440,920",
+      "stroke": "#dde3ec",
+      "strokeWidth": 1,
+      "strokeLinejoin": "round"
+     }
+    },
+    {
+     "id": "tpl-s58",
+     "assetId": "shape:Footer band",
+     "name": "Footer band",
+     "xPct": -0.227,
+     "yPct": 68.933,
+     "widthPct": 100.455,
+     "heightPct": 31.172,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 442,
+      "h": 298,
+      "vx": -1,
+      "vy": 659,
+      "path": "M0,700C150,660 290,660 440,700L440,956L0,956Z",
+      "fill": "#0b1f3a"
+     }
+    },
+    {
+     "id": "tpl-s50",
+     "assetId": "shape:Device shadow",
+     "name": "Device shadow",
+     "xPct": -2.5,
+     "yPct": 35.565,
+     "widthPct": 105.0,
+     "heightPct": 59.855,
+     "rotation": 0,
+     "opacity": 0.22,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 462,
+      "h": 572.21,
+      "radius": 82.5,
+      "fill": "#0b1f3a",
+      "blur": 22,
+      "inset": 66
+     }
+    },
+    {
+     "id": "tpl-s51",
+     "assetId": "shape:Index box",
+     "name": "Index box",
+     "xPct": 34.091,
+     "yPct": 6.485,
+     "widthPct": 7.727,
+     "heightPct": 3.556,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 34,
+      "h": 34,
+      "radius": 6,
+      "fill": "#0b1f3a"
+     }
+    },
+    {
+     "id": "tpl-s54",
+     "assetId": "shape:Accent rule",
+     "name": "Accent rule",
+     "xPct": 44.545,
+     "yPct": 24.006,
+     "widthPct": 10.909,
+     "heightPct": 0.523,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 48,
+      "h": 5,
+      "radius": 2.5,
+      "fill": "#1f5bd8"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 35.6,
+    "x": 0.0,
+    "y": 32.28,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#0b1f3a",
+    "borderColor": "#8a96a8",
+    "zIndex": 10
+   }
   }
+ ],
+ "designHeight": 2347,
+ "textColor": "#111111",
+ "columnCount": 5,
+ "titles": [
+  "Enterprise Command Hub",
+  "Team Workspaces",
+  "Bank-Grade Security",
+  "Custom Reports",
+  "24/7 Priority Support"
+ ],
+ "subtitles": [
+  "Every operation, one trusted dashboard",
+  "Every department aligned in shared spaces",
+  "Encrypted, audited and compliance ready",
+  "Automated PDF and Excel exports",
+  "A dedicated account team, always on"
  ]
 }

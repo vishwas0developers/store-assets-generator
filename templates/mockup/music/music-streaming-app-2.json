@@ -1,302 +1,302 @@
 {
- "id": "music-streaming-app-2",
- "name": "Music streaming app",
- "description": "Present your music streaming service with our free template. Display music libraries, playlist management, and playback features in an engaging design that enhances the listening experience.",
- "category": "music",
- "devices": [
-  "apple-iphone-16-pro-max",
-  "apple-iphone-14-plus",
-  "samsung-galaxy-s21-ultra"
- ],
- "isPaid": false,
- "designHeight": 2347,
- "layout": "single-no-text",
- "background": {
-  "type": "gradient",
-  "value": "linear-gradient(135deg, #fa6d5b 0%, #e76080 100%)"
- },
- "textColor": "#111111",
- "columnCount": 4,
- "pages": [
-  {
-   "title": "100+ million songs.\nall add-free.",
-   "subtitle": "",
-   "layout": "single-no-text",
-   "background": {
+  "id": "music-streaming-app-2",
+  "name": "Music streaming app-2",
+  "description": "Present your music streaming service with our free template. Display music libraries, playlist management, and playback features in an engaging design that enhances the listening experience.",
+  "category": "music",
+  "devices": [
+    "apple-iphone-16-pro-max",
+    "apple-iphone-14-plus",
+    "samsung-galaxy-s21-ultra"
+  ],
+  "isPaid": false,
+  "designHeight": 2347,
+  "layout": "single-no-text",
+  "background": {
     "type": "gradient",
     "value": "linear-gradient(135deg, #fa6d5b 0%, #e76080 100%)"
-   },
-   "devices": null,
-   "decorations": [],
-   "textLayers": [
-    {
-     "id": "tpl-t2",
-     "xPct": 4.545,
-     "yPct": 3.461,
-     "widthPct": 90.909,
-     "rotation": 0,
-     "opacity": 1,
-     "zIndex": 30,
-     "customName": "Title",
-     "style": {
-      "text": "100+ million songs.\nall add-free.",
-      "color": "#ffffff",
-      "size": 83.5,
-      "align": "center",
-      "fontFamily": "Inter, sans-serif",
-      "fontWeightNum": 700,
-      "lineHeightMultiplier": 1.15
-     }
-    }
-   ],
-   "assetLayers": [
-    {
-     "id": "tpl-s1",
-     "assetId": "shape:Phone shadow",
-     "name": "Phone shadow",
-     "xPct": -20.227,
-     "yPct": 12.762,
-     "widthPct": 140.455,
-     "heightPct": 119.846,
-     "rotation": 0,
-     "opacity": 0.22,
-     "zIndex": 5,
-     "cropFit": "stretch",
-     "shape": {
-      "type": "roundRect",
-      "w": 618,
-      "h": 1145.73,
-      "radius": 156.0,
-      "fill": "#000000",
-      "blur": 28,
-      "inset": 84
-     }
-    }
-   ],
-   "deviceOne": {
-    "size": 75.31,
-    "x": 0.0,
-    "y": 21.57,
-    "rotation": 0,
-    "brightness": 100,
-    "frameless": false,
-    "bezelColor": "#ffffff",
-    "borderColor": "#ffffff",
-    "zIndex": 10
-   }
   },
-  {
-   "title": "Real-time lyrics.\nRead, follow, sing.",
-   "subtitle": "",
-   "layout": "single-no-text",
-   "background": {
-    "type": "gradient",
-    "value": "linear-gradient(135deg, #fa6d5b 0%, #e76080 100%)"
-   },
-   "devices": null,
-   "decorations": [],
-   "textLayers": [
+  "textColor": "#111111",
+  "columnCount": 4,
+  "pages": [
     {
-     "id": "tpl-t4",
-     "xPct": 4.545,
-     "yPct": 3.461,
-     "widthPct": 90.909,
-     "rotation": 0,
-     "opacity": 1,
-     "zIndex": 30,
-     "customName": "Title",
-     "style": {
-      "text": "Real-time lyrics.\nRead, follow, sing.",
-      "color": "#ffffff",
-      "size": 83.5,
-      "align": "center",
-      "fontFamily": "Inter, sans-serif",
-      "fontWeightNum": 700,
-      "lineHeightMultiplier": 1.15
-     }
-    }
-   ],
-   "assetLayers": [
+      "title": "100+ million songs.\nall add-free.",
+      "subtitle": "",
+      "layout": "single-no-text",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #fa6d5b 0%, #e76080 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [
+        {
+          "id": "tpl-t2",
+          "xPct": 4.545,
+          "yPct": 3.461,
+          "widthPct": 90.909,
+          "rotation": 0,
+          "opacity": 1,
+          "zIndex": 30,
+          "customName": "Title",
+          "style": {
+            "text": "100+ million songs.\nall add-free.",
+            "color": "#ffffff",
+            "size": 83.5,
+            "align": "center",
+            "fontFamily": "Inter, sans-serif",
+            "fontWeightNum": 700,
+            "lineHeightMultiplier": 1.15
+          }
+        }
+      ],
+      "assetLayers": [
+        {
+          "id": "tpl-s1",
+          "assetId": "shape:Phone shadow",
+          "name": "Phone shadow",
+          "xPct": -20.227,
+          "yPct": 12.762,
+          "widthPct": 140.455,
+          "heightPct": 119.846,
+          "rotation": 0,
+          "opacity": 0.22,
+          "zIndex": 5,
+          "cropFit": "stretch",
+          "shape": {
+            "type": "roundRect",
+            "w": 618,
+            "h": 1145.73,
+            "radius": 156,
+            "fill": "#000000",
+            "blur": 28,
+            "inset": 84
+          }
+        }
+      ],
+      "deviceOne": {
+        "size": 75.31,
+        "x": 0,
+        "y": 21.57,
+        "rotation": 0,
+        "brightness": 100,
+        "frameless": false,
+        "bezelColor": "#ffffff",
+        "borderColor": "#ffffff",
+        "zIndex": 10
+      }
+    },
     {
-     "id": "tpl-s3",
-     "assetId": "shape:Phone shadow",
-     "name": "Phone shadow",
-     "xPct": -20.227,
-     "yPct": 12.762,
-     "widthPct": 140.455,
-     "heightPct": 119.846,
-     "rotation": 0,
-     "opacity": 0.22,
-     "zIndex": 5,
-     "cropFit": "stretch",
-     "shape": {
-      "type": "roundRect",
-      "w": 618,
-      "h": 1145.73,
-      "radius": 156.0,
-      "fill": "#000000",
-      "blur": 28,
-      "inset": 84
-     }
-    }
-   ],
-   "deviceOne": {
-    "size": 75.31,
-    "x": 0.0,
-    "y": 21.57,
-    "rotation": 0,
-    "brightness": 100,
-    "frameless": false,
-    "bezelColor": "#ffffff",
-    "borderColor": "#ffffff",
-    "zIndex": 10
-   }
-  },
-  {
-   "title": "Latest music from\nyour favorite artists.",
-   "subtitle": "",
-   "layout": "single-no-text",
-   "background": {
-    "type": "gradient",
-    "value": "linear-gradient(135deg, #fa6d5b 0%, #e76080 100%)"
-   },
-   "devices": null,
-   "decorations": [],
-   "textLayers": [
+      "title": "Real-time lyrics.\nRead, follow, sing.",
+      "subtitle": "",
+      "layout": "single-no-text",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #fa6d5b 0%, #e76080 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [
+        {
+          "id": "tpl-t4",
+          "xPct": 4.545,
+          "yPct": 3.461,
+          "widthPct": 90.909,
+          "rotation": 0,
+          "opacity": 1,
+          "zIndex": 30,
+          "customName": "Title",
+          "style": {
+            "text": "Real-time lyrics.\nRead, follow, sing.",
+            "color": "#ffffff",
+            "size": 83.5,
+            "align": "center",
+            "fontFamily": "Inter, sans-serif",
+            "fontWeightNum": 700,
+            "lineHeightMultiplier": 1.15
+          }
+        }
+      ],
+      "assetLayers": [
+        {
+          "id": "tpl-s3",
+          "assetId": "shape:Phone shadow",
+          "name": "Phone shadow",
+          "xPct": -20.227,
+          "yPct": 12.762,
+          "widthPct": 140.455,
+          "heightPct": 119.846,
+          "rotation": 0,
+          "opacity": 0.22,
+          "zIndex": 5,
+          "cropFit": "stretch",
+          "shape": {
+            "type": "roundRect",
+            "w": 618,
+            "h": 1145.73,
+            "radius": 156,
+            "fill": "#000000",
+            "blur": 28,
+            "inset": 84
+          }
+        }
+      ],
+      "deviceOne": {
+        "size": 75.31,
+        "x": 0,
+        "y": 21.57,
+        "rotation": 0,
+        "brightness": 100,
+        "frameless": false,
+        "bezelColor": "#ffffff",
+        "borderColor": "#ffffff",
+        "zIndex": 10
+      }
+    },
     {
-     "id": "tpl-t6",
-     "xPct": 4.545,
-     "yPct": 3.461,
-     "widthPct": 90.909,
-     "rotation": 0,
-     "opacity": 1,
-     "zIndex": 30,
-     "customName": "Title",
-     "style": {
-      "text": "Latest music from\nyour favorite artists.",
-      "color": "#ffffff",
-      "size": 83.5,
-      "align": "center",
-      "fontFamily": "Inter, sans-serif",
-      "fontWeightNum": 700,
-      "lineHeightMultiplier": 1.15
-     }
-    }
-   ],
-   "assetLayers": [
+      "title": "Latest music from\nyour favorite artists.",
+      "subtitle": "",
+      "layout": "single-no-text",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #fa6d5b 0%, #e76080 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [
+        {
+          "id": "tpl-t6",
+          "xPct": 4.545,
+          "yPct": 3.461,
+          "widthPct": 90.909,
+          "rotation": 0,
+          "opacity": 1,
+          "zIndex": 30,
+          "customName": "Title",
+          "style": {
+            "text": "Latest music from\nyour favorite artists.",
+            "color": "#ffffff",
+            "size": 83.5,
+            "align": "center",
+            "fontFamily": "Inter, sans-serif",
+            "fontWeightNum": 700,
+            "lineHeightMultiplier": 1.15
+          }
+        }
+      ],
+      "assetLayers": [
+        {
+          "id": "tpl-s5",
+          "assetId": "shape:Phone shadow",
+          "name": "Phone shadow",
+          "xPct": -20.227,
+          "yPct": 12.762,
+          "widthPct": 140.455,
+          "heightPct": 119.846,
+          "rotation": 0,
+          "opacity": 0.22,
+          "zIndex": 5,
+          "cropFit": "stretch",
+          "shape": {
+            "type": "roundRect",
+            "w": 618,
+            "h": 1145.73,
+            "radius": 156,
+            "fill": "#000000",
+            "blur": 28,
+            "inset": 84
+          }
+        }
+      ],
+      "deviceOne": {
+        "size": 75.31,
+        "x": 0,
+        "y": 21.57,
+        "rotation": 0,
+        "brightness": 100,
+        "frameless": false,
+        "bezelColor": "#ffffff",
+        "borderColor": "#ffffff",
+        "zIndex": 10
+      }
+    },
     {
-     "id": "tpl-s5",
-     "assetId": "shape:Phone shadow",
-     "name": "Phone shadow",
-     "xPct": -20.227,
-     "yPct": 12.762,
-     "widthPct": 140.455,
-     "heightPct": 119.846,
-     "rotation": 0,
-     "opacity": 0.22,
-     "zIndex": 5,
-     "cropFit": "stretch",
-     "shape": {
-      "type": "roundRect",
-      "w": 618,
-      "h": 1145.73,
-      "radius": 156.0,
-      "fill": "#000000",
-      "blur": 28,
-      "inset": 84
-     }
+      "title": "Discover playlists\nmade just for you.",
+      "subtitle": "",
+      "layout": "single-no-text",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #fa6d5b 0%, #e76080 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [
+        {
+          "id": "tpl-t8",
+          "xPct": 4.545,
+          "yPct": 3.461,
+          "widthPct": 90.909,
+          "rotation": 0,
+          "opacity": 1,
+          "zIndex": 30,
+          "customName": "Title",
+          "style": {
+            "text": "Discover playlists\nmade just for you.",
+            "color": "#ffffff",
+            "size": 83.5,
+            "align": "center",
+            "fontFamily": "Inter, sans-serif",
+            "fontWeightNum": 700,
+            "lineHeightMultiplier": 1.15
+          }
+        }
+      ],
+      "assetLayers": [
+        {
+          "id": "tpl-s7",
+          "assetId": "shape:Phone shadow",
+          "name": "Phone shadow",
+          "xPct": -20.227,
+          "yPct": 12.762,
+          "widthPct": 140.455,
+          "heightPct": 119.846,
+          "rotation": 0,
+          "opacity": 0.22,
+          "zIndex": 5,
+          "cropFit": "stretch",
+          "shape": {
+            "type": "roundRect",
+            "w": 618,
+            "h": 1145.73,
+            "radius": 156,
+            "fill": "#000000",
+            "blur": 28,
+            "inset": 84
+          }
+        }
+      ],
+      "deviceOne": {
+        "size": 75.31,
+        "x": 0,
+        "y": 21.57,
+        "rotation": 0,
+        "brightness": 100,
+        "frameless": false,
+        "bezelColor": "#ffffff",
+        "borderColor": "#ffffff",
+        "zIndex": 10
+      }
     }
-   ],
-   "deviceOne": {
-    "size": 75.31,
-    "x": 0.0,
-    "y": 21.57,
-    "rotation": 0,
-    "brightness": 100,
-    "frameless": false,
-    "bezelColor": "#ffffff",
-    "borderColor": "#ffffff",
-    "zIndex": 10
-   }
-  },
-  {
-   "title": "Discover playlists\nmade just for you.",
-   "subtitle": "",
-   "layout": "single-no-text",
-   "background": {
-    "type": "gradient",
-    "value": "linear-gradient(135deg, #fa6d5b 0%, #e76080 100%)"
-   },
-   "devices": null,
-   "decorations": [],
-   "textLayers": [
-    {
-     "id": "tpl-t8",
-     "xPct": 4.545,
-     "yPct": 3.461,
-     "widthPct": 90.909,
-     "rotation": 0,
-     "opacity": 1,
-     "zIndex": 30,
-     "customName": "Title",
-     "style": {
-      "text": "Discover playlists\nmade just for you.",
-      "color": "#ffffff",
-      "size": 83.5,
-      "align": "center",
-      "fontFamily": "Inter, sans-serif",
-      "fontWeightNum": 700,
-      "lineHeightMultiplier": 1.15
-     }
-    }
-   ],
-   "assetLayers": [
-    {
-     "id": "tpl-s7",
-     "assetId": "shape:Phone shadow",
-     "name": "Phone shadow",
-     "xPct": -20.227,
-     "yPct": 12.762,
-     "widthPct": 140.455,
-     "heightPct": 119.846,
-     "rotation": 0,
-     "opacity": 0.22,
-     "zIndex": 5,
-     "cropFit": "stretch",
-     "shape": {
-      "type": "roundRect",
-      "w": 618,
-      "h": 1145.73,
-      "radius": 156.0,
-      "fill": "#000000",
-      "blur": 28,
-      "inset": 84
-     }
-    }
-   ],
-   "deviceOne": {
-    "size": 75.31,
-    "x": 0.0,
-    "y": 21.57,
-    "rotation": 0,
-    "brightness": 100,
-    "frameless": false,
-    "bezelColor": "#ffffff",
-    "borderColor": "#ffffff",
-    "zIndex": 10
-   }
-  }
- ],
- "titles": [
-  "100+ million songs.\nall add-free.",
-  "Real-time lyrics.\nRead, follow, sing.",
-  "Latest music from\nyour favorite artists.",
-  "Discover playlists\nmade just for you."
- ],
- "subtitles": [
-  "",
-  "",
-  "",
-  ""
- ]
+  ],
+  "titles": [
+    "100+ million songs.\nall add-free.",
+    "Real-time lyrics.\nRead, follow, sing.",
+    "Latest music from\nyour favorite artists.",
+    "Discover playlists\nmade just for you."
+  ],
+  "subtitles": [
+    "",
+    "",
+    "",
+    ""
+  ]
 }

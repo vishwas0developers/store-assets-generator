@@ -1,7 +1,7 @@
 {
  "version": 1,
  "id": "books-app-template-1",
- "name": "Books app",
+ "name": "Books App-2",
  "category": "books",
  "description": "Present your reading app with our free template. Display your digital library, reading features, and book collections in an elegant design that enhances the reading experience.",
  "devices": [
@@ -18,113 +18,1773 @@
    "label": "samsung-galaxy-s21-ultra"
   }
  ],
- "layout": "snapshot-single-title-above",
+ "layout": "single-no-text",
  "background": {
   "type": "gradient",
-  "value": "linear-gradient(135deg, #ece9e6, #ded7d3)"
+  "value": "linear-gradient(180deg, #1b2547 0%, #121a36 55%, #0c1228 100%)"
  },
  "panoramic": false,
  "columnCount": 8,
  "titles": [
-  "Write your\ntitle here",
-  "Write your\ntitle here",
-  "Write your\ntitle here",
-  "Write your\ntitle here",
-  "Write your\ntitle here",
-  "Write your\ntitle here",
-  "Write your\ntitle here",
-  "Write your\ntitle here"
+  "Your library after dark",
+  "Read in focus mode",
+  "Pick up where you left off",
+  "Shelves for every mood",
+  "Highlights that stay",
+  "Listen when your eyes rest",
+  "Build a nightly reading habit",
+  "Start your first chapter"
  ],
  "subtitles": [
-  "Present your reading app with our free t",
-  "Present your reading app with our free t",
-  "Present your reading app with our free t",
-  "Present your reading app with our free t",
-  "Present your reading app with our free t",
-  "Present your reading app with our free t",
-  "Present your reading app with our free t",
-  "Present your reading app with our free t"
+  "Thousands of books, easy on tired eyes",
+  "Warm pages, no distractions",
+  "Your place is saved on every device",
+  "Sort by genre, series or up next",
+  "Every note, quote and bookmark in one place",
+  "Switch to audio and never lose your page",
+  "Small goals, steady streaks",
+  "Free for 7 days, cancel anytime"
  ],
  "pages": [
   {
-   "title": "Write your\ntitle here",
-   "subtitle": "Present your reading app with our free t",
-   "layout": "snapshot-single-title-above",
-   "background": null,
+   "title": "Your library after dark",
+   "subtitle": "Thousands of books, easy on tired eyes",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #1b2547 0%, #121a36 55%, #0c1228 100%)"
+   },
    "devices": null,
    "decorations": [],
-   "textLayers": [],
-   "assetLayers": []
+   "textLayers": [
+    {
+     "id": "tpl-t8",
+     "xPct": 9.091,
+     "yPct": 10.276,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Your library\nafter dark",
+      "color": "#f7f1e3",
+      "size": 108.0,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.08,
+      "charSpacing": -25
+     }
+    },
+    {
+     "id": "tpl-t9",
+     "xPct": 9.091,
+     "yPct": 24.303,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Thousands of books,\neasy on tired eyes",
+      "color": "#b8c1dc",
+      "size": 41.7,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.35
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s2",
+     "assetId": "shape:Lamp glow",
+     "name": "Lamp glow",
+     "xPct": -27.273,
+     "yPct": 23.013,
+     "widthPct": 154.545,
+     "heightPct": 71.13,
+     "rotation": 0,
+     "opacity": 0.27999999999999997,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 680,
+      "h": 680,
+      "radius": 340,
+      "fill": "#f4b942",
+      "blur": 50,
+      "inset": 170
+     }
+    },
+    {
+     "id": "tpl-s3",
+     "assetId": "shape:Star",
+     "name": "Star",
+     "xPct": 81.364,
+     "yPct": 7.113,
+     "widthPct": 0.909,
+     "heightPct": 0.418,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 4,
+      "h": 4,
+      "fill": "#f7f1e3"
+     }
+    },
+    {
+     "id": "tpl-s4",
+     "assetId": "shape:Star",
+     "name": "Star",
+     "xPct": 89.432,
+     "yPct": 13.441,
+     "widthPct": 0.682,
+     "heightPct": 0.314,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 3.0,
+      "h": 3.0,
+      "fill": "#f7f1e3"
+     }
+    },
+    {
+     "id": "tpl-s5",
+     "assetId": "shape:Star",
+     "name": "Star",
+     "xPct": 67.841,
+     "yPct": 4.027,
+     "widthPct": 0.682,
+     "heightPct": 0.314,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 3.0,
+      "h": 3.0,
+      "fill": "#f7f1e3"
+     }
+    },
+    {
+     "id": "tpl-s6",
+     "assetId": "shape:Star",
+     "name": "Star",
+     "xPct": 17.841,
+     "yPct": 25.994,
+     "widthPct": 0.682,
+     "heightPct": 0.314,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 3.0,
+      "h": 3.0,
+      "fill": "#f7f1e3"
+     }
+    },
+    {
+     "id": "tpl-s1",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 9.318,
+     "yPct": 30.126,
+     "widthPct": 81.364,
+     "heightPct": 69.587,
+     "rotation": 0,
+     "opacity": 0.3,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 358,
+      "h": 665.25,
+      "radius": 89.92,
+      "fill": "#000000",
+      "blur": 16,
+      "inset": 48
+     }
+    },
+    {
+     "id": "tpl-s7",
+     "assetId": "shape:Bookmark ribbon",
+     "name": "Bookmark ribbon",
+     "xPct": 47.5,
+     "yPct": 0.0,
+     "widthPct": 5.0,
+     "heightPct": 6.695,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 25,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 22,
+      "h": 64,
+      "vx": 209,
+      "vy": 0,
+      "path": "M209,0L231,0L231,64L220.0,55L209,64Z",
+      "fill": "#f4b942"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 43.85,
+    "x": 0.0,
+    "y": 24.0,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#0a0a0a",
+    "borderColor": "#3a4468",
+    "zIndex": 10
+   }
   },
   {
-   "title": "Write your\ntitle here",
-   "subtitle": "Present your reading app with our free t",
-   "layout": "snapshot-single-title-above",
-   "background": null,
+   "title": "Read in focus mode",
+   "subtitle": "Warm pages, no distractions",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #1b2547 0%, #121a36 55%, #0c1228 100%)"
+   },
    "devices": null,
    "decorations": [],
-   "textLayers": [],
-   "assetLayers": []
+   "textLayers": [
+    {
+     "id": "tpl-t15",
+     "xPct": 10.0,
+     "yPct": 10.654,
+     "widthPct": 78.182,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Read in\nfocus mode",
+      "color": "#f7f1e3",
+      "size": 98.2,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.08,
+      "charSpacing": -25
+     }
+    },
+    {
+     "id": "tpl-t16",
+     "xPct": 10.0,
+     "yPct": 23.157,
+     "widthPct": 78.182,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Warm pages, no\ndistractions",
+      "color": "#b8c1dc",
+      "size": 39.3,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.35
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s11",
+     "assetId": "shape:Lamp glow",
+     "name": "Lamp glow",
+     "xPct": -18.182,
+     "yPct": 28.243,
+     "widthPct": 150.0,
+     "heightPct": 69.038,
+     "rotation": 0,
+     "opacity": 0.27999999999999997,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 660,
+      "h": 660,
+      "radius": 330,
+      "fill": "#f4b942",
+      "blur": 50,
+      "inset": 170
+     }
+    },
+    {
+     "id": "tpl-s12",
+     "assetId": "shape:Star",
+     "name": "Star",
+     "xPct": 85.909,
+     "yPct": 6.067,
+     "widthPct": 0.909,
+     "heightPct": 0.418,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 4,
+      "h": 4,
+      "fill": "#f7f1e3"
+     }
+    },
+    {
+     "id": "tpl-s13",
+     "assetId": "shape:Star",
+     "name": "Star",
+     "xPct": 74.659,
+     "yPct": 15.533,
+     "widthPct": 0.682,
+     "heightPct": 0.314,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 3.0,
+      "h": 3.0,
+      "fill": "#f7f1e3"
+     }
+    },
+    {
+     "id": "tpl-s10",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 12.705,
+     "yPct": 28.659,
+     "widthPct": 78.636,
+     "heightPct": 66.86,
+     "rotation": 7,
+     "opacity": 0.3,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 346,
+      "h": 639.18,
+      "radius": 88.0,
+      "fill": "#000000",
+      "blur": 16,
+      "inset": 48
+     }
+    },
+    {
+     "id": "tpl-s14",
+     "assetId": "shape:Bookmark ribbon",
+     "name": "Bookmark ribbon",
+     "xPct": 10.909,
+     "yPct": 0.0,
+     "widthPct": 5.0,
+     "heightPct": 6.695,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 25,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 22,
+      "h": 64,
+      "vx": 48,
+      "vy": 0,
+      "path": "M48,0L70,0L70,64L59.0,55L48,64Z",
+      "fill": "#f4b942"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 41.84,
+    "x": 3.56,
+    "y": 20.17,
+    "rotation": 7,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#0a0a0a",
+    "borderColor": "#3a4468",
+    "zIndex": 10
+   }
   },
   {
-   "title": "Write your\ntitle here",
-   "subtitle": "Present your reading app with our free t",
-   "layout": "snapshot-single-title-above",
-   "background": null,
+   "title": "Pick up where you left off",
+   "subtitle": "Your place is saved on every device",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #1b2547 0%, #121a36 55%, #0c1228 100%)"
+   },
    "devices": null,
    "decorations": [],
-   "textLayers": [],
-   "assetLayers": []
+   "textLayers": [
+    {
+     "id": "tpl-t24",
+     "xPct": 10.0,
+     "yPct": 9.817,
+     "widthPct": 78.182,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Pick up where\nyou left off",
+      "color": "#f7f1e3",
+      "size": 98.2,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.08,
+      "charSpacing": -25
+     }
+    },
+    {
+     "id": "tpl-t25",
+     "xPct": 10.0,
+     "yPct": 22.32,
+     "widthPct": 78.182,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Your place is saved\non every device",
+      "color": "#b8c1dc",
+      "size": 39.3,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.35
+     }
+    },
+    {
+     "id": "tpl-t26",
+     "xPct": 14.545,
+     "yPct": 66.993,
+     "widthPct": 34.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "Card title",
+     "style": {
+      "text": "Chapter 12",
+      "color": "#121a36",
+      "size": 44.2,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t27",
+     "xPct": 44.091,
+     "yPct": 66.993,
+     "widthPct": 13.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "Card pct",
+     "style": {
+      "text": "64%",
+      "color": "#121a36",
+      "size": 44.2,
+      "align": "right",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t28",
+     "xPct": 14.545,
+     "yPct": 69.418,
+     "widthPct": 40.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "Card note",
+     "style": {
+      "text": "18 min left in chapter",
+      "color": "#121a36",
+      "size": 29.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s18",
+     "assetId": "shape:Lamp glow",
+     "name": "Lamp glow",
+     "xPct": -15.909,
+     "yPct": 29.289,
+     "widthPct": 145.455,
+     "heightPct": 66.946,
+     "rotation": 0,
+     "opacity": 0.27999999999999997,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 640,
+      "h": 640,
+      "radius": 320,
+      "fill": "#f4b942",
+      "blur": 50,
+      "inset": 170
+     }
+    },
+    {
+     "id": "tpl-s17",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 18.636,
+     "yPct": 30.126,
+     "widthPct": 76.364,
+     "heightPct": 64.587,
+     "rotation": 0,
+     "opacity": 0.3,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 336,
+      "h": 617.45,
+      "radius": 86.4,
+      "fill": "#000000",
+      "blur": 16,
+      "inset": 48
+     }
+    },
+    {
+     "id": "tpl-s19",
+     "assetId": "shape:Bookmark ribbon",
+     "name": "Bookmark ribbon",
+     "xPct": 84.545,
+     "yPct": 0.0,
+     "widthPct": 5.0,
+     "heightPct": 6.695,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 25,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 22,
+      "h": 64,
+      "vx": 372,
+      "vy": 0,
+      "path": "M372,0L394,0L394,64L383.0,55L372,64Z",
+      "fill": "#f4b942"
+     }
+    },
+    {
+     "id": "tpl-s20",
+     "assetId": "shape:Card shadow",
+     "name": "Card shadow",
+     "xPct": 0.909,
+     "yPct": 61.506,
+     "widthPct": 70.455,
+     "heightPct": 18.41,
+     "rotation": 0,
+     "opacity": 0.35,
+     "zIndex": 14,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 310,
+      "h": 176,
+      "radius": 60,
+      "fill": "#000000",
+      "blur": 16,
+      "inset": 40
+     }
+    },
+    {
+     "id": "tpl-s21",
+     "assetId": "shape:Progress card",
+     "name": "Progress card",
+     "xPct": 10.0,
+     "yPct": 64.854,
+     "widthPct": 52.273,
+     "heightPct": 10.042,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 230,
+      "h": 96,
+      "radius": 20,
+      "fill": "#f4b942"
+     }
+    },
+    {
+     "id": "tpl-s22",
+     "assetId": "shape:Track",
+     "name": "Track",
+     "xPct": 14.545,
+     "yPct": 71.757,
+     "widthPct": 43.182,
+     "heightPct": 0.837,
+     "rotation": 0,
+     "opacity": 0.25,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 190,
+      "h": 8,
+      "radius": 4,
+      "fill": "#121a36"
+     }
+    },
+    {
+     "id": "tpl-s23",
+     "assetId": "shape:Progress",
+     "name": "Progress",
+     "xPct": 14.545,
+     "yPct": 71.757,
+     "widthPct": 27.636,
+     "heightPct": 0.837,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 121.6,
+      "h": 8,
+      "radius": 4,
+      "fill": "#121a36"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 40.17,
+    "x": 12.5,
+    "y": 21.62,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#0a0a0a",
+    "borderColor": "#3a4468",
+    "zIndex": 10
+   }
   },
   {
-   "title": "Write your\ntitle here",
-   "subtitle": "Present your reading app with our free t",
-   "layout": "snapshot-single-title-above",
-   "background": null,
+   "title": "Shelves for every mood",
+   "subtitle": "Sort by genre, series or up next",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #1b2547 0%, #121a36 55%, #0c1228 100%)"
+   },
    "devices": null,
    "decorations": [],
-   "textLayers": [],
-   "assetLayers": []
+   "textLayers": [
+    {
+     "id": "tpl-t33",
+     "xPct": 9.091,
+     "yPct": 9.817,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Shelves for\nevery mood",
+      "color": "#f7f1e3",
+      "size": 98.2,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.08,
+      "charSpacing": -25
+     }
+    },
+    {
+     "id": "tpl-t34",
+     "xPct": 9.091,
+     "yPct": 22.529,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Sort by genre, series\nor up next",
+      "color": "#b8c1dc",
+      "size": 39.3,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.35
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s31",
+     "assetId": "shape:Lamp glow",
+     "name": "Lamp glow",
+     "xPct": -29.545,
+     "yPct": 28.243,
+     "widthPct": 159.091,
+     "heightPct": 73.222,
+     "rotation": 0,
+     "opacity": 0.27999999999999997,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 700,
+      "h": 700,
+      "radius": 350,
+      "fill": "#f4b942",
+      "blur": 50,
+      "inset": 170
+     }
+    },
+    {
+     "id": "tpl-s29",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 4.738,
+     "yPct": 32.087,
+     "widthPct": 69.545,
+     "heightPct": 57.769,
+     "rotation": -6,
+     "opacity": 0.3,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 306,
+      "h": 552.27,
+      "radius": 81.6,
+      "fill": "#000000",
+      "blur": 16,
+      "inset": 48
+     }
+    },
+    {
+     "id": "tpl-s30",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 26.171,
+     "yPct": 36.271,
+     "widthPct": 69.545,
+     "heightPct": 57.769,
+     "rotation": 6,
+     "opacity": 0.3,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 306,
+      "h": 552.27,
+      "radius": 81.6,
+      "fill": "#000000",
+      "blur": 16,
+      "inset": 48
+     }
+    },
+    {
+     "id": "tpl-s32",
+     "assetId": "shape:Bookmark ribbon",
+     "name": "Bookmark ribbon",
+     "xPct": 84.545,
+     "yPct": 0.0,
+     "widthPct": 5.0,
+     "heightPct": 6.695,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 25,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 22,
+      "h": 64,
+      "vx": 372,
+      "vy": 0,
+      "path": "M372,0L394,0L394,64L383.0,55L372,64Z",
+      "fill": "#f4b942"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 35.14,
+    "x": -21.98,
+    "y": 21.67,
+    "rotation": -6,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#0a0a0a",
+    "borderColor": "#3a4468",
+    "zIndex": 10
+   },
+   "extraDevices": [
+    {
+     "size": 35.14,
+     "x": 22.93,
+     "y": 30.44,
+     "rotation": 6,
+     "brightness": 100,
+     "frameless": false,
+     "bezelColor": "#0a0a0a",
+     "borderColor": "#3a4468",
+     "zIndex": 11
+    }
+   ]
   },
   {
-   "title": "Write your\ntitle here",
-   "subtitle": "Present your reading app with our free t",
-   "layout": "snapshot-single-title-above",
-   "background": null,
+   "title": "Highlights that stay",
+   "subtitle": "Every note, quote and bookmark in one place",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #1b2547 0%, #121a36 55%, #0c1228 100%)"
+   },
    "devices": null,
    "decorations": [],
-   "textLayers": [],
-   "assetLayers": []
+   "textLayers": [
+    {
+     "id": "tpl-t40",
+     "xPct": 10.0,
+     "yPct": 73.624,
+     "widthPct": 78.182,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Highlights\nthat stay",
+      "color": "#f7f1e3",
+      "size": 98.2,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.08,
+      "charSpacing": -25
+     }
+    },
+    {
+     "id": "tpl-t41",
+     "xPct": 10.0,
+     "yPct": 85.291,
+     "widthPct": 78.182,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Every note, quote and\nbookmark in one place",
+      "color": "#b8c1dc",
+      "size": 39.3,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.35
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s36",
+     "assetId": "shape:Lamp glow",
+     "name": "Lamp glow",
+     "xPct": -27.273,
+     "yPct": -2.092,
+     "widthPct": 154.545,
+     "heightPct": 71.13,
+     "rotation": 0,
+     "opacity": 0.27999999999999997,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 680,
+      "h": 680,
+      "radius": 340,
+      "fill": "#f4b942",
+      "blur": 50,
+      "inset": 170
+     }
+    },
+    {
+     "id": "tpl-s37",
+     "assetId": "shape:Star",
+     "name": "Star",
+     "xPct": 13.295,
+     "yPct": 66.789,
+     "widthPct": 0.682,
+     "heightPct": 0.314,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 3.0,
+      "h": 3.0,
+      "fill": "#f7f1e3"
+     }
+    },
+    {
+     "id": "tpl-s38",
+     "assetId": "shape:Star",
+     "name": "Star",
+     "xPct": 88.182,
+     "yPct": 79.289,
+     "widthPct": 0.909,
+     "heightPct": 0.418,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 4,
+      "h": 4,
+      "fill": "#f7f1e3"
+     }
+    },
+    {
+     "id": "tpl-s35",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 10.682,
+     "yPct": 1.883,
+     "widthPct": 78.636,
+     "heightPct": 66.86,
+     "rotation": 0,
+     "opacity": 0.3,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 346,
+      "h": 639.18,
+      "radius": 88.0,
+      "fill": "#000000",
+      "blur": 16,
+      "inset": 48
+     }
+    },
+    {
+     "id": "tpl-s39",
+     "assetId": "shape:Accent bar",
+     "name": "Accent bar",
+     "xPct": 10.0,
+     "yPct": 70.293,
+     "widthPct": 12.727,
+     "heightPct": 0.628,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 25,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 56,
+      "h": 6,
+      "radius": 3,
+      "fill": "#f4b942"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 41.84,
+    "x": 0.0,
+    "y": -26.95,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#0a0a0a",
+    "borderColor": "#3a4468",
+    "zIndex": 10
+   }
   },
   {
-   "title": "Write your\ntitle here",
-   "subtitle": "Present your reading app with our free t",
-   "layout": "snapshot-single-title-above",
-   "background": null,
+   "title": "Listen when your eyes rest",
+   "subtitle": "Switch to audio and never lose your page",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #1b2547 0%, #121a36 55%, #0c1228 100%)"
+   },
    "devices": null,
    "decorations": [],
-   "textLayers": [],
-   "assetLayers": []
+   "textLayers": [
+    {
+     "id": "tpl-t47",
+     "xPct": 12.727,
+     "yPct": 10.654,
+     "widthPct": 77.273,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Listen when\nyour eyes rest",
+      "color": "#f7f1e3",
+      "size": 98.2,
+      "align": "right",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.08,
+      "charSpacing": -25
+     }
+    },
+    {
+     "id": "tpl-t48",
+     "xPct": 21.818,
+     "yPct": 23.157,
+     "widthPct": 68.182,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Switch to audio and\nnever lose your page",
+      "color": "#b8c1dc",
+      "size": 39.3,
+      "align": "right",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.35
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s43",
+     "assetId": "shape:Lamp glow",
+     "name": "Lamp glow",
+     "xPct": -31.818,
+     "yPct": 28.243,
+     "widthPct": 150.0,
+     "heightPct": 69.038,
+     "rotation": 0,
+     "opacity": 0.27999999999999997,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 660,
+      "h": 660,
+      "radius": 330,
+      "fill": "#f4b942",
+      "blur": 50,
+      "inset": 170
+     }
+    },
+    {
+     "id": "tpl-s44",
+     "assetId": "shape:Star",
+     "name": "Star",
+     "xPct": 13.295,
+     "yPct": 6.119,
+     "widthPct": 0.682,
+     "heightPct": 0.314,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 3.0,
+      "h": 3.0,
+      "fill": "#f7f1e3"
+     }
+    },
+    {
+     "id": "tpl-s45",
+     "assetId": "shape:Star",
+     "name": "Star",
+     "xPct": 24.545,
+     "yPct": 15.481,
+     "widthPct": 0.909,
+     "heightPct": 0.418,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 4,
+      "h": 4,
+      "fill": "#f7f1e3"
+     }
+    },
+    {
+     "id": "tpl-s42",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 8.659,
+     "yPct": 28.659,
+     "widthPct": 78.636,
+     "heightPct": 66.86,
+     "rotation": -7,
+     "opacity": 0.3,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 346,
+      "h": 639.18,
+      "radius": 88.0,
+      "fill": "#000000",
+      "blur": 16,
+      "inset": 48
+     }
+    },
+    {
+     "id": "tpl-s46",
+     "assetId": "shape:Bookmark ribbon",
+     "name": "Bookmark ribbon",
+     "xPct": 84.545,
+     "yPct": 0.0,
+     "widthPct": 5.0,
+     "heightPct": 6.695,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 25,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 22,
+      "h": 64,
+      "vx": 372,
+      "vy": 0,
+      "path": "M372,0L394,0L394,64L383.0,55L372,64Z",
+      "fill": "#f4b942"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 41.84,
+    "x": -3.56,
+    "y": 20.17,
+    "rotation": -7,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#0a0a0a",
+    "borderColor": "#3a4468",
+    "zIndex": 10
+   }
   },
   {
-   "title": "Write your\ntitle here",
-   "subtitle": "Present your reading app with our free t",
-   "layout": "snapshot-single-title-above",
-   "background": null,
+   "title": "Build a nightly reading habit",
+   "subtitle": "Small goals, steady streaks",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #1b2547 0%, #121a36 55%, #0c1228 100%)"
+   },
    "devices": null,
    "decorations": [],
-   "textLayers": [],
-   "assetLayers": []
+   "textLayers": [
+    {
+     "id": "tpl-t61",
+     "xPct": 10.0,
+     "yPct": 9.817,
+     "widthPct": 78.182,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Build a nightly\nreading habit",
+      "color": "#f7f1e3",
+      "size": 98.2,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.08,
+      "charSpacing": -25
+     }
+    },
+    {
+     "id": "tpl-t62",
+     "xPct": 10.0,
+     "yPct": 22.32,
+     "widthPct": 78.182,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Small goals, steady\nstreaks",
+      "color": "#b8c1dc",
+      "size": 39.3,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.35
+     }
+    },
+    {
+     "id": "tpl-t63",
+     "xPct": 48.636,
+     "yPct": 60.717,
+     "widthPct": 40.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "Card title",
+     "style": {
+      "text": "5-night streak",
+      "color": "#121a36",
+      "size": 44.2,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t64",
+     "xPct": 48.636,
+     "yPct": 63.351,
+     "widthPct": 40.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "Card note",
+     "style": {
+      "text": "20 pages a night",
+      "color": "#4a5372",
+      "size": 29.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s50",
+     "assetId": "shape:Lamp glow",
+     "name": "Lamp glow",
+     "xPct": -29.545,
+     "yPct": 29.289,
+     "widthPct": 145.455,
+     "heightPct": 66.946,
+     "rotation": 0,
+     "opacity": 0.27999999999999997,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 640,
+      "h": 640,
+      "radius": 320,
+      "fill": "#f4b942",
+      "blur": 50,
+      "inset": 170
+     }
+    },
+    {
+     "id": "tpl-s49",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 5.0,
+     "yPct": 30.126,
+     "widthPct": 76.364,
+     "heightPct": 64.587,
+     "rotation": 0,
+     "opacity": 0.3,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 336,
+      "h": 617.45,
+      "radius": 86.4,
+      "fill": "#000000",
+      "blur": 16,
+      "inset": 48
+     }
+    },
+    {
+     "id": "tpl-s51",
+     "assetId": "shape:Bookmark ribbon",
+     "name": "Bookmark ribbon",
+     "xPct": 10.909,
+     "yPct": 0.0,
+     "widthPct": 5.0,
+     "heightPct": 6.695,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 25,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 22,
+      "h": 64,
+      "vx": 48,
+      "vy": 0,
+      "path": "M48,0L70,0L70,64L59.0,55L48,64Z",
+      "fill": "#f4b942"
+     }
+    },
+    {
+     "id": "tpl-s52",
+     "assetId": "shape:Card shadow",
+     "name": "Card shadow",
+     "xPct": 35.455,
+     "yPct": 55.23,
+     "widthPct": 66.364,
+     "heightPct": 19.874,
+     "rotation": 0,
+     "opacity": 0.35,
+     "zIndex": 14,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 292,
+      "h": 190,
+      "radius": 60,
+      "fill": "#000000",
+      "blur": 16,
+      "inset": 40
+     }
+    },
+    {
+     "id": "tpl-s53",
+     "assetId": "shape:Streak card",
+     "name": "Streak card",
+     "xPct": 44.545,
+     "yPct": 58.577,
+     "widthPct": 48.182,
+     "heightPct": 11.506,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 212,
+      "h": 110,
+      "radius": 20,
+      "fill": "#f7f1e3"
+     }
+    },
+    {
+     "id": "tpl-s54",
+     "assetId": "shape:Day",
+     "name": "Day",
+     "xPct": 48.409,
+     "yPct": 66.004,
+     "widthPct": 4.091,
+     "heightPct": 1.883,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 18,
+      "h": 18,
+      "fill": "#f4b942"
+     }
+    },
+    {
+     "id": "tpl-s55",
+     "assetId": "shape:Day",
+     "name": "Day",
+     "xPct": 54.477,
+     "yPct": 66.004,
+     "widthPct": 4.091,
+     "heightPct": 1.883,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 18,
+      "h": 18,
+      "fill": "#f4b942"
+     }
+    },
+    {
+     "id": "tpl-s56",
+     "assetId": "shape:Day",
+     "name": "Day",
+     "xPct": 60.545,
+     "yPct": 66.004,
+     "widthPct": 4.091,
+     "heightPct": 1.883,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 18,
+      "h": 18,
+      "fill": "#f4b942"
+     }
+    },
+    {
+     "id": "tpl-s57",
+     "assetId": "shape:Day",
+     "name": "Day",
+     "xPct": 66.614,
+     "yPct": 66.004,
+     "widthPct": 4.091,
+     "heightPct": 1.883,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 18,
+      "h": 18,
+      "fill": "#f4b942"
+     }
+    },
+    {
+     "id": "tpl-s58",
+     "assetId": "shape:Day",
+     "name": "Day",
+     "xPct": 72.682,
+     "yPct": 66.004,
+     "widthPct": 4.091,
+     "heightPct": 1.883,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 18,
+      "h": 18,
+      "fill": "#f4b942"
+     }
+    },
+    {
+     "id": "tpl-s59",
+     "assetId": "shape:Day",
+     "name": "Day",
+     "xPct": 78.75,
+     "yPct": 66.004,
+     "widthPct": 4.091,
+     "heightPct": 1.883,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 18,
+      "h": 18,
+      "fill": "#d9d3c4"
+     }
+    },
+    {
+     "id": "tpl-s60",
+     "assetId": "shape:Day",
+     "name": "Day",
+     "xPct": 84.818,
+     "yPct": 66.004,
+     "widthPct": 4.091,
+     "heightPct": 1.883,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 18,
+      "h": 18,
+      "fill": "#d9d3c4"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 40.17,
+    "x": -12.5,
+    "y": 21.62,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#0a0a0a",
+    "borderColor": "#3a4468",
+    "zIndex": 10
+   }
   },
   {
-   "title": "Write your\ntitle here",
-   "subtitle": "Present your reading app with our free t",
-   "layout": "snapshot-single-title-above",
-   "background": null,
+   "title": "Start your first chapter",
+   "subtitle": "Free for 7 days, cancel anytime",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #1b2547 0%, #121a36 55%, #0c1228 100%)"
+   },
    "devices": null,
    "decorations": [],
-   "textLayers": [],
-   "assetLayers": []
+   "textLayers": [
+    {
+     "id": "tpl-t73",
+     "xPct": 9.091,
+     "yPct": 9.439,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Start your\nfirst chapter",
+      "color": "#f7f1e3",
+      "size": 108.0,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.08,
+      "charSpacing": -25
+     }
+    },
+    {
+     "id": "tpl-t74",
+     "xPct": 9.091,
+     "yPct": 21.902,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Free for 7 days,\ncancel anytime",
+      "color": "#b8c1dc",
+      "size": 39.3,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.35
+     }
+    },
+    {
+     "id": "tpl-t75",
+     "xPct": 34.091,
+     "yPct": 29.293,
+     "widthPct": 31.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 32,
+     "customName": "CTA",
+     "style": {
+      "text": "Try it free",
+      "color": "#121a36",
+      "size": 36.8,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s66",
+     "assetId": "shape:Lamp glow",
+     "name": "Lamp glow",
+     "xPct": -27.273,
+     "yPct": 29.289,
+     "widthPct": 154.545,
+     "heightPct": 71.13,
+     "rotation": 0,
+     "opacity": 0.27999999999999997,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 680,
+      "h": 680,
+      "radius": 340,
+      "fill": "#f4b942",
+      "blur": 50,
+      "inset": 170
+     }
+    },
+    {
+     "id": "tpl-s67",
+     "assetId": "shape:Star",
+     "name": "Star",
+     "xPct": 15.455,
+     "yPct": 6.067,
+     "widthPct": 0.909,
+     "heightPct": 0.418,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 4,
+      "h": 4,
+      "fill": "#f7f1e3"
+     }
+    },
+    {
+     "id": "tpl-s68",
+     "assetId": "shape:Star",
+     "name": "Star",
+     "xPct": 86.023,
+     "yPct": 9.257,
+     "widthPct": 0.682,
+     "heightPct": 0.314,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 3.0,
+      "h": 3.0,
+      "fill": "#f7f1e3"
+     }
+    },
+    {
+     "id": "tpl-s69",
+     "assetId": "shape:Star",
+     "name": "Star",
+     "xPct": 8.75,
+     "yPct": 31.224,
+     "widthPct": 0.682,
+     "heightPct": 0.314,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 3.0,
+      "h": 3.0,
+      "fill": "#f7f1e3"
+     }
+    },
+    {
+     "id": "tpl-s70",
+     "assetId": "shape:Star",
+     "name": "Star",
+     "xPct": 90.455,
+     "yPct": 33.264,
+     "widthPct": 0.909,
+     "heightPct": 0.418,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 4,
+      "h": 4,
+      "fill": "#f7f1e3"
+     }
+    },
+    {
+     "id": "tpl-s65",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 10.682,
+     "yPct": 33.264,
+     "widthPct": 78.636,
+     "heightPct": 66.86,
+     "rotation": 0,
+     "opacity": 0.3,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 346,
+      "h": 639.18,
+      "radius": 88.0,
+      "fill": "#000000",
+      "blur": 16,
+      "inset": 48
+     }
+    },
+    {
+     "id": "tpl-s71",
+     "assetId": "shape:Bookmark ribbon",
+     "name": "Bookmark ribbon",
+     "xPct": 47.5,
+     "yPct": 0.0,
+     "widthPct": 5.0,
+     "heightPct": 6.695,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 25,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "path",
+      "w": 22,
+      "h": 64,
+      "vx": 209,
+      "vy": 0,
+      "path": "M209,0L231,0L231,64L220.0,55L209,64Z",
+      "fill": "#f4b942"
+     }
+    },
+    {
+     "id": "tpl-s72",
+     "assetId": "shape:CTA pill",
+     "name": "CTA pill",
+     "xPct": 34.091,
+     "yPct": 28.033,
+     "widthPct": 31.818,
+     "heightPct": 3.975,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 140,
+      "h": 38,
+      "radius": 19,
+      "fill": "#f4b942"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 41.84,
+    "x": 0.0,
+    "y": 28.28,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#0a0a0a",
+    "borderColor": "#3a4468",
+    "zIndex": 10
+   }
   }
- ]
+ ],
+ "designHeight": 2347,
+ "textColor": "#111111"
 }

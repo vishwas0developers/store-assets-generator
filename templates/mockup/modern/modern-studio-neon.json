@@ -10,46 +10,1242 @@
    "label": "6.9 Inch Phone"
   }
  ],
- "layout": "two-devices-title-below",
+ "layout": "single-no-text",
  "background": {
-  "type": "pattern",
-  "value": "neon-rings"
+  "type": "gradient",
+  "value": "radial-gradient(circle at 50% 38%, #2a1450 0%, #150c2e 45%, #0e0a1c 100%)"
  },
  "pages": [
   {
-   "title": "Vibrant Workflows",
-   "subtitle": "Bring your ideas to life with speed",
-   "layout": "two-devices-title-below",
-   "background": null,
-   "devices": null
+   "title": "Create in neon light",
+   "subtitle": "Your pocket design studio, ready when inspiration hits",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "radial-gradient(circle at 50% 38%, #2a1450 0%, #150c2e 45%, #0e0a1c 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t8",
+     "xPct": 8.182,
+     "yPct": 6.112,
+     "widthPct": 83.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Create in\nneon light",
+      "color": "#ffffff",
+      "size": 112.9,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.08,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t9",
+     "xPct": 8.182,
+     "yPct": 18.245,
+     "widthPct": 83.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Your pocket design studio,\nready when inspiration hits",
+      "color": "#cfc8ea",
+      "size": 46.6,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.3
+     }
+    },
+    {
+     "id": "tpl-t7",
+     "xPct": 11.818,
+     "yPct": 84.68,
+     "widthPct": 39.371,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "customName": "NEW  ·  PRO TOOLS",
+     "style": {
+      "text": "NEW  ·  PRO TOOLS",
+      "color": "#0e0a1c",
+      "size": 36.8,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s1",
+     "assetId": "shape:Glow",
+     "name": "Glow",
+     "xPct": 4.545,
+     "yPct": 37.657,
+     "widthPct": 90.909,
+     "heightPct": 41.841,
+     "rotation": 0,
+     "opacity": 0.3,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 400,
+      "h": 400,
+      "fill": "#ff3ec8",
+      "blur": 60
+     }
+    },
+    {
+     "id": "tpl-s2",
+     "assetId": "shape:Ring glow",
+     "name": "Ring glow",
+     "xPct": 6.818,
+     "yPct": 42.887,
+     "widthPct": 86.364,
+     "heightPct": 39.749,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 380,
+      "h": 380,
+      "blur": 14,
+      "stroke": "#ff3ec8",
+      "strokeWidth": 28,
+      "inset": 14.0
+     }
+    },
+    {
+     "id": "tpl-s3",
+     "assetId": "shape:Neon ring",
+     "name": "Neon ring",
+     "xPct": 6.818,
+     "yPct": 42.887,
+     "widthPct": 86.364,
+     "heightPct": 39.749,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 380,
+      "h": 380,
+      "stroke": "#ff3ec8",
+      "strokeWidth": 7,
+      "inset": 3.5
+     }
+    },
+    {
+     "id": "tpl-s4",
+     "assetId": "shape:Ring core",
+     "name": "Ring core",
+     "xPct": 6.818,
+     "yPct": 42.887,
+     "widthPct": 86.364,
+     "heightPct": 39.749,
+     "rotation": 0,
+     "opacity": 0.6,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 380,
+      "h": 380,
+      "stroke": "#ffffff",
+      "strokeWidth": 1.75,
+      "inset": 0.875
+     }
+    },
+    {
+     "id": "tpl-s5",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 0.909,
+     "yPct": 24.477,
+     "widthPct": 98.182,
+     "heightPct": 80.517,
+     "rotation": 0,
+     "opacity": 0.5,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 432,
+      "h": 769.75,
+      "radius": 118.08,
+      "fill": "#000000",
+      "blur": 24,
+      "inset": 72
+     }
+    },
+    {
+     "id": "tpl-s6",
+     "assetId": "shape:Pill",
+     "name": "Pill",
+     "xPct": 11.818,
+     "yPct": 83.682,
+     "widthPct": 39.371,
+     "heightPct": 3.556,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 173.23,
+      "h": 34,
+      "radius": 17,
+      "fill": "#c8ff3a"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 48.2,
+    "x": 0.0,
+    "y": 21.55,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
   },
   {
-   "title": "Smart Insights",
-   "subtitle": "AI-powered analytics at a glance",
-   "layout": "two-devices-title-below",
-   "background": null,
-   "devices": null
+   "title": "Layers that glow",
+   "subtitle": "Stack, blend and light up every element",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "radial-gradient(circle at 50% 38%, #2a1450 0%, #150c2e 45%, #0e0a1c 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t18",
+     "xPct": 9.091,
+     "yPct": 6.112,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Layers\nthat glow",
+      "color": "#ffffff",
+      "size": 112.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.08,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t19",
+     "xPct": 9.091,
+     "yPct": 18.245,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Stack, blend and light up\nevery element",
+      "color": "#cfc8ea",
+      "size": 46.6,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.3
+     }
+    },
+    {
+     "id": "tpl-t17",
+     "xPct": 9.091,
+     "yPct": 27.149,
+     "widthPct": 32.009,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "customName": "BLEND MODES",
+     "style": {
+      "text": "BLEND MODES",
+      "color": "#0e0a1c",
+      "size": 36.8,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s10",
+     "assetId": "shape:Glow",
+     "name": "Glow",
+     "xPct": -9.091,
+     "yPct": 44.979,
+     "widthPct": 86.364,
+     "heightPct": 39.749,
+     "rotation": 0,
+     "opacity": 0.3,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 380,
+      "h": 380,
+      "fill": "#ff3ec8",
+      "blur": 60
+     }
+    },
+    {
+     "id": "tpl-s11",
+     "assetId": "shape:Glow",
+     "name": "Glow",
+     "xPct": 54.545,
+     "yPct": 18.828,
+     "widthPct": 54.545,
+     "heightPct": 25.105,
+     "rotation": 0,
+     "opacity": 0.12,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 240,
+      "h": 240,
+      "fill": "#c8ff3a",
+      "blur": 60
+     }
+    },
+    {
+     "id": "tpl-s12",
+     "assetId": "shape:Ring glow",
+     "name": "Ring glow",
+     "xPct": 1.136,
+     "yPct": 49.686,
+     "widthPct": 75.0,
+     "heightPct": 34.519,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 330,
+      "h": 330,
+      "blur": 14,
+      "stroke": "#ff3ec8",
+      "strokeWidth": 28,
+      "inset": 14.0
+     }
+    },
+    {
+     "id": "tpl-s13",
+     "assetId": "shape:Neon ring",
+     "name": "Neon ring",
+     "xPct": 1.136,
+     "yPct": 49.686,
+     "widthPct": 75.0,
+     "heightPct": 34.519,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 330,
+      "h": 330,
+      "stroke": "#ff3ec8",
+      "strokeWidth": 7,
+      "inset": 3.5
+     }
+    },
+    {
+     "id": "tpl-s14",
+     "assetId": "shape:Ring core",
+     "name": "Ring core",
+     "xPct": 1.136,
+     "yPct": 49.686,
+     "widthPct": 75.0,
+     "heightPct": 34.519,
+     "rotation": 0,
+     "opacity": 0.6,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 330,
+      "h": 330,
+      "stroke": "#ffffff",
+      "strokeWidth": 1.75,
+      "inset": 0.875
+     }
+    },
+    {
+     "id": "tpl-s15",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 4.406,
+     "yPct": 24.187,
+     "widthPct": 92.273,
+     "heightPct": 74.608,
+     "rotation": 8,
+     "opacity": 0.5,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 406,
+      "h": 713.25,
+      "radius": 113.92,
+      "fill": "#000000",
+      "blur": 24,
+      "inset": 72
+     }
+    },
+    {
+     "id": "tpl-s16",
+     "assetId": "shape:Pill",
+     "name": "Pill",
+     "xPct": 9.091,
+     "yPct": 26.151,
+     "widthPct": 32.009,
+     "heightPct": 3.556,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 140.84,
+      "h": 34,
+      "radius": 17,
+      "fill": "#c8ff3a"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 43.85,
+    "x": 0.91,
+    "y": 18.24,
+    "rotation": 8,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
   },
   {
-   "title": "Automated Action",
-   "subtitle": "Set up triggers in seconds",
-   "layout": "two-devices-title-below",
-   "background": null,
-   "devices": null
+   "title": "Edit side by side",
+   "subtitle": "Compare versions and keep the best take",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "radial-gradient(circle at 50% 38%, #2a1450 0%, #150c2e 45%, #0e0a1c 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t26",
+     "xPct": 8.182,
+     "yPct": 6.112,
+     "widthPct": 83.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Edit side\nby side",
+      "color": "#ffffff",
+      "size": 112.9,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.08,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t27",
+     "xPct": 8.182,
+     "yPct": 18.245,
+     "widthPct": 83.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Compare versions and\nkeep the best take",
+      "color": "#cfc8ea",
+      "size": 46.6,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.3
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s20",
+     "assetId": "shape:Glow",
+     "name": "Glow",
+     "xPct": 2.273,
+     "yPct": 42.887,
+     "widthPct": 95.455,
+     "heightPct": 43.933,
+     "rotation": 0,
+     "opacity": 0.28,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 420,
+      "h": 420,
+      "fill": "#ff3ec8",
+      "blur": 60
+     }
+    },
+    {
+     "id": "tpl-s21",
+     "assetId": "shape:Ring glow",
+     "name": "Ring glow",
+     "xPct": 4.545,
+     "yPct": 43.933,
+     "widthPct": 90.909,
+     "heightPct": 41.841,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 400,
+      "h": 400,
+      "blur": 14,
+      "stroke": "#ff3ec8",
+      "strokeWidth": 24,
+      "inset": 12.0
+     }
+    },
+    {
+     "id": "tpl-s22",
+     "assetId": "shape:Neon ring",
+     "name": "Neon ring",
+     "xPct": 4.545,
+     "yPct": 43.933,
+     "widthPct": 90.909,
+     "heightPct": 41.841,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 400,
+      "h": 400,
+      "stroke": "#ff3ec8",
+      "strokeWidth": 6,
+      "inset": 3.0
+     }
+    },
+    {
+     "id": "tpl-s23",
+     "assetId": "shape:Ring core",
+     "name": "Ring core",
+     "xPct": 4.545,
+     "yPct": 43.933,
+     "widthPct": 90.909,
+     "heightPct": 41.841,
+     "rotation": 0,
+     "opacity": 0.6,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 400,
+      "h": 400,
+      "stroke": "#ffffff",
+      "strokeWidth": 1.5,
+      "inset": 0.75
+     }
+    },
+    {
+     "id": "tpl-s24",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": -0.717,
+     "yPct": 28.74,
+     "widthPct": 75.0,
+     "heightPct": 60.28,
+     "rotation": -6,
+     "opacity": 0.5,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 330,
+      "h": 576.27,
+      "radius": 93.6,
+      "fill": "#000000",
+      "blur": 20,
+      "inset": 60
+     }
+    },
+    {
+     "id": "tpl-s25",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 25.717,
+     "yPct": 32.924,
+     "widthPct": 75.0,
+     "heightPct": 60.28,
+     "rotation": 6,
+     "opacity": 0.5,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 330,
+      "h": 576.27,
+      "radius": 93.6,
+      "fill": "#000000",
+      "blur": 20,
+      "inset": 60
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 35.14,
+    "x": -27.69,
+    "y": 17.29,
+    "rotation": -6,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 9
+   },
+   "extraDevices": [
+    {
+     "size": 35.14,
+     "x": 27.69,
+     "y": 26.06,
+     "rotation": 6,
+     "brightness": 100,
+     "frameless": false,
+     "bezelColor": "#060606",
+     "borderColor": "#5e5e5e",
+     "zIndex": 11
+    }
+   ]
   },
   {
-   "title": "Custom Views",
-   "subtitle": "Tailor dashboard to your workflow",
-   "layout": "two-devices-title-below",
-   "background": null,
-   "devices": null
+   "title": "Export in 4K",
+   "subtitle": "Crisp files for every platform in one tap",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "radial-gradient(circle at 50% 38%, #2a1450 0%, #150c2e 45%, #0e0a1c 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t41",
+     "xPct": 9.091,
+     "yPct": 6.112,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Export\nin 4K",
+      "color": "#ffffff",
+      "size": 112.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.08,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t42",
+     "xPct": 9.091,
+     "yPct": 18.245,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Crisp files for every\nplatform in one tap",
+      "color": "#cfc8ea",
+      "size": 46.6,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.3
+     }
+    },
+    {
+     "id": "tpl-t36",
+     "xPct": 14.802,
+     "yPct": 69.908,
+     "widthPct": 7.797,
+     "rotation": -4,
+     "opacity": 1,
+     "zIndex": 21,
+     "customName": "4K",
+     "style": {
+      "text": "4K",
+      "color": "#0e0a1c",
+      "size": 44.2,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t37",
+     "xPct": 25.785,
+     "yPct": 68.492,
+     "widthPct": 26.338,
+     "rotation": -4,
+     "opacity": 1,
+     "zIndex": 21,
+     "customName": "Export ready",
+     "style": {
+      "text": "Export ready",
+      "color": "#ffffff",
+      "size": 41.7,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t38",
+     "xPct": 26.189,
+     "yPct": 71.148,
+     "widthPct": 28.741,
+     "rotation": -4,
+     "opacity": 1,
+     "zIndex": 21,
+     "customName": "3840 × 2160 · MP4",
+     "style": {
+      "text": "3840 × 2160 · MP4",
+      "color": "#cfc8ea",
+      "size": 31.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s28",
+     "assetId": "shape:Glow",
+     "name": "Glow",
+     "xPct": 27.273,
+     "yPct": 39.749,
+     "widthPct": 81.818,
+     "heightPct": 37.657,
+     "rotation": 0,
+     "opacity": 0.28,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 360,
+      "h": 360,
+      "fill": "#ff3ec8",
+      "blur": 60
+     }
+    },
+    {
+     "id": "tpl-s29",
+     "assetId": "shape:Ring glow",
+     "name": "Ring glow",
+     "xPct": 34.091,
+     "yPct": 38.703,
+     "widthPct": 68.182,
+     "heightPct": 31.381,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 300,
+      "h": 300,
+      "blur": 14,
+      "stroke": "#ff3ec8",
+      "strokeWidth": 24,
+      "inset": 12.0
+     }
+    },
+    {
+     "id": "tpl-s30",
+     "assetId": "shape:Neon ring",
+     "name": "Neon ring",
+     "xPct": 34.091,
+     "yPct": 38.703,
+     "widthPct": 68.182,
+     "heightPct": 31.381,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 300,
+      "h": 300,
+      "stroke": "#ff3ec8",
+      "strokeWidth": 6,
+      "inset": 3.0
+     }
+    },
+    {
+     "id": "tpl-s31",
+     "assetId": "shape:Ring core",
+     "name": "Ring core",
+     "xPct": 34.091,
+     "yPct": 38.703,
+     "widthPct": 68.182,
+     "heightPct": 31.381,
+     "rotation": 0,
+     "opacity": 0.6,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 300,
+      "h": 300,
+      "stroke": "#ffffff",
+      "strokeWidth": 1.5,
+      "inset": 0.75
+     }
+    },
+    {
+     "id": "tpl-s32",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 9.091,
+     "yPct": 24.477,
+     "widthPct": 95.455,
+     "heightPct": 77.79,
+     "rotation": 0,
+     "opacity": 0.5,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 420,
+      "h": 743.67,
+      "radius": 116.16,
+      "fill": "#000000",
+      "blur": 24,
+      "inset": 72
+     }
+    },
+    {
+     "id": "tpl-s33",
+     "assetId": "shape:Shade",
+     "name": "Shade",
+     "xPct": 0.0,
+     "yPct": 61.82,
+     "widthPct": 68.182,
+     "heightPct": 20.711,
+     "rotation": -4,
+     "opacity": 0.45,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 300,
+      "h": 198,
+      "radius": 62,
+      "fill": "#000000",
+      "blur": 16,
+      "inset": 40
+     }
+    },
+    {
+     "id": "tpl-s34",
+     "assetId": "shape:Plate",
+     "name": "Plate",
+     "xPct": 9.091,
+     "yPct": 66.004,
+     "widthPct": 50.0,
+     "heightPct": 12.343,
+     "rotation": -4,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 220,
+      "h": 118,
+      "radius": 22,
+      "fill": "#1c1236",
+      "stroke": "#ff3ec8",
+      "strokeWidth": 2,
+      "inset": 1.0
+     }
+    },
+    {
+     "id": "tpl-s35",
+     "assetId": "shape:Tile",
+     "name": "Tile",
+     "xPct": 12.919,
+     "yPct": 68.403,
+     "widthPct": 10.0,
+     "heightPct": 4.603,
+     "rotation": -4,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 44,
+      "h": 44,
+      "radius": 12,
+      "fill": "#c8ff3a"
+     }
+    },
+    {
+     "id": "tpl-s39",
+     "assetId": "shape:Bar bg",
+     "name": "Bar bg",
+     "xPct": 13.626,
+     "yPct": 74.574,
+     "widthPct": 41.818,
+     "heightPct": 1.046,
+     "rotation": -4,
+     "opacity": 1,
+     "zIndex": 17,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 184,
+      "h": 10,
+      "radius": 5,
+      "fill": "#3a2d5c"
+     }
+    },
+    {
+     "id": "tpl-s40",
+     "assetId": "shape:Bar",
+     "name": "Bar",
+     "xPct": 13.635,
+     "yPct": 74.698,
+     "widthPct": 34.091,
+     "heightPct": 1.046,
+     "rotation": -4,
+     "opacity": 1,
+     "zIndex": 18,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 150,
+      "h": 10,
+      "radius": 5,
+      "fill": "#ff3ec8"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 46.19,
+    "x": 10.87,
+    "y": 20.32,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
   },
   {
-   "title": "Instant Sharing",
-   "subtitle": "Export and share with your team",
-   "layout": "two-devices-title-below",
-   "background": null,
-   "devices": null
+   "title": "Your studio, anywhere",
+   "subtitle": "Sync projects across all your devices",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "radial-gradient(circle at 50% 38%, #2a1450 0%, #150c2e 45%, #0e0a1c 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t51",
+     "xPct": 8.182,
+     "yPct": 6.112,
+     "widthPct": 83.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Your studio,\nanywhere",
+      "color": "#ffffff",
+      "size": 112.9,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 900,
+      "lineHeightMultiplier": 1.08,
+      "charSpacing": -20
+     }
+    },
+    {
+     "id": "tpl-t52",
+     "xPct": 8.182,
+     "yPct": 18.245,
+     "widthPct": 83.636,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Sync projects across all\nyour devices",
+      "color": "#cfc8ea",
+      "size": 46.6,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.3
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s43",
+     "assetId": "shape:Glow",
+     "name": "Glow",
+     "xPct": 0.0,
+     "yPct": 21.967,
+     "widthPct": 100.0,
+     "heightPct": 46.025,
+     "rotation": 0,
+     "opacity": 0.3,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 440,
+      "h": 440,
+      "fill": "#ff3ec8",
+      "blur": 60
+     }
+    },
+    {
+     "id": "tpl-s44",
+     "assetId": "shape:Ring glow",
+     "name": "Ring glow",
+     "xPct": 15.909,
+     "yPct": 29.289,
+     "widthPct": 68.182,
+     "heightPct": 31.381,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 300,
+      "h": 300,
+      "blur": 14,
+      "stroke": "#c8ff3a",
+      "strokeWidth": 20,
+      "inset": 10.0
+     }
+    },
+    {
+     "id": "tpl-s45",
+     "assetId": "shape:Neon ring",
+     "name": "Neon ring",
+     "xPct": 15.909,
+     "yPct": 29.289,
+     "widthPct": 68.182,
+     "heightPct": 31.381,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 300,
+      "h": 300,
+      "stroke": "#c8ff3a",
+      "strokeWidth": 5,
+      "inset": 2.5
+     }
+    },
+    {
+     "id": "tpl-s46",
+     "assetId": "shape:Ring core",
+     "name": "Ring core",
+     "xPct": 15.909,
+     "yPct": 29.289,
+     "widthPct": 68.182,
+     "heightPct": 31.381,
+     "rotation": 0,
+     "opacity": 0.6,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 300,
+      "h": 300,
+      "stroke": "#ffffff",
+      "strokeWidth": 1.25,
+      "inset": 0.625
+     }
+    },
+    {
+     "id": "tpl-s47",
+     "assetId": "shape:Ring glow",
+     "name": "Ring glow",
+     "xPct": 3.409,
+     "yPct": 23.536,
+     "widthPct": 93.182,
+     "heightPct": 42.887,
+     "rotation": 0,
+     "opacity": 0.55,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 410,
+      "h": 410,
+      "blur": 14,
+      "stroke": "#ff3ec8",
+      "strokeWidth": 28,
+      "inset": 14.0
+     }
+    },
+    {
+     "id": "tpl-s48",
+     "assetId": "shape:Neon ring",
+     "name": "Neon ring",
+     "xPct": 3.409,
+     "yPct": 23.536,
+     "widthPct": 93.182,
+     "heightPct": 42.887,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 410,
+      "h": 410,
+      "stroke": "#ff3ec8",
+      "strokeWidth": 7,
+      "inset": 3.5
+     }
+    },
+    {
+     "id": "tpl-s49",
+     "assetId": "shape:Ring core",
+     "name": "Ring core",
+     "xPct": 3.409,
+     "yPct": 23.536,
+     "widthPct": 93.182,
+     "heightPct": 42.887,
+     "rotation": 0,
+     "opacity": 0.6,
+     "zIndex": 3,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "ellipse",
+      "w": 410,
+      "h": 410,
+      "stroke": "#ffffff",
+      "strokeWidth": 1.75,
+      "inset": 0.875
+     }
+    },
+    {
+     "id": "tpl-s50",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 2.955,
+     "yPct": 27.615,
+     "widthPct": 94.091,
+     "heightPct": 76.426,
+     "rotation": 0,
+     "opacity": 0.5,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 414,
+      "h": 730.64,
+      "radius": 115.2,
+      "fill": "#000000",
+      "blur": 24,
+      "inset": 72
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 45.19,
+    "x": 0.0,
+    "y": 24.77,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
   }
+ ],
+ "designHeight": 2347,
+ "textColor": "#111111",
+ "columnCount": 5,
+ "titles": [
+  "Create in neon light",
+  "Layers that glow",
+  "Edit side by side",
+  "Export in 4K",
+  "Your studio, anywhere"
+ ],
+ "subtitles": [
+  "Your pocket design studio, ready when inspiration hits",
+  "Stack, blend and light up every element",
+  "Compare versions and keep the best take",
+  "Crisp files for every platform in one tap",
+  "Sync projects across all your devices"
  ]
 }

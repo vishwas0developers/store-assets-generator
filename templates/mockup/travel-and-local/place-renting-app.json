@@ -1,302 +1,302 @@
 {
- "id": "place-renting-app",
- "name": "Place renting app",
- "description": "Display your property rental platform with our free template. Showcase property listings, booking features, and rental management in a professional design that simplifies the rental process.",
- "category": "travel-and-local",
- "devices": [
-  "apple-iphone-16-pro-max",
-  "apple-iphone-14-plus",
-  "samsung-galaxy-s21-ultra"
- ],
- "isPaid": false,
- "designHeight": 2347,
- "layout": "single-no-text",
- "background": {
-  "type": "gradient",
-  "value": "linear-gradient(135deg, #1e293b 0%, #0f172a 100%)"
- },
- "textColor": "#ffffff",
- "columnCount": 4,
- "pages": [
-  {
-   "title": "Search,\nRent,\nEnjoy.",
-   "subtitle": "",
-   "layout": "single-no-text",
-   "background": {
+  "id": "place-renting-app",
+  "name": "Place renting app-2",
+  "description": "Display your property rental platform with our free template. Showcase property listings, booking features, and rental management in a professional design that simplifies the rental process.",
+  "category": "travel-and-local",
+  "devices": [
+    "apple-iphone-16-pro-max",
+    "apple-iphone-14-plus",
+    "samsung-galaxy-s21-ultra"
+  ],
+  "isPaid": false,
+  "designHeight": 2347,
+  "layout": "single-no-text",
+  "background": {
     "type": "gradient",
     "value": "linear-gradient(135deg, #1e293b 0%, #0f172a 100%)"
-   },
-   "devices": null,
-   "decorations": [],
-   "textLayers": [
-    {
-     "id": "tpl-t2",
-     "xPct": 6.818,
-     "yPct": 3.127,
-     "widthPct": 86.364,
-     "rotation": 0,
-     "opacity": 1,
-     "zIndex": 30,
-     "customName": "Title",
-     "style": {
-      "text": "Search,\nRent,\nEnjoy.",
-      "color": "#ffffff",
-      "size": 93.3,
-      "align": "left",
-      "fontFamily": "Inter, sans-serif",
-      "fontWeightNum": 800,
-      "lineHeightMultiplier": 1.12
-     }
-    }
-   ],
-   "assetLayers": [
-    {
-     "id": "tpl-s1",
-     "assetId": "shape:Phone shadow",
-     "name": "Phone shadow",
-     "xPct": -20.227,
-     "yPct": 22.176,
-     "widthPct": 140.455,
-     "heightPct": 119.846,
-     "rotation": 0,
-     "opacity": 0.22,
-     "zIndex": 5,
-     "cropFit": "stretch",
-     "shape": {
-      "type": "roundRect",
-      "w": 618,
-      "h": 1145.73,
-      "radius": 156.0,
-      "fill": "#000000",
-      "blur": 28,
-      "inset": 84
-     }
-    }
-   ],
-   "deviceOne": {
-    "size": 75.31,
-    "x": 0.0,
-    "y": 30.77,
-    "rotation": 0,
-    "brightness": 100,
-    "frameless": false,
-    "bezelColor": "#ffffff",
-    "borderColor": "#ffffff",
-    "zIndex": 10
-   }
   },
-  {
-   "title": "Find your perfect stay",
-   "subtitle": "",
-   "layout": "single-no-text",
-   "background": {
-    "type": "gradient",
-    "value": "linear-gradient(135deg, #1e293b 0%, #0f172a 100%)"
-   },
-   "devices": null,
-   "decorations": [],
-   "textLayers": [
+  "textColor": "#ffffff",
+  "columnCount": 4,
+  "pages": [
     {
-     "id": "tpl-t4",
-     "xPct": 4.545,
-     "yPct": 3.461,
-     "widthPct": 90.909,
-     "rotation": 0,
-     "opacity": 1,
-     "zIndex": 30,
-     "customName": "Title",
-     "style": {
-      "text": "Find your perfect stay",
-      "color": "#ffffff",
-      "size": 83.5,
-      "align": "center",
-      "fontFamily": "Inter, sans-serif",
-      "fontWeightNum": 700,
-      "lineHeightMultiplier": 1.15
-     }
-    }
-   ],
-   "assetLayers": [
+      "title": "Search,\nRent,\nEnjoy.",
+      "subtitle": "",
+      "layout": "single-no-text",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #1e293b 0%, #0f172a 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [
+        {
+          "id": "tpl-t2",
+          "xPct": 6.818,
+          "yPct": 3.127,
+          "widthPct": 86.364,
+          "rotation": 0,
+          "opacity": 1,
+          "zIndex": 30,
+          "customName": "Title",
+          "style": {
+            "text": "Search,\nRent,\nEnjoy.",
+            "color": "#ffffff",
+            "size": 93.3,
+            "align": "left",
+            "fontFamily": "Inter, sans-serif",
+            "fontWeightNum": 800,
+            "lineHeightMultiplier": 1.12
+          }
+        }
+      ],
+      "assetLayers": [
+        {
+          "id": "tpl-s1",
+          "assetId": "shape:Phone shadow",
+          "name": "Phone shadow",
+          "xPct": -20.227,
+          "yPct": 22.176,
+          "widthPct": 140.455,
+          "heightPct": 119.846,
+          "rotation": 0,
+          "opacity": 0.22,
+          "zIndex": 5,
+          "cropFit": "stretch",
+          "shape": {
+            "type": "roundRect",
+            "w": 618,
+            "h": 1145.73,
+            "radius": 156,
+            "fill": "#000000",
+            "blur": 28,
+            "inset": 84
+          }
+        }
+      ],
+      "deviceOne": {
+        "size": 75.31,
+        "x": 0,
+        "y": 30.77,
+        "rotation": 0,
+        "brightness": 100,
+        "frameless": false,
+        "bezelColor": "#ffffff",
+        "borderColor": "#ffffff",
+        "zIndex": 10
+      }
+    },
     {
-     "id": "tpl-s3",
-     "assetId": "shape:Phone shadow",
-     "name": "Phone shadow",
-     "xPct": -20.227,
-     "yPct": 12.762,
-     "widthPct": 140.455,
-     "heightPct": 119.846,
-     "rotation": 0,
-     "opacity": 0.22,
-     "zIndex": 5,
-     "cropFit": "stretch",
-     "shape": {
-      "type": "roundRect",
-      "w": 618,
-      "h": 1145.73,
-      "radius": 156.0,
-      "fill": "#000000",
-      "blur": 28,
-      "inset": 84
-     }
-    }
-   ],
-   "deviceOne": {
-    "size": 75.31,
-    "x": 0.0,
-    "y": 21.57,
-    "rotation": 0,
-    "brightness": 100,
-    "frameless": false,
-    "bezelColor": "#ffffff",
-    "borderColor": "#ffffff",
-    "zIndex": 10
-   }
-  },
-  {
-   "title": "Find the\nbest prices",
-   "subtitle": "",
-   "layout": "single-no-text",
-   "background": {
-    "type": "gradient",
-    "value": "linear-gradient(135deg, #1e293b 0%, #0f172a 100%)"
-   },
-   "devices": null,
-   "decorations": [],
-   "textLayers": [
+      "title": "Find your perfect stay",
+      "subtitle": "",
+      "layout": "single-no-text",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #1e293b 0%, #0f172a 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [
+        {
+          "id": "tpl-t4",
+          "xPct": 4.545,
+          "yPct": 3.461,
+          "widthPct": 90.909,
+          "rotation": 0,
+          "opacity": 1,
+          "zIndex": 30,
+          "customName": "Title",
+          "style": {
+            "text": "Find your perfect stay",
+            "color": "#ffffff",
+            "size": 83.5,
+            "align": "center",
+            "fontFamily": "Inter, sans-serif",
+            "fontWeightNum": 700,
+            "lineHeightMultiplier": 1.15
+          }
+        }
+      ],
+      "assetLayers": [
+        {
+          "id": "tpl-s3",
+          "assetId": "shape:Phone shadow",
+          "name": "Phone shadow",
+          "xPct": -20.227,
+          "yPct": 12.762,
+          "widthPct": 140.455,
+          "heightPct": 119.846,
+          "rotation": 0,
+          "opacity": 0.22,
+          "zIndex": 5,
+          "cropFit": "stretch",
+          "shape": {
+            "type": "roundRect",
+            "w": 618,
+            "h": 1145.73,
+            "radius": 156,
+            "fill": "#000000",
+            "blur": 28,
+            "inset": 84
+          }
+        }
+      ],
+      "deviceOne": {
+        "size": 75.31,
+        "x": 0,
+        "y": 21.57,
+        "rotation": 0,
+        "brightness": 100,
+        "frameless": false,
+        "bezelColor": "#ffffff",
+        "borderColor": "#ffffff",
+        "zIndex": 10
+      }
+    },
     {
-     "id": "tpl-t6",
-     "xPct": 4.545,
-     "yPct": 3.461,
-     "widthPct": 90.909,
-     "rotation": 0,
-     "opacity": 1,
-     "zIndex": 30,
-     "customName": "Title",
-     "style": {
-      "text": "Find the\nbest prices",
-      "color": "#ffffff",
-      "size": 83.5,
-      "align": "center",
-      "fontFamily": "Inter, sans-serif",
-      "fontWeightNum": 700,
-      "lineHeightMultiplier": 1.15
-     }
-    }
-   ],
-   "assetLayers": [
+      "title": "Find the\nbest prices",
+      "subtitle": "",
+      "layout": "single-no-text",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #1e293b 0%, #0f172a 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [
+        {
+          "id": "tpl-t6",
+          "xPct": 4.545,
+          "yPct": 3.461,
+          "widthPct": 90.909,
+          "rotation": 0,
+          "opacity": 1,
+          "zIndex": 30,
+          "customName": "Title",
+          "style": {
+            "text": "Find the\nbest prices",
+            "color": "#ffffff",
+            "size": 83.5,
+            "align": "center",
+            "fontFamily": "Inter, sans-serif",
+            "fontWeightNum": 700,
+            "lineHeightMultiplier": 1.15
+          }
+        }
+      ],
+      "assetLayers": [
+        {
+          "id": "tpl-s5",
+          "assetId": "shape:Phone shadow",
+          "name": "Phone shadow",
+          "xPct": -20.227,
+          "yPct": 12.762,
+          "widthPct": 140.455,
+          "heightPct": 119.846,
+          "rotation": 0,
+          "opacity": 0.22,
+          "zIndex": 5,
+          "cropFit": "stretch",
+          "shape": {
+            "type": "roundRect",
+            "w": 618,
+            "h": 1145.73,
+            "radius": 156,
+            "fill": "#000000",
+            "blur": 28,
+            "inset": 84
+          }
+        }
+      ],
+      "deviceOne": {
+        "size": 75.31,
+        "x": 0,
+        "y": 21.57,
+        "rotation": 0,
+        "brightness": 100,
+        "frameless": false,
+        "bezelColor": "#ffffff",
+        "borderColor": "#ffffff",
+        "zIndex": 10
+      }
+    },
     {
-     "id": "tpl-s5",
-     "assetId": "shape:Phone shadow",
-     "name": "Phone shadow",
-     "xPct": -20.227,
-     "yPct": 12.762,
-     "widthPct": 140.455,
-     "heightPct": 119.846,
-     "rotation": 0,
-     "opacity": 0.22,
-     "zIndex": 5,
-     "cropFit": "stretch",
-     "shape": {
-      "type": "roundRect",
-      "w": 618,
-      "h": 1145.73,
-      "radius": 156.0,
-      "fill": "#000000",
-      "blur": 28,
-      "inset": 84
-     }
+      "title": "Explore\nall places",
+      "subtitle": "",
+      "layout": "single-no-text",
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #1e293b 0%, #0f172a 100%)"
+      },
+      "devices": null,
+      "decorations": [],
+      "textLayers": [
+        {
+          "id": "tpl-t8",
+          "xPct": 4.545,
+          "yPct": 3.461,
+          "widthPct": 90.909,
+          "rotation": 0,
+          "opacity": 1,
+          "zIndex": 30,
+          "customName": "Title",
+          "style": {
+            "text": "Explore\nall places",
+            "color": "#ffffff",
+            "size": 83.5,
+            "align": "center",
+            "fontFamily": "Inter, sans-serif",
+            "fontWeightNum": 700,
+            "lineHeightMultiplier": 1.15
+          }
+        }
+      ],
+      "assetLayers": [
+        {
+          "id": "tpl-s7",
+          "assetId": "shape:Phone shadow",
+          "name": "Phone shadow",
+          "xPct": -20.227,
+          "yPct": 12.762,
+          "widthPct": 140.455,
+          "heightPct": 119.846,
+          "rotation": 0,
+          "opacity": 0.22,
+          "zIndex": 5,
+          "cropFit": "stretch",
+          "shape": {
+            "type": "roundRect",
+            "w": 618,
+            "h": 1145.73,
+            "radius": 156,
+            "fill": "#000000",
+            "blur": 28,
+            "inset": 84
+          }
+        }
+      ],
+      "deviceOne": {
+        "size": 75.31,
+        "x": 0,
+        "y": 21.57,
+        "rotation": 0,
+        "brightness": 100,
+        "frameless": false,
+        "bezelColor": "#ffffff",
+        "borderColor": "#ffffff",
+        "zIndex": 10
+      }
     }
-   ],
-   "deviceOne": {
-    "size": 75.31,
-    "x": 0.0,
-    "y": 21.57,
-    "rotation": 0,
-    "brightness": 100,
-    "frameless": false,
-    "bezelColor": "#ffffff",
-    "borderColor": "#ffffff",
-    "zIndex": 10
-   }
-  },
-  {
-   "title": "Explore\nall places",
-   "subtitle": "",
-   "layout": "single-no-text",
-   "background": {
-    "type": "gradient",
-    "value": "linear-gradient(135deg, #1e293b 0%, #0f172a 100%)"
-   },
-   "devices": null,
-   "decorations": [],
-   "textLayers": [
-    {
-     "id": "tpl-t8",
-     "xPct": 4.545,
-     "yPct": 3.461,
-     "widthPct": 90.909,
-     "rotation": 0,
-     "opacity": 1,
-     "zIndex": 30,
-     "customName": "Title",
-     "style": {
-      "text": "Explore\nall places",
-      "color": "#ffffff",
-      "size": 83.5,
-      "align": "center",
-      "fontFamily": "Inter, sans-serif",
-      "fontWeightNum": 700,
-      "lineHeightMultiplier": 1.15
-     }
-    }
-   ],
-   "assetLayers": [
-    {
-     "id": "tpl-s7",
-     "assetId": "shape:Phone shadow",
-     "name": "Phone shadow",
-     "xPct": -20.227,
-     "yPct": 12.762,
-     "widthPct": 140.455,
-     "heightPct": 119.846,
-     "rotation": 0,
-     "opacity": 0.22,
-     "zIndex": 5,
-     "cropFit": "stretch",
-     "shape": {
-      "type": "roundRect",
-      "w": 618,
-      "h": 1145.73,
-      "radius": 156.0,
-      "fill": "#000000",
-      "blur": 28,
-      "inset": 84
-     }
-    }
-   ],
-   "deviceOne": {
-    "size": 75.31,
-    "x": 0.0,
-    "y": 21.57,
-    "rotation": 0,
-    "brightness": 100,
-    "frameless": false,
-    "bezelColor": "#ffffff",
-    "borderColor": "#ffffff",
-    "zIndex": 10
-   }
-  }
- ],
- "titles": [
-  "Search,\nRent,\nEnjoy.",
-  "Find your perfect stay",
-  "Find the\nbest prices",
-  "Explore\nall places"
- ],
- "subtitles": [
-  "",
-  "",
-  "",
-  ""
- ]
+  ],
+  "titles": [
+    "Search,\nRent,\nEnjoy.",
+    "Find your perfect stay",
+    "Find the\nbest prices",
+    "Explore\nall places"
+  ],
+  "subtitles": [
+    "",
+    "",
+    "",
+    ""
+  ]
 }
