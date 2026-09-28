@@ -10,46 +10,970 @@
    "label": "Galaxy Phone"
   }
  ],
- "layout": "left-side-title-above",
+ "layout": "single-no-text",
  "background": {
-  "type": "pattern",
-  "value": "matte-spheres"
+  "type": "gradient",
+  "value": "linear-gradient(180deg, #0B0E14 0%, #121620 50%, #0A0C12 100%)"
  },
  "pages": [
   {
-   "title": "Executive Metrics",
-   "subtitle": "High-level KPIs on a single screen",
-   "layout": "left-side-title-above",
-   "background": null,
-   "devices": null
+   "title": "Leadership at a glance",
+   "subtitle": "Real-time metrics & executive controls",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #0B0E14 0%, #121620 50%, #0A0C12 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t4",
+     "xPct": 9.091,
+     "yPct": 9.584,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Leadership at\na glance",
+      "color": "#F5F7FA",
+      "size": 103.1,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.1
+     }
+    },
+    {
+     "id": "tpl-t5",
+     "xPct": 9.091,
+     "yPct": 21.065,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Real-time metrics & executive controls",
+      "color": "#9CA3AF",
+      "size": 39.3,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.35
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s2",
+     "assetId": "shape:Brass glow",
+     "name": "Brass glow",
+     "xPct": -22.727,
+     "yPct": 25.105,
+     "widthPct": 145.455,
+     "heightPct": 66.946,
+     "rotation": 0,
+     "opacity": 0.105,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 640,
+      "h": 640,
+      "radius": 320,
+      "fill": "#D4AF37",
+      "blur": 45,
+      "inset": 150
+     }
+    },
+    {
+     "id": "tpl-s1",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 7.614,
+     "yPct": 23.745,
+     "widthPct": 84.773,
+     "heightPct": 71.524,
+     "rotation": 0,
+     "opacity": 0.35,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 373,
+      "h": 683.77,
+      "radius": 96.4,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s3",
+     "assetId": "shape:Brass line",
+     "name": "Brass line",
+     "xPct": 40.909,
+     "yPct": 24.582,
+     "widthPct": 18.182,
+     "heightPct": 0.418,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 25,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 80,
+      "h": 4,
+      "radius": 2,
+      "fill": "#D4AF37"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 44.35,
+    "x": 0.0,
+    "y": 14.74,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#080A0E",
+    "borderColor": "#384256",
+    "zIndex": 10
+   }
   },
   {
-   "title": "Live Revenue",
-   "subtitle": "Track cashflow across currencies",
-   "layout": "left-side-title-above",
-   "background": null,
-   "devices": null
+   "title": "Track assets in real-time",
+   "subtitle": "Live portfolio monitoring & growth",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #0B0E14 0%, #121620 50%, #0A0C12 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t10",
+     "xPct": 9.091,
+     "yPct": 9.966,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Track assets\nin real-time",
+      "color": "#F5F7FA",
+      "size": 93.3,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.1
+     }
+    },
+    {
+     "id": "tpl-t11",
+     "xPct": 9.091,
+     "yPct": 21.483,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Live portfolio monitoring & growth",
+      "color": "#9CA3AF",
+      "size": 39.3,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.35
+     }
+    },
+    {
+     "id": "tpl-t12",
+     "xPct": 22.273,
+     "yPct": 67.021,
+     "widthPct": 27.273,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "Valuation",
+     "style": {
+      "text": "$4.8M",
+      "color": "#F5F7FA",
+      "size": 49.1,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t13",
+     "xPct": 22.273,
+     "yPct": 69.836,
+     "widthPct": 27.273,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "Growth",
+     "style": {
+      "text": "+14.2% YTD",
+      "color": "#E6CA65",
+      "size": 29.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s7",
+     "assetId": "shape:Brass glow",
+     "name": "Brass glow",
+     "xPct": -11.364,
+     "yPct": 28.243,
+     "widthPct": 140.909,
+     "heightPct": 64.854,
+     "rotation": 0,
+     "opacity": 0.105,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 620,
+      "h": 620,
+      "radius": 310,
+      "fill": "#D4AF37",
+      "blur": 45,
+      "inset": 150
+     }
+    },
+    {
+     "id": "tpl-s6",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 11.518,
+     "yPct": 22.546,
+     "widthPct": 80.227,
+     "heightPct": 66.979,
+     "rotation": 6,
+     "opacity": 0.35,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 353,
+      "h": 640.32,
+      "radius": 93.2,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s8",
+     "assetId": "shape:Card",
+     "name": "Card",
+     "xPct": 8.182,
+     "yPct": 64.854,
+     "widthPct": 45.455,
+     "heightPct": 9.937,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 200,
+      "h": 95,
+      "radius": 16,
+      "fill": "#161B26",
+      "stroke": "#283042",
+      "strokeWidth": 1,
+      "inset": 0.5
+     }
+    },
+    {
+     "id": "tpl-s9",
+     "assetId": "shape:Shape",
+     "name": "Shape",
+     "xPct": 11.818,
+     "yPct": 66.946,
+     "widthPct": 8.182,
+     "heightPct": 3.766,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 36,
+      "h": 36,
+      "radius": 18,
+      "fill": "#222B3D",
+      "stroke": "#D4AF37",
+      "strokeWidth": 1.5,
+      "inset": 0.75
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 41.0,
+    "x": 2.93,
+    "y": 9.71,
+    "rotation": 6,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#080A0E",
+    "borderColor": "#384256",
+    "zIndex": 10
+   }
   },
   {
-   "title": "Global Operations",
-   "subtitle": "Monitor regional performance",
-   "layout": "left-side-title-above",
-   "background": null,
-   "devices": null
+   "title": "Enterprise analytics & insights",
+   "subtitle": "Data-driven decisions for global teams",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #0B0E14 0%, #121620 50%, #0A0C12 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t19",
+     "xPct": 9.091,
+     "yPct": 9.966,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Enterprise analytics\n& insights",
+      "color": "#F5F7FA",
+      "size": 93.3,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.1
+     }
+    },
+    {
+     "id": "tpl-t20",
+     "xPct": 9.091,
+     "yPct": 22.529,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Data-driven decisions for global teams",
+      "color": "#9CA3AF",
+      "size": 39.3,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.35
+     }
+    },
+    {
+     "id": "tpl-t21",
+     "xPct": 57.727,
+     "yPct": 56.894,
+     "widthPct": 30.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "Metric label",
+     "style": {
+      "text": "Efficiency",
+      "color": "#9CA3AF",
+      "size": 34.4,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 600,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t22",
+     "xPct": 57.727,
+     "yPct": 58.682,
+     "widthPct": 30.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "Score",
+     "style": {
+      "text": "98.4%",
+      "color": "#F5F7FA",
+      "size": 54.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s15",
+     "assetId": "shape:Brass glow",
+     "name": "Brass glow",
+     "xPct": -27.273,
+     "yPct": 29.289,
+     "widthPct": 136.364,
+     "heightPct": 62.762,
+     "rotation": 0,
+     "opacity": 0.105,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 600,
+      "h": 600,
+      "radius": 300,
+      "fill": "#D4AF37",
+      "blur": 45,
+      "inset": 150
+     }
+    },
+    {
+     "id": "tpl-s14",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 2.5,
+     "yPct": 22.699,
+     "widthPct": 79.091,
+     "heightPct": 65.843,
+     "rotation": 0,
+     "opacity": 0.35,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 348,
+      "h": 629.45,
+      "radius": 92.4,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s16",
+     "assetId": "shape:Card",
+     "name": "Card",
+     "xPct": 54.091,
+     "yPct": 54.393,
+     "widthPct": 38.182,
+     "heightPct": 12.552,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 168,
+      "h": 120,
+      "radius": 16,
+      "fill": "#161B26",
+      "stroke": "#283042",
+      "strokeWidth": 1,
+      "inset": 0.5
+     }
+    },
+    {
+     "id": "tpl-s17",
+     "assetId": "shape:Shape",
+     "name": "Shape",
+     "xPct": 57.727,
+     "yPct": 62.343,
+     "widthPct": 30.909,
+     "heightPct": 0.628,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 136,
+      "h": 6,
+      "radius": 3,
+      "fill": "#252F42"
+     }
+    },
+    {
+     "id": "tpl-s18",
+     "assetId": "shape:Shape",
+     "name": "Shape",
+     "xPct": 57.727,
+     "yPct": 62.343,
+     "widthPct": 24.545,
+     "heightPct": 0.628,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 21,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 108,
+      "h": 6,
+      "radius": 3,
+      "fill": "#D4AF37"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 40.17,
+    "x": -14.58,
+    "y": 9.15,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#080A0E",
+    "borderColor": "#384256",
+    "zIndex": 10
+   }
   },
   {
-   "title": "Risk Radar",
-   "subtitle": "Early warnings and anomaly detection",
-   "layout": "left-side-title-above",
-   "background": null,
-   "devices": null
+   "title": "Unified command center",
+   "subtitle": "Seamless multi-region operations",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #0B0E14 0%, #121620 50%, #0A0C12 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t27",
+     "xPct": 9.091,
+     "yPct": 9.443,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Unified command\ncenter",
+      "color": "#F5F7FA",
+      "size": 93.3,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.1
+     }
+    },
+    {
+     "id": "tpl-t28",
+     "xPct": 9.091,
+     "yPct": 21.065,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Seamless multi-region operations",
+      "color": "#9CA3AF",
+      "size": 39.3,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.35
+     }
+    },
+    {
+     "id": "tpl-t29",
+     "xPct": 32.955,
+     "yPct": 24.648,
+     "widthPct": 34.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "Tag",
+     "style": {
+      "text": "GLOBAL ACCESS",
+      "color": "#0B0E14",
+      "size": 29.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s25",
+     "assetId": "shape:Brass glow",
+     "name": "Brass glow",
+     "xPct": -25.0,
+     "yPct": 28.243,
+     "widthPct": 150.0,
+     "heightPct": 69.038,
+     "rotation": 0,
+     "opacity": 0.105,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 660,
+      "h": 660,
+      "radius": 330,
+      "fill": "#D4AF37",
+      "blur": 45,
+      "inset": 150
+     }
+    },
+    {
+     "id": "tpl-s23",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 3.798,
+     "yPct": 24.143,
+     "widthPct": 70.0,
+     "heightPct": 56.752,
+     "rotation": -6,
+     "opacity": 0.35,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 308,
+      "h": 542.55,
+      "radius": 86.0,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s24",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 21.875,
+     "yPct": 22.074,
+     "widthPct": 77.955,
+     "heightPct": 64.706,
+     "rotation": 5,
+     "opacity": 0.35,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 343,
+      "h": 618.59,
+      "radius": 91.6,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s26",
+     "assetId": "shape:Tag pill",
+     "name": "Tag pill",
+     "xPct": 32.955,
+     "yPct": 23.536,
+     "widthPct": 34.091,
+     "heightPct": 3.347,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 150,
+      "h": 32,
+      "radius": 16,
+      "fill": "#D4AF37"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 39.33,
+    "x": 20.32,
+    "y": 7.11,
+    "rotation": 5,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#080A0E",
+    "borderColor": "#384256",
+    "zIndex": 11
+   },
+   "extraDevices": [
+    {
+     "size": 33.47,
+     "x": -24.64,
+     "y": 4.16,
+     "rotation": -6,
+     "brightness": 100,
+     "frameless": false,
+     "bezelColor": "#080A0E",
+     "borderColor": "#384256",
+     "zIndex": 8
+    }
+   ]
   },
   {
-   "title": "Board Reports",
-   "subtitle": "Generate presentation-ready slides",
-   "layout": "left-side-title-above",
-   "background": null,
-   "devices": null
+   "title": "Bank-grade security built-in",
+   "subtitle": "Compliance, encryption & audit trails",
+   "layout": "single-no-text",
+   "background": {
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #0B0E14 0%, #121620 50%, #0A0C12 100%)"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t35",
+     "xPct": 8.182,
+     "yPct": 29.788,
+     "widthPct": 30.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "Chip 1",
+     "style": {
+      "text": "SOC2 Type II",
+      "color": "#F5F7FA",
+      "size": 31.9,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t36",
+     "xPct": 60.909,
+     "yPct": 44.432,
+     "widthPct": 30.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "Chip 2",
+     "style": {
+      "text": "256-Bit AES",
+      "color": "#E6CA65",
+      "size": 31.9,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t37",
+     "xPct": 9.091,
+     "yPct": 71.35,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Bank-grade security\nbuilt-in",
+      "color": "#F5F7FA",
+      "size": 88.4,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.1
+     }
+    },
+    {
+     "id": "tpl-t38",
+     "xPct": 9.091,
+     "yPct": 84.559,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Compliance, encryption & audit trails",
+      "color": "#9CA3AF",
+      "size": 39.3,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.35
+     }
+    },
+    {
+     "id": "tpl-t39",
+     "xPct": 34.091,
+     "yPct": 92.354,
+     "widthPct": 31.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "CTA Text",
+     "style": {
+      "text": "Request Demo",
+      "color": "#0B0E14",
+      "size": 34.4,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s31",
+     "assetId": "shape:Brass glow",
+     "name": "Brass glow",
+     "xPct": -22.727,
+     "yPct": 1.046,
+     "widthPct": 145.455,
+     "heightPct": 66.946,
+     "rotation": 0,
+     "opacity": 0.105,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 640,
+      "h": 640,
+      "radius": 320,
+      "fill": "#D4AF37",
+      "blur": 45,
+      "inset": 150
+     }
+    },
+    {
+     "id": "tpl-s30",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 9.318,
+     "yPct": 3.87,
+     "widthPct": 81.364,
+     "heightPct": 68.115,
+     "rotation": 0,
+     "opacity": 0.35,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 358,
+      "h": 651.18,
+      "radius": 94.0,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s32",
+     "assetId": "shape:Card",
+     "name": "Card",
+     "xPct": 8.182,
+     "yPct": 28.243,
+     "widthPct": 30.909,
+     "heightPct": 4.393,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 136,
+      "h": 42,
+      "radius": 14,
+      "fill": "#161B26",
+      "stroke": "#283042",
+      "strokeWidth": 1,
+      "inset": 0.5
+     }
+    },
+    {
+     "id": "tpl-s33",
+     "assetId": "shape:Card",
+     "name": "Card",
+     "xPct": 60.909,
+     "yPct": 42.887,
+     "widthPct": 30.909,
+     "heightPct": 4.393,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 136,
+      "h": 42,
+      "radius": 14,
+      "fill": "#1F2738",
+      "stroke": "#D4AF37",
+      "strokeWidth": 1,
+      "inset": 0.5
+     }
+    },
+    {
+     "id": "tpl-s34",
+     "assetId": "shape:CTA Button",
+     "name": "CTA Button",
+     "xPct": 34.091,
+     "yPct": 90.795,
+     "widthPct": 31.818,
+     "heightPct": 4.603,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 25,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 140,
+      "h": 44,
+      "radius": 22,
+      "fill": "#D4AF37"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 41.84,
+    "x": 0.0,
+    "y": -22.35,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#080A0E",
+    "borderColor": "#384256",
+    "zIndex": 10
+   }
   }
+ ],
+ "designHeight": 2347,
+ "textColor": "#111111",
+ "columnCount": 5,
+ "titles": [
+  "Leadership at a glance",
+  "Track assets in real-time",
+  "Enterprise analytics & insights",
+  "Unified command center",
+  "Bank-grade security built-in"
+ ],
+ "subtitles": [
+  "Real-time metrics & executive controls",
+  "Live portfolio monitoring & growth",
+  "Data-driven decisions for global teams",
+  "Seamless multi-region operations",
+  "Compliance, encryption & audit trails"
  ]
 }
