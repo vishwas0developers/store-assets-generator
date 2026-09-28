@@ -1786,13 +1786,15 @@ button.xsmall {
   cursor: pointer;
   border-bottom: 1px solid var(--border-subtle);
 }
-.file-card-thumb-wrap img {
+.file-card-thumb-wrap img,
+.file-card-thumb-wrap video {
   width: 100%;
   height: 100%;
   object-fit: contain;
   transition: transform 0.2s ease;
 }
-.file-card-thumb-wrap:hover img {
+.file-card-thumb-wrap:hover img,
+.file-card-thumb-wrap:hover video {
   transform: scale(1.04);
 }
 .file-card-thumb-placeholder {

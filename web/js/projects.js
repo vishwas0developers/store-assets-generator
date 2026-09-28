@@ -285,12 +285,11 @@ export async function refreshFileExplorer() {
         if (isImage) {
           thumbContent = `<img src="${downloadUrl}" alt="${fileName}" loading="lazy" />`;
         } else if (isVideo) {
-          thumbContent = `
-            <div class="file-card-thumb-placeholder">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
-              <span style="font-size: 0.72rem; font-weight: 600;">VIDEO</span>
-            </div>
-          `;
+          // A media-fragment seek (#t=0.1) makes the browser decode and paint that
+          // frame as the <video>'s own displayed frame, with no autoplay, no
+          // canvas capture, no extra dependency -- the native way to get a video
+          // thumbnail for free.
+          thumbContent = `<video src="${downloadUrl}#t=0.1" preload="metadata" muted playsinline></video>`;
         } else {
           thumbContent = `
             <div class="file-card-thumb-placeholder">
