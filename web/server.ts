@@ -2399,6 +2399,32 @@ export async function startWebServer(options: { port?: number; host?: string; op
     }
 
     {
+      // Electron's Download button: a deliberate "Save As" to wherever the user
+      // just picked via the native dialog, which may differ from the remembered
+      // default folder a render was written to. Same-machine copy (Electron's
+      // main process and this server share a filesystem), no re-encode.
+      const m = p.match(/^\/api\/videos\/([^/]+)\/render-jobs\/([^/]+)\/save-as$/);
+      if (m && method === "POST") {
+        const vid = decodeURIComponent(m[1]);
+        const jobId = decodeURIComponent(m[2]);
+        const job = renderJobs.get(jobId);
+        if (!job || job.projectId !== vid || !job.outputFile) return sendError(res, 404, "Render job output not found");
+        if (!fs.existsSync(job.outputFile)) return sendError(res, 404, "Output file does not exist on disk");
+        const body = await readJsonBody(req);
+        const target = String(body.path || "").trim();
+        if (!target) return sendError(res, 400, "'path' is required");
+        try {
+          fs.mkdirSync(path.dirname(target), { recursive: true });
+          fs.copyFileSync(job.outputFile, target);
+        } catch (err: any) {
+          return sendError(res, 500, `Could not save to '${target}': ${err?.message || err}`);
+        }
+        sendJson(res, 200, { ok: true, path: target });
+        return;
+      }
+    }
+
+    {
       const m = p.match(/^\/api\/videos\/([^/]+)\/exports$/);
       if (m && method === "GET") {
         const vid = decodeURIComponent(m[1]);

@@ -143,6 +143,15 @@ app.whenReady().then(async () => {
     return result.filePath;
   });
 
+  ipcMain.handle('choose-save-folder', async () => {
+    if (!mainWindow) return null;
+    const result = await dialog.showOpenDialog(mainWindow, {
+      properties: ['openDirectory', 'createDirectory'],
+    });
+    if (result.canceled || !result.filePaths[0]) return null;
+    return result.filePaths[0];
+  });
+
   ipcMain.handle('show-in-folder', async (event, targetPath) => {
     if (targetPath && typeof targetPath === 'string') {
       shell.showItemInFolder(targetPath);

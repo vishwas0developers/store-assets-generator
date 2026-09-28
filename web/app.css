@@ -4276,3 +4276,10 @@ html.light .saved-template-badge {
 }
 .saved-player-stage:fullscreen { border-radius: 0; }
 .saved-player-stage iframe { position: absolute; top: 0; left: 0; border: none; transform-origin: 0 0; }
+
+/* Confirm/alert dialogs must sit above every modal. SweetAlert's default
+   (1060) put "Stop rendering?" underneath the export modal (1200), so Cancel
+   Render looked like it did nothing -- the confirm was open but invisible. */
+.swal2-container {
+  z-index: 10050 !important;
+}

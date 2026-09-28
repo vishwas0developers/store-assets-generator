@@ -1608,6 +1608,13 @@ export function renderSavedConfigsGrid() {
     const isPortrait = aspect === "9:16";
     const previewUrl = `/api/videos/${videoId}/configs/${c.id}/preview`;
     const devicesUsed = [...new Set(c.scenes.map((s) => s.device || "default"))].join(", ");
+    const totalSec = c.scenes.reduce((sum, s) => sum + Math.max(1, s.durationSeconds || 5), 0);
+    const durationLabel = `${Math.floor(totalSec / 60)}:${String(Math.round(totalSec % 60)).padStart(2, "0")}`;
+    // A saved config is a snapshot -- editing the live project's scenes afterward
+    // (e.g. trimming a scene's duration) does not change what's already saved,
+    // so this render/export still uses the durations as of savedAt. Surfacing
+    // the total here is the visible cue to re-save if that's since gone stale.
+    const savedAtLabel = c.savedAt ? new Date(c.savedAt).toLocaleString() : "";
 
     return `
       <div class="saved-template-card card" data-config-id="${c.id}">
@@ -1617,6 +1624,7 @@ export function renderSavedConfigsGrid() {
           <div class="saved-template-card-badges">
             <span class="saved-template-badge aspect">${aspect}</span>
             <span class="saved-template-badge scene-count">${c.scenes.length} Scenes</span>
+            <span class="saved-template-badge" title="Total duration as saved${savedAtLabel ? ` (saved ${savedAtLabel})` : ""} -- re-save this template after editing scene durations to update it">⏱ ${durationLabel}</span>
           </div>
         </div>
 
@@ -2080,6 +2088,45 @@ let currentExportPollTimer = null;
 let exportModalLocked = false;
 let exportModalStartTime = 0;
 
+// A chosen save folder must survive a page reload/new project ("remember this
+// location by default for future rendering sessions"), and Electron paths are
+// plain strings (localStorage is enough) while the browser's File System Access
+// API hands back a FileSystemDirectoryHandle, which only IndexedDB can store.
+const SAVE_DIR_DB = "sag-export-dir";
+const SAVE_DIR_STORE = "handles";
+function saveDirDb() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(SAVE_DIR_DB, 1);
+    req.onupgradeneeded = () => req.result.createObjectStore(SAVE_DIR_STORE);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+async function getSavedDirHandle() {
+  try {
+    const db = await saveDirDb();
+    return await new Promise((resolve, reject) => {
+      const tx = db.transaction(SAVE_DIR_STORE, "readonly").objectStore(SAVE_DIR_STORE).get("dir");
+      tx.onsuccess = () => resolve(tx.result || null);
+      tx.onerror = () => reject(tx.error);
+    });
+  } catch {
+    return null;
+  }
+}
+async function setSavedDirHandle(handle) {
+  try {
+    const db = await saveDirDb();
+    await new Promise((resolve, reject) => {
+      const tx = db.transaction(SAVE_DIR_STORE, "readwrite").objectStore(SAVE_DIR_STORE).put(handle, "dir");
+      tx.oncomplete = resolve;
+      tx.onerror = () => reject(tx.error);
+    });
+  } catch {
+    // Not fatal -- the handle just won't be remembered next session.
+  }
+}
+
 export function openExportModal({ title, subject, startUrl, project, configId, defaultFileName }) {
   const backdrop = $("export-video-backdrop");
   const modal = backdrop?.querySelector(".export-modal");
@@ -2096,37 +2143,95 @@ export function openExportModal({ title, subject, startUrl, project, configId, d
   const initialName = defaultFileName || (project?.name || "video-export").toLowerCase().replace(/[^a-z0-9]+/g, "-");
   if (filenameInput) filenameInput.value = initialName;
 
-  // Save to path (Electron only)
-  const saveToRow = $("export-saveto-row");
+  // Save location -- required before Start is enabled, remembered across sessions.
+  // Electron: a real OS folder path (IPC dialog, saved to localStorage), and the
+  // server writes the finished render there directly via `saveTo`. Plain browser:
+  // no server-writable path exists, so a FileSystemDirectoryHandle (File System
+  // Access API, Chromium-based browsers) is what's remembered (IndexedDB, handles
+  // aren't string-serializable), and the finished file is written into it client
+  // side once the render completes -- see the `job.state === "done"` branch below.
   const saveToInput = $("export-saveto-input");
-  let chosenSaveToPath = "";
-  if (saveToRow) saveToRow.style.display = isElectron ? "block" : "none";
-  if (saveToInput) saveToInput.value = "";
+  const saveToHint = $("export-saveto-hint");
+  const saveToClear = $("export-saveto-clear");
+  const hasFsAccess = typeof window.showDirectoryPicker === "function";
+  let chosenFolderPath = isElectron ? localStorage.getItem("videoExportFolder") || "" : "";
+  let chosenDirHandle = null;
+
+  const currentFileName = () => {
+    const fmt = getSelectedFormat();
+    return (filenameInput?.value.trim() || initialName) + "." + (fmt === "webm" ? "webm" : "mp4");
+  };
+
+  function refreshSaveToUi() {
+    const has = isElectron ? !!chosenFolderPath : !!chosenDirHandle;
+    if (saveToInput) saveToInput.value = isElectron ? chosenFolderPath : chosenDirHandle ? `📁 ${chosenDirHandle.name}` : "";
+    if (saveToHint) saveToHint.style.display = has ? "none" : "block";
+    if (saveToClear) saveToClear.style.display = has ? "inline-block" : "none";
+    if (startBtn) startBtn.disabled = !has;
+    return has;
+  }
+
+  if (!isElectron && hasFsAccess) {
+    getSavedDirHandle().then(async (handle) => {
+      if (!handle) return refreshSaveToUi();
+      try {
+        // A stored handle's permission doesn't survive every browser restart --
+        // re-querying (not re-requesting, that needs a user gesture) tells us
+        // whether it's still usable without forcing a re-pick every time.
+        if ((await handle.queryPermission({ mode: "readwrite" })) === "granted") {
+          chosenDirHandle = handle;
+        }
+      } catch {}
+      refreshSaveToUi();
+    });
+  } else if (!isElectron && !hasFsAccess && saveToHint) {
+    saveToHint.textContent = "This browser can't remember a save folder -- Download will ask where to save each time.";
+  }
 
   const saveToBtn = $("export-saveto-btn");
   if (saveToBtn) {
     saveToBtn.onclick = async () => {
-      if (!isElectron) return;
-      const fmt = getSelectedFormat();
-      const ext = fmt === "webm" ? "webm" : "mp4";
-      const fn = (filenameInput?.value.trim() || initialName) + "." + ext;
-      try {
-        const selectedPath = await window.electronNative.invoke("choose-save-path", { defaultName: fn, ext });
-        if (selectedPath) {
-          chosenSaveToPath = selectedPath;
-          if (saveToInput) saveToInput.value = selectedPath;
+      if (isElectron) {
+        try {
+          const selected = await window.electronNative.invoke("choose-save-folder");
+          if (selected) {
+            chosenFolderPath = selected;
+            localStorage.setItem("videoExportFolder", selected);
+          }
+        } catch (err) {
+          console.error("Failed to pick save folder:", err);
         }
-      } catch (err) {
-        console.error("Failed to pick save path:", err);
+      } else if (hasFsAccess) {
+        try {
+          const handle = await window.showDirectoryPicker({ mode: "readwrite" });
+          chosenDirHandle = handle;
+          await setSavedDirHandle(handle);
+        } catch (err) {
+          if (err?.name !== "AbortError") console.error("Failed to pick save folder:", err);
+        }
+      } else {
+        showAlert("This browser doesn't support choosing a save folder. Downloads will use your browser's own save location.");
       }
+      refreshSaveToUi();
     };
   }
-  const saveToClear = $("export-saveto-clear");
   if (saveToClear) {
     saveToClear.onclick = () => {
-      chosenSaveToPath = "";
-      if (saveToInput) saveToInput.value = "";
+      chosenFolderPath = "";
+      chosenDirHandle = null;
+      if (isElectron) localStorage.removeItem("videoExportFolder");
+      else setSavedDirHandle(null);
+      refreshSaveToUi();
     };
+  }
+
+  /** Writes a Blob into the chosen browser folder -- the completion handler and
+   *  the Download button's "save a copy here" both funnel through this. */
+  async function writeBlobToChosenDir(blob, name) {
+    const fileHandle = await chosenDirHandle.getFileHandle(name, { create: true });
+    const writable = await fileHandle.createWritable();
+    await writable.write(blob);
+    await writable.close();
   }
 
   // Populate presets chips
@@ -2369,6 +2474,10 @@ export function openExportModal({ title, subject, startUrl, project, configId, d
   if (startBtn) {
     startBtn.onclick = async () => {
       if (exportModalLocked) return;
+      if (!refreshSaveToUi()) {
+        showToast("Choose a save location before rendering.", "error");
+        return;
+      }
       startBtn.disabled = true;
 
       const format = getSelectedFormat();
@@ -2405,7 +2514,7 @@ export function openExportModal({ title, subject, startUrl, project, configId, d
         audioVolume: audioVol,
         fileName,
         sceneRange,
-        saveTo: chosenSaveToPath || undefined,
+        saveTo: isElectron && chosenFolderPath ? `${chosenFolderPath.replace(/[\\/]+$/, "")}/${currentFileName()}` : undefined,
       };
 
       try {
@@ -2442,10 +2551,11 @@ export function openExportModal({ title, subject, startUrl, project, configId, d
       } catch (err) {
         showErrorView(`Failed to initiate render: ${err.message}`);
       } finally {
-        startBtn.disabled = false;
+        refreshSaveToUi();
       }
     };
   }
+  refreshSaveToUi();
 
   function startPollingJob(jobId) {
     currentExportJobId = jobId;
@@ -2561,7 +2671,7 @@ export function openExportModal({ title, subject, startUrl, project, configId, d
     }
   }
 
-  function showCompleteView(job) {
+  async function showCompleteView(job) {
     exportModalLocked = false;
     const closeBtn = $("export-modal-close");
     if (closeBtn) {
@@ -2577,35 +2687,82 @@ export function openExportModal({ title, subject, startUrl, project, configId, d
       player.src = fileUrl;
     }
 
+    const name = job.fileName || `promo.${job.format || "mp4"}`;
+    let savedPath = job.savedPath || ""; // Electron: already written server-side via `saveTo`.
+    let browserSaveError = "";
+    if (!isElectron && chosenDirHandle) {
+      // "Once rendering is complete, the file must be saved to the selected
+      // location" -- the browser has no server-writable path, so this is done
+      // here: fetch the finished render and write it straight into the folder
+      // the user chose (and this session verified permission for) at modal-open.
+      try {
+        const blob = await (await fetch(fileUrl)).blob();
+        await writeBlobToChosenDir(blob, name);
+        savedPath = `📁 ${chosenDirHandle.name}/${name}`;
+      } catch (err) {
+        browserSaveError = err?.message || String(err);
+        console.error("Failed to save into chosen folder:", err);
+      }
+    }
+
     const grid = $("export-complete-meta-grid");
     if (grid) {
       const sizeMb = job.sizeBytes ? (job.sizeBytes / (1024 * 1024)).toFixed(2) + " MB" : "Unknown";
       grid.innerHTML = `
-        <div class="export-meta-item"><span class="export-meta-label">File Name</span><span class="export-meta-value">${job.fileName || "promo." + job.format}</span></div>
+        <div class="export-meta-item"><span class="export-meta-label">File Name</span><span class="export-meta-value">${name}</span></div>
         <div class="export-meta-item"><span class="export-meta-label">Format</span><span class="export-meta-value">${(job.format || "mp4").toUpperCase()}</span></div>
         <div class="export-meta-item"><span class="export-meta-label">Resolution</span><span class="export-meta-value">${job.width || 1080} × ${job.height || 1920}</span></div>
         <div class="export-meta-item"><span class="export-meta-label">Duration</span><span class="export-meta-value">${job.durationSec || 0}s</span></div>
         <div class="export-meta-item"><span class="export-meta-label">File Size</span><span class="export-meta-value">${sizeMb}</span></div>
-        <div class="export-meta-item"><span class="export-meta-label">Save Path</span><span class="export-meta-value">${job.savedPath || "Downloads / Local Storage"}</span></div>
+        <div class="export-meta-item"><span class="export-meta-label">Save Path</span><span class="export-meta-value">${savedPath || (browserSaveError ? "Save failed -- see Download" : "Downloads / Local Storage")}</span></div>
       `;
     }
+    if (browserSaveError) showToast(`Couldn't save into the chosen folder: ${browserSaveError}`, "error");
+    else if (savedPath) showToast(`Saved to ${savedPath}`, "success");
 
-    const triggerDownload = (url, name) => {
+    const triggerDownload = (url, fname) => {
       const a = document.createElement("a");
       a.href = url;
-      if (name) a.download = name;
+      if (fname) a.download = fname;
       a.style.display = "none";
       document.body.appendChild(a);
       a.click();
       setTimeout(() => a.remove(), 100);
     };
 
+    // "Download" is a deliberate Save As -- lets the user pick a location that
+    // differs from the remembered default, instead of only ever landing there.
     const downloadBtn = $("export-btn-download");
     if (downloadBtn) {
-      downloadBtn.onclick = () => {
-        triggerDownload(`${fileUrl}?download=1`, job.fileName || `promo.${job.format || "mp4"}`);
-        showToast("Video downloaded successfully.", "success");
-        tryClose();
+      downloadBtn.onclick = async () => {
+        if (isElectron) {
+          try {
+            const ext = job.format === "webm" ? "webm" : "mp4";
+            const target = await window.electronNative.invoke("choose-save-path", { defaultName: name, ext });
+            if (!target) return;
+            await api(`/api/videos/${videoId}/render-jobs/${job.id}/save-as`, { method: "POST", body: { path: target } });
+            showToast(`Saved to ${target}`, "success");
+            tryClose();
+          } catch (err) {
+            showAlert("Could not save the file: " + err.message);
+          }
+        } else if (typeof window.showSaveFilePicker === "function") {
+          try {
+            const handle = await window.showSaveFilePicker({ suggestedName: name });
+            const blob = await (await fetch(fileUrl)).blob();
+            const writable = await handle.createWritable();
+            await writable.write(blob);
+            await writable.close();
+            showToast("Video saved.", "success");
+            tryClose();
+          } catch (err) {
+            if (err?.name !== "AbortError") showAlert("Could not save the file: " + err.message);
+          }
+        } else {
+          triggerDownload(`${fileUrl}?download=1`, name);
+          showToast("Video downloaded successfully.", "success");
+          tryClose();
+        }
       };
     }
 

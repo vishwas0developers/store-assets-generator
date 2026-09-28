@@ -1065,7 +1065,28 @@ export function composeStandaloneHtml(project: VideoProject, activeSceneIndex?: 
 
   const config = templateConfig(templateId);
   if (!config) return html;
-  const scenes = config.scenes || [];
+  // Durations come from the PROJECT's scenes (what the user actually edited),
+  // not the template's own defaults -- config.scenes is a cached parse shared
+  // across every render, so clone before overriding it. Without this, a scene
+  // whose duration was changed (e.g. a screen-recording clip lengthening it to
+  // 23.8s while the template still says 5s) still seeks/plays on the template's
+  // stale duration: the export renders frames well past 5s that the player only
+  // ever shows as the next scene's opening frame, held and slightly jittering
+  // (the transition's own motion) -- exactly the "stuck on Scene 2, flickering"
+  // symptom, for every scene after the one whose length was ever edited.
+  const projectScenesByOrder = [...project.scenes].sort((a, b) => a.order - b.order);
+  const scenes = (config.scenes || []).map((s: any, i: number) => {
+    const projScene = projectScenesByOrder[i];
+    if (!projScene) return s;
+    const durationSeconds = Math.max(0.1, projScene.durationSeconds || 5);
+    return { ...s, durationSeconds, durationMs: durationSeconds * 1000 };
+  });
+  if (scenes.length) {
+    html = html.replace(
+      /(<script type="application\/json" id="template-config">)[\s\S]*?(<\/script>)/,
+      (_m, open, close) => `${open}\n${JSON.stringify({ ...config, scenes })}\n${close}`,
+    );
+  }
 
   // Migrated templates (see deviceShellMarkup) carry {{DEVICE_ID}}/
   // {{DEVICE_W}}/{{DEVICE_H}} placeholders on their device-shell <canvas>
@@ -1211,12 +1232,35 @@ export function composeStandaloneHtml(project: VideoProject, activeSceneIndex?: 
             videoEl.style.setProperty('object-fit', 'cover');
             videoEl.style.display = 'none';
             imgs[0].parentNode.insertBefore(videoEl, imgs[0].nextSibling);
+            // A clip that can't load must not stall every frame on the 1.5s 'seeked'
+            // timeout below (that was ~16 minutes for one 22s recording) or swap the
+            // screenshot for a blank <video> -- keep showing the screenshot instead.
+            videoEl.addEventListener('error', () => { videoBroken = true; });
+            // Every template's own seek sets currentTime = scene time on ALL <video>s
+            // on the page, which clobbered this clip's hold/trim-adjusted time (it ran
+            // 2s ahead and ignored the trim, plus paid a second seek every frame).
+            // Only syncVideo below may move this element's playhead.
+            Object.defineProperty(videoEl, 'currentTime', {
+              configurable: true,
+              get: function () { return mediaTime.get.call(this); },
+              set: function () {},
+            });
           }
+          var videoBroken = false;
+          var mediaTime = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, 'currentTime');
           // Show the screenshot(s) OR the video for a given scene-relative time.
           // visibility (not opacity/display) on the imgs: templates animate their
           // opacity every frame, so those must stay untouched.
           var syncVideo = (ms) => {
             if (!videoEl) return;
+            if (videoBroken || videoEl.error) {
+              if (videoShown !== false) {
+                videoShown = false;
+                imgs.forEach((im) => { im.style.visibility = ''; });
+                videoEl.style.display = 'none';
+              }
+              return;
+            }
             const showVideo = ms >= vid.holdMs;
             if (showVideo !== videoShown) {
               videoShown = showVideo;
@@ -1230,8 +1274,13 @@ export function composeStandaloneHtml(project: VideoProject, activeSceneIndex?: 
             return new Promise((resolve) => {
               const done = () => { videoEl.removeEventListener('seeked', done); resolve(undefined); };
               videoEl.addEventListener('seeked', done);
-              videoEl.currentTime = t;
-              setTimeout(done, 1500);
+              mediaTime.set.call(videoEl, t);
+              setTimeout(() => {
+                // Still no data at all after 1.5s: treat as unloadable rather than
+                // paying this timeout again on every remaining frame.
+                if (videoEl.readyState === 0) videoBroken = true;
+                done();
+              }, 1500);
             });
           };
         }
@@ -1733,25 +1782,15 @@ export async function renderVideo(
   if (orientations.size > 1) throw new Error("Mixed-orientation project: every scene must share the same aspect ratio (9:16 or 16:9) before rendering.");
 
   const outDir = videoDir(project.id);
-  const framesDir = path.join(outDir, "frames");
-  fs.rmSync(framesDir, { recursive: true, force: true });
-  fs.mkdirSync(framesDir, { recursive: true });
 
   const resolveUri = (rel: string) => {
     const abs = videoFile(project.id, rel);
     return dataUri(fs.existsSync(abs) ? abs : projectFile(project.id, rel));
   };
 
-  // Compute total frames up front and scene offsets
+  // Compute total frames up front
   const sceneFrameCounts = scenes.map((s) => Math.round(Math.max(1, s.durationSeconds) * fps));
   const totalFrames = sceneFrameCounts.reduce((a, b) => a + b, 0);
-
-  const sceneStartIndices: number[] = [];
-  let runningStart = 0;
-  for (let i = 0; i < scenes.length; i++) {
-    sceneStartIndices.push(runningStart);
-    runningStart += sceneFrameCounts[i];
-  }
 
   // Detect encoder choice
   let crf = quality === "high" ? "18" : quality === "small" ? "28" : "23";
@@ -1769,14 +1808,142 @@ export async function renderVideo(
   const startTime = Date.now();
   let totalRenderedFrames = 0;
 
-  // Parallel scene workers -- capped at 4, not 6: each worker holds its own
-  // Chromium page/GPU context, and pushing concurrency past what this machine's
-  // single GPU can actually parallelize made throughput collapse over a long
-  // render (started ~40-50fps, fell to ~1fps by the tail) rather than scale.
-  const concurrency = Math.min(4, Math.max(1, scenes.length));
+  // Scenes render strictly in order, one at a time: Scene 1's frames are all
+  // captured and encoded before Scene 2 starts, matching how the project is
+  // edited scene-by-scene and making "scene N of {total}" progress accurate.
+  // (An earlier concurrent-worker version parallelized scenes for speed, but
+  // that's what could jumble progress reporting and stress a single consumer
+  // GPU's session limits under load -- revisit if render time becomes an
+  // issue on a machine with room to parallelize safely.)
+  const concurrency = 1;
   const isGpu = encoderChoice.codec.includes("nvenc") || encoderChoice.codec.includes("qsv");
   const processorShort = isGpu ? "GPU" : "CPU";
   const acceleratorLabel = `${processorShort} (${encoderChoice.name})`;
+
+  const rawVideoPath = path.join(outDir, `promo_raw_${Date.now()}.${format === "webm" ? "webm" : "mp4"}`);
+
+  // Build scale/pad filter based on resolution & orientation options -- computed
+  // up front now (not after capture) because the streaming ffmpeg process below
+  // needs its full argument list before the first frame is even captured.
+  const baseCanvas = canvasFor(scenes[0]);
+  let targetWidth = baseCanvas.width;
+  let targetHeight = baseCanvas.height;
+  const isLandscape = baseCanvas.width > baseCanvas.height;
+
+  if (opts.resolution && typeof opts.resolution === "object") {
+    targetWidth = clampEven(opts.resolution.width);
+    targetHeight = clampEven(opts.resolution.height);
+  } else if (opts.resolution === "1080") {
+    targetHeight = isLandscape ? 1080 : 1920;
+    targetWidth = isLandscape ? 1920 : 1080;
+  } else if (opts.resolution === "720") {
+    targetHeight = isLandscape ? 720 : 1280;
+    targetWidth = isLandscape ? 1280 : 720;
+  } else if (opts.resolution === "480") {
+    targetHeight = isLandscape ? 480 : 854;
+    targetWidth = isLandscape ? 854 : 480;
+  }
+
+  if (opts.orientation === "square") {
+    const side = Math.min(targetWidth, targetHeight);
+    targetWidth = side;
+    targetHeight = side;
+  } else if (opts.orientation === "landscape" && targetWidth < targetHeight) {
+    const tmp = targetWidth;
+    targetWidth = targetHeight;
+    targetHeight = tmp;
+  } else if (opts.orientation === "portrait" && targetWidth > targetHeight) {
+    const tmp = targetWidth;
+    targetWidth = targetHeight;
+    targetHeight = tmp;
+  }
+
+  const vfFilter = buildVfFilter(targetWidth, targetHeight, baseCanvas.width, baseCanvas.height, opts.orientation);
+
+  // Each scene is piped straight into its own ffmpeg encode (image2pipe over
+  // stdin) as a short segment, and the segments are stream-copied together at
+  // the end. Two problems this avoids, both of which the live app hit:
+  //  1. One JPEG file per frame (~1600 files) made throughput crawl to ~1fps with
+  //     CPU/GPU near idle -- Windows Defender real-time protection (active on this
+  //     machine) scans every new file on create, and that latency stalls the write
+  //     without ever showing up as CPU/GPU/disk load. Now there are ~10 segment
+  //     files instead of ~1600 frames, and no frames/ directory at all.
+  //  2. Scenes render strictly one at a time now (see `concurrency` above), so
+  //     each segment finishes fully -- capture, then its own encode -- before
+  //     the next scene starts, and the segments are simply joined in order.
+  const segmentDir = path.join(outDir, `segments_${Date.now()}`);
+  fs.mkdirSync(segmentDir, { recursive: true });
+  const segExt = format === "webm" ? "webm" : "mp4";
+  const segmentPaths = scenes.map((_, i) => path.join(segmentDir, `seg_${String(i).padStart(3, "0")}.${segExt}`));
+  const activeEncoders = new Set<ReturnType<typeof spawn>>();
+  const killEncoders = () => activeEncoders.forEach((p) => p.kill("SIGKILL"));
+  if (signal) signal.addEventListener("abort", killEncoders, { once: true });
+
+  /** How many video frames actually made it into a segment file -- there's no
+   *  vendored ffprobe, so this reads it back off ffmpeg's own progress output
+   *  rather than trusting that a zero exit code means the frames all landed. */
+  async function countSegmentFrames(segPath: string): Promise<number> {
+    try {
+      const { stdout } = await execFileAsync(resolveTool("ffmpeg"), [
+        "-v", "error", "-i", segPath, "-map", "0:v:0", "-c", "copy", "-f", "null",
+        "-progress", "pipe:1", "-nostats", "-",
+      ]);
+      const matches = [...stdout.matchAll(/frame=(\d+)/g)];
+      return matches.length ? parseInt(matches[matches.length - 1][1], 10) : 0;
+    } catch {
+      return 0;
+    }
+  }
+
+  const cpuFallbackArgs = ["-c:v", "libx264", "-preset", "veryfast", "-crf", quality === "high" ? "18" : quality === "small" ? "28" : "23", "-pix_fmt", "yuv420p"];
+
+  function startSegmentEncoder(segPath: string, encoderArgs: string[] = encoderChoice.args) {
+    const args = ["-y", "-loglevel", "error", "-f", "image2pipe", "-framerate", String(fps), "-i", "pipe:0"];
+    if (vfFilter) args.push("-vf", vfFilter);
+    args.push(...encoderArgs, segPath);
+    const proc = spawn(resolveTool("ffmpeg"), args, { stdio: ["pipe", "ignore", "pipe"] });
+    activeEncoders.add(proc);
+    let stderr = "";
+    let exited = false;
+    // stderr must be drained or ffmpeg blocks once the OS pipe buffer fills.
+    proc.stderr!.on("data", (c) => { stderr = (stderr + c.toString()).slice(-2000); });
+    // EPIPE if the encoder is killed (cancel) mid-write -- the exit code below is
+    // what reports the real failure.
+    proc.stdin!.on("error", () => {});
+    const done = new Promise<void>((resolve, reject) => {
+      proc.on("error", reject);
+      proc.on("close", (code) => {
+        exited = true;
+        activeEncoders.delete(proc);
+        if (code === 0) resolve();
+        else reject(new Error(`FFmpeg segment encode failed (exit ${code}): ${stderr.slice(-300)}`));
+      });
+    });
+    // Observed later via finish(); without this a failure before then would be an
+    // unhandled rejection that crashes the whole process (the previous version did).
+    done.catch(() => {});
+    return {
+      async write(buf: Buffer) {
+        // Encoder already gone (cancelled or crashed): its 'close' has fired, so a
+        // drain/close wait below could never resolve -- that hang is why Cancel left
+        // the job stuck "running". Return; the caller's checkAborted()/finish() report it.
+        if (exited) return;
+        if (!proc.stdin!.write(buf) && !exited) {
+          await new Promise<void>((resolve) => {
+            // Wait for drain, or for the encoder exiting (a drain that can't come) --
+            // and detach whichever didn't fire, or every backpressured write leaks one.
+            const finish = () => { proc.stdin!.off("drain", finish); proc.off("close", finish); resolve(); };
+            proc.stdin!.once("drain", finish);
+            proc.once("close", finish);
+          });
+        }
+      },
+      finish() {
+        proc.stdin!.end();
+        return done;
+      },
+    };
+  }
 
   const { chromium } = await import("playwright");
   const browser = await chromium.launch({
@@ -1826,7 +1993,6 @@ export async function renderVideo(
 
           const scene = scenes[sIdx];
           const sceneFrames = sceneFrameCounts[sIdx];
-          const startIndex = sceneStartIndices[sIdx];
 
           await page.setViewportSize(canvasFor(scene));
           const html = sceneHtml(
@@ -1847,15 +2013,30 @@ export async function renderVideo(
           // which is what showed up as "flicker" (the scrubber/timer/active-chip
           // changing frame to frame) over the actual scene content.
           await page.evaluate(() => document.body.classList.add("rendering")).catch(() => {});
+          // A screen-recording clip must be fully buffered before frame capture:
+          // Chromium clamps a seek to the buffered range, so capturing early froze the
+          // clip on whatever had loaded so far (~5s in) for the rest of the scene.
+          // Capped at 15s so a broken clip can't hold up the render.
+          await page.evaluate(async () => {
+            const vids = Array.from(document.querySelectorAll("video"));
+            const ready = (v: HTMLVideoElement) => !!v.error || (v.readyState >= 4 && v.buffered.length > 0 &&
+              v.buffered.end(v.buffered.length - 1) >= v.duration - 0.05);
+            vids.forEach((v) => { v.preload = "auto"; });
+            for (const deadline = Date.now() + 15000; Date.now() < deadline && !vids.every(ready);) {
+              await new Promise((r) => setTimeout(r, 50));
+            }
+          }).catch(() => {});
 
+          let segment = startSegmentEncoder(segmentPaths[sIdx]);
+          const sceneFrameBufs: Buffer[] = []; // kept for a same-frames CPU retry below, no re-capture needed
           for (let f = 0; f < sceneFrames; f++) {
             checkAborted();
             const ms = (f / fps) * 1000;
             await page.evaluate((t) => (window as any).seek(t), ms);
 
-            const globalFrameIndex = startIndex + f;
-            const framePath = path.join(framesDir, `frame_${String(globalFrameIndex).padStart(6, "0")}.jpg`);
-            await page.screenshot({ path: framePath, type: "jpeg", quality: 90 });
+            const buf = await page.screenshot({ type: "jpeg", quality: 90 });
+            sceneFrameBufs.push(buf);
+            await segment.write(buf);
             // Re-checked right after the slow part of each frame (not just before
             // it) so Cancel lands within one frame instead of one frame plus
             // whatever the next scene-claim/setContent would have cost.
@@ -1874,7 +2055,7 @@ export async function renderVideo(
             // Report at most every 250ms or on the final frame
             if (now - lastReportTime > 250 || totalRenderedFrames === totalFrames) {
               lastReportTime = now;
-              const percent = Math.min(85, Math.round(2 + (totalRenderedFrames / totalFrames) * 83));
+              const percent = Math.min(92, Math.round(2 + (totalRenderedFrames / totalFrames) * 90));
               const elapsedSec = (now - startTime) / 1000;
               const overallFps = elapsedSec > 0 ? Math.round(totalRenderedFrames / elapsedSec) : 0;
               const activeFps = dynamicFps > 0 ? dynamicFps : overallFps;
@@ -1896,6 +2077,27 @@ export async function renderVideo(
               });
             }
           }
+          checkAborted();
+          let segmentOk = false;
+          try {
+            await segment.finish();
+            segmentOk = (await countSegmentFrames(segmentPaths[sIdx])) === sceneFrames;
+          } catch {
+            segmentOk = false;
+          }
+          if (!segmentOk) {
+            // The GPU encoder produced a short/empty segment (exactly the "frozen,
+            // repeats one frame" symptom a later concat would bake in) -- same
+            // captured frames, re-encoded once on the CPU before giving up.
+            fs.rmSync(segmentPaths[sIdx], { force: true });
+            segment = startSegmentEncoder(segmentPaths[sIdx], cpuFallbackArgs);
+            for (const buf of sceneFrameBufs) await segment.write(buf);
+            await segment.finish();
+            const cpuFrames = await countSegmentFrames(segmentPaths[sIdx]);
+            if (cpuFrames !== sceneFrames) {
+              throw new Error(`Scene ${sIdx + 1} failed to encode (expected ${sceneFrames} frames, got ${cpuFrames}) even after a CPU retry.`);
+            }
+          }
         }
       } finally {
         await page.close().catch(() => {});
@@ -1908,7 +2110,9 @@ export async function renderVideo(
 
     await Promise.all(workerPromises);
   } catch (err) {
-    fs.rmSync(framesDir, { recursive: true, force: true });
+    killEncoders();
+    // Retries: a just-killed ffmpeg on Windows can hold its segment file briefly.
+    try { fs.rmSync(segmentDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 }); } catch {}
     throw err;
   } finally {
     // See closeBrowserSafely's doc comment -- a graceful close() can hang when
@@ -1920,92 +2124,27 @@ export async function renderVideo(
   checkAborted();
   report({
     phase: "encoding",
-    percent: 86,
-    message: `Encoding video via ${encoderChoice.name}...`,
+    percent: 94,
+    message: `Joining ${scenes.length} encoded scene${scenes.length === 1 ? "" : "s"}...`,
     accelerator: acceleratorLabel,
     encoder: encoderChoice.name,
   });
-
-  const rawVideoPath = path.join(outDir, `promo_raw_${Date.now()}.${format === "webm" ? "webm" : "mp4"}`);
-
-  // Build scale/pad filter based on resolution & orientation options
-  const baseCanvas = canvasFor(scenes[0]);
-  let targetWidth = baseCanvas.width;
-  let targetHeight = baseCanvas.height;
-  const isLandscape = baseCanvas.width > baseCanvas.height;
-
-  const clampEven = (v: number) => Math.max(240, Math.min(3840, Math.floor(v / 2) * 2));
-
-  if (opts.resolution && typeof opts.resolution === "object") {
-    targetWidth = clampEven(opts.resolution.width);
-    targetHeight = clampEven(opts.resolution.height);
-  } else if (opts.resolution === "1080") {
-    targetHeight = isLandscape ? 1080 : 1920;
-    targetWidth = isLandscape ? 1920 : 1080;
-  } else if (opts.resolution === "720") {
-    targetHeight = isLandscape ? 720 : 1280;
-    targetWidth = isLandscape ? 1280 : 720;
-  } else if (opts.resolution === "480") {
-    targetHeight = isLandscape ? 480 : 854;
-    targetWidth = isLandscape ? 854 : 480;
+  // Stream copy (no re-encode): every segment was encoded with identical codec,
+  // size and frame rate, so the concat demuxer just joins them -- near-instant.
+  const concatList = path.join(segmentDir, "list.txt");
+  fs.writeFileSync(concatList, segmentPaths.map((p) => `file '${p.replace(/\\/g, "/").replace(/'/g, "'\\''")}'`).join("\n"));
+  try {
+    await execFileAsync(resolveTool("ffmpeg"), [
+      "-y", "-loglevel", "error",
+      "-f", "concat", "-safe", "0", "-i", concatList,
+      "-c", "copy",
+      ...(format === "mp4" ? ["-movflags", "+faststart"] : []),
+      rawVideoPath,
+    ]);
+  } finally {
+    // Retries: a just-killed ffmpeg on Windows can hold its segment file briefly.
+    try { fs.rmSync(segmentDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 }); } catch {}
   }
-
-  if (opts.orientation === "square") {
-    const side = Math.min(targetWidth, targetHeight);
-    targetWidth = side;
-    targetHeight = side;
-  } else if (opts.orientation === "landscape" && targetWidth < targetHeight) {
-    const tmp = targetWidth;
-    targetWidth = targetHeight;
-    targetHeight = tmp;
-  } else if (opts.orientation === "portrait" && targetWidth > targetHeight) {
-    const tmp = targetWidth;
-    targetWidth = targetHeight;
-    targetHeight = tmp;
-  }
-
-  const vfFilter = buildVfFilter(targetWidth, targetHeight, baseCanvas.width, baseCanvas.height, opts.orientation);
-
-  const ffmpegArgs = [
-    "-y",
-    "-framerate", String(fps),
-    "-i", path.join(framesDir, "frame_%06d.jpg"),
-  ];
-
-  if (vfFilter) {
-    ffmpegArgs.push("-vf", vfFilter);
-  }
-
-  ffmpegArgs.push(...encoderChoice.args);
-  if (format === "mp4") {
-    ffmpegArgs.push("-movflags", "+faststart");
-  }
-  ffmpegArgs.push(rawVideoPath);
-
-  // Run FFmpeg encoding with spawn to allow cancellation & progress tracking
-  await new Promise<void>((resolve, reject) => {
-    const ff = spawn(resolveTool("ffmpeg"), ffmpegArgs);
-    if (signal) {
-      if (signal.aborted) {
-        ff.kill("SIGKILL");
-        return reject(new RenderCancelled());
-      }
-      signal.addEventListener("abort", () => {
-        ff.kill("SIGKILL");
-        reject(new RenderCancelled());
-      }, { once: true });
-    }
-
-    let stderrData = "";
-    ff.stderr.on("data", (chunk) => {
-      stderrData += chunk.toString();
-    });
-
-    ff.on("close", (code) => {
-      if (code === 0) resolve();
-      else reject(new Error(`FFmpeg encoding failed with exit code ${code}: ${stderrData.slice(-300)}`));
-    });
-  });
 
   checkAborted();
 
@@ -2037,7 +2176,11 @@ export async function renderVideo(
     const fadeInMs = project.bgmFadeInMs ?? 1500;
     const fadeOutMs = project.bgmFadeOutMs ?? 2000;
     const fadeOutStart = Math.max(0, totalSeconds - fadeOutMs / 1000);
-    const audioFilter = `[1:a]volume=${audioVolume},afade=t=in:st=0:d=${(fadeInMs / 1000).toFixed(2)},afade=t=out:st=${fadeOutStart.toFixed(2)}:d=${(fadeOutMs / 1000).toFixed(2)}[a]`;
+    // loudnorm first: the generated BGM track is soft on its own (mean ~-22dB),
+    // easy to miss under any scene audio -- normalize to a standard broadcast
+    // level (-16 LUFS) before the user's own volume slider scales from there,
+    // instead of scaling an already-quiet source.
+    const audioFilter = `[1:a]loudnorm=I=-16:TP=-1.5:LRA=11,volume=${audioVolume},afade=t=in:st=0:d=${(fadeInMs / 1000).toFixed(2)},afade=t=out:st=${fadeOutStart.toFixed(2)}:d=${(fadeOutMs / 1000).toFixed(2)}[a]`;
 
     const audioArgs = [
       "-y",
@@ -2079,7 +2222,6 @@ export async function renderVideo(
   // Also copy/symlink to standard promo.<ext> for backwards compatibility
   fs.copyFileSync(finalVideoPath, defaultPromoPath);
 
-  fs.rmSync(framesDir, { recursive: true, force: true });
   report({ phase: "done", percent: 100, message: "Export complete!", width: targetWidth, height: targetHeight });
 
   return finalVideoPath;

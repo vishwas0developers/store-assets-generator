@@ -18,6 +18,7 @@ contextBridge.exposeInMainWorld('electronNative', {
       'ensure-binaries',
       'get-stream-frame',
       'choose-save-path',
+      'choose-save-folder',
       'show-in-folder'
     ];
     if (validChannels.includes(channel)) {
