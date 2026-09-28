@@ -1115,7 +1115,7 @@ export function composeStandaloneHtml(project: VideoProject, activeSceneIndex?: 
   if (!bgmUrl && BGM_PRESETS[templateId]) {
     bgmUrl = `/api/bgm-presets/${encodeURIComponent(templateId)}`;
   }
-  const bgmVolume = project.bgmVolume ?? 0.35;
+  const bgmVolume = project.bgmVolume ?? 1;
 
   // Calculate scene offset if activeSceneIndex is set
   let sceneStartMs = 0;
@@ -1681,7 +1681,7 @@ export async function detectBestH264Encoder(crf: string): Promise<EncoderChoice>
       return {
         codec: "h264_nvenc",
         name: "NVIDIA NVENC (GPU)",
-        args: ["-c:v", "h264_nvenc", "-preset", "p4", "-cq", crf, "-pix_fmt", "yuv420p"],
+        args: ["-c:v", "h264_nvenc", "-preset", "p4", "-cq", crf, "-bf", "0", "-pix_fmt", "yuv420p"],
       };
     } else if (isQsv) {
       return {
@@ -1693,7 +1693,7 @@ export async function detectBestH264Encoder(crf: string): Promise<EncoderChoice>
       return {
         codec: "libx264",
         name: "libx264 (CPU)",
-        args: ["-c:v", "libx264", "-preset", "veryfast", "-crf", crf, "-pix_fmt", "yuv420p"],
+        args: ["-c:v", "libx264", "-preset", "veryfast", "-crf", crf, "-bf", "0", "-pix_fmt", "yuv420p"],
       };
     }
   }
@@ -1711,7 +1711,7 @@ export async function detectBestH264Encoder(crf: string): Promise<EncoderChoice>
     cachedH264Encoder = {
       codec: "h264_nvenc",
       name: "NVIDIA NVENC (GPU)",
-      args: ["-c:v", "h264_nvenc", "-preset", "p4", "-cq", crf, "-pix_fmt", "yuv420p"],
+      args: ["-c:v", "h264_nvenc", "-preset", "p4", "-cq", crf, "-bf", "0", "-pix_fmt", "yuv420p"],
     };
     return cachedH264Encoder;
   } catch {}
@@ -1738,7 +1738,7 @@ export async function detectBestH264Encoder(crf: string): Promise<EncoderChoice>
   cachedH264Encoder = {
     codec: "libx264",
     name: "libx264 (CPU)",
-    args: ["-c:v", "libx264", "-preset", "veryfast", "-crf", crf, "-pix_fmt", "yuv420p"],
+    args: ["-c:v", "libx264", "-preset", "veryfast", "-crf", crf, "-bf", "0", "-pix_fmt", "yuv420p"],
   };
   return cachedH264Encoder;
 }
@@ -1769,7 +1769,7 @@ export async function renderVideo(
   const fps = opts.fps || 30;
   const quality = opts.quality || "standard";
   const includeAudio = opts.includeAudio !== false;
-  const audioVolume = opts.audioVolume ?? (project.bgmVolume ?? 0.35);
+  const audioVolume = opts.audioVolume ?? (project.bgmVolume ?? 1);
 
   let scenes = [...project.scenes].sort((a, b) => a.order - b.order);
   if (opts.sceneRange) {
@@ -1892,7 +1892,18 @@ export async function renderVideo(
     }
   }
 
-  const cpuFallbackArgs = ["-c:v", "libx264", "-preset", "veryfast", "-crf", quality === "high" ? "18" : quality === "small" ? "28" : "23", "-pix_fmt", "yuv420p"];
+  // -bf 0 (here and on every encoder choice above): each scene is its own
+  // independently-encoded segment stitched together with -c copy, so every
+  // scene boundary is a fresh GOP start. With B-frames enabled (NVENC's
+  // default), a decoder has to buffer and reorder a few frames before it can
+  // display anything from a new GOP -- ffmpeg's own seek-based frame checks
+  // don't show this (it decodes properly, just not in real time), but a
+  // player doing normal sequential playback stalls for those first few
+  // frames while its reorder buffer refills. That's the "first 2-3 frames of
+  // every scene stutter, then smooth" pattern. P-frames-only removes the
+  // reorder buffer requirement entirely, so there's nothing to refill at a
+  // GOP restart.
+  const cpuFallbackArgs = ["-c:v", "libx264", "-preset", "veryfast", "-crf", quality === "high" ? "18" : quality === "small" ? "28" : "23", "-bf", "0", "-pix_fmt", "yuv420p"];
 
   function startSegmentEncoder(segPath: string, encoderArgs: string[] = encoderChoice.args) {
     const args = ["-y", "-loglevel", "error", "-f", "image2pipe", "-framerate", String(fps), "-i", "pipe:0"];
