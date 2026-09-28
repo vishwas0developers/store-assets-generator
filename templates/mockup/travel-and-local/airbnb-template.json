@@ -20,119 +20,710 @@
  ],
  "layout": "single-no-text",
  "background": {
-  "type": "solid",
-  "value": "#ffffff"
+  "type": "gradient",
+  "value": "linear-gradient(180deg, #FDFBF7 0%, #F8F3EA 60%, #F0E8D9 100%)"
  },
  "panoramic": true,
  "columnCount": 4,
  "titles": [
-  "TODO",
-  "TODO",
-  "TODO",
-  "TODO"
+  "Find your next dream stay",
+  "Book unique local activities & tours",
+  "Turn your home into extra income",
+  "Seamless stays wherever you travel"
  ],
  "subtitles": [
-  "TODO",
-  "TODO",
-  "TODO",
-  "TODO"
+  "Unique homes, cabins & beachfront villas worldwide",
+  "Unforgettable experiences led by local experts",
+  "Host guests safely with AirCover protection",
+  "Instant reservations, flex cancellation & 24/7 support"
  ],
  "pages": [
   {
-   "title": "TODO",
-   "subtitle": "TODO",
+   "title": "Find your next dream stay",
+   "subtitle": "Unique homes, cabins & beachfront villas worldwide",
    "layout": "single-no-text",
    "background": {
-    "type": "solid",
-    "value": "#ffffff"
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #FDFBF7 0%, #F8F3EA 60%, #F0E8D9 100%)"
    },
    "devices": null,
    "decorations": [],
-   "textLayers": [],
-   "assetLayers": [],
+   "textLayers": [
+    {
+     "id": "tpl-t4",
+     "xPct": 9.091,
+     "yPct": 9.775,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Find your next\ndream stay",
+      "color": "#222222",
+      "size": 98.2,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.1
+     }
+    },
+    {
+     "id": "tpl-t5",
+     "xPct": 9.091,
+     "yPct": 21.274,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Unique homes, cabins & beachfront villas worldwide",
+      "color": "#717171",
+      "size": 39.3,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.35
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s2",
+     "assetId": "shape:Coral glow",
+     "name": "Coral glow",
+     "xPct": -22.727,
+     "yPct": 25.105,
+     "widthPct": 145.455,
+     "heightPct": 66.946,
+     "rotation": 0,
+     "opacity": 0.0875,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 640,
+      "h": 640,
+      "radius": 320,
+      "fill": "#FF5A5F",
+      "blur": 45,
+      "inset": 150
+     }
+    },
+    {
+     "id": "tpl-s1",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 7.614,
+     "yPct": 23.745,
+     "widthPct": 84.773,
+     "heightPct": 71.524,
+     "rotation": 0,
+     "opacity": 0.2,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 373,
+      "h": 683.77,
+      "radius": 96.4,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s3",
+     "assetId": "shape:Coral line",
+     "name": "Coral line",
+     "xPct": 42.045,
+     "yPct": 24.582,
+     "widthPct": 15.909,
+     "heightPct": 0.418,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 25,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 70,
+      "h": 4,
+      "radius": 2,
+      "fill": "#FF5A5F"
+     }
+    }
+   ],
    "deviceOne": {
-    "size": 54.39,
+    "size": 44.35,
     "x": 0.0,
-    "y": 24.79,
+    "y": 14.74,
     "rotation": 0,
     "brightness": 100,
     "frameless": false,
-    "bezelColor": "#060606",
-    "borderColor": "#5e5e5e",
+    "bezelColor": "#222222",
+    "borderColor": "#FF5A5F",
     "zIndex": 10
    }
   },
   {
-   "title": "TODO",
-   "subtitle": "TODO",
+   "title": "Book unique local activities & tours",
+   "subtitle": "Unforgettable experiences led by local experts",
    "layout": "single-no-text",
    "background": {
-    "type": "solid",
-    "value": "#ffffff"
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #FDFBF7 0%, #F8F3EA 60%, #F0E8D9 100%)"
    },
    "devices": null,
    "decorations": [],
-   "textLayers": [],
-   "assetLayers": [],
+   "textLayers": [
+    {
+     "id": "tpl-t10",
+     "xPct": 9.091,
+     "yPct": 9.966,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Book unique local\nactivities & tours",
+      "color": "#222222",
+      "size": 93.3,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.1
+     }
+    },
+    {
+     "id": "tpl-t11",
+     "xPct": 9.091,
+     "yPct": 21.483,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Unforgettable experiences led by local experts",
+      "color": "#717171",
+      "size": 39.3,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.35
+     }
+    },
+    {
+     "id": "tpl-t12",
+     "xPct": 21.818,
+     "yPct": 65.533,
+     "widthPct": 25.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "Badge",
+     "style": {
+      "text": "EXPERIENCES",
+      "color": "#FF5A5F",
+      "size": 27.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t13",
+     "xPct": 21.818,
+     "yPct": 67.416,
+     "widthPct": 25.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "Sub",
+     "style": {
+      "text": "Top Rated Hosts",
+      "color": "#717171",
+      "size": 27.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s7",
+     "assetId": "shape:Coral glow",
+     "name": "Coral glow",
+     "xPct": -11.364,
+     "yPct": 28.243,
+     "widthPct": 140.909,
+     "heightPct": 64.854,
+     "rotation": 0,
+     "opacity": 0.0875,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 620,
+      "h": 620,
+      "radius": 310,
+      "fill": "#FF5A5F",
+      "blur": 45,
+      "inset": 150
+     }
+    },
+    {
+     "id": "tpl-s6",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 11.518,
+     "yPct": 22.546,
+     "widthPct": 80.227,
+     "heightPct": 66.979,
+     "rotation": 6,
+     "opacity": 0.2,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 353,
+      "h": 640.32,
+      "radius": 93.2,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s8",
+     "assetId": "shape:Card",
+     "name": "Card",
+     "xPct": 8.182,
+     "yPct": 62.762,
+     "widthPct": 43.182,
+     "heightPct": 9.205,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 190,
+      "h": 88,
+      "radius": 16,
+      "fill": "#FFFFFF",
+      "stroke": "#EBEBEB",
+      "strokeWidth": 1,
+      "inset": 0.5
+     }
+    },
+    {
+     "id": "tpl-s9",
+     "assetId": "shape:Shape",
+     "name": "Shape",
+     "xPct": 11.818,
+     "yPct": 64.435,
+     "widthPct": 8.182,
+     "heightPct": 3.766,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 36,
+      "h": 36,
+      "radius": 18,
+      "fill": "#FFF0F0"
+     }
+    }
+   ],
    "deviceOne": {
-    "size": 54.39,
-    "x": 0.0,
-    "y": 24.79,
-    "rotation": 0,
+    "size": 41.0,
+    "x": 2.93,
+    "y": 9.71,
+    "rotation": 6,
     "brightness": 100,
     "frameless": false,
-    "bezelColor": "#060606",
-    "borderColor": "#5e5e5e",
+    "bezelColor": "#222222",
+    "borderColor": "#FF5A5F",
     "zIndex": 10
    }
   },
   {
-   "title": "TODO",
-   "subtitle": "TODO",
+   "title": "Turn your home into extra income",
+   "subtitle": "Host guests safely with AirCover protection",
    "layout": "single-no-text",
    "background": {
-    "type": "solid",
-    "value": "#ffffff"
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #FDFBF7 0%, #F8F3EA 60%, #F0E8D9 100%)"
    },
    "devices": null,
    "decorations": [],
-   "textLayers": [],
-   "assetLayers": [],
+   "textLayers": [
+    {
+     "id": "tpl-t17",
+     "xPct": 9.091,
+     "yPct": 10.157,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Turn your home\ninto extra income",
+      "color": "#222222",
+      "size": 88.4,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.1
+     }
+    },
+    {
+     "id": "tpl-t18",
+     "xPct": 9.091,
+     "yPct": 21.483,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Host guests safely with AirCover protection",
+      "color": "#717171",
+      "size": 39.3,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.35
+     }
+    },
+    {
+     "id": "tpl-t19",
+     "xPct": 57.727,
+     "yPct": 56.984,
+     "widthPct": 30.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "Host label",
+     "style": {
+      "text": "Host Earnings",
+      "color": "#717171",
+      "size": 31.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 600,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t20",
+     "xPct": 57.727,
+     "yPct": 58.862,
+     "widthPct": 30.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "Amount",
+     "style": {
+      "text": "$2,850/mo",
+      "color": "#FF5A5F",
+      "size": 49.1,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t21",
+     "xPct": 57.727,
+     "yPct": 61.768,
+     "widthPct": 30.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "Sub",
+     "style": {
+      "text": "Estimated potential",
+      "color": "#717171",
+      "size": 27.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s15",
+     "assetId": "shape:Coral glow",
+     "name": "Coral glow",
+     "xPct": -27.273,
+     "yPct": 29.289,
+     "widthPct": 136.364,
+     "heightPct": 62.762,
+     "rotation": 0,
+     "opacity": 0.0875,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 600,
+      "h": 600,
+      "radius": 300,
+      "fill": "#FF5A5F",
+      "blur": 45,
+      "inset": 150
+     }
+    },
+    {
+     "id": "tpl-s14",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 2.5,
+     "yPct": 22.699,
+     "widthPct": 79.091,
+     "heightPct": 65.843,
+     "rotation": 0,
+     "opacity": 0.2,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 348,
+      "h": 629.45,
+      "radius": 92.4,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s16",
+     "assetId": "shape:Card",
+     "name": "Card",
+     "xPct": 54.091,
+     "yPct": 54.393,
+     "widthPct": 38.182,
+     "heightPct": 11.506,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 168,
+      "h": 110,
+      "radius": 16,
+      "fill": "#FFFFFF",
+      "stroke": "#EBEBEB",
+      "strokeWidth": 1,
+      "inset": 0.5
+     }
+    }
+   ],
    "deviceOne": {
-    "size": 54.39,
-    "x": 0.0,
-    "y": 24.79,
+    "size": 40.17,
+    "x": -14.58,
+    "y": 9.15,
     "rotation": 0,
     "brightness": 100,
     "frameless": false,
-    "bezelColor": "#060606",
-    "borderColor": "#5e5e5e",
+    "bezelColor": "#222222",
+    "borderColor": "#FF5A5F",
     "zIndex": 10
    }
   },
   {
-   "title": "TODO",
-   "subtitle": "TODO",
+   "title": "Seamless stays wherever you travel",
+   "subtitle": "Instant reservations, flex cancellation & 24/7 support",
    "layout": "single-no-text",
    "background": {
-    "type": "solid",
-    "value": "#ffffff"
+    "type": "gradient",
+    "value": "linear-gradient(180deg, #FDFBF7 0%, #F8F3EA 60%, #F0E8D9 100%)"
    },
    "devices": null,
    "decorations": [],
-   "textLayers": [],
-   "assetLayers": [],
+   "textLayers": [
+    {
+     "id": "tpl-t26",
+     "xPct": 9.091,
+     "yPct": 9.443,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Seamless stays\nwherever you travel",
+      "color": "#222222",
+      "size": 93.3,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1.1
+     }
+    },
+    {
+     "id": "tpl-t27",
+     "xPct": 9.091,
+     "yPct": 21.065,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Instant reservations, flex cancellation & 24/7 support",
+      "color": "#717171",
+      "size": 39.3,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.35
+     }
+    },
+    {
+     "id": "tpl-t28",
+     "xPct": 32.955,
+     "yPct": 24.648,
+     "widthPct": 34.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "Tag",
+     "style": {
+      "text": "INSTANT BOOK",
+      "color": "#FFFFFF",
+      "size": 29.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s24",
+     "assetId": "shape:Coral glow",
+     "name": "Coral glow",
+     "xPct": -25.0,
+     "yPct": 28.243,
+     "widthPct": 150.0,
+     "heightPct": 69.038,
+     "rotation": 0,
+     "opacity": 0.0875,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 660,
+      "h": 660,
+      "radius": 330,
+      "fill": "#FF5A5F",
+      "blur": 45,
+      "inset": 150
+     }
+    },
+    {
+     "id": "tpl-s22",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 3.798,
+     "yPct": 24.143,
+     "widthPct": 70.0,
+     "heightPct": 56.752,
+     "rotation": -6,
+     "opacity": 0.2,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 308,
+      "h": 542.55,
+      "radius": 86.0,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s23",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 21.875,
+     "yPct": 22.074,
+     "widthPct": 77.955,
+     "heightPct": 64.706,
+     "rotation": 5,
+     "opacity": 0.2,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 343,
+      "h": 618.59,
+      "radius": 91.6,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s25",
+     "assetId": "shape:Tag pill",
+     "name": "Tag pill",
+     "xPct": 32.955,
+     "yPct": 23.536,
+     "widthPct": 34.091,
+     "heightPct": 3.347,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 150,
+      "h": 32,
+      "radius": 16,
+      "fill": "#FF5A5F"
+     }
+    }
+   ],
    "deviceOne": {
-    "size": 54.39,
-    "x": 0.0,
-    "y": 24.79,
-    "rotation": 0,
+    "size": 39.33,
+    "x": 20.32,
+    "y": 7.11,
+    "rotation": 5,
     "brightness": 100,
     "frameless": false,
-    "bezelColor": "#060606",
-    "borderColor": "#5e5e5e",
-    "zIndex": 10
-   }
+    "bezelColor": "#222222",
+    "borderColor": "#FF5A5F",
+    "zIndex": 11
+   },
+   "extraDevices": [
+    {
+     "size": 33.47,
+     "x": -24.64,
+     "y": 4.16,
+     "rotation": -6,
+     "brightness": 100,
+     "frameless": false,
+     "bezelColor": "#222222",
+     "borderColor": "#FF5A5F",
+     "zIndex": 8
+    }
+   ]
   }
  ],
  "designHeight": 2347,

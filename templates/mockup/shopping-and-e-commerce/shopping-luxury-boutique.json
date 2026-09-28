@@ -10,47 +10,946 @@
    "label": "6.7 Inch Phone"
   }
  ],
- "layout": "single-title-above",
+ "layout": "single-no-text",
  "background": {
   "type": "solid",
-  "value": "solid-cream"
+  "value": "#FAF6F0"
  },
- "textColor": "#1c1c1c",
+ "textColor": "#111111",
  "pages": [
   {
-   "title": "Curated Fashion",
-   "subtitle": "Discover exclusive designer drops",
-   "layout": "single-title-above",
-   "background": null,
-   "devices": null
+   "title": "Curated luxury for you",
+   "subtitle": "Exclusive runway collections & boutique drops",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#FAF6F0"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t4",
+     "xPct": 9.091,
+     "yPct": 9.733,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Curated luxury\nfor you",
+      "color": "#5C203B",
+      "size": 98.2,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.12
+     }
+    },
+    {
+     "id": "tpl-t5",
+     "xPct": 9.091,
+     "yPct": 21.274,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Exclusive runway collections & boutique drops",
+      "color": "#6E6460",
+      "size": 39.3,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.35
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s2",
+     "assetId": "shape:Luxury glow",
+     "name": "Luxury glow",
+     "xPct": -22.727,
+     "yPct": 25.105,
+     "widthPct": 145.455,
+     "heightPct": 66.946,
+     "rotation": 0,
+     "opacity": 0.0875,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 640,
+      "h": 640,
+      "radius": 320,
+      "fill": "#C59B7A",
+      "blur": 45,
+      "inset": 150
+     }
+    },
+    {
+     "id": "tpl-s1",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 7.614,
+     "yPct": 23.745,
+     "widthPct": 84.773,
+     "heightPct": 71.524,
+     "rotation": 0,
+     "opacity": 0.2,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 373,
+      "h": 683.77,
+      "radius": 96.4,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s3",
+     "assetId": "shape:Rose gold line",
+     "name": "Rose gold line",
+     "xPct": 42.045,
+     "yPct": 24.582,
+     "widthPct": 15.909,
+     "heightPct": 0.314,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 25,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 70,
+      "h": 3,
+      "radius": 1.5,
+      "fill": "#C59B7A"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 44.35,
+    "x": 0.0,
+    "y": 14.74,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#1A1615",
+    "borderColor": "#C59B7A",
+    "zIndex": 10
+   }
   },
   {
-   "title": "AR Try-On",
-   "subtitle": "See products in 3D before buying",
-   "layout": "single-title-above",
-   "background": null,
-   "devices": null
+   "title": "Discover top designer drops",
+   "subtitle": "New seasonal releases from iconic fashion houses",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#FAF6F0"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t10",
+     "xPct": 9.091,
+     "yPct": 9.927,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Discover top\ndesigner drops",
+      "color": "#5C203B",
+      "size": 93.3,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.12
+     }
+    },
+    {
+     "id": "tpl-t11",
+     "xPct": 9.091,
+     "yPct": 21.483,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Subtitle",
+     "style": {
+      "text": "New seasonal releases from iconic fashion houses",
+      "color": "#6E6460",
+      "size": 39.3,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.35
+     }
+    },
+    {
+     "id": "tpl-t12",
+     "xPct": 21.818,
+     "yPct": 65.443,
+     "widthPct": 25.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "Badge",
+     "style": {
+      "text": "NEW ARRIVALS",
+      "color": "#5C203B",
+      "size": 29.5,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t13",
+     "xPct": 21.818,
+     "yPct": 67.416,
+     "widthPct": 25.0,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "Sub",
+     "style": {
+      "text": "240+ Items Added",
+      "color": "#6E6460",
+      "size": 27.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s7",
+     "assetId": "shape:Luxury glow",
+     "name": "Luxury glow",
+     "xPct": -11.364,
+     "yPct": 28.243,
+     "widthPct": 140.909,
+     "heightPct": 64.854,
+     "rotation": 0,
+     "opacity": 0.0875,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 620,
+      "h": 620,
+      "radius": 310,
+      "fill": "#C59B7A",
+      "blur": 45,
+      "inset": 150
+     }
+    },
+    {
+     "id": "tpl-s6",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 11.518,
+     "yPct": 22.546,
+     "widthPct": 80.227,
+     "heightPct": 66.979,
+     "rotation": 6,
+     "opacity": 0.2,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 353,
+      "h": 640.32,
+      "radius": 93.2,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s8",
+     "assetId": "shape:Card",
+     "name": "Card",
+     "xPct": 8.182,
+     "yPct": 62.762,
+     "widthPct": 43.182,
+     "heightPct": 9.205,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 190,
+      "h": 88,
+      "radius": 16,
+      "fill": "#FFFFFF",
+      "stroke": "#EADBC8",
+      "strokeWidth": 1,
+      "inset": 0.5
+     }
+    },
+    {
+     "id": "tpl-s9",
+     "assetId": "shape:Shape",
+     "name": "Shape",
+     "xPct": 11.818,
+     "yPct": 64.435,
+     "widthPct": 8.182,
+     "heightPct": 3.766,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 20,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 36,
+      "h": 36,
+      "radius": 18,
+      "fill": "#F3E9DD"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 41.0,
+    "x": 2.93,
+    "y": 9.71,
+    "rotation": 6,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#1A1615",
+    "borderColor": "#C59B7A",
+    "zIndex": 10
+   }
   },
   {
-   "title": "Express Checkout",
-   "subtitle": "Pay securely with Apple Pay",
-   "layout": "single-title-above",
-   "background": null,
-   "devices": null
+   "title": "Tailored styling recommendations",
+   "subtitle": "Personalized outfits matched to your taste",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#FAF6F0"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t17",
+     "xPct": 9.091,
+     "yPct": 10.12,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Tailored styling\nrecommendations",
+      "color": "#5C203B",
+      "size": 88.4,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.12
+     }
+    },
+    {
+     "id": "tpl-t18",
+     "xPct": 9.091,
+     "yPct": 21.483,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Personalized outfits matched to your taste",
+      "color": "#6E6460",
+      "size": 39.3,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.35
+     }
+    },
+    {
+     "id": "tpl-t19",
+     "xPct": 57.727,
+     "yPct": 56.984,
+     "widthPct": 30.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "Match label",
+     "style": {
+      "text": "Style Match",
+      "color": "#6E6460",
+      "size": 31.9,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 600,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t20",
+     "xPct": 57.727,
+     "yPct": 58.682,
+     "widthPct": 30.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "Score",
+     "style": {
+      "text": "99.2%",
+      "color": "#5C203B",
+      "size": 54.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t21",
+     "xPct": 57.727,
+     "yPct": 61.768,
+     "widthPct": 30.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "Sub",
+     "style": {
+      "text": "Curated for you",
+      "color": "#C59B7A",
+      "size": 27.0,
+      "align": "left",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s15",
+     "assetId": "shape:Luxury glow",
+     "name": "Luxury glow",
+     "xPct": -27.273,
+     "yPct": 29.289,
+     "widthPct": 136.364,
+     "heightPct": 62.762,
+     "rotation": 0,
+     "opacity": 0.0875,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 600,
+      "h": 600,
+      "radius": 300,
+      "fill": "#C59B7A",
+      "blur": 45,
+      "inset": 150
+     }
+    },
+    {
+     "id": "tpl-s14",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 2.5,
+     "yPct": 22.699,
+     "widthPct": 79.091,
+     "heightPct": 65.843,
+     "rotation": 0,
+     "opacity": 0.2,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 348,
+      "h": 629.45,
+      "radius": 92.4,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s16",
+     "assetId": "shape:Card",
+     "name": "Card",
+     "xPct": 54.091,
+     "yPct": 54.393,
+     "widthPct": 38.182,
+     "heightPct": 11.506,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 168,
+      "h": 110,
+      "radius": 16,
+      "fill": "#FFFFFF",
+      "stroke": "#EADBC8",
+      "strokeWidth": 1,
+      "inset": 0.5
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 40.17,
+    "x": -14.58,
+    "y": 9.15,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#1A1615",
+    "borderColor": "#C59B7A",
+    "zIndex": 10
+   }
   },
   {
-   "title": "Track Delivery",
-   "subtitle": "Live GPS tracking to your door",
-   "layout": "single-title-above",
-   "background": null,
-   "devices": null
+   "title": "VIP express delivery",
+   "subtitle": "White-glove shipping direct to your door",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#FAF6F0"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t26",
+     "xPct": 9.091,
+     "yPct": 9.404,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "VIP express\ndelivery",
+      "color": "#5C203B",
+      "size": 93.3,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.12
+     }
+    },
+    {
+     "id": "tpl-t27",
+     "xPct": 9.091,
+     "yPct": 21.065,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Subtitle",
+     "style": {
+      "text": "White-glove shipping direct to your door",
+      "color": "#6E6460",
+      "size": 39.3,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.35
+     }
+    },
+    {
+     "id": "tpl-t28",
+     "xPct": 32.955,
+     "yPct": 24.648,
+     "widthPct": 34.091,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "Tag",
+     "style": {
+      "text": "GLOBAL VIP",
+      "color": "#FFFFFF",
+      "size": 29.5,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s24",
+     "assetId": "shape:Luxury glow",
+     "name": "Luxury glow",
+     "xPct": -25.0,
+     "yPct": 28.243,
+     "widthPct": 150.0,
+     "heightPct": 69.038,
+     "rotation": 0,
+     "opacity": 0.0875,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 660,
+      "h": 660,
+      "radius": 330,
+      "fill": "#C59B7A",
+      "blur": 45,
+      "inset": 150
+     }
+    },
+    {
+     "id": "tpl-s22",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 3.798,
+     "yPct": 24.143,
+     "widthPct": 70.0,
+     "heightPct": 56.752,
+     "rotation": -6,
+     "opacity": 0.2,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 308,
+      "h": 542.55,
+      "radius": 86.0,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s23",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 21.875,
+     "yPct": 22.074,
+     "widthPct": 77.955,
+     "heightPct": 64.706,
+     "rotation": 5,
+     "opacity": 0.2,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 343,
+      "h": 618.59,
+      "radius": 91.6,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s25",
+     "assetId": "shape:Tag pill",
+     "name": "Tag pill",
+     "xPct": 32.955,
+     "yPct": 23.536,
+     "widthPct": 34.091,
+     "heightPct": 3.347,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 16,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 150,
+      "h": 32,
+      "radius": 16,
+      "fill": "#5C203B"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 39.33,
+    "x": 20.32,
+    "y": 7.11,
+    "rotation": 5,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#1A1615",
+    "borderColor": "#C59B7A",
+    "zIndex": 11
+   },
+   "extraDevices": [
+    {
+     "size": 33.47,
+     "x": -24.64,
+     "y": 4.16,
+     "rotation": -6,
+     "brightness": 100,
+     "frameless": false,
+     "bezelColor": "#1A1615",
+     "borderColor": "#C59B7A",
+     "zIndex": 8
+    }
+   ]
   },
   {
-   "title": "VIP Lounge",
-   "subtitle": "Unlock rewards and early access",
-   "layout": "single-title-above",
-   "background": null,
-   "devices": null
+   "title": "Boutique privileges & rewards",
+   "subtitle": "Earn points, unlock private sales & insider perks",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#FAF6F0"
+   },
+   "devices": null,
+   "decorations": [],
+   "textLayers": [
+    {
+     "id": "tpl-t34",
+     "xPct": 8.182,
+     "yPct": 29.788,
+     "widthPct": 30.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "Chip 1",
+     "style": {
+      "text": "Private Access",
+      "color": "#1C1716",
+      "size": 31.9,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t35",
+     "xPct": 60.909,
+     "yPct": 44.432,
+     "widthPct": 30.909,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 22,
+     "customName": "Chip 2",
+     "style": {
+      "text": "Double Points",
+      "color": "#FFFFFF",
+      "size": 31.9,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1
+     }
+    },
+    {
+     "id": "tpl-t36",
+     "xPct": 9.091,
+     "yPct": 71.312,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "Title",
+     "style": {
+      "text": "Boutique privileges\n& rewards",
+      "color": "#5C203B",
+      "size": 88.4,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 700,
+      "lineHeightMultiplier": 1.12
+     }
+    },
+    {
+     "id": "tpl-t37",
+     "xPct": 9.091,
+     "yPct": 84.559,
+     "widthPct": 81.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 31,
+     "customName": "Subtitle",
+     "style": {
+      "text": "Earn points, unlock private sales & insider perks",
+      "color": "#6E6460",
+      "size": 39.3,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 500,
+      "lineHeightMultiplier": 1.35
+     }
+    },
+    {
+     "id": "tpl-t38",
+     "xPct": 34.091,
+     "yPct": 92.354,
+     "widthPct": 31.818,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 30,
+     "customName": "CTA Text",
+     "style": {
+      "text": "Join Privilege",
+      "color": "#FFFFFF",
+      "size": 34.4,
+      "align": "center",
+      "fontFamily": "Inter, sans-serif",
+      "fontWeightNum": 800,
+      "lineHeightMultiplier": 1
+     }
+    }
+   ],
+   "assetLayers": [
+    {
+     "id": "tpl-s30",
+     "assetId": "shape:Luxury glow",
+     "name": "Luxury glow",
+     "xPct": -22.727,
+     "yPct": 1.046,
+     "widthPct": 145.455,
+     "heightPct": 66.946,
+     "rotation": 0,
+     "opacity": 0.0875,
+     "zIndex": 2,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 640,
+      "h": 640,
+      "radius": 320,
+      "fill": "#C59B7A",
+      "blur": 45,
+      "inset": 150
+     }
+    },
+    {
+     "id": "tpl-s29",
+     "assetId": "shape:Phone shadow",
+     "name": "Phone shadow",
+     "xPct": 9.318,
+     "yPct": 3.87,
+     "widthPct": 81.364,
+     "heightPct": 68.115,
+     "rotation": 0,
+     "opacity": 0.2,
+     "zIndex": 5,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 358,
+      "h": 651.18,
+      "radius": 94.0,
+      "fill": "#000000",
+      "blur": 18,
+      "inset": 54
+     }
+    },
+    {
+     "id": "tpl-s31",
+     "assetId": "shape:Card",
+     "name": "Card",
+     "xPct": 8.182,
+     "yPct": 28.243,
+     "widthPct": 30.909,
+     "heightPct": 4.393,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 136,
+      "h": 42,
+      "radius": 14,
+      "fill": "#FFFFFF",
+      "stroke": "#EADBC8",
+      "strokeWidth": 1,
+      "inset": 0.5
+     }
+    },
+    {
+     "id": "tpl-s32",
+     "assetId": "shape:Card",
+     "name": "Card",
+     "xPct": 60.909,
+     "yPct": 42.887,
+     "widthPct": 30.909,
+     "heightPct": 4.393,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 15,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 136,
+      "h": 42,
+      "radius": 14,
+      "fill": "#5C203B",
+      "stroke": "#EADBC8",
+      "strokeWidth": 1,
+      "inset": 0.5
+     }
+    },
+    {
+     "id": "tpl-s33",
+     "assetId": "shape:CTA Button",
+     "name": "CTA Button",
+     "xPct": 34.091,
+     "yPct": 90.795,
+     "widthPct": 31.818,
+     "heightPct": 4.603,
+     "rotation": 0,
+     "opacity": 1,
+     "zIndex": 25,
+     "cropFit": "stretch",
+     "shape": {
+      "type": "roundRect",
+      "w": 140,
+      "h": 44,
+      "radius": 22,
+      "fill": "#5C203B"
+     }
+    }
+   ],
+   "deviceOne": {
+    "size": 41.84,
+    "x": 0.0,
+    "y": -22.35,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#1A1615",
+    "borderColor": "#C59B7A",
+    "zIndex": 10
+   }
   }
+ ],
+ "designHeight": 2347,
+ "columnCount": 5,
+ "titles": [
+  "Curated luxury for you",
+  "Discover top designer drops",
+  "Tailored styling recommendations",
+  "VIP express delivery",
+  "Boutique privileges & rewards"
+ ],
+ "subtitles": [
+  "Exclusive runway collections & boutique drops",
+  "New seasonal releases from iconic fashion houses",
+  "Personalized outfits matched to your taste",
+  "White-glove shipping direct to your door",
+  "Earn points, unlock private sales & insider perks"
  ]
 }
