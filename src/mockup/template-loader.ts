@@ -170,7 +170,11 @@ export function loadMockupTemplatesFromDisk(forceReload = false): MockupTemplate
   cachedTemplates = map;
   cachedSignature = signature;
   console.log(`[TemplateLoader] Loaded ${map.size}/${jsonFiles.length} mockup templates`);
-  return Array.from(cachedTemplates.values());
+  return Array.from(cachedTemplates.values()).sort((a, b) => {
+    const catCmp = a.category.localeCompare(b.category);
+    if (catCmp !== 0) return catCmp;
+    return a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: "base" });
+  });
 }
 
 export function getMockupTemplateFromDisk(id: string): MockupTemplateDefinition | undefined {

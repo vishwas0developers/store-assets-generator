@@ -136,6 +136,11 @@ export async function ensureMockupTemplates() {
     try {
       const res = await api("/api/mockups/templates");
       const raw = res.templates || [];
+      raw.sort((a, b) => {
+        const catCmp = (a.category || "").localeCompare(b.category || "");
+        if (catCmp !== 0) return catCmp;
+        return (a.name || "").localeCompare(b.name || "", undefined, { numeric: true, sensitivity: "base" });
+      });
       setMockupTemplates(raw);
     } catch (e) {
       console.error("Failed to load mockup templates from server API:", e);

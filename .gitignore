@@ -8,7 +8,6 @@ output/
 *.log
 .DS_Store
 graphify-out/
-Template videos/
 tools/
 *.rar
 *.py
@@ -21,10 +20,7 @@ scratch/
 .graphifyignore
 .vscode/mcp.json
 .claude-harness-mcp/
-scrcpy-master/
-scrcpy-gui/
-New studio.app-mockup.com/
-_appmockup-studio
 logs/
 .sandbox/
-_reviews/
+extra/
+graphify-out/.graphify_labels.json

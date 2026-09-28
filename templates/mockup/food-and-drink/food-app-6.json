@@ -1,7 +1,7 @@
 {
  "version": 1,
  "id": "food-app-6",
- "name": "Food app 6",
+ "name": "Food app-6",
  "category": "food-and-drink",
  "description": "Showcase your food delivery service app with a clean and modern design.",
  "devices": [
@@ -103,7 +103,7 @@
    ],
    "deviceOne": {
     "size": 66.11,
-    "x": 0.0,
+    "x": 0,
     "y": 8.87,
     "rotation": 0,
     "brightness": 100,
@@ -170,7 +170,7 @@
    ],
    "deviceOne": {
     "size": 66.11,
-    "x": 0.0,
+    "x": 0,
     "y": 8.87,
     "rotation": 0,
     "brightness": 100,
@@ -237,7 +237,7 @@
    ],
    "deviceOne": {
     "size": 66.11,
-    "x": 0.0,
+    "x": 0,
     "y": 8.87,
     "rotation": 0,
     "brightness": 100,
@@ -304,7 +304,7 @@
    ],
    "deviceOne": {
     "size": 66.11,
-    "x": 0.0,
+    "x": 0,
     "y": 8.87,
     "rotation": 0,
     "brightness": 100,
@@ -371,7 +371,7 @@
    ],
    "deviceOne": {
     "size": 66.11,
-    "x": 0.0,
+    "x": 0,
     "y": 8.87,
     "rotation": 0,
     "brightness": 100,
@@ -438,7 +438,7 @@
    ],
    "deviceOne": {
     "size": 66.11,
-    "x": 0.0,
+    "x": 0,
     "y": 8.87,
     "rotation": 0,
     "brightness": 100,
@@ -505,7 +505,7 @@
    ],
    "deviceOne": {
     "size": 66.11,
-    "x": 0.0,
+    "x": 0,
     "y": 8.87,
     "rotation": 0,
     "brightness": 100,
@@ -572,7 +572,7 @@
    ],
    "deviceOne": {
     "size": 66.11,
-    "x": 0.0,
+    "x": 0,
     "y": 8.87,
     "rotation": 0,
     "brightness": 100,

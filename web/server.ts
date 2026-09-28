@@ -1617,17 +1617,23 @@ export async function startWebServer(options: { port?: number; host?: string; op
     // Templates section
     if (method === "GET" && p === "/api/mockups/templates") {
       sendJson(res, 200, {
-        templates: MOCKUP_TEMPLATES.map((t: any) => ({
-          id: t.id,
-          name: t.name,
-          category: t.category,
-          description: t.description,
-          columnCount: t.columnCount,
-          layout: t.layout,
-          background: t.background,
-          devices: t.devices,
-          titles: t.titles
-        }))
+        templates: MOCKUP_TEMPLATES.slice()
+          .sort((a: any, b: any) => {
+            const catComp = (a.category || "").localeCompare(b.category || "", undefined, { sensitivity: "base" });
+            if (catComp !== 0) return catComp;
+            return (a.name || "").localeCompare(b.name || "", undefined, { numeric: true, sensitivity: "base" });
+          })
+          .map((t: any) => ({
+            id: t.id,
+            name: t.name,
+            category: t.category,
+            description: t.description,
+            columnCount: t.columnCount,
+            layout: t.layout,
+            background: t.background,
+            devices: t.devices,
+            titles: t.titles
+          }))
       });
       return;
     }

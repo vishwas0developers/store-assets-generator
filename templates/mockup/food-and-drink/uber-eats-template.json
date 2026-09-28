@@ -1,7 +1,7 @@
 {
  "version": 1,
  "id": "uber-eats-template",
- "name": "Food app-4",
+ "name": "Food app-7",
  "category": "food-and-drink",
  "description": "Showcase your food delivery service app with a clean and modern design.",
  "devices": [
@@ -69,7 +69,7 @@
      "style": {
       "text": "Dinner,\nat your door",
       "color": "#ffffff",
-      "size": 108.0,
+      "size": 108,
       "align": "left",
       "fontFamily": "Inter, sans-serif",
       "fontWeightNum": 800,
@@ -108,7 +108,7 @@
      "style": {
       "text": "01  NEARBY",
       "color": "#2fe0b8",
-      "size": 27.0,
+      "size": 27,
       "align": "center",
       "fontFamily": "Inter, sans-serif",
       "fontWeightNum": 700,
@@ -277,7 +277,7 @@
      "style": {
       "text": "Browse by\ncraving",
       "color": "#13183a",
-      "size": 108.0,
+      "size": 108,
       "align": "center",
       "fontFamily": "Inter, sans-serif",
       "fontWeightNum": 800,
@@ -316,7 +316,7 @@
      "style": {
       "text": "02  EXPLORE",
       "color": "#0b7a63",
-      "size": 27.0,
+      "size": 27,
       "align": "center",
       "fontFamily": "Inter, sans-serif",
       "fontWeightNum": 700,
@@ -366,7 +366,7 @@
       "type": "roundRect",
       "w": 382,
       "h": 675.18,
-      "radius": 106.0,
+      "radius": 106,
       "fill": "#000000",
       "blur": 22,
       "inset": 66
@@ -428,7 +428,7 @@
      "style": {
       "text": "Build the\nperfect order",
       "color": "#ffffff",
-      "size": 108.0,
+      "size": 108,
       "align": "left",
       "fontFamily": "Inter, sans-serif",
       "fontWeightNum": 800,
@@ -467,7 +467,7 @@
      "style": {
       "text": "03  CUSTOMIZE",
       "color": "#2fe0b8",
-      "size": 27.0,
+      "size": 27,
       "align": "center",
       "fontFamily": "Inter, sans-serif",
       "fontWeightNum": 700,
@@ -517,7 +517,7 @@
       "type": "roundRect",
       "w": 357,
       "h": 620.86,
-      "radius": 102.0,
+      "radius": 102,
       "fill": "#000000",
       "blur": 22,
       "inset": 66
@@ -590,7 +590,7 @@
      "name": "Pin",
      "xPct": 79.318,
      "yPct": 26.046,
-     "widthPct": 5.0,
+     "widthPct": 5,
      "heightPct": 2.301,
      "rotation": 0,
      "opacity": 1,
@@ -624,7 +624,7 @@
     }
    ],
    "deviceOne": {
-    "size": 41.0,
+    "size": 41,
     "x": 32.65,
     "y": 30.09,
     "rotation": 0,
@@ -671,7 +671,7 @@
      "style": {
       "text": "Track it\nlive",
       "color": "#13183a",
-      "size": 108.0,
+      "size": 108,
       "align": "left",
       "fontFamily": "Inter, sans-serif",
       "fontWeightNum": 800,
@@ -710,7 +710,7 @@
      "style": {
       "text": "04  TRACKING",
       "color": "#0b7a63",
-      "size": 27.0,
+      "size": 27,
       "align": "center",
       "fontFamily": "Inter, sans-serif",
       "fontWeightNum": 700,
@@ -764,7 +764,7 @@
      "name": "Route",
      "xPct": 3.591,
      "yPct": 72.782,
-     "widthPct": 11.0,
+     "widthPct": 11,
      "heightPct": 27.029,
      "rotation": 0,
      "opacity": 0.8,
@@ -899,8 +899,8 @@
      "cropFit": "stretch",
      "shape": {
       "type": "ellipse",
-      "w": 11.0,
-      "h": 11.0,
+      "w": 11,
+      "h": 11,
       "fill": "#13183a"
      }
     }
@@ -940,7 +940,7 @@
      "style": {
       "text": "Checkout\nin one tap",
       "color": "#ffffff",
-      "size": 108.0,
+      "size": 108,
       "align": "left",
       "fontFamily": "Inter, sans-serif",
       "fontWeightNum": 800,
@@ -979,7 +979,7 @@
      "style": {
       "text": "05  CHECKOUT",
       "color": "#2fe0b8",
-      "size": 27.0,
+      "size": 27,
       "align": "center",
       "fontFamily": "Inter, sans-serif",
       "fontWeightNum": 700,
@@ -1080,7 +1080,7 @@
      "name": "Pin",
      "xPct": 65.682,
      "yPct": 72.071,
-     "widthPct": 5.0,
+     "widthPct": 5,
      "heightPct": 2.301,
      "rotation": 0,
      "opacity": 1,
@@ -1148,7 +1148,7 @@
      "style": {
       "text": "Group orders,\nmade easy",
       "color": "#13183a",
-      "size": 108.0,
+      "size": 108,
       "align": "center",
       "fontFamily": "Inter, sans-serif",
       "fontWeightNum": 800,
@@ -1187,7 +1187,7 @@
      "style": {
       "text": "06  TOGETHER",
       "color": "#0b7a63",
-      "size": 27.0,
+      "size": 27,
       "align": "center",
       "fontFamily": "Inter, sans-serif",
       "fontWeightNum": 700,
@@ -1334,7 +1334,7 @@
      "style": {
       "text": "Deals worth\nwaiting for",
       "color": "#ffffff",
-      "size": 108.0,
+      "size": 108,
       "align": "center",
       "fontFamily": "Inter, sans-serif",
       "fontWeightNum": 800,
@@ -1373,7 +1373,7 @@
      "style": {
       "text": "07  OFFERS",
       "color": "#2fe0b8",
-      "size": 27.0,
+      "size": 27,
       "align": "center",
       "fontFamily": "Inter, sans-serif",
       "fontWeightNum": 700,
@@ -1562,15 +1562,15 @@
      "cropFit": "stretch",
      "shape": {
       "type": "ellipse",
-      "w": 11.0,
-      "h": 11.0,
+      "w": 11,
+      "h": 11,
       "fill": "#13183a"
      }
     }
    ],
    "deviceOne": {
     "size": 45.52,
-    "x": 0.0,
+    "x": 0,
     "y": 22.93,
     "rotation": 0,
     "brightness": 100,
@@ -1603,7 +1603,7 @@
      "style": {
       "text": "Rate &\nreorder",
       "color": "#13183a",
-      "size": 108.0,
+      "size": 108,
       "align": "left",
       "fontFamily": "Inter, sans-serif",
       "fontWeightNum": 800,
@@ -1642,7 +1642,7 @@
      "style": {
       "text": "08  FAVORITES",
       "color": "#0b7a63",
-      "size": 27.0,
+      "size": 27,
       "align": "center",
       "fontFamily": "Inter, sans-serif",
       "fontWeightNum": 700,
@@ -1760,7 +1760,7 @@
      "id": "tpl-s73",
      "assetId": "shape:Card shadow",
      "name": "Card shadow",
-     "xPct": 25.0,
+     "xPct": 25,
      "yPct": 52.929,
      "widthPct": 72.727,
      "heightPct": 15.9,
@@ -1831,8 +1831,8 @@
      "cropFit": "stretch",
      "shape": {
       "type": "ellipse",
-      "w": 11.0,
-      "h": 11.0,
+      "w": 11,
+      "h": 11,
       "fill": "#13183a"
      }
     }
