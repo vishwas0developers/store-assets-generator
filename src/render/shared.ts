@@ -1,4 +1,5 @@
 import fs from "fs";
+import path from "path";
 import { frameSvgFor, resolveGeometry, type DeviceModel } from "../devices/registry.js";
 import { resolveDeviceFrameGeometry } from "../mockup/layerLayout.js";
 
@@ -8,10 +9,21 @@ const dataUriCache = new Map<string, string>();
 
 /** Inline the screenshot so rendered HTML is self-contained (no file:// or
  *  http fetches to race with the screenshot call). */
+/** A `<video>` refuses a data URI whose MIME type is wrong (MEDIA_ERR_SRC_NOT_SUPPORTED)
+ *  -- unlike `<img>`, which sniffs -- so an `.mp4` screen recording labelled image/png
+ *  never loaded in the export renderer. Unknown extensions keep the old image/png. */
+const DATA_URI_MIME: Record<string, string> = {
+  ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".webp": "image/webp",
+  ".gif": "image/gif", ".svg": "image/svg+xml",
+  ".mp4": "video/mp4", ".webm": "video/webm", ".mov": "video/quicktime",
+  ".wav": "audio/wav", ".mp3": "audio/mpeg",
+};
+
 export function dataUri(absPath: string): string {
   let cached = dataUriCache.get(absPath);
   if (cached === undefined) {
-    cached = `data:image/png;base64,${fs.readFileSync(absPath, "base64")}`;
+    const mime = DATA_URI_MIME[path.extname(absPath).toLowerCase()] ?? "image/png";
+    cached = `data:${mime};base64,${fs.readFileSync(absPath, "base64")}`;
     dataUriCache.set(absPath, cached);
   }
   return cached;

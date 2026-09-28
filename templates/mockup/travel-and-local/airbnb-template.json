@@ -18,65 +18,123 @@
    "label": "samsung-galaxy-s21-ultra"
   }
  ],
- "layout": "rotated-right-2-title-above",
+ "layout": "single-no-text",
  "background": {
-  "type": "panoramic",
-  "value": "ocean"
+  "type": "solid",
+  "value": "#ffffff"
  },
  "panoramic": true,
  "columnCount": 4,
  "titles": [
-  "Search,\nRent,\nEnjoy.",
-  "properties",
-  "Find the\nbest prices",
-  "Explore\nall places"
+  "TODO",
+  "TODO",
+  "TODO",
+  "TODO"
  ],
  "subtitles": [
-  "Display your property rental platform wi",
-  "Display your property rental platform wi",
-  "Display your property rental platform wi",
-  "Display your property rental platform wi"
+  "TODO",
+  "TODO",
+  "TODO",
+  "TODO"
  ],
  "pages": [
   {
-   "title": "Search,\nRent,\nEnjoy.",
-   "subtitle": "Display your property rental platform wi",
-   "layout": "rotated-right-2-title-above",
-   "background": null,
+   "title": "TODO",
+   "subtitle": "TODO",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#ffffff"
+   },
    "devices": null,
    "decorations": [],
    "textLayers": [],
-   "assetLayers": []
+   "assetLayers": [],
+   "deviceOne": {
+    "size": 54.39,
+    "x": 0.0,
+    "y": 24.79,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
   },
   {
-   "title": "properties",
-   "subtitle": "Display your property rental platform wi",
-   "layout": "rotated-right-2-no-text",
-   "background": null,
+   "title": "TODO",
+   "subtitle": "TODO",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#ffffff"
+   },
    "devices": null,
    "decorations": [],
    "textLayers": [],
-   "assetLayers": []
+   "assetLayers": [],
+   "deviceOne": {
+    "size": 54.39,
+    "x": 0.0,
+    "y": 24.79,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
   },
   {
-   "title": "Find the\nbest prices",
-   "subtitle": "Display your property rental platform wi",
-   "layout": "single-title-above",
-   "background": null,
+   "title": "TODO",
+   "subtitle": "TODO",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#ffffff"
+   },
    "devices": null,
    "decorations": [],
    "textLayers": [],
-   "assetLayers": []
+   "assetLayers": [],
+   "deviceOne": {
+    "size": 54.39,
+    "x": 0.0,
+    "y": 24.79,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
   },
   {
-   "title": "Explore\nall places",
-   "subtitle": "Display your property rental platform wi",
-   "layout": "single-title-above",
-   "background": null,
+   "title": "TODO",
+   "subtitle": "TODO",
+   "layout": "single-no-text",
+   "background": {
+    "type": "solid",
+    "value": "#ffffff"
+   },
    "devices": null,
    "decorations": [],
    "textLayers": [],
-   "assetLayers": []
+   "assetLayers": [],
+   "deviceOne": {
+    "size": 54.39,
+    "x": 0.0,
+    "y": 24.79,
+    "rotation": 0,
+    "brightness": 100,
+    "frameless": false,
+    "bezelColor": "#060606",
+    "borderColor": "#5e5e5e",
+    "zIndex": 10
+   }
   }
- ]
+ ],
+ "designHeight": 2347,
+ "textColor": "#111111"
 }

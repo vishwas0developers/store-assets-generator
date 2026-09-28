@@ -1437,13 +1437,14 @@
           </div>
         </div>
 
-        <div id="export-saveto-row" class="export-form-group" style="display:none;">
-          <label class="export-label">Save To (Local Disk)</label>
+        <div id="export-saveto-row" class="export-form-group">
+          <label class="export-label">Save To (Required)</label>
           <div style="display:flex; gap:0.5rem; align-items:center;">
-            <input type="text" id="export-saveto-input" class="export-input" readonly placeholder="Default Downloads / Output" style="flex:1; font-size:0.85rem;" />
-            <button type="button" id="export-saveto-btn" class="secondary small">Choose...</button>
-            <button type="button" id="export-saveto-clear" class="secondary small" title="Clear path">&times;</button>
+            <input type="text" id="export-saveto-input" class="export-input" readonly placeholder="No location selected" style="flex:1; font-size:0.85rem;" />
+            <button type="button" id="export-saveto-btn" class="secondary small">Choose Folder...</button>
+            <button type="button" id="export-saveto-clear" class="secondary small" title="Forget this location" style="display:none;">&times;</button>
           </div>
+          <p id="export-saveto-hint" class="hint slot-issue error" style="margin-top:.4rem; font-size:0.8rem;">A save location is required before rendering.</p>
         </div>
 
         <!-- Format Selector -->
