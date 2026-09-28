@@ -160,6 +160,10 @@ export interface VideoProject {
     accent?: string;
     platforms?: { name: string; icon: string; url: string }[];
   };
+  /** Global/default background image, applied to every scene that has no
+   *  scene-specific override (`scene.slotValues.background`). Null/absent
+   *  means "use each scene's named theme" (see backgroundCss in shared.ts). */
+  backgroundImage?: string | null; // VideoSourceImage id
   /** Named snapshots of `template` + `scenes`, saved by the user from the
    *  Scenes tab and restored later via the "Saved Configs" section -- lets
    *  someone keep several fully-configured variants of a project side by

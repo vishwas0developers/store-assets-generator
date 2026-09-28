@@ -525,6 +525,7 @@ export function renderVideoScenes() {
   if (scBackground && videoSceneOptions.backgrounds) {
     scBackground.innerHTML = videoSceneOptions.backgrounds.map((b) => `<option value="${b}">${b}</option>`).join("");
   }
+  renderGlobalBackgroundPanel();
   const scDevice = $("sc-device");
   if (scDevice && videoDevices) {
     scDevice.innerHTML = videoDevices.map((d) => `<option value="${d.id}">${d.vendor} — ${d.name}</option>`).join("");
@@ -840,8 +841,125 @@ async function loadSceneContentPanel(sceneId) {
     return;
   }
   if (contentPanelSceneId !== sceneId) return;
+  renderSceneBackgroundSlot(sceneId);
   renderSlotEditor(spec.specs, spec.values, spec.issues, sceneId);
   renderSegmentsPanel(sceneId, spec.specs, spec.values);
+}
+
+/** Shared thumbnail + reuse-dropdown + Upload New Source + Remove control,
+ *  used by both the global (right side) and per-scene (left side) background
+ *  pickers -- same interaction model as imageField()'s screenshot slot. */
+function backgroundImageControl({ sourceId, onChange }) {
+  const wrap = document.createElement("div");
+  wrap.className = "content-slot-image";
+  const source = sourceId ? (videoProject.sources || []).find((s) => s.id === sourceId) : null;
+
+  const thumb = document.createElement("div");
+  thumb.className = "content-slot-thumb";
+  if (source) {
+    const img = document.createElement("img");
+    img.src = `/api/videos/${videoId}/file?p=${encodeURIComponent(source.file)}`;
+    thumb.appendChild(img);
+  } else {
+    thumb.textContent = "No image";
+  }
+  const thumbCol = document.createElement("div");
+  thumbCol.className = "content-slot-thumb-col";
+  thumbCol.appendChild(thumb);
+  wrap.appendChild(thumbCol);
+
+  const controls = document.createElement("div");
+  controls.className = "content-slot-image-controls";
+
+  const sources = (videoProject.sources || []).filter((src) => src.kind !== "video");
+  if (sources.length > 0) {
+    const existingSelect = document.createElement("select");
+    existingSelect.style.cssText = "width:100%; font-size:0.78rem; margin-bottom:0.35rem;";
+    populateSourceSelect(existingSelect, sources, sourceId || "", { blankLabel: "Reuse existing background…" });
+    existingSelect.onchange = () => onChange(existingSelect.value || null);
+    controls.appendChild(existingSelect);
+  }
+
+  const fileInput = document.createElement("input");
+  fileInput.type = "file";
+  fileInput.accept = "image/png,image/jpeg,image/webp,image/gif";
+  fileInput.onchange = async () => {
+    const file = fileInput.files[0];
+    if (!file) return;
+    try {
+      const uploaded = await uploadFile(`/api/videos/${videoId}/sources?name=${encodeURIComponent(file.name)}`, file);
+      videoProject.sources.push(uploaded);
+      onChange(uploaded.id);
+    } catch (e) {
+      await showAlert("Upload failed: " + e.message);
+    }
+  };
+  controls.appendChild(fileInput);
+  controls.appendChild(uploadButton(fileInput));
+
+  if (source) {
+    const removeBtn = document.createElement("button");
+    removeBtn.type = "button";
+    removeBtn.className = "secondary small";
+    removeBtn.textContent = "Remove";
+    removeBtn.onclick = () => onChange(null);
+    controls.appendChild(removeBtn);
+  }
+  wrap.appendChild(controls);
+  return wrap;
+}
+
+/** Global background: an image-based default for every scene (mirrors
+ *  imageField()'s thumbnail/reuse/upload/remove pattern but persists to
+ *  project.backgroundImage instead of a per-scene slot). */
+function renderGlobalBackgroundPanel() {
+  const host = $("global-background-panel");
+  if (!host || !videoProject) return;
+  host.innerHTML = "";
+  host.appendChild(backgroundImageControl({
+    sourceId: videoProject.backgroundImage || null,
+    onChange: async (sourceId) => {
+      const updated = await api(`/api/videos/${videoId}`, { method: "PUT", body: { backgroundImage: sourceId } });
+      videoProject.backgroundImage = updated.backgroundImage;
+      renderGlobalBackgroundPanel();
+      showScenePreview();
+    },
+  }));
+}
+
+/** Per-scene background override, shown directly above the Screenshot content
+ *  slot in the left Content panel. Stored as scene.slotValues.background --
+ *  the same generic per-scene slot bag every other content field uses -- so a
+ *  scene with no override here simply falls back to the global background
+ *  above (see resolveSceneBackgroundCss in render.ts). */
+function renderSceneBackgroundSlot(sceneId) {
+  const host = $("sc-background-panel");
+  if (!host || !videoProject) return;
+  host.innerHTML = "";
+  const scene = videoProject.scenes.find((s) => s.id === sceneId);
+  if (!scene) return;
+  const wrap = document.createElement("div");
+  wrap.className = "content-slot";
+  const label = document.createElement("label");
+  label.textContent = "Background Theme";
+  wrap.appendChild(label);
+  const value = scene.slotValues?.background;
+  const sourceId = value?.kind === "image" ? value.sourceId : null;
+  wrap.appendChild(backgroundImageControl({
+    sourceId,
+    onChange: async (id) => {
+      await saveSlotValue(sceneId, "background", { kind: "image", sourceId: id });
+      scene.slotValues = { ...(scene.slotValues || {}), background: { kind: "image", sourceId: id } };
+      renderSceneBackgroundSlot(sceneId);
+      showScenePreview();
+    },
+  }));
+  const note = document.createElement("p");
+  note.className = "hint";
+  note.style.cssText = "margin:.3rem 0 0;";
+  note.textContent = "Overrides the global background for this scene only. Remove it to fall back to the global background.";
+  wrap.appendChild(note);
+  host.appendChild(wrap);
 }
 
 /** Hides a native file input and returns the app's own button that opens it,
