@@ -60,7 +60,7 @@
     {
      "id": "tpl-t3",
      "xPct": 6.364,
-     "yPct": 6.402,
+     "yPct": 8.2,
      "widthPct": 87.273,
      "rotation": 0,
      "opacity": 1,
@@ -72,7 +72,7 @@
       "size": 88.4,
       "align": "left",
       "fontFamily": "Inter, sans-serif",
-      "fontWeightNum": 600,
+      "fontWeightNum": 700,
       "lineHeightMultiplier": 1.15
      }
     }
@@ -83,9 +83,9 @@
      "assetId": "shape:BadgeP1",
      "name": "BadgeP1",
      "xPct": 6.364,
-     "yPct": 5.021,
-     "widthPct": 5.455,
-     "heightPct": 2.929,
+     "yPct": 4.5,
+     "widthPct": 4.5,
+     "heightPct": 2.1,
      "rotation": 0,
      "opacity": 1.0,
      "zIndex": 20,
@@ -93,8 +93,8 @@
      "shape": {
       "type": "roundRect",
       "w": 24,
-      "h": 28,
-      "radius": 12,
+      "h": 24,
+      "radius": 8,
       "fill": "#5d14e0"
      }
     },
@@ -147,7 +147,7 @@
     {
      "id": "tpl-t6",
      "xPct": 6.364,
-     "yPct": 79.101,
+     "yPct": 77.2,
      "widthPct": 87.273,
      "rotation": 0,
      "opacity": 1,
@@ -159,7 +159,7 @@
       "size": 88.4,
       "align": "left",
       "fontFamily": "Inter, sans-serif",
-      "fontWeightNum": 600,
+      "fontWeightNum": 700,
       "lineHeightMultiplier": 1.15
      }
     }
@@ -170,18 +170,18 @@
      "assetId": "shape:BadgeP2",
      "name": "BadgeP2",
      "xPct": 6.364,
-     "yPct": 95.711,
-     "widthPct": 5.909,
-     "heightPct": 2.72,
+     "yPct": 73.5,
+     "widthPct": 4.5,
+     "heightPct": 2.1,
      "rotation": 0,
      "opacity": 1.0,
      "zIndex": 20,
      "cropFit": "stretch",
      "shape": {
       "type": "roundRect",
-      "w": 26,
-      "h": 26,
-      "radius": 6,
+      "w": 24,
+      "h": 24,
+      "radius": 8,
       "fill": "#f59e0b"
      }
     },
@@ -234,7 +234,7 @@
     {
      "id": "tpl-t9",
      "xPct": 6.364,
-     "yPct": 6.402,
+     "yPct": 8.2,
      "widthPct": 87.273,
      "rotation": 0,
      "opacity": 1,
@@ -246,7 +246,7 @@
       "size": 88.4,
       "align": "left",
       "fontFamily": "Inter, sans-serif",
-      "fontWeightNum": 600,
+      "fontWeightNum": 700,
       "lineHeightMultiplier": 1.15
      }
     }
@@ -257,18 +257,18 @@
      "assetId": "shape:BadgeP3",
      "name": "BadgeP3",
      "xPct": 6.364,
-     "yPct": 5.021,
-     "widthPct": 5.0,
-     "heightPct": 2.301,
+     "yPct": 4.5,
+     "widthPct": 4.5,
+     "heightPct": 2.1,
      "rotation": 0,
      "opacity": 1.0,
      "zIndex": 20,
      "cropFit": "stretch",
      "shape": {
       "type": "roundRect",
-      "w": 22,
-      "h": 22,
-      "radius": 4,
+      "w": 24,
+      "h": 24,
+      "radius": 8,
       "fill": "#ec4899"
      }
     },
@@ -321,7 +321,7 @@
     {
      "id": "tpl-t12",
      "xPct": 6.364,
-     "yPct": 79.101,
+     "yPct": 77.2,
      "widthPct": 87.273,
      "rotation": 0,
      "opacity": 1,
@@ -333,7 +333,7 @@
       "size": 88.4,
       "align": "left",
       "fontFamily": "Inter, sans-serif",
-      "fontWeightNum": 600,
+      "fontWeightNum": 700,
       "lineHeightMultiplier": 1.15
      }
     }
@@ -344,9 +344,9 @@
      "assetId": "shape:BadgeP4",
      "name": "BadgeP4",
      "xPct": 6.364,
-     "yPct": 95.711,
-     "widthPct": 5.455,
-     "heightPct": 2.929,
+     "yPct": 73.5,
+     "widthPct": 4.5,
+     "heightPct": 2.1,
      "rotation": 0,
      "opacity": 1.0,
      "zIndex": 20,
@@ -354,8 +354,8 @@
      "shape": {
       "type": "roundRect",
       "w": 24,
-      "h": 28,
-      "radius": 12,
+      "h": 24,
+      "radius": 8,
       "fill": "#06b6d4"
      }
     },
@@ -408,7 +408,7 @@
     {
      "id": "tpl-t15",
      "xPct": 6.364,
-     "yPct": 6.402,
+     "yPct": 8.2,
      "widthPct": 87.273,
      "rotation": 0,
      "opacity": 1,
@@ -420,7 +420,7 @@
       "size": 88.4,
       "align": "left",
       "fontFamily": "Inter, sans-serif",
-      "fontWeightNum": 600,
+      "fontWeightNum": 700,
       "lineHeightMultiplier": 1.15
      }
     }
@@ -431,9 +431,9 @@
      "assetId": "shape:BadgeP5",
      "name": "BadgeP5",
      "xPct": 6.364,
-     "yPct": 5.021,
-     "widthPct": 5.455,
-     "heightPct": 2.929,
+     "yPct": 4.5,
+     "widthPct": 4.5,
+     "heightPct": 2.1,
      "rotation": 0,
      "opacity": 1.0,
      "zIndex": 20,
@@ -441,8 +441,8 @@
      "shape": {
       "type": "roundRect",
       "w": 24,
-      "h": 28,
-      "radius": 12,
+      "h": 24,
+      "radius": 8,
       "fill": "#6366f1"
      }
     },
@@ -495,7 +495,7 @@
     {
      "id": "tpl-t18",
      "xPct": 6.364,
-     "yPct": 79.101,
+     "yPct": 77.2,
      "widthPct": 87.273,
      "rotation": 0,
      "opacity": 1,
@@ -507,7 +507,7 @@
       "size": 88.4,
       "align": "left",
       "fontFamily": "Inter, sans-serif",
-      "fontWeightNum": 600,
+      "fontWeightNum": 700,
       "lineHeightMultiplier": 1.15
      }
     }
@@ -518,18 +518,18 @@
      "assetId": "shape:BadgeP6",
      "name": "BadgeP6",
      "xPct": 6.364,
-     "yPct": 95.711,
-     "widthPct": 5.909,
-     "heightPct": 2.72,
+     "yPct": 73.5,
+     "widthPct": 4.5,
+     "heightPct": 2.1,
      "rotation": 0,
      "opacity": 1.0,
      "zIndex": 20,
      "cropFit": "stretch",
      "shape": {
       "type": "roundRect",
-      "w": 26,
-      "h": 26,
-      "radius": 6,
+      "w": 24,
+      "h": 24,
+      "radius": 8,
       "fill": "#f59e0b"
      }
     },
@@ -582,7 +582,7 @@
     {
      "id": "tpl-t21",
      "xPct": 6.364,
-     "yPct": 6.402,
+     "yPct": 8.2,
      "widthPct": 87.273,
      "rotation": 0,
      "opacity": 1,
@@ -594,7 +594,7 @@
       "size": 88.4,
       "align": "left",
       "fontFamily": "Inter, sans-serif",
-      "fontWeightNum": 600,
+      "fontWeightNum": 700,
       "lineHeightMultiplier": 1.15
      }
     }
@@ -605,18 +605,18 @@
      "assetId": "shape:BadgeP7",
      "name": "BadgeP7",
      "xPct": 6.364,
-     "yPct": 5.021,
-     "widthPct": 5.0,
-     "heightPct": 2.301,
+     "yPct": 4.5,
+     "widthPct": 4.5,
+     "heightPct": 2.1,
      "rotation": 0,
      "opacity": 1.0,
      "zIndex": 20,
      "cropFit": "stretch",
      "shape": {
       "type": "roundRect",
-      "w": 22,
-      "h": 22,
-      "radius": 4,
+      "w": 24,
+      "h": 24,
+      "radius": 8,
       "fill": "#ec4899"
      }
     },
@@ -669,7 +669,7 @@
     {
      "id": "tpl-t24",
      "xPct": 6.364,
-     "yPct": 79.101,
+     "yPct": 77.2,
      "widthPct": 87.273,
      "rotation": 0,
      "opacity": 1,
@@ -681,7 +681,7 @@
       "size": 88.4,
       "align": "left",
       "fontFamily": "Inter, sans-serif",
-      "fontWeightNum": 600,
+      "fontWeightNum": 700,
       "lineHeightMultiplier": 1.15
      }
     }
@@ -692,9 +692,9 @@
      "assetId": "shape:BadgeP8",
      "name": "BadgeP8",
      "xPct": 6.364,
-     "yPct": 95.711,
-     "widthPct": 5.455,
-     "heightPct": 2.929,
+     "yPct": 73.5,
+     "widthPct": 4.5,
+     "heightPct": 2.1,
      "rotation": 0,
      "opacity": 1.0,
      "zIndex": 20,
@@ -702,8 +702,8 @@
      "shape": {
       "type": "roundRect",
       "w": 24,
-      "h": 28,
-      "radius": 12,
+      "h": 24,
+      "radius": 8,
       "fill": "#06b6d4"
      }
     },
