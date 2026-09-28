@@ -158,7 +158,7 @@ function ensureVideoDetailAudio() {
   if (!videoDetailAudio) {
     videoDetailAudio = new Audio();
     videoDetailAudio.loop = false;
-    videoDetailAudio.volume = 0.35;
+    videoDetailAudio.volume = 1;
   }
   return videoDetailAudio;
 }
@@ -2494,7 +2494,7 @@ export function openExportModal({ title, subject, startUrl, project, configId, d
       const fps = parseInt(fpsSelect?.value || "30", 10);
       const quality = qualitySelect?.value || "standard";
       const includeAudio = audioToggle ? audioToggle.checked : true;
-      const audioVol = audioVolume ? parseFloat(audioVolume.value) : 0.35;
+      const audioVol = audioVolume ? parseFloat(audioVolume.value) : 1;
       const fileName = filenameInput?.value.trim() || initialName;
 
       let sceneRange;
