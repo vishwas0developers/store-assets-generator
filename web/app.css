@@ -2813,6 +2813,12 @@ html:not(.light) .export-summary-banner {
   color: #93c5fd;
 }
 
+.export-scene-badge {
+  display: inline-block;
+  color: #f59e0b;
+  font-weight: 700;
+}
+
 .export-hardware-box {
   display: flex;
   align-items: center;

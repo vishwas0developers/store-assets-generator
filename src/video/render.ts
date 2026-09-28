@@ -1810,12 +1810,9 @@ export async function renderVideo(
 
   // Scenes render strictly in order, one at a time: Scene 1's frames are all
   // captured and encoded before Scene 2 starts, matching how the project is
-  // edited scene-by-scene and making "scene N of {total}" progress accurate.
-  // (An earlier concurrent-worker version parallelized scenes for speed, but
-  // that's what could jumble progress reporting and stress a single consumer
-  // GPU's session limits under load -- revisit if render time becomes an
-  // issue on a machine with room to parallelize safely.)
-  const concurrency = 1;
+  // edited scene-by-scene and making "scene N of {total}" progress and the
+  // final concat order unambiguous. Throughput instead comes from a pool of
+  // pages capturing *within* one scene concurrently -- see POOL_SIZE below.
   const isGpu = encoderChoice.codec.includes("nvenc") || encoderChoice.codec.includes("qsv");
   const processorShort = isGpu ? "GPU" : "CPU";
   const acceleratorLabel = `${processorShort} (${encoderChoice.name})`;
@@ -1963,47 +1960,49 @@ export async function renderVideo(
   });
 
   try {
-    // Process scenes with concurrency pool
-    let nextSceneIndex = 0;
-    const workerPromises: Promise<void>[] = [];
     let lastReportTime = 0;
     let windowFrames = 0;
     let windowStartTime = Date.now();
     let dynamicFps = 0;
 
-    // Every distinct device across the whole render, routed once per worker page
-    // instead of once per scene -- see runWorker below.
+    // Every distinct device across the whole render, routed once per pool page
+    // instead of once per scene.
     const allDeviceIds = [...new Set(scenes.map((s) => s.device))];
 
-    const runWorker = async () => {
-      // One Chromium page reused for every scene this worker claims, not a fresh
-      // page per scene. Recreating a GPU-accelerated page 10 times over a render
-      // (once per scene) is what made throughput collapse over a long render --
-      // it started around 40-50fps and fell to ~1fps by the tail as page/GPU
-      // context churn piled up. A page's content is simply replaced between
-      // scenes now, the same way the original single-page sequential renderer
-      // did it, just once per concurrent worker instead of once for the whole job.
-      const page = await browser.newPage({ viewport: canvasFor(scenes[0]) });
-      try {
-        await installThreeJsRoutes(page, allDeviceIds);
-        while (true) {
-          checkAborted();
-          const sIdx = nextSceneIndex++;
-          if (sIdx >= scenes.length) break;
+    // A pool of pages reused for every scene (not recreated per scene -- that's
+    // what made throughput collapse over a long render before: it started around
+    // 40-50fps and fell to ~1fps by the tail as page/GPU context churn piled up).
+    // Scenes themselves are still strictly sequential -- scene N is fully
+    // captured, encoded and verified before scene N+1 starts, so "scene X of Y"
+    // progress and the final concat order are never in doubt -- but *within* one
+    // scene, all pool pages seek+screenshot different frames at once, which is
+    // where the actual GPU/CPU throughput was being left on the table: a single
+    // page's seek-then-screenshot round trip is mostly waiting, not compute, so
+    // one page alone can't keep a GPU busy. Out-of-order results are held in
+    // `frameBuf` and only ever handed to the encoder in strict frame order.
+    const POOL_SIZE = 4;
+    const pages = await Promise.all(
+      Array.from({ length: POOL_SIZE }, () => browser.newPage({ viewport: canvasFor(scenes[0]) })),
+    );
+    await Promise.all(pages.map((page) => installThreeJsRoutes(page, allDeviceIds)));
 
-          const scene = scenes[sIdx];
-          const sceneFrames = sceneFrameCounts[sIdx];
+    try {
+      for (let sIdx = 0; sIdx < scenes.length; sIdx++) {
+        checkAborted();
+        const scene = scenes[sIdx];
+        const sceneFrames = sceneFrameCounts[sIdx];
+        const html = sceneHtml(
+          scene,
+          sourceUrisFor(project, scene, resolveUri, false),
+          true,
+          sourceKindsFor(project, scene),
+          project,
+          resolveUri,
+          false
+        );
 
+        await Promise.all(pages.map(async (page) => {
           await page.setViewportSize(canvasFor(scene));
-          const html = sceneHtml(
-            scene,
-            sourceUrisFor(project, scene, resolveUri, false),
-            true,
-            sourceKindsFor(project, scene),
-            project,
-            resolveUri,
-            false
-          );
           await page.setContent(html, { waitUntil: "load" });
           // Every template's own template.html already ships a `body.rendering
           // .v-player-bar { display: none !important; }` rule for exactly this
@@ -2014,9 +2013,9 @@ export async function renderVideo(
           // changing frame to frame) over the actual scene content.
           await page.evaluate(() => document.body.classList.add("rendering")).catch(() => {});
           // A screen-recording clip must be fully buffered before frame capture:
-          // Chromium clamps a seek to the buffered range, so capturing early froze the
-          // clip on whatever had loaded so far (~5s in) for the rest of the scene.
-          // Capped at 15s so a broken clip can't hold up the render.
+          // Chromium clamps a seek to the buffered range, so capturing early froze
+          // the clip on whatever had loaded so far (~5s in) for the rest of the
+          // scene. Capped at 15s so a broken clip can't hold up the render.
           await page.evaluate(async () => {
             const vids = Array.from(document.querySelectorAll("video"));
             const ready = (v: HTMLVideoElement) => !!v.error || (v.readyState >= 4 && v.buffered.length > 0 &&
@@ -2026,33 +2025,53 @@ export async function renderVideo(
               await new Promise((r) => setTimeout(r, 50));
             }
           }).catch(() => {});
+        }));
 
-          let segment = startSegmentEncoder(segmentPaths[sIdx]);
-          const sceneFrameBufs: Buffer[] = []; // kept for a same-frames CPU retry below, no re-capture needed
-          for (let f = 0; f < sceneFrames; f++) {
+        let segment = startSegmentEncoder(segmentPaths[sIdx]);
+        const sceneFrameBufs: Buffer[] = new Array(sceneFrames); // kept for a same-frames CPU retry below
+        const frameBuf = new Map<number, Buffer>();
+        let nextWriteFrame = 0;
+        let draining = false;
+        async function drainReadyFrames() {
+          if (draining) return; // an in-progress call will pick up anything new -- see write() below
+          draining = true;
+          try {
+            while (frameBuf.has(nextWriteFrame)) {
+              const buf = frameBuf.get(nextWriteFrame)!;
+              frameBuf.delete(nextWriteFrame);
+              await segment.write(buf);
+              nextWriteFrame++;
+            }
+          } finally {
+            draining = false;
+          }
+        }
+
+        let nextCaptureFrame = 0;
+        const captureNext = async (page: import("playwright").Page) => {
+          while (true) {
             checkAborted();
+            const f = nextCaptureFrame++;
+            if (f >= sceneFrames) return;
             const ms = (f / fps) * 1000;
             await page.evaluate((t) => (window as any).seek(t), ms);
-
             const buf = await page.screenshot({ type: "jpeg", quality: 90 });
-            sceneFrameBufs.push(buf);
-            await segment.write(buf);
+            sceneFrameBufs[f] = buf;
+            frameBuf.set(f, buf);
+            await drainReadyFrames();
             // Re-checked right after the slow part of each frame (not just before
-            // it) so Cancel lands within one frame instead of one frame plus
-            // whatever the next scene-claim/setContent would have cost.
+            // it) so Cancel lands within one frame instead of costing whatever the
+            // rest of the pool's in-flight frames would have taken.
             checkAborted();
 
             totalRenderedFrames++;
             windowFrames++;
-
             const now = Date.now();
             if (now - windowStartTime >= 1000) {
               dynamicFps = Math.round((windowFrames * 1000) / (now - windowStartTime));
               windowFrames = 0;
               windowStartTime = now;
             }
-
-            // Report at most every 250ms or on the final frame
             if (now - lastReportTime > 250 || totalRenderedFrames === totalFrames) {
               lastReportTime = now;
               const percent = Math.min(92, Math.round(2 + (totalRenderedFrames / totalFrames) * 90));
@@ -2077,38 +2096,36 @@ export async function renderVideo(
               });
             }
           }
-          checkAborted();
-          let segmentOk = false;
-          try {
-            await segment.finish();
-            segmentOk = (await countSegmentFrames(segmentPaths[sIdx])) === sceneFrames;
-          } catch {
-            segmentOk = false;
-          }
-          if (!segmentOk) {
-            // The GPU encoder produced a short/empty segment (exactly the "frozen,
-            // repeats one frame" symptom a later concat would bake in) -- same
-            // captured frames, re-encoded once on the CPU before giving up.
-            fs.rmSync(segmentPaths[sIdx], { force: true });
-            segment = startSegmentEncoder(segmentPaths[sIdx], cpuFallbackArgs);
-            for (const buf of sceneFrameBufs) await segment.write(buf);
-            await segment.finish();
-            const cpuFrames = await countSegmentFrames(segmentPaths[sIdx]);
-            if (cpuFrames !== sceneFrames) {
-              throw new Error(`Scene ${sIdx + 1} failed to encode (expected ${sceneFrames} frames, got ${cpuFrames}) even after a CPU retry.`);
-            }
+        };
+
+        await Promise.all(pages.map((page) => captureNext(page)));
+        await drainReadyFrames(); // flush anything left buffered after the last page finished
+
+        checkAborted();
+        let segmentOk = false;
+        try {
+          await segment.finish();
+          segmentOk = (await countSegmentFrames(segmentPaths[sIdx])) === sceneFrames;
+        } catch {
+          segmentOk = false;
+        }
+        if (!segmentOk) {
+          // The GPU encoder produced a short/empty segment (exactly the "frozen,
+          // repeats one frame" symptom a later concat would bake in) -- same
+          // captured frames, re-encoded once on the CPU before giving up.
+          fs.rmSync(segmentPaths[sIdx], { force: true });
+          segment = startSegmentEncoder(segmentPaths[sIdx], cpuFallbackArgs);
+          for (const buf of sceneFrameBufs) await segment.write(buf);
+          await segment.finish();
+          const cpuFrames = await countSegmentFrames(segmentPaths[sIdx]);
+          if (cpuFrames !== sceneFrames) {
+            throw new Error(`Scene ${sIdx + 1} failed to encode (expected ${sceneFrames} frames, got ${cpuFrames}) even after a CPU retry.`);
           }
         }
-      } finally {
-        await page.close().catch(() => {});
       }
-    };
-
-    for (let w = 0; w < concurrency; w++) {
-      workerPromises.push(runWorker());
+    } finally {
+      await Promise.all(pages.map((page) => page.close().catch(() => {})));
     }
-
-    await Promise.all(workerPromises);
   } catch (err) {
     killEncoders();
     // Retries: a just-killed ffmpeg on Windows can hold its segment file briefly.
