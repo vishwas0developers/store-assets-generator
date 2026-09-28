@@ -977,7 +977,39 @@ function flowLabelsHtml(scene: VideoScene, durationMs: number): string {
     .join("\n");
 }
 
-function sceneLayoutCss(scene: VideoScene, animation: SceneAnimation, durationMs: number, selector: string, keyframeSuffix: string, gateSelector: string = selector): string {
+/** Precedence, most to least specific: scene.slotValues.background (the
+ *  left-side per-scene override) -> project.backgroundImage (the right-side
+ *  global default) -> the scene's own named theme via backgroundCss. Mirrors
+ *  resolveSlots' brand-fallback pattern in slots.ts, just for a field that
+ *  lives outside the slot-target system (background paints `.backdrop`
+ *  directly, it has no DOM slot target to resolve through). */
+function resolveSceneBackgroundCss(
+  scene: VideoScene,
+  project?: VideoProject,
+  resolveUri?: (rel: string) => string,
+): string {
+  if (project && resolveUri) {
+    const override = scene.slotValues?.background;
+    const overrideId = override?.kind === "image" ? override.sourceId : undefined;
+    const sourceId = overrideId ?? project.backgroundImage ?? null;
+    if (sourceId) {
+      const source = project.sources.find((s) => s.id === sourceId);
+      if (source) return `center / cover no-repeat url(${resolveUri(source.file)})`;
+    }
+  }
+  return backgroundCss(scene.background);
+}
+
+function sceneLayoutCss(
+  scene: VideoScene,
+  animation: SceneAnimation,
+  durationMs: number,
+  selector: string,
+  keyframeSuffix: string,
+  gateSelector: string = selector,
+  project?: VideoProject,
+  resolveUri?: (rel: string) => string,
+): string {
   const layout = layoutFor(scene);
   const isLandscape = orientationOf(scene) === "16:9";
   const backdropKf = (animation.backdropKeyframes ?? defaultBackdrop)(scene);
@@ -990,7 +1022,7 @@ function sceneLayoutCss(scene: VideoScene, animation: SceneAnimation, durationMs
     ${selector} .copy { text-align: ${layout.copyAlign}; flex: ${layout.copyFlex}; ${layout.copyMaxWidth ? `max-width:${layout.copyMaxWidth};` : ""} z-index: 4; ${isStackedTop ? "margin-bottom: clamp(32px, 4.5vh, 60px);" : ""} ${isStackedBottom ? "margin-top: clamp(32px, 4.5vh, 60px);" : ""} }
     ${selector} .label { font-size: ${isLandscape ? 64 : 54}px; }
     ${selector} .subtext { font-size: ${isLandscape ? 32 : 28}px; }
-    ${selector} .backdrop { background: ${backgroundCss(scene.background)}; }
+    ${selector} .backdrop { background: ${resolveSceneBackgroundCss(scene, project, resolveUri)}; }
     ${!isLandscape ? `${selector} .stage { margin: 0 auto; align-self: center !important; }` : ""}
     ${
       scene.depth === "float" || scene.depth === "showcase"
@@ -1396,7 +1428,7 @@ export function sceneHtml(
   ${textAnimCss(scene)}
   ${FLOW_LABEL_CSS}
   ${foldRigCss(durationMs)}
-  ${sceneLayoutCss(scene, animation, durationMs, ".canvas", "")}
+  ${sceneLayoutCss(scene, animation, durationMs, ".canvas", "", undefined, project, resolveUri)}
 </style></head>
 <body>
   <div class="canvas">${contentHtml}</div>
@@ -1457,7 +1489,7 @@ export function templatePreviewHtml(project: VideoProject): string {
     .map((scene, i) => {
       const animation = SCENE_ANIMATIONS[scene.sceneTemplate] ?? SCENE_ANIMATIONS["hero-rise"];
       const durationMs = Math.max(1, scene.durationSeconds) * 1000;
-      return sceneLayoutCss(scene, animation, durationMs, `.scene-${i}`, `-${i}`, `.scene-${i}.playing`) + textAnimCss(scene, `.scene-${i}`, `-${i}`);
+      return sceneLayoutCss(scene, animation, durationMs, `.scene-${i}`, `-${i}`, `.scene-${i}.playing`, project, resolveUri) + textAnimCss(scene, `.scene-${i}`, `-${i}`);
     })
     .join("\n");
 

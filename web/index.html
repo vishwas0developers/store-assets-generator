@@ -944,6 +944,7 @@
                   <h3 style="margin:0; font-size:.85rem;">Content</h3>
                   <span id="sc-content-save-state" class="hint"></span>
                 </div>
+                <div id="sc-background-panel"></div>
                 <div id="sc-content-panel"></div>
 
                 <div id="sc-source-section">
@@ -1080,8 +1081,10 @@
                   <option value="zoom">Zoom</option>
                 </select>
                 
-                <label>Background Theme</label>
+                <label>Background Theme (Global)</label>
                 <select id="sc-background"></select>
+                <div id="global-background-panel" style="margin-top:.5rem;"></div>
+                <p class="hint" style="margin:.3rem 0 0;">Applies to every scene by default. A scene with its own Background Theme override (in its Content panel) ignores this.</p>
 
                 <h3 style="margin:1.25rem 0 .5rem; font-size:.85rem;">Timing</h3>
                 <!-- Only shown while the scene has a linked video (see syncVideoTimingUi). -->

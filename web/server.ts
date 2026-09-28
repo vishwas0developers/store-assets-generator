@@ -1814,6 +1814,7 @@ export async function startWebServer(options: { port?: number; host?: string; op
         if (body.bgm !== undefined) project.bgm = body.bgm;
         if (body.bgmVolume !== undefined) project.bgmVolume = body.bgmVolume;
         if (body.brand !== undefined) project.brand = body.brand;
+        if (body.backgroundImage !== undefined) project.backgroundImage = body.backgroundImage;
         saveVideoProject(project);
         sendJson(res, 200, project);
         return;
