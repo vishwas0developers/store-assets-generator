@@ -2625,7 +2625,19 @@ export function openExportModal({ title, subject, startUrl, project, configId, d
 
   function updateRenderingView(job) {
     const p = job.progress || {};
-    if ($("export-render-phase-msg")) $("export-render-phase-msg").textContent = p.message || "Rendering video...";
+    const phaseMsgEl = $("export-render-phase-msg");
+    if (phaseMsgEl) {
+      if (p.phase === "frames" && p.scene && p.sceneCount) {
+        // Split out "scene N of M" into its own colored badge -- as one plain
+        // string it read as the same flat text as the frame count, easy to miss
+        // that it's counting up through scenes rather than just frames.
+        phaseMsgEl.innerHTML =
+          `Rendering frame ${p.frame ?? 0} / ${p.totalFrames ?? 0} · ` +
+          `<span class="export-scene-badge">Scene ${p.scene} of ${p.sceneCount}</span>`;
+      } else {
+        phaseMsgEl.textContent = p.message || "Rendering video...";
+      }
+    }
     if ($("export-render-pct")) $("export-render-pct").textContent = `${p.percent || 0}%`;
     if ($("export-progress-bar-fill")) $("export-progress-bar-fill").style.width = `${p.percent || 0}%`;
 
