@@ -1,7 +1,7 @@
 {
  "version": 1,
  "id": "airbnb-template",
- "name": "Place renting app",
+ "name": "Place renting app-1",
  "category": "travel-and-local",
  "description": "Display your property rental platform with our free template. Showcase property listings, booking features, and rental management in a professional design that simplifies the rental process.",
  "devices": [
@@ -156,7 +156,7 @@
    ],
    "deviceOne": {
     "size": 44.35,
-    "x": 0.0,
+    "x": 0,
     "y": 14.74,
     "rotation": 0,
     "brightness": 100,
@@ -219,7 +219,7 @@
      "id": "tpl-t12",
      "xPct": 21.818,
      "yPct": 65.533,
-     "widthPct": 25.0,
+     "widthPct": 25,
      "rotation": 0,
      "opacity": 1,
      "zIndex": 22,
@@ -227,7 +227,7 @@
      "style": {
       "text": "EXPERIENCES",
       "color": "#FF5A5F",
-      "size": 27.0,
+      "size": 27,
       "align": "left",
       "fontFamily": "Inter, sans-serif",
       "fontWeightNum": 800,
@@ -238,7 +238,7 @@
      "id": "tpl-t13",
      "xPct": 21.818,
      "yPct": 67.416,
-     "widthPct": 25.0,
+     "widthPct": 25,
      "rotation": 0,
      "opacity": 1,
      "zIndex": 22,
@@ -246,7 +246,7 @@
      "style": {
       "text": "Top Rated Hosts",
       "color": "#717171",
-      "size": 27.0,
+      "size": 27,
       "align": "left",
       "fontFamily": "Inter, sans-serif",
       "fontWeightNum": 500,
@@ -344,7 +344,7 @@
     }
    ],
    "deviceOne": {
-    "size": 41.0,
+    "size": 41,
     "x": 2.93,
     "y": 9.71,
     "rotation": 6,
@@ -454,7 +454,7 @@
      "style": {
       "text": "Estimated potential",
       "color": "#717171",
-      "size": 27.0,
+      "size": 27,
       "align": "left",
       "fontFamily": "Inter, sans-serif",
       "fontWeightNum": 500,
@@ -617,9 +617,9 @@
      "id": "tpl-s24",
      "assetId": "shape:Coral glow",
      "name": "Coral glow",
-     "xPct": -25.0,
+     "xPct": -25,
      "yPct": 28.243,
-     "widthPct": 150.0,
+     "widthPct": 150,
      "heightPct": 69.038,
      "rotation": 0,
      "opacity": 0.0875,
@@ -641,7 +641,7 @@
      "name": "Phone shadow",
      "xPct": 3.798,
      "yPct": 24.143,
-     "widthPct": 70.0,
+     "widthPct": 70,
      "heightPct": 56.752,
      "rotation": -6,
      "opacity": 0.2,
@@ -651,7 +651,7 @@
       "type": "roundRect",
       "w": 308,
       "h": 542.55,
-      "radius": 86.0,
+      "radius": 86,
       "fill": "#000000",
       "blur": 18,
       "inset": 54

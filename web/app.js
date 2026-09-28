@@ -3462,6 +3462,11 @@ async function ensureMockupTemplates() {
     const raw = templates || [];
     const ids = new Set(raw.map((t) => t.id));
     const merged = raw.concat(EXTRA_STARTER_TEMPLATES.filter((t) => !ids.has(t.id)));
+    merged.sort((a, b) => {
+      const catCmp = (a.category || "").localeCompare(b.category || "");
+      if (catCmp !== 0) return catCmp;
+      return (a.name || "").localeCompare(b.name || "", undefined, { numeric: true, sensitivity: "base" });
+    });
     mockupTemplates = merged;
   }
   return mockupTemplates;

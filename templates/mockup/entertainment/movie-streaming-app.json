@@ -1,7 +1,7 @@
 {
  "version": 1,
  "id": "movie-streaming-app",
- "name": "Movie streaming app",
+ "name": "Movie streaming app 1",
  "category": "entertainment",
  "description": "Present your movie streaming app with our premium template. Showcase your content library, personalized recommendations, and seamless playback features in a sleek, engaging design that highlights the entertainment experience.",
  "devices": [
@@ -59,9 +59,9 @@
    "textLayers": [
     {
      "id": "tpl-t7",
-     "xPct": 0.0,
+     "xPct": 0,
      "yPct": 4.992,
-     "widthPct": 100.0,
+     "widthPct": 100,
      "rotation": 0,
      "opacity": 1,
      "zIndex": 30,
@@ -214,7 +214,7 @@
    ],
    "deviceOne": {
     "size": 55.73,
-    "x": 0.0,
+    "x": 0,
     "y": 8.12,
     "rotation": 0,
     "brightness": 100,
@@ -237,9 +237,9 @@
    "textLayers": [
     {
      "id": "tpl-t14",
-     "xPct": 0.0,
+     "xPct": 0,
      "yPct": 4.992,
-     "widthPct": 100.0,
+     "widthPct": 100,
      "rotation": 0,
      "opacity": 1,
      "zIndex": 30,
@@ -392,7 +392,7 @@
    ],
    "deviceOne": {
     "size": 55.73,
-    "x": 0.0,
+    "x": 0,
     "y": 8.12,
     "rotation": 0,
     "brightness": 100,
@@ -415,9 +415,9 @@
    "textLayers": [
     {
      "id": "tpl-t21",
-     "xPct": 0.0,
+     "xPct": 0,
      "yPct": 4.992,
-     "widthPct": 100.0,
+     "widthPct": 100,
      "rotation": 0,
      "opacity": 1,
      "zIndex": 30,
@@ -570,7 +570,7 @@
    ],
    "deviceOne": {
     "size": 55.73,
-    "x": 0.0,
+    "x": 0,
     "y": 8.12,
     "rotation": 0,
     "brightness": 100,
@@ -593,9 +593,9 @@
    "textLayers": [
     {
      "id": "tpl-t28",
-     "xPct": 0.0,
+     "xPct": 0,
      "yPct": 4.992,
-     "widthPct": 100.0,
+     "widthPct": 100,
      "rotation": 0,
      "opacity": 1,
      "zIndex": 30,
@@ -748,7 +748,7 @@
    ],
    "deviceOne": {
     "size": 55.73,
-    "x": 0.0,
+    "x": 0,
     "y": 8.12,
     "rotation": 0,
     "brightness": 100,
@@ -771,9 +771,9 @@
    "textLayers": [
     {
      "id": "tpl-t35",
-     "xPct": 0.0,
+     "xPct": 0,
      "yPct": 4.992,
-     "widthPct": 100.0,
+     "widthPct": 100,
      "rotation": 0,
      "opacity": 1,
      "zIndex": 30,
@@ -926,7 +926,7 @@
    ],
    "deviceOne": {
     "size": 55.73,
-    "x": 0.0,
+    "x": 0,
     "y": 8.12,
     "rotation": 0,
     "brightness": 100,
@@ -949,9 +949,9 @@
    "textLayers": [
     {
      "id": "tpl-t42",
-     "xPct": 0.0,
+     "xPct": 0,
      "yPct": 4.992,
-     "widthPct": 100.0,
+     "widthPct": 100,
      "rotation": 0,
      "opacity": 1,
      "zIndex": 30,
@@ -1104,7 +1104,7 @@
    ],
    "deviceOne": {
     "size": 55.73,
-    "x": 0.0,
+    "x": 0,
     "y": 8.12,
     "rotation": 0,
     "brightness": 100,
@@ -1127,9 +1127,9 @@
    "textLayers": [
     {
      "id": "tpl-t49",
-     "xPct": 0.0,
+     "xPct": 0,
      "yPct": 4.992,
-     "widthPct": 100.0,
+     "widthPct": 100,
      "rotation": 0,
      "opacity": 1,
      "zIndex": 30,
@@ -1282,7 +1282,7 @@
    ],
    "deviceOne": {
     "size": 55.73,
-    "x": 0.0,
+    "x": 0,
     "y": 8.12,
     "rotation": 0,
     "brightness": 100,
@@ -1305,9 +1305,9 @@
    "textLayers": [
     {
      "id": "tpl-t56",
-     "xPct": 0.0,
+     "xPct": 0,
      "yPct": 4.992,
-     "widthPct": 100.0,
+     "widthPct": 100,
      "rotation": 0,
      "opacity": 1,
      "zIndex": 30,
@@ -1460,7 +1460,7 @@
    ],
    "deviceOne": {
     "size": 55.73,
-    "x": 0.0,
+    "x": 0,
     "y": 8.12,
     "rotation": 0,
     "brightness": 100,

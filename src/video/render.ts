@@ -1969,26 +1969,30 @@ export async function renderVideo(
     // instead of once per scene.
     const allDeviceIds = [...new Set(scenes.map((s) => s.device))];
 
-    // A pool of pages reused for every scene (not recreated per scene -- that's
-    // what made throughput collapse over a long render before: it started around
-    // 40-50fps and fell to ~1fps by the tail as page/GPU context churn piled up).
-    // Scenes themselves are still strictly sequential -- scene N is fully
-    // captured, encoded and verified before scene N+1 starts, so "scene X of Y"
-    // progress and the final concat order are never in doubt -- but *within* one
-    // scene, all pool pages seek+screenshot different frames at once, which is
-    // where the actual GPU/CPU throughput was being left on the table: a single
-    // page's seek-then-screenshot round trip is mostly waiting, not compute, so
-    // one page alone can't keep a GPU busy. Out-of-order results are held in
-    // `frameBuf` and only ever handed to the encoder in strict frame order.
+    // A fresh pool of pages *for every scene* -- within one scene, all pool
+    // pages seek+screenshot different frames at once (a single page's
+    // seek-then-screenshot round trip is mostly waiting, not compute, so one
+    // page alone can't keep a GPU busy). Scenes stay strictly sequential --
+    // scene N is fully captured, encoded and verified before scene N+1 starts.
+    //
+    // Pages are NOT reused across scenes, even though that sounds like the
+    // obvious win: reusing a page for its next scene's `setContent()` leaves
+    // some residual GPU-compositor/animation-timeline state that visibly
+    // corrupts that scene's first ~100-150ms -- confirmed by isolating it to
+    // exactly page reuse (reproduced even with a single page, zero
+    // concurrency; gone the instant each scene gets brand-new pages). This
+    // *is* the "scene 2 onward flickers/jumps" bug, on every scene after the
+    // first one on a page. A prior version reused pages deliberately, to fix
+    // an earlier ~1fps collapse -- but that collapse was actually caused by
+    // writing one file per frame (thousands of tiny files, each hitting
+    // Windows Defender's per-file scan), not by page-creation cost itself.
+    // Since frames are now streamed straight into a per-scene ffmpeg encoder
+    // (no per-frame files at all), that cause is gone and fresh pages are
+    // cheap enough to afford per scene.
     const POOL_SIZE = 4;
-    const pages = await Promise.all(
-      Array.from({ length: POOL_SIZE }, () => browser.newPage({ viewport: canvasFor(scenes[0]) })),
-    );
-    await Promise.all(pages.map((page) => installThreeJsRoutes(page, allDeviceIds)));
 
-    try {
-      for (let sIdx = 0; sIdx < scenes.length; sIdx++) {
-        checkAborted();
+    for (let sIdx = 0; sIdx < scenes.length; sIdx++) {
+      checkAborted();
         const scene = scenes[sIdx];
         const sceneFrames = sceneFrameCounts[sIdx];
         const html = sceneHtml(
@@ -2000,6 +2004,11 @@ export async function renderVideo(
           resolveUri,
           false
         );
+
+        const pages = await Promise.all(
+          Array.from({ length: POOL_SIZE }, () => browser.newPage({ viewport: canvasFor(scene) })),
+        );
+        await Promise.all(pages.map((page) => installThreeJsRoutes(page, allDeviceIds)));
 
         await Promise.all(pages.map(async (page) => {
           await page.setViewportSize(canvasFor(scene));
@@ -2055,6 +2064,17 @@ export async function renderVideo(
             if (f >= sceneFrames) return;
             const ms = (f / fps) * 1000;
             await page.evaluate((t) => (window as any).seek(t), ms);
+            // Setting a Web Animation's currentTime doesn't synchronously repaint --
+            // the new style only lands on the next rendering update. A screenshot
+            // taken immediately can still capture the PREVIOUS frame's pose, and
+            // which one wins is a timing race that gets worse under the 4-page
+            // concurrent load above: exactly the "jumps back and forth between two
+            // poses" flicker seen on every scene after the first (scene 1 happened
+            // not to hit it, not because it's exempt). A double rAF forces a full
+            // style+paint cycle to complete before the screenshot is taken.
+            await page.evaluate(() => new Promise<void>((resolve) => {
+              requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+            }));
             const buf = await page.screenshot({ type: "jpeg", quality: 90 });
             sceneFrameBufs[f] = buf;
             frameBuf.set(f, buf);
@@ -2122,8 +2142,7 @@ export async function renderVideo(
             throw new Error(`Scene ${sIdx + 1} failed to encode (expected ${sceneFrames} frames, got ${cpuFrames}) even after a CPU retry.`);
           }
         }
-      }
-    } finally {
+
       await Promise.all(pages.map((page) => page.close().catch(() => {})));
     }
   } catch (err) {

@@ -1,7 +1,7 @@
 {
  "version": 1,
  "id": "food-app-4",
- "name": "Food App 4",
+ "name": "Food app-4",
  "category": "food-and-drink",
  "description": "Present your food delivery app with our professional template. Showcase restaurant listings, menu browsing, and order tracking in an appealing design that makes food ordering seamless and engaging.",
  "devices": [
@@ -98,7 +98,7 @@
      "widthPct": 63.636,
      "heightPct": 4.393,
      "rotation": 0,
-     "opacity": 1.0,
+     "opacity": 1,
      "zIndex": 20,
      "cropFit": "stretch",
      "shape": {
@@ -134,7 +134,7 @@
    ],
    "deviceOne": {
     "size": 63.6,
-    "x": 0.0,
+    "x": 0,
     "y": 15.12,
     "rotation": 0,
     "brightness": 100,
@@ -201,7 +201,7 @@
    ],
    "deviceOne": {
     "size": 63.6,
-    "x": 0.0,
+    "x": 0,
     "y": 6.03,
     "rotation": 0,
     "brightness": 100,
@@ -268,7 +268,7 @@
    ],
    "deviceOne": {
     "size": 63.6,
-    "x": 0.0,
+    "x": 0,
     "y": 6.03,
     "rotation": 0,
     "brightness": 100,
@@ -335,7 +335,7 @@
    ],
    "deviceOne": {
     "size": 63.6,
-    "x": 0.0,
+    "x": 0,
     "y": 6.03,
     "rotation": 0,
     "brightness": 100,
