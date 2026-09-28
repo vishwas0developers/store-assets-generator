@@ -2045,6 +2045,20 @@ export async function renderVideo(
               await new Promise((r) => setTimeout(r, 50));
             }
           }).catch(() => {});
+          // Warm-up: this page just navigated, so its WebGL context is still
+          // compiling shaders / doing its first paint. The per-frame double-rAF
+          // below only guards against animation-timeline lag on an already-warm
+          // page -- it's too short to absorb a cold first paint, which is what
+          // showed up as the first 2-4 frames of every scene shaking/repeating
+          // before settling down. Seek to frame 0 and ride out several rAFs here,
+          // once per scene setup, so that cold-start cost never lands in a
+          // captured frame.
+          await page.evaluate((t) => (window as any).seek(t), 0).catch(() => {});
+          await page.evaluate(() => new Promise<void>((resolve) => {
+            let n = 0;
+            const tick = () => { if (++n >= 6) resolve(); else requestAnimationFrame(tick); };
+            requestAnimationFrame(tick);
+          })).catch(() => {});
         }));
 
         let segment = startSegmentEncoder(segmentPaths[sIdx]);
