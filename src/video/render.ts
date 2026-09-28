@@ -2228,6 +2228,15 @@ export async function renderVideo(
       "-map", "[a]",
       "-c:v", "copy",
       "-c:a", format === "webm" ? "libopus" : "aac",
+      // loudnorm (in audioFilter above) combined with -stream_loop -1 on the BGM
+      // input makes ffmpeg silently auto-negotiate the encoder's sample rate up
+      // to 96kHz (confirmed: a 44.1kHz source in, 96kHz AAC out) instead of
+      // matching the source. That's valid AAC, but common consumer decoders
+      // (Windows' own default player among them) don't handle 96kHz AAC and
+      // play the file back with no audio at all -- silently, no error, exactly
+      // the "no audio" reports despite ffprobe/ffplay showing a normal-looking
+      // stream. Pin the output to a standard, universally-supported rate.
+      "-ar", "48000",
       "-shortest",
       finalVideoPath,
     ];
