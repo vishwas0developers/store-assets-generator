@@ -1123,11 +1123,12 @@ export function composeStandaloneHtml(project: VideoProject, activeSceneIndex?: 
   // Migrated templates (see deviceShellMarkup) carry {{DEVICE_ID}}/
   // {{DEVICE_W}}/{{DEVICE_H}} placeholders on their device-shell <canvas>
   // tags instead of a hardcoded CSS device shape -- substitute the
-  // template's own (already-present, previously-unused) `config.device`
-  // field. Plain string substitution, not regex/DOM surgery, so this is a
-  // no-op for not-yet-migrated templates (no placeholders present).
+  // dynamically chosen device from project/active scene (falling back to config.device).
   if (html.includes("{{DEVICE_ID}}")) {
-    const shellDevice = DEVICE_REGISTRY[config.device ?? ""] ?? DEVICE_REGISTRY["phone"];
+    const activeScene = activeSceneIndex !== undefined ? projectScenesByOrder[activeSceneIndex] : projectScenesByOrder[0];
+    const rawDeviceId = activeScene?.device || project.device || config.device || "apple-iphone-15-pro";
+    const selectedDeviceId = rawDeviceId.replace(/^(2d|3d):/, "");
+    const shellDevice = DEVICE_REGISTRY[selectedDeviceId] ?? DEVICE_REGISTRY[config.device ?? ""] ?? DEVICE_REGISTRY["phone"];
     html = html
       .replaceAll("{{DEVICE_ID}}", shellDevice.id)
       .replaceAll("{{DEVICE_W}}", String(shellDevice.geometry.width))
@@ -1163,12 +1164,34 @@ export function composeStandaloneHtml(project: VideoProject, activeSceneIndex?: 
   // -- resolveSlots is the single normalizer both the studio editor and this
   // renderer use, so there is no second description of what a scene needs.
   const payload = project.scenes.flatMap((_pScene, idx) => resolveSlots(project, idx, uriFor, allowDemo));
+  // Slots templates never populate `scene.background` (that field only feeds
+  // the code-gen device-preset path's baked-in theme names) -- so only inject
+  // when a real image override/global default is actually set, and leave a
+  // template's own baked `.canvas` CSS background untouched otherwise. Scoped
+  // correctly because this whole function renders ONE document per active
+  // scene for both the edit-preview and the final per-scene render capture,
+  // so `.canvas` here always belongs to just the scene being rendered -- see
+  // this function's activeScene below.
   // Within-scene multi-screenshot timelines (project-wide -- see
   // resolveImageSequences's doc comment for why this can't be per-scene).
   const sequences = resolveImageSequences(project, uriFor, allowDemo);
 
   // Screenshot -> video hand-off for the active scene (see VideoScene.videoSourceId).
   const activeScene = activeSceneIndex === undefined ? undefined : project.scenes.find((sc) => sc.order === activeSceneIndex);
+  // Two background shapes exist across templates: the device presets keep one
+  // `#scene-N > .backdrop` div per scene (inline gradient), while the tpl-*
+  // promos paint a single shared `.canvas`. Each scene with an image override
+  // or a project default gets its own backdrop written (so the full-sequence
+  // player shows per-scene backgrounds too); the active scene additionally
+  // writes `.canvas`, which is what a tpl-* document renders for that scene.
+  projectScenesByOrder.forEach((sc, i) => {
+    const override = sc.slotValues?.background;
+    const overrideId = override?.kind === "image" ? override.sourceId : undefined;
+    if (!overrideId && !project.backgroundImage) return;
+    const value = resolveSceneBackgroundCss(sc, project, uriFor);
+    payload.push({ targets: [`#scene-${i} > .backdrop`], op: "bg", value });
+    if (activeScene && sc.id === activeScene.id) payload.push({ targets: [".canvas"], op: "bg", value });
+  });
   const videoSource = activeScene?.videoSourceId ? project.sources.find((src) => src.id === activeScene.videoSourceId && src.kind === "video") : undefined;
   const videoTargets = activeScene && videoSource && project.template
     ? slotSpecsForScene(project.template, activeScene.order)
@@ -1194,6 +1217,7 @@ export function composeStandaloneHtml(project: VideoProject, activeSceneIndex?: 
           document.querySelectorAll(sel).forEach((el) => {
             if (op === 'text') el.textContent = value;
             else if (op === 'src') el.src = value;
+            else if (op === 'bg') el.style.background = value;
             else el.innerHTML = value;
           });
         }));

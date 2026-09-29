@@ -27,6 +27,13 @@ export interface VideoSourceImage {
   deviceCategory?: import("../capture/deviceCategories.js").DeviceCategory;
   resolution?: string;   // secondary technical metadata, e.g. "1242x2688"
   deviceLabel?: string;  // e.g. "Phone – 6.5\" Display"
+  /** What this image was uploaded *for* -- "screenshot" (an app screen, shown
+   *  inside a device frame) vs "background" (a full-bleed photo/texture). Both
+   *  are still `kind: "image"`; this is the discriminator the Screenshot and
+   *  Background reuse-dropdowns filter on so the two pickers don't cross-list
+   *  each other's images. Falls back to "screenshot" when unset, since every
+   *  source predating this field was in fact a screenshot upload. */
+  purpose?: "screenshot" | "background";
 }
 
 export interface FlowStep {
@@ -141,6 +148,8 @@ export interface VideoProject {
   name: string;
   /** The chosen top-level template (a full ~60s sequence recipe). */
   template: string | null;
+  /** Optional project-wide default device override (e.g. "apple-iphone-15-pro" or "2d:apple-iphone-16-pro-max"). */
+  device?: string;
   sources: VideoSourceImage[];
   scenes: VideoScene[];
   bgm: string | null;

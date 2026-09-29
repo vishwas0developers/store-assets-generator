@@ -113,5 +113,9 @@ export interface DeviceDefinition {
   archived?: boolean;
   /** Optional custom SVG string for uploaded SVG device templates */
   customSvg?: string;
+  /** Which render path the UI should show first for this device (2D flat
+   *  SVG vs 3D GLB/rig). Defaults to "3d" when absent — see
+   *  `resolveDeviceMode()` in registry.ts. */
+  defaultMode?: "2d" | "3d";
   schemaVersion: number;
 }

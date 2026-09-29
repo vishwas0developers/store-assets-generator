@@ -1989,7 +1989,9 @@ export async function startWebServer(options: { port?: number; host?: string; op
         const abs = videoFile(id, relPath);
         fs.writeFileSync(abs, bodyBuf);
         const dims = imageDimensions(bodyBuf, format);
-        const source = { id: `src_${Date.now()}`, name, file: relPath, width: dims?.width ?? 0, height: dims?.height ?? 0, kind: "image" as const };
+        const purposeParam = url.searchParams.get("purpose");
+        const purpose = purposeParam === "background" ? ("background" as const) : ("screenshot" as const);
+        const source = { id: `src_${Date.now()}`, name, file: relPath, width: dims?.width ?? 0, height: dims?.height ?? 0, kind: "image" as const, purpose };
         project.sources.push(source);
 
         const slotParam = url.searchParams.get("slot");

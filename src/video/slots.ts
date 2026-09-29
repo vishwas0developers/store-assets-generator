@@ -356,7 +356,10 @@ function isSlotFilled(value: SlotValue | undefined): boolean {
 
 export interface ResolvedSlot {
   targets: string[];
-  op: "text" | "src" | "html";
+  // "bg" is appended by render.ts (composeStandaloneHtml) for the background
+  // image override/default -- it never comes out of resolveSlots itself,
+  // since background lives outside the per-role slot-target system.
+  op: "text" | "src" | "html" | "bg";
   value: string;
 }
 
