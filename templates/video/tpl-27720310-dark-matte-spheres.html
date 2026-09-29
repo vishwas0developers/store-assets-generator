@@ -1,0 +1,2002 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Matte Geometry & Cyber Blue — 27720310 Reference</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      background: #0a0a0c;
+      font-family: 'Montserrat', sans-serif;
+      color: #ffffff;
+      -webkit-font-smoothing: antialiased;
+    }
+    
+    .canvas {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      background: radial-gradient(circle at 50% 45%, #181820 0%, #08080a 100%);
+      overflow: hidden;
+    }
+    
+    /* 3D Matte Spheres with realistic shading */
+    .sphere {
+      position: absolute;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #42424c 0%, #16161c 65%, #050507 100%);
+      box-shadow: 0 25px 60px rgba(0,0,0,0.7);
+      pointer-events: none;
+      z-index: 2;
+    }
+    
+    /* Glowing Cyber Blue Frame */
+    .cyber-frame {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 1300px;
+      height: 720px;
+      border: 6px solid #00c2ff;
+      box-shadow: 0 0 35px rgba(0, 194, 255, 0.35);
+      z-index: 1;
+      pointer-events: none;
+    }
+    
+    /* Swiss Typography annotations */
+    .swiss-label {
+      position: absolute;
+      font-family: monospace;
+      font-size: 14px;
+      text-transform: lowercase;
+      color: rgba(255, 255, 255, 0.45);
+      z-index: 5;
+    }
+    
+    .swiss-cross {
+      position: absolute;
+      font-size: 24px;
+      color: rgba(255, 255, 255, 0.3);
+      font-weight: 300;
+      z-index: 5;
+      pointer-events: none;
+    }
+    
+    .scene {
+      position: absolute;
+      inset: 0;
+      width: 1920px;
+      height: 1080px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 3;
+      padding: 0 14%;
+      box-sizing: border-box;
+    }
+    
+    .scene.active, .scene.playing {
+      display: flex;
+    }
+    
+    .scene-content {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+    }
+    
+    /* Copy Columns with solid black block badges */
+    .copy-col {
+      flex: 1.1;
+      max-width: 720px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      z-index: 5;
+    }
+    
+    .copy-col.right-side {
+      text-align: right;
+      align-items: flex-end;
+    }
+    
+    .badge-block {
+      background: #000000;
+      padding: 10px 22px;
+      display: inline-block;
+      margin-bottom: 6px;
+    }
+    
+    .title-white {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 52px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin: 0;
+      color: #ffffff;
+      line-height: 1.2;
+    }
+    
+    .subtitle-block {
+      background: #000000;
+      padding: 6px 14px;
+      display: inline-block;
+      margin-top: 10px;
+    }
+    
+    .subtitle {
+      font-family: monospace;
+      font-size: 18px;
+      color: #00c2ff;
+      margin: 0;
+      text-transform: lowercase;
+    }
+    
+    /* Device rendering columns */
+    .device-col {
+      flex: 0.9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      z-index: 4;
+    }
+    
+    .phone-3d-viewport {
+      perspective: 1500px;
+      width: 600px;
+      height: 900px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    
+    .phone-3d-scaler {
+      transform-style: preserve-3d;
+      transform: scale(0.92);
+      z-index: 2;
+    }
+    
+    .phone-3d-rig {
+      position: relative;
+      width: 370px;
+      height: 760px;
+      transform-style: preserve-3d;
+    }
+    
+    /* 3D phone faces */
+    .phone-face {
+      position: absolute;
+      inset: 0;
+      border-radius: 44px;
+      box-sizing: border-box;
+    }
+    
+    /* Front Screen with curved bezel overlays (No borders in portrait mode) */
+    .phone-face.front {
+      background: #000000;
+      transform: translateZ(9px);
+      z-index: 10;
+      border: none;
+      overflow: hidden;
+      box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.9);
+    }
+    
+    .screen-scroll-wrap {
+      width: 100%;
+      height: 100%;
+      border-radius: 44px;
+      overflow: hidden;
+      position: relative;
+      background: #000000;
+    }
+    
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: block;
+      object-fit: cover;
+    }
+    
+    /* Glossy reflections overlays */
+    .gloss-sheen {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(130deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.02) 40%, rgba(255, 255, 255, 0.08) 100%);
+      z-index: 11;
+      pointer-events: none;
+      border-radius: 44px;
+    }
+    
+    .screen-edge-glare {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 12px;
+      background: linear-gradient(to right, rgba(255, 255, 255, 0.15), transparent);
+      z-index: 12;
+      pointer-events: none;
+    }
+    
+    .screen-edge-glare.left-edge { left: 0; }
+    .screen-edge-glare.right-edge { right: 0; transform: scaleX(-1); }
+    
+    /* Curved AMOLED glass side shading */
+    .curved-edge-shadow {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 22px;
+      z-index: 13;
+      pointer-events: none;
+    }
+    
+    .curved-edge-shadow.left {
+      left: 0;
+      background: linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 50%, transparent 100%);
+    }
+    
+    .curved-edge-shadow.right {
+      right: 0;
+      background: linear-gradient(to left, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 50%, transparent 100%);
+    }
+    
+    /* Extruded side metal rails - disabled by default for portrait, enabled for landscape */
+    .phone-side {
+      position: absolute;
+      background: none;
+      border: none;
+    }
+    
+    .landscape-layout .phone-side {
+      background: linear-gradient(to bottom, #2d2d37, #191921 50%, #2d2d37);
+      border: 1px solid #141419;
+    }
+    
+    .side-left { width: 18px; height: 760px; left: -9px; top: 0; transform: rotateY(90deg); }
+    .side-right { width: 18px; height: 760px; right: -9px; top: 0; transform: rotateY(-90deg); }
+    .side-top { width: 370px; height: 18px; left: 0; top: -9px; transform: rotateX(90deg); }
+    .side-bottom { width: 370px; height: 18px; left: 0; bottom: -9px; transform: rotateX(-90deg); }
+    
+    /* Back Face of Galaxy model */
+    .phone-face.back {
+      background: #18181f;
+      transform: rotateY(180deg) translateZ(9px);
+      border: 5px solid #121217;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.75);
+    }
+    
+    /* Camera module bump */
+    .back-camera-module {
+      position: absolute;
+      top: 40px;
+      left: 30px;
+      width: 76px;
+      height: 125px;
+      border-radius: 22px;
+      background: #0a0a0f;
+      border: 2px solid #22222a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-evenly;
+      padding: 8px 0;
+      box-sizing: border-box;
+    }
+    
+    .back-lens {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #33333a, #050507 70%);
+      border: 1.5px solid #33333a;
+    }
+    
+    .back-flash {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #e8b923;
+      box-shadow: 0 0 5px #e8b923;
+    }
+    
+    .camera-punch {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 12px;
+      height: 12px;
+      background: #08080c;
+      border-radius: 50%;
+      border: 1.5px solid #1a1a24;
+      z-index: 15;
+    }
+    
+    /* Landscape screenshot rotation within portrait frame */
+    .landscape-screenshot {
+      width: 762px !important;
+      height: 372px !important;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(90deg);
+      object-fit: cover;
+    }
+    
+    /* Customer reviews CSS styling */
+    .reviews-container {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      width: 600px;
+      z-index: 5;
+    }
+    
+    .review-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      background: rgba(0, 0, 0, 0.45);
+      border-left: 3px solid #00c2ff;
+      padding: 14px 20px;
+      border-radius: 0 12px 12px 0;
+    }
+    
+    .review-avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      border: 2.5px solid #00c2ff;
+      object-fit: cover;
+    }
+    
+    .review-content {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .review-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: #ffffff;
+      margin: 0;
+    }
+    
+    .review-stars {
+      color: #ffd700;
+      font-size: 14px;
+      margin: 4px 0;
+    }
+    
+    .review-text {
+      font-size: 13px;
+      color: #cbd5e1;
+      margin: 0;
+      line-height: 1.4;
+    }
+    
+    
+  /* Global shared template reset styles */
+  html, body { margin:0; padding:0; overflow:hidden; }
+  
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="canvas">
+    <div class="cyber-frame" id="cyber-frame"></div>
+    
+    <!-- Floating Spheres -->
+    <div class="sphere" style="width: 170px; height: 170px; left: 10%; top: 12%;" id="sphere-1"></div>
+    <div class="sphere" style="width: 120px; height: 120px; right: 28%; bottom: 10%;" id="sphere-2"></div>
+    <div class="sphere" style="width: 140px; height: 140px; right: 8%; top: 28%;" id="sphere-3"></div>
+    <div class="sphere" style="width: 90px; height: 90px; left: 24%; bottom: 15%;" id="sphere-4"></div>
+    
+    <!-- Swiss Labels -->
+    <div class="swiss-label" style="top: 40px; left: 40px;">new</div>
+    <div class="swiss-label" style="top: 40px; right: 40px;">app</div>
+    <div class="swiss-label" style="bottom: 40px; left: 40px;">2020</div>
+    <div class="swiss-label" style="bottom: 40px; right: 40px;">2021</div>
+    <div class="swiss-label" style="top: 40px; left: 50%; transform: translateX(-50%);">play</div>
+    <div class="swiss-label" style="bottom: 30px; left: 50%; transform: translateX(-50%);">app_name</div>
+    
+    <!-- Crosshairs -->
+    <div class="swiss-cross" style="top: 50%; left: 35px; transform: translateY(-50%);">+</div>
+    <div class="swiss-cross" style="top: 50%; right: 35px; transform: translateY(-50%);">+</div>
+    
+    <!-- Scene 1 -->
+    <div class="scene" id="scene-0">
+      <div class="scene-content" style="justify-content: center;">
+        <div class="device-col">
+          <div class="phone-3d-viewport">
+            <div class="phone-3d-scaler" style="transform: scale(0.92);">
+              <div class="phone-3d-rig" id="phone-rig-0">
+                <div class="phone-face front">
+                  <div class="camera-punch"></div>
+                  <div class="gloss-sheen"></div>
+                  <div class="screen-edge-glare left-edge"></div>
+                  <div class="screen-edge-glare right-edge"></div>
+                  <div class="curved-edge-shadow left"></div>
+                  <div class="curved-edge-shadow right"></div>
+                  <div class="screen-scroll-wrap">
+                    <img class="phone-screen" id="slot-0" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="Screen 1" />
+                  </div>
+                </div>
+                <div class="phone-face back">
+                  <div class="back-camera-module">
+                    <div class="back-lens"></div>
+                    <div class="back-lens"></div>
+                    <div class="back-lens"></div>
+                    <div class="back-flash"></div>
+                  </div>
+                </div>
+                <div class="phone-side side-left"></div>
+                <div class="phone-side side-right"></div>
+                <div class="phone-side side-top"></div>
+                <div class="phone-side side-bottom"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Scene 2 -->
+    <div class="scene" id="scene-1">
+      <div class="scene-content">
+        <div class="copy-col">
+          <div><div class="badge-block"><h2 class="title-white" id="s1-text">Meet the new</h2></div></div>
+          <div><div class="badge-block"><h2 class="title-white" id="s1-subtext">Android app</h2></div></div>
+        </div>
+        <div class="device-col">
+          <div class="phone-3d-viewport">
+            <div class="phone-3d-scaler" style="transform: scale(0.92);">
+              <div class="phone-3d-rig" id="phone-rig-1">
+                <div class="phone-face front">
+                  <div class="camera-punch"></div>
+                  <div class="gloss-sheen"></div>
+                  <div class="screen-edge-glare left-edge"></div>
+                  <div class="screen-edge-glare right-edge"></div>
+                  <div class="curved-edge-shadow left"></div>
+                  <div class="curved-edge-shadow right"></div>
+                  <div class="screen-scroll-wrap">
+                    <img class="phone-screen" id="slot-1" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="Screen 2" />
+                  </div>
+                </div>
+                <div class="phone-face back">
+                  <div class="back-camera-module">
+                    <div class="back-lens"></div>
+                    <div class="back-lens"></div>
+                    <div class="back-lens"></div>
+                    <div class="back-flash"></div>
+                  </div>
+                </div>
+                <div class="phone-side side-left"></div>
+                <div class="phone-side side-right"></div>
+                <div class="phone-side side-top"></div>
+                <div class="phone-side side-bottom"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Scene 3 -->
+    <div class="scene" id="scene-2">
+      <div class="scene-content" style="flex-direction: row-reverse;">
+        <div class="copy-col right-side">
+          <div><div class="badge-block"><h2 class="title-white" id="s2-text">New level</h2></div></div>
+          <div><div class="badge-block"><h2 class="title-white" id="s2-subtext">of app development</h2></div></div>
+        </div>
+        <div class="device-col">
+          <div class="phone-3d-viewport">
+            <div class="phone-3d-scaler" style="transform: scale(0.94);">
+              <div class="phone-3d-rig" id="phone-rig-2">
+                <div class="phone-face front">
+                  <div class="camera-punch"></div>
+                  <div class="gloss-sheen"></div>
+                  <div class="screen-edge-glare left-edge"></div>
+                  <div class="screen-edge-glare right-edge"></div>
+                  <div class="curved-edge-shadow left"></div>
+                  <div class="curved-edge-shadow right"></div>
+                  <div class="screen-scroll-wrap">
+                    <img class="phone-screen" id="slot-2" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="Screen 3" />
+                  </div>
+                </div>
+                <div class="phone-face back">
+                  <div class="back-camera-module">
+                    <div class="back-lens"></div>
+                    <div class="back-lens"></div>
+                    <div class="back-lens"></div>
+                    <div class="back-flash"></div>
+                  </div>
+                </div>
+                <div class="phone-side side-left"></div>
+                <div class="phone-side side-right"></div>
+                <div class="phone-side side-top"></div>
+                <div class="phone-side side-bottom"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Scene 4 -->
+    <div class="scene" id="scene-3">
+      <div class="scene-content">
+        <div class="copy-col">
+          <div><div class="badge-block"><h2 class="title-white" id="s3-text">App of the week</h2></div></div>
+          <div><div class="badge-block"><h2 class="title-white" id="s3-subtext">Aug 2020</h2></div></div>
+        </div>
+        <div class="device-col">
+          <div class="phone-3d-viewport">
+            <div class="phone-3d-scaler" style="transform: scale(0.92);">
+              <div class="phone-3d-rig" id="phone-rig-3">
+                <div class="phone-face front">
+                  <div class="camera-punch"></div>
+                  <div class="gloss-sheen"></div>
+                  <div class="screen-edge-glare left-edge"></div>
+                  <div class="screen-edge-glare right-edge"></div>
+                  <div class="curved-edge-shadow left"></div>
+                  <div class="curved-edge-shadow right"></div>
+                  <div class="screen-scroll-wrap">
+                    <img class="phone-screen" id="slot-3" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="Screen 4" />
+                  </div>
+                </div>
+                <div class="phone-face back">
+                  <div class="back-camera-module">
+                    <div class="back-lens"></div>
+                    <div class="back-lens"></div>
+                    <div class="back-lens"></div>
+                    <div class="back-flash"></div>
+                  </div>
+                </div>
+                <div class="phone-side side-left"></div>
+                <div class="phone-side side-right"></div>
+                <div class="phone-side side-top"></div>
+                <div class="phone-side side-bottom"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Scene 5 -->
+    <div class="scene" id="scene-4">
+      <div class="scene-content" style="flex-direction: row-reverse;">
+        <div class="copy-col right-side">
+          <div><div class="badge-block"><h2 class="title-white" id="s4-text">Intuitive UI</h2></div></div>
+          <div><div class="badge-block"><h2 class="title-white" id="s4-subtext">Pixel perfect</h2></div></div>
+        </div>
+        <div class="device-col">
+          <div class="phone-3d-viewport">
+            <div class="phone-3d-scaler" style="transform: scale(0.92);">
+              <div class="phone-3d-rig" id="phone-rig-4">
+                <div class="phone-face front">
+                  <div class="camera-punch"></div>
+                  <div class="gloss-sheen"></div>
+                  <div class="screen-edge-glare left-edge"></div>
+                  <div class="screen-edge-glare right-edge"></div>
+                  <div class="curved-edge-shadow left"></div>
+                  <div class="curved-edge-shadow right"></div>
+                  <div class="screen-scroll-wrap">
+                    <img class="phone-screen" id="slot-4" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="Screen 5" />
+                  </div>
+                </div>
+                <div class="phone-face back">
+                  <div class="back-camera-module">
+                    <div class="back-lens"></div>
+                    <div class="back-lens"></div>
+                    <div class="back-lens"></div>
+                    <div class="back-flash"></div>
+                  </div>
+                </div>
+                <div class="phone-side side-left"></div>
+                <div class="phone-side side-right"></div>
+                <div class="phone-side side-top"></div>
+                <div class="phone-side side-bottom"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Scene 6 -->
+    <div class="scene" id="scene-5">
+      <div class="scene-content">
+        <div class="copy-col">
+          <div><div class="badge-block"><h2 class="title-white" id="s5-text">Finally</h2></div></div>
+          <div><div class="badge-block"><h2 class="title-white" id="s5-subtext">it's comming</h2></div></div>
+        </div>
+        <div class="device-col">
+          <div class="phone-3d-viewport">
+            <div class="phone-3d-scaler" style="transform: scale(0.94);">
+              <div class="phone-3d-rig" id="phone-rig-5">
+                <div class="phone-face front">
+                  <div class="camera-punch"></div>
+                  <div class="gloss-sheen"></div>
+                  <div class="screen-edge-glare left-edge"></div>
+                  <div class="screen-edge-glare right-edge"></div>
+                  <div class="curved-edge-shadow left"></div>
+                  <div class="curved-edge-shadow right"></div>
+                  <div class="screen-scroll-wrap">
+                    <img class="phone-screen" id="slot-5" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="Screen 6" />
+                  </div>
+                </div>
+                <div class="phone-face back">
+                  <div class="back-camera-module">
+                    <div class="back-lens"></div>
+                    <div class="back-lens"></div>
+                    <div class="back-lens"></div>
+                    <div class="back-flash"></div>
+                  </div>
+                </div>
+                <div class="phone-side side-left"></div>
+                <div class="phone-side side-right"></div>
+                <div class="phone-side side-top"></div>
+                <div class="phone-side side-bottom"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+     <!-- Scene 7 (Dual Macro Closeup) -->
+    <div class="scene" id="scene-6">
+      <div class="scene-content" style="justify-content: center; gap: 40px; position: relative;">
+        <!-- Left Side Phone -->
+        <div class="phone-3d-viewport" id="viewport-6-left" style="position: absolute; transform: translate(-180px, 0px);">
+          <div class="phone-3d-scaler" style="transform: scale(0.88);">
+            <div class="phone-3d-rig" id="phone-rig-6">
+              <div class="phone-face front">
+                <div class="camera-punch"></div>
+                <div class="gloss-sheen"></div>
+                <div class="screen-edge-glare left-edge"></div>
+                <div class="screen-edge-glare right-edge"></div>
+                <div class="curved-edge-shadow left"></div>
+                <div class="curved-edge-shadow right"></div>
+                <div class="screen-scroll-wrap">
+                  <img class="phone-screen" id="slot-6" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5OrkJggg==" alt="Screen 7" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Right Side Phone -->
+        <div class="phone-3d-viewport" id="viewport-6-right" style="position: absolute; transform: translate(180px, 0px);">
+          <div class="phone-3d-scaler" style="transform: scale(0.88);">
+            <div class="phone-3d-rig" id="phone-rig-6-secondary">
+              <div class="phone-face front">
+                <div class="camera-punch"></div>
+                <div class="gloss-sheen"></div>
+                <div class="screen-edge-glare left-edge"></div>
+                <div class="screen-edge-glare right-edge"></div>
+                <div class="curved-edge-shadow left"></div>
+                <div class="curved-edge-shadow right"></div>
+                <div class="screen-scroll-wrap">
+                  <img class="phone-screen" id="slot-6-secondary" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5OrkJggg==" alt="Screen 7 duplicate" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Scene 8 -->
+    <div class="scene" id="scene-7">
+      <div class="scene-content" style="flex-direction: row-reverse;">
+        <div class="copy-col right-side">
+          <div><div class="badge-block"><h2 class="title-white" id="s7-text">Completely new</h2></div></div>
+          <div><div class="badge-block"><h2 class="title-white" id="s7-subtext">experience</h2></div></div>
+        </div>
+        <div class="device-col">
+          <div class="phone-3d-viewport">
+            <div class="phone-3d-scaler" style="transform: scale(0.92);">
+              <div class="phone-3d-rig" id="phone-rig-7">
+                <div class="phone-face front">
+                  <div class="camera-punch"></div>
+                  <div class="gloss-sheen"></div>
+                  <div class="screen-edge-glare left-edge"></div>
+                  <div class="screen-edge-glare right-edge"></div>
+                  <div class="curved-edge-shadow left"></div>
+                  <div class="curved-edge-shadow right"></div>
+                  <div class="screen-scroll-wrap">
+                    <img class="phone-screen" id="slot-7" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="Screen 8" />
+                  </div>
+                </div>
+                <div class="phone-face back">
+                  <div class="back-camera-module">
+                    <div class="back-lens"></div>
+                    <div class="back-lens"></div>
+                    <div class="back-lens"></div>
+                    <div class="back-flash"></div>
+                  </div>
+                </div>
+                <div class="phone-side side-left"></div>
+                <div class="phone-side side-right"></div>
+                <div class="phone-side side-top"></div>
+                <div class="phone-side side-bottom"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Scene 9 (Front Phone Dynamic Showcase) -->
+    <div class="scene" id="scene-8">
+      <div class="scene-content" style="justify-content: center;">
+        <div class="device-col">
+          <div class="phone-3d-viewport">
+            <div class="phone-3d-scaler" style="transform: scale(1.02);">
+              <div class="phone-3d-rig" id="phone-rig-8">
+                <div class="phone-face front">
+                  <div class="camera-punch"></div>
+                  <div class="gloss-sheen"></div>
+                  <div class="screen-edge-glare left-edge"></div>
+                  <div class="screen-edge-glare right-edge"></div>
+                  <div class="curved-edge-shadow left"></div>
+                  <div class="curved-edge-shadow right"></div>
+                  <div class="screen-scroll-wrap">
+                    <img class="phone-screen" id="slot-8" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="Screen 9" />
+                  </div>
+                </div>
+                <div class="phone-face back">
+                  <div class="back-camera-module">
+                    <div class="back-lens"></div>
+                    <div class="back-lens"></div>
+                    <div class="back-lens"></div>
+                    <div class="back-flash"></div>
+                  </div>
+                </div>
+                <div class="phone-side side-left"></div>
+                <div class="phone-side side-right"></div>
+                <div class="phone-side side-top"></div>
+                <div class="phone-side side-bottom"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Scene 10 -->
+    <div class="scene" id="scene-9">
+      <div class="scene-content">
+        <div class="copy-col">
+          <div><div class="badge-block"><h2 class="title-white" id="s9-text">Convenient mobile</h2></div></div>
+          <div><div class="badge-block"><h2 class="title-white" id="s9-subtext">application</h2></div></div>
+        </div>
+        <div class="device-col">
+          <div class="phone-3d-viewport">
+            <div class="phone-3d-scaler" style="transform: scale(0.92);">
+              <div class="phone-3d-rig" id="phone-rig-9">
+                <div class="phone-face front">
+                  <div class="camera-punch"></div>
+                  <div class="gloss-sheen"></div>
+                  <div class="screen-edge-glare left-edge"></div>
+                  <div class="screen-edge-glare right-edge"></div>
+                  <div class="curved-edge-shadow left"></div>
+                  <div class="curved-edge-shadow right"></div>
+                  <div class="screen-scroll-wrap">
+                    <img class="phone-screen" id="slot-9" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="Screen 10" />
+                  </div>
+                </div>
+                <div class="phone-face back">
+                  <div class="back-camera-module">
+                    <div class="back-lens"></div>
+                    <div class="back-lens"></div>
+                    <div class="back-lens"></div>
+                    <div class="back-flash"></div>
+                  </div>
+                </div>
+                <div class="phone-side side-left"></div>
+                <div class="phone-side side-right"></div>
+                <div class="phone-side side-top"></div>
+                <div class="phone-side side-bottom"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Scene 11 -->
+    <div class="scene" id="scene-10">
+      <div class="scene-content">
+        <div class="copy-col">
+          <div><div class="badge-block"><h2 class="title-white" id="s10-text">The best application</h2></div></div>
+          <div><div class="badge-block"><h2 class="title-white" id="s10-subtext">according to NYT</h2></div></div>
+        </div>
+        <div class="device-col">
+          <div class="phone-3d-viewport">
+            <div class="phone-3d-scaler" style="transform: scale(0.92);">
+              <div class="phone-3d-rig" id="phone-rig-10">
+                <div class="phone-face front">
+                  <div class="camera-punch"></div>
+                  <div class="gloss-sheen"></div>
+                  <div class="screen-edge-glare left-edge"></div>
+                  <div class="screen-edge-glare right-edge"></div>
+                  <div class="curved-edge-shadow left"></div>
+                  <div class="curved-edge-shadow right"></div>
+                  <div class="screen-scroll-wrap">
+                    <img class="phone-screen" id="slot-10" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="Screen 11" />
+                  </div>
+                </div>
+                <div class="phone-face back">
+                  <div class="back-camera-module">
+                    <div class="back-lens"></div>
+                    <div class="back-lens"></div>
+                    <div class="back-lens"></div>
+                    <div class="back-flash"></div>
+                  </div>
+                </div>
+                <div class="phone-side side-left"></div>
+                <div class="phone-side side-right"></div>
+                <div class="phone-side side-top"></div>
+                <div class="phone-side side-bottom"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Scene 12 (Cyber Glow Center Showcase) -->
+    <div class="scene" id="scene-11">
+      <div class="scene-content" style="justify-content: center; align-items: center;">
+        <div class="device-col" style="position: relative;">
+          <!-- Glowing Cyber Frame Accent -->
+          <div style="position: absolute; width: 440px; height: 820px; border: 3px solid rgba(0,194,255,0.6); box-shadow: 0 0 35px rgba(0,194,255,0.35); border-radius: 48px; pointer-events: none;"></div>
+          <div class="phone-3d-viewport">
+            <div class="phone-3d-scaler" style="transform: scale(0.96);">
+              <div class="phone-3d-rig" id="phone-rig-11">
+                <div class="phone-face front">
+                  <div class="camera-punch"></div>
+                  <div class="gloss-sheen"></div>
+                  <div class="screen-edge-glare left-edge"></div>
+                  <div class="screen-edge-glare right-edge"></div>
+                  <div class="curved-edge-shadow left"></div>
+                  <div class="curved-edge-shadow right"></div>
+                  <div class="screen-scroll-wrap">
+                    <img class="phone-screen" id="slot-11" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="Screen 12" />
+                  </div>
+                </div>
+                <div class="phone-side side-left"></div>
+                <div class="phone-side side-right"></div>
+                <div class="phone-side side-top"></div>
+                <div class="phone-side side-bottom"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Scene 13 (Extreme Performance Showcase) -->
+    <div class="scene" id="scene-12">
+      <div class="scene-content" style="display: flex; width: 100%; align-items: center; justify-content: space-between; position: relative;">
+        <!-- Left side label -->
+        <div class="copy-col" id="scene-12-label" style="opacity: 1; transition: opacity 0.15s ease;">
+          <div><div class="badge-block"><h2 class="title-white" id="s12-text">Extreme Power</h2></div></div>
+          <div><div class="badge-block"><h2 class="title-white" id="s12-subtext">Cyber Specs</h2></div></div>
+        </div>
+        
+        <!-- Right side phone viewport wrapper -->
+        <div class="device-col">
+          <div class="phone-3d-viewport" id="viewport-12" style="position: absolute; transform: translate(160px, 0px);">
+            <div class="phone-3d-scaler" id="scaler-12" style="transform: scale(0.68);">
+              <div class="phone-3d-rig" id="phone-rig-12">
+                <div class="phone-face front">
+                  <div class="camera-punch"></div>
+                  <div class="gloss-sheen"></div>
+                  <div class="screen-edge-glare left-edge"></div>
+                  <div class="screen-edge-glare right-edge"></div>
+                  <div class="curved-edge-shadow left"></div>
+                  <div class="curved-edge-shadow right"></div>
+                  <div class="screen-scroll-wrap">
+                    <img class="phone-screen" id="slot-12" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="Screen 13" />
+                  </div>
+                </div>
+                <div class="phone-side side-left"></div>
+                <div class="phone-side side-right"></div>
+                <div class="phone-side side-top"></div>
+                <div class="phone-side side-bottom"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Scene 14 (Dynamic Angle Showcase) -->
+    <div class="scene" id="scene-13">
+      <div class="scene-content" style="justify-content: center;">
+        <div class="phone-3d-viewport">
+          <div class="phone-3d-scaler" style="transform: scale(1.05);">
+            <div class="phone-3d-rig" id="phone-rig-13">
+              <div class="phone-face front">
+                <div class="camera-punch"></div>
+                <div class="gloss-sheen"></div>
+                <div class="screen-edge-glare left-edge"></div>
+                <div class="screen-edge-glare right-edge"></div>
+                <div class="curved-edge-shadow left"></div>
+                <div class="curved-edge-shadow right"></div>
+                <div class="screen-scroll-wrap">
+                  <img class="phone-screen" id="slot-13" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="Screen 14" />
+                </div>
+              </div>
+              <div class="phone-side side-left"></div>
+              <div class="phone-side side-right"></div>
+              <div class="phone-side side-top"></div>
+              <div class="phone-side side-bottom"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Scene 15 (Landscape Mode) -->
+    <div class="scene" id="scene-14">
+      <div class="scene-content landscape-layout">
+        <div class="copy-col" style="transform: translate(80px, 180px);">
+          <div><div class="badge-block"><h2 class="title-white" id="s14-text">Advanced</h2></div></div>
+          <div><div class="badge-block"><h2 class="title-white" id="s14-subtext">video options</h2></div></div>
+        </div>
+        <div class="device-col">
+          <div class="phone-3d-viewport">
+            <div class="phone-3d-scaler" style="transform: scale(0.96);">
+              <div class="phone-3d-rig" id="phone-rig-14">
+                <div class="phone-face front">
+                  <div class="camera-punch"></div>
+                  <div class="gloss-sheen"></div>
+                  <div class="screen-edge-glare left-edge"></div>
+                  <div class="screen-edge-glare right-edge"></div>
+                  <div class="curved-edge-shadow left"></div>
+                  <div class="curved-edge-shadow right"></div>
+                  <div class="screen-scroll-wrap">
+                    <img class="phone-screen landscape-screenshot" id="slot-14" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="Screen 15" />
+                  </div>
+                </div>
+                <div class="phone-face back"></div>
+                <div class="phone-side side-left"></div>
+                <div class="phone-side side-right"></div>
+                <div class="phone-side side-top"></div>
+                <div class="phone-side side-bottom"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Scene 16 (Isometric Dual Phone) -->
+    <div class="scene" id="scene-15">
+      <div class="scene-content">
+        <div class="copy-col" style="transform: translateY(-160px);">
+          <div><div class="badge-block"><h2 class="title-white" id="s15-text">Powerfull app</h2></div></div>
+          <div><div class="badge-block"><h2 class="title-white" id="s15-subtext">Simple design</h2></div></div>
+        </div>
+        <div class="device-col" style="position: relative;">
+          <!-- Face down phone -->
+          <div class="phone-3d-viewport" id="viewport-15-back" style="position: absolute; transform: translate(-140px, 40px);">
+            <div class="phone-3d-scaler" style="transform: scale(0.85);">
+              <div class="phone-3d-rig" id="phone-rig-15-back">
+                <div class="phone-face back">
+                  <div class="back-camera-module">
+                    <div class="back-lens"></div>
+                    <div class="back-lens"></div>
+                    <div class="back-lens"></div>
+                    <div class="back-flash"></div>
+                  </div>
+                </div>
+                <div class="phone-side side-left"></div>
+                <div class="phone-side side-right"></div>
+                <div class="phone-side side-top"></div>
+                <div class="phone-side side-bottom"></div>
+              </div>
+            </div>
+          </div>
+          <!-- Face up phone -->
+          <div class="phone-3d-viewport" id="viewport-15-front" style="position: absolute; transform: translate(120px, 120px);">
+            <div class="phone-3d-scaler" style="transform: scale(0.85);">
+              <div class="phone-3d-rig" id="phone-rig-15-front">
+                <div class="phone-face front">
+                  <div class="camera-punch"></div>
+                  <div class="gloss-sheen"></div>
+                  <div class="screen-edge-glare left-edge"></div>
+                  <div class="screen-edge-glare right-edge"></div>
+                  <div class="curved-edge-shadow left"></div>
+                  <div class="curved-edge-shadow right"></div>
+                  <div class="screen-scroll-wrap">
+                    <img class="phone-screen" id="slot-15" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="Screen 16" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Scene 17 (Pre-outro) -->
+    <div class="scene" id="scene-16">
+      <div class="scene-content" style="justify-content: center; align-items: center;">
+        <div style="width: 100px; height: 100px; border: 6px solid #00c2ff; border-radius: 50%;"></div>
+      </div>
+    </div>
+    
+    <!-- Scene 18 (Customer Testimonials) -->
+    <div class="scene" id="scene-17">
+      <div class="scene-content">
+        <!-- Left: Dual Phones -->
+        <div class="device-col" id="viewport-17-container" style="position: relative; transform: translate(-50px, 0px);">
+          <!-- Back Phone -->
+          <div class="phone-3d-viewport" style="position: absolute; transform: translate(-80px, 0px) scale(0.82);">
+            <div class="phone-3d-rig" id="phone-rig-17-back">
+              <div class="phone-face back">
+                <div class="back-camera-module">
+                  <div class="back-lens"></div>
+                  <div class="back-lens"></div>
+                  <div class="back-lens"></div>
+                  <div class="back-flash"></div>
+                </div>
+              </div>
+              <div class="phone-side side-left"></div>
+              <div class="phone-side side-right"></div>
+              <div class="phone-side side-top"></div>
+              <div class="phone-side side-bottom"></div>
+            </div>
+          </div>
+          <!-- Front Phone -->
+          <div class="phone-3d-viewport" style="position: absolute; transform: translate(60px, 0px) scale(0.82);">
+            <div class="phone-3d-rig" id="phone-rig-17-front">
+              <div class="phone-face front">
+                <div class="camera-punch"></div>
+                <div class="gloss-sheen"></div>
+                <div class="screen-edge-glare left-edge"></div>
+                <div class="screen-edge-glare right-edge"></div>
+                <div class="curved-edge-shadow left"></div>
+                <div class="curved-edge-shadow right"></div>
+                <div class="screen-scroll-wrap">
+                  <img class="phone-screen" id="slot-17" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="Screen 18" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Right: Testimonials -->
+        <div class="reviews-container">
+          <div><div class="badge-block" style="margin-bottom: 20px;"><h2 class="title-white" id="s17-text">Customers review</h2></div></div>
+          
+          <div class="review-item">
+            <img class="review-avatar" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="Shawn Avatar" />
+            <div class="review-content">
+              <span class="review-name">Shawn Dowson</span>
+              <span class="review-stars">★★★★★</span>
+              <p class="review-text">Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</p>
+            </div>
+          </div>
+          
+          <div class="review-item">
+            <img class="review-avatar" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="Jane Avatar" />
+            <div class="review-content">
+              <span class="review-name">Jane Abrams</span>
+              <span class="review-stars">★★★★★</span>
+              <p class="review-text">Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.</p>
+            </div>
+          </div>
+          
+          <div class="review-item">
+            <img class="review-avatar" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="Corey Avatar" />
+            <div class="review-content">
+              <span class="review-name">Corey James</span>
+              <span class="review-stars">★★★★★</span>
+              <p class="review-text">Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia</p>
+            </div>
+          </div>
+        </div>
+      </div>
+  </div>
+
+  
+
+  <script type="application/json" id="template-config">
+    {
+  "id": "tpl-27720310-dark-matte-spheres",
+  "name": "Matte Geometry & Cyber Blue — 27720310 Reference",
+  "description": "Authentic full recreation of 27720310.mp4 with 18 scenes, 3D Galaxy flagship phones, floating matte spheres, glowing cyber blue frames, and high-fidelity customer testimonials.",
+  "useCase": "Best for modern high-end app promotional presentations and tech showcases.",
+  "designStyle": "Matte Geometry",
+  "aspectRatio": "16:9",
+  "features": [
+    "18 scenes matching 27720310.mp4 frame-by-frame",
+    "Realistic 3D Galaxy flagship phone chassis",
+    "Floating 3D matte black spheres",
+    "Glowing cyber blue frame rectangles",
+    "Swiss-style timecode and label annotations",
+    "Widescreen landscape and isometric dual phone presentations"
+  ],
+  "device": "samsung-galaxy-s25",
+  "deviceType": "3d",
+  "variant": "matte-spheres",
+  "deviceFraction": 0.62,
+  "scenes": [
+    {
+      "label": "Scene 1: Opener",
+      "sceneTemplate": "studio-opener",
+      "durationSeconds": 6.7,
+      "background": "matte-dark",
+      "rotate": 0,
+      "zoom": 1,
+      "move": 0,
+      "depth": "opener",
+      "layout": "intro-kinetic",
+      "text": "",
+      "subtext": "",
+      "slots": {
+        "screenshot": "slot-0"
+      }
+    },
+    {
+      "label": "Scene 2: Meet the new Android app",
+      "sceneTemplate": "studio-phone",
+      "durationSeconds": 6,
+      "background": "matte-dark",
+      "rotate": 0,
+      "zoom": 1,
+      "move": 0,
+      "depth": "showcase",
+      "layout": "copy-left",
+      "text": "Meet the new",
+      "subtext": "Android app",
+      "slots": {
+        "text": "s1-text",
+        "subtext": "s1-subtext",
+        "screenshot": "slot-1"
+      }
+    },
+    {
+      "label": "Scene 3: New level",
+      "sceneTemplate": "studio-phone",
+      "durationSeconds": 5.1,
+      "background": "matte-dark",
+      "rotate": 0,
+      "zoom": 1,
+      "move": 0,
+      "depth": "showcase",
+      "layout": "copy-right",
+      "text": "New level",
+      "subtext": "of app development",
+      "slots": {
+        "text": "s2-text",
+        "subtext": "s2-subtext",
+        "screenshot": "slot-2"
+      }
+    },
+    {
+      "label": "Scene 4: App of the week",
+      "sceneTemplate": "studio-phone",
+      "durationSeconds": 5.3,
+      "background": "matte-dark",
+      "rotate": 0,
+      "zoom": 1,
+      "move": 0,
+      "depth": "showcase",
+      "layout": "copy-left",
+      "text": "App of the week",
+      "subtext": "Aug 2020",
+      "slots": {
+        "text": "s3-text",
+        "subtext": "s3-subtext",
+        "screenshot": "slot-3"
+      }
+    },
+    {
+      "label": "Scene 5: Intuitive UI",
+      "sceneTemplate": "studio-phone",
+      "durationSeconds": 5.1,
+      "background": "matte-dark",
+      "rotate": 0,
+      "zoom": 1,
+      "move": 0,
+      "depth": "showcase",
+      "layout": "copy-right",
+      "text": "Intuitive UI",
+      "subtext": "Pixel perfect",
+      "slots": {
+        "text": "s4-text",
+        "subtext": "s4-subtext",
+        "screenshot": "slot-4"
+      }
+    },
+    {
+      "label": "Scene 6: Finally it's comming",
+      "sceneTemplate": "studio-phone",
+      "durationSeconds": 5.1,
+      "background": "matte-dark",
+      "rotate": 0,
+      "zoom": 1,
+      "move": 0,
+      "depth": "showcase",
+      "layout": "copy-left",
+      "text": "Finally",
+      "subtext": "it's comming",
+      "slots": {
+        "text": "s5-text",
+        "subtext": "s5-subtext",
+        "screenshot": "slot-5"
+      }
+    },
+    {
+      "label": "Scene 7: Dual Macro Closeup",
+      "sceneTemplate": "studio-macro",
+      "durationSeconds": 5,
+      "background": "matte-dark",
+      "rotate": 0,
+      "zoom": 1.4,
+      "move": 0,
+      "depth": "macro",
+      "layout": "macro-closeup",
+      "text": "",
+      "subtext": "",
+      "slots": {
+        "screenshot": "slot-6"
+      }
+    },
+    {
+      "label": "Scene 8: Completely new experience",
+      "sceneTemplate": "studio-phone",
+      "durationSeconds": 5.2,
+      "background": "matte-dark",
+      "rotate": 0,
+      "zoom": 1,
+      "move": 0,
+      "depth": "showcase",
+      "layout": "copy-right",
+      "text": "Completely new",
+      "subtext": "experience",
+      "slots": {
+        "text": "s7-text",
+        "subtext": "s7-subtext",
+        "screenshot": "slot-7"
+      }
+    },
+    {
+      "label": "Scene 9: Transition whip",
+      "sceneTemplate": "studio-transition",
+      "durationSeconds": 2.4,
+      "background": "matte-dark",
+      "rotate": 0,
+      "zoom": 1,
+      "move": 0,
+      "depth": "transition",
+      "layout": "kinetic-pan",
+      "text": "",
+      "subtext": "",
+      "slots": {
+        "screenshot": "slot-8"
+      }
+    },
+    {
+      "label": "Scene 10: Convenient mobile application",
+      "sceneTemplate": "studio-phone",
+      "durationSeconds": 5.3,
+      "background": "matte-dark",
+      "rotate": 0,
+      "zoom": 1,
+      "move": 0,
+      "depth": "showcase",
+      "layout": "copy-left",
+      "text": "Convenient mobile",
+      "subtext": "application",
+      "slots": {
+        "text": "s9-text",
+        "subtext": "s9-subtext",
+        "screenshot": "slot-9"
+      }
+    },
+    {
+      "label": "Scene 11: The best application",
+      "sceneTemplate": "studio-phone",
+      "durationSeconds": 5.4,
+      "background": "matte-dark",
+      "rotate": 0,
+      "zoom": 1,
+      "move": 0,
+      "depth": "showcase",
+      "layout": "copy-left",
+      "text": "The best application",
+      "subtext": "according to NYT",
+      "slots": {
+        "text": "s10-text",
+        "subtext": "s10-subtext",
+        "screenshot": "slot-10"
+      }
+    },
+    {
+      "label": "Scene 12: Transition 2",
+      "sceneTemplate": "studio-transition",
+      "durationSeconds": 1.8,
+      "background": "matte-dark",
+      "rotate": 0,
+      "zoom": 1,
+      "move": 0,
+      "depth": "transition",
+      "layout": "cyan-pulse",
+      "text": "",
+      "subtext": "",
+      "slots": {
+        "screenshot": "slot-11"
+      }
+    },
+    {
+      "label": "Scene 13: Extreme Macro Closeup",
+      "sceneTemplate": "studio-macro",
+      "durationSeconds": 3.1,
+      "background": "matte-dark",
+      "rotate": 0,
+      "zoom": 1.5,
+      "move": 0,
+      "depth": "macro",
+      "layout": "extreme-closeup",
+      "text": "Extreme Power",
+      "subtext": "Cyber Specs",
+      "slots": {
+        "text": "s12-text",
+        "subtext": "s12-subtext",
+        "screenshot": "slot-12"
+      }
+    },
+    {
+      "label": "Scene 14: Corner Pan Transition",
+      "sceneTemplate": "studio-transition",
+      "durationSeconds": 1.6,
+      "background": "matte-dark",
+      "rotate": 0,
+      "zoom": 1,
+      "move": 0,
+      "depth": "transition",
+      "layout": "whip-corner",
+      "text": "",
+      "subtext": "",
+      "slots": {
+        "screenshot": "slot-13"
+      }
+    },
+    {
+      "label": "Scene 15: Landscape Video Mode",
+      "sceneTemplate": "studio-landscape",
+      "durationSeconds": 4.7,
+      "background": "matte-dark",
+      "rotate": 90,
+      "zoom": 1,
+      "move": 0,
+      "depth": "landscape",
+      "layout": "landscape-center",
+      "text": "Advanced",
+      "subtext": "video options",
+      "slots": {
+        "text": "s14-text",
+        "subtext": "s14-subtext",
+        "screenshot": "slot-14"
+      }
+    },
+    {
+      "label": "Scene 16: Isometric Dual Phone",
+      "sceneTemplate": "studio-phone",
+      "durationSeconds": 3.3,
+      "background": "matte-dark",
+      "rotate": 0,
+      "zoom": 1,
+      "move": 0,
+      "depth": "showcase",
+      "layout": "copy-left",
+      "text": "Powerfull app",
+      "subtext": "Simple design",
+      "slots": {
+        "text": "s15-text",
+        "subtext": "s15-subtext",
+        "screenshot": "slot-15"
+      }
+    },
+    {
+      "label": "Scene 17: Outro transition",
+      "sceneTemplate": "studio-outro",
+      "durationSeconds": 1.4,
+      "background": "matte-dark",
+      "rotate": 0,
+      "zoom": 1,
+      "move": 0,
+      "depth": "flat",
+      "layout": "outro-kinetic",
+      "text": "",
+      "subtext": "",
+      "slots": {
+        "screenshot": "slot-16"
+      }
+    },
+    {
+      "label": "Scene 18: Customer Testimonials",
+      "sceneTemplate": "studio-outro",
+      "durationSeconds": 5.5,
+      "background": "matte-dark",
+      "rotate": 0,
+      "zoom": 1,
+      "move": 0,
+      "depth": "flat",
+      "layout": "reviews-card",
+      "text": "Customers",
+      "subtext": "review",
+      "slots": {
+        "text": "s17-text",
+        "subtext": "s17-subtext",
+        "screenshot": "slot-17"
+      }
+    }
+  ]
+}
+  </script>
+
+  <script>
+    /* Continuous floating spheres and 3D camera timeline transformations */
+    window.__customSceneTransform = function(sceneIdx, progress, globalTimeMs) {
+      // Harmonic floating matte spheres logic
+      const s1 = document.getElementById("sphere-1");
+      const s2 = document.getElementById("sphere-2");
+      const s3 = document.getElementById("sphere-3");
+      const s4 = document.getElementById("sphere-4");
+      
+      if (s1) s1.style.transform = "translateY(" + (Math.sin(globalTimeMs * 0.0012) * 22) + "px) rotate(" + (globalTimeMs * 0.002) + "deg)";
+      if (s2) s2.style.transform = "translateY(" + (Math.cos(globalTimeMs * 0.0016) * 18) + "px)";
+      if (s3) s3.style.transform = "translate(" + (Math.sin(globalTimeMs * 0.001) * 15) + "px, " + (Math.cos(globalTimeMs * 0.001) * 15) + "px)";
+      if (s4) s4.style.transform = "translateY(" + (Math.sin(globalTimeMs * 0.0018) * 25) + "px)";
+
+      // Cyber Frame subtle rotation/parallax
+      const frame = document.getElementById("cyber-frame");
+      if (frame) {
+        frame.style.transform = "translate(-50%, -50%) rotate3d(1, 1, 0, " + (Math.sin(globalTimeMs * 0.0008) * 1.5) + "deg)";
+      }
+
+      // Easing helpers
+      const tEntry = Math.min(1, progress / 0.35);
+      const easeEntry = 1 - Math.pow(1 - tEntry, 3); // Smooth cubic ease-out
+      const tDrift = progress; // Ambient drift runs continuously over the whole scene duration
+
+      // Exact 3D Phone Rotations & Motions
+      if (sceneIdx === 0) { // Scene 1 Opener (Preserved exact motion)
+        const rig = document.getElementById("phone-rig-0");
+        if (rig) {
+          const entryScale = 0.82 + (0.12 * easeEntry); // 0.82 -> 0.94
+          const currentYaw = 42 - (17 * easeEntry) - (11 * tDrift); // Entry Y-yaw: 42deg -> 25deg -> 14deg
+          const currentPitch = 10 * Math.sin(progress * Math.PI);
+          rig.style.transform = "scale(" + entryScale + ") rotateY(" + currentYaw + "deg) rotateX(" + currentPitch + "deg)";
+        }
+      }
+      else if (sceneIdx === 1) { // Scene 2: Meet the new Android app (Phone on Right)
+        const rig = document.getElementById("phone-rig-1");
+        if (rig) {
+          const entryX = 140 * (1 - easeEntry); // Smooth slide-in from right: 140px -> 0px
+          const currentYaw = 24 - (14 * easeEntry) - (6 * tDrift); // Yaw: 24deg -> 10deg -> 4deg
+          const floatPitch = Math.sin(globalTimeMs * 0.001) * 2;
+          rig.style.transform = "translateX(" + entryX + "px) rotateY(" + currentYaw + "deg) rotateX(" + floatPitch + "deg)";
+        }
+      }
+      else if (sceneIdx === 2) { // Scene 3: New level (Phone on Left)
+        const rig = document.getElementById("phone-rig-2");
+        if (rig) {
+          const entryX = -140 * (1 - easeEntry); // Smooth slide-in from left: -140px -> 0px
+          const currentYaw = -22 + (12 * easeEntry) + (6 * tDrift); // Yaw: -22deg -> -10deg -> -4deg
+          const currentPitch = 8 - (3 * easeEntry) - (3 * tDrift); // Pitch: 8deg -> 5deg -> 2deg
+          rig.style.transform = "translateX(" + entryX + "px) rotateY(" + currentYaw + "deg) rotateX(" + currentPitch + "deg)";
+        }
+      }
+      else if (sceneIdx === 3) { // Scene 4: App of the week (Phone on Right)
+        const rig = document.getElementById("phone-rig-3");
+        if (rig) {
+          const entryX = 130 * (1 - easeEntry); // Slide-in from right: 130px -> 0px
+          const entryScale = 0.88 + (0.07 * easeEntry); // Scale: 0.88 -> 0.95
+          const currentYaw = 20 - (12 * easeEntry) - (4 * tDrift); // Yaw: 20deg -> 8deg -> 4deg
+          rig.style.transform = "translateX(" + entryX + "px) scale(" + entryScale + ") rotateY(" + currentYaw + "deg)";
+        }
+      }
+      else if (sceneIdx === 4) { // Scene 5: Intuitive UI (Phone on Left)
+        const rig = document.getElementById("phone-rig-4");
+        if (rig) {
+          const entryY = 150 * (1 - easeEntry); // Smooth rise from bottom: 150px -> 0px
+          const currentYaw = -18 + (10 * easeEntry) + (4 * tDrift); // Yaw: -18deg -> -8deg -> -4deg
+          const floatPitch = Math.cos(globalTimeMs * 0.0012) * 2;
+          rig.style.transform = "translateY(" + entryY + "px) rotateY(" + currentYaw + "deg) rotateX(" + floatPitch + "deg)";
+        }
+      }
+      else if (sceneIdx === 5) { // Scene 6: Finally it's coming (Center Phone)
+        const rig = document.getElementById("phone-rig-5");
+        if (rig) {
+          const entryZ = -220 * (1 - easeEntry); // Smooth zoom from depth: -220px -> 0px
+          const currentScale = 0.86 + (0.10 * easeEntry); // Scale: 0.86 -> 0.96
+          const floatPitch = Math.sin(globalTimeMs * 0.0014) * 2.5;
+          const floatYaw = Math.cos(globalTimeMs * 0.001) * 2;
+          rig.style.transform = "translateZ(" + entryZ + "px) scale(" + currentScale + ") rotateX(" + floatPitch + "deg) rotateY(" + floatYaw + "deg)";
+        }
+      }
+      else if (sceneIdx === 6) { // Scene 7: Dual Macro
+        const viewportLeft = document.getElementById("viewport-6-left");
+        const viewportRight = document.getElementById("viewport-6-right");
+        const rigLeft = document.getElementById("phone-rig-6");
+        const rigRight = document.getElementById("phone-rig-6-secondary");
+
+        if (viewportLeft && viewportRight) {
+          const entryYLeft = -320 * (1 - easeEntry); 
+          const entryYRight = 320 * (1 - easeEntry);
+          viewportLeft.style.transform = "translate(-180px, " + entryYLeft + "px)";
+          viewportRight.style.transform = "translate(180px, " + entryYRight + "px)";
+        }
+        if (rigLeft && rigRight) {
+          const currentYawLeft = 14 - (6 * easeEntry) - (4 * tDrift);
+          const currentYawRight = -14 + (6 * easeEntry) + (4 * tDrift);
+          rigLeft.style.transform = "rotateY(" + currentYawLeft + "deg)";
+          rigRight.style.transform = "rotateY(" + currentYawRight + "deg)";
+        }
+      }
+      else if (sceneIdx === 7) { // Scene 8: Completely new experience (Phone on Right)
+        const rig = document.getElementById("phone-rig-7");
+        if (rig) {
+          const entryX = 140 * (1 - easeEntry);
+          const currentYaw = 26 - (14 * easeEntry) - (6 * tDrift); // 26deg -> 12deg -> 6deg
+          const currentPitch = -4 + (2 * easeEntry) + (2 * tDrift);
+          rig.style.transform = "translateX(" + entryX + "px) rotateY(" + currentYaw + "deg) rotateX(" + currentPitch + "deg)";
+        }
+      }
+      else if (sceneIdx === 8) { // Scene 9: Dynamic Front Phone Showcase (Fully Usable Screen)
+        const rig = document.getElementById("phone-rig-8");
+        if (rig) {
+          const entryScale = 0.92 + (0.10 * easeEntry); // 0.92 -> 1.02
+          const currentYaw = -16 + (10 * easeEntry) + (4 * tDrift); // -16deg -> -6deg -> -2deg
+          const floatPitch = Math.sin(globalTimeMs * 0.0012) * 2;
+          rig.style.transform = "scale(" + entryScale + ") rotateY(" + currentYaw + "deg) rotateX(" + floatPitch + "deg)";
+        }
+      }
+      else if (sceneIdx === 9) { // Scene 10: Convenient mobile (Phone on Right)
+        const rig = document.getElementById("phone-rig-9");
+        if (rig) {
+          const entryX = 130 * (1 - easeEntry); // 130px -> 0px
+          const currentYaw = 18 - (12 * easeEntry) - (4 * tDrift); // 18deg -> 6deg -> 2deg
+          rig.style.transform = "translateX(" + entryX + "px) rotateY(" + currentYaw + "deg)";
+        }
+      }
+      else if (sceneIdx === 10) { // Scene 11: The best application (Phone on Left)
+        const rig = document.getElementById("phone-rig-10");
+        if (rig) {
+          const entryX = -130 * (1 - easeEntry); // -130px -> 0px
+          const currentYaw = -20 + (12 * easeEntry) + (4 * tDrift); // -20deg -> -8deg -> -4deg
+          const currentPitch = 8 - (4 * easeEntry) - (2 * tDrift);
+          rig.style.transform = "translateX(" + entryX + "px) rotateY(" + currentYaw + "deg) rotateX(" + currentPitch + "deg)";
+        }
+      }
+      else if (sceneIdx === 11) { // Scene 12: Cyber Glow Center Showcase (Fully Usable Screen)
+        const rig = document.getElementById("phone-rig-11");
+        if (rig) {
+          const entryScale = 0.88 + (0.08 * easeEntry); // 0.88 -> 0.96
+          const floatYaw = Math.sin(globalTimeMs * 0.001) * 3;
+          rig.style.transform = "scale(" + entryScale + ") rotateY(" + floatYaw + "deg)";
+        }
+      }
+      else if (sceneIdx === 12) { // Scene 13: Extreme Performance Showcase
+        const label = document.getElementById("scene-12-label");
+        if (label) {
+          label.style.opacity = Math.max(0, 1 - (progress / 0.45));
+        }
+        const viewport = document.getElementById("viewport-12");
+        if (viewport) {
+          const entryX = 160 * (1 - easeEntry); // Smooth slide-in to center: 160px -> 0px
+          viewport.style.transform = "translate(" + entryX + "px, 0px)";
+        }
+        const scaler = document.getElementById("scaler-12");
+        if (scaler) {
+          const currentScale = 0.68 + (0.22 * easeEntry); // Start relatively small and scale up to 0.90 (fully fitting the screen)
+          scaler.style.transform = "scale(" + currentScale + ")";
+        }
+        const rig = document.getElementById("phone-rig-12");
+        if (rig) {
+          const currentYaw = 16 - (12 * easeEntry) - (4 * tDrift); // 16deg -> 4deg -> 0deg
+          const floatPitch = Math.sin(globalTimeMs * 0.001) * 2;
+          rig.style.transform = "rotateY(" + currentYaw + "deg) rotateX(" + floatPitch + "deg)";
+        }
+      }
+      else if (sceneIdx === 13) { // Scene 14: Dynamic Angle Front Phone (Fully Usable Screen)
+        const rig = document.getElementById("phone-rig-13");
+        if (rig) {
+          const entryX = 80 * (1 - easeEntry);
+          const entryY = 80 * (1 - easeEntry);
+          const currentYaw = 16 - (10 * easeEntry) - (4 * tDrift); // 16deg -> 6deg -> 2deg
+          rig.style.transform = "translate(" + entryX + "px, " + entryY + "px) rotateY(" + currentYaw + "deg) rotateX(4deg)";
+        }
+      }
+      else if (sceneIdx === 14) { // Scene 15: Landscape Video Mode
+        const rig = document.getElementById("phone-rig-14");
+        if (rig) {
+          const currentAngle = -60 - (30 * easeEntry); // Smooth rotate: -60deg -> -90deg
+          const currentScale = 0.92 + (0.08 * easeEntry); // Scale: 0.92 -> 1.0
+          const floatPitch = Math.sin(globalTimeMs * 0.001) * 4;
+          rig.style.transform = "rotateZ(" + currentAngle + "deg) scale(" + currentScale + ") rotateX(" + floatPitch + "deg)";
+        }
+      }
+      else if (sceneIdx === 15) { // Scene 16: Isometric Dual Phone
+        const viewportBack = document.getElementById("viewport-15-back");
+        const viewportFront = document.getElementById("viewport-15-front");
+        const rigBack = document.getElementById("phone-rig-15-back");
+        const rigFront = document.getElementById("phone-rig-15-front");
+
+        if (viewportBack && viewportFront) {
+          const entryXBack = -260 + (120 * easeEntry); // -260px -> -140px
+          const entryXFront = 240 - (120 * easeEntry); // 240px -> 120px
+          viewportBack.style.transform = "translate(" + entryXBack + "px, 40px)";
+          viewportFront.style.transform = "translate(" + entryXFront + "px, 120px)";
+        }
+
+        if (rigBack && rigFront) {
+          const floatOffset = Math.sin(globalTimeMs * 0.001) * 2;
+          rigBack.style.transform = "rotateY(180deg) rotateX(" + (-20 + floatOffset) + "deg) rotateZ(35deg)";
+          rigFront.style.transform = "rotateY(15deg) rotateX(" + (20 + floatOffset) + "deg) rotateZ(-15deg)";
+        }
+      }
+      else if (sceneIdx === 17) { // Scene 18: Customer Testimonials
+        const container = document.getElementById("viewport-17-container");
+        if (container) {
+          const entryX = -180 + (130 * easeEntry); // Slide in from left: -180px -> -50px
+          container.style.transform = "translate(" + entryX + "px, 0px)";
+        }
+        const rigBack = document.getElementById("phone-rig-17-back");
+        const rigFront = document.getElementById("phone-rig-17-front");
+        if (rigBack) rigBack.style.transform = "rotateY(180deg) rotateX(-10deg) scale(0.95)";
+        if (rigFront) rigFront.style.transform = "rotateY(" + (12 - 6 * tDrift) + "deg) scale(0.95)";
+      }
+    };
+  </script>
+
+  
+  <!-- Video Player Logic & API Controller -->
+  <script>
+  (function() {
+    // Dynamically inject player bar when loaded standalone (window.self === window.top)
+    if (window.self === window.top) {
+      const styleEl = document.createElement("style");
+      styleEl.textContent = "\n  /* === Universal Interactive Player Overlay === */\n  .v-player-bar {\n    position: fixed;\n    bottom: 24px;\n    left: 50%;\n    transform: translateX(-50%);\n    display: flex;\n    align-items: center;\n    gap: 16px;\n    background: rgba(15, 17, 26, 0.88);\n    backdrop-filter: blur(18px);\n    -webkit-backdrop-filter: blur(18px);\n    border: 1px solid rgba(255, 255, 255, 0.16);\n    border-radius: 40px;\n    padding: 10px 22px;\n    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.05);\n    z-index: 999999;\n    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;\n    color: #ffffff;\n    user-select: none;\n    transition: opacity 0.35s ease, transform 0.35s ease;\n  }\n  .v-player-bar.autohide {\n    opacity: 0;\n    pointer-events: none;\n    transform: translate(-50%, 15px);\n  }\n  .v-btn {\n    background: #3b82f6;\n    color: white;\n    border: none;\n    border-radius: 50%;\n    width: 40px;\n    height: 40px;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    font-size: 16px;\n    cursor: pointer;\n    transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;\n    box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);\n    outline: none;\n  }\n  .v-btn:hover {\n    transform: scale(1.08);\n    background: #2563eb;\n    box-shadow: 0 6px 18px rgba(59, 130, 246, 0.6);\n  }\n  .v-btn-secondary {\n    background: rgba(255, 255, 255, 0.1);\n    color: #cbd5e1;\n    box-shadow: none;\n    width: 34px;\n    height: 34px;\n    font-size: 14px;\n  }\n  .v-btn-secondary:hover {\n    background: rgba(255, 255, 255, 0.2);\n    color: #fff;\n    box-shadow: none;\n  }\n  .v-timeline-box {\n    display: flex;\n    align-items: center;\n    gap: 12px;\n    width: 260px;\n  }\n  .v-scrubber {\n    flex: 1;\n    height: 6px;\n    background: rgba(255, 255, 255, 0.2);\n    border-radius: 3px;\n    position: relative;\n    cursor: pointer;\n  }\n  .v-scrubber:hover {\n    height: 8px;\n  }\n  .v-scrubber-fill {\n    position: absolute;\n    left: 0;\n    top: 0;\n    bottom: 0;\n    width: 0%;\n    background: #3b82f6;\n    border-radius: 3px;\n    pointer-events: none;\n  }\n  .v-scrubber-thumb {\n    position: absolute;\n    top: 50%;\n    left: 0%;\n    transform: translate(-50%, -50%);\n    width: 14px;\n    height: 14px;\n    background: #ffffff;\n    border-radius: 50%;\n    box-shadow: 0 2px 6px rgba(0,0,0,0.5);\n    pointer-events: none;\n    transition: transform 0.1s ease;\n  }\n  .v-scrubber:hover .v-scrubber-thumb {\n    transform: translate(-50%, -50%) scale(1.2);\n  }\n  .v-time-text {\n    font-size: 13px;\n    font-variant-numeric: tabular-nums;\n    color: #94a3b8;\n    min-width: 80px;\n    text-align: right;\n  }\n  .v-pills {\n    display: flex;\n    gap: 6px;\n    border-left: 1px solid rgba(255, 255, 255, 0.14);\n    padding-left: 12px;\n  }\n  .v-pill {\n    background: rgba(255, 255, 255, 0.08);\n    border: 1px solid rgba(255, 255, 255, 0.12);\n    color: #94a3b8;\n    font-size: 12px;\n    font-weight: 500;\n    padding: 5px 11px;\n    border-radius: 16px;\n    cursor: pointer;\n    transition: all 0.15s ease;\n    outline: none;\n  }\n  .v-pill:hover {\n    background: rgba(255, 255, 255, 0.18);\n    color: #ffffff;\n  }\n  .v-pill.active {\n    background: rgba(59, 130, 246, 0.35);\n    border-color: #3b82f6;\n    color: #ffffff;\n    font-weight: 600;\n  }\n  @media print {\n    .v-player-bar { display: none !important; }\n  }\n  body.rendering .v-player-bar, .v-player-bar.render-hidden {\n    display: none !important;\n  }\n  ";
+      document.head.appendChild(styleEl);
+
+      const barContainer = document.createElement("div");
+      barContainer.innerHTML = "\n  <!-- Standalone Floating Video Player Bar -->\n  <div class=\"v-player-bar\" id=\"v-player-bar\">\n    <button class=\"v-btn\" id=\"v-play-btn\" title=\"Play / Pause (Space)\">&#9654;</button>\n    <button class=\"v-btn v-btn-secondary\" id=\"v-replay-btn\" title=\"Replay\">&#8635;</button>\n    <div class=\"v-timeline-box\">\n      <div class=\"v-scrubber\" id=\"v-scrubber\">\n        <div class=\"v-scrubber-fill\" id=\"v-scrubber-fill\"></div>\n        <div class=\"v-scrubber-thumb\" id=\"v-scrubber-thumb\"></div>\n      </div>\n      <div class=\"v-time-text\" id=\"v-time-text\">0:00 / 1:18</div>\n    </div>\n    <div class=\"v-pills\" id=\"v-pills\">\n      <button class=\"v-pill active\" data-scene=\"0\">1</button><button class=\"v-pill \" data-scene=\"1\">2</button><button class=\"v-pill \" data-scene=\"2\">3</button><button class=\"v-pill \" data-scene=\"3\">4</button><button class=\"v-pill \" data-scene=\"4\">5</button><button class=\"v-pill \" data-scene=\"5\">6</button><button class=\"v-pill \" data-scene=\"6\">7</button><button class=\"v-pill \" data-scene=\"7\">8</button><button class=\"v-pill \" data-scene=\"8\">9</button><button class=\"v-pill \" data-scene=\"9\">10</button><button class=\"v-pill \" data-scene=\"10\">11</button><button class=\"v-pill \" data-scene=\"11\">12</button><button class=\"v-pill \" data-scene=\"12\">13</button><button class=\"v-pill \" data-scene=\"13\">14</button><button class=\"v-pill \" data-scene=\"14\">15</button><button class=\"v-pill \" data-scene=\"15\">16</button><button class=\"v-pill \" data-scene=\"16\">17</button><button class=\"v-pill \" data-scene=\"17\">18</button>\n    </div>\n  </div>\n  ".trim();
+      document.body.appendChild(barContainer.firstElementChild);
+    }
+
+    const config = JSON.parse(document.getElementById("template-config").textContent);
+    const scenes = config.scenes;
+    let durations = scenes.map(s => (s.durationSeconds || s.durationMs / 1000 || 5) * 1000);
+    let totalDuration = durations.reduce((a, b) => a + b, 0);
+    
+    let currentSceneIdx = 0;
+    let globalTimeMs = 0;
+    let playState = "idle"; // idle | playing | paused | ended
+    let mode = "sequence"; // sequence | scene
+    let sceneEndMs = 0; // end of the scene started by playScene()
+    let playbackInterval = null;
+    let lastTickTime = Date.now();
+    let hideTimeout = null;
+
+    const playBtn = document.getElementById("v-play-btn");
+    const replayBtn = document.getElementById("v-replay-btn");
+    const scrubber = document.getElementById("v-scrubber");
+    const scrubberFill = document.getElementById("v-scrubber-fill");
+    const scrubberThumb = document.getElementById("v-scrubber-thumb");
+    const timeText = document.getElementById("v-time-text");
+    const playerBar = document.getElementById("v-player-bar");
+    const pills = document.querySelectorAll(".v-pill");
+
+    if (window.self !== window.top && playerBar) {
+      playerBar.style.display = "none";
+    }
+
+    function formatTime(ms) {
+      const totalSec = Math.floor(ms / 1000);
+      const min = Math.floor(totalSec / 60);
+      const sec = totalSec % 60;
+      return min + ":" + (sec < 10 ? "0" : "") + sec;
+    }
+
+    function updateUiTime() {
+      const progress = Math.max(0, Math.min(1, globalTimeMs / totalDuration));
+      if (scrubberFill) scrubberFill.style.width = (progress * 100) + "%";
+      if (scrubberThumb) scrubberThumb.style.left = (progress * 100) + "%";
+      if (timeText) timeText.textContent = formatTime(globalTimeMs) + " / " + formatTime(totalDuration);
+      
+      pills.forEach((p, idx) => {
+        p.classList.toggle("active", idx === currentSceneIdx);
+      });
+
+      if (playBtn) {
+        playBtn.innerHTML = playState === "playing" ? "&#10074;&#10074;" : playState === "ended" ? "&#8635;" : "&#9654;";
+      }
+    }
+
+    function notify() {
+      if (window.__videoPreview && typeof window.__videoPreview.onState === 'function') {
+        try {
+          window.__videoPreview.onState({ scene: currentSceneIdx, state: playState, mode });
+        } catch(e) {}
+      }
+    }
+
+    function applyCssAnimationSeek(sceneIdx, sceneRelMs) {
+      document.getAnimations().forEach(a => {
+        try {
+          if (playState === "playing") {
+            a.play();
+          } else {
+            a.pause();
+            a.currentTime = sceneRelMs;
+          }
+        } catch(e) {}
+      });
+      document.querySelectorAll("video").forEach(v => {
+        try {
+          if (playState === "playing") v.play();
+          else { v.pause(); v.currentTime = sceneRelMs / 1000; }
+        } catch(e) {}
+      });
+    }
+
+    function apply3DRigCustomTransforms(sceneIdx, sceneRelMs, sceneDurationMs) {
+      const progress = Math.max(0, Math.min(1, sceneRelMs / sceneDurationMs));
+      
+      // Dynamic hook for template-specific 3D rigs if defined
+      if (typeof window.__customSceneTransform === 'function') {
+        window.__customSceneTransform(sceneIdx, progress, globalTimeMs);
+      } else {
+        const rig = document.getElementById("phone-rig-" + sceneIdx);
+        if (rig) {
+          const yRot = -20 + (progress * 18);
+          const xRot = 8 * Math.sin(progress * Math.PI);
+          rig.style.transform = "rotateY(" + yRot + "deg) rotateX(" + xRot + "deg)";
+        }
+      }
+    }
+
+    function renderFrameAt(timeMs) {
+      globalTimeMs = Math.max(0, Math.min(totalDuration, timeMs));
+      
+      let accum = 0;
+      let targetIdx = 0;
+      let sceneRelMs = 0;
+      for (let i = 0; i < durations.length; i++) {
+        if (globalTimeMs < accum + durations[i] || i === durations.length - 1) {
+          targetIdx = i;
+          sceneRelMs = globalTimeMs - accum;
+          break;
+        }
+        accum += durations[i];
+      }
+
+      if (targetIdx !== currentSceneIdx || !document.querySelector(".scene.playing, .scene.active")) {
+        const changed = targetIdx !== currentSceneIdx;
+        currentSceneIdx = targetIdx;
+        document.querySelectorAll(".scene").forEach((el, idx) => {
+          if (idx === currentSceneIdx) {
+            el.classList.add("playing");
+            el.classList.add("active");
+          } else {
+            el.classList.remove("playing");
+            el.classList.remove("active");
+          }
+        });
+        void document.body.offsetWidth; // Force CSS animation restart
+        if (changed) notify();
+      }
+
+      const curSceneDur = durations[currentSceneIdx] || 5000;
+      applyCssAnimationSeek(currentSceneIdx, sceneRelMs);
+      apply3DRigCustomTransforms(currentSceneIdx, sceneRelMs, curSceneDur);
+      updateUiTime();
+    }
+
+    function startLoop() {
+      if (playbackInterval) clearInterval(playbackInterval);
+      lastTickTime = Date.now();
+      playbackInterval = setInterval(() => {
+        const now = Date.now();
+        const delta = now - lastTickTime;
+        lastTickTime = now;
+
+        globalTimeMs += delta;
+        if (mode === "scene" && globalTimeMs >= sceneEndMs) {
+          // playScene(n) plays exactly that scene: stop at its end, never run into the next.
+          globalTimeMs = Math.max(0, sceneEndMs - 1);
+          window.pause();
+          playState = "ended";
+          notify();
+          return;
+        }
+        if (globalTimeMs >= totalDuration) {
+          globalTimeMs = totalDuration;
+          renderFrameAt(globalTimeMs);
+          window.pause();
+          playState = "ended";
+          notify();
+          return;
+        }
+
+        renderFrameAt(globalTimeMs);
+      }, 1000 / 60);
+    }
+
+    function resetAutoHide() {
+      if (!playerBar) return;
+      playerBar.classList.remove("autohide");
+      if (hideTimeout) clearTimeout(hideTimeout);
+      if (playState === "playing") {
+        hideTimeout = setTimeout(() => {
+          playerBar.classList.add("autohide");
+        }, 3000);
+      }
+    }
+
+    window.seek = function(timeMs) {
+      renderFrameAt(timeMs);
+    };
+
+    window.play = function() {
+      if (playState === "ended" || globalTimeMs >= totalDuration) {
+        globalTimeMs = 0;
+      }
+      playState = "playing";
+      mode = "sequence";
+      startLoop();
+      renderFrameAt(globalTimeMs);
+      notify();
+      resetAutoHide();
+    };
+
+    window.pause = function() {
+      playState = "paused";
+      if (playbackInterval) {
+        clearInterval(playbackInterval);
+        playbackInterval = null;
+      }
+      renderFrameAt(globalTimeMs);
+      notify();
+      resetAutoHide();
+    };
+
+    window.replay = function() {
+      globalTimeMs = 0;
+      window.play();
+    };
+
+    window.goto = function(index) {
+      index = Math.max(0, Math.min(index, durations.length - 1));
+      let targetMs = 0;
+      for (let i = 0; i < index; i++) targetMs += durations[i];
+      window.pause();
+      renderFrameAt(targetMs + 100);
+      playState = "idle";
+      notify();
+    };
+
+    window.playScene = function(index) {
+      index = Math.max(0, Math.min(index, durations.length - 1));
+      let targetMs = 0;
+      for (let i = 0; i < index; i++) targetMs += durations[i];
+      globalTimeMs = targetMs;
+      sceneEndMs = targetMs + durations[index];
+      mode = "scene";
+      playState = "playing";
+      startLoop();
+      renderFrameAt(globalTimeMs);
+      notify();
+      resetAutoHide();
+    };
+
+    window.__videoPreview = {
+      sceneCount: durations.length,
+      onState: null,
+      play: window.play,
+      pause: window.pause,
+      replay: window.replay,
+      goto: window.goto,
+      playScene: window.playScene,
+      next: () => window.goto(currentSceneIdx + 1),
+      prev: () => window.goto(currentSceneIdx - 1),
+      isPaused: () => playState === "paused" || playState === "idle",
+      currentScene: () => currentSceneIdx,
+      currentState: () => playState,
+    };
+
+    // DOM Event Listeners
+    if (playBtn) {
+      playBtn.onclick = (e) => {
+        e.stopPropagation();
+        if (playState === "playing") window.pause();
+        else window.play();
+      };
+    }
+    if (replayBtn) {
+      replayBtn.onclick = (e) => {
+        e.stopPropagation();
+        window.replay();
+      };
+    }
+    if (scrubber) {
+      const handleScrub = (e) => {
+        const rect = scrubber.getBoundingClientRect();
+        const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+        renderFrameAt(pct * totalDuration);
+      };
+      scrubber.onmousedown = (e) => {
+        e.stopPropagation();
+        handleScrub(e);
+        const onMove = (ev) => handleScrub(ev);
+        const onUp = () => {
+          window.removeEventListener("mousemove", onMove);
+          window.removeEventListener("mouseup", onUp);
+        };
+        window.addEventListener("mousemove", onMove);
+        window.addEventListener("mouseup", onUp);
+      };
+    }
+
+    pills.forEach((p, idx) => {
+      p.onclick = (e) => {
+        e.stopPropagation();
+        window.goto(idx);
+      };
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.code === "Space" && e.target.tagName !== "INPUT" && e.target.tagName !== "TEXTAREA") {
+        e.preventDefault();
+        if (playState === "playing") window.pause();
+        else window.play();
+      }
+    });
+
+    document.body.onclick = (e) => {
+      if (e.target.closest(".v-player-bar")) return;
+      if (playState === "playing") window.pause();
+      else window.play();
+    };
+
+    document.addEventListener("mousemove", resetAutoHide);
+
+    // Initial load: render frame 0 settled
+    renderFrameAt(0);
+
+    // Autoplay when opened directly as a standalone web page
+    if (window.self === window.top && !window.location.search.includes("paused")) {
+      setTimeout(() => {
+        window.play();
+      }, 250);
+    }
+  })();
+  </script>
+  
+</body>
+</html>

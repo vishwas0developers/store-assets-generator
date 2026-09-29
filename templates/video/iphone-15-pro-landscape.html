@@ -1,0 +1,1547 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>iPhone 15 Pro — Modern Premium</title>
+  <style>
+    html, body { margin:0; padding:0; overflow:hidden; width:1920px; height:1080px; background:#000; }
+    
+    .canvas {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      font-family: "Segoe UI", Roboto, -apple-system, sans-serif;
+    }
+
+    .scene {
+      position: absolute;
+      inset: 0;
+      width: 1920px;
+      height: 1080px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+      padding: 0 10%;
+    }
+
+    .scene.active, .scene.playing {
+      display: flex;
+    }
+
+    .backdrop {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+
+    .vignette {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 50%, rgba(0,0,0,0) 30%, rgba(0,0,0,0.3) 100%);
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* 3D phone layout and viewport */
+    .phone-3d-viewport {
+      perspective: 1600px;
+      width: 600px;
+      height: 900px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 2;
+      transform-origin: center center;
+    }
+
+    .phone-3d-viewport::after {
+      content: '';
+      position: absolute;
+      bottom: 50px;
+      left: 50%;
+      width: 280px;
+      height: 24px;
+      background: radial-gradient(ellipse at center, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0) 70%);
+      transform: translateX(-50%);
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .phone-3d-scaler {
+      transform-style: preserve-3d;
+      transform: scale(0.9);
+      z-index: 2;
+    }
+
+    .phone-3d-rig {
+      position: relative;
+      width: 370px;
+      height: 800px;
+      transform-style: preserve-3d;
+      border-radius: 52px;
+      box-shadow:
+        0 0 0 2px #22252c,
+        0 0 0 3.5px rgba(255,255,255,0.12),
+        0 20px 60px rgba(0,0,0,0.4);
+    }
+
+    /* Protruding side rails buttons */
+    .phone-3d-rig::before, .phone-3d-rig::after {
+      content: '';
+      position: absolute;
+      background: #1c1d22;
+      z-index: 9;
+      border-radius: 3px;
+    }
+    .phone-3d-rig::before {
+      left: -3px;
+      top: 150px;
+      width: 4px;
+      height: 80px;
+    }
+    .phone-3d-rig::after {
+      right: -3px;
+      top: 170px;
+      width: 4px;
+      height: 55px;
+    }
+
+    /* Device shell now comes from a real GLB rendered by
+       src/render/three-bridge.ts's shell-only mode (see the
+       <canvas class="device-shell-canvas"> inserted per scene below) --
+       these rules neutralize the old flat-CSS chrome so the canvas shows
+       through cleanly instead of fighting a hardcoded background/rails. */
+    .phone-3d-rig.shell-migrated { background: transparent; box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
+    .phone-3d-rig.shell-migrated::before, .phone-3d-rig.shell-migrated::after { display: none; }
+    .phone-face.front.shell-migrated { background: transparent; }
+    .device-shell-canvas { pointer-events: none; }
+
+    .phone-face.front {
+      position: absolute;
+      inset: 0;
+      border-radius: 52px;
+      z-index: 10;
+      overflow: hidden;
+      padding: 9px;
+      background: #08080a;
+    }
+
+    .screen-scroll-wrap {
+      width: 100%;
+      height: 100%;
+      border-radius: 43px;
+      overflow: hidden;
+      position: relative;
+      background: #08080a;
+    }
+
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: block;
+      object-fit: cover;
+    }
+
+    .gloss-sheen {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.01) 40%, rgba(255,255,255,0.05) 100%);
+      z-index: 11;
+      pointer-events: none;
+      border-radius: 43px;
+    }
+
+    .screen-edge-glare {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 8px;
+      background: linear-gradient(to right, rgba(255,255,255,0.1), transparent);
+      z-index: 12;
+      pointer-events: none;
+    }
+    .screen-edge-glare.left-edge { left: 0; }
+    .screen-edge-glare.right-edge { right: 0; transform: scaleX(-1); }
+
+    .curved-edge-shadow {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 16px;
+      z-index: 13;
+      pointer-events: none;
+    }
+    .curved-edge-shadow.left {
+      left: 0;
+      background: linear-gradient(to right, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.15) 60%, transparent 100%);
+    }
+    .curved-edge-shadow.right {
+      right: 0;
+      background: linear-gradient(to left, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.15) 60%, transparent 100%);
+    }
+
+    /* Typography styles - Enlarged for 9:16 and layered with GPU will-change */
+    .title-black {
+      font-size: 56px;
+      font-weight: 800;
+      line-height: 1.18;
+      margin: 0;
+      letter-spacing: -1.5px;
+      will-change: transform, opacity;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+
+    .subtitle-grey {
+      font-size: 24px;
+      font-weight: 500;
+      line-height: 1.4;
+      margin: 0;
+      will-change: transform, opacity;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+
+    /* Walkthrough flow labels style */
+    .flow-label {
+      position: absolute;
+      z-index: 20;
+      padding: 16px 36px;
+      background: rgba(18, 20, 26, 0.82);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 999px;
+      color: #ffffff;
+      font-size: 26px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 20px rgba(255,255,255,0.18), inset 0 1px 2px rgba(255,255,255,0.4);
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+    /* Bracket positions are set per-card via inline style in JS */
+    .flow-label-left {
+      left: 5%;
+    }
+    .flow-label-right {
+      right: 5%;
+    }
+
+    
+  /* Global shared template reset styles */
+  html, body { margin:0; padding:0; overflow:hidden; }
+  
+  </style>
+</head>
+<body>
+  <div class="canvas">
+    
+    <!-- Scene 1: Cold Open -->
+    <div class="scene" id="scene-0">
+      <div class="backdrop" style="background: linear-gradient(135deg,#0f2027 0%,#203a43 50%,#2c5364 100%);"></div>
+      <div class="vignette"></div>
+      
+      <div class="scene-content" style="display: flex; width: 100%; height: 100%; align-items: center; justify-content: space-between;">
+        <!-- Copy block (Permanently hidden in Scene 10) -->
+        
+        <div class="copy-col" style="flex: 1.1; max-width: 800px; display: flex; flex-direction: column; justify-content: center; z-index: 5; ">
+          <h2 class="title-black" id="s0-text" style="color: #ffffff; text-shadow: 0 4px 12px rgba(0,0,0,0.3); opacity: 0;">Introducing AppName</h2>
+          <p class="subtitle-grey" id="s0-subtext" style="color: rgba(255,255,255,0.8); opacity: 0; margin-top: 16px;">Reimagined for the widescreen canvas</p>
+        </div>
+        
+
+        <!-- Device viewport -->
+        <div class="device-col" style="flex: 0.9; display: flex; align-items: center; justify-content: center; height: 100%; z-index: 4;">
+          <div class="phone-3d-viewport" id="viewport-0" style="transform-origin: center center;">
+            <div class="phone-3d-scaler" id="scaler-0">
+              <div class="phone-3d-rig shell-migrated" id="phone-rig-0">
+                <canvas class="device-shell-canvas" data-device-id="{{DEVICE_ID}}" data-shell-only="1" width="{{DEVICE_W}}" height="{{DEVICE_H}}" style="position:absolute;inset:0;width:100%;height:100%;z-index:1;"></canvas>
+                
+          <div class="phone-face front shell-migrated">
+            <div class="gloss-sheen"></div>
+            <div class="screen-edge-glare left-edge"></div>
+            <div class="screen-edge-glare right-edge"></div>
+            <div class="curved-edge-shadow left"></div>
+            <div class="curved-edge-shadow right"></div>
+            <div class="screen-scroll-wrap">
+              <img class="phone-screen" id="slot-0" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="Screen" />
+            </div>
+          </div>
+        
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Flow Walkthrough Labels -->
+      
+    </div>
+      
+    <!-- Scene 2: Core Feature -->
+    <div class="scene" id="scene-1">
+      <div class="backdrop" style="background: linear-gradient(135deg,#1e3c72 0%,#2a5298 100%);"></div>
+      <div class="vignette"></div>
+      
+      <div class="scene-content" style="display: flex; width: 100%; height: 100%; align-items: center; justify-content: space-between; flex-direction: row-reverse;">
+        <!-- Copy block (Permanently hidden in Scene 10) -->
+        
+        <div class="copy-col" style="flex: 1.1; max-width: 800px; display: flex; flex-direction: column; justify-content: center; z-index: 5; ">
+          <h2 class="title-black" id="s1-text" style="color: #ffffff; text-shadow: 0 4px 12px rgba(0,0,0,0.3); opacity: 0;">Power, Refined</h2>
+          <p class="subtitle-grey" id="s1-subtext" style="color: rgba(255,255,255,0.8); opacity: 0; margin-top: 16px;">Every interaction crafted with precision</p>
+        </div>
+        
+
+        <!-- Device viewport -->
+        <div class="device-col" style="flex: 0.9; display: flex; align-items: center; justify-content: center; height: 100%; z-index: 4;">
+          <div class="phone-3d-viewport" id="viewport-1" style="transform-origin: center center;">
+            <div class="phone-3d-scaler" id="scaler-1">
+              <div class="phone-3d-rig shell-migrated" id="phone-rig-1">
+                <canvas class="device-shell-canvas" data-device-id="{{DEVICE_ID}}" data-shell-only="1" width="{{DEVICE_W}}" height="{{DEVICE_H}}" style="position:absolute;inset:0;width:100%;height:100%;z-index:1;"></canvas>
+                
+          <div class="phone-face front shell-migrated">
+            <div class="gloss-sheen"></div>
+            <div class="screen-edge-glare left-edge"></div>
+            <div class="screen-edge-glare right-edge"></div>
+            <div class="curved-edge-shadow left"></div>
+            <div class="curved-edge-shadow right"></div>
+            <div class="screen-scroll-wrap">
+              <img class="phone-screen active" id="slot-1-0" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="Screen A" />
+              <img class="phone-screen" id="slot-1-1" style="opacity: 0;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="Screen B" />
+            </div>
+          </div>
+        
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Flow Walkthrough Labels -->
+      
+    </div>
+      
+    <!-- Scene 3: Feature Breakdown -->
+    <div class="scene" id="scene-2">
+      <div class="backdrop" style="background: linear-gradient(135deg,#654ea3 0%,#eaafc8 100%);"></div>
+      <div class="vignette"></div>
+      
+      <div class="scene-content" style="display: flex; width: 100%; height: 100%; align-items: center; justify-content: space-between;">
+        <!-- Copy block (Permanently hidden in Scene 10) -->
+        
+        <div class="copy-col" style="flex: 1.1; max-width: 800px; display: flex; flex-direction: column; justify-content: center; z-index: 5; ">
+          <h2 class="title-black" id="s2-text" style="color: #ffffff; text-shadow: 0 4px 12px rgba(0,0,0,0.3); opacity: 0;">Built to Impress</h2>
+          <p class="subtitle-grey" id="s2-subtext" style="color: rgba(255,255,255,0.8); opacity: 0; margin-top: 16px;">See the bigger picture in high detail</p>
+        </div>
+        
+
+        <!-- Device viewport -->
+        <div class="device-col" style="flex: 0.9; display: flex; align-items: center; justify-content: center; height: 100%; z-index: 4;">
+          <div class="phone-3d-viewport" id="viewport-2" style="transform-origin: center center;">
+            <div class="phone-3d-scaler" id="scaler-2">
+              <div class="phone-3d-rig shell-migrated" id="phone-rig-2">
+                <canvas class="device-shell-canvas" data-device-id="{{DEVICE_ID}}" data-shell-only="1" width="{{DEVICE_W}}" height="{{DEVICE_H}}" style="position:absolute;inset:0;width:100%;height:100%;z-index:1;"></canvas>
+                
+          <div class="phone-face front shell-migrated">
+            <div class="gloss-sheen"></div>
+            <div class="screen-edge-glare left-edge"></div>
+            <div class="screen-edge-glare right-edge"></div>
+            <div class="curved-edge-shadow left"></div>
+            <div class="curved-edge-shadow right"></div>
+            <div class="screen-scroll-wrap">
+              <img class="phone-screen" id="slot-2" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="Screen" />
+            </div>
+          </div>
+        
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Flow Walkthrough Labels -->
+      
+    </div>
+      
+    <!-- Scene 4: Interactive Deep Dive -->
+    <div class="scene" id="scene-3">
+      <div class="backdrop" style="background: linear-gradient(135deg,#232526 0%,#414345 100%);"></div>
+      <div class="vignette"></div>
+      
+      <div class="scene-content" style="display: flex; width: 100%; height: 100%; align-items: center; justify-content: space-between;">
+        <!-- Copy block (Permanently hidden in Scene 10) -->
+        
+        <div class="copy-col" style="flex: 1.1; max-width: 800px; display: flex; flex-direction: column; justify-content: center; z-index: 5; ">
+          <h2 class="title-black" id="s3-text" style="color: #ffffff; text-shadow: 0 4px 12px rgba(0,0,0,0.3); opacity: 0;">Total Control</h2>
+          <p class="subtitle-grey" id="s3-subtext" style="color: rgba(255,255,255,0.8); opacity: 0; margin-top: 16px;">Complete workflow oversight in one spot</p>
+        </div>
+        
+
+        <!-- Device viewport -->
+        <div class="device-col" style="flex: 0.9; display: flex; align-items: center; justify-content: center; height: 100%; z-index: 4;">
+          <div class="phone-3d-viewport" id="viewport-3" style="transform-origin: center center;">
+            <div class="phone-3d-scaler" id="scaler-3">
+              <div class="phone-3d-rig shell-migrated" id="phone-rig-3">
+                <canvas class="device-shell-canvas" data-device-id="{{DEVICE_ID}}" data-shell-only="1" width="{{DEVICE_W}}" height="{{DEVICE_H}}" style="position:absolute;inset:0;width:100%;height:100%;z-index:1;"></canvas>
+                
+          <div class="phone-face front shell-migrated">
+            <div class="gloss-sheen"></div>
+            <div class="screen-edge-glare left-edge"></div>
+            <div class="screen-edge-glare right-edge"></div>
+            <div class="curved-edge-shadow left"></div>
+            <div class="curved-edge-shadow right"></div>
+            <div class="screen-scroll-wrap">
+              <img class="phone-screen active" id="slot-3-0" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="Screen A" />
+              <img class="phone-screen" id="slot-3-1" style="opacity: 0;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="Screen B" />
+            </div>
+          </div>
+        
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Flow Walkthrough Labels -->
+      
+    </div>
+      
+    <!-- Scene 5: Performance & Capabilities -->
+    <div class="scene" id="scene-4">
+      <div class="backdrop" style="background: linear-gradient(135deg,#1e3c72 0%,#2a5298 100%);"></div>
+      <div class="vignette"></div>
+      
+      <div class="scene-content" style="display: flex; width: 100%; height: 100%; align-items: center; justify-content: space-between; flex-direction: row-reverse;">
+        <!-- Copy block (Permanently hidden in Scene 10) -->
+        
+        <div class="copy-col" style="flex: 1.1; max-width: 800px; display: flex; flex-direction: column; justify-content: center; z-index: 5; ">
+          <h2 class="title-black" id="s4-text" style="color: #ffffff; text-shadow: 0 4px 12px rgba(0,0,0,0.3); opacity: 0;">Built for Scale</h2>
+          <p class="subtitle-grey" id="s4-subtext" style="color: rgba(255,255,255,0.8); opacity: 0; margin-top: 16px;">Fast under any load</p>
+        </div>
+        
+
+        <!-- Device viewport -->
+        <div class="device-col" style="flex: 0.9; display: flex; align-items: center; justify-content: center; height: 100%; z-index: 4;">
+          <div class="phone-3d-viewport" id="viewport-4" style="transform-origin: center center;">
+            <div class="phone-3d-scaler" id="scaler-4">
+              <div class="phone-3d-rig shell-migrated" id="phone-rig-4">
+                <canvas class="device-shell-canvas" data-device-id="{{DEVICE_ID}}" data-shell-only="1" width="{{DEVICE_W}}" height="{{DEVICE_H}}" style="position:absolute;inset:0;width:100%;height:100%;z-index:1;"></canvas>
+                
+          <div class="phone-face front shell-migrated">
+            <div class="gloss-sheen"></div>
+            <div class="screen-edge-glare left-edge"></div>
+            <div class="screen-edge-glare right-edge"></div>
+            <div class="curved-edge-shadow left"></div>
+            <div class="curved-edge-shadow right"></div>
+            <div class="screen-scroll-wrap">
+              <img class="phone-screen" id="slot-4" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="Screen" />
+            </div>
+          </div>
+        
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Flow Walkthrough Labels -->
+      
+    </div>
+      
+    <!-- Scene 6: Speed & Automation -->
+    <div class="scene" id="scene-5">
+      <div class="backdrop" style="background: linear-gradient(135deg,#0f2027 0%,#203a43 50%,#2c5364 100%);"></div>
+      <div class="vignette"></div>
+      
+      <div class="scene-content" style="display: flex; width: 100%; height: 100%; align-items: center; justify-content: space-between;">
+        <!-- Copy block (Permanently hidden in Scene 10) -->
+        
+        <div class="copy-col" style="flex: 1.1; max-width: 800px; display: flex; flex-direction: column; justify-content: center; z-index: 5; ">
+          <h2 class="title-black" id="s5-text" style="color: #ffffff; text-shadow: 0 4px 12px rgba(0,0,0,0.3); opacity: 0;">Runs Itself</h2>
+          <p class="subtitle-grey" id="s5-subtext" style="color: rgba(255,255,255,0.8); opacity: 0; margin-top: 16px;">Set your rules, let automation take over</p>
+        </div>
+        
+
+        <!-- Device viewport -->
+        <div class="device-col" style="flex: 0.9; display: flex; align-items: center; justify-content: center; height: 100%; z-index: 4;">
+          <div class="phone-3d-viewport" id="viewport-5" style="transform-origin: center center;">
+            <div class="phone-3d-scaler" id="scaler-5">
+              <div class="phone-3d-rig shell-migrated" id="phone-rig-5">
+                <canvas class="device-shell-canvas" data-device-id="{{DEVICE_ID}}" data-shell-only="1" width="{{DEVICE_W}}" height="{{DEVICE_H}}" style="position:absolute;inset:0;width:100%;height:100%;z-index:1;"></canvas>
+                
+          <div class="phone-face front shell-migrated">
+            <div class="gloss-sheen"></div>
+            <div class="screen-edge-glare left-edge"></div>
+            <div class="screen-edge-glare right-edge"></div>
+            <div class="curved-edge-shadow left"></div>
+            <div class="curved-edge-shadow right"></div>
+            <div class="screen-scroll-wrap">
+              <img class="phone-screen" id="slot-5" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="Screen" />
+            </div>
+          </div>
+        
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Flow Walkthrough Labels -->
+      
+    </div>
+      
+    <!-- Scene 7: Security & Privacy -->
+    <div class="scene" id="scene-6">
+      <div class="backdrop" style="background: linear-gradient(135deg,#232526 0%,#414345 100%);"></div>
+      <div class="vignette"></div>
+      
+      <div class="scene-content" style="display: flex; width: 100%; height: 100%; align-items: center; justify-content: space-between;">
+        <!-- Copy block (Permanently hidden in Scene 10) -->
+        
+        <div class="copy-col" style="flex: 1.1; max-width: 800px; display: flex; flex-direction: column; justify-content: center; z-index: 5; ">
+          <h2 class="title-black" id="s6-text" style="color: #ffffff; text-shadow: 0 4px 12px rgba(0,0,0,0.3); opacity: 0;">Airtight Security</h2>
+          <p class="subtitle-grey" id="s6-subtext" style="color: rgba(255,255,255,0.8); opacity: 0; margin-top: 16px;">Enterprise-grade protection by default</p>
+        </div>
+        
+
+        <!-- Device viewport -->
+        <div class="device-col" style="flex: 0.9; display: flex; align-items: center; justify-content: center; height: 100%; z-index: 4;">
+          <div class="phone-3d-viewport" id="viewport-6" style="transform-origin: center center;">
+            <div class="phone-3d-scaler" id="scaler-6">
+              <div class="phone-3d-rig shell-migrated" id="phone-rig-6">
+                <canvas class="device-shell-canvas" data-device-id="{{DEVICE_ID}}" data-shell-only="1" width="{{DEVICE_W}}" height="{{DEVICE_H}}" style="position:absolute;inset:0;width:100%;height:100%;z-index:1;"></canvas>
+                
+          <div class="phone-face front shell-migrated">
+            <div class="gloss-sheen"></div>
+            <div class="screen-edge-glare left-edge"></div>
+            <div class="screen-edge-glare right-edge"></div>
+            <div class="curved-edge-shadow left"></div>
+            <div class="curved-edge-shadow right"></div>
+            <div class="screen-scroll-wrap">
+              <img class="phone-screen" id="slot-6" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="Screen" />
+            </div>
+          </div>
+        
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Flow Walkthrough Labels -->
+      
+    </div>
+      
+    <!-- Scene 8: Seamless Collaboration -->
+    <div class="scene" id="scene-7">
+      <div class="backdrop" style="background: linear-gradient(135deg,#1e3c72 0%,#2a5298 100%);"></div>
+      <div class="vignette"></div>
+      
+      <div class="scene-content" style="display: flex; width: 100%; height: 100%; align-items: center; justify-content: space-between; flex-direction: row-reverse;">
+        <!-- Copy block (Permanently hidden in Scene 10) -->
+        
+        <div class="copy-col" style="flex: 1.1; max-width: 800px; display: flex; flex-direction: column; justify-content: center; z-index: 5; ">
+          <h2 class="title-black" id="s7-text" style="color: #ffffff; text-shadow: 0 4px 12px rgba(0,0,0,0.3); opacity: 0;">Fast, Fluid, Familiar</h2>
+          <p class="subtitle-grey" id="s7-subtext" style="color: rgba(255,255,255,0.8); opacity: 0; margin-top: 16px;">Instant collaboration across your team</p>
+        </div>
+        
+
+        <!-- Device viewport -->
+        <div class="device-col" style="flex: 0.9; display: flex; align-items: center; justify-content: center; height: 100%; z-index: 4;">
+          <div class="phone-3d-viewport" id="viewport-7" style="transform-origin: center center;">
+            <div class="phone-3d-scaler" id="scaler-7">
+              <div class="phone-3d-rig shell-migrated" id="phone-rig-7">
+                <canvas class="device-shell-canvas" data-device-id="{{DEVICE_ID}}" data-shell-only="1" width="{{DEVICE_W}}" height="{{DEVICE_H}}" style="position:absolute;inset:0;width:100%;height:100%;z-index:1;"></canvas>
+                
+          <div class="phone-face front shell-migrated">
+            <div class="gloss-sheen"></div>
+            <div class="screen-edge-glare left-edge"></div>
+            <div class="screen-edge-glare right-edge"></div>
+            <div class="curved-edge-shadow left"></div>
+            <div class="curved-edge-shadow right"></div>
+            <div class="screen-scroll-wrap">
+              <img class="phone-screen" id="slot-7" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="Screen" />
+            </div>
+          </div>
+        
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Flow Walkthrough Labels -->
+      
+    </div>
+      
+    <!-- Scene 9: Ecosystem & Benefits -->
+    <div class="scene" id="scene-8">
+      <div class="backdrop" style="background: linear-gradient(135deg,#654ea3 0%,#eaafc8 100%);"></div>
+      <div class="vignette"></div>
+      
+      <div class="scene-content" style="display: flex; width: 100%; height: 100%; align-items: center; justify-content: space-between;">
+        <!-- Copy block (Permanently hidden in Scene 10) -->
+        
+        <div class="copy-col" style="flex: 1.1; max-width: 800px; display: flex; flex-direction: column; justify-content: center; z-index: 5; ">
+          <h2 class="title-black" id="s8-text" style="color: #ffffff; text-shadow: 0 4px 12px rgba(0,0,0,0.3); opacity: 0;">One Account, Every Screen</h2>
+          <p class="subtitle-grey" id="s8-subtext" style="color: rgba(255,255,255,0.8); opacity: 0; margin-top: 16px;">Desktop, mobile, and web -- unified</p>
+        </div>
+        
+
+        <!-- Device viewport -->
+        <div class="device-col" style="flex: 0.9; display: flex; align-items: center; justify-content: center; height: 100%; z-index: 4;">
+          <div class="phone-3d-viewport" id="viewport-8" style="transform-origin: center center;">
+            <div class="phone-3d-scaler" id="scaler-8">
+              <div class="phone-3d-rig shell-migrated" id="phone-rig-8">
+                <canvas class="device-shell-canvas" data-device-id="{{DEVICE_ID}}" data-shell-only="1" width="{{DEVICE_W}}" height="{{DEVICE_H}}" style="position:absolute;inset:0;width:100%;height:100%;z-index:1;"></canvas>
+                
+          <div class="phone-face front shell-migrated">
+            <div class="gloss-sheen"></div>
+            <div class="screen-edge-glare left-edge"></div>
+            <div class="screen-edge-glare right-edge"></div>
+            <div class="curved-edge-shadow left"></div>
+            <div class="curved-edge-shadow right"></div>
+            <div class="screen-scroll-wrap">
+              <img class="phone-screen" id="slot-8" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="Screen" />
+            </div>
+          </div>
+        
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Flow Walkthrough Labels -->
+      
+    </div>
+      
+    <!-- Scene 10: App Flow -->
+    <div class="scene" id="scene-9">
+      <div class="backdrop" style="background: linear-gradient(135deg,#0f2027 0%,#203a43 50%,#2c5364 100%);"></div>
+      <div class="vignette"></div>
+      
+      <div class="scene-content" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; width: 100%; height: 100%;">
+        <!-- Copy block (Permanently hidden in Scene 10) -->
+        
+        <div class="copy-col" style="max-width: 1000px; margin-bottom: 40px; z-index: 5; text-align: center; align-items: center; display: none !important;">
+          <h2 class="title-black" id="s9-text" style="color: #ffffff; text-shadow: 0 4px 12px rgba(0,0,0,0.3); opacity: 0;">Everything You Need</h2>
+          <p class="subtitle-grey" id="s9-subtext" style="color: rgba(255,255,255,0.8); opacity: 0; margin-top: 16px;">Download today and see for yourself</p>
+        </div>
+        
+
+        <!-- Device viewport -->
+        <div class="device-col" style="display: flex; align-items: center; justify-content: center; z-index: 4;">
+          <div class="phone-3d-viewport" id="viewport-9" style="transform-origin: center center;">
+            <div class="phone-3d-scaler" id="scaler-9">
+              <div class="phone-3d-rig shell-migrated" id="phone-rig-9">
+                <canvas class="device-shell-canvas" data-device-id="{{DEVICE_ID}}" data-shell-only="1" width="{{DEVICE_W}}" height="{{DEVICE_H}}" style="position:absolute;inset:0;width:100%;height:100%;z-index:1;"></canvas>
+                
+          <div class="phone-face front shell-migrated">
+            <div class="gloss-sheen"></div>
+            <div class="screen-edge-glare left-edge"></div>
+            <div class="screen-edge-glare right-edge"></div>
+            <div class="curved-edge-shadow left"></div>
+            <div class="curved-edge-shadow right"></div>
+            <div class="screen-scroll-wrap">
+              <img class="phone-screen" id="slot-9" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="Screen" />
+            </div>
+          </div>
+        
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Flow Walkthrough Labels -->
+      
+          <div class="flow-label" id="flow-label-9-0" style="opacity:0; top:28%; left:5%;">
+            <span>Home Dashboard</span>
+          </div>
+        
+
+          <div class="flow-label" id="flow-label-9-1" style="opacity:0; top:28%; right:5%;">
+            <span>Live Analytics</span>
+          </div>
+        
+
+          <div class="flow-label" id="flow-label-9-2" style="opacity:0; top:50%; left:12%;">
+            <span>Team Settings</span>
+          </div>
+        
+
+          <div class="flow-label" id="flow-label-9-3" style="opacity:0; top:50%; right:12%;">
+            <span>Bank-Grade Security</span>
+          </div>
+        
+
+          <div class="flow-label" id="flow-label-9-4" style="opacity:0; top:72%; left:5%;">
+            <span>Instant Sync</span>
+          </div>
+        
+
+          <div class="flow-label" id="flow-label-9-5" style="opacity:0; top:72%; right:5%;">
+            <span>Get the App</span>
+          </div>
+        
+    </div>
+      
+  </div>
+
+  
+
+  <script type="application/json" id="template-config">
+{
+  "id": "iphone-15-pro-landscape",
+  "device": "apple-iphone-15-pro",
+  "deviceType": "3d",
+  "deviceFraction": 0.6,
+  "name": "iPhone 15 Pro — Modern Premium",
+  "description": "Widescreen showcase featuring alternating left/right layout balance, cinematic 3D product motion, and animated flow subtitles.",
+  "useCase": "Best for website hero headers, YouTube video ads, and product launch keynotes.",
+  "designStyle": "Full 16:9 widescreen canvas, deep ocean/royal palette, alternating copy rhythm, dynamic flow labels.",
+  "aspectRatio": "16:9",
+  "features": [
+    "Widescreen 10-scene master layout",
+    "Alternating left/right balance",
+    "Dynamic flow subtitles in scene 10"
+  ],
+  "scenes": [
+    {
+      "label": "Cold Open",
+      "sceneTemplate": "tilt-3d",
+      "durationSeconds": 5,
+      "background": "ocean",
+      "rotate": 12,
+      "zoom": 10,
+      "move": 25,
+      "layout": "copy-left",
+      "depth": "perspective",
+      "transition": "cut",
+      "text": "Introducing AppName",
+      "subtext": "Reimagined for the widescreen canvas",
+      "slots": {
+        "text": "s0-text",
+        "subtext": "s0-subtext",
+        "screenshot": "slot-0"
+      }
+    },
+    {
+      "label": "Core Feature",
+      "sceneTemplate": "kinetic-type",
+      "durationSeconds": 5,
+      "background": "royal",
+      "rotate": 0,
+      "zoom": 12,
+      "move": 0,
+      "layout": "copy-right",
+      "depth": "showcase",
+      "transition": "fade",
+      "screenCount": 2,
+      "text": "Power, Refined",
+      "subtext": "Every interaction crafted with precision",
+      "slots": {
+        "text": "s1-text",
+        "subtext": "s1-subtext",
+        "screenshots": [
+          "slot-1a",
+          "slot-1b"
+        ]
+      }
+    },
+    {
+      "label": "Feature Breakdown",
+      "sceneTemplate": "mask-reveal",
+      "durationSeconds": 5,
+      "background": "violet",
+      "rotate": 4,
+      "zoom": 10,
+      "move": 20,
+      "layout": "hero-device",
+      "depth": "perspective",
+      "transition": "fade",
+      "text": "Built to Impress",
+      "subtext": "See the bigger picture in high detail",
+      "slots": {
+        "text": "s2-text",
+        "subtext": "s2-subtext",
+        "screenshot": "slot-2"
+      }
+    },
+    {
+      "label": "Interactive Deep Dive",
+      "sceneTemplate": "zoom-focus",
+      "durationSeconds": 5,
+      "background": "graphite",
+      "rotate": 0,
+      "zoom": 12,
+      "move": 0,
+      "layout": "copy-left",
+      "depth": "showcase",
+      "transition": "wipe",
+      "screenCount": 2,
+      "text": "Total Control",
+      "subtext": "Complete workflow oversight in one spot",
+      "slots": {
+        "text": "s3-text",
+        "subtext": "s3-subtext",
+        "screenshots": [
+          "slot-3a",
+          "slot-3b"
+        ]
+      }
+    },
+    {
+      "label": "Performance & Capabilities",
+      "sceneTemplate": "tilt-3d",
+      "durationSeconds": 4.5,
+      "background": "royal",
+      "rotate": 8,
+      "zoom": 10,
+      "move": 20,
+      "layout": "copy-right",
+      "depth": "float",
+      "transition": "fade",
+      "text": "Built for Scale",
+      "subtext": "Fast under any load",
+      "slots": {
+        "text": "s4-text",
+        "subtext": "s4-subtext",
+        "screenshot": "slot-4"
+      }
+    },
+    {
+      "label": "Speed & Automation",
+      "sceneTemplate": "kinetic-type",
+      "durationSeconds": 4.5,
+      "background": "ocean",
+      "rotate": 0,
+      "zoom": 10,
+      "move": 0,
+      "layout": "copy-left",
+      "depth": "showcase",
+      "transition": "fade",
+      "text": "Runs Itself",
+      "subtext": "Set your rules, let automation take over",
+      "slots": {
+        "text": "s5-text",
+        "subtext": "s5-subtext",
+        "screenshot": "slot-5"
+      }
+    },
+    {
+      "label": "Security & Privacy",
+      "sceneTemplate": "mask-reveal",
+      "durationSeconds": 4.5,
+      "background": "graphite",
+      "rotate": 0,
+      "zoom": 10,
+      "move": 0,
+      "layout": "hero-device",
+      "depth": "showcase",
+      "transition": "fade",
+      "text": "Airtight Security",
+      "subtext": "Enterprise-grade protection by default",
+      "slots": {
+        "text": "s6-text",
+        "subtext": "s6-subtext",
+        "screenshot": "slot-6"
+      }
+    },
+    {
+      "label": "Seamless Collaboration",
+      "sceneTemplate": "parallax-stack",
+      "durationSeconds": 5,
+      "background": "royal",
+      "rotate": 4,
+      "zoom": 10,
+      "move": 20,
+      "layout": "copy-right",
+      "depth": "float",
+      "transition": "fade",
+      "text": "Fast, Fluid, Familiar",
+      "subtext": "Instant collaboration across your team",
+      "slots": {
+        "text": "s7-text",
+        "subtext": "s7-subtext",
+        "screenshot": "slot-7"
+      }
+    },
+    {
+      "label": "Ecosystem & Benefits",
+      "sceneTemplate": "slide-pan",
+      "durationSeconds": 4.5,
+      "background": "violet",
+      "rotate": -4,
+      "zoom": 8,
+      "move": 30,
+      "layout": "copy-left",
+      "depth": "showcase",
+      "transition": "fade",
+      "text": "One Account, Every Screen",
+      "subtext": "Desktop, mobile, and web -- unified",
+      "slots": {
+        "text": "s8-text",
+        "subtext": "s8-subtext",
+        "screenshot": "slot-8"
+      }
+    },
+    {
+      "label": "App Flow",
+      "sceneTemplate": "landscape-flow",
+      "durationSeconds": 10,
+      "background": "ocean",
+      "rotate": 0,
+      "zoom": 14,
+      "move": 0,
+      "layout": "centre-flank",
+      "depth": "showcase",
+      "transition": "fade",
+      "text": "Everything You Need",
+      "subtext": "Download today and see for yourself",
+      "slots": {
+        "text": "s9-text",
+        "subtext": "s9-subtext",
+        "screenshot": "slot-9"
+      },
+      "flowSteps": [
+        {
+          "label": "Home Dashboard",
+          "startSec": 2,
+          "durationSec": 2,
+          "side": "left"
+        },
+        {
+          "label": "Live Analytics",
+          "startSec": 3,
+          "durationSec": 2,
+          "side": "right"
+        },
+        {
+          "label": "Team Settings",
+          "startSec": 4,
+          "durationSec": 2,
+          "side": "left"
+        },
+        {
+          "label": "Bank-Grade Security",
+          "startSec": 5,
+          "durationSec": 2,
+          "side": "right"
+        },
+        {
+          "label": "Instant Sync",
+          "startSec": 6,
+          "durationSec": 2,
+          "side": "left"
+        },
+        {
+          "label": "Get the App",
+          "startSec": 7,
+          "durationSec": 2,
+          "side": "right"
+        }
+      ]
+    }
+  ]
+}
+  </script>
+
+  <script>
+    // Progressive, jitter-free transformation engine
+    window.__customSceneTransform = function(sceneIdx, progress, globalTimeMs) {
+      // Easing helper
+      function easeOutCubic(x) {
+        return 1 - Math.pow(1 - x, 3);
+      }
+
+      function easeWindow(p, win) {
+        const t = Math.min(1, Math.max(0, p / win));
+        return 1 - Math.pow(1 - t, 3);
+      }
+
+      // Smooth transform interpolation
+      function applyRigTransform(rig, viewport, text, subtext, config) {
+        const ease = easeOutCubic(progress);
+        
+        // 3D phone transforms
+        if (rig) {
+          const yaw = config.startYaw + (config.endYaw - config.startYaw) * ease;
+          const pitch = config.startPitch + (config.endPitch - config.startPitch) * ease;
+          const tx = config.startX + (config.endX - config.startX) * ease;
+          const ty = config.startY + (config.endY - config.startY) * ease;
+          
+          // Apply gentle ambient drift once entered
+          const driftSpeed = 0.001;
+          const driftYaw = Math.sin(globalTimeMs * driftSpeed) * 2.2 * ease;
+          const driftPitch = Math.cos(globalTimeMs * driftSpeed * 1.2) * 1.4 * ease;
+          const driftX = Math.sin(globalTimeMs * driftSpeed * 0.9) * 6 * ease;
+          const driftY = Math.cos(globalTimeMs * driftSpeed * 1.1) * 6 * ease;
+
+          rig.style.transform = "rotateY(" + (yaw + driftYaw) + "deg) rotateX(" + (pitch + driftPitch) + "deg)";
+          
+          if (viewport) {
+            const vScale = config.startScale + (config.endScale - config.startScale) * ease;
+            const vX = tx + driftX;
+            const vY = ty + driftY;
+            viewport.style.transform = "translate(" + vX + "px, " + vY + "px) scale(" + vScale + ")";
+          }
+        }
+
+        // Text reveal animations (fade & translate3d for subpixel smoothing)
+        if (text) {
+          const tEase = easeWindow(progress, 0.6);
+          text.style.opacity = tEase;
+          text.style.transform = "translate3d(0, " + (25 * (1 - tEase)) + "px, 0)";
+        }
+        if (subtext) {
+          const subProgress = Math.max(0, (progress - 0.12) / 0.88);
+          const tSubEase = easeWindow(subProgress, 0.6);
+          subtext.style.opacity = tSubEase;
+          subtext.style.transform = "translate3d(0, " + (20 * (1 - tSubEase)) + "px, 0)";
+        }
+      }
+
+      const viewport = document.getElementById("viewport-" + sceneIdx);
+      const scaler = document.getElementById("scaler-" + sceneIdx);
+      const rig = document.getElementById("phone-rig-" + sceneIdx);
+      const text = document.getElementById("s" + sceneIdx + "-text");
+      const subtext = document.getElementById("s" + sceneIdx + "-subtext");
+
+      // Default animation properties
+      // Portrait endScale is larger to fill canvas height (~82% coverage)
+      let animConfig = {
+        startYaw: -18, endYaw: 0,
+        startPitch: 4, endPitch: 0,
+        startX: 0, endX: 0,
+        startY: 280, endY: 0,
+        startScale: 0.84, endScale: 1.0
+      };
+
+      if (sceneIdx === 0) { // Scene 1: Hero Rise
+        animConfig = {
+          startYaw: -15, endYaw: 5,
+          startPitch: 5, endPitch: 0,
+          startX: 0, endX: 0,
+          startY: 400, endY: 0,
+          startScale: 0.85, endScale: 1.02
+        };
+      }
+      else if (sceneIdx === 1) { // Scene 2: 3D Tilt
+        animConfig = {
+          startYaw: -35, endYaw: -8,
+          startPitch: 8, endPitch: 0,
+          startX: 300, endX: 0,
+          startY: 0, endY: 0,
+          startScale: 0.88, endScale: 1.05
+        };
+        // Scene 2 shows two screenshots (slot-1-0 / slot-1-1): crossfade between them
+        const imgA = document.getElementById("slot-1-0");
+        const imgB = document.getElementById("slot-1-1");
+        if (imgA && imgB) {
+          const fadeStart = 0.35;
+          const fadeDur = 0.25;
+          const tFade = Math.min(1, Math.max(0, (progress - fadeStart) / fadeDur));
+          imgA.style.opacity = 1 - tFade;
+          imgB.style.opacity = tFade;
+        }
+      }
+      else if (sceneIdx === 2) { // Scene 3: Feature Breakdown (single screenshot)
+        animConfig = {
+          startYaw: 25, endYaw: 0,
+          startPitch: 0, endPitch: 0,
+          startX: 0, endX: 0,
+          startY: 200, endY: 0,
+          startScale: 0.86, endScale: 1.0
+        };
+      }
+      else if (sceneIdx === 3) { // Scene 4: Zoom Focus
+        animConfig = {
+          startYaw: -12, endYaw: 6,
+          startPitch: 4, endPitch: 0,
+          startX: 0, endX: 0,
+          startY: 0, endY: 0,
+          startScale: 0.78, endScale: 1.06
+        };
+        // For landscape multiple screen crossfade if scene index 3
+        const imgA = document.getElementById("slot-3-0");
+        const imgB = document.getElementById("slot-3-1");
+        if (imgA && imgB) {
+          const fadeStart = 0.35;
+          const fadeDur = 0.25;
+          const tFade = Math.min(1, Math.max(0, (progress - fadeStart) / fadeDur));
+          imgA.style.opacity = 1 - tFade;
+          imgB.style.opacity = tFade;
+        }
+      }
+      else if (sceneIdx === 4) { // Scene 5: Parallax stack
+        animConfig = {
+          startYaw: -22, endYaw: -5,
+          startPitch: 0, endPitch: 0,
+          startX: -150, endX: 0,
+          startY: 0, endY: 0,
+          startScale: 0.88, endScale: 1.02
+        };
+      }
+      else if (sceneIdx === 5) { // Scene 6: Kinetic Type
+        animConfig = {
+          startYaw: 0, endYaw: 0,
+          startPitch: 0, endPitch: 0,
+          startX: 0, endX: 0,
+          startY: 180, endY: 0,
+          startScale: 0.9, endScale: 1.03
+        };
+      }
+      else if (sceneIdx === 6) { // Scene 7: Zoom Focus (Security scene)
+        animConfig = {
+          startYaw: 15, endYaw: -12,
+          startPitch: 4, endPitch: 0,
+          startX: 0, endX: 0,
+          startY: 0, endY: 0,
+          startScale: 0.82, endScale: 1.08
+        };
+      }
+      else if (sceneIdx === 7) { // Scene 8: Seamless Collaboration
+        animConfig = {
+          startYaw: -18, endYaw: 8,
+          startPitch: 0, endPitch: 0,
+          startX: 120, endX: 0,
+          startY: 0, endY: 0,
+          startScale: 0.88, endScale: 1.02
+        };
+      }
+      else if (sceneIdx === 8) { // Scene 9: Ecosystem & Benefits
+        animConfig = {
+          startYaw: 0, endYaw: 0,
+          startPitch: 0, endPitch: 0,
+          startX: 0, endX: 0,
+          startY: -200, endY: 0,
+          startScale: 0.88, endScale: 1.02
+        };
+      }
+      else if (sceneIdx === 9) { // Scene 10: App Flow outro spin + merge / pill-flank
+        // Landscape: cap at 1.5 so phone touches top/bottom edges exactly (1080 / (800*0.9) = 1.5)
+        // Portrait: 2.45 drives the full-bleed zoom
+        const finalScale = 1.5;
+        animConfig = {
+          startYaw: -360, endYaw: 0,
+          startPitch: 0, endPitch: 0,
+          startX: 0, endX: 0,
+          startY: 0, endY: 0,
+          startScale: 0.85, endScale: finalScale
+        };
+
+        // For landscape flow, reveal flanking walkthrough labels dynamically
+        if (true) {
+          const lCount = 6;
+          for (let stepIdx = 0; stepIdx < lCount; stepIdx++) {
+            const label = document.getElementById("flow-label-9-" + stepIdx);
+            if (label) {
+              const startProgress = 0.15 + stepIdx * 0.08;
+              const stepProgress = Math.min(1, Math.max(0, (progress - startProgress) / 0.15));
+              const stepEase = easeOutCubic(stepProgress);
+              label.style.opacity = stepProgress;
+              const xOffset = (stepIdx % 2 === 0 ? -40 : 40) * (1 - stepEase);
+              label.style.transform = "translateY(-50%) translateX(" + xOffset + "px)";
+            }
+          }
+        }
+      }
+
+      applyRigTransform(rig, scaler, text, subtext, animConfig);
+    };
+  </script>
+
+  
+  <!-- Video Player Logic & API Controller -->
+  <script>
+  (function() {
+    // Dynamically inject player bar when loaded standalone (window.self === window.top)
+    if (window.self === window.top) {
+      const styleEl = document.createElement("style");
+      styleEl.textContent = "\n  /* === Universal Interactive Player Overlay === */\n  .v-player-bar {\n    position: fixed;\n    bottom: 24px;\n    left: 50%;\n    transform: translateX(-50%);\n    display: flex;\n    align-items: center;\n    gap: 16px;\n    background: rgba(15, 17, 26, 0.88);\n    backdrop-filter: blur(18px);\n    -webkit-backdrop-filter: blur(18px);\n    border: 1px solid rgba(255, 255, 255, 0.16);\n    border-radius: 40px;\n    padding: 10px 22px;\n    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.05);\n    z-index: 999999;\n    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;\n    color: #ffffff;\n    user-select: none;\n    transition: opacity 0.35s ease, transform 0.35s ease;\n  }\n  .v-player-bar.autohide {\n    opacity: 0;\n    pointer-events: none;\n    transform: translate(-50%, 15px);\n  }\n  .v-btn {\n    background: #3b82f6;\n    color: white;\n    border: none;\n    border-radius: 50%;\n    width: 40px;\n    height: 40px;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    font-size: 16px;\n    cursor: pointer;\n    transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;\n    box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);\n    outline: none;\n  }\n  .v-btn:hover {\n    transform: scale(1.08);\n    background: #2563eb;\n    box-shadow: 0 6px 18px rgba(59, 130, 246, 0.6);\n  }\n  .v-btn-secondary {\n    background: rgba(255, 255, 255, 0.1);\n    color: #cbd5e1;\n    box-shadow: none;\n    width: 34px;\n    height: 34px;\n    font-size: 14px;\n  }\n  .v-btn-secondary:hover {\n    background: rgba(255, 255, 255, 0.2);\n    color: #fff;\n    box-shadow: none;\n  }\n  .v-timeline-box {\n    display: flex;\n    align-items: center;\n    gap: 12px;\n    width: 260px;\n  }\n  .v-scrubber {\n    flex: 1;\n    height: 6px;\n    background: rgba(255, 255, 255, 0.2);\n    border-radius: 3px;\n    position: relative;\n    cursor: pointer;\n  }\n  .v-scrubber:hover {\n    height: 8px;\n  }\n  .v-scrubber-fill {\n    position: absolute;\n    left: 0;\n    top: 0;\n    bottom: 0;\n    width: 0%;\n    background: #3b82f6;\n    border-radius: 3px;\n    pointer-events: none;\n  }\n  .v-scrubber-thumb {\n    position: absolute;\n    top: 50%;\n    left: 0%;\n    transform: translate(-50%, -50%);\n    width: 14px;\n    height: 14px;\n    background: #ffffff;\n    border-radius: 50%;\n    box-shadow: 0 2px 6px rgba(0,0,0,0.5);\n    pointer-events: none;\n    transition: transform 0.1s ease;\n  }\n  .v-scrubber:hover .v-scrubber-thumb {\n    transform: translate(-50%, -50%) scale(1.2);\n  }\n  .v-time-text {\n    font-size: 13px;\n    font-variant-numeric: tabular-nums;\n    color: #94a3b8;\n    min-width: 80px;\n    text-align: right;\n  }\n  .v-pills {\n    display: flex;\n    gap: 6px;\n    border-left: 1px solid rgba(255, 255, 255, 0.14);\n    padding-left: 12px;\n  }\n  .v-pill {\n    background: rgba(255, 255, 255, 0.08);\n    border: 1px solid rgba(255, 255, 255, 0.12);\n    color: #94a3b8;\n    font-size: 12px;\n    font-weight: 500;\n    padding: 5px 11px;\n    border-radius: 16px;\n    cursor: pointer;\n    transition: all 0.15s ease;\n    outline: none;\n  }\n  .v-pill:hover {\n    background: rgba(255, 255, 255, 0.18);\n    color: #ffffff;\n  }\n  .v-pill.active {\n    background: rgba(59, 130, 246, 0.35);\n    border-color: #3b82f6;\n    color: #ffffff;\n    font-weight: 600;\n  }\n  @media print {\n    .v-player-bar { display: none !important; }\n  }\n  body.rendering .v-player-bar, .v-player-bar.render-hidden {\n    display: none !important;\n  }\n  ";
+      document.head.appendChild(styleEl);
+
+      const barContainer = document.createElement("div");
+      barContainer.innerHTML = "\n  <!-- Standalone Floating Video Player Bar -->\n  <div class=\"v-player-bar\" id=\"v-player-bar\">\n    <button class=\"v-btn\" id=\"v-play-btn\" title=\"Play / Pause (Space)\">&#9654;</button>\n    <button class=\"v-btn v-btn-secondary\" id=\"v-mute-btn\" title=\"Mute / Unmute Audio\">&#128266;</button>\n    <div class=\"v-timeline-box\">\n      <div class=\"v-scrubber\" id=\"v-scrubber\">\n        <div class=\"v-scrubber-fill\" id=\"v-scrubber-fill\"></div>\n        <div class=\"v-scrubber-thumb\" id=\"v-scrubber-thumb\"></div>\n      </div>\n      <div class=\"v-time-text\" id=\"v-time-text\">0:00 / 0:53</div>\n    </div>\n    <div class=\"v-pills\" id=\"v-pills\">\n      <button class=\"v-pill active\" data-scene=\"0\">1</button><button class=\"v-pill \" data-scene=\"1\">2</button><button class=\"v-pill \" data-scene=\"2\">3</button><button class=\"v-pill \" data-scene=\"3\">4</button><button class=\"v-pill \" data-scene=\"4\">5</button><button class=\"v-pill \" data-scene=\"5\">6</button><button class=\"v-pill \" data-scene=\"6\">7</button><button class=\"v-pill \" data-scene=\"7\">8</button><button class=\"v-pill \" data-scene=\"8\">9</button><button class=\"v-pill \" data-scene=\"9\">10</button>\n    </div>\n  </div>\n  ".trim();
+      document.body.appendChild(barContainer.firstElementChild);
+    }
+
+    const config = JSON.parse(document.getElementById("template-config").textContent);
+    const scenes = config.scenes;
+    let durations = scenes.map(s => (s.durationSeconds || s.durationMs / 1000 || 5) * 1000);
+    let totalDuration = durations.reduce((a, b) => a + b, 0);
+    
+    let currentSceneIdx = 0;
+    let globalTimeMs = 0;
+    let playState = "idle"; // idle | playing | paused | ended
+    let mode = "sequence"; // sequence | scene
+    let playbackInterval = null;
+    let lastTickTime = Date.now();
+    let hideTimeout = null;
+
+    const playBtn = document.getElementById("v-play-btn");
+    const scrubber = document.getElementById("v-scrubber");
+    const scrubberFill = document.getElementById("v-scrubber-fill");
+    const scrubberThumb = document.getElementById("v-scrubber-thumb");
+    const timeText = document.getElementById("v-time-text");
+    const playerBar = document.getElementById("v-player-bar");
+    const pills = document.querySelectorAll(".v-pill");
+
+    if (window.self !== window.top && playerBar) {
+      playerBar.style.display = "none";
+    }
+
+    function formatTime(ms) {
+      const totalSec = Math.floor(ms / 1000);
+      const min = Math.floor(totalSec / 60);
+      const sec = totalSec % 60;
+      return min + ":" + (sec < 10 ? "0" : "") + sec;
+    }
+
+    function updateUiTime() {
+      const progress = Math.max(0, Math.min(1, globalTimeMs / totalDuration));
+      if (scrubberFill) scrubberFill.style.width = (progress * 100) + "%";
+      if (scrubberThumb) scrubberThumb.style.left = (progress * 100) + "%";
+      if (timeText) timeText.textContent = formatTime(globalTimeMs) + " / " + formatTime(totalDuration);
+      
+      pills.forEach((p, idx) => {
+        p.classList.toggle("active", idx === currentSceneIdx);
+      });
+
+      if (playBtn) {
+        playBtn.innerHTML = playState === "playing" ? "&#10074;&#10074;" : playState === "ended" ? "&#8635;" : "&#9654;";
+      }
+    }
+
+    function notify() {
+      if (window.__videoPreview && typeof window.__videoPreview.onState === 'function') {
+        try {
+          window.__videoPreview.onState({ scene: currentSceneIdx, state: playState, mode });
+        } catch(e) {}
+      }
+    }
+
+    function applyCssAnimationSeek(sceneIdx, sceneRelMs) {
+      document.getAnimations().forEach(a => {
+        try {
+          if (playState === "playing") {
+            if (a.playState !== "running") {
+              a.play();
+            }
+          } else {
+            if (a.playState !== "paused") {
+              a.pause();
+            }
+            // Only set currentTime if it deviates to avoid micro-stutters
+            if (Math.abs((a.currentTime || 0) - sceneRelMs) > 16) {
+              a.currentTime = sceneRelMs;
+            }
+          }
+        } catch(e) {}
+      });
+      document.querySelectorAll("video").forEach(v => {
+        try {
+          if (playState === "playing") {
+            if (v.paused) v.play();
+          } else {
+            if (!v.paused) v.pause();
+            // Only seek if difference is significant
+            if (Math.abs(v.currentTime - (sceneRelMs / 1000)) > 0.05) {
+              v.currentTime = sceneRelMs / 1000;
+            }
+          }
+        } catch(e) {}
+      });
+    }
+
+    function apply3DRigCustomTransforms(sceneIdx, sceneRelMs, sceneDurationMs) {
+      const progress = Math.max(0, Math.min(1, sceneRelMs / sceneDurationMs));
+      
+      // Dynamic hook for template-specific 3D rigs if defined
+      if (typeof window.__customSceneTransform === 'function') {
+        try {
+          window.__customSceneTransform(sceneIdx, progress, globalTimeMs);
+        } catch (err) {
+          console.error("Custom transform error:", err);
+        }
+      } else {
+        const rig = document.getElementById("phone-rig-" + sceneIdx);
+        if (rig) {
+          const yRot = -20 + (progress * 18);
+          const xRot = 8 * Math.sin(progress * Math.PI);
+          rig.style.transform = "rotateY(" + yRot + "deg) rotateX(" + xRot + "deg)";
+        }
+      }
+    }
+
+    function renderFrameAt(timeMs) {
+      globalTimeMs = Math.max(0, Math.min(totalDuration, timeMs));
+      
+      let accum = 0;
+      let targetIdx = 0;
+      let sceneRelMs = 0;
+      for (let i = 0; i < durations.length; i++) {
+        if (globalTimeMs < accum + durations[i] || i === durations.length - 1) {
+          targetIdx = i;
+          sceneRelMs = globalTimeMs - accum;
+          break;
+        }
+        accum += durations[i];
+      }
+
+      if (targetIdx !== currentSceneIdx || !document.querySelector(".scene.playing, .scene.active")) {
+        const changed = targetIdx !== currentSceneIdx;
+        currentSceneIdx = targetIdx;
+        document.querySelectorAll(".scene").forEach((el, idx) => {
+          if (idx === currentSceneIdx) {
+            el.classList.add("playing");
+            el.classList.add("active");
+          } else {
+            el.classList.remove("playing");
+            el.classList.remove("active");
+          }
+        });
+        void document.body.offsetWidth; // Force CSS animation restart
+        if (changed) notify();
+      }
+
+      const curSceneDur = durations[currentSceneIdx] || 5000;
+      applyCssAnimationSeek(currentSceneIdx, sceneRelMs);
+      apply3DRigCustomTransforms(currentSceneIdx, sceneRelMs, curSceneDur);
+      updateUiTime();
+    }
+
+    let animationFrameId = null;
+    let sceneEndMs = 0; // end of the scene started by playScene()
+
+    function startLoop() {
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+      lastTickTime = performance.now();
+      
+      function tick(now) {
+        if (playState !== "playing") return;
+        const delta = now - lastTickTime;
+        lastTickTime = now;
+
+        globalTimeMs += delta;
+        if (mode === "scene" && globalTimeMs >= sceneEndMs) {
+          // playScene(n) plays exactly that scene: stop at its end, never run into the next.
+          globalTimeMs = Math.max(0, sceneEndMs - 1);
+          window.pause();
+          playState = "ended";
+          notify();
+          return;
+        }
+        if (globalTimeMs >= totalDuration) {
+          globalTimeMs = totalDuration;
+          renderFrameAt(globalTimeMs);
+          window.pause();
+          playState = "ended";
+          notify();
+          return;
+        }
+
+        renderFrameAt(globalTimeMs);
+        animationFrameId = requestAnimationFrame(tick);
+      }
+      
+      animationFrameId = requestAnimationFrame(tick);
+    }
+
+    function resetAutoHide() {
+      if (!playerBar) return;
+      playerBar.classList.remove("autohide");
+      if (hideTimeout) clearTimeout(hideTimeout);
+      if (playState === "playing") {
+        hideTimeout = setTimeout(() => {
+          playerBar.classList.add("autohide");
+        }, 3000);
+      }
+    }
+
+    window.seek = function(timeMs) {
+      renderFrameAt(timeMs);
+    };
+
+    window.play = function() {
+      if (playState === "ended" || globalTimeMs >= totalDuration) {
+        globalTimeMs = 0;
+      }
+      playState = "playing";
+      mode = "sequence";
+      startLoop();
+      renderFrameAt(globalTimeMs);
+      notify();
+      resetAutoHide();
+    };
+
+    window.pause = function() {
+      playState = "paused";
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
+      }
+      renderFrameAt(globalTimeMs);
+      notify();
+      resetAutoHide();
+    };
+
+    window.replay = function() {
+      globalTimeMs = 0;
+      window.play();
+    };
+
+    window.goto = function(index) {
+      index = Math.max(0, Math.min(index, durations.length - 1));
+      let targetMs = 0;
+      for (let i = 0; i < index; i++) targetMs += durations[i];
+      window.pause();
+      renderFrameAt(targetMs + 100);
+      playState = "idle";
+      notify();
+    };
+
+    window.playScene = function(index) {
+      index = Math.max(0, Math.min(index, durations.length - 1));
+      let targetMs = 0;
+      for (let i = 0; i < index; i++) targetMs += durations[i];
+      globalTimeMs = targetMs;
+      sceneEndMs = targetMs + durations[index];
+      mode = "scene";
+      playState = "playing";
+      startLoop();
+      renderFrameAt(globalTimeMs);
+      notify();
+      resetAutoHide();
+    };
+
+    window.__videoPreview = {
+      sceneCount: durations.length,
+      onState: null,
+      play: window.play,
+      pause: window.pause,
+      replay: window.replay,
+      goto: window.goto,
+      playScene: window.playScene,
+      next: () => window.goto(currentSceneIdx + 1),
+      prev: () => window.goto(currentSceneIdx - 1),
+      isPaused: () => playState === "paused" || playState === "idle",
+      currentScene: () => currentSceneIdx,
+      currentState: () => playState,
+      get globalTimeMs() { return globalTimeMs; },
+      totalDuration: totalDuration,
+    };
+
+    // DOM Event Listeners
+    if (playBtn) {
+      playBtn.onclick = (e) => {
+        e.stopPropagation();
+        if (playState === "playing") window.pause();
+        else window.play();
+      };
+    }
+    const muteBtn = document.getElementById("v-mute-btn");
+    let isAudioMuted = false;
+    if (muteBtn) {
+      muteBtn.onclick = (e) => {
+        e.stopPropagation();
+        isAudioMuted = !isAudioMuted;
+        muteBtn.innerHTML = isAudioMuted ? "&#128263;" : "&#128266;";
+        muteBtn.title = isAudioMuted ? "Unmute Audio" : "Mute Audio";
+
+        try {
+          if (window.parent && window.parent !== window) {
+            window.parent.postMessage({ type: "video-mute-toggle", muted: isAudioMuted }, "*");
+          }
+        } catch(err) {}
+
+        document.querySelectorAll("audio, video").forEach(el => {
+          el.muted = isAudioMuted;
+        });
+      };
+    }
+
+    if (scrubber) {
+      let isDragging = false;
+      let resumeAfterDrag = false;
+      const handleScrub = (e) => {
+        const rect = scrubber.getBoundingClientRect();
+        const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+        renderFrameAt(pct * totalDuration);
+      };
+      scrubber.onmousedown = (e) => {
+        e.stopPropagation();
+        isDragging = true;
+        resumeAfterDrag = (playState === "playing");
+        if (resumeAfterDrag) {
+          window.pause();
+        }
+        handleScrub(e);
+        const onMove = (ev) => {
+          if (isDragging) {
+            handleScrub(ev);
+          }
+        };
+        const onUp = () => {
+          if (isDragging) {
+            isDragging = false;
+            window.removeEventListener("mousemove", onMove);
+            window.removeEventListener("mouseup", onUp);
+            if (resumeAfterDrag) {
+              window.play();
+            }
+          }
+        };
+        window.addEventListener("mousemove", onMove);
+        window.addEventListener("mouseup", onUp);
+      };
+    }
+
+    pills.forEach((p, idx) => {
+      p.onclick = (e) => {
+        e.stopPropagation();
+        window.goto(idx);
+      };
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.code === "Space" && e.target.tagName !== "INPUT" && e.target.tagName !== "TEXTAREA") {
+        e.preventDefault();
+        if (playState === "playing") window.pause();
+        else window.play();
+      }
+    });
+
+    document.body.onclick = (e) => {
+      if (e.target.closest(".v-player-bar")) return;
+      if (playState === "playing") window.pause();
+      else window.play();
+    };
+
+    document.addEventListener("mousemove", resetAutoHide);
+
+    // Initial load: render frame 0 settled
+    renderFrameAt(0);
+
+    // Autoplay when opened directly as a standalone web page
+    if (window.self === window.top && !window.location.search.includes("paused")) {
+      setTimeout(() => {
+        window.play();
+      }, 250);
+    }
+  })();
+  </script>
+  
+</body>
+</html>
