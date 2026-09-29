@@ -525,10 +525,18 @@ export function renderVideoScenes() {
   if (scBackground && videoSceneOptions.backgrounds) {
     scBackground.innerHTML = videoSceneOptions.backgrounds.map((b) => `<option value="${b}">${b}</option>`).join("");
   }
+  // The named-gradient theme select only renders for code-gen device-preset
+  // templates -- a tpl-* slots template ignores scene.background entirely and
+  // keeps its own baked CSS, so showing the dropdown there would be a dead
+  // control with no visible effect.
+  const themeSection = $("sc-background-theme-section");
+  if (themeSection) themeSection.style.display = videoProject.template ? "none" : "";
   renderGlobalBackgroundPanel();
   const scDevice = $("sc-device");
   if (scDevice && videoDevices) {
-    scDevice.innerHTML = videoDevices.map((d) => `<option value="${d.id}">${d.vendor} — ${d.name}</option>`).join("");
+    const d3Options = videoDevices.map((d) => `<option value="3d:${d.id}">${d.vendor} — ${d.name} (3D Model)</option>`).join("");
+    const d2Options = videoDevices.map((d) => `<option value="2d:${d.id}">${d.vendor} — ${d.name} (2D SVG)</option>`).join("");
+    scDevice.innerHTML = `<optgroup label="3D Devices (Model & Rig)">${d3Options}</optgroup><optgroup label="2D Devices (SVG Frame)">${d2Options}</optgroup>`;
   }
 
   const orientation = (videoProject.scenes[0] && videoProject.scenes[0].aspectRatio) === "16:9" ? "16:9" : "9:16";
@@ -849,7 +857,7 @@ async function loadSceneContentPanel(sceneId) {
 /** Shared thumbnail + reuse-dropdown + Upload New Source + Remove control,
  *  used by both the global (right side) and per-scene (left side) background
  *  pickers -- same interaction model as imageField()'s screenshot slot. */
-function backgroundImageControl({ sourceId, onChange }) {
+function backgroundImageControl({ sourceId, fallbackImageUrl, fallbackLabel, onChange }) {
   const wrap = document.createElement("div");
   wrap.className = "content-slot-image";
   const source = sourceId ? (videoProject.sources || []).find((s) => s.id === sourceId) : null;
@@ -857,9 +865,27 @@ function backgroundImageControl({ sourceId, onChange }) {
   const thumb = document.createElement("div");
   thumb.className = "content-slot-thumb";
   if (source) {
+    // An explicit override for this control -- shown at full opacity, no label.
     const img = document.createElement("img");
     img.src = `/api/videos/${videoId}/file?p=${encodeURIComponent(source.file)}`;
     thumb.appendChild(img);
+  } else if (fallbackImageUrl) {
+    // Nothing set *here*, but a fallback (global default, or the scene's own
+    // theme swatch) is in effect -- show it dimmed with a badge so the control
+    // never looks empty when a background actually is being applied.
+    thumb.style.position = "relative";
+    const img = document.createElement("img");
+    img.src = fallbackImageUrl;
+    img.style.opacity = "0.55";
+    thumb.appendChild(img);
+    const badge = document.createElement("span");
+    badge.className = "file-card-badge";
+    badge.style.cssText = "position:absolute; bottom:4px; left:4px; top:auto; right:auto;";
+    badge.textContent = fallbackLabel || "inherited";
+    thumb.appendChild(badge);
+  } else if (fallbackLabel) {
+    thumb.style.cssText = "font-size:0.72rem; text-align:center; padding:0 6px; color:var(--text-muted);";
+    thumb.textContent = fallbackLabel;
   } else {
     thumb.textContent = "No image";
   }
@@ -871,11 +897,28 @@ function backgroundImageControl({ sourceId, onChange }) {
   const controls = document.createElement("div");
   controls.className = "content-slot-image-controls";
 
-  const sources = (videoProject.sources || []).filter((src) => src.kind !== "video");
+  // "purpose" (not just kind !== "video") keeps this list to actual background
+  // uploads -- otherwise every app screenshot uploaded for the Screenshot slot
+  // would also show up here, and vice versa (they used to share one filter).
+  const sources = (videoProject.sources || []).filter((src) => src.kind !== "video" && (src.purpose || "screenshot") === "background");
   if (sources.length > 0) {
     const existingSelect = document.createElement("select");
     existingSelect.style.cssText = "width:100%; font-size:0.78rem; margin-bottom:0.35rem;";
-    populateSourceSelect(existingSelect, sources, sourceId || "", { blankLabel: "Reuse existing background…" });
+    // A flat list by name, not populateSourceSelect's device-size optgroups --
+    // "Phone"/"Tablet" categorization only means something for a screenshot,
+    // and is a guess-by-dimensions label that's actively misleading for a
+    // background photo (which has no such deviceCategory of its own).
+    const blank = document.createElement("option");
+    blank.value = "";
+    blank.textContent = "Reuse existing background…";
+    existingSelect.appendChild(blank);
+    for (const s of sources) {
+      const opt = document.createElement("option");
+      opt.value = s.id;
+      opt.textContent = s.name;
+      existingSelect.appendChild(opt);
+    }
+    if (sourceId) existingSelect.value = sourceId;
     existingSelect.onchange = () => onChange(existingSelect.value || null);
     controls.appendChild(existingSelect);
   }
@@ -887,7 +930,7 @@ function backgroundImageControl({ sourceId, onChange }) {
     const file = fileInput.files[0];
     if (!file) return;
     try {
-      const uploaded = await uploadFile(`/api/videos/${videoId}/sources?name=${encodeURIComponent(file.name)}`, file);
+      const uploaded = await uploadFile(`/api/videos/${videoId}/sources?name=${encodeURIComponent(file.name)}&purpose=background`, file);
       videoProject.sources.push(uploaded);
       onChange(uploaded.id);
     } catch (e) {
@@ -916,8 +959,13 @@ function renderGlobalBackgroundPanel() {
   const host = $("global-background-panel");
   if (!host || !videoProject) return;
   host.innerHTML = "";
+  // There is no single global *theme* (each scene keeps its own Background
+  // Theme dropdown above) -- only the global *image* lives here, so the only
+  // honest fallback label when no image is set is that scenes fall back to
+  // their own themes individually, not a single named one.
   host.appendChild(backgroundImageControl({
     sourceId: videoProject.backgroundImage || null,
+    fallbackLabel: "No global image — each scene uses its own Background Theme",
     onChange: async (sourceId) => {
       const updated = await api(`/api/videos/${videoId}`, { method: "PUT", body: { backgroundImage: sourceId } });
       videoProject.backgroundImage = updated.backgroundImage;
@@ -945,8 +993,26 @@ function renderSceneBackgroundSlot(sceneId) {
   wrap.appendChild(label);
   const value = scene.slotValues?.background;
   const sourceId = value?.kind === "image" ? value.sourceId : null;
+  // No override here -- show whatever this scene actually falls back to
+  // (resolveSceneBackgroundCss in render.ts: global image if set, else this
+  // scene's own theme), so the control never implies "nothing is applied".
+  const globalSource = !sourceId && videoProject.backgroundImage
+    ? (videoProject.sources || []).find((s) => s.id === videoProject.backgroundImage)
+    : null;
+  const fallbackImageUrl = globalSource ? `/api/videos/${videoId}/file?p=${encodeURIComponent(globalSource.file)}` : null;
+  // scene.background (the named-gradient theme) only actually renders for the
+  // code-gen device-preset templates -- a "tpl-*" slots template ignores it
+  // entirely and keeps its own baked-in CSS background, so labeling it here
+  // would show a value with no visible effect.
+  const isSlotsTemplate = !!videoProject.template;
+  const fallbackLabel = globalSource
+    ? "global default"
+    : sourceId ? null
+    : isSlotsTemplate ? "Template's default background" : `Theme: ${scene.background || "ocean"}`;
   wrap.appendChild(backgroundImageControl({
     sourceId,
+    fallbackImageUrl,
+    fallbackLabel,
     onChange: async (id) => {
       await saveSlotValue(sceneId, "background", { kind: "image", sourceId: id });
       scene.slotValues = { ...(scene.slotValues || {}), background: { kind: "image", sourceId: id } };
@@ -1375,7 +1441,9 @@ function imageField(spec, sourceId, sceneId, index) {
   // Capture tab writes and Studio Mockup's Screenshot Source Mapping reads
   // (see editor.js's populateSourceSelect), so picking here is consistent
   // with both other tabs instead of forcing a fresh upload every time.
-  const sources = (videoProject.sources || []).filter((src) => src.kind !== "video");
+  // Excludes background-purpose uploads too -- see backgroundImageControl's
+  // matching filter, which excludes screenshots from its own dropdown.
+  const sources = (videoProject.sources || []).filter((src) => src.kind !== "video" && (src.purpose || "screenshot") !== "background");
   if (sources.length > 0) {
     const existingSelect = document.createElement("select");
     existingSelect.style.cssText = "width:100%; font-size:0.78rem; margin-bottom:0.35rem;";

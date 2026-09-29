@@ -168,6 +168,36 @@ export function listDevices(filter: ListDevicesFilter = {}): DeviceModel[] {
   });
 }
 
+export type DeviceMode = "2d" | "3d";
+
+export interface DeviceCapability {
+  supports2d: boolean;
+  supports3d: boolean;
+  defaultMode: DeviceMode;
+}
+
+// ponytail: every device is authored with full geometry, so both the flat
+// SVG path (buildFrameSvg) and the GLB/rig path (build-glb.ts) always build
+// successfully today -- supports2d/supports3d are always true. Add real
+// per-device gating here if a device type is ever introduced that can't
+// support one of the two paths.
+function deviceCapability(device: DeviceModel): DeviceCapability {
+  return { supports2d: true, supports3d: true, defaultMode: device.definition.defaultMode ?? "3d" };
+}
+
+/** Capability + default render path for a device by id, or undefined if
+ *  the id isn't in the registry. */
+export function resolveDeviceMode(id: string): DeviceCapability | undefined {
+  const device = DEVICE_REGISTRY[id];
+  return device ? deviceCapability(device) : undefined;
+}
+
+/** `listDevices()` filtered to devices that support the given render mode. */
+export function listDevicesByMode(mode: DeviceMode, filter: ListDevicesFilter = {}): DeviceModel[] {
+  const key = mode === "2d" ? "supports2d" : "supports3d";
+  return listDevices(filter).filter((d) => deviceCapability(d)[key]);
+}
+
 /** Resolve a device + optional variant id to the geometry that should
  *  actually be rendered (foldables select folded/unfolded here). */
 export function resolveGeometry(device: DeviceModel, variantId?: string): DeviceGeometry {

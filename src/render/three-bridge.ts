@@ -76,8 +76,12 @@ export async function installThreeJsRoutes(page: Page, deviceIds: string[]): Pro
 export const THREE_BRIDGE_SCRIPT = `
 <script type="importmap">{"imports":{"three":"${ORIGIN}/three/build/three.module.js"}}</script>
 <script type="module">
-import * as THREE from "three";
-import { GLTFLoader } from "${ORIGIN}/three/examples/jsm/loaders/GLTFLoader.js";
+const isLocalBridge = location.origin.includes("device-bridge.local");
+const threeBase = isLocalBridge ? "${ORIGIN}/three" : "/vendor/three";
+const deviceApiBase = isLocalBridge ? "${ORIGIN}/devices" : "/api/devices";
+
+const THREE = await import(threeBase + "/build/three.module.js");
+const { GLTFLoader } = await import(threeBase + "/examples/jsm/loaders/GLTFLoader.js");
 
 const PX_TO_M = 1 / 12000;
 const PERSPECTIVE_PX = 1800; // matches ".stage { perspective: 1800px }"
@@ -168,7 +172,8 @@ async function initCanvas(canvas) {
   let root;
   const screenLayers = [];
   try {
-    const buf = await fetch("${ORIGIN}/devices/" + deviceId + ".glb").then((r) => r.arrayBuffer());
+    const url = isLocalBridge ? \`\${ORIGIN}/devices/\${deviceId}.glb\` : \`/api/devices/\${encodeURIComponent(deviceId)}/glb\`;
+    const buf = await fetch(url).then((r) => r.arrayBuffer());
     const gltf = await new Promise((resolve, reject) => new GLTFLoader().parse(buf, "", resolve, reject));
     root = gltf.scene.children.find((n) => n.userData && n.userData.role === "device-root") || gltf.scene.children[0];
     scene.add(root);

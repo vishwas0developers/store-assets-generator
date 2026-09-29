@@ -8422,6 +8422,25 @@ function bind3dDeviceViewers(grid) {
   });
 }
 
+let currentDeviceMode = "3d";
+
+const devTab3d = $("dev-mode-tab-3d");
+const devTab2d = $("dev-mode-tab-2d");
+if (devTab3d && devTab2d) {
+  devTab3d.onclick = () => {
+    currentDeviceMode = "3d";
+    devTab3d.classList.add("active");
+    devTab2d.classList.remove("active");
+    renderDevicesCatalogueList();
+  };
+  devTab2d.onclick = () => {
+    currentDeviceMode = "2d";
+    devTab2d.classList.add("active");
+    devTab3d.classList.remove("active");
+    renderDevicesCatalogueList();
+  };
+}
+
 // Bind search and filter events
 const devSearch = $("dev-search");
 if (devSearch) devSearch.oninput = renderDevicesCatalogueList;
