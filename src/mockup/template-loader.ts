@@ -15,6 +15,9 @@ export interface MockupTemplatePage {
   deviceOne?: Partial<DeviceLayerStyle>;
   deviceTwo?: Partial<DeviceLayerStyle>;
   extraDevices?: DeviceLayerStyle[];
+  /** Title/subtitle styling (colour/size/align...) without the text itself. */
+  titleStyle?: Record<string, unknown>;
+  subtitleStyle?: Record<string, unknown>;
 }
 
 export interface MockupTemplateDefinition {
@@ -89,6 +92,8 @@ export function validateAndNormalizeTemplate(raw: any, filepath?: string): Mocku
       deviceOne: p.deviceOne,
       deviceTwo: p.deviceTwo,
       extraDevices: Array.isArray(p.extraDevices) ? p.extraDevices : undefined,
+      titleStyle: p.titleStyle,
+      subtitleStyle: p.subtitleStyle,
     }));
   } else {
     const count = typeof raw.columnCount === "number" && raw.columnCount > 0 ? raw.columnCount : (raw.titles?.length || 5);
@@ -175,6 +180,19 @@ export function loadMockupTemplatesFromDisk(forceReload = false): MockupTemplate
     if (catCmp !== 0) return catCmp;
     return a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: "base" });
   });
+}
+
+/** Overwrites only this template's own JSON file (keeping a one-time .bak) and refreshes the cache. */
+export function writeTemplateToDisk(template: MockupTemplateDefinition): void {
+  const file = template.filePath;
+  if (!file) throw new Error(`Template '${template.id}' has no file on disk.`);
+  const rel = path.relative(TEMPLATES_ROOT, file);
+  if (rel.startsWith("..") || path.isAbsolute(rel)) throw new Error("Template path is outside the templates folder.");
+  const { folderPath, filePath, titles, subtitles, columnCount, ...clean } = template;
+  const bak = `${file}.bak`;
+  if (!fs.existsSync(bak)) fs.copyFileSync(file, bak);
+  fs.writeFileSync(file, JSON.stringify(clean, null, 2) + "\n", "utf-8");
+  loadMockupTemplatesFromDisk(true);
 }
 
 export function getMockupTemplateFromDisk(id: string): MockupTemplateDefinition | undefined {

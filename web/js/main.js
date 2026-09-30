@@ -123,7 +123,7 @@ import {
   mockupHistory,
   mockupHistoryIdx
 } from './state.js';
-import { api, uploadFile, showAlert, showConfirm, showPrompt, showToast } from './utils.js';
+import { api, uploadFile, showAlert, showConfirm, showPrompt, showSelect, showToast } from './utils.js';
 import {
   setupProjectsHandlers,
   refreshProjectsList,
@@ -341,6 +341,27 @@ function setupMockupToolbar() {
       setMockupDirty(false);
       renderMockupMatrix();
       showToast("Changes saved.", "success");
+    };
+  }
+
+  if ($id("mk-update-template")) {
+    $id("mk-update-template").onclick = async () => {
+      if (!mockupProject || !mockupId) return showAlert("No active mockup project loaded.");
+      try {
+        const { templates } = await api("/api/mockups/templates");
+        const opts = {};
+        for (const t of templates) (opts[t.category || "Other"] ||= {})[t.id] = t.name;
+        const templateId = await showSelect("Choose the template whose default will be replaced by the current canvas.", opts, "Update Template", "Next");
+        if (!templateId) return;
+        const t = templates.find((x) => x.id === templateId);
+        const ok = await showConfirm(`Overwrite the default of "${t.name}" (${t.category}) with this project's pages? Every future project using it will get these settings.`, "Overwrite template?");
+        if (!ok) return;
+        await saveCurrentMockupProject();
+        await api(`/api/mockups/${mockupId}/update-template`, { method: "POST", body: { templateId } });
+        showToast(`Template "${t.name}" updated.`, "success");
+      } catch (e) {
+        await showAlert("Update Template failed: " + e.message, "error");
+      }
     };
   }
 

@@ -279,6 +279,26 @@ export function showPrompt(message, defaultValue = "", title = "Input Required")
   }).then((result) => (result.value !== undefined ? result.value : null));
 }
 
+/** options: { "Group": { value: "label" } } or { value: "label" }. Resolves to the chosen value or null. */
+export function showSelect(message, options, title = "Choose", confirmText = "Continue") {
+  const colors = getSwalColors();
+  return window.Swal.fire({
+    title,
+    text: message,
+    input: "select",
+    inputOptions: options,
+    inputPlaceholder: "Select a template…",
+    inputValidator: (v) => (v ? undefined : "Please choose one."),
+    showCancelButton: true,
+    confirmButtonText: confirmText,
+    cancelButtonText: "Cancel",
+    background: colors.background,
+    color: colors.color,
+    confirmButtonColor: "#dc2626",
+    cancelButtonColor: colors.cancelButtonColor,
+  }).then((result) => (result.isConfirmed ? result.value : null));
+}
+
 export function showToast(message, type = "info") {
   const container = document.getElementById("custom-toast-container");
   if (!container) return;
