@@ -18,7 +18,7 @@ import {
 import { listDevices, reloadRegistry } from "./registry.js";
 import { CURRENT_SCHEMA_VERSION, type DeviceDefinition } from "./schema.js";
 
-const CONFIG_PATH = path.join(process.cwd(), "config", "devices.json");
+const CONFIG_PATH = path.join(process.cwd(), "devices", "catalogue.json");
 
 function testDef(id: string): DeviceDefinition {
   return {
@@ -100,7 +100,7 @@ async function demo() {
     assert.ok(!listDevices({ includeArchived: true }).some((d) => d.id === def.id), "deleted device must be gone");
 
     // -- Import path: importDevice registers via overrideGlbPath, id collision enforced --
-    const importPath = path.join(process.cwd(), ".device-glb-cache", "__test_imported__.glb");
+    const importPath = path.join(process.cwd(), "devices/3d", "__test_imported__.glb");
     const importedDef = await importDevice(glb, importPath, {});
     assert.strictEqual(importedDef.overrideGlbPath, importPath, "imported device must record overrideGlbPath");
     await assert.rejects(() => importDevice(glb, importPath, {}), /already exists/, "re-importing the same id without replaceId must be rejected");

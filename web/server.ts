@@ -26,6 +26,8 @@ import { chat, extractJsonArray } from "../src/ai/chat.js";
 import { DEVICE_REGISTRY, listDevices, reloadRegistry } from "../src/devices/registry.js";
 import { buildFrameSvg } from "../src/devices/build-frame-svg.js";
 import { getDeviceGlbPath, createDevice, deleteDevice, archiveDevice } from "../src/devices/device-manager.js";
+import { DEVICES_2D_DIR, DEVICES_CSS_DIR } from "../src/devices/paths.js";
+import { listVideoDevices, listCssDevices, reloadCssDevices, resolveRigAsset, isDeviceCompatible, devicePreviewHtml, sync2dDeviceFiles } from "../src/devices/rig-assets.js";
 import { loadPlatformSpec } from "../src/platform/index.js";
 
 import {
@@ -110,8 +112,9 @@ import {
   videoFile,
   type VideoExportRecord,
 } from "../src/video/project.js";
-import { detectBestH264Encoder, ensureGeneratedBgm, listSceneAnimations, listSceneLayouts, listVideoBackgrounds, renderVideo, RenderCancelled, type RenderOptions, type RenderProgress, renderVideoTemplateThumbs, sceneHtml, scenePreviewHtml, sourceKindsFor, sourceUrisFor, templatePreviewHtml } from "../src/video/render.js";
+import { SCENE_ANIMATIONS, detectBestH264Encoder, ensureGeneratedBgm, listSceneAnimations, listSceneLayouts, listVideoBackgrounds, renderVideo, RenderCancelled, type RenderOptions, type RenderProgress, renderVideoTemplateThumbs, sceneHtml, scenePreviewHtml, sourceKindsFor, sourceUrisFor, templatePreviewHtml } from "../src/video/render.js";
 import { EXPORT_PRESETS } from "../src/video/exportPresets.js";
+import { listTemplateBackgrounds } from "../src/video/templateBackgrounds.js";
 import { VIDEO_TEMPLATES, applyVideoTemplate, resolveTemplateId, scratchVideoProject, loadAllTemplates } from "../src/video/templates.js";
 import { BGM_PRESETS, renderBgmWav } from "../src/video/bgm.js";
 import { slotSpecsForScene, validateScene, type SlotIssue } from "../src/video/slots.js";
@@ -432,11 +435,12 @@ function validateProject(project: { template: string | null; scenes: { id: strin
   return { ready, scenes };
 }
 
-function sniffImageFormat(buf: Buffer): "png" | "jpeg" | "webp" | "gif" | null {
+function sniffImageFormat(buf: Buffer): "png" | "jpeg" | "webp" | "gif" | "svg" | null {
   if (buf.length >= 8 && buf[0] === 0x89 && buf[1] === 0x50 && buf[2] === 0x4e && buf[3] === 0x47) return "png";
   if (buf.length >= 3 && buf[0] === 0xff && buf[1] === 0xd8 && buf[2] === 0xff) return "jpeg";
   if (buf.length >= 12 && buf.toString("ascii", 0, 4) === "RIFF" && buf.toString("ascii", 8, 12) === "WEBP") return "webp";
   if (buf.length >= 6 && buf.toString("ascii", 0, 3) === "GIF") return "gif";
+  if (/<svg[\s>]/i.test(buf.toString("utf8", 0, 1024))) return "svg";
   return null;
 }
 
@@ -500,6 +504,7 @@ function installProcessGuards(): void {
 }
 
 export async function startWebServer(options: { port?: number; host?: string; openBrowser?: boolean } = {}): Promise<http.Server> {
+  try { sync2dDeviceFiles(); } catch (e) { console.error("[devices] 2D asset sync failed:", e); }
   installProcessGuards();
   console.log(`[SAG-SERVER] Starting -- cwd=${process.cwd()} node=${process.version} file=${import.meta.url}`);
   const port = options.port || 8787;
@@ -813,17 +818,47 @@ export async function startWebServer(options: { port?: number; host?: string; op
       }
     }
 
+    // One registry for every device (2D/3D x SVG/GLB/CSS). `type=2D|3D` returns only that mode.
+    if (method === "GET" && p === "/api/video-devices") {
+      const type = url.searchParams.get("type");
+      const all = listVideoDevices();
+      sendJson(res, 200, { devices: type === "2D" || type === "3D" ? all.filter((d) => d.deviceType === type) : all });
+      return;
+    }
+
+    {
+      const m = p.match(/^\/api\/video-devices\/(2D|3D)\/([^/]+)\/preview$/);
+      if (m && method === "GET") {
+        const asset = resolveRigAsset(decodeURIComponent(m[2]), m[1] as "2D" | "3D");
+        if (!asset) return sendError(res, 404, `No ${m[1]} device '${decodeURIComponent(m[2])}'.`);
+        res.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-cache" });
+        res.end(devicePreviewHtml(asset));
+        return;
+      }
+    }
+
+    // Import: catalogue definitions (2D/3D) and/or CSS device assets, merged into devices/.
     if (method === "POST" && p === "/api/devices/import") {
       try {
         const body = await readJsonBody(req);
-        const devices = Array.isArray(body) ? body : body.devices;
-        if (!Array.isArray(devices)) {
-          return sendError(res, 400, "Expected a JSON array of device specifications, or an object with a 'devices' array.");
+        const items = Array.isArray(body) ? body : [...(body.devices ?? []), ...(body.css ?? [])];
+        if (!Array.isArray(items) || !items.length) {
+          return sendError(res, 400, "Expected a JSON array of device definitions, or an object with 'devices' and/or 'css' arrays.");
         }
-        const customFile = path.join(process.cwd(), "output", ".custom-devices.json");
-        fs.writeFileSync(customFile, JSON.stringify(devices, null, 2), "utf-8");
+        let imported = 0;
+        const skipped: string[] = [];
+        for (const item of items) {
+          if (item?.sourceType === "CSS" && item.markup?.front && /^[a-z0-9-]+$/.test(item.id ?? "")) {
+            fs.mkdirSync(DEVICES_CSS_DIR, { recursive: true });
+            fs.writeFileSync(path.join(DEVICES_CSS_DIR, `${item.id}.json`), JSON.stringify(item, null, 2) + "\n");
+            imported++;
+          } else {
+            try { createDevice(item); imported++; } catch (e: any) { skipped.push(`${item?.id ?? "?"}: ${e.message}`); }
+          }
+        }
+        reloadCssDevices();
         reloadRegistry();
-        sendJson(res, 200, { ok: true, count: devices.length, total: DEVICE_REGISTRY.length });
+        sendJson(res, 200, { ok: true, imported, skipped });
       } catch (err: any) {
         sendError(res, 400, `Invalid device registry JSON: ${err.message}`);
       }
@@ -835,7 +870,7 @@ export async function startWebServer(options: { port?: number; host?: string; op
         "Content-Type": "application/json",
         "Content-Disposition": 'attachment; filename="device-registry.json"',
       });
-      res.end(JSON.stringify(DEVICE_REGISTRY, null, 2));
+      res.end(JSON.stringify({ devices: Object.values(DEVICE_REGISTRY).map((d) => d.definition), css: listCssDevices() }, null, 2));
       return;
     }
 
@@ -1383,10 +1418,12 @@ export async function startWebServer(options: { port?: number; host?: string; op
         body: "#1a1a1a",
         accent: "#3a3a3a",
         railMaterial: "aluminum",
-        customSvg: svg,
+        customSvgFile: `${id}.svg`,
         schemaVersion: 2,
       };
 
+      fs.mkdirSync(DEVICES_2D_DIR, { recursive: true });
+      fs.writeFileSync(path.join(DEVICES_2D_DIR, `${id}.svg`), svg);
       createDevice(def);
       reloadRegistry();
       sendJson(res, 200, { ok: true, deviceId: id, name: def.name });
@@ -1804,7 +1841,7 @@ export async function startWebServer(options: { port?: number; host?: string; op
     }
 
     {
-      const m = p.match(/^\/api\/videos\/(?!templates$|scene-options$)([^/]+)$/);
+      const m = p.match(/^\/api\/videos\/(?!templates$|scene-options$|template-backgrounds$)([^/]+)$/);
       if (m && method === "GET") return sendJson(res, 200, loadVideoProject(decodeURIComponent(m[1])));
       if (m && method === "PUT") {
         const body = await readJsonBody(req);
@@ -1833,6 +1870,7 @@ export async function startWebServer(options: { port?: number; host?: string; op
         let mime = "image/png";
         if (ext === ".jpg" || ext === ".jpeg") mime = "image/jpeg";
         else if (ext === ".webp") mime = "image/webp";
+        else if (ext === ".svg") { mime = "image/svg+xml"; res.setHeader("Content-Security-Policy", "sandbox"); }
         else if (ext === ".mp4") mime = "video/mp4";
         else if (ext === ".webm") mime = "video/webm";
         else if (ext === ".wav") mime = "audio/wav";
@@ -1858,6 +1896,12 @@ export async function startWebServer(options: { port?: number; host?: string; op
         sendFileRanged(req, res, wavPath, "audio/wav");
         return;
       }
+    }
+
+    if (method === "GET" && p === "/api/videos/template-backgrounds") {
+      loadAllTemplates();
+      sendJson(res, 200, { backgrounds: listTemplateBackgrounds(VIDEO_TEMPLATES) });
+      return;
     }
 
     if (method === "GET" && p === "/api/videos/templates") {
@@ -1984,7 +2028,7 @@ export async function startWebServer(options: { port?: number; host?: string; op
         }
         const bodyBuf = await readRawBody(req);
         const format = sniffImageFormat(bodyBuf);
-        if (!format) return sendError(res, 400, "Unrecognized image format (expected PNG, JPEG, WebP, or GIF).");
+        if (!format) return sendError(res, 400, "Unrecognized image format (expected PNG, JPEG, WebP, GIF, or SVG).");
         const relPath = `sources/img_${Date.now()}.${imageExtFor(format)}`;
         const abs = videoFile(id, relPath);
         fs.writeFileSync(abs, bodyBuf);
@@ -2222,6 +2266,15 @@ export async function startWebServer(options: { port?: number; host?: string; op
         const nextAspect = body.aspectRatio ?? project.scenes[idx].aspectRatio;
         if (project.scenes.some((s, i) => i !== idx && (s.aspectRatio ?? "9:16") !== (nextAspect ?? "9:16"))) {
           return sendError(res, 400, "Every scene in a project must share the same aspect ratio.");
+        }
+        // Free (non-template) scenes take their mode from the chosen scene animation.
+        if (!project.template && body.sceneTemplate && body.deviceMode === undefined) body.deviceMode = SCENE_ANIMATIONS[body.sceneTemplate]?.deviceMode ?? "3D";
+        if (body.device !== undefined || body.deviceMode !== undefined) {
+          // A scene only accepts devices of its own mode -- reject, don't silently coerce, an explicit bad pick.
+          const tpl = VIDEO_TEMPLATES.find((t) => t.id === project.template);
+          const mode = body.deviceMode ?? project.scenes[idx].deviceMode ?? tpl?.scenes?.[idx]?.deviceMode ?? tpl?.deviceMode ?? "3D";
+          const device = body.device ?? project.scenes[idx].device;
+          if (!isDeviceCompatible(device, mode)) return sendError(res, 400, `'${device}' is not a ${mode} device -- this scene requires a ${mode} device.`);
         }
         project.scenes[idx] = { ...project.scenes[idx], ...body };
         saveVideoProject(project);

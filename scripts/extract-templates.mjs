@@ -7,7 +7,6 @@ fs.mkdirSync(outDir, { recursive: true });
 
 for (const t of VIDEO_TEMPLATES) {
   const tplDir = path.join(outDir, t.id);
-  fs.mkdirSync(tplDir, { recursive: true });
 
   const htmlContent = `<!doctype html>
 <html lang="en">
@@ -259,6 +258,6 @@ for (const t of VIDEO_TEMPLATES) {
 </body>
 </html>`;
 
-  fs.writeFileSync(path.join(tplDir, 'template.html'), htmlContent);
+  fs.writeFileSync(path.join(path.dirname(tplDir), path.basename(tplDir) + '.html'), htmlContent);
   console.log(`Extracted standalone template HTML for: ${t.id}`);
 }

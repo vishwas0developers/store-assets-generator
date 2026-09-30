@@ -41,7 +41,7 @@ export interface MockupSourceImage {
 
 export interface MockupDeviceRow {
   id: string;
-  /** config/devices.json id. */
+  /** devices/catalogue.json id. */
   deviceId: string;
   variant?: string;
   /** Platform size target key (see sizeTargets.ts); unset on legacy rows until ensureSizeRows runs. */
@@ -136,7 +136,7 @@ export interface DeviceLayerStyle {
   /** Per-page override for the outer border/rim stroke width (px, in the
    *  device's own geometry units) drawn by build-frame-svg.ts's main bezel
    *  rect. Undefined = use the device's fixed catalog default (`bezelWidth`
-   *  in config/devices.json) -- zero behavior change until a user adjusts
+   *  in devices/catalogue.json) -- zero behavior change until a user adjusts
    *  the "Border Thickness" slider. */
   borderThickness?: number;
   /** Per-page ABSOLUTE bezel width (px, device units) between the border

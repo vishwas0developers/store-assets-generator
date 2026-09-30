@@ -1,0 +1,12 @@
+<svg viewBox="0 0 1080 2424" xmlns="http://www.w3.org/2000/svg">
+    <mask id="bezel-hole-google-pixel-9">
+      <rect x="0" y="0" width="1080" height="2424" fill="#fff" />
+      <rect x="26" y="26" width="1028" height="2372" rx="41" fill="#000" />
+    </mask>
+    <rect x="7" y="7" width="1066" height="2410"
+          rx="48" fill="#4a5d4f" stroke="#6b8570" stroke-width="14" mask="url(#bezel-hole-google-pixel-9)" />
+    <g id="camera-cutout"><circle cx="540" cy="42" r="16" fill="#000" stroke="#6b8570" stroke-width="2" /></g>
+    <rect x="1073" y="472.67999999999995" width="14" height="121.2" rx="4" fill="#6b8570" />
+    <rect x="1073" y="630.2399999999999" width="14" height="145.44" rx="4" fill="#6b8570" />
+    
+  </svg>

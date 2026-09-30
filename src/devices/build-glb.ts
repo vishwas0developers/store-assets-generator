@@ -90,7 +90,7 @@ function buildScreen(def: DeviceDefinition): THREE.Mesh {
 
 function buildCameraIsland(def: DeviceDefinition): THREE.Group | null {
   const island = def.cameraIsland;
-  if (island.style === "none" || island.lenses.length === 0) return null;
+  if (!island || island.style === "none" || island.lenses.length === 0) return null;
   const { width, height, thickness } = def.geometry;
   const group = new THREE.Group();
   group.name = "CameraIsland";
@@ -208,10 +208,10 @@ export function buildDeviceScene(def: DeviceDefinition): THREE.Group {
   const island = buildCameraIsland(def);
   if (island) root.add(island);
 
-  for (const btn of def.buttons as DeviceButton[]) {
+  for (const btn of (def.buttons ?? []) as DeviceButton[]) {
     root.add(buildEdgeItem(def, btn.face, btn.offsetPct, btn.lengthPct, "button", btn.kind));
   }
-  for (const port of def.ports as DevicePort[]) {
+  for (const port of (def.ports ?? []) as DevicePort[]) {
     root.add(buildEdgeItem(def, port.face, port.offsetPct, 0.12, "port", port.kind));
   }
 

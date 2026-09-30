@@ -1230,11 +1230,8 @@ export function create23552607Template() {
 
   // Write template compiled markup directly to the official project directory tpl-23552607-minimal-studio-3d
   const targetDir = path.join(rootDir, 'templates', 'video', 'tpl-23552607-minimal-studio-3d');
-  if (!fs.existsSync(targetDir)) {
-    fs.mkdirSync(targetDir, { recursive: true });
-  }
 
-  const targetFile = path.join(targetDir, 'template.html');
+  const targetFile = path.join(path.dirname(targetDir), path.basename(targetDir) + '.html');
   fs.writeFileSync(targetFile, templateHtml, 'utf8');
   console.log(`Successfully generated frame-accurate template at: ${targetFile}`);
 }

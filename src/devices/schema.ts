@@ -1,5 +1,5 @@
 /** Source-of-truth device schema. A `DeviceDefinition` is authored as JSON
- *  (`config/devices.json`) and compiled to a self-contained GLB by
+ *  (`devices/catalogue.json`) and compiled to a self-contained GLB by
  *  `build-glb.ts` (procedural path) or supplied directly as an imported GLB
  *  whose `extras` are read back into this same shape (override path) — see
  *  docs/DEVICE-FRAMES.md "Source of truth". */
@@ -113,6 +113,8 @@ export interface DeviceDefinition {
   archived?: boolean;
   /** Optional custom SVG string for uploaded SVG device templates */
   customSvg?: string;
+  /** File name in devices/2d/ holding a custom uploaded 2D SVG frame. */
+  customSvgFile?: string;
   /** Which render path the UI should show first for this device (2D flat
    *  SVG vs 3D GLB/rig). Defaults to "3d" when absent — see
    *  `resolveDeviceMode()` in registry.ts. */

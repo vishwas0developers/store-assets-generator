@@ -8,7 +8,7 @@ export type CaptureCategory = "phone" | "tablet7" | "tablet10";
 export interface SizeTarget {
   key: string;
   label: string;
-  /** config/devices.json id used for a newly added row. */
+  /** devices/catalogue.json id used for a newly added row. */
   deviceId: string;
   width: number;
   height: number;

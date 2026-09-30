@@ -1,0 +1,11 @@
+<svg viewBox="0 0 1284 2778" xmlns="http://www.w3.org/2000/svg">
+    <mask id="bezel-hole-apple-iphone-14-plus">
+      <rect x="0" y="0" width="1284" height="2778" fill="#fff" />
+      <rect x="36" y="36" width="1212" height="2706" rx="81" fill="#000" />
+    </mask>
+    <rect x="9" y="9" width="1266" height="2760"
+          rx="90" fill="#1f2937" stroke="#111827" stroke-width="18" mask="url(#bezel-hole-apple-iphone-14-plus)" />
+    <g id="camera-cutout"><rect x="502" y="0" width="280" height="65" rx="32.5" fill="#000" /></g>
+    
+    
+  </svg>

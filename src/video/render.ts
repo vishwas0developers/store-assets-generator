@@ -24,8 +24,11 @@ import { projectFile } from "../project/projectStore.js";
 import { VIDEO_TEMPLATES, type VideoTemplate } from "./templates.js";
 import { templateHtmlPath, templateConfig } from "./templateConfig.js";
 import { placeholderScreenUri } from "./placeholder.js";
+import { TEMPLATE_BG_PREFIX, templateBackgroundCss } from "./templateBackgrounds.js";
 import { resolveSlots, resolveImageSequences, slotSpecsForScene } from "./slots.js";
 import { installThreeJsRoutes, THREE_BRIDGE_SCRIPT } from "../render/three-bridge.js";
+import { applyRigDevices } from "../devices/rig-engine.js";
+import { resolveRigAsset, sanitizeSceneDevice } from "../devices/rig-assets.js";
 import { resolveDemoAsset } from "./demoAssets.js";
 import { BGM_PRESETS, renderBgmWav } from "./bgm.js";
 export { EXPORT_PRESETS, type ExportPreset } from "./exportPresets.js";
@@ -119,6 +122,8 @@ export function buildVfFilter(
 export interface SceneAnimation {
   id: string;
   name: string;
+  /** Device mode this animation renders: "2D" = flat SVG frame (`deviceMarkup`), "3D" (default) = GLB shell / rig. */
+  deviceMode?: "2D" | "3D";
   /** CSS easing applied to the device layer's entrance/hold/exit. */
   easing: string;
   /** Keyframe body (0%..100% of the scene's full duration) for the device layer. */
@@ -335,6 +340,7 @@ export const SCENE_ANIMATIONS: Record<string, SceneAnimation> = {
   },
   "fold-open": {
     id: "fold-open",
+    deviceMode: "2D",
     name: "Fold open",
     easing: "cubic-bezier(.2,.9,.2,1.05)",
     deviceKeyframes: (s) => `
@@ -394,6 +400,7 @@ export const SCENE_ANIMATIONS: Record<string, SceneAnimation> = {
   },
   "trio-lineup": {
     id: "trio-lineup",
+    deviceMode: "2D",
     name: "Trio lineup",
     easing: "cubic-bezier(.22,.9,.3,1)",
     deviceKeyframes: (s) => `
@@ -419,6 +426,7 @@ export const SCENE_ANIMATIONS: Record<string, SceneAnimation> = {
   },
   "hud-blueprint-rise": {
     id: "hud-blueprint-rise",
+    deviceMode: "2D",
     name: "HUD blueprint rise",
     easing: "cubic-bezier(.16,1,.3,1)",
     deviceKeyframes: (s) => `
@@ -442,6 +450,7 @@ export const SCENE_ANIMATIONS: Record<string, SceneAnimation> = {
   },
   "neon-rings-orbit": {
     id: "neon-rings-orbit",
+    deviceMode: "2D",
     name: "Neon rings orbit",
     easing: "cubic-bezier(.2,.85,.3,1)",
     deviceKeyframes: (s) => `
@@ -470,6 +479,7 @@ export const SCENE_ANIMATIONS: Record<string, SceneAnimation> = {
   },
   "studio-orbit-scroll": {
     id: "studio-orbit-scroll",
+    deviceMode: "2D",
     name: "Studio orbit scroll",
     easing: "cubic-bezier(.25,1,.2,1)",
     deviceKeyframes: (s) => `
@@ -506,6 +516,7 @@ export const SCENE_ANIMATIONS: Record<string, SceneAnimation> = {
   },
   "matte-spheres-drift": {
     id: "matte-spheres-drift",
+    deviceMode: "2D",
     name: "Matte spheres drift",
     easing: "cubic-bezier(.22,1,.36,1)",
     deviceKeyframes: (s) => `
@@ -535,6 +546,7 @@ export const SCENE_ANIMATIONS: Record<string, SceneAnimation> = {
   },
   "split-panorama-track": {
     id: "split-panorama-track",
+    deviceMode: "2D",
     name: "Split panorama track",
     easing: "cubic-bezier(.25,1,.2,1)",
     deviceKeyframes: (s) => `
@@ -556,6 +568,7 @@ export const SCENE_ANIMATIONS: Record<string, SceneAnimation> = {
   },
   "trio-fan-gloss": {
     id: "trio-fan-gloss",
+    deviceMode: "2D",
     name: "Trio fan gloss",
     easing: "cubic-bezier(.16,1,.3,1)",
     deviceKeyframes: (s) => `
@@ -626,7 +639,7 @@ export const SCENE_ANIMATIONS: Record<string, SceneAnimation> = {
 };
 
 export function listSceneAnimations() {
-  return Object.values(SCENE_ANIMATIONS).map((a) => ({ id: a.id, name: a.name }));
+  return Object.values(SCENE_ANIMATIONS).map((a) => ({ id: a.id, name: a.name, deviceMode: a.deviceMode ?? "3D" }));
 }
 export function listVideoBackgrounds() {
   return Object.keys(BACKGROUNDS);
@@ -983,19 +996,33 @@ function flowLabelsHtml(scene: VideoScene, durationMs: number): string {
  *  resolveSlots' brand-fallback pattern in slots.ts, just for a field that
  *  lives outside the slot-target system (background paints `.backdrop`
  *  directly, it has no DOM slot target to resolve through). */
+function sceneBackgroundRef(scene: VideoScene, project: VideoProject): string | null {
+  const override = scene.slotValues?.background;
+  const overrideId = override?.kind === "image" ? override.sourceId : undefined;
+  return overrideId ?? project.backgroundImage ?? null;
+}
+
+/** A ref is either `template:<id>` (that template's own native background) or
+ *  an uploaded source id. Returns null for "leave the template as it is":
+ *  no ref, or a ref pointing at the project's own template. */
+function backgroundCssForRef(ref: string | null, project: VideoProject, resolveUri: (rel: string) => string): string | null {
+  if (!ref) return null;
+  if (ref.startsWith(TEMPLATE_BG_PREFIX)) {
+    const id = ref.slice(TEMPLATE_BG_PREFIX.length);
+    return id === project.template ? null : templateBackgroundCss(id);
+  }
+  const source = project.sources.find((s) => s.id === ref);
+  return source ? `center / cover no-repeat url(${resolveUri(source.file)})` : null;
+}
+
 function resolveSceneBackgroundCss(
   scene: VideoScene,
   project?: VideoProject,
   resolveUri?: (rel: string) => string,
 ): string {
   if (project && resolveUri) {
-    const override = scene.slotValues?.background;
-    const overrideId = override?.kind === "image" ? override.sourceId : undefined;
-    const sourceId = overrideId ?? project.backgroundImage ?? null;
-    if (sourceId) {
-      const source = project.sources.find((s) => s.id === sourceId);
-      if (source) return `center / cover no-repeat url(${resolveUri(source.file)})`;
-    }
+    const css = backgroundCssForRef(sceneBackgroundRef(scene, project), project, resolveUri);
+    if (css) return css;
   }
   return backgroundCss(scene.background);
 }
@@ -1120,20 +1147,17 @@ export function composeStandaloneHtml(project: VideoProject, activeSceneIndex?: 
     );
   }
 
-  // Migrated templates (see deviceShellMarkup) carry {{DEVICE_ID}}/
-  // {{DEVICE_W}}/{{DEVICE_H}} placeholders on their device-shell <canvas>
-  // tags instead of a hardcoded CSS device shape -- substitute the
-  // dynamically chosen device from project/active scene (falling back to config.device).
-  if (html.includes("{{DEVICE_ID}}")) {
-    const activeScene = activeSceneIndex !== undefined ? projectScenesByOrder[activeSceneIndex] : projectScenesByOrder[0];
-    const rawDeviceId = activeScene?.device || project.device || config.device || "apple-iphone-15-pro";
-    const selectedDeviceId = rawDeviceId.replace(/^(2d|3d):/, "");
-    const shellDevice = DEVICE_REGISTRY[selectedDeviceId] ?? DEVICE_REGISTRY[config.device ?? ""] ?? DEVICE_REGISTRY["phone"];
-    html = html
-      .replaceAll("{{DEVICE_ID}}", shellDevice.id)
-      .replaceAll("{{DEVICE_W}}", String(shellDevice.geometry.width))
-      .replaceAll("{{DEVICE_H}}", String(shellDevice.geometry.height));
-  }
+  // Device layer: each rig in the template carries `data-device`; swap in the
+  // device the project's scene asks for (validated against the scene's
+  // deviceMode) without touching the template's own animation/layout.
+  html = applyRigDevices(html, {
+    pick: (i) => {
+      const scene = projectScenesByOrder[i];
+      if (!scene) return null;
+      const { device, deviceMode } = sanitizeSceneDevice(scene, { device: config.device, deviceMode: config.scenes?.[i]?.deviceMode ?? config.deviceMode });
+      return resolveRigAsset(device, deviceMode);
+    },
+  });
   const uriFor = resolveUri ?? previewResolveUri(project.id);
 
   // Resolve the same BGM renderVideo would mix into the export -- a real
@@ -1185,10 +1209,8 @@ export function composeStandaloneHtml(project: VideoProject, activeSceneIndex?: 
   // player shows per-scene backgrounds too); the active scene additionally
   // writes `.canvas`, which is what a tpl-* document renders for that scene.
   projectScenesByOrder.forEach((sc, i) => {
-    const override = sc.slotValues?.background;
-    const overrideId = override?.kind === "image" ? override.sourceId : undefined;
-    if (!overrideId && !project.backgroundImage) return;
-    const value = resolveSceneBackgroundCss(sc, project, uriFor);
+    const value = backgroundCssForRef(sceneBackgroundRef(sc, project), project, uriFor);
+    if (!value) return;
     payload.push({ targets: [`#scene-${i} > .backdrop`], op: "bg", value });
     if (activeScene && sc.id === activeScene.id) payload.push({ targets: [".canvas"], op: "bg", value });
   });
@@ -1408,6 +1430,8 @@ export function composeStandaloneHtml(project: VideoProject, activeSceneIndex?: 
   </script>
   `;
 
+  // GLB device shells (3D devices) are painted by the three.js bridge.
+  if (html.includes("device-shell-canvas")) html = html.replace("</body>", `${THREE_BRIDGE_SCRIPT}</body>`);
   html = html.replace("</body>", `${injectionScript}</body>`);
   return html;
 }
@@ -1425,7 +1449,7 @@ export function sceneHtml(
   if (project && project.template) {
     // Only templates that declare `slots` (the replicated tpl-* promos) go
     // through the standalone-HTML injector. The 10 device presets carry a
-    // template.html (for the Templates-tab preview player) but no slots, so
+    // template HTML (for the Templates-tab preview player) but no slots, so
     // they fall through to the code-generated path below, which is what
     // actually understands their screenshots/screenCount/word-split text.
     const cfg = templateConfig(project.template);
@@ -1498,7 +1522,7 @@ export function scenePreviewHtml(project: VideoProject, sceneId: string): string
  *  -- plain JS scheduling, not an AI video engine. */
 export function templatePreviewHtml(project: VideoProject): string {
   if (project.template) {
-    const htmlPath = path.join(process.cwd(), "templates", "video", project.template, "template.html");
+    const htmlPath = templateHtmlPath(project.template);
     if (fs.existsSync(htmlPath)) {
       return composeStandaloneHtml(project);
     }
@@ -2034,7 +2058,7 @@ export async function renderVideo(
 
     // Every distinct device across the whole render, routed once per pool page
     // instead of once per scene.
-    const allDeviceIds = [...new Set(scenes.map((s) => s.device))];
+    const allDeviceIds = [...new Set([...scenes.map((s) => s.device), ...(project.template ? [templateConfig(project.template)?.device] : [])].filter((d): d is string => !!d))];
 
     // A fresh pool of pages *for every scene* -- within one scene, all pool
     // pages seek+screenshot different frames at once (a single page's
@@ -2080,7 +2104,7 @@ export async function renderVideo(
         await Promise.all(pages.map(async (page) => {
           await page.setViewportSize(canvasFor(scene));
           await page.setContent(html, { waitUntil: "load" });
-          // Every template's own template.html already ships a `body.rendering
+          // Every template's own template HTML already ships a `body.rendering
           // .v-player-bar { display: none !important; }` rule for exactly this
           // (its standalone play/pause/scrubber/scene-chip overlay must never end
           // up baked into the exported frames) -- it just needs this class to

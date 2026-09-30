@@ -1,9 +1,9 @@
 import fs from "fs";
 import path from "path";
 
-/** Path to a standalone template's HTML file (one per templates/video/<id>/). */
+/** Path to a standalone template's HTML file (flat: templates/video/<id>.html). */
 export function templateHtmlPath(templateId: string): string {
-  return path.join(process.cwd(), "templates", "video", templateId, "template.html");
+  return path.join(process.cwd(), "templates", "video", `${templateId}.html`);
 }
 
 const templateConfigCache = new Map<string, any | null>();

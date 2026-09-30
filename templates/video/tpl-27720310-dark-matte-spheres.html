@@ -167,22 +167,15 @@
       z-index: 2;
     }
     
-    .phone-3d-rig {
-      position: relative;
-      width: 370px;
-      height: 760px;
-      transform-style: preserve-3d;
-    }
-    
-    /* 3D phone faces */
+    </style>
+  <style data-device-css="css-dark-matte-phone">
+    .phone-3d-rig { width: 370px; height: 760px; }
     .phone-face {
       position: absolute;
       inset: 0;
       border-radius: 44px;
       box-sizing: border-box;
     }
-    
-    /* Front Screen with curved bezel overlays (No borders in portrait mode) */
     .phone-face.front {
       background: #000000;
       transform: translateZ(9px);
@@ -191,7 +184,6 @@
       overflow: hidden;
       box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.9);
     }
-    
     .screen-scroll-wrap {
       width: 100%;
       height: 100%;
@@ -200,18 +192,6 @@
       position: relative;
       background: #000000;
     }
-    
-    .phone-screen {
-      width: 100%;
-      height: 100%;
-      position: absolute;
-      top: 0;
-      left: 0;
-      display: block;
-      object-fit: cover;
-    }
-    
-    /* Glossy reflections overlays */
     .gloss-sheen {
       position: absolute;
       inset: 0;
@@ -220,7 +200,6 @@
       pointer-events: none;
       border-radius: 44px;
     }
-    
     .screen-edge-glare {
       position: absolute;
       top: 0;
@@ -230,11 +209,8 @@
       z-index: 12;
       pointer-events: none;
     }
-    
     .screen-edge-glare.left-edge { left: 0; }
     .screen-edge-glare.right-edge { right: 0; transform: scaleX(-1); }
-    
-    /* Curved AMOLED glass side shading */
     .curved-edge-shadow {
       position: absolute;
       top: 0;
@@ -243,43 +219,33 @@
       z-index: 13;
       pointer-events: none;
     }
-    
     .curved-edge-shadow.left {
       left: 0;
       background: linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 50%, transparent 100%);
     }
-    
     .curved-edge-shadow.right {
       right: 0;
       background: linear-gradient(to left, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 50%, transparent 100%);
     }
-    
-    /* Extruded side metal rails - disabled by default for portrait, enabled for landscape */
     .phone-side {
       position: absolute;
       background: none;
       border: none;
     }
-    
     .landscape-layout .phone-side {
       background: linear-gradient(to bottom, #2d2d37, #191921 50%, #2d2d37);
       border: 1px solid #141419;
     }
-    
     .side-left { width: 18px; height: 760px; left: -9px; top: 0; transform: rotateY(90deg); }
     .side-right { width: 18px; height: 760px; right: -9px; top: 0; transform: rotateY(-90deg); }
     .side-top { width: 370px; height: 18px; left: 0; top: -9px; transform: rotateX(90deg); }
     .side-bottom { width: 370px; height: 18px; left: 0; bottom: -9px; transform: rotateX(-90deg); }
-    
-    /* Back Face of Galaxy model */
     .phone-face.back {
       background: #18181f;
       transform: rotateY(180deg) translateZ(9px);
       border: 5px solid #121217;
       box-shadow: 0 30px 60px rgba(0,0,0,0.75);
     }
-    
-    /* Camera module bump */
     .back-camera-module {
       position: absolute;
       top: 40px;
@@ -296,7 +262,6 @@
       padding: 8px 0;
       box-sizing: border-box;
     }
-    
     .back-lens {
       width: 22px;
       height: 22px;
@@ -304,7 +269,6 @@
       background: radial-gradient(circle at 35% 35%, #33333a, #050507 70%);
       border: 1.5px solid #33333a;
     }
-    
     .back-flash {
       width: 10px;
       height: 10px;
@@ -312,7 +276,6 @@
       background: #e8b923;
       box-shadow: 0 0 5px #e8b923;
     }
-    
     .camera-punch {
       position: absolute;
       top: 20px;
@@ -325,6 +288,63 @@
       border: 1.5px solid #1a1a24;
       z-index: 15;
     }
+  </style>
+  <style>.phone-3d-rig { position: relative; transform-style: preserve-3d; }
+    
+    /* 3D phone faces */
+    
+    
+    /* Front Screen with curved bezel overlays (No borders in portrait mode) */
+    
+    
+    
+    
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: block;
+      object-fit: cover;
+    }
+    
+    /* Glossy reflections overlays */
+    
+    
+    
+    
+    
+    
+    
+    /* Curved AMOLED glass side shading */
+    
+    
+    
+    
+    
+    
+    /* Extruded side metal rails - disabled by default for portrait, enabled for landscape */
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /* Back Face of Galaxy model */
+    
+    
+    /* Camera module bump */
+    
+    
+    
+    
+    
+    
+    
     
     /* Landscape screenshot rotation within portrait frame */
     .landscape-screenshot {
@@ -424,7 +444,7 @@
         <div class="device-col">
           <div class="phone-3d-viewport">
             <div class="phone-3d-scaler" style="transform: scale(0.92);">
-              <div class="phone-3d-rig" id="phone-rig-0">
+              <div class="phone-3d-rig" id="phone-rig-0" data-device="css-dark-matte-phone" data-device-rig-classes="" data-device-size="370x760">
                 <div class="phone-face front">
                   <div class="camera-punch"></div>
                   <div class="gloss-sheen"></div>
@@ -465,7 +485,7 @@
         <div class="device-col">
           <div class="phone-3d-viewport">
             <div class="phone-3d-scaler" style="transform: scale(0.92);">
-              <div class="phone-3d-rig" id="phone-rig-1">
+              <div class="phone-3d-rig" id="phone-rig-1" data-device="css-dark-matte-phone" data-device-rig-classes="" data-device-size="370x760">
                 <div class="phone-face front">
                   <div class="camera-punch"></div>
                   <div class="gloss-sheen"></div>
@@ -506,7 +526,7 @@
         <div class="device-col">
           <div class="phone-3d-viewport">
             <div class="phone-3d-scaler" style="transform: scale(0.94);">
-              <div class="phone-3d-rig" id="phone-rig-2">
+              <div class="phone-3d-rig" id="phone-rig-2" data-device="css-dark-matte-phone" data-device-rig-classes="" data-device-size="370x760">
                 <div class="phone-face front">
                   <div class="camera-punch"></div>
                   <div class="gloss-sheen"></div>
@@ -547,7 +567,7 @@
         <div class="device-col">
           <div class="phone-3d-viewport">
             <div class="phone-3d-scaler" style="transform: scale(0.92);">
-              <div class="phone-3d-rig" id="phone-rig-3">
+              <div class="phone-3d-rig" id="phone-rig-3" data-device="css-dark-matte-phone" data-device-rig-classes="" data-device-size="370x760">
                 <div class="phone-face front">
                   <div class="camera-punch"></div>
                   <div class="gloss-sheen"></div>
@@ -588,7 +608,7 @@
         <div class="device-col">
           <div class="phone-3d-viewport">
             <div class="phone-3d-scaler" style="transform: scale(0.92);">
-              <div class="phone-3d-rig" id="phone-rig-4">
+              <div class="phone-3d-rig" id="phone-rig-4" data-device="css-dark-matte-phone" data-device-rig-classes="" data-device-size="370x760">
                 <div class="phone-face front">
                   <div class="camera-punch"></div>
                   <div class="gloss-sheen"></div>
@@ -629,7 +649,7 @@
         <div class="device-col">
           <div class="phone-3d-viewport">
             <div class="phone-3d-scaler" style="transform: scale(0.94);">
-              <div class="phone-3d-rig" id="phone-rig-5">
+              <div class="phone-3d-rig" id="phone-rig-5" data-device="css-dark-matte-phone" data-device-rig-classes="" data-device-size="370x760">
                 <div class="phone-face front">
                   <div class="camera-punch"></div>
                   <div class="gloss-sheen"></div>
@@ -665,7 +685,7 @@
         <!-- Left Side Phone -->
         <div class="phone-3d-viewport" id="viewport-6-left" style="position: absolute; transform: translate(-180px, 0px);">
           <div class="phone-3d-scaler" style="transform: scale(0.88);">
-            <div class="phone-3d-rig" id="phone-rig-6">
+            <div class="phone-3d-rig" id="phone-rig-6" data-device="css-dark-matte-phone" data-device-rig-classes="" data-device-size="370x760">
               <div class="phone-face front">
                 <div class="camera-punch"></div>
                 <div class="gloss-sheen"></div>
@@ -683,7 +703,7 @@
         <!-- Right Side Phone -->
         <div class="phone-3d-viewport" id="viewport-6-right" style="position: absolute; transform: translate(180px, 0px);">
           <div class="phone-3d-scaler" style="transform: scale(0.88);">
-            <div class="phone-3d-rig" id="phone-rig-6-secondary">
+            <div class="phone-3d-rig" id="phone-rig-6-secondary" data-device="css-dark-matte-phone" data-device-rig-classes="" data-device-size="370x760">
               <div class="phone-face front">
                 <div class="camera-punch"></div>
                 <div class="gloss-sheen"></div>
@@ -711,7 +731,7 @@
         <div class="device-col">
           <div class="phone-3d-viewport">
             <div class="phone-3d-scaler" style="transform: scale(0.92);">
-              <div class="phone-3d-rig" id="phone-rig-7">
+              <div class="phone-3d-rig" id="phone-rig-7" data-device="css-dark-matte-phone" data-device-rig-classes="" data-device-size="370x760">
                 <div class="phone-face front">
                   <div class="camera-punch"></div>
                   <div class="gloss-sheen"></div>
@@ -748,7 +768,7 @@
         <div class="device-col">
           <div class="phone-3d-viewport">
             <div class="phone-3d-scaler" style="transform: scale(1.02);">
-              <div class="phone-3d-rig" id="phone-rig-8">
+              <div class="phone-3d-rig" id="phone-rig-8" data-device="css-dark-matte-phone" data-device-rig-classes="" data-device-size="370x760">
                 <div class="phone-face front">
                   <div class="camera-punch"></div>
                   <div class="gloss-sheen"></div>
@@ -789,7 +809,7 @@
         <div class="device-col">
           <div class="phone-3d-viewport">
             <div class="phone-3d-scaler" style="transform: scale(0.92);">
-              <div class="phone-3d-rig" id="phone-rig-9">
+              <div class="phone-3d-rig" id="phone-rig-9" data-device="css-dark-matte-phone" data-device-rig-classes="" data-device-size="370x760">
                 <div class="phone-face front">
                   <div class="camera-punch"></div>
                   <div class="gloss-sheen"></div>
@@ -830,7 +850,7 @@
         <div class="device-col">
           <div class="phone-3d-viewport">
             <div class="phone-3d-scaler" style="transform: scale(0.92);">
-              <div class="phone-3d-rig" id="phone-rig-10">
+              <div class="phone-3d-rig" id="phone-rig-10" data-device="css-dark-matte-phone" data-device-rig-classes="" data-device-size="370x760">
                 <div class="phone-face front">
                   <div class="camera-punch"></div>
                   <div class="gloss-sheen"></div>
@@ -869,7 +889,7 @@
           <div style="position: absolute; width: 440px; height: 820px; border: 3px solid rgba(0,194,255,0.6); box-shadow: 0 0 35px rgba(0,194,255,0.35); border-radius: 48px; pointer-events: none;"></div>
           <div class="phone-3d-viewport">
             <div class="phone-3d-scaler" style="transform: scale(0.96);">
-              <div class="phone-3d-rig" id="phone-rig-11">
+              <div class="phone-3d-rig" id="phone-rig-11" data-device="css-dark-matte-phone" data-device-rig-classes="" data-device-size="370x760">
                 <div class="phone-face front">
                   <div class="camera-punch"></div>
                   <div class="gloss-sheen"></div>
@@ -905,7 +925,7 @@
         <div class="device-col">
           <div class="phone-3d-viewport" id="viewport-12" style="position: absolute; transform: translate(160px, 0px);">
             <div class="phone-3d-scaler" id="scaler-12" style="transform: scale(0.68);">
-              <div class="phone-3d-rig" id="phone-rig-12">
+              <div class="phone-3d-rig" id="phone-rig-12" data-device="css-dark-matte-phone" data-device-rig-classes="" data-device-size="370x760">
                 <div class="phone-face front">
                   <div class="camera-punch"></div>
                   <div class="gloss-sheen"></div>
@@ -933,7 +953,7 @@
       <div class="scene-content" style="justify-content: center;">
         <div class="phone-3d-viewport">
           <div class="phone-3d-scaler" style="transform: scale(1.05);">
-            <div class="phone-3d-rig" id="phone-rig-13">
+            <div class="phone-3d-rig" id="phone-rig-13" data-device="css-dark-matte-phone" data-device-rig-classes="" data-device-size="370x760">
               <div class="phone-face front">
                 <div class="camera-punch"></div>
                 <div class="gloss-sheen"></div>
@@ -965,7 +985,7 @@
         <div class="device-col">
           <div class="phone-3d-viewport">
             <div class="phone-3d-scaler" style="transform: scale(0.96);">
-              <div class="phone-3d-rig" id="phone-rig-14">
+              <div class="phone-3d-rig" id="phone-rig-14" data-device="css-dark-matte-phone" data-device-rig-classes="" data-device-size="370x760">
                 <div class="phone-face front">
                   <div class="camera-punch"></div>
                   <div class="gloss-sheen"></div>
@@ -1000,7 +1020,7 @@
           <!-- Face down phone -->
           <div class="phone-3d-viewport" id="viewport-15-back" style="position: absolute; transform: translate(-140px, 40px);">
             <div class="phone-3d-scaler" style="transform: scale(0.85);">
-              <div class="phone-3d-rig" id="phone-rig-15-back">
+              <div class="phone-3d-rig" id="phone-rig-15-back" data-device="css-dark-matte-phone" data-device-rig-classes="" data-device-size="370x760">
                 <div class="phone-face back">
                   <div class="back-camera-module">
                     <div class="back-lens"></div>
@@ -1019,7 +1039,7 @@
           <!-- Face up phone -->
           <div class="phone-3d-viewport" id="viewport-15-front" style="position: absolute; transform: translate(120px, 120px);">
             <div class="phone-3d-scaler" style="transform: scale(0.85);">
-              <div class="phone-3d-rig" id="phone-rig-15-front">
+              <div class="phone-3d-rig" id="phone-rig-15-front" data-device="css-dark-matte-phone" data-device-rig-classes="" data-device-size="370x760">
                 <div class="phone-face front">
                   <div class="camera-punch"></div>
                   <div class="gloss-sheen"></div>
@@ -1052,7 +1072,7 @@
         <div class="device-col" id="viewport-17-container" style="position: relative; transform: translate(-50px, 0px);">
           <!-- Back Phone -->
           <div class="phone-3d-viewport" style="position: absolute; transform: translate(-80px, 0px) scale(0.82);">
-            <div class="phone-3d-rig" id="phone-rig-17-back">
+            <div class="phone-3d-rig" id="phone-rig-17-back" data-device="css-dark-matte-phone" data-device-rig-classes="" data-device-size="370x760">
               <div class="phone-face back">
                 <div class="back-camera-module">
                   <div class="back-lens"></div>
@@ -1069,7 +1089,7 @@
           </div>
           <!-- Front Phone -->
           <div class="phone-3d-viewport" style="position: absolute; transform: translate(60px, 0px) scale(0.82);">
-            <div class="phone-3d-rig" id="phone-rig-17-front">
+            <div class="phone-3d-rig" id="phone-rig-17-front" data-device="css-dark-matte-phone" data-device-rig-classes="" data-device-size="370x760">
               <div class="phone-face front">
                 <div class="camera-punch"></div>
                 <div class="gloss-sheen"></div>
@@ -1137,14 +1157,15 @@
     "Swiss-style timecode and label annotations",
     "Widescreen landscape and isometric dual phone presentations"
   ],
-  "device": "samsung-galaxy-s25",
-  "deviceType": "3d",
+  "device": "css-dark-matte-phone",
+  "deviceMode": "3D",
   "variant": "matte-spheres",
   "deviceFraction": 0.62,
   "scenes": [
     {
       "label": "Scene 1: Opener",
       "sceneTemplate": "studio-opener",
+      "deviceMode": "3D",
       "durationSeconds": 6.7,
       "background": "matte-dark",
       "rotate": 0,
@@ -1161,6 +1182,7 @@
     {
       "label": "Scene 2: Meet the new Android app",
       "sceneTemplate": "studio-phone",
+      "deviceMode": "3D",
       "durationSeconds": 6,
       "background": "matte-dark",
       "rotate": 0,
@@ -1179,6 +1201,7 @@
     {
       "label": "Scene 3: New level",
       "sceneTemplate": "studio-phone",
+      "deviceMode": "3D",
       "durationSeconds": 5.1,
       "background": "matte-dark",
       "rotate": 0,
@@ -1197,6 +1220,7 @@
     {
       "label": "Scene 4: App of the week",
       "sceneTemplate": "studio-phone",
+      "deviceMode": "3D",
       "durationSeconds": 5.3,
       "background": "matte-dark",
       "rotate": 0,
@@ -1215,6 +1239,7 @@
     {
       "label": "Scene 5: Intuitive UI",
       "sceneTemplate": "studio-phone",
+      "deviceMode": "3D",
       "durationSeconds": 5.1,
       "background": "matte-dark",
       "rotate": 0,
@@ -1233,6 +1258,7 @@
     {
       "label": "Scene 6: Finally it's comming",
       "sceneTemplate": "studio-phone",
+      "deviceMode": "3D",
       "durationSeconds": 5.1,
       "background": "matte-dark",
       "rotate": 0,
@@ -1251,6 +1277,7 @@
     {
       "label": "Scene 7: Dual Macro Closeup",
       "sceneTemplate": "studio-macro",
+      "deviceMode": "3D",
       "durationSeconds": 5,
       "background": "matte-dark",
       "rotate": 0,
@@ -1267,6 +1294,7 @@
     {
       "label": "Scene 8: Completely new experience",
       "sceneTemplate": "studio-phone",
+      "deviceMode": "3D",
       "durationSeconds": 5.2,
       "background": "matte-dark",
       "rotate": 0,
@@ -1285,6 +1313,7 @@
     {
       "label": "Scene 9: Transition whip",
       "sceneTemplate": "studio-transition",
+      "deviceMode": "3D",
       "durationSeconds": 2.4,
       "background": "matte-dark",
       "rotate": 0,
@@ -1301,6 +1330,7 @@
     {
       "label": "Scene 10: Convenient mobile application",
       "sceneTemplate": "studio-phone",
+      "deviceMode": "3D",
       "durationSeconds": 5.3,
       "background": "matte-dark",
       "rotate": 0,
@@ -1319,6 +1349,7 @@
     {
       "label": "Scene 11: The best application",
       "sceneTemplate": "studio-phone",
+      "deviceMode": "3D",
       "durationSeconds": 5.4,
       "background": "matte-dark",
       "rotate": 0,
@@ -1337,6 +1368,7 @@
     {
       "label": "Scene 12: Transition 2",
       "sceneTemplate": "studio-transition",
+      "deviceMode": "3D",
       "durationSeconds": 1.8,
       "background": "matte-dark",
       "rotate": 0,
@@ -1353,6 +1385,7 @@
     {
       "label": "Scene 13: Extreme Macro Closeup",
       "sceneTemplate": "studio-macro",
+      "deviceMode": "3D",
       "durationSeconds": 3.1,
       "background": "matte-dark",
       "rotate": 0,
@@ -1371,6 +1404,7 @@
     {
       "label": "Scene 14: Corner Pan Transition",
       "sceneTemplate": "studio-transition",
+      "deviceMode": "3D",
       "durationSeconds": 1.6,
       "background": "matte-dark",
       "rotate": 0,
@@ -1387,6 +1421,7 @@
     {
       "label": "Scene 15: Landscape Video Mode",
       "sceneTemplate": "studio-landscape",
+      "deviceMode": "3D",
       "durationSeconds": 4.7,
       "background": "matte-dark",
       "rotate": 90,
@@ -1405,6 +1440,7 @@
     {
       "label": "Scene 16: Isometric Dual Phone",
       "sceneTemplate": "studio-phone",
+      "deviceMode": "3D",
       "durationSeconds": 3.3,
       "background": "matte-dark",
       "rotate": 0,
@@ -1423,6 +1459,7 @@
     {
       "label": "Scene 17: Outro transition",
       "sceneTemplate": "studio-outro",
+      "deviceMode": "3D",
       "durationSeconds": 1.4,
       "background": "matte-dark",
       "rotate": 0,
@@ -1439,6 +1476,7 @@
     {
       "label": "Scene 18: Customer Testimonials",
       "sceneTemplate": "studio-outro",
+      "deviceMode": "3D",
       "durationSeconds": 5.5,
       "background": "matte-dark",
       "rotate": 0,

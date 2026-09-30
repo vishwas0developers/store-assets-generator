@@ -5,6 +5,7 @@ import { buildDeviceGlb } from "./build-glb.js";
 import { ensureGltfNodeEnv } from "./gltf-node-env.js";
 import { CURRENT_SCHEMA_VERSION, type DeviceDefinition } from "./schema.js";
 import { DEVICE_REGISTRY, reloadRegistry } from "./registry.js";
+import { CATALOGUE_PATH, DEVICES_3D_DIR } from "./paths.js";
 
 /** CPU-only device lifecycle surface (Phase 3 of the plan) — GLB build,
  *  export, import/validation, and CRUD. No renderer/GPU context is created
@@ -12,8 +13,8 @@ import { DEVICE_REGISTRY, reloadRegistry } from "./registry.js";
  *  GPU-touching surface) live separately (Phase 4) and are only ever
  *  called from browser contexts. See plan "GPU/WebGL scope". */
 
-const CONFIG_PATH = path.join(process.cwd(), "config", "devices.json");
-const GLB_CACHE_DIR = path.join(process.cwd(), ".device-glb-cache");
+const CONFIG_PATH = CATALOGUE_PATH;
+const GLB_CACHE_DIR = DEVICES_3D_DIR;
 const PROJECTS_ROOT = path.join(process.cwd(), "output", "projects");
 
 // ---------------------------------------------------------------------------
@@ -22,7 +23,7 @@ const PROJECTS_ROOT = path.join(process.cwd(), "output", "projects");
 
 /** Builds (or returns the cached) GLB for a device's *current* definition.
  *  Procedural devices are rebuilt if the cached file is missing or older
- *  than `config/devices.json`; override devices just read their pinned
+ *  than `devices/catalogue.json`; override devices just read their pinned
  *  file directly. CPU-only. */
 export async function getDeviceGlbPath(def: DeviceDefinition): Promise<string> {
   if (def.overrideGlbPath) return def.overrideGlbPath;

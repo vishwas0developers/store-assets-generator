@@ -33,7 +33,6 @@ async function main() {
 
   for (const t of originalTemplates) {
     const tplDir = path.join(outBaseDir, t.id);
-    fs.mkdirSync(tplDir, { recursive: true });
 
     const isLandscape = t.aspectRatio === "16:9";
     const width = isLandscape ? 1920 : 1080;
@@ -47,7 +46,7 @@ async function main() {
     // this generator only fails loudly if `t.device` isn't a real registered
     // device instead of silently falling back to a generic/wrong shape.
     if (!DEVICE_REGISTRY[t.device]) {
-      throw new Error(`Template "${t.id}" declares device "${t.device}", which is not in config/devices.json. Add it to the registry before regenerating.`);
+      throw new Error(`Template "${t.id}" declares device "${t.device}", which is not in devices/catalogue.json. Add it to the registry before regenerating.`);
     }
 
     let htmlScenes = "";
@@ -637,7 +636,7 @@ ${JSON.stringify(t, null, 2)}
 </body>
 </html>`;
 
-    fs.writeFileSync(path.join(tplDir, 'template.html'), templateHtml);
+    fs.writeFileSync(path.join(path.dirname(tplDir), path.basename(tplDir) + '.html'), templateHtml);
     console.log(`[OK] Recreated authentic original template: ${t.id} (${t.aspectRatio}, ${t.device})`);
   }
 
