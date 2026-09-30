@@ -8203,15 +8203,25 @@ function renderDevicesCatalogueList() {
   
   if (!Array.isArray(videoDevices)) videoDevices = [];
 
-  const searchVal = $("dev-search").value.toLowerCase();
-  const platformVal = $("dev-filter-platform").value;
-  const formFactorVal = $("dev-filter-formfactor").value;
+  const searchVal = $("dev-search")?.value.toLowerCase().trim() || "";
+  const platformVal = $("dev-filter-platform")?.value || "";
+  const modeVal = $("dev-filter-mode")?.value || "";
+  const formFactorVal = $("dev-filter-formfactor")?.value || "";
+  const formatVal = $("dev-filter-format")?.value || "";
 
   const filtered = videoDevices.filter(d => {
-    const matchesSearch = d.name.toLowerCase().includes(searchVal) || d.vendor.toLowerCase().includes(searchVal);
-    const matchesPlatform = !platformVal || d.platforms.includes(platformVal);
+    if (modeVal && d.deviceType !== modeVal) return false;
+    const matchesSearch = !searchVal || (d.name && d.name.toLowerCase().includes(searchVal)) || (d.vendor && d.vendor.toLowerCase().includes(searchVal));
+    const matchesPlatform = !platformVal || !d.platforms || d.platforms.length === 0 || d.platforms.includes(platformVal);
     const matchesForm = !formFactorVal || d.formFactor === formFactorVal;
-    return matchesSearch && matchesPlatform && matchesForm;
+    const matchesFormat = !formatVal || (
+      d.sourceType && (
+        d.sourceType.toUpperCase() === formatVal.toUpperCase() ||
+        (formatVal.toUpperCase() === "3D" && (d.sourceType.toUpperCase() === "GLB" || d.deviceType === "3D")) ||
+        (formatVal.toUpperCase() === "GLB" && d.sourceType.toUpperCase() === "GLB")
+      )
+    );
+    return matchesSearch && matchesPlatform && matchesForm && matchesFormat;
   });
   
   if (filtered.length === 0) {
@@ -8422,32 +8432,17 @@ function bind3dDeviceViewers(grid) {
   });
 }
 
-let currentDeviceMode = "3d";
-
-const devTab3d = $("dev-mode-tab-3d");
-const devTab2d = $("dev-mode-tab-2d");
-if (devTab3d && devTab2d) {
-  devTab3d.onclick = () => {
-    currentDeviceMode = "3d";
-    devTab3d.classList.add("active");
-    devTab2d.classList.remove("active");
-    renderDevicesCatalogueList();
-  };
-  devTab2d.onclick = () => {
-    currentDeviceMode = "2d";
-    devTab2d.classList.add("active");
-    devTab3d.classList.remove("active");
-    renderDevicesCatalogueList();
-  };
-}
-
 // Bind search and filter events
 const devSearch = $("dev-search");
 if (devSearch) devSearch.oninput = renderDevicesCatalogueList;
 const devFilterPlatform = $("dev-filter-platform");
 if (devFilterPlatform) devFilterPlatform.onchange = renderDevicesCatalogueList;
+const devFilterMode = $("dev-filter-mode");
+if (devFilterMode) devFilterMode.onchange = renderDevicesCatalogueList;
 const devFilterFormfactor = $("dev-filter-formfactor");
 if (devFilterFormfactor) devFilterFormfactor.onchange = renderDevicesCatalogueList;
+const devFilterFormat = $("dev-filter-format");
+if (devFilterFormat) devFilterFormat.onchange = renderDevicesCatalogueList;
 
 // Export button handler
 const devExportBtn = $("dev-export-btn");
