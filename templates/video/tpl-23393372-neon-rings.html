@@ -55,33 +55,23 @@
     /* Curved-glass 3D phone style */
     .phone-3d-container { perspective:1600px; width:600px; height:920px; display:flex; align-items:center; justify-content:center; transform-style:preserve-3d; }
     .phone-3d-container.landscape-mode { width:920px; height:600px; }
-    .phone-3d-rig { position:relative; width:370px; height:760px; transform-style:preserve-3d; }
-    
+    </style>
+  <style data-device-css="css-neon-bevel-phone">
+    .phone-3d-rig { width:370px; height:760px; }
     .phone-face { position:absolute; inset:0; border-radius:46px; box-sizing:border-box; }
     .phone-face.front { background:#0a0a0f; transform:translateZ(10px); z-index:10; border:1px solid #232329; overflow:hidden; box-shadow:inset 0 0 25px rgba(255,42,109,0.15); display:flex; flex-direction:column; }
     .phone-top-bezel { height:40px; display:flex; align-items:center; justify-content:center; position:relative; background:#000000; z-index:5; }
     .phone-speaker-grille { width:58px; height:4px; border-radius:2px; background:#475569; }
     .phone-camera-dot { position:absolute; right:110px; top:50%; transform:translateY(-50%); width:8px; height:8px; border-radius:50%; background:#0f172a; box-shadow:inset 0 0 2px #ff2a6d; }
-    
-    /* Screen frame rounded directly at the bottom to solve CSS 3D parent overflow clip bugs */
     .phone-screen-frame { flex:1; position:relative; overflow:hidden; background:#0f0f14; border-radius:0 0 44px 44px;
       background-image:linear-gradient(90deg, rgba(255,255,255,0.18) 0%, transparent 8%, transparent 92%, rgba(255,255,255,0.18) 100%);
     }
-    .phone-screen { width:100%; height:100%; object-fit:cover; display:block; border-radius:inherit; }
     .gloss-sheen { position:absolute; inset:0; background:linear-gradient(105deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.02) 40%, rgba(255,255,255,0.12) 100%); z-index:11; pointer-events:none; }
-    
-    /* Dual image slot support for Scene 7 - slightly enlarged landscape slot to guarantee 100% coverage */
-    .phone-screen.portrait-src { position:absolute; inset:0; z-index:3; opacity:1; }
-    .phone-screen.landscape-src { position:absolute; width:740px; height:380px; left:50%; top:50%; transform:translate(-50%, -50%) rotate(90deg); object-fit:cover; z-index:2; opacity:0; }
-
-    /* Rear Chassis */
     .phone-face.back { background:linear-gradient(135deg, #121218 0%, #050507 100%); transform:rotateY(180deg) translateZ(10px); border:2px solid #ff2a6d; box-shadow:0 30px 60px rgba(0,0,0,0.65); display:flex; align-items:center; justify-content:center; }
     .back-camera-module { position:absolute; top:40px; left:50%; transform:translateX(-50%); width:70px; height:120px; border-radius:20px; background:#0a0a0f; border:2px solid #2a2a30; display:flex; flex-direction:column; align-items:center; justify-content:space-evenly; }
     .back-lens { width:38px; height:38px; border-radius:50%; background:radial-gradient(circle at 35% 35%, #3a3a42, #050507 70%); border:2px solid #3a3a42; }
     .back-flash { width:12px; height:12px; border-radius:50%; background:#e8b923; box-shadow:0 0 6px #e8b923; }
     .back-fingerprint { position:absolute; bottom:120px; left:50%; transform:translateX(-50%); width:50px; height:50px; border-radius:50%; border:2px solid #2a2a30; }
-    
-    /* Extrusion side rails */
     .phone-side { position:absolute; background:linear-gradient(to bottom, #232329, #475569 50%, #232329); border:1px solid #1e293b; }
     .side-left { width:20px; height:680px; left:-10px; top:40px; transform:rotateY(90deg); border-radius:6px; }
     .side-right { width:20px; height:680px; right:-10px; top:40px; transform:rotateY(-90deg); border-radius:6px; }
@@ -93,6 +83,43 @@
     .power-btn { width:4px; height:50px; right:-4px; top:140px; }
     .usb-port { position:absolute; left:50%; top:50%; transform:translate(-50%, -50%); width:36px; height:6px; border-radius:3px; background:#3a3a42; }
     .phone-ambient-shadow { position:absolute; width:360px; height:740px; border-radius:60px; background:rgba(0,0,0,0.5); filter:blur(30px); transform:translateZ(-60px) scale(0.94); pointer-events:none; }
+  </style>
+  <style>.phone-3d-rig { position:relative; transform-style:preserve-3d; }
+    
+    
+    
+    
+    
+    
+    
+    /* Screen frame rounded directly at the bottom to solve CSS 3D parent overflow clip bugs */
+    
+    .phone-screen { width:100%; height:100%; object-fit:cover; display:block; border-radius:inherit; }
+    
+    
+    /* Dual image slot support for Scene 7 - slightly enlarged landscape slot to guarantee 100% coverage */
+    .phone-screen.portrait-src { position:absolute; inset:0; z-index:3; opacity:1; }
+    .phone-screen.landscape-src { position:absolute; width:740px; height:380px; left:50%; top:50%; transform:translate(-50%, -50%) rotate(90deg); object-fit:cover; z-index:2; opacity:0; }
+
+    /* Rear Chassis */
+    
+    
+    
+    
+    
+    
+    /* Extrusion side rails */
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
     /* In-App Mockups style */
     .mockup-ui { position:absolute; inset:0; background:linear-gradient(135deg, #150910 0%, #030305 100%); display:flex; flex-direction:column; padding:24px; box-sizing:border-box; border-radius:inherit; }
@@ -149,7 +176,7 @@
         </div>
         <div style="margin-top:20px;">
     <div class="phone-3d-container ">
-      <div class="phone-3d-rig" id="phone-rig-0">
+      <div class="phone-3d-rig" id="phone-rig-0" data-device="css-neon-bevel-phone" data-device-rig-classes="" data-device-size="370x760">
         <div class="phone-ambient-shadow"></div>
         
     <div class="phone-face front">
@@ -201,7 +228,7 @@
         </div>
         
     <div class="phone-3d-container ">
-      <div class="phone-3d-rig" id="phone-rig-1">
+      <div class="phone-3d-rig" id="phone-rig-1" data-device="css-neon-bevel-phone" data-device-rig-classes="" data-device-size="370x760">
         <div class="phone-ambient-shadow"></div>
         
     <div class="phone-face front">
@@ -255,7 +282,7 @@
           <div style="position:relative; transform-style:preserve-3d; width:370px; height:760px;" id="fan-group-2">
             
     <div class="phone-3d-container ">
-      <div class="phone-3d-rig" id="phone-rig-2">
+      <div class="phone-3d-rig" id="phone-rig-2" data-device="css-neon-bevel-phone" data-device-rig-classes="" data-device-size="370x760">
         <div class="phone-ambient-shadow"></div>
         
     <div class="phone-face front">
@@ -339,7 +366,7 @@
         </div>
         
     <div class="phone-3d-container ">
-      <div class="phone-3d-rig" id="phone-rig-3">
+      <div class="phone-3d-rig" id="phone-rig-3" data-device="css-neon-bevel-phone" data-device-rig-classes="" data-device-size="370x760">
         <div class="phone-ambient-shadow"></div>
         
     <div class="phone-face front">
@@ -391,7 +418,7 @@
         </div>
         <div style="margin-top:20px;">
     <div class="phone-3d-container ">
-      <div class="phone-3d-rig" id="phone-rig-4">
+      <div class="phone-3d-rig" id="phone-rig-4" data-device="css-neon-bevel-phone" data-device-rig-classes="" data-device-size="370x760">
         <div class="phone-ambient-shadow"></div>
         
     <div class="phone-face front">
@@ -443,7 +470,7 @@
         </div>
         
     <div class="phone-3d-container ">
-      <div class="phone-3d-rig" id="phone-rig-5">
+      <div class="phone-3d-rig" id="phone-rig-5" data-device="css-neon-bevel-phone" data-device-rig-classes="" data-device-size="370x760">
         <div class="phone-ambient-shadow"></div>
         
     <div class="phone-face front">
@@ -495,7 +522,7 @@
         </div>
         
     <div class="phone-3d-container landscape-mode">
-      <div class="phone-3d-rig" id="phone-rig-6">
+      <div class="phone-3d-rig" id="phone-rig-6" data-device="css-neon-bevel-phone" data-device-rig-classes="" data-device-size="370x760">
         <div class="phone-ambient-shadow"></div>
         
     <div class="phone-face front">
@@ -551,7 +578,7 @@
           </div>
         </div>
         <div class="duo-wrap" style="margin-top:20px;">
-          <div class="phone-3d-rig duo-front" id="phone-rig-7a">
+          <div class="phone-3d-rig duo-front" id="phone-rig-7a" data-device="css-neon-bevel-phone" data-device-rig-classes="" data-device-size="370x760">
             
     <div class="phone-face front">
       <div class="phone-top-bezel">
@@ -572,7 +599,7 @@
             <div class="phone-side side-top"></div>
             <div class="phone-side side-bottom"></div>
           </div>
-          <div class="phone-3d-rig duo-back" id="phone-rig-7b">
+          <div class="phone-3d-rig duo-back" id="phone-rig-7b" data-device="css-neon-bevel-phone" data-device-rig-classes="" data-device-size="370x760">
             <div class="phone-face back" style="transform:translateZ(10px);">
               <div class="back-camera-module">
                 <div class="back-lens"></div>
@@ -609,14 +636,15 @@
     "Panoramic fan-out screen parallax",
     "Live synchronized active scene cards"
   ],
-  "device": "samsung-galaxy-s25",
-  "deviceType": "3d",
+  "device": "css-neon-bevel-phone",
+  "deviceMode": "3D",
   "variant": "neon-rings-3d",
   "deviceFraction": 0.6,
   "scenes": [
     {
       "label": "App Promo",
       "sceneTemplate": "hero-rise",
+      "deviceMode": "3D",
       "durationSeconds": 6,
       "background": "graphite",
       "rotate": 0,
@@ -634,6 +662,7 @@
     {
       "label": "Effective Way",
       "sceneTemplate": "hero-rise",
+      "deviceMode": "3D",
       "durationSeconds": 6,
       "background": "graphite",
       "rotate": 0,
@@ -651,6 +680,7 @@
     {
       "label": "Beautiful Modern Design",
       "sceneTemplate": "hero-rise",
+      "deviceMode": "3D",
       "durationSeconds": 5,
       "background": "graphite",
       "rotate": 0,
@@ -673,6 +703,7 @@
     {
       "label": "Easy to Customize",
       "sceneTemplate": "hero-rise",
+      "deviceMode": "3D",
       "durationSeconds": 7,
       "background": "graphite",
       "rotate": 0,
@@ -690,6 +721,7 @@
     {
       "label": "Color Control",
       "sceneTemplate": "hero-rise",
+      "deviceMode": "3D",
       "durationSeconds": 5,
       "background": "graphite",
       "rotate": 0,
@@ -707,6 +739,7 @@
     {
       "label": "Modular Structure",
       "sceneTemplate": "hero-rise",
+      "deviceMode": "3D",
       "durationSeconds": 5,
       "background": "graphite",
       "rotate": 0,
@@ -724,6 +757,7 @@
     {
       "label": "Media Player",
       "sceneTemplate": "hero-rise",
+      "deviceMode": "3D",
       "durationSeconds": 5,
       "background": "graphite",
       "rotate": 0,
@@ -742,6 +776,7 @@
     {
       "label": "Available on VideoHive",
       "sceneTemplate": "hero-rise",
+      "deviceMode": "3D",
       "durationSeconds": 6,
       "background": "graphite",
       "rotate": 0,

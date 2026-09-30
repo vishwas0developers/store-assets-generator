@@ -24,6 +24,7 @@ let videoDetailAudio = null;
 let videoDetailResizeObserver = null;
 let hostPlaybackTick = null;
 let videoDevices = [];
+let videoDeviceRegistry = [];
 let videoSceneOptions = { animations: [], backgrounds: [], layouts: {} };
 
 let scTransport = {
@@ -69,6 +70,9 @@ export async function loadVideoProjectInto(id) {
     if (!Array.isArray(videoDevices) || videoDevices.length === 0) {
       const res = await api("/api/devices");
       videoDevices = Array.isArray(res) ? res : (Array.isArray(res?.devices) ? res.devices : []);
+    }
+    if (videoDeviceRegistry.length === 0) {
+      videoDeviceRegistry = (await api("/api/video-devices"))?.devices ?? [];
     }
     if (videoSceneOptions.animations.length === 0) {
       videoSceneOptions = await api("/api/videos/scene-options");
@@ -532,12 +536,13 @@ export function renderVideoScenes() {
   const themeSection = $("sc-background-theme-section");
   if (themeSection) themeSection.style.display = videoProject.template ? "none" : "";
   renderGlobalBackgroundPanel();
-  const scDevice = $("sc-device");
-  if (scDevice && videoDevices) {
-    const d3Options = videoDevices.map((d) => `<option value="3d:${d.id}">${d.vendor} — ${d.name} (3D Model)</option>`).join("");
-    const d2Options = videoDevices.map((d) => `<option value="2d:${d.id}">${d.vendor} — ${d.name} (2D SVG)</option>`).join("");
-    scDevice.innerHTML = `<optgroup label="3D Devices (Model & Rig)">${d3Options}</optgroup><optgroup label="2D Devices (SVG Frame)">${d2Options}</optgroup>`;
+  if (!templateBackgrounds.length) {
+    ensureTemplateBackgrounds().then(() => {
+      renderGlobalBackgroundPanel();
+      if (selectedSceneId) renderSceneBackgroundSlot(selectedSceneId);
+    });
   }
+  populateSceneDeviceSelect(videoProject.scenes.find((s) => s.id === selectedSceneId));
 
   const orientation = (videoProject.scenes[0] && videoProject.scenes[0].aspectRatio) === "16:9" ? "16:9" : "9:16";
   const layouts = (videoSceneOptions.layouts && videoSceneOptions.layouts[orientation]) || [];
@@ -675,7 +680,8 @@ function selectScene(sceneId) {
   if ($("sc-layout")) $("sc-layout").value = scene.layout || "";
   if ($("sc-depth")) $("sc-depth").value = scene.depth || "flat";
   if ($("sc-transition")) $("sc-transition").value = scene.transition || "cut";
-  if ($("sc-device")) $("sc-device").value = scene.device || "";
+  populateSceneDeviceSelect(scene);
+  if ($("sc-device")) $("sc-device").value = String(scene.device || "").replace(/^(2d|3d):/, "");
   if ($("sc-background")) $("sc-background").value = scene.background || "";
   if ($("sc-duration")) $("sc-duration").value = scene.durationSeconds || 5;
   if ($("sc-rotate")) { $("sc-rotate").value = scene.rotate || 0; $("sc-rotate-val").textContent = scene.rotate || 0; }
@@ -697,6 +703,34 @@ function selectScene(sceneId) {
   updateScenePreviewScale();
   loadSceneContentPanel(sceneId);
 }
+
+/** A scene's required mode: its own `deviceMode`, else 3D. */
+const sceneDeviceMode = (scene) => (scene?.deviceMode === "2D" ? "2D" : "3D");
+
+/** Only devices of the scene's required deviceMode are offered -- a 2D scene never
+ *  lists 3D devices and vice versa (the server rejects such a pick too). CSS-built
+ *  devices need a slot-driven template's rigs, so they're only offered there. */
+function populateSceneDeviceSelect(scene) {
+  const scDevice = $("sc-device");
+  if (!scDevice) return;
+  const mode = sceneDeviceMode(scene);
+  const usable = videoDeviceRegistry.filter((d) => d.deviceType === mode && (d.sourceType !== "CSS" || videoProject?.template));
+  const opts = usable.map((d) => `<option value="${d.id}">${d.vendor} — ${d.name} (${d.sourceType})</option>`).join("");
+  scDevice.innerHTML = `<optgroup label="${mode} Devices">${opts}</optgroup>`;
+}
+
+/** Device Management -> "Use in selected scene". */
+window.assignDeviceToSelectedScene = async (id, mode) => {
+  const scene = videoProject?.scenes?.find((s) => s.id === selectedSceneId);
+  if (!scene) return { ok: false, message: "Open a video project and select a scene first." };
+  if (sceneDeviceMode(scene) !== mode) return { ok: false, message: `This scene requires a ${sceneDeviceMode(scene)} device.` };
+  populateSceneDeviceSelect(scene);
+  const dev = $("sc-device");
+  if (!dev || ![...dev.options].some((o) => o.value === id)) return { ok: false, message: "That device can't be used by this project's scenes." };
+  dev.value = id;
+  await saveCurrentScene();
+  return { ok: true, message: "Device applied to the selected scene." };
+};
 
 function updateVariantSelect(deviceSelectId, variantSelectId, current, catalog) {
   const devSelect = $(deviceSelectId);
@@ -854,40 +888,52 @@ async function loadSceneContentPanel(sceneId) {
   renderSegmentsPanel(sceneId, spec.specs, spec.values);
 }
 
-/** Shared thumbnail + reuse-dropdown + Upload New Source + Remove control,
- *  used by both the global (right side) and per-scene (left side) background
- *  pickers -- same interaction model as imageField()'s screenshot slot. */
-function backgroundImageControl({ sourceId, fallbackImageUrl, fallbackLabel, onChange }) {
+let templateBackgrounds = [];
+
+async function ensureTemplateBackgrounds() {
+  if (templateBackgrounds.length) return;
+  try {
+    templateBackgrounds = (await api("/api/videos/template-backgrounds")).backgrounds || [];
+  } catch (e) {
+    console.error("Failed to load template backgrounds:", e);
+  }
+}
+
+/** The ref meaning "this project's own template, untouched" -- what every
+ *  background control shows selected until something else is chosen. */
+function nativeBackgroundRef() {
+  return videoProject?.template ? `template:${videoProject.template}` : "";
+}
+
+/** Thumbnail + dropdown + Upload New Source + Remove, shared by the global
+ *  (right) and per-scene (left) background pickers. A ref is either
+ *  `template:<id>` (any existing template's own background, listed from the
+ *  templates themselves) or the id of an image/SVG the user uploaded. */
+function backgroundControl({ selectedRef, badge, canRemove, onChange }) {
   const wrap = document.createElement("div");
   wrap.className = "content-slot-image";
-  const source = sourceId ? (videoProject.sources || []).find((s) => s.id === sourceId) : null;
+
+  const tb = templateBackgrounds.find((b) => b.ref === selectedRef);
+  const source = !tb && selectedRef ? (videoProject.sources || []).find((s) => s.id === selectedRef) : null;
 
   const thumb = document.createElement("div");
   thumb.className = "content-slot-thumb";
-  if (source) {
-    // An explicit override for this control -- shown at full opacity, no label.
+  thumb.style.position = "relative";
+  if (tb) {
+    thumb.style.background = tb.css;
+  } else if (source) {
     const img = document.createElement("img");
     img.src = `/api/videos/${videoId}/file?p=${encodeURIComponent(source.file)}`;
     thumb.appendChild(img);
-  } else if (fallbackImageUrl) {
-    // Nothing set *here*, but a fallback (global default, or the scene's own
-    // theme swatch) is in effect -- show it dimmed with a badge so the control
-    // never looks empty when a background actually is being applied.
-    thumb.style.position = "relative";
-    const img = document.createElement("img");
-    img.src = fallbackImageUrl;
-    img.style.opacity = "0.55";
-    thumb.appendChild(img);
-    const badge = document.createElement("span");
-    badge.className = "file-card-badge";
-    badge.style.cssText = "position:absolute; bottom:4px; left:4px; top:auto; right:auto;";
-    badge.textContent = fallbackLabel || "inherited";
-    thumb.appendChild(badge);
-  } else if (fallbackLabel) {
-    thumb.style.cssText = "font-size:0.72rem; text-align:center; padding:0 6px; color:var(--text-muted);";
-    thumb.textContent = fallbackLabel;
   } else {
-    thumb.textContent = "No image";
+    thumb.textContent = "Theme default";
+  }
+  if (badge) {
+    const b = document.createElement("span");
+    b.className = "file-card-badge";
+    b.style.cssText = "position:absolute; bottom:4px; left:4px; top:auto; right:auto;";
+    b.textContent = badge;
+    thumb.appendChild(b);
   }
   const thumbCol = document.createElement("div");
   thumbCol.className = "content-slot-thumb-col";
@@ -897,35 +943,31 @@ function backgroundImageControl({ sourceId, fallbackImageUrl, fallbackLabel, onC
   const controls = document.createElement("div");
   controls.className = "content-slot-image-controls";
 
-  // "purpose" (not just kind !== "video") keeps this list to actual background
-  // uploads -- otherwise every app screenshot uploaded for the Screenshot slot
-  // would also show up here, and vice versa (they used to share one filter).
-  const sources = (videoProject.sources || []).filter((src) => src.kind !== "video" && (src.purpose || "screenshot") === "background");
-  if (sources.length > 0) {
-    const existingSelect = document.createElement("select");
-    existingSelect.style.cssText = "width:100%; font-size:0.78rem; margin-bottom:0.35rem;";
-    // A flat list by name, not populateSourceSelect's device-size optgroups --
-    // "Phone"/"Tablet" categorization only means something for a screenshot,
-    // and is a guess-by-dimensions label that's actively misleading for a
-    // background photo (which has no such deviceCategory of its own).
-    const blank = document.createElement("option");
-    blank.value = "";
-    blank.textContent = "Reuse existing background…";
-    existingSelect.appendChild(blank);
-    for (const s of sources) {
-      const opt = document.createElement("option");
-      opt.value = s.id;
-      opt.textContent = s.name;
-      existingSelect.appendChild(opt);
-    }
-    if (sourceId) existingSelect.value = sourceId;
-    existingSelect.onchange = () => onChange(existingSelect.value || null);
-    controls.appendChild(existingSelect);
+  const select = document.createElement("select");
+  select.style.cssText = "width:100%; font-size:0.78rem; margin-bottom:0.35rem;";
+  const native = nativeBackgroundRef();
+  if (!native) select.appendChild(new Option("Theme default", ""));
+  const tGroup = document.createElement("optgroup");
+  tGroup.label = "Template backgrounds";
+  for (const b of templateBackgrounds) {
+    tGroup.appendChild(new Option(b.ref === native ? `${b.name} (this template)` : b.name, b.ref));
   }
+  if (tGroup.children.length) select.appendChild(tGroup);
+  // Uploads only ever appear here because the user added them.
+  const uploads = (videoProject.sources || []).filter((s) => s.kind !== "video" && s.purpose === "background");
+  if (uploads.length) {
+    const uGroup = document.createElement("optgroup");
+    uGroup.label = "Uploaded";
+    for (const s of uploads) uGroup.appendChild(new Option(s.name, s.id));
+    select.appendChild(uGroup);
+  }
+  select.value = selectedRef || "";
+  select.onchange = () => onChange(select.value || null);
+  controls.appendChild(select);
 
   const fileInput = document.createElement("input");
   fileInput.type = "file";
-  fileInput.accept = "image/png,image/jpeg,image/webp,image/gif";
+  fileInput.accept = "image/png,image/jpeg,image/webp,image/gif,image/svg+xml,.svg";
   fileInput.onchange = async () => {
     const file = fileInput.files[0];
     if (!file) return;
@@ -940,7 +982,7 @@ function backgroundImageControl({ sourceId, fallbackImageUrl, fallbackLabel, onC
   controls.appendChild(fileInput);
   controls.appendChild(uploadButton(fileInput));
 
-  if (source) {
+  if (canRemove) {
     const removeBtn = document.createElement("button");
     removeBtn.type = "button";
     removeBtn.className = "secondary small";
@@ -952,34 +994,33 @@ function backgroundImageControl({ sourceId, fallbackImageUrl, fallbackLabel, onC
   return wrap;
 }
 
-/** Global background: an image-based default for every scene (mirrors
- *  imageField()'s thumbnail/reuse/upload/remove pattern but persists to
- *  project.backgroundImage instead of a per-scene slot). */
+/** Global default background (project.backgroundImage). Null means "each scene
+ *  keeps its template's own background", which the dropdown shows as the
+ *  current template's entry. */
 function renderGlobalBackgroundPanel() {
   const host = $("global-background-panel");
   if (!host || !videoProject) return;
   host.innerHTML = "";
-  // There is no single global *theme* (each scene keeps its own Background
-  // Theme dropdown above) -- only the global *image* lives here, so the only
-  // honest fallback label when no image is set is that scenes fall back to
-  // their own themes individually, not a single named one.
-  host.appendChild(backgroundImageControl({
-    sourceId: videoProject.backgroundImage || null,
-    fallbackLabel: "No global image — each scene uses its own Background Theme",
-    onChange: async (sourceId) => {
-      const updated = await api(`/api/videos/${videoId}`, { method: "PUT", body: { backgroundImage: sourceId } });
-      videoProject.backgroundImage = updated.backgroundImage;
+  const native = nativeBackgroundRef();
+  const explicit = videoProject.backgroundImage || null;
+  host.appendChild(backgroundControl({
+    selectedRef: explicit || native,
+    badge: explicit ? null : "template default",
+    canRemove: !!explicit,
+    onChange: async (ref) => {
+      const value = !ref || ref === native ? null : ref;
+      const updated = await api(`/api/videos/${videoId}`, { method: "PUT", body: { backgroundImage: value } });
+      videoProject.backgroundImage = updated.backgroundImage ?? null;
       renderGlobalBackgroundPanel();
+      if (selectedSceneId) renderSceneBackgroundSlot(selectedSceneId);
       showScenePreview();
     },
   }));
 }
 
 /** Per-scene background override, shown directly above the Screenshot content
- *  slot in the left Content panel. Stored as scene.slotValues.background --
- *  the same generic per-scene slot bag every other content field uses -- so a
- *  scene with no override here simply falls back to the global background
- *  above (see resolveSceneBackgroundCss in render.ts). */
+ *  slot. Stored in scene.slotValues.background; with no override the scene
+ *  shows the global default, else its template's own background. */
 function renderSceneBackgroundSlot(sceneId) {
   const host = $("sc-background-panel");
   if (!host || !videoProject) return;
@@ -992,30 +1033,15 @@ function renderSceneBackgroundSlot(sceneId) {
   label.textContent = "Background Theme";
   wrap.appendChild(label);
   const value = scene.slotValues?.background;
-  const sourceId = value?.kind === "image" ? value.sourceId : null;
-  // No override here -- show whatever this scene actually falls back to
-  // (resolveSceneBackgroundCss in render.ts: global image if set, else this
-  // scene's own theme), so the control never implies "nothing is applied".
-  const globalSource = !sourceId && videoProject.backgroundImage
-    ? (videoProject.sources || []).find((s) => s.id === videoProject.backgroundImage)
-    : null;
-  const fallbackImageUrl = globalSource ? `/api/videos/${videoId}/file?p=${encodeURIComponent(globalSource.file)}` : null;
-  // scene.background (the named-gradient theme) only actually renders for the
-  // code-gen device-preset templates -- a "tpl-*" slots template ignores it
-  // entirely and keeps its own baked-in CSS background, so labeling it here
-  // would show a value with no visible effect.
-  const isSlotsTemplate = !!videoProject.template;
-  const fallbackLabel = globalSource
-    ? "global default"
-    : sourceId ? null
-    : isSlotsTemplate ? "Template's default background" : `Theme: ${scene.background || "ocean"}`;
-  wrap.appendChild(backgroundImageControl({
-    sourceId,
-    fallbackImageUrl,
-    fallbackLabel,
-    onChange: async (id) => {
-      await saveSlotValue(sceneId, "background", { kind: "image", sourceId: id });
-      scene.slotValues = { ...(scene.slotValues || {}), background: { kind: "image", sourceId: id } };
+  const override = value?.kind === "image" ? value.sourceId : null;
+  const global = videoProject.backgroundImage || null;
+  wrap.appendChild(backgroundControl({
+    selectedRef: override || global || nativeBackgroundRef(),
+    badge: override ? null : global ? "global default" : "template default",
+    canRemove: !!override,
+    onChange: async (ref) => {
+      await saveSlotValue(sceneId, "background", { kind: "image", sourceId: ref });
+      scene.slotValues = { ...(scene.slotValues || {}), background: { kind: "image", sourceId: ref } };
       renderSceneBackgroundSlot(sceneId);
       showScenePreview();
     },
@@ -1023,7 +1049,7 @@ function renderSceneBackgroundSlot(sceneId) {
   const note = document.createElement("p");
   note.className = "hint";
   note.style.cssText = "margin:.3rem 0 0;";
-  note.textContent = "Overrides the global background for this scene only. Remove it to fall back to the global background.";
+  note.textContent = "Applies to this scene only. Remove it to fall back to the global background.";
   wrap.appendChild(note);
   host.appendChild(wrap);
 }
@@ -1713,6 +1739,8 @@ export async function saveCurrentScene() {
     depth: $("sc-depth")?.value || "flat",
     transition: $("sc-transition")?.value || "cut",
     device: $("sc-device")?.value,
+    // Template scenes keep the template-declared mode; free scenes follow their animation.
+    deviceMode: videoProject.template ? sceneDeviceMode(videoProject.scenes.find((s) => s.id === selectedSceneId)) : (videoSceneOptions.animations.find((a) => a.id === $("sc-template")?.value)?.deviceMode ?? "3D"),
     variant: $("sc-variant")?.value || undefined,
     background: $("sc-background")?.value,
     durationSeconds: Number($("sc-duration")?.value) || 3,

@@ -149,20 +149,9 @@
       z-index: 2;
     }
     
-    .phone-3d-rig {
-      position: relative;
-      width: 370px;
-      height: 760px;
-      transform-style: preserve-3d;
-      border-radius: 48px;
-      /* Thin metal side rail (thickness) + fine metallic highlight line along the chassis boundary */
-      box-shadow:
-        0 0 0 2px #22252c,
-        0 0 0 3px rgba(255, 255, 255, 0.14),
-        0 30px 70px rgba(0, 0, 0, 0.28);
-    }
-
-    /* Dedicated 38180229 chassis: matte ink finish, side hardware accents (rung: CSS pseudo-elements, no markup change) */
+    </style>
+  <style data-device-css="css-minimal-chassis-phone">
+    .phone-3d-rig { width: 370px; height: 760px; border-radius: 48px; }
     .phone-3d-rig::before, .phone-3d-rig::after {
       content: '';
       position: absolute;
@@ -182,14 +171,12 @@
       width: 4px;
       height: 50px;
     }
-
     .phone-face {
       position: absolute;
       inset: 0;
       border-radius: 48px;
       box-sizing: border-box;
     }
-
     .phone-face.front {
       background: #0d0f14;
       transform: translateZ(9px);
@@ -197,7 +184,6 @@
       overflow: hidden;
       padding: 8px; /* ultra-thin symmetrical bezel around the active display */
     }
-
     .screen-scroll-wrap {
       width: 100%;
       height: 100%;
@@ -206,18 +192,6 @@
       position: relative;
       background: #0d0f14;
     }
-    
-    .phone-screen {
-      width: 100%;
-      height: 100%;
-      position: absolute;
-      top: 0;
-      left: 0;
-      display: block;
-      object-fit: cover;
-    }
-
-    /* Glossy reflection sheen overlay */
     .gloss-sheen {
       position: absolute;
       inset: 0;
@@ -226,7 +200,6 @@
       pointer-events: none;
       border-radius: 40px;
     }
-
     .screen-edge-glare {
       position: absolute;
       top: 0;
@@ -238,7 +211,6 @@
     }
     .screen-edge-glare.left-edge { left: 0; }
     .screen-edge-glare.right-edge { right: 0; transform: scaleX(-1); }
-
     .curved-edge-shadow {
       position: absolute;
       top: 0;
@@ -255,8 +227,6 @@
       right: 0;
       background: linear-gradient(to left, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 50%, transparent 100%);
     }
-
-    /* True 3D side rail panels — thin brushed-metal edges revealed by the existing rotateY yaw */
     .phone-side {
       position: absolute;
       top: 48px; /* inset by the corner radius so the flat rail never pokes past the rounded corners */
@@ -274,6 +244,61 @@
       transform-origin: right center;
       transform: rotateY(90deg);
     }
+    .camera-punch {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 12px;
+      height: 12px;
+      background: #08080c;
+      border-radius: 50%;
+      border: 1.5px solid #1a1a24;
+      z-index: 15;
+    }
+  </style>
+  <style>.phone-3d-rig { position: relative; transform-style: preserve-3d; /* Thin metal side rail (thickness) + fine metallic highlight line along the chassis boundary */
+      box-shadow:
+        0 0 0 2px #22252c,
+        0 0 0 3px rgba(255, 255, 255, 0.14),
+        0 30px 70px rgba(0, 0, 0, 0.28); }
+
+    /* Dedicated 38180229 chassis: matte ink finish, side hardware accents (rung: CSS pseudo-elements, no markup change) */
+    
+    
+    
+
+    
+
+    
+
+    
+    
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: block;
+      object-fit: cover;
+    }
+
+    /* Glossy reflection sheen overlay */
+    
+
+    
+    
+    
+
+    
+    
+    
+
+    /* True 3D side rail panels — thin brushed-metal edges revealed by the existing rotateY yaw */
+    
+    
+    
 
     /* Grounding floor shadow beneath each device */
     .phone-3d-viewport::after {
@@ -289,18 +314,7 @@
       pointer-events: none;
     }
 
-    .camera-punch {
-      position: absolute;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 12px;
-      height: 12px;
-      background: #08080c;
-      border-radius: 50%;
-      border: 1.5px solid #1a1a24;
-      z-index: 15;
-    }
+    
 
     /* Floating Shield Badge Accent (Scene 4) */
     .security-badge {
@@ -443,7 +457,7 @@
         <div class="device-col">
           <div class="phone-3d-viewport">
             <div class="phone-3d-scaler" style="transform: scale(0.92);">
-              <div class="phone-3d-rig" id="phone-rig-1">
+              <div class="phone-3d-rig" id="phone-rig-1" data-device="css-minimal-chassis-phone" data-device-rig-classes="" data-device-size="370x760">
                 <div class="phone-side left"></div>
                 <div class="phone-side right"></div>
                 <div class="phone-face front">
@@ -484,7 +498,7 @@
           
           <div class="phone-3d-viewport" style="z-index: 2;">
             <div class="phone-3d-scaler" style="transform: scale(0.92);">
-              <div class="phone-3d-rig" id="phone-rig-2">
+              <div class="phone-3d-rig" id="phone-rig-2" data-device="css-minimal-chassis-phone" data-device-rig-classes="" data-device-size="370x760">
                 <div class="phone-side left"></div>
                 <div class="phone-side right"></div>
                 <div class="phone-face front">
@@ -525,7 +539,7 @@
           
           <div class="phone-3d-viewport">
             <div class="phone-3d-scaler" style="transform: scale(0.90);">
-              <div class="phone-3d-rig" id="phone-rig-3">
+              <div class="phone-3d-rig" id="phone-rig-3" data-device="css-minimal-chassis-phone" data-device-rig-classes="" data-device-size="370x760">
                 <div class="phone-side left"></div>
                 <div class="phone-side right"></div>
                 <div class="phone-face front">
@@ -564,7 +578,7 @@
         <div class="device-col">
           <div class="phone-3d-viewport">
             <div class="phone-3d-scaler" style="transform: scale(0.92);">
-              <div class="phone-3d-rig" id="phone-rig-4">
+              <div class="phone-3d-rig" id="phone-rig-4" data-device="css-minimal-chassis-phone" data-device-rig-classes="" data-device-size="370x760">
                 <div class="phone-side left"></div>
                 <div class="phone-side right"></div>
                 <div class="phone-face front">
@@ -600,7 +614,7 @@
 
           <div class="phone-3d-viewport">
             <div class="phone-3d-scaler" style="transform: scale(0.90);">
-              <div class="phone-3d-rig" id="phone-rig-5">
+              <div class="phone-3d-rig" id="phone-rig-5" data-device="css-minimal-chassis-phone" data-device-rig-classes="" data-device-size="370x760">
                 <div class="phone-side left"></div>
                 <div class="phone-side right"></div>
                 <div class="phone-face front">
@@ -672,14 +686,15 @@
     "Unified two-phase monotonic motion engine",
     "100% front-screen usability for all screenshots"
   ],
-  "device": "android-modern-flagship",
-  "deviceType": "3d",
+  "device": "css-minimal-chassis-phone",
+  "deviceMode": "3D",
   "variant": "minimal-skyblue",
   "deviceFraction": 0.62,
   "scenes": [
     {
       "label": "Scene 1: App Logo Opener",
       "sceneTemplate": "studio-opener",
+      "deviceMode": "3D",
       "durationSeconds": 1.73,
       "background": "minimal-white",
       "rotate": 0,
@@ -697,6 +712,7 @@
     {
       "label": "Scene 2: Video Calling Made With Love",
       "sceneTemplate": "studio-phone",
+      "deviceMode": "3D",
       "durationSeconds": 2.57,
       "background": "minimal-white",
       "rotate": 0,
@@ -714,6 +730,7 @@
     {
       "label": "Scene 3: Group Calls in Few Clicks",
       "sceneTemplate": "studio-phone",
+      "deviceMode": "3D",
       "durationSeconds": 2.67,
       "background": "minimal-white",
       "rotate": 0,
@@ -731,6 +748,7 @@
     {
       "label": "Scene 4: Built-in Encryption",
       "sceneTemplate": "studio-phone",
+      "deviceMode": "3D",
       "durationSeconds": 3.33,
       "background": "minimal-white",
       "rotate": 0,
@@ -749,6 +767,7 @@
     {
       "label": "Scene 5: Easy Snapshots During Call",
       "sceneTemplate": "studio-phone",
+      "deviceMode": "3D",
       "durationSeconds": 2.67,
       "background": "minimal-white",
       "rotate": 0,
@@ -767,6 +786,7 @@
     {
       "label": "Scene 6: Download. Sign Up. Call.",
       "sceneTemplate": "studio-phone",
+      "deviceMode": "3D",
       "durationSeconds": 3.33,
       "background": "minimal-white",
       "rotate": 0,
@@ -784,6 +804,7 @@
     {
       "label": "Scene 7: Outro Call-to-Action",
       "sceneTemplate": "studio-outro",
+      "deviceMode": "3D",
       "durationSeconds": 3.6,
       "background": "minimal-white",
       "rotate": 0,

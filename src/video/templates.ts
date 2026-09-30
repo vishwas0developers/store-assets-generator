@@ -23,6 +23,8 @@ export interface VideoTemplateScene {
   depth?: "flat" | "perspective" | "float" | "showcase";
   transition?: "cut" | "fade" | "slide" | "wipe" | "zoom";
   flowSteps?: FlowStep[];
+  /** Explicit device mode this scene expects (defaults to the template's). */
+  deviceMode?: "2D" | "3D";
   text: string;
   subtext: string;
 }
@@ -35,6 +37,8 @@ export interface VideoTemplate {
   designStyle: string;
   aspectRatio: string;
   features: string[];
+  /** Default device mode for every scene in this template. */
+  deviceMode: "2D" | "3D";
   device: string;
   variant?: string;
   deviceFraction: number;
@@ -46,16 +50,17 @@ export const VIDEO_TEMPLATES: VideoTemplate[] = [];
 export function loadAllTemplates(): VideoTemplate[] {
   const templatesDir = path.join(process.cwd(), "templates", "video");
   if (!fs.existsSync(templatesDir)) return [];
-  const folders = fs.readdirSync(templatesDir);
+  const files = fs.readdirSync(templatesDir).filter((f) => f.endsWith(".html"));
   const list: VideoTemplate[] = [];
-  for (const f of folders) {
-    const htmlPath = path.join(templatesDir, f, "template.html");
-    if (fs.existsSync(htmlPath)) {
+  for (const f of files) {
+    const htmlPath = path.join(templatesDir, f);
+    {
       try {
         const html = fs.readFileSync(htmlPath, "utf-8");
         const match = html.match(/<script type="application\/json" id="template-config">([\s\S]*?)<\/script>/);
         if (match) {
           const config = JSON.parse(match[1]);
+          config.deviceMode ??= "3D";
           list.push(config);
         }
       } catch (e) {
@@ -183,6 +188,7 @@ export function applyVideoTemplate(project: VideoProject, templateId: string): v
       sceneTemplate: s.sceneTemplate,
       sourceId,
       screenIds,
+      deviceMode: s.deviceMode ?? template.deviceMode ?? "3D",
       device: template.device,
       variant: template.variant,
       deviceFraction: template.deviceFraction,

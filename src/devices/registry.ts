@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { buildFrameSvg } from "./build-frame-svg.js";
+import { CATALOGUE_PATH, DEVICES_2D_DIR } from "./paths.js";
 import { CURRENT_SCHEMA_VERSION, type DeviceDefinition, type DeviceVariant as SchemaVariant } from "./schema.js";
 
 /** Compat shape: identical to the pre-GLB `DeviceGeometry` so `still.ts`,
@@ -57,7 +58,7 @@ export interface DeviceModel extends DeviceCatalogueEntry {
   definition: DeviceDefinition;
 }
 
-const CONFIG_PATH = path.join(process.cwd(), "config", "devices.json");
+const CONFIG_PATH = CATALOGUE_PATH;
 
 /** Schema migration chain, keyed on `schemaVersion` — a no-op today since
  *  only v2 (the GLB-era schema) exists, but this is the seam future
@@ -78,7 +79,7 @@ function migrateDeviceDefinition(raw: DeviceDefinition): DeviceDefinition {
 
 function loadCatalogue(): DeviceDefinition[] {
   if (!fs.existsSync(CONFIG_PATH)) {
-    throw new Error(`Device catalogue not found at ${CONFIG_PATH}. Reinstall or restore config/devices.json.`);
+    throw new Error(`Device catalogue not found at ${CONFIG_PATH}. Reinstall or restore devices/catalogue.json.`);
   }
   const parsed = JSON.parse(fs.readFileSync(CONFIG_PATH, "utf-8")) as { devices: DeviceDefinition[] };
   return parsed.devices.map(migrateDeviceDefinition);
@@ -116,6 +117,14 @@ function compatVariant(v: SchemaVariant): DeviceVariant {
   };
 }
 
+/** A custom 2D device's SVG lives in devices/2d/<file>; inline `customSvg` is still honoured. */
+function customSvgOf(def: DeviceDefinition): string | undefined {
+  if (def.customSvg) return def.customSvg;
+  if (!def.customSvgFile) return undefined;
+  const file = path.join(DEVICES_2D_DIR, path.basename(def.customSvgFile));
+  return fs.existsSync(file) ? fs.readFileSync(file, "utf-8") : undefined;
+}
+
 function resolveModel(def: DeviceDefinition): DeviceModel {
   return {
     id: def.id,
@@ -129,13 +138,13 @@ function resolveModel(def: DeviceDefinition): DeviceModel {
     variants: def.variants?.map(compatVariant),
     styles: ["default"],
     colorways: ["light", "dark"],
-    svgFrame: def.customSvg || buildFrameSvg(def, "dark"),
+    svgFrame: customSvgOf(def) || buildFrameSvg(def, "dark"),
     definition: def,
   };
 }
 
 /** Catalogue-backed registry, id -> resolved DeviceModel. `frame`/`geometry`
- *  are compat views derived from `config/devices.json`'s `DeviceDefinition`
+ *  are compat views derived from `devices/catalogue.json`'s `DeviceDefinition`
  *  entries (see `src/devices/schema.ts`); `definition` carries the full
  *  richer shape. Adding a device is a JSON entry, no code. */
 export let DEVICE_REGISTRY: Record<string, DeviceModel> = Object.fromEntries(

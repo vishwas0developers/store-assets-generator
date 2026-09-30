@@ -1,0 +1,13 @@
+<svg viewBox="0 0 1080 2340" xmlns="http://www.w3.org/2000/svg">
+    <mask id="bezel-hole-flat-edge-slim">
+      <rect x="0" y="0" width="1080" height="2340" fill="#fff" />
+      <rect x="24" y="24" width="1032" height="2292" rx="26" fill="#000" />
+    </mask>
+    <rect x="8" y="8" width="1064" height="2324"
+          rx="34" fill="#1a1a1a" stroke="#4a4a4a" stroke-width="16" mask="url(#bezel-hole-flat-edge-slim)" />
+    <g id="camera-cutout"><rect x="430" y="0" width="220" height="34" rx="17" fill="#000" /></g>
+    <rect x="1072" y="450.44999999999993" width="16" height="128.7" rx="4" fill="#4a4a4a" />
+    <rect x="-8" y="549.9" width="16" height="117" rx="4" fill="#4a4a4a" />
+    <rect x="-8" y="690.3000000000001" width="16" height="117" rx="4" fill="#4a4a4a" />
+    
+  </svg>

@@ -1,0 +1,13 @@
+<svg viewBox="0 0 1080 2400" xmlns="http://www.w3.org/2000/svg">
+    <mask id="bezel-hole-phone">
+      <rect x="0" y="0" width="1080" height="2400" fill="#fff" />
+      <rect x="30" y="30" width="1020" height="2340" rx="22" fill="#000" />
+    </mask>
+    <rect x="8" y="8" width="1064" height="2384"
+          rx="30" fill="#222222" stroke="#444444" stroke-width="16" mask="url(#bezel-hole-phone)" />
+    <g id="camera-cutout"><circle cx="540" cy="44" r="18" fill="#000" stroke="#444444" stroke-width="2" /></g>
+    <rect x="1072" y="456" width="16" height="144" rx="4" fill="#444444" />
+    <rect x="-8" y="516" width="16" height="120" rx="4" fill="#444444" />
+    <rect x="-8" y="660" width="16" height="120" rx="4" fill="#444444" />
+    
+  </svg>

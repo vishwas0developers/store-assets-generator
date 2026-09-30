@@ -1085,7 +1085,7 @@
                 <label>Background Theme (Global)</label>
                 <select id="sc-background"></select>
                 </div>
-                <label>Background Image (Global)</label>
+                <label>Background (Global)</label>
                 <div id="global-background-panel" style="margin-top:.25rem;"></div>
                 <p class="hint" style="margin:.3rem 0 0;">Applies to every scene by default. A scene with its own Background Theme override (in its Content panel) ignores this.</p>
 
@@ -1142,7 +1142,7 @@
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:1rem;">
               <div>
                 <h2 style="margin:0; font-size:1.2rem; font-weight:600;">📱 Device Registry & Management</h2>
-                <p class="hint" style="margin:.2rem 0 0;">Inspect, manage, and select dynamic 2D SVG and 3D GLB device frames for Video Studio templates.</p>
+                <p class="hint" style="margin:.2rem 0 0;">One registry of reusable 2D and 3D devices (SVG, GLB or CSS under the hood) for Video Studio templates. A scene only accepts devices of its own mode.</p>
               </div>
               <div style="display:flex; gap:10px;">
                 <button class="secondary small" id="dev-import-btn" type="button">&#11014; Import JSON</button>
@@ -1152,8 +1152,8 @@
             </div>
 
             <div style="display:flex; gap:10px; margin-bottom:1.2rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.8rem;">
-              <button class="secondary small active" id="dev-mode-tab-3d" type="button" style="font-weight:600;">🧊 3D Devices (Model & Rig)</button>
-              <button class="secondary small" id="dev-mode-tab-2d" type="button" style="font-weight:600;">🖼️ 2D Devices (SVG Frame)</button>
+              <button class="secondary small active" id="dev-mode-tab-3d" type="button" style="font-weight:600;">🧊 3D Devices</button>
+              <button class="secondary small" id="dev-mode-tab-2d" type="button" style="font-weight:600;">🖼️ 2D Devices</button>
             </div>
 
             <div class="row" style="gap:15px; margin-bottom:1.5rem;">

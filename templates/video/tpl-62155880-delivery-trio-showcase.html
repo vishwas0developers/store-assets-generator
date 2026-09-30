@@ -62,20 +62,17 @@
     .device-col.trio { flex:1.4; }
     .device-col.center-only { flex:1; }
 
-    .phone-3d-rig { position:absolute; top:50%; left:50%; margin-top:-350px; margin-left:-170px; width:340px; height:700px; transform-style:preserve-3d; border: none; outline: none; }
+    </style>
+  <style data-device-css="apple-iphone-15-pro">
+    .phone-3d-rig { width:340px; height:700px; border: none; }
     .phone-face { position:absolute; inset:0; border-radius:46px; box-sizing:border-box; }
     .phone-face.front { background:#000000; transform:translateZ(8px); z-index:10; overflow:hidden; padding:4px; border: 1.5px solid rgba(255,255,255,0.3); outline: none; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05), 0 20px 45px rgba(0,0,0,0.5); }
     .phone-face.back { background:linear-gradient(135deg, #cbd5e1 0%, #94a3b8 50%, #475569 100%); transform:translateZ(-8px) rotateY(180deg); border: 1px solid rgba(255,255,255,0.2); box-shadow: inset 0 0 20px rgba(0,0,0,0.4); }
-    .dynamic-island { position:absolute; top:15px; left:50%; transform:translateX(-50%); width:90px; height:26px; background:#0c0d10; border-radius:13px; z-index:12; border:1px solid #1a1b20; box-shadow: inset 0 1px 2px rgba(255,255,255,0.1), 0 1px 2px rgba(0,0,0,0.5); }
-    .phone-screen { width:100%; height:100%; object-fit:cover; border-radius:42px; }
-    .reflection-screen { position:absolute; top:50%; left:50%; margin-top:-350px; margin-left:-170px; width:340px; height:700px; border-radius:46px; transform-origin:center bottom; transform:scaleY(-1) translateY(6px); opacity:0.16; filter:blur(4px); pointer-events:none; z-index:1; }
-    /* Premium 3D Polished Chrome Chassis Side Rails */
     .phone-3d-rig.shell-migrated { border: none; }
     .phone-face.front.shell-migrated { background: transparent; border: none; box-shadow: none; }
     .phone-face.back.shell-migrated { display: none; }
     .phone-side.shell-migrated { display: none; }
     .device-shell-canvas { pointer-events: none; position: absolute; inset: 0; }
-
     .phone-side {
       position:absolute;
       box-sizing: border-box;
@@ -89,6 +86,30 @@
     .volume-up { width:4px; height:45px; left:-4px; top:120px; }
     .volume-down { width:4px; height:45px; left:-4px; top:180px; }
     .power-btn { width:4px; height:50px; right:-4px; top:140px; }
+  </style>
+  <style>.phone-3d-rig { position:absolute; top:50%; left:50%; margin-top:-350px; margin-left:-170px; transform-style:preserve-3d; outline: none; }
+    
+    
+    
+    .dynamic-island { position:absolute; top:15px; left:50%; transform:translateX(-50%); width:90px; height:26px; background:#0c0d10; border-radius:13px; z-index:12; border:1px solid #1a1b20; box-shadow: inset 0 1px 2px rgba(255,255,255,0.1), 0 1px 2px rgba(0,0,0,0.5); }
+    .phone-screen { width:100%; height:100%; object-fit:cover; border-radius:42px; }
+    .reflection-screen { position:absolute; top:50%; left:50%; margin-top:-350px; margin-left:-170px; width:340px; height:700px; border-radius:46px; transform-origin:center bottom; transform:scaleY(-1) translateY(6px); opacity:0.16; filter:blur(4px); pointer-events:none; z-index:1; }
+    /* Premium 3D Polished Chrome Chassis Side Rails */
+    
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
     /* Scene 1: squircle location-pin logo + tap ripple */
     .logo-squircle-pin {
@@ -263,8 +284,8 @@
     <div class="scene" id="scene-1">
       <div class="scene-content">
         <div class="device-col">
-          <div class="phone-3d-rig shell-migrated" id="phone-rig-1">
-            <canvas class="device-shell-canvas" data-device-id="{{DEVICE_ID}}" data-shell-only="1" width="{{DEVICE_W}}" height="{{DEVICE_H}}"></canvas>
+          <div class="phone-3d-rig shell-migrated" id="phone-rig-1" data-device="apple-iphone-15-pro" data-device-rig-classes="shell-migrated" data-device-size="340x700">
+            <canvas class="device-shell-canvas" data-device-id="apple-iphone-15-pro" data-shell-only="1" width="1179" height="2556"></canvas>
             <div class="phone-face front shell-migrated">
               <img class="phone-screen" id="slot-0" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="slot-0" />
             </div>
@@ -292,8 +313,8 @@
     <div class="scene" id="scene-2">
       <div class="scene-content" style="justify-content:center;">
         <div class="device-col center-only" style="position:relative;">
-          <div class="phone-3d-rig shell-migrated" id="phone-rig-2">
-            <canvas class="device-shell-canvas" data-device-id="{{DEVICE_ID}}" data-shell-only="1" width="{{DEVICE_W}}" height="{{DEVICE_H}}"></canvas>
+          <div class="phone-3d-rig shell-migrated" id="phone-rig-2" data-device="apple-iphone-15-pro" data-device-rig-classes="shell-migrated" data-device-size="340x700">
+            <canvas class="device-shell-canvas" data-device-id="apple-iphone-15-pro" data-shell-only="1" width="1179" height="2556"></canvas>
             <div class="phone-face front shell-migrated">
               <img class="phone-screen" id="slot-1" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="slot-1" />
             </div>
@@ -326,8 +347,8 @@
           <p class="subtitle" id="s3-subtext" style="font-size: 20px;">As soon as you finish typing a word, it will be checked against the dictionary.</p>
         </div>
         <div class="device-col trio" style="position:relative;">
-          <div class="phone-3d-rig shell-migrated" id="phone-rig-3a" style="transform: translateX(-160px);">
-            <canvas class="device-shell-canvas" data-device-id="{{DEVICE_ID}}" data-shell-only="1" width="{{DEVICE_W}}" height="{{DEVICE_H}}"></canvas>
+          <div class="phone-3d-rig shell-migrated" id="phone-rig-3a" style="transform: translateX(-160px);" data-device="apple-iphone-15-pro" data-device-rig-classes="shell-migrated" data-device-size="340x700">
+            <canvas class="device-shell-canvas" data-device-id="apple-iphone-15-pro" data-shell-only="1" width="1179" height="2556"></canvas>
             <div class="phone-face front shell-migrated">
               <img class="phone-screen" id="slot-2" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="slot-2" />
             </div>
@@ -342,8 +363,8 @@
             <div class="phone-side side-top shell-migrated"></div>
             <div class="phone-side side-bottom shell-migrated"></div>
           </div>
-          <div class="phone-3d-rig shell-migrated" id="phone-rig-3b" style="transform: translateX(240px) rotateY(-12deg);">
-            <canvas class="device-shell-canvas" data-device-id="{{DEVICE_ID}}" data-shell-only="1" width="{{DEVICE_W}}" height="{{DEVICE_H}}"></canvas>
+          <div class="phone-3d-rig shell-migrated" id="phone-rig-3b" style="transform: translateX(240px) rotateY(-12deg);" data-device="apple-iphone-15-pro" data-device-rig-classes="shell-migrated" data-device-size="340x700">
+            <canvas class="device-shell-canvas" data-device-id="apple-iphone-15-pro" data-shell-only="1" width="1179" height="2556"></canvas>
             <div class="phone-face front shell-migrated">
               <img class="phone-screen" id="slot-3" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="slot-3" />
             </div>
@@ -375,8 +396,8 @@
           </div>
         </div>
         <div class="device-col">
-          <div class="phone-3d-rig shell-migrated" id="phone-rig-4">
-            <canvas class="device-shell-canvas" data-device-id="{{DEVICE_ID}}" data-shell-only="1" width="{{DEVICE_W}}" height="{{DEVICE_H}}"></canvas>
+          <div class="phone-3d-rig shell-migrated" id="phone-rig-4" data-device="apple-iphone-15-pro" data-device-rig-classes="shell-migrated" data-device-size="340x700">
+            <canvas class="device-shell-canvas" data-device-id="apple-iphone-15-pro" data-shell-only="1" width="1179" height="2556"></canvas>
             <div class="phone-face front shell-migrated">
               <img class="phone-screen" id="slot-4" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="slot-4" />
             </div>
@@ -399,8 +420,8 @@
     <div class="scene" id="scene-5">
       <div class="scene-content">
         <div class="device-col center-only" style="position:relative;">
-          <div class="phone-3d-rig shell-migrated" id="phone-rig-5">
-            <canvas class="device-shell-canvas" data-device-id="{{DEVICE_ID}}" data-shell-only="1" width="{{DEVICE_W}}" height="{{DEVICE_H}}"></canvas>
+          <div class="phone-3d-rig shell-migrated" id="phone-rig-5" data-device="apple-iphone-15-pro" data-device-rig-classes="shell-migrated" data-device-size="340x700">
+            <canvas class="device-shell-canvas" data-device-id="apple-iphone-15-pro" data-shell-only="1" width="1179" height="2556"></canvas>
             <div class="phone-face front shell-migrated">
               <img class="phone-screen" id="slot-5" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="slot-5" />
             </div>
@@ -433,8 +454,8 @@
           <h2 class="title-highlight small" id="s6-text">Why We Are The <span>Best Choice</span> And How It Works</h2>
         </div>
         <div class="device-col trio" style="height:560px;">
-          <div class="phone-3d-rig shell-migrated" id="phone-rig-6a" style="transform: translateX(-340px) translateY(-90px) translateZ(-70px) scale(0.82) rotateY(15deg);">
-            <canvas class="device-shell-canvas" data-device-id="{{DEVICE_ID}}" data-shell-only="1" width="{{DEVICE_W}}" height="{{DEVICE_H}}"></canvas>
+          <div class="phone-3d-rig shell-migrated" id="phone-rig-6a" style="transform: translateX(-340px) translateY(-90px) translateZ(-70px) scale(0.82) rotateY(15deg);" data-device="apple-iphone-15-pro" data-device-rig-classes="shell-migrated" data-device-size="340x700">
+            <canvas class="device-shell-canvas" data-device-id="apple-iphone-15-pro" data-shell-only="1" width="1179" height="2556"></canvas>
             <div class="phone-face front shell-migrated">
               <img class="phone-screen" id="slot-6" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="slot-6" />
             </div>
@@ -449,8 +470,8 @@
             <div class="phone-side side-top shell-migrated"></div>
             <div class="phone-side side-bottom shell-migrated"></div>
           </div>
-          <div class="phone-3d-rig shell-migrated" id="phone-rig-6b" style="transform: translateX(0px) translateY(-90px) translateZ(30px) scale(0.88) rotateY(0deg);">
-            <canvas class="device-shell-canvas" data-device-id="{{DEVICE_ID}}" data-shell-only="1" width="{{DEVICE_W}}" height="{{DEVICE_H}}"></canvas>
+          <div class="phone-3d-rig shell-migrated" id="phone-rig-6b" style="transform: translateX(0px) translateY(-90px) translateZ(30px) scale(0.88) rotateY(0deg);" data-device="apple-iphone-15-pro" data-device-rig-classes="shell-migrated" data-device-size="340x700">
+            <canvas class="device-shell-canvas" data-device-id="apple-iphone-15-pro" data-shell-only="1" width="1179" height="2556"></canvas>
             <div class="phone-face front shell-migrated">
               <img class="phone-screen" id="slot-7" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="slot-7" />
             </div>
@@ -465,8 +486,8 @@
             <div class="phone-side side-top shell-migrated"></div>
             <div class="phone-side side-bottom shell-migrated"></div>
           </div>
-          <div class="phone-3d-rig shell-migrated" id="phone-rig-6c" style="transform: translateX(340px) translateY(-90px) translateZ(-70px) scale(0.82) rotateY(-15deg);">
-            <canvas class="device-shell-canvas" data-device-id="{{DEVICE_ID}}" data-shell-only="1" width="{{DEVICE_W}}" height="{{DEVICE_H}}"></canvas>
+          <div class="phone-3d-rig shell-migrated" id="phone-rig-6c" style="transform: translateX(340px) translateY(-90px) translateZ(-70px) scale(0.82) rotateY(-15deg);" data-device="apple-iphone-15-pro" data-device-rig-classes="shell-migrated" data-device-size="340x700">
+            <canvas class="device-shell-canvas" data-device-id="apple-iphone-15-pro" data-shell-only="1" width="1179" height="2556"></canvas>
             <div class="phone-face front shell-migrated">
               <img class="phone-screen" id="slot-8" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="slot-8" />
             </div>
@@ -512,8 +533,8 @@
           </div>
         </div>
         <div class="device-col trio" style="position:relative;">
-          <div class="phone-3d-rig shell-migrated" id="phone-rig-7a" style="transform: translateX(-120px);">
-            <canvas class="device-shell-canvas" data-device-id="{{DEVICE_ID}}" data-shell-only="1" width="{{DEVICE_W}}" height="{{DEVICE_H}}"></canvas>
+          <div class="phone-3d-rig shell-migrated" id="phone-rig-7a" style="transform: translateX(-120px);" data-device="apple-iphone-15-pro" data-device-rig-classes="shell-migrated" data-device-size="340x700">
+            <canvas class="device-shell-canvas" data-device-id="apple-iphone-15-pro" data-shell-only="1" width="1179" height="2556"></canvas>
             <div class="phone-face front shell-migrated">
               <img class="phone-screen" id="slot-9" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="slot-9" />
             </div>
@@ -528,8 +549,8 @@
             <div class="phone-side side-top shell-migrated"></div>
             <div class="phone-side side-bottom shell-migrated"></div>
           </div>
-          <div class="phone-3d-rig shell-migrated" id="phone-rig-7b" style="transform: translateX(220px) rotateY(-14deg);">
-            <canvas class="device-shell-canvas" data-device-id="{{DEVICE_ID}}" data-shell-only="1" width="{{DEVICE_W}}" height="{{DEVICE_H}}"></canvas>
+          <div class="phone-3d-rig shell-migrated" id="phone-rig-7b" style="transform: translateX(220px) rotateY(-14deg);" data-device="apple-iphone-15-pro" data-device-rig-classes="shell-migrated" data-device-size="340x700">
+            <canvas class="device-shell-canvas" data-device-id="apple-iphone-15-pro" data-shell-only="1" width="1179" height="2556"></canvas>
             <div class="phone-face front shell-migrated">
               <img class="phone-screen" id="slot-10" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" alt="slot-10" />
             </div>
@@ -568,13 +589,14 @@
     "Dynamic multi-platform QR code outro"
   ],
   "device": "apple-iphone-15-pro",
-  "deviceType": "3d",
+  "deviceMode": "3D",
   "variant": "delivery-trio",
   "deviceFraction": 0.6,
   "scenes": [
     {
       "label": "Scene 1: Opening Scene",
       "sceneTemplate": "hero-rise",
+      "deviceMode": "3D",
       "durationSeconds": 3.6,
       "background": "gradient-opener",
       "rotate": 0,
@@ -592,6 +614,7 @@
     {
       "label": "Scene 2: App Opening & Info Reveal",
       "sceneTemplate": "hero-rise",
+      "deviceMode": "3D",
       "durationSeconds": 7.2,
       "background": "royal",
       "rotate": 0,
@@ -609,6 +632,7 @@
     {
       "label": "Scene 3: Center Phone + Feature Labels Ring",
       "sceneTemplate": "hero-rise",
+      "deviceMode": "3D",
       "durationSeconds": 5.8,
       "background": "royal",
       "rotate": 0,
@@ -625,6 +649,7 @@
     {
       "label": "Scene 4: Two-Phone Feature Presentation",
       "sceneTemplate": "hero-rise",
+      "deviceMode": "3D",
       "durationSeconds": 6.3,
       "background": "royal",
       "rotate": 0,
@@ -646,6 +671,7 @@
     {
       "label": "Scene 5: Dual-Sided Feature Capsules",
       "sceneTemplate": "hero-rise",
+      "deviceMode": "3D",
       "durationSeconds": 6.4,
       "background": "royal",
       "rotate": 0,
@@ -663,6 +689,7 @@
     {
       "label": "Scene 6: Handoff & Glass Magnifier Card",
       "sceneTemplate": "hero-rise",
+      "deviceMode": "3D",
       "durationSeconds": 3.9,
       "background": "royal",
       "rotate": 0,
@@ -680,6 +707,7 @@
     {
       "label": "Scene 7: Trio Showcase + Feature Cards",
       "sceneTemplate": "hero-rise",
+      "deviceMode": "3D",
       "durationSeconds": 7.7,
       "background": "royal",
       "rotate": 0,
@@ -701,6 +729,7 @@
     {
       "label": "Scene 8: Outro CTA",
       "sceneTemplate": "studio-outro",
+      "deviceMode": "3D",
       "durationSeconds": 4.9,
       "background": "royal",
       "rotate": 0,

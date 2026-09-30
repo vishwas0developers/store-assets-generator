@@ -21,7 +21,7 @@ function rowOutput(row: Pick<MockupDeviceRow, "deviceId" | "variant" | "sizeKey"
 /**
  * Studio Mockup Export section -- absorbs the old standalone Store Package
  * step. Exports every visible device row at that row's own device
- * geometry (its config/devices.json entry, foldable-variant aware) and
+ * geometry (its devices/catalogue.json entry, foldable-variant aware) and
  * zips the set, matching the reference's "Export Device Screenshots" / ZIP
  * behaviour. There is no separate platform/device-class picker any more --
  * the device rows YOU built in the Editor canvas ARE the export targets.

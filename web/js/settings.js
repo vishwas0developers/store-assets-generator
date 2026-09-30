@@ -1,5 +1,5 @@
 // Settings, Modals, Toolchain, Credentials, and 3D Device Catalogue Management
-import { activeProjectId, videoDevices } from './state.js';
+import { activeProjectId } from './state.js';
 import { api, uploadFile, showAlert, showToast } from './utils.js';
 
 const $ = (id) => document.getElementById(id);
@@ -295,35 +295,54 @@ function loadThreeModule() {
   return __threeModulePromise;
 }
 
+/** The unified device registry (/api/video-devices): every device is 2D or 3D
+ *  (`deviceType`) and implemented as SVG, GLB or CSS (`sourceType`). The Device
+ *  Manager only has the two `deviceType` tabs -- the source is a badge. */
+let deviceRegistry = [];
+let currentDeviceMode = "3D";
+
+function bindDeviceTabs() {
+  for (const mode of ["3D", "2D"]) {
+    const tab = $(`dev-mode-tab-${mode.toLowerCase()}`);
+    if (!tab || tab.dataset.bound) continue;
+    tab.dataset.bound = "1";
+    tab.onclick = () => {
+      currentDeviceMode = mode;
+      for (const m of ["3D", "2D"]) $(`dev-mode-tab-${m.toLowerCase()}`)?.classList.toggle("active", m === mode);
+      renderDevicesCatalogueList();
+    };
+  }
+}
+
 export async function loadDevicesCatalogue() {
   const grid = $("dev-grid");
   if (!grid) return;
   grid.innerHTML = '<div class="hint">Loading devices...</div>';
+  bindDeviceTabs();
 
   try {
-    let devices = videoDevices;
-    if (!Array.isArray(devices) || devices.length === 0) {
-      const res = await api("/api/devices");
-      devices = Array.isArray(res) ? res : (Array.isArray(res?.devices) ? res.devices : []);
-    }
-    renderDevicesCatalogueList(devices);
+    const res = await api("/api/video-devices");
+    deviceRegistry = Array.isArray(res?.devices) ? res.devices : [];
+    renderDevicesCatalogueList();
   } catch (err) {
     grid.innerHTML = `<div class="hint slot-issue error">Failed to load device catalogue: ${err.message}</div>`;
   }
 }
 
-export function renderDevicesCatalogueList(devicesList) {
+const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+
+export function renderDevicesCatalogueList() {
   const grid = $("dev-grid");
   if (!grid) return;
 
-  const list = devicesList || videoDevices || [];
   const searchVal = $("dev-search")?.value.toLowerCase() || "";
   const platformVal = $("dev-filter-platform")?.value || "";
   const formFactorVal = $("dev-filter-formfactor")?.value || "";
 
-  const filtered = list.filter((d) => {
+  const filtered = deviceRegistry.filter((d) => {
+    if (d.deviceType !== currentDeviceMode) return false;
     const matchesSearch = d.name.toLowerCase().includes(searchVal) || d.vendor.toLowerCase().includes(searchVal);
-    const matchesPlatform = !platformVal || d.platforms.includes(platformVal);
+    const matchesPlatform = !platformVal || d.platforms.length === 0 || d.platforms.includes(platformVal);
     const matchesForm = !formFactorVal || d.formFactor === formFactorVal;
     return matchesSearch && matchesPlatform && matchesForm;
   });
@@ -339,46 +358,49 @@ export function renderDevicesCatalogueList(devicesList) {
       const lbl = p === "apple-app-store" ? "iOS" : "Android";
       return `<span class="device-tag ${cls}">${lbl}</span>`;
     }).join(" ");
-
-    return `
-      <div class="device-card" data-device-id="${d.id}">
-        <div class="device-3d-viewport" style="width:100%; height:190px;" data-device-id="${d.id}">
+    const preview = d.sourceType === "GLB"
+      ? `<div class="device-3d-viewport" style="width:100%; height:190px;" data-device-id="${esc(d.id)}">
           <canvas class="device-3d-canvas" style="width:100%; height:100%; display:block;"></canvas>
           <div class="device-3d-controls">
             <button type="button" class="secondary small d3-orbit-btn" title="Toggle auto-orbit">&#8635; Orbit</button>
             <button type="button" class="secondary small d3-reset-btn" title="Reset view">&#8634; Reset</button>
           </div>
-        </div>
+        </div>`
+      : `<iframe src="/api/video-devices/${d.deviceType}/${encodeURIComponent(d.id)}/preview" loading="lazy" style="width:100%; height:190px; border:0; border-radius:8px; background:#0e0f13;"></iframe>`;
+    const dims = d.dimensions ? `${d.dimensions.width} × ${d.dimensions.height}${d.dimensions.depth ? ` × ${d.dimensions.depth}` : ""}` : "";
+
+    return `
+      <div class="device-card" data-device-id="${esc(d.id)}" data-device-type="${d.deviceType}">
+        ${preview}
         <div class="device-card-header">
           <div>
-            <div class="device-vendor">${d.vendor}</div>
-            <h3 class="device-name">${d.name}</h3>
+            <div class="device-vendor">${esc(d.vendor)}</div>
+            <h3 class="device-name">${esc(d.name)}</h3>
           </div>
           <div style="display:flex; flex-direction:column; gap:4px; align-items:flex-end;">
+            <span class="device-tag">${d.deviceType} · ${d.sourceType}</span>
             ${platformBadges}
           </div>
         </div>
         <div class="device-specs-list">
-          <div class="device-spec-item">
-            <span class="device-spec-label">Form Factor:</span>
-            <span>${d.formFactor}</span>
-          </div>
-          <div class="device-spec-item">
-            <span class="device-spec-label">Screen Inset:</span>
-            <span>T:${d.geometry.screenInset.top} L:${d.geometry.screenInset.left} W:${d.geometry.screenInset.width} H:${d.geometry.screenInset.height}</span>
-          </div>
-          <div class="device-spec-item">
-            <span class="device-spec-label">Bezel Width:</span>
-            <span>${d.frame.bezelWidth}px</span>
-          </div>
-          <div class="device-spec-item">
-            <span class="device-spec-label">Cutout Type:</span>
-            <span>${d.frame.cutout}</span>
-          </div>
+          <div class="device-spec-item"><span class="device-spec-label">Form Factor:</span><span>${esc(d.formFactor)}</span></div>
+          <div class="device-spec-item"><span class="device-spec-label">Size:</span><span>${dims}</span></div>
+          <div class="device-spec-item"><span class="device-spec-label">Features:</span><span>${esc((d.features || []).join(", "))}</span></div>
+          ${d.sourceTemplate ? `<div class="device-spec-item"><span class="device-spec-label">Extracted from:</span><span>${esc(d.sourceTemplate)}</span></div>` : ""}
         </div>
+        <div style="margin-top:.6rem;"><button type="button" class="secondary small dev-use-btn" data-id="${esc(d.id)}" data-type="${d.deviceType}">Use in selected scene</button></div>
       </div>
     `;
   }).join("");
+
+  grid.querySelectorAll(".dev-use-btn").forEach((btn) => {
+    btn.onclick = async () => {
+      const assign = window.assignDeviceToSelectedScene;
+      const res = assign ? await assign(btn.dataset.id, btn.dataset.type) : { ok: false, message: "Open Video Studio and select a scene first." };
+      if (res.ok) showToast(res.message, "success");
+      else await showAlert(res.message);
+    };
+  });
 
   bind3dDeviceViewers(grid);
 }
@@ -749,9 +771,9 @@ export function setupSettingsAndModals() {
       try {
         const text = await file.text();
         const parsed = JSON.parse(text);
-        await api("/api/devices/import", { method: "POST", body: parsed });
+        const r = await api("/api/devices/import", { method: "POST", body: parsed });
         await loadDevicesCatalogue();
-        showToast("Device catalogue successfully imported!", "success");
+        showToast(`Imported ${r.imported} device(s)${r.skipped?.length ? `, skipped ${r.skipped.length}` : ""}.`, "success");
       } catch (err) {
         await showAlert("Failed to import device catalogue: " + err.message);
       }

@@ -1,0 +1,38 @@
+{
+  "id": "css-neon-bevel-phone",
+  "name": "Neon Bevel Phone",
+  "vendor": "Template",
+  "deviceType": "3D",
+  "sourceType": "CSS",
+  "formFactor": "phone",
+  "dimensions": {
+    "width": 370,
+    "height": 760,
+    "depth": 20,
+    "radius": 46
+  },
+  "features": [
+    "6-face-box",
+    "top-bottom-bezel",
+    "speaker-grille",
+    "back-camera-module",
+    "fingerprint-sensor",
+    "usb-port",
+    "side-buttons"
+  ],
+  "rigClass": "phone-3d-rig",
+  "rigClasses": [],
+  "markup": {
+    "front": "<div class=\"phone-face front\">\r\n      <div class=\"phone-top-bezel\">\r\n        <div class=\"phone-speaker-grille\"></div>\r\n        <div class=\"phone-camera-dot\"></div>\r\n      </div>\r\n      <div class=\"phone-screen-frame\" style=\"background: #880e4f;\">\r\n        <!--SCREEN-->\r\n  \r\n        <div class=\"gloss-sheen\"></div>\r\n      </div>\r\n    </div>",
+    "sides": [
+      "<div class=\"phone-side side-left\">\r\n          <div class=\"side-btn volume-up\"></div>\r\n          <div class=\"side-btn volume-down\"></div>\r\n        </div>",
+      "<div class=\"phone-side side-right\">\r\n          <div class=\"side-btn power-btn\"></div>\r\n        </div>",
+      "<div class=\"phone-side side-top\"></div>",
+      "<div class=\"phone-side side-bottom\">\r\n          <div class=\"usb-port\"></div>\r\n        </div>"
+    ],
+    "ambient": "<div class=\"phone-ambient-shadow\"></div>",
+    "back": "<div class=\"phone-face back\">\r\n          <div class=\"back-camera-module\">\r\n            <div class=\"back-lens\"></div>\r\n            <div class=\"back-lens\"></div>\r\n            <div class=\"back-flash\"></div>\r\n          </div>\r\n          <div class=\"back-fingerprint\"></div>\r\n        </div>"
+  },
+  "css": ".phone-3d-rig { width:370px; height:760px; }\n    .phone-face { position:absolute; inset:0; border-radius:46px; box-sizing:border-box; }\n    .phone-face.front { background:#0a0a0f; transform:translateZ(10px); z-index:10; border:1px solid #232329; overflow:hidden; box-shadow:inset 0 0 25px rgba(255,42,109,0.15); display:flex; flex-direction:column; }\n    .phone-top-bezel { height:40px; display:flex; align-items:center; justify-content:center; position:relative; background:#000000; z-index:5; }\n    .phone-speaker-grille { width:58px; height:4px; border-radius:2px; background:#475569; }\n    .phone-camera-dot { position:absolute; right:110px; top:50%; transform:translateY(-50%); width:8px; height:8px; border-radius:50%; background:#0f172a; box-shadow:inset 0 0 2px #ff2a6d; }\n    .phone-screen-frame { flex:1; position:relative; overflow:hidden; background:#0f0f14; border-radius:0 0 44px 44px;\r\n      background-image:linear-gradient(90deg, rgba(255,255,255,0.18) 0%, transparent 8%, transparent 92%, rgba(255,255,255,0.18) 100%);\r\n    }\n    .gloss-sheen { position:absolute; inset:0; background:linear-gradient(105deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.02) 40%, rgba(255,255,255,0.12) 100%); z-index:11; pointer-events:none; }\n    .phone-face.back { background:linear-gradient(135deg, #121218 0%, #050507 100%); transform:rotateY(180deg) translateZ(10px); border:2px solid #ff2a6d; box-shadow:0 30px 60px rgba(0,0,0,0.65); display:flex; align-items:center; justify-content:center; }\n    .back-camera-module { position:absolute; top:40px; left:50%; transform:translateX(-50%); width:70px; height:120px; border-radius:20px; background:#0a0a0f; border:2px solid #2a2a30; display:flex; flex-direction:column; align-items:center; justify-content:space-evenly; }\n    .back-lens { width:38px; height:38px; border-radius:50%; background:radial-gradient(circle at 35% 35%, #3a3a42, #050507 70%); border:2px solid #3a3a42; }\n    .back-flash { width:12px; height:12px; border-radius:50%; background:#e8b923; box-shadow:0 0 6px #e8b923; }\n    .back-fingerprint { position:absolute; bottom:120px; left:50%; transform:translateX(-50%); width:50px; height:50px; border-radius:50%; border:2px solid #2a2a30; }\n    .phone-side { position:absolute; background:linear-gradient(to bottom, #232329, #475569 50%, #232329); border:1px solid #1e293b; }\n    .side-left { width:20px; height:680px; left:-10px; top:40px; transform:rotateY(90deg); border-radius:6px; }\n    .side-right { width:20px; height:680px; right:-10px; top:40px; transform:rotateY(-90deg); border-radius:6px; }\n    .side-top { width:290px; height:20px; left:40px; top:-10px; transform:rotateX(90deg); border-radius:6px; }\n    .side-bottom { width:290px; height:20px; left:40px; bottom:-10px; transform:rotateX(-90deg); border-radius:6px; }\n    .side-btn { position:absolute; background:#475569; border:1px solid #334155; border-radius:3px; }\n    .volume-up { width:4px; height:45px; left:-4px; top:120px; }\n    .volume-down { width:4px; height:45px; left:-4px; top:180px; }\n    .power-btn { width:4px; height:50px; right:-4px; top:140px; }\n    .usb-port { position:absolute; left:50%; top:50%; transform:translate(-50%, -50%); width:36px; height:6px; border-radius:3px; background:#3a3a42; }\n    .phone-ambient-shadow { position:absolute; width:360px; height:740px; border-radius:60px; background:rgba(0,0,0,0.5); filter:blur(30px); transform:translateZ(-60px) scale(0.94); pointer-events:none; }",
+  "sourceTemplate": "tpl-23393372-neon-rings"
+}

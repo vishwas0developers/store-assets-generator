@@ -9,7 +9,7 @@ import { dataUri } from "../render/shared.js";
 /**
  * Derives what dynamic content each scene of each template needs, from the
  * template's own embedded `#template-config` JSON -- never by authoring a
- * second description of the templates. See templates/video/<id>/template.html.
+ * second description of the templates. See templates/video/<id>.html.
  */
 
 export type SlotKind = "text" | "textList" | "image" | "imageList" | "platformList";

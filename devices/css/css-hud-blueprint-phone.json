@@ -1,0 +1,38 @@
+{
+  "id": "css-hud-blueprint-phone",
+  "name": "HUD Blueprint Phone",
+  "vendor": "Template",
+  "deviceType": "3D",
+  "sourceType": "CSS",
+  "formFactor": "phone",
+  "dimensions": {
+    "width": 370,
+    "height": 760,
+    "depth": 20,
+    "radius": 46
+  },
+  "features": [
+    "6-face-box",
+    "top-bottom-bezel",
+    "home-button",
+    "sensor-dots",
+    "glass-reflection",
+    "side-buttons",
+    "usb-port"
+  ],
+  "rigClass": "phone-3d-chassis",
+  "rigClasses": [],
+  "markup": {
+    "front": "<div class=\"phone-face-front\">\r\n      <div class=\"phone-top-bezel\">\r\n        <div class=\"phone-sensor-dots\"></div>\r\n        <div class=\"phone-speaker-grille\"></div>\r\n        <div class=\"phone-camera-dot\"></div>\r\n      </div>\r\n      <div class=\"phone-screen-frame\" style=\"background: #1e293b;\">\r\n        <!--SCREEN-->\r\n  \r\n        <div class=\"phone-glass-reflection\"></div>\r\n      </div>\r\n      <div class=\"phone-bottom-bezel\">\r\n        <div class=\"phone-home-button\"></div>\r\n      </div>\r\n    </div>",
+    "sides": [
+      "<div class=\"phone-side-extrusion side-edge-left\">\r\n          <div class=\"side-btn volume-up\"></div>\r\n          <div class=\"side-btn volume-down\"></div>\r\n        </div>",
+      "<div class=\"phone-side-extrusion side-edge-right\">\r\n          <div class=\"side-btn power-btn\"></div>\r\n        </div>",
+      "<div class=\"phone-side-extrusion side-edge-top\"></div>",
+      "<div class=\"phone-side-extrusion side-edge-bottom\">\r\n          <div class=\"bottom-port\"></div>\r\n        </div>"
+    ],
+    "ambient": "<div class=\"phone-ambient-shadow\"></div>",
+    "back": "<div class=\"phone-face-back\">\r\n          <div class=\"phone-back-camera\"></div>\r\n        </div>"
+  },
+  "css": ".phone-3d-chassis { width:370px; height:760px; }\n    .phone-face-front { position:absolute; inset:0; border-radius:46px; background:#ffffff; border:1px solid #d4d8df; transform:translateZ(10px); overflow:hidden; box-shadow:inset 0 0 4px rgba(0,0,0,0.1); display:flex; flex-direction:column; z-index:10; }\n    .phone-top-bezel { height:50px; width:100%; display:flex; align-items:center; justify-content:center; position:relative; background:#ffffff; z-index:5; }\n    .phone-speaker-grille { width:58px; height:5px; border-radius:3px; background:#94a3b8; border:1px solid #64748b; }\n    .phone-camera-dot { position:absolute; right:110px; top:50%; transform:translateY(-50%); width:9px; height:9px; border-radius:50%; background:#0f172a; box-shadow:inset 0 0 2px #38bdf8; }\n    .phone-sensor-dots { position:absolute; left:110px; top:50%; transform:translateY(-50%); width:6px; height:6px; border-radius:50%; background:#64748b; }\n    .phone-screen-frame { flex:1; width:100%; position:relative; overflow:hidden; background:#0f172a; }\n    .phone-glass-reflection { position:absolute; inset:0; background:linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.05) 40%, rgba(255,255,255,0) 41%, rgba(255,255,255,0.15) 100%); pointer-events:none; z-index:15; }\n    .phone-bottom-bezel { height:58px; width:100%; display:flex; align-items:center; justify-content:center; position:relative; background:#ffffff; z-index:5; }\n    .phone-home-button { width:64px; height:22px; border-radius:11px; border:2px solid #cbd5e1; background:linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%); box-shadow:inset 0 1px 2px rgba(0,0,0,0.08); }\n    .phone-face-back { position:absolute; inset:0; border-radius:46px; background:linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%); transform:rotateY(180deg) translateZ(10px); border:2px solid #cbd5e1; box-shadow:0 35px 80px rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; }\n    .phone-back-camera { width:60px; height:60px; border-radius:18px; background:#1e293b; border:3px solid #cbd5e1; box-shadow:inset 0 0 10px #000; position:absolute; top:35px; }\n    .phone-side-extrusion { position:absolute; background:linear-gradient(to bottom, #f8fafc, #cbd5e1 50%, #94a3b8); border:1px solid #cbd5e1; }\n    .side-edge-left { width:20px; height:680px; left:-10px; top:40px; transform:rotateY(90deg); border-radius:6px; }\n    .side-edge-right { width:20px; height:680px; right:-10px; top:40px; transform:rotateY(-90deg); border-radius:6px; }\n    .side-edge-top { width:290px; height:20px; left:40px; top:-10px; transform:rotateX(90deg); border-radius:6px; }\n    .side-edge-bottom { width:290px; height:20px; left:40px; bottom:-10px; transform:rotateX(-90deg); border-radius:6px; }\n    .side-btn { position:absolute; background:#cbd5e1; border:1px solid #94a3b8; border-radius:3px; }\n    .volume-up { width:4px; height:45px; left:-4px; top:120px; }\n    .volume-down { width:4px; height:45px; left:-4px; top:180px; }\n    .power-btn { width:4px; height:50px; right:-4px; top:140px; }\n    .bottom-port { width:40px; height:6px; border-radius:3px; background:#475569; position:absolute; left:50%; top:50%; transform:translate(-50%, -50%); }\n    .phone-ambient-shadow { position:absolute; width:360px; height:740px; border-radius:60px; background:rgba(0, 0, 0, 0.45); filter:blur(28px); transform:translateZ(-60px) scale(0.95); pointer-events:none; }",
+  "sourceTemplate": "tpl-1371526-hud-blueprint"
+}

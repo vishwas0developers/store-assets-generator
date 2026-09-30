@@ -16,6 +16,7 @@
       "preload.cjs",
       "dist/**/*",
       "web/**/*",
+      "devices/**/*",
       "vendor/**/*"
     ],
     "win": {
@@ -28,6 +29,7 @@
   "scripts": {
     "postinstall": "playwright install chromium",
     "build": "tsc",
+    "devices:export": "node scripts/devices/export-device-assets.mjs",
     "start": "electron .",
     "package:win": "npm run build && electron-builder --win nsis --x64",
     "test:video": "npm run build && node dist/src/video/render.test.js"

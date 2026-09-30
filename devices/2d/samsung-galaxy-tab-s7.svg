@@ -1,0 +1,11 @@
+<svg viewBox="0 0 1600 2560" xmlns="http://www.w3.org/2000/svg">
+    <mask id="bezel-hole-samsung-galaxy-tab-s7">
+      <rect x="0" y="0" width="1600" height="2560" fill="#fff" />
+      <rect x="36" y="36" width="1528" height="2488" rx="38" fill="#000" />
+    </mask>
+    <rect x="10" y="10" width="1580" height="2540"
+          rx="48" fill="#1e293b" stroke="#0f172a" stroke-width="20" mask="url(#bezel-hole-samsung-galaxy-tab-s7)" />
+    <g id="camera-cutout"><circle cx="800" cy="36" r="10" fill="#000" stroke="#0f172a" stroke-width="2" /></g>
+    
+    
+  </svg>

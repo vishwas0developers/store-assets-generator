@@ -1,0 +1,35 @@
+{
+  "id": "css-dark-matte-phone",
+  "name": "Dark Matte Phone",
+  "vendor": "Template",
+  "deviceType": "3D",
+  "sourceType": "CSS",
+  "formFactor": "phone",
+  "dimensions": {
+    "width": 370,
+    "height": 760,
+    "depth": 18,
+    "radius": 44
+  },
+  "features": [
+    "6-face-box",
+    "punch-hole-camera",
+    "triple-lens-back",
+    "gloss-sheen",
+    "curved-edge-shadow"
+  ],
+  "rigClass": "phone-3d-rig",
+  "rigClasses": [],
+  "markup": {
+    "front": "<div class=\"phone-face front\">\r\n                  <div class=\"camera-punch\"></div>\r\n                  <div class=\"gloss-sheen\"></div>\r\n                  <div class=\"screen-edge-glare left-edge\"></div>\r\n                  <div class=\"screen-edge-glare right-edge\"></div>\r\n                  <div class=\"curved-edge-shadow left\"></div>\r\n                  <div class=\"curved-edge-shadow right\"></div>\r\n                  <div class=\"screen-scroll-wrap\">\r\n                    <!--SCREEN-->\r\n                  </div>\r\n                </div>",
+    "sides": [
+      "<div class=\"phone-side side-left\"></div>",
+      "<div class=\"phone-side side-right\"></div>",
+      "<div class=\"phone-side side-top\"></div>",
+      "<div class=\"phone-side side-bottom\"></div>"
+    ],
+    "back": "<div class=\"phone-face back\">\r\n                  <div class=\"back-camera-module\">\r\n                    <div class=\"back-lens\"></div>\r\n                    <div class=\"back-lens\"></div>\r\n                    <div class=\"back-lens\"></div>\r\n                    <div class=\"back-flash\"></div>\r\n                  </div>\r\n                </div>"
+  },
+  "css": ".phone-3d-rig { width: 370px; height: 760px; }\n    .phone-face {\r\n      position: absolute;\r\n      inset: 0;\r\n      border-radius: 44px;\r\n      box-sizing: border-box;\r\n    }\n    .phone-face.front {\r\n      background: #000000;\r\n      transform: translateZ(9px);\r\n      z-index: 10;\r\n      border: none;\r\n      overflow: hidden;\r\n      box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.9);\r\n    }\n    .screen-scroll-wrap {\r\n      width: 100%;\r\n      height: 100%;\r\n      border-radius: 44px;\r\n      overflow: hidden;\r\n      position: relative;\r\n      background: #000000;\r\n    }\n    .gloss-sheen {\r\n      position: absolute;\r\n      inset: 0;\r\n      background: linear-gradient(130deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.02) 40%, rgba(255, 255, 255, 0.08) 100%);\r\n      z-index: 11;\r\n      pointer-events: none;\r\n      border-radius: 44px;\r\n    }\n    .screen-edge-glare {\r\n      position: absolute;\r\n      top: 0;\r\n      bottom: 0;\r\n      width: 12px;\r\n      background: linear-gradient(to right, rgba(255, 255, 255, 0.15), transparent);\r\n      z-index: 12;\r\n      pointer-events: none;\r\n    }\n    .screen-edge-glare.left-edge { left: 0; }\n    .screen-edge-glare.right-edge { right: 0; transform: scaleX(-1); }\n    .curved-edge-shadow {\r\n      position: absolute;\r\n      top: 0;\r\n      bottom: 0;\r\n      width: 22px;\r\n      z-index: 13;\r\n      pointer-events: none;\r\n    }\n    .curved-edge-shadow.left {\r\n      left: 0;\r\n      background: linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 50%, transparent 100%);\r\n    }\n    .curved-edge-shadow.right {\r\n      right: 0;\r\n      background: linear-gradient(to left, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 50%, transparent 100%);\r\n    }\n    .phone-side {\r\n      position: absolute;\r\n      background: none;\r\n      border: none;\r\n    }\n    .landscape-layout .phone-side {\r\n      background: linear-gradient(to bottom, #2d2d37, #191921 50%, #2d2d37);\r\n      border: 1px solid #141419;\r\n    }\n    .side-left { width: 18px; height: 760px; left: -9px; top: 0; transform: rotateY(90deg); }\n    .side-right { width: 18px; height: 760px; right: -9px; top: 0; transform: rotateY(-90deg); }\n    .side-top { width: 370px; height: 18px; left: 0; top: -9px; transform: rotateX(90deg); }\n    .side-bottom { width: 370px; height: 18px; left: 0; bottom: -9px; transform: rotateX(-90deg); }\n    .phone-face.back {\r\n      background: #18181f;\r\n      transform: rotateY(180deg) translateZ(9px);\r\n      border: 5px solid #121217;\r\n      box-shadow: 0 30px 60px rgba(0,0,0,0.75);\r\n    }\n    .back-camera-module {\r\n      position: absolute;\r\n      top: 40px;\r\n      left: 30px;\r\n      width: 76px;\r\n      height: 125px;\r\n      border-radius: 22px;\r\n      background: #0a0a0f;\r\n      border: 2px solid #22222a;\r\n      display: flex;\r\n      flex-direction: column;\r\n      align-items: center;\r\n      justify-content: space-evenly;\r\n      padding: 8px 0;\r\n      box-sizing: border-box;\r\n    }\n    .back-lens {\r\n      width: 22px;\r\n      height: 22px;\r\n      border-radius: 50%;\r\n      background: radial-gradient(circle at 35% 35%, #33333a, #050507 70%);\r\n      border: 1.5px solid #33333a;\r\n    }\n    .back-flash {\r\n      width: 10px;\r\n      height: 10px;\r\n      border-radius: 50%;\r\n      background: #e8b923;\r\n      box-shadow: 0 0 5px #e8b923;\r\n    }\n    .camera-punch {\r\n      position: absolute;\r\n      top: 20px;\r\n      left: 50%;\r\n      transform: translateX(-50%);\r\n      width: 12px;\r\n      height: 12px;\r\n      background: #08080c;\r\n      border-radius: 50%;\r\n      border: 1.5px solid #1a1a24;\r\n      z-index: 15;\r\n    }",
+  "sourceTemplate": "tpl-27720310-dark-matte-spheres"
+}

@@ -730,8 +730,7 @@ ${JSON.stringify(config, null, 2)}
 </html>`;
 
   const tplDir = path.join(rootDir, 'templates', 'video', config.id);
-  fs.mkdirSync(tplDir, { recursive: true });
-  fs.writeFileSync(path.join(tplDir, 'template.html'), html);
+  fs.writeFileSync(path.join(path.dirname(tplDir), path.basename(tplDir) + '.html'), html);
   console.log(`[SUCCESS] Recreated 1371526 template with 13 full scenes and 3D phone models at ${tplDir}`);
 }
 

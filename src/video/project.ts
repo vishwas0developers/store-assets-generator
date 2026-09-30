@@ -63,6 +63,8 @@ export interface VideoScene {
   /** Clip window inside the source video, in seconds. */
   videoStartSec?: number;
   videoEndSec?: number;
+  /** Device mode this scene requires; only devices of this type are selectable/applicable. */
+  deviceMode?: "2D" | "3D";
   device: string;
   variant?: string;
   /** Fraction of canvas height the device fills (see deviceScaleFor) --
@@ -200,6 +202,7 @@ export interface SavedTemplateConfig {
 
 import { loadProject, saveProject, listProjects } from "../project/projectStore.js";
 import { templateConfig, htmlSpanToAsterisk } from "./templateConfig.js";
+import { sanitizeSceneDevice } from "../devices/rig-assets.js";
 
 const ROOT = path.join(process.cwd(), "output", "projects");
 
@@ -222,7 +225,17 @@ export function createVideoProject(name: string): VideoProject {
   throw new Error("Deprecated: Use createProject from projectStore instead");
 }
 
+/** Data-model rule: a scene's device must match its deviceMode (2D/3D). */
+export function sanitizeProjectDevices(project: VideoProject): void {
+  const cfg = project.template ? templateConfig(project.template) : null;
+  (project.scenes ?? []).forEach((scene, i) => {
+    const tpl = cfg ? { device: cfg.device, deviceMode: cfg.scenes?.[i]?.deviceMode ?? cfg.deviceMode } : null;
+    Object.assign(scene, sanitizeSceneDevice(scene, tpl));
+  });
+}
+
 export function saveVideoProject(project: VideoProject): void {
+  sanitizeProjectDevices(project);
   const unified = loadProject(project.id);
   unified.video = project;
   saveProject(unified);
@@ -256,6 +269,7 @@ export function loadVideoProject(id: string): VideoProject {
     const cfg = templateConfig(project.template);
     project.scenes.forEach((scene: VideoScene, i: number) => migrateScene(scene, cfg?.scenes?.[i]));
   }
+  if (project?.scenes?.length) sanitizeProjectDevices(project);
   return project;
 }
 

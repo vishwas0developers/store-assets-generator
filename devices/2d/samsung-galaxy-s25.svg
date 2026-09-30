@@ -1,0 +1,12 @@
+<svg viewBox="0 0 1080 2340" xmlns="http://www.w3.org/2000/svg">
+    <mask id="bezel-hole-samsung-galaxy-s25">
+      <rect x="0" y="0" width="1080" height="2340" fill="#fff" />
+      <rect x="18" y="18" width="1044" height="2304" rx="51" fill="#000" />
+    </mask>
+    <rect x="5" y="5" width="1070" height="2330"
+          rx="56" fill="#1a2744" stroke="#33456e" stroke-width="10" mask="url(#bezel-hole-samsung-galaxy-s25)" />
+    <g id="camera-cutout"><circle cx="540" cy="39" r="13" fill="#000" stroke="#33456e" stroke-width="2" /></g>
+    <rect x="1075" y="386.1" width="10" height="117" rx="4" fill="#33456e" />
+    <rect x="1075" y="526.5" width="10" height="163.8" rx="4" fill="#33456e" />
+    
+  </svg>

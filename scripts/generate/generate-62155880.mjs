@@ -691,9 +691,8 @@ export function create62155880Template() {
 </html>`;
 
   const tplDir = path.join(rootDir, 'templates', 'video', config.id);
-  fs.mkdirSync(tplDir, { recursive: true });
-  fs.writeFileSync(path.join(tplDir, 'template.html'), templateHtml);
-  console.log(`Successfully generated frame-accurate template at: ${path.join(tplDir, 'template.html')}`);
+  fs.writeFileSync(path.join(path.dirname(tplDir), path.basename(tplDir) + '.html'), templateHtml);
+  console.log(`Successfully generated frame-accurate template at: ${path.join(path.dirname(tplDir), path.basename(tplDir) + '.html')}`);
 }
 
 // Auto-run if executed directly
