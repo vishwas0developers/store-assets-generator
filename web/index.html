@@ -1151,23 +1151,29 @@
               </div>
             </div>
 
-            <div style="display:flex; gap:10px; margin-bottom:1.2rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.8rem;">
-              <button class="secondary small active" id="dev-mode-tab-3d" type="button" style="font-weight:600;">🧊 3D Devices</button>
-              <button class="secondary small" id="dev-mode-tab-2d" type="button" style="font-weight:600;">🖼️ 2D Devices</button>
-            </div>
-
-            <div class="row" style="gap:15px; margin-bottom:1.5rem;">
-              <input type="text" id="dev-search" placeholder="Search devices by name or vendor..." style="flex:1; margin:0;" />
-              <select id="dev-filter-platform" style="width:160px; margin:0;">
+            <div class="row" style="gap:12px; margin-bottom:1.5rem; flex-wrap:wrap;">
+              <input type="text" id="dev-search" placeholder="Search devices by name or vendor..." style="flex:1; min-width:200px; margin:0;" />
+              <select id="dev-filter-platform" style="width:150px; margin:0;">
                 <option value="">All Platforms</option>
                 <option value="google-play">Google Play (Android)</option>
                 <option value="apple-app-store">Apple App Store (iOS)</option>
               </select>
-              <select id="dev-filter-formfactor" style="width:160px; margin:0;">
+              <select id="dev-filter-mode" style="width:110px; margin:0;">
+                <option value="">All</option>
+                <option value="2D">2D</option>
+                <option value="3D">3D</option>
+              </select>
+              <select id="dev-filter-formfactor" style="width:150px; margin:0;">
                 <option value="">All Form Factors</option>
                 <option value="phone">Phones</option>
                 <option value="tablet">Tablets</option>
                 <option value="foldable">Foldables</option>
+              </select>
+              <select id="dev-filter-format" style="width:150px; margin:0;">
+                <option value="">All Formats</option>
+                <option value="SVG">SVG</option>
+                <option value="CSS">CSS</option>
+                <option value="GLB">3D (GLB)</option>
               </select>
             </div>
 

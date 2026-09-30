@@ -296,29 +296,13 @@ function loadThreeModule() {
 }
 
 /** The unified device registry (/api/video-devices): every device is 2D or 3D
- *  (`deviceType`) and implemented as SVG, GLB or CSS (`sourceType`). The Device
- *  Manager only has the two `deviceType` tabs -- the source is a badge. */
+ *  (`deviceType`) and implemented as SVG, GLB or CSS (`sourceType`). */
 let deviceRegistry = [];
-let currentDeviceMode = "3D";
-
-function bindDeviceTabs() {
-  for (const mode of ["3D", "2D"]) {
-    const tab = $(`dev-mode-tab-${mode.toLowerCase()}`);
-    if (!tab || tab.dataset.bound) continue;
-    tab.dataset.bound = "1";
-    tab.onclick = () => {
-      currentDeviceMode = mode;
-      for (const m of ["3D", "2D"]) $(`dev-mode-tab-${m.toLowerCase()}`)?.classList.toggle("active", m === mode);
-      renderDevicesCatalogueList();
-    };
-  }
-}
 
 export async function loadDevicesCatalogue() {
   const grid = $("dev-grid");
   if (!grid) return;
   grid.innerHTML = '<div class="hint">Loading devices...</div>';
-  bindDeviceTabs();
 
   try {
     const res = await api("/api/video-devices");
@@ -335,16 +319,25 @@ export function renderDevicesCatalogueList() {
   const grid = $("dev-grid");
   if (!grid) return;
 
-  const searchVal = $("dev-search")?.value.toLowerCase() || "";
+  const searchVal = $("dev-search")?.value.toLowerCase().trim() || "";
   const platformVal = $("dev-filter-platform")?.value || "";
+  const modeVal = $("dev-filter-mode")?.value || "";
   const formFactorVal = $("dev-filter-formfactor")?.value || "";
+  const formatVal = $("dev-filter-format")?.value || "";
 
   const filtered = deviceRegistry.filter((d) => {
-    if (d.deviceType !== currentDeviceMode) return false;
-    const matchesSearch = d.name.toLowerCase().includes(searchVal) || d.vendor.toLowerCase().includes(searchVal);
-    const matchesPlatform = !platformVal || d.platforms.length === 0 || d.platforms.includes(platformVal);
+    if (modeVal && d.deviceType !== modeVal) return false;
+    const matchesSearch = !searchVal || (d.name && d.name.toLowerCase().includes(searchVal)) || (d.vendor && d.vendor.toLowerCase().includes(searchVal));
+    const matchesPlatform = !platformVal || !d.platforms || d.platforms.length === 0 || d.platforms.includes(platformVal);
     const matchesForm = !formFactorVal || d.formFactor === formFactorVal;
-    return matchesSearch && matchesPlatform && matchesForm;
+    const matchesFormat = !formatVal || (
+      d.sourceType && (
+        d.sourceType.toUpperCase() === formatVal.toUpperCase() ||
+        (formatVal.toUpperCase() === "3D" && (d.sourceType.toUpperCase() === "GLB" || d.deviceType === "3D")) ||
+        (formatVal.toUpperCase() === "GLB" && d.sourceType.toUpperCase() === "GLB")
+      )
+    );
+    return matchesSearch && matchesPlatform && matchesForm && matchesFormat;
   });
 
   if (filtered.length === 0) {
@@ -755,8 +748,12 @@ export function setupSettingsAndModals() {
   if (devSearch) devSearch.oninput = () => renderDevicesCatalogueList();
   const devFilterPlatform = $("dev-filter-platform");
   if (devFilterPlatform) devFilterPlatform.onchange = () => renderDevicesCatalogueList();
+  const devFilterMode = $("dev-filter-mode");
+  if (devFilterMode) devFilterMode.onchange = () => renderDevicesCatalogueList();
   const devFilterFormfactor = $("dev-filter-formfactor");
   if (devFilterFormfactor) devFilterFormfactor.onchange = () => renderDevicesCatalogueList();
+  const devFilterFormat = $("dev-filter-format");
+  if (devFilterFormat) devFilterFormat.onchange = () => renderDevicesCatalogueList();
 
   const devExportBtn = $("dev-export-btn");
   if (devExportBtn) devExportBtn.onclick = () => { window.location.href = "/api/devices/export"; };
