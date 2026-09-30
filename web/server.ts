@@ -101,7 +101,7 @@ import {
 import { groupedLayoutPresets, listLayoutPresets } from "../src/mockup/layouts.js";
 import { cellPreviewHtml, renderTemplateDetailThumbs, renderTemplateThumbs, templateThumbHtml, templateDetailThumbHtml, templateScreenHtml } from "../src/mockup/render.js";
 import { exportMockupProject, exportSingleScreen, exportPanoramicBanner } from "../src/mockup/export.js";
-import { MOCKUP_TEMPLATES, applyMockupTemplate, getMockupTemplateFromDisk } from "../src/mockup/templates.js";
+import { MOCKUP_TEMPLATES, applyMockupTemplate, getMockupTemplateFromDisk, updateTemplateFromProject } from "../src/mockup/templates.js";
 import { sizeTargetsFor } from "../src/mockup/sizeTargets.js";
 
 import {
@@ -1774,6 +1774,23 @@ export async function startWebServer(options: { port?: number; host?: string; op
         }
         res.writeHead(200, { "Content-Type": "image/png", "Cache-Control": "no-cache" });
         fs.createReadStream(thumbPath).pipe(res);
+        return;
+      }
+    }
+
+    {
+      const m = p.match(/^\/api\/mockups\/([^/]+)\/update-template$/);
+      if (m && method === "POST") {
+        const body = await readJsonBody(req);
+        if (!body.templateId) return sendError(res, 400, "templateId is required");
+        const id = decodeURIComponent(m[1]);
+        const project = loadMockupProject(id);
+        try {
+          const name = updateTemplateFromProject(project, body.templateId, loadProject(id).platform);
+          sendJson(res, 200, { ok: true, templateId: body.templateId, name });
+        } catch (e: any) {
+          sendError(res, 400, e.message);
+        }
         return;
       }
     }

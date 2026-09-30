@@ -5,6 +5,7 @@ import { designSizeFor, primaryTargetFor } from "./sizeTargets.js";
 import {
   loadMockupTemplatesFromDisk,
   getMockupTemplateFromDisk,
+  writeTemplateToDisk,
   type MockupTemplateDefinition,
   type MockupTemplatePage
 } from "./template-loader.js";
@@ -74,6 +75,49 @@ function fitPageToHeight(style: ColumnStyle, designH: number, H: number, deviceH
   }
 }
 
+/** Inverse of applyMockupTemplate: overwrites `templateId`'s JSON with the project's current pages. Returns the template name. */
+export function updateTemplateFromProject(project: MockupProject, templateId: string, platform?: string): string {
+  const template = getMockupTemplateFromDisk(templateId);
+  if (!template) throw new Error(`Unknown template '${templateId}'.`);
+  if (project.columns.length === 0) throw new Error("This project has no pages to save.");
+  const clone = <T>(v: T): T => JSON.parse(JSON.stringify(v));
+  const device = (d: any) => {
+    const c = clone(d);
+    delete c.sourceId;
+    return c;
+  };
+
+  template.pages = project.columns.map((col) => {
+    const s = col.style;
+    const { text: title, ...titleStyle } = s.title;
+    const { text: subtitle, ...subtitleStyle } = s.subtitle;
+    return {
+      title,
+      subtitle,
+      titleStyle,
+      subtitleStyle,
+      layout: s.layout,
+      background: clone(s.background),
+      devices: null,
+      decorations: clone(s.decorations ?? []),
+      textLayers: clone(s.textLayers ?? []),
+      assetLayers: clone(s.assetLayers ?? []),
+      deviceOne: device(s.deviceOne),
+      deviceTwo: s.deviceTwo ? device(s.deviceTwo) : undefined,
+      extraDevices: s.extraDevices?.length ? s.extraDevices.map(device) : undefined,
+    };
+  });
+  if (project.devices.length > 0) {
+    template.devices = project.devices.map((d) => ({ deviceId: d.deviceId, label: d.label, variant: d.variant }));
+  }
+  template.layout = project.columns[0].style.layout;
+  template.background = clone(project.columns[0].style.background);
+  template.textColor = undefined; // per-page titleStyle now carries colours
+  template.designHeight = designSizeFor(primaryTargetFor(platform)).height;
+  writeTemplateToDisk(template);
+  return template.name;
+}
+
 export function applyMockupTemplate(project: MockupProject, templateId: string, platform?: string, canvasHeight?: number): void {
   const template = getMockupTemplateFromDisk(templateId) || loadMockupTemplatesFromDisk().find((t) => t.id === templateId);
   if (!template) throw new Error(`Unknown template '${templateId}'.`);
@@ -126,6 +170,8 @@ export function applyMockupTemplate(project: MockupProject, templateId: string, 
       style.title.color = template.textColor;
       style.subtitle.color = template.textColor;
     }
+    if (page.titleStyle) Object.assign(style.title, page.titleStyle);
+    if (page.subtitleStyle) Object.assign(style.subtitle, page.subtitleStyle);
     style.deviceOne.size = deviceSize;
     style.deviceOne.frameless = pagePreset.frameless;
     if (pagePreset.twoDevices) {
