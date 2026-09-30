@@ -764,8 +764,8 @@ function updateScenePreviewScale() {
   const frameEl = document.querySelector(".preview-frame");
   if (!box || !frameEl) return;
 
-  const availWidth = Math.max(160, frameEl.clientWidth - 24);
-  const availHeight = Math.min(window.innerHeight * 0.5, 420);
+  const availWidth = Math.max(160, frameEl.clientWidth);
+  const availHeight = Math.min(Math.max(260, window.innerHeight * 0.52), 480);
   let boxWidth = availHeight * (nativeWidth / nativeHeight);
   let boxHeight = availHeight;
   if (boxWidth > availWidth) {
@@ -1982,6 +1982,10 @@ export function renderSavedConfigsGrid() {
   if (typeof window === "undefined") return;
 
   window.addEventListener("resize", () => updateScenePreviewScale());
+  const previewFrame = document.querySelector(".preview-frame");
+  if (previewFrame && typeof ResizeObserver !== "undefined") {
+    new ResizeObserver(() => updateScenePreviewScale()).observe(previewFrame);
+  }
 
   const flowAddBtn = $("sc-flow-add-btn");
   if (flowAddBtn) {

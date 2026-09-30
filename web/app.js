@@ -6825,8 +6825,8 @@ function updateScenePreviewScale() {
   // aspect-ratio does not reliably resolve a size for a flex child with no
   // definite width or height (it can collapse toward zero), which is what
   // produced the earlier "thin strip" preview.
-  const availWidth = Math.max(160, frameEl.clientWidth - 24); // minus .preview-frame's own padding
-  const availHeight = Math.min(window.innerHeight * 0.5, 420);
+  const availWidth = Math.max(160, frameEl.clientWidth);
+  const availHeight = Math.min(Math.max(260, window.innerHeight * 0.52), 480);
   let boxWidth = availHeight * (nativeWidth / nativeHeight);
   let boxHeight = availHeight;
   if (boxWidth > availWidth) {
@@ -6842,6 +6842,10 @@ function updateScenePreviewScale() {
   frame.style.transform = `scale(${boxWidth / nativeWidth})`;
 }
 window.addEventListener("resize", () => updateScenePreviewScale());
+const previewFrame = document.querySelector(".preview-frame");
+if (previewFrame && typeof ResizeObserver !== "undefined") {
+  new ResizeObserver(() => updateScenePreviewScale()).observe(previewFrame);
+}
 
 // ---------------------------------------------------------------------------
 // Playback transport -- Play/Pause/frame-step/±1s, placed BELOW the player
