@@ -140,7 +140,7 @@ export interface VideoDeviceEntry {
   sourceTemplate?: string;
 }
 
-function entryOf(a: RigDeviceAsset, platforms: string[] = []): VideoDeviceEntry {
+function entryOf(a: RigDeviceAsset, platforms: string[] = a.platforms ?? []): VideoDeviceEntry {
   return {
     id: a.id.replace(/~2d$/, ""), name: a.name, vendor: a.vendor ?? "", deviceType: a.deviceType, sourceType: a.sourceType,
     formFactor: a.formFactor, platforms, features: a.features, dimensions: a.dimensions, sourceTemplate: a.sourceTemplate,

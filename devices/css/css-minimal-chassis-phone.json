@@ -4,6 +4,9 @@
   "vendor": "Template",
   "deviceType": "3D",
   "sourceType": "CSS",
+  "platforms": [
+    "google-play"
+  ],
   "formFactor": "phone",
   "dimensions": {
     "width": 370,

@@ -1544,9 +1544,9 @@ button.xsmall {
    overflow -- see updateScenePreviewScale() in app.js, which computes the
    scale factor and sets it here via inline style on #sc-preview. */
 .preview-frame {
-  background: #0a0c10; border: 1px solid #21252f; border-radius: 8px;
+  background: transparent; border: none;
   display: flex; align-items: center; justify-content: center;
-  padding: .75rem; width: 100%;
+  padding: 0; width: 100%;
 }
 /* Width/height are set explicitly in px by updateScenePreviewScale() (app.js),
    not by CSS aspect-ratio -- aspect-ratio alone does not reliably resolve a
@@ -1556,8 +1556,8 @@ button.xsmall {
    therefore its aspect ratio) changes, is the same technique already used
    and proven by the Templates-tab stage's .video-preview-scale. */
 .studio-preview-box {
-  position: relative; overflow: hidden; background: #000; border-radius: 6px;
-  box-shadow: 0 10px 30px rgba(0,0,0,.5);
+  position: relative; overflow: hidden; background: transparent; border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.35);
 }
 .studio-preview-box iframe { position: absolute; top: 0; left: 0; border: 0; transform-origin: top left; }
 
