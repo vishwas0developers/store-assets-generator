@@ -38,6 +38,8 @@ export interface RigDeviceAsset {
   /** How the device is implemented (implementation detail, not a user category). */
   sourceType: SourceType;
   formFactor: "phone" | "tablet" | "foldable";
+  /** Store platforms this device belongs to (google-play / apple-app-store). */
+  platforms?: string[];
   dimensions: { width: number; height: number; depth?: number; radius?: number };
   screen?: { top: number; left: number; width: number; height: number; radius?: number };
   features: string[];

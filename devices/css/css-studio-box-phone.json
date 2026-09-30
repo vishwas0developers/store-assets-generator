@@ -4,6 +4,10 @@
   "vendor": "Template",
   "deviceType": "3D",
   "sourceType": "CSS",
+  "platforms": [
+    "google-play",
+    "apple-app-store"
+  ],
   "formFactor": "phone",
   "dimensions": {
     "width": 360,

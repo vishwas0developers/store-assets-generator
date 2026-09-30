@@ -1,6 +1,8 @@
 import { type FlowStep, type VideoProject, type VideoScene, type SlotValue } from "./project.js";
 import { templateConfig, htmlSpanToAsterisk } from "./templateConfig.js";
 import { slotSpecsForScene } from "./slots.js";
+import { DEVICE_REGISTRY } from "../devices/registry.js";
+import { listCssDevices } from "../devices/rig-assets.js";
 import fs from "fs";
 import path from "path";
 
@@ -39,6 +41,8 @@ export interface VideoTemplate {
   features: string[];
   /** Default device mode for every scene in this template. */
   deviceMode: "2D" | "3D";
+  /** Store platforms this template targets (google-play / apple-app-store). */
+  platforms: string[];
   device: string;
   variant?: string;
   deviceFraction: number;
@@ -61,6 +65,7 @@ export function loadAllTemplates(): VideoTemplate[] {
         if (match) {
           const config = JSON.parse(match[1]);
           config.deviceMode ??= "3D";
+          config.platforms ??= DEVICE_REGISTRY[config.device]?.platforms ?? listCssDevices().find((d) => d.id === config.device)?.platforms ?? [];
           list.push(config);
         }
       } catch (e) {

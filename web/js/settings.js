@@ -328,7 +328,7 @@ export function renderDevicesCatalogueList() {
   const filtered = deviceRegistry.filter((d) => {
     if (modeVal && d.deviceType !== modeVal) return false;
     const matchesSearch = !searchVal || (d.name && d.name.toLowerCase().includes(searchVal)) || (d.vendor && d.vendor.toLowerCase().includes(searchVal));
-    const matchesPlatform = !platformVal || !d.platforms || d.platforms.length === 0 || d.platforms.includes(platformVal);
+    const matchesPlatform = !platformVal || (d.platforms || []).includes(platformVal);
     const matchesForm = !formFactorVal || d.formFactor === formFactorVal;
     const matchesFormat = !formatVal || (
       d.sourceType && (
