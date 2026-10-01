@@ -19,7 +19,18 @@ for %%T in (node npm) do (
 )
 
 echo.
-echo 2. Installing dependencies...
+echo 2. Incrementing build version ^(package.json is the single source of truth^)...
+call npm version patch --no-git-tag-version >nul
+if !ERRORLEVEL! neq 0 (
+    echo   [FAIL] Version bump failed.
+    pause
+    exit /b 1
+)
+for /f %%V in ('node -p "require('./package.json').version"') do set "APP_VERSION=%%V"
+echo   [OK]   Building version !APP_VERSION!
+
+echo.
+echo 3. Installing dependencies...
 call npm install
 if !ERRORLEVEL! neq 0 (
     echo.
@@ -29,7 +40,7 @@ if !ERRORLEVEL! neq 0 (
 )
 
 echo.
-echo 3. Compiling TypeScript and web assets...
+echo 4. Compiling TypeScript and web assets...
 call npm run build
 if !ERRORLEVEL! neq 0 (
     echo.
@@ -39,7 +50,7 @@ if !ERRORLEVEL! neq 0 (
 )
 
 echo.
-echo 4. Packaging Standalone Windows Desktop Executable (.exe)...
+echo 5. Packaging Standalone Windows Desktop Executable (.exe)...
 call npx electron-builder --win nsis --x64
 if !ERRORLEVEL! neq 0 (
     echo.
@@ -50,7 +61,7 @@ if !ERRORLEVEL! neq 0 (
 
 echo.
 echo =========================================================================
-echo  Build Succeeded Cleanly.
+echo  Build Succeeded Cleanly - version !APP_VERSION!.
 echo  Standalone Windows installer generated in: dist/
 echo =========================================================================
 echo.
