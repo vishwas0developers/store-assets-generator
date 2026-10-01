@@ -684,7 +684,6 @@ function selectScene(sceneId) {
   if ($("sc-depth")) $("sc-depth").value = scene.depth || "flat";
   if ($("sc-transition")) $("sc-transition").value = scene.transition || "cut";
   populateSceneDeviceSelect(scene);
-  if ($("sc-device")) $("sc-device").value = String(scene.device || "").replace(/^(2d|3d):/, "");
   if ($("sc-background")) $("sc-background").value = scene.background || "";
   if ($("sc-duration")) $("sc-duration").value = scene.durationSeconds || 5;
   if ($("sc-rotate")) { $("sc-rotate").value = scene.rotate || 0; $("sc-rotate-val").textContent = scene.rotate || 0; }
@@ -707,31 +706,85 @@ function selectScene(sceneId) {
   loadSceneContentPanel(sceneId);
 }
 
-/** A scene's required mode: its own `deviceMode`, else 3D. */
+/** A scene's rendering mode: its own `deviceMode`, else 3D. */
 const sceneDeviceMode = (scene) => (scene?.deviceMode === "2D" ? "2D" : "3D");
 
-/** Only devices of the scene's required deviceMode are offered -- a 2D scene never
- *  lists 3D devices and vice versa (the server rejects such a pick too). CSS-built
- *  devices need a slot-driven template's rigs, so they're only offered there. */
+const DEVICE_VALUE_RE = /^(2d|3d|css):/;
+
+/** Option value = "<category>:<id>". The same catalogue id exists as both a 2D and a 3D device, so the category is
+ *  part of the value; a CSS device is its own category (its rendering mode comes from its registry entry). */
+function deviceOptionValue(d) {
+  return d.sourceType === "CSS" ? `css:${d.id}` : `${String(d.deviceType).toLowerCase()}:${d.id}`;
+}
+
+/** { id, mode } for an option value; mode is "2D" | "3D" (null for a legacy bare id). */
+function parseDeviceValue(value) {
+  const m = String(value || "").match(/^(2d|3d|css):(.*)$/);
+  if (!m) return { id: String(value || ""), mode: null };
+  if (m[1] === "css") {
+    const entry = videoDeviceRegistry.find((d) => d.sourceType === "CSS" && d.id === m[2]);
+    return { id: m[2], mode: entry?.deviceType === "2D" ? "2D" : "3D" };
+  }
+  return { id: m[2], mode: m[1].toUpperCase() };
+}
+
+/** The option value matching what a scene currently renders with. */
+function currentDeviceOptionValue(scene) {
+  const mode = sceneDeviceMode(scene);
+  const id = String(scene?.device || "").replace(DEVICE_VALUE_RE, "");
+  const css = videoDeviceRegistry.find((d) => d.sourceType === "CSS" && d.id === id && d.deviceType === mode);
+  return css ? `css:${id}` : `${mode.toLowerCase()}:${id}`;
+}
+
+/** Offers every device of every category (3D models, 2D frames, CSS rigs): the device is an independent property of
+ *  the scene, not something locked to the template's original device. The scene's current category is listed first
+ *  and its current device is always present and selected. */
 function populateSceneDeviceSelect(scene) {
   const scDevice = $("sc-device");
   if (!scDevice) return;
-  const mode = sceneDeviceMode(scene);
-  const usable = videoDeviceRegistry.filter((d) => d.deviceType === mode && (d.sourceType !== "CSS" || videoApplication?.template));
-  const opts = usable.map((d) => `<option value="${d.id}">${d.vendor} — ${d.name} (${d.sourceType})</option>`).join("");
-  scDevice.innerHTML = `<optgroup label="${mode} Devices">${opts}</optgroup>`;
+  const label = (d) => `${d.vendor} — ${d.name}`;
+  const groups = [
+    { key: "3D", title: "3D Devices", list: videoDeviceRegistry.filter((d) => d.sourceType !== "CSS" && d.deviceType === "3D") },
+    { key: "2D", title: "2D Devices", list: videoDeviceRegistry.filter((d) => d.sourceType !== "CSS" && d.deviceType === "2D") },
+    { key: "CSS", title: "CSS Devices", list: videoApplication?.template ? videoDeviceRegistry.filter((d) => d.sourceType === "CSS") : [] },
+  ];
+  const currentValue = currentDeviceOptionValue(scene);
+  const currentGroup = currentValue.startsWith("css:") ? "CSS" : sceneDeviceMode(scene);
+  groups.sort((x, y) => (y.key === currentGroup) - (x.key === currentGroup));
+  let html = groups
+    .filter((g) => g.list.length)
+    .map((g) => `<optgroup label="${g.title}">${g.list.map((d) => `<option value="${deviceOptionValue(d)}">${label(d)}</option>`).join("")}</optgroup>`)
+    .join("");
+  if (scene?.device && !html.includes(`value="${currentValue}"`)) {
+    html = `<option value="${currentValue}">${scene.device} (current)</option>` + html;
+  }
+  scDevice.innerHTML = html;
+  scDevice.value = currentValue;
+}
+
+/** Persists the device picked in the dropdown for the current scene and re-renders the preview with it. */
+async function applySelectedSceneDevice() {
+  try {
+    await saveCurrentScene();
+    const scene = videoApplication?.scenes?.find((s) => s.id === selectedSceneId);
+    if (scene) populateSceneDeviceSelect(scene);
+  } catch (e) {
+    const scene = videoApplication?.scenes?.find((s) => s.id === selectedSceneId);
+    if (scene) populateSceneDeviceSelect(scene);
+    await showAlert("Could not change the device: " + e.message);
+  }
 }
 
 /** Device Management -> "Use in selected scene". */
 window.assignDeviceToSelectedScene = async (id, mode) => {
   const scene = videoApplication?.scenes?.find((s) => s.id === selectedSceneId);
   if (!scene) return { ok: false, message: "Open an application and select a scene first." };
-  if (sceneDeviceMode(scene) !== mode) return { ok: false, message: `This scene requires a ${sceneDeviceMode(scene)} device.` };
   populateSceneDeviceSelect(scene);
   const dev = $("sc-device");
-  if (!dev || ![...dev.options].some((o) => o.value === id)) return { ok: false, message: "That device can't be used by this application's scenes." };
-  dev.value = id;
-  await saveCurrentScene();
+  const wanted = [`${String(mode).toLowerCase()}:${id}`, `css:${id}`].find((v) => dev && [...dev.options].some((o) => o.value === v));
+  if (!wanted) return { ok: false, message: "That device can't be used by this application's scenes." };
+  dev.value = wanted;
+  await applySelectedSceneDevice();
   return { ok: true, message: "Device applied to the selected scene." };
 };
 
@@ -739,7 +792,7 @@ function updateVariantSelect(deviceSelectId, variantSelectId, current, catalog) 
   const devSelect = $(deviceSelectId);
   const varSelect = $(variantSelectId);
   if (!devSelect || !varSelect) return;
-  const device = catalog.find((d) => d.id === devSelect.value);
+  const device = catalog.find((d) => d.id === String(devSelect.value).replace(DEVICE_VALUE_RE, ""));
   varSelect.innerHTML = '<option value="">default</option>';
   if (device?.variants) {
     for (const v of device.variants) varSelect.innerHTML += `<option value="${v.id}">${v.name}</option>`;
@@ -1041,7 +1094,7 @@ function renderSceneBackgroundSlot(sceneId) {
   const global = videoApplication.backgroundImage || null;
   wrap.appendChild(backgroundControl({
     selectedRef: override || global || nativeBackgroundRef(),
-    badge: override ? null : global ? "global default" : "template default",
+    badge: null,
     canRemove: !!override,
     onChange: async (ref) => {
       await saveSlotValue(sceneId, "background", { kind: "image", sourceId: ref });
@@ -1053,7 +1106,11 @@ function renderSceneBackgroundSlot(sceneId) {
   const note = document.createElement("p");
   note.className = "hint";
   note.style.cssText = "margin:.3rem 0 0;";
-  note.textContent = "Applies to this scene only. Remove it to fall back to the global background.";
+  note.textContent = override
+    ? "Applies to this scene only. Remove it to fall back to the global background."
+    : global
+      ? "Using the global background. Pick one here to override it for this scene only."
+      : "Using the template's own background. Pick one here to override it for this scene only.";
   wrap.appendChild(note);
   host.appendChild(wrap);
 }
@@ -1739,15 +1796,17 @@ function renderSegmentsPanel(sceneId, specs, values) {
 
 export async function saveCurrentScene() {
   if (!videoId || !selectedSceneId || !videoApplication) return;
+  const selectedDevice = parseDeviceValue($("sc-device")?.value);
   const body = {
     sceneTemplate: $("sc-template")?.value,
     layout: $("sc-layout")?.value || undefined,
     depth: $("sc-depth")?.value || "flat",
     transition: $("sc-transition")?.value || "cut",
-    device: $("sc-device")?.value,
-    // Template scenes keep the template-declared mode; free scenes follow their animation.
-    deviceMode: videoApplication.template ? sceneDeviceMode(videoApplication.scenes.find((s) => s.id === selectedSceneId)) : (videoSceneOptions.animations.find((a) => a.id === $("sc-template")?.value)?.deviceMode ?? "3D"),
-    variant: $("sc-variant")?.value || undefined,
+    device: selectedDevice.id || undefined,
+    // The picked device decides the mode (3D model / 2D frame / CSS rig); only a scene with no device picked falls back.
+    deviceMode: selectedDevice.mode ?? (videoApplication.template ? sceneDeviceMode(videoApplication.scenes.find((s) => s.id === selectedSceneId)) : (videoSceneOptions.animations.find((a) => a.id === $("sc-template")?.value)?.deviceMode ?? "3D")),
+    // null (not undefined) so switching device really clears the previous device's variant on the server.
+    variant: $("sc-variant")?.value || null,
     background: $("sc-background")?.value,
     durationSeconds: Number($("sc-duration")?.value) || 3,
     rotate: Number($("sc-rotate")?.value || 0),
@@ -2162,7 +2221,10 @@ export function renderSavedConfigsGrid() {
 
   const scDevice = $("sc-device");
   if (scDevice) {
-    scDevice.onchange = () => updateVariantSelect("sc-device", "sc-variant", "", videoDevices);
+    scDevice.onchange = async () => {
+      updateVariantSelect("sc-device", "sc-variant", "", videoDevices);
+      await applySelectedSceneDevice();
+    };
   }
 
   for (const [id, out] of [["sc-rotate", "sc-rotate-val"], ["sc-zoom", "sc-zoom-val"], ["sc-move", "sc-move-val"]]) {

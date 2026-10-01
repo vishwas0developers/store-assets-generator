@@ -98,7 +98,11 @@ export function buildFrameSvg(
   const body = fg.bodyRect;
   const bodyFill = overrides?.bezelColor || (colorway === "light" ? "#e8e8e8" : def.body);
   const strokeColor = overrides?.borderColor || (colorway === "light" ? "#c9c9c9" : def.accent);
-  const maskId = `bezel-hole-${def.id}`;
+  // SVG ids are document-global: the same device used by several scenes/pages with different geometry or overrides
+  // must not share one mask id, or every instance silently renders with the FIRST instance's mask. Derive the id from
+  // everything the mask depends on so identical inputs share it and different inputs never collide.
+  const maskKey = [width, height, inset.left, inset.top, inset.width, inset.height, fg.screenRadius].join("_");
+  const maskId = `bezel-hole-${def.id}-${maskKey}`.replace(/[^A-Za-z0-9_-]/g, "_");
 
   return `<svg viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
     <mask id="${maskId}">

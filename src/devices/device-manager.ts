@@ -1,3 +1,4 @@
+import { fileURLToPath } from "url";
 import fs from "fs";
 import path from "path";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
@@ -31,7 +32,10 @@ export async function getDeviceGlbPath(def: DeviceDefinition): Promise<string> {
   fs.mkdirSync(GLB_CACHE_DIR, { recursive: true });
   const cachePath = path.join(GLB_CACHE_DIR, `${def.id}.glb`);
   const configMtime = fs.existsSync(CONFIG_PATH) ? fs.statSync(CONFIG_PATH).mtimeMs : 0;
-  const cacheStale = !fs.existsSync(cachePath) || fs.statSync(cachePath).mtimeMs < configMtime;
+  // The cached GLB is also stale when the procedural builder that produced it has been rebuilt since.
+  const builderFile = fileURLToPath(new URL("./build-glb.js", import.meta.url));
+  const builderMtime = fs.existsSync(builderFile) ? fs.statSync(builderFile).mtimeMs : 0;
+  const cacheStale = !fs.existsSync(cachePath) || fs.statSync(cachePath).mtimeMs < Math.max(configMtime, builderMtime);
   if (cacheStale) {
     const glb = await buildDeviceGlb(def);
     fs.writeFileSync(cachePath, glb);

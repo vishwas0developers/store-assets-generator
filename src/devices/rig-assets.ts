@@ -50,8 +50,12 @@ export function listCssDevices(): RigDeviceAsset[] { return [...loadCss().values
 // Generated assets for catalogue (2D SVG / 3D GLB) devices
 // ---------------------------------------------------------------------------
 
-const GLB_RIG_CSS = `
-.phone-3d-rig.shell-migrated { background: transparent; box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
+const NEUTRAL_RIG_CSS = `
+.phone-3d-rig { background: transparent; box-shadow: none; border: 0; }
+.phone-3d-rig::before, .phone-3d-rig::after { display: none; }`;
+
+const GLB_RIG_CSS = `${NEUTRAL_RIG_CSS}
+.phone-3d-rig.shell-migrated { background: transparent; box-shadow: none; }
 .phone-3d-rig.shell-migrated::before, .phone-3d-rig.shell-migrated::after { display: none; }
 .device-shell-canvas { pointer-events: none; }`;
 
@@ -101,7 +105,7 @@ export function build2dAsset(device: DeviceModel): RigDeviceAsset {
     id: `${device.id}~2d`,
     rigClasses: [],
     markup: { front: screenBoxFront(device, "phone-face front dev2d", frameSvgFor(device, undefined)), sides: [] },
-    css: "",
+    css: NEUTRAL_RIG_CSS,
   };
 }
 

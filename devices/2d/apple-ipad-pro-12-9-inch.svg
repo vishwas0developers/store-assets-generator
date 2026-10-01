@@ -1,10 +1,10 @@
 <svg viewBox="0 0 2048 2732" xmlns="http://www.w3.org/2000/svg">
-    <mask id="bezel-hole-apple-ipad-pro-12-9-inch">
+    <mask id="bezel-hole-apple-ipad-pro-12-9-inch-2048_2732_44_44_1960_2644_48">
       <rect x="0" y="0" width="2048" height="2732" fill="#fff" />
       <rect x="44" y="44" width="1960" height="2644" rx="48" fill="#000" />
     </mask>
     <rect x="12" y="12" width="2024" height="2708"
-          rx="60" fill="#1c1c1c" stroke="#404040" stroke-width="24" mask="url(#bezel-hole-apple-ipad-pro-12-9-inch)" />
+          rx="60" fill="#1c1c1c" stroke="#404040" stroke-width="24" mask="url(#bezel-hole-apple-ipad-pro-12-9-inch-2048_2732_44_44_1960_2644_48)" />
     <g id="camera-cutout"><circle cx="1024" cy="38" r="12" fill="#000" stroke="#404040" stroke-width="2" /></g>
     
     
