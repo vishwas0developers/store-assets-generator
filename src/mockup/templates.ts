@@ -1,4 +1,4 @@
-import { addColumn, addDeviceRow, defaultColumnStyle, ensureSizeRows, type ColumnStyle, type MockupProject } from "./project.js";
+import { addColumn, addDeviceRow, defaultColumnStyle, ensureSizeRows, type ColumnStyle, type MockupApplication } from "./application.js";
 import { DEVICE_REGISTRY, resolveGeometry } from "../devices/registry.js";
 import { getLayoutPreset } from "./layouts.js";
 import { designSizeFor, primaryTargetFor } from "./sizeTargets.js";
@@ -6,6 +6,7 @@ import {
   loadMockupTemplatesFromDisk,
   getMockupTemplateFromDisk,
   writeTemplateToDisk,
+  createTemplateOnDisk,
   type MockupTemplateDefinition,
   type MockupTemplatePage
 } from "./template-loader.js";
@@ -75,11 +76,9 @@ function fitPageToHeight(style: ColumnStyle, designH: number, H: number, deviceH
   }
 }
 
-/** Inverse of applyMockupTemplate: overwrites `templateId`'s JSON with the project's current pages. Returns the template name. */
-export function updateTemplateFromProject(project: MockupProject, templateId: string, platform?: string): string {
-  const template = getMockupTemplateFromDisk(templateId);
-  if (!template) throw new Error(`Unknown template '${templateId}'.`);
-  if (project.columns.length === 0) throw new Error("This project has no pages to save.");
+/** Inverse of applyMockupTemplate: folds the application's current pages into `template` (mutated, not written). */
+function foldApplicationIntoTemplate(template: MockupTemplateDefinition, application: MockupApplication, platform?: string): void {
+  if (application.columns.length === 0) throw new Error("This application has no pages to save.");
   const clone = <T>(v: T): T => JSON.parse(JSON.stringify(v));
   const device = (d: any) => {
     const c = clone(d);
@@ -87,7 +86,7 @@ export function updateTemplateFromProject(project: MockupProject, templateId: st
     return c;
   };
 
-  template.pages = project.columns.map((col) => {
+  template.pages = application.columns.map((col) => {
     const s = col.style;
     const { text: title, ...titleStyle } = s.title;
     const { text: subtitle, ...subtitleStyle } = s.subtitle;
@@ -107,29 +106,70 @@ export function updateTemplateFromProject(project: MockupProject, templateId: st
       extraDevices: s.extraDevices?.length ? s.extraDevices.map(device) : undefined,
     };
   });
-  if (project.devices.length > 0) {
-    template.devices = project.devices.map((d) => ({ deviceId: d.deviceId, label: d.label, variant: d.variant }));
+  if (application.devices.length > 0) {
+    template.devices = application.devices.map((d) => ({ deviceId: d.deviceId, label: d.label, variant: d.variant }));
   }
-  template.layout = project.columns[0].style.layout;
-  template.background = clone(project.columns[0].style.background);
+  template.layout = application.columns[0].style.layout;
+  template.background = clone(application.columns[0].style.background);
   template.textColor = undefined; // per-page titleStyle now carries colours
   template.designHeight = designSizeFor(primaryTargetFor(platform)).height;
+}
+
+/** Overwrites exactly `templateId`'s own JSON with the application's pages. Returns the template name. */
+export function updateTemplateFromApplication(application: MockupApplication, templateId: string, platform?: string): string {
+  const template = getMockupTemplateFromDisk(templateId);
+  if (!template) throw new Error(`Unknown template '${templateId}'.`);
+  foldApplicationIntoTemplate(template, application, platform);
   writeTemplateToDisk(template);
   return template.name;
 }
 
-export function applyMockupTemplate(project: MockupProject, templateId: string, platform?: string, canvasHeight?: number): void {
+/** Creates a brand-new default template (own id + JSON file) from the application's pages. */
+export function createTemplateFromApplication(
+  application: MockupApplication,
+  meta: { name: string; category: string; description?: string },
+  platform?: string,
+): MockupTemplateDefinition {
+  const name = meta.name.trim();
+  const category = meta.category.trim();
+  if (!name) throw new Error("A template name is required.");
+  if (!category) throw new Error("A category is required.");
+  if (loadMockupTemplatesFromDisk().some((t) => t.name.toLowerCase() === name.toLowerCase() && t.category === category)) {
+    throw new Error(`A template named '${name}' already exists in '${category}'.`);
+  }
+  const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 40) || "template";
+  const existingIds = new Set(loadMockupTemplatesFromDisk().map((t) => t.id));
+  let id = slug;
+  for (let n = 2; existingIds.has(id); n++) id = `${slug}-${n}`;
+  const template: MockupTemplateDefinition = {
+    version: 1,
+    id,
+    name,
+    category,
+    description: meta.description?.trim() ?? "",
+    devices: [],
+    layout: "",
+    background: application.columns[0]?.style.background ?? ({ type: "gradient", value: "ocean" } as any),
+    panoramic: false,
+    pages: [],
+  };
+  foldApplicationIntoTemplate(template, application, platform);
+  createTemplateOnDisk(template);
+  return getMockupTemplateFromDisk(id)!;
+}
+
+export function applyMockupTemplate(application: MockupApplication, templateId: string, platform?: string, canvasHeight?: number): void {
   const template = getMockupTemplateFromDisk(templateId) || loadMockupTemplatesFromDisk().find((t) => t.id === templateId);
   if (!template) throw new Error(`Unknown template '${templateId}'.`);
 
-  project.devices = [];
-  project.columns = [];
-  project.cells = {};
-  project.globalPanoramic = { file: "", flip: false };
+  application.devices = [];
+  application.columns = [];
+  application.cells = {};
+  application.globalPanoramic = { file: "", flip: false };
 
-  template.devices.forEach((d, i) => addDeviceRow(project, { deviceId: d.deviceId, label: d.label, variant: d.variant, previewsVisible: true, isBase: i === 0 }));
+  template.devices.forEach((d, i) => addDeviceRow(application, { deviceId: d.deviceId, label: d.label, variant: d.variant, previewsVisible: true, isBase: i === 0 }));
 
-  if (platform) ensureSizeRows(project, platform);
+  if (platform) ensureSizeRows(application, platform);
 
   const preset = getLayoutPreset(template.layout);
   const targetWidth = preset.twoDevices ? CANVAS_WIDTH * 0.72 : CANVAS_WIDTH * 0.78;
@@ -148,7 +188,7 @@ export function applyMockupTemplate(project: MockupProject, templateId: string, 
   }));
 
   if (template.panoramic) {
-    project.globalPanoramic = {
+    application.globalPanoramic = {
       file: template.background?.panoramaFile || template.background?.value || "",
       flip: false
     };
@@ -199,7 +239,7 @@ export function applyMockupTemplate(project: MockupProject, templateId: string, 
       fitPageToHeight(style, template.designHeight, canvasHeight ?? designSizeFor(primaryTargetFor(platform)).height, geo.height, i);
     }
 
-    const col = addColumn(project, style);
+    const col = addColumn(application, style);
     col.templateDefaultStyle = JSON.parse(JSON.stringify(style));
   });
 }

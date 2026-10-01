@@ -14,7 +14,7 @@ import path from "path";
  * unauthenticated and the login popup was all that ever got screenshotted.
  *
  * Mirrors 5.demo-assets-generator/app/config.py's ENV_PATH pattern (a
- * gitignored .env at the project root, editable through the app's own
+ * gitignored .env at the application root, editable through the app's own
  * Settings UI rather than by hand) — hand-rolled rather than adding the
  * `dotenv` dependency, since the format needed here is a handful of
  * KEY=VALUE lines, not the full spec.

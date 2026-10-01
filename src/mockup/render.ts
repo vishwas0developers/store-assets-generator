@@ -8,7 +8,7 @@ import {
   resolveBackground,
 } from "../render/shared.js";
 import { DEVICE_REGISTRY, resolveGeometry } from "../devices/registry.js";
-import { projectFile } from "../project/projectStore.js";
+import { applicationFile } from "../application/applicationStore.js";
 import { getLayoutPreset, presentationTransform } from "./layouts.js";
 import {
   effectiveCellStyle,
@@ -17,10 +17,10 @@ import {
   type ColumnStyle,
   type DeviceLayerStyle,
   type MockupAssetLayer,
-  type MockupProject,
+  type MockupApplication,
   type TextLayer,
   type TextStyle,
-} from "./project.js";
+} from "./application.js";
 import { applyMockupTemplate, type MockupStarterTemplate } from "./templates.js";
 import { shapeSvgUri } from "./shapeSvg.js";
 import {
@@ -100,7 +100,7 @@ function textBlock(style: ColumnStyle, textPosition: string): string {
 }
 
 export interface RenderContext {
-  /** Turns a project-relative source/background/panorama path into a usable src. */
+  /** Turns an application-relative source/background/panorama path into a usable src. */
   resolveUri: (relativePath: string) => string;
   columnIndex: number;
   columnCount: number;
@@ -152,23 +152,23 @@ function textLayersMarkup(layers: TextLayer[] = [], resolveUri: (rel: string) =>
 }
 
 /** Renders one cell (a device row x a column) to a full HTML document. */
-export function cellHtml(project: MockupProject, deviceRowId: string, columnId: string, canvas: { width: number; height: number }, ctx: RenderContext): string {
-  const deviceRow = project.devices.find((d) => d.id === deviceRowId);
+export function cellHtml(application: MockupApplication, deviceRowId: string, columnId: string, canvas: { width: number; height: number }, ctx: RenderContext): string {
+  const deviceRow = application.devices.find((d) => d.id === deviceRowId);
   if (!deviceRow) throw new Error(`Device row '${deviceRowId}' not found.`);
-  const style = effectiveCellStyle(project, deviceRowId, columnId);
+  const style = effectiveCellStyle(application, deviceRowId, columnId);
   const preset = getLayoutPreset(style.layout);
   const transform = presentationTransform(preset.presentation);
 
   // Size row: non-primary rows adapt the single page design (proportional fit) and pick a same-category screenshot.
   const rowInfo = findSizeTarget(deviceRow.sizeKey);
-  const primaryRow = rowInfo ? project.devices.find((r) => r.sizeKey === primaryTargetFor(rowInfo.platform).key) : undefined;
+  const primaryRow = rowInfo ? application.devices.find((r) => r.sizeKey === primaryTargetFor(rowInfo.platform).key) : undefined;
   const nonPrimary = !!rowInfo && !!primaryRow && primaryRow.id !== deviceRow.id;
-  const primarySource = project.sources.find((s) => s.id === style.deviceOne.sourceId) ?? project.sources[ctx.columnIndex] ?? project.sources[0];
+  const primarySource = application.sources.find((s) => s.id === style.deviceOne.sourceId) ?? application.sources[ctx.columnIndex] ?? application.sources[0];
   const primaryCat = primarySource?.deviceCategory;
-  const pickRowSource = <T extends (typeof project.sources)[number] | undefined>(src: T): T => {
+  const pickRowSource = <T extends (typeof application.sources)[number] | undefined>(src: T): T => {
     if (!nonPrimary || !src || !primaryCat) return src;
-    const idx = project.sources.filter((s) => s.deviceCategory === primaryCat).indexOf(primarySource!);
-    const pick = project.sources.filter((s) => s.deviceCategory === rowInfo!.target.captureCategory)[idx];
+    const idx = application.sources.filter((s) => s.deviceCategory === primaryCat).indexOf(primarySource!);
+    const pick = application.sources.filter((s) => s.deviceCategory === rowInfo!.target.captureCategory)[idx];
     return (pick ?? src) as T;
   };
   const source = pickRowSource(primarySource);
@@ -201,7 +201,7 @@ export function cellHtml(project: MockupProject, deviceRowId: string, columnId: 
   // comment lower down (where this was previously computed, now moved up
   // so deviceOne's cross-page projection can use it too) for why this must
   // NOT reuse ctx.columnIndex, which different callers define differently.
-  const orderedColumnIds = [...project.columns].sort((a, b) => a.order - b.order).map((c) => c.id);
+  const orderedColumnIds = [...application.columns].sort((a, b) => a.order - b.order).map((c) => c.id);
   const panoramaColumnIndex = orderedColumnIds.indexOf(columnId);
 
   const d1 = style.deviceOne;
@@ -244,7 +244,7 @@ export function cellHtml(project: MockupProject, deviceRowId: string, columnId: 
   // position/rotation/size/screenshot. This is what makes a device one
   // continuous object across pages instead of a duplicated copy: nothing
   // is stored per-page except the one owning column's DeviceLayerStyle.
-  for (const otherCol of project.columns) {
+  for (const otherCol of application.columns) {
     if (otherCol.id === columnId) continue;
     const otherD1 = otherCol.style.deviceOne;
     if (!otherD1 || otherD1.panoramaXPx == null || otherD1.visible === false || (otherD1 as any).deleted) continue;
@@ -253,7 +253,7 @@ export function cellHtml(project: MockupProject, deviceRowId: string, columnId: 
     const otherGeo = resolveGeometry(DEVICE_REGISTRY[deviceRow.deviceId] ?? DEVICE_REGISTRY["phone"], deviceRow.variant);
     const otherResolved = rk(resolveDeviceOneTransform(otherD1, transform.deviceOne.xPct, transform.deviceOne.rotate, otherGeo.width, panoramaColumnIndex));
     if (otherResolved.skip) continue;
-    const otherSource = pickRowSource(project.sources.find((s) => s.id === otherD1.sourceId)) ?? source;
+    const otherSource = pickRowSource(application.sources.find((s) => s.id === otherD1.sourceId)) ?? source;
     const otherUri = otherSource ? ctx.resolveUri(otherSource.file) : screenshotUri;
     const otherZ = resolveDeviceOneZIndex(otherCol.style);
     const otherFlip = `${otherResolved.flipH ? " scaleX(-1)" : ""}${otherResolved.flipV ? " scaleY(-1)" : ""}`;
@@ -266,7 +266,7 @@ export function cellHtml(project: MockupProject, deviceRowId: string, columnId: 
   if (preset.twoDevices && style.deviceTwo && transform.deviceTwo && style.deviceTwo.visible !== false && !(style.deviceTwo as any).deleted) {
     const d2 = style.deviceTwo;
     const d2Z = resolveDeviceTwoZIndex(style);
-    const source2 = pickRowSource(project.sources.find((s) => s.id === d2.sourceId)) ?? source;
+    const source2 = pickRowSource(application.sources.find((s) => s.id === d2.sourceId)) ?? source;
     const uri2 = source2
       ? ctx.resolveUri(source2.file)
       : ctx.resolveUri
@@ -286,7 +286,7 @@ export function cellHtml(project: MockupProject, deviceRowId: string, columnId: 
   (style.extraDevices ?? []).forEach((extra, i) => {
     if (extra.visible === false || (extra as any).deleted) return;
     const extraZ = resolveExtraDeviceZIndex(extra.zIndex, i);
-    const extraSource = pickRowSource(project.sources.find((s) => s.id === extra.sourceId)) ?? source;
+    const extraSource = pickRowSource(application.sources.find((s) => s.id === extra.sourceId)) ?? source;
     const extraUri = extraSource ? ctx.resolveUri(extraSource.file) : screenshotUri;
     const extraResolved = rk(resolveExtraDeviceTransform(extra));
     const extraFlip = `${extraResolved.flipH ? " scaleX(-1)" : ""}${extraResolved.flipV ? " scaleY(-1)" : ""}`;
@@ -343,27 +343,27 @@ export function cellHtml(project: MockupProject, deviceRowId: string, columnId: 
 <body><div class="canvas">${textBlock(style, preset.textPosition)}<div class="stage">${deviceLayers}${assets}${textLayers}</div>${decorations}</div></body></html>`;
 }
 
-function projectResolveUri(projectId: string) {
+function applicationResolveUri(applicationId: string) {
   return (relativePath: string) => {
     if (!relativePath || relativePath === "" || relativePath === "__second_device__") {
       return placeholderScreenUri(0);
     }
-    return `/api/mockups/${projectId}/file?p=${encodeURIComponent(relativePath)}`;
+    return `/api/mockups/${applicationId}/file?p=${encodeURIComponent(relativePath)}`;
   };
 }
 
 /** A row's design canvas: 1080 x (1080*H/W of its size target); legacy rows without a sizeKey keep 1080x1920. */
-export function rowDesignCanvas(project: MockupProject, deviceRowId: string): { width: number; height: number } {
-  const info = findSizeTarget(project.devices.find((d) => d.id === deviceRowId)?.sizeKey);
+export function rowDesignCanvas(application: MockupApplication, deviceRowId: string): { width: number; height: number } {
+  const info = findSizeTarget(application.devices.find((d) => d.id === deviceRowId)?.sizeKey);
   return info ? designSizeFor(info.target) : CANVAS;
 }
 
-export function cellPreviewHtml(project: MockupProject, deviceRowId: string, columnId: string, canvas: { width: number; height: number } = rowDesignCanvas(project, deviceRowId)): string {
-  const columnIndex = project.columns.findIndex((c) => c.id === columnId);
-  return cellHtml(project, deviceRowId, columnId, canvas, {
-    resolveUri: projectResolveUri(project.id),
+export function cellPreviewHtml(application: MockupApplication, deviceRowId: string, columnId: string, canvas: { width: number; height: number } = rowDesignCanvas(application, deviceRowId)): string {
+  const columnIndex = application.columns.findIndex((c) => c.id === columnId);
+  return cellHtml(application, deviceRowId, columnId, canvas, {
+    resolveUri: applicationResolveUri(application.id),
     columnIndex: Math.max(0, columnIndex),
-    columnCount: project.columns.length,
+    columnCount: application.columns.length,
   });
 }
 
@@ -390,22 +390,22 @@ function fontFaceCss(style: unknown): string {
 
 /** Renders every column for one device row at that row's real export
  *  dimensions -- used by the Export section. Reads files from disk. */
-export async function renderDeviceRowExport(project: MockupProject, deviceRowId: string, outputDir: string, canvas: { width: number; height: number }, scale = 1): Promise<string[]> {
+export async function renderDeviceRowExport(application: MockupApplication, deviceRowId: string, outputDir: string, canvas: { width: number; height: number }, scale = 1): Promise<string[]> {
   fs.mkdirSync(outputDir, { recursive: true });
   const { chromium } = await import("playwright");
   const browser = await chromium.launch({ headless: true });
   const written: string[] = [];
   // Uploaded sources live under the mockup dir; Live Web/Android captures live at the
-  // project root ("captures/N.png") and are referenced by the same relative path.
+  // application root ("captures/N.png") and are referenced by the same relative path.
   const resolveUri = (relativePath: string) => {
-    const abs = mockupFile(project.id, relativePath);
-    return dataUri(fs.existsSync(abs) ? abs : projectFile(project.id, relativePath));
+    const abs = mockupFile(application.id, relativePath);
+    return dataUri(fs.existsSync(abs) ? abs : applicationFile(application.id, relativePath));
   };
   try {
     const page = await browser.newPage({ viewport: canvas, deviceScaleFactor: scale });
-    const columns = [...project.columns].sort((a, b) => a.order - b.order);
+    const columns = [...application.columns].sort((a, b) => a.order - b.order);
     for (let i = 0; i < columns.length; i++) {
-      const html = cellHtml(project, deviceRowId, columns[i].id, canvas, { resolveUri, columnIndex: i, columnCount: columns.length });
+      const html = cellHtml(application, deviceRowId, columns[i].id, canvas, { resolveUri, columnIndex: i, columnCount: columns.length });
       await page.setContent(html, { waitUntil: "load" });
       const outPath = path.join(outputDir, `${String(i + 1).padStart(2, "0")}_${columns[i].id}.png`);
       await page.screenshot({ path: outPath, type: "png" });
@@ -417,20 +417,20 @@ export async function renderDeviceRowExport(project: MockupProject, deviceRowId:
   return written;
 }
 
-export async function renderSingleScreenExport(project: MockupProject, deviceRowId: string, columnId: string, canvas: { width: number; height: number }, scale = 1): Promise<string> {
-  const exportsRoot = path.join(mockupDir(project.id), "exports");
+export async function renderSingleScreenExport(application: MockupApplication, deviceRowId: string, columnId: string, canvas: { width: number; height: number }, scale = 1): Promise<string> {
+  const exportsRoot = path.join(mockupDir(application.id), "exports");
   fs.mkdirSync(exportsRoot, { recursive: true });
   const outPath = path.join(exportsRoot, `single_${columnId}.png`);
   const { chromium } = await import("playwright");
   const browser = await chromium.launch({ headless: true });
   const resolveUri = (relativePath: string) => {
-    const abs = mockupFile(project.id, relativePath);
-    return dataUri(fs.existsSync(abs) ? abs : projectFile(project.id, relativePath));
+    const abs = mockupFile(application.id, relativePath);
+    return dataUri(fs.existsSync(abs) ? abs : applicationFile(application.id, relativePath));
   };
   try {
     const page = await browser.newPage({ viewport: canvas, deviceScaleFactor: scale });
-    const colIdx = project.columns.findIndex((c) => c.id === columnId);
-    const html = cellHtml(project, deviceRowId, columnId, canvas, { resolveUri, columnIndex: Math.max(0, colIdx), columnCount: project.columns.length });
+    const colIdx = application.columns.findIndex((c) => c.id === columnId);
+    const html = cellHtml(application, deviceRowId, columnId, canvas, { resolveUri, columnIndex: Math.max(0, colIdx), columnCount: application.columns.length });
     await page.setContent(html, { waitUntil: "load" });
     await page.screenshot({ path: outPath, type: "png" });
   } finally {
@@ -439,25 +439,25 @@ export async function renderSingleScreenExport(project: MockupProject, deviceRow
   return outPath;
 }
 
-export async function renderPanoramicBannerExport(project: MockupProject, deviceRowId: string, singleCanvas: { width: number; height: number }, scale = 1, fileName = "panoramic_banner.png"): Promise<string> {
-  const exportsRoot = path.join(mockupDir(project.id), "exports");
+export async function renderPanoramicBannerExport(application: MockupApplication, deviceRowId: string, singleCanvas: { width: number; height: number }, scale = 1, fileName = "panoramic_banner.png"): Promise<string> {
+  const exportsRoot = path.join(mockupDir(application.id), "exports");
   fs.mkdirSync(exportsRoot, { recursive: true });
   const outPath = path.join(exportsRoot, fileName);
-  const columns = [...project.columns].sort((a, b) => a.order - b.order);
+  const columns = [...application.columns].sort((a, b) => a.order - b.order);
   const totalWidth = singleCanvas.width * Math.max(1, columns.length);
   const totalHeight = singleCanvas.height;
 
   const { chromium } = await import("playwright");
   const browser = await chromium.launch({ headless: true });
   const resolveUri = (relativePath: string) => {
-    const abs = mockupFile(project.id, relativePath);
-    return dataUri(fs.existsSync(abs) ? abs : projectFile(project.id, relativePath));
+    const abs = mockupFile(application.id, relativePath);
+    return dataUri(fs.existsSync(abs) ? abs : applicationFile(application.id, relativePath));
   };
 
   try {
     const page = await browser.newPage({ viewport: { width: totalWidth, height: totalHeight }, deviceScaleFactor: scale });
     const cellHtmls = columns.map((col, idx) => {
-      const singleHtml = cellHtml(project, deviceRowId, col.id, singleCanvas, { resolveUri, columnIndex: idx, columnCount: columns.length });
+      const singleHtml = cellHtml(application, deviceRowId, col.id, singleCanvas, { resolveUri, columnIndex: idx, columnCount: columns.length });
       return `<div style="width:${singleCanvas.width}px;height:${singleCanvas.height}px;flex:0 0 ${singleCanvas.width}px;position:relative;overflow:hidden;">
         <iframe srcdoc="${escapeHtml(singleHtml)}" style="width:${singleCanvas.width}px;height:${singleCanvas.height}px;border:none;pointer-events:none;"></iframe>
       </div>`;
@@ -479,7 +479,7 @@ export async function renderPanoramicBannerExport(project: MockupProject, device
 }
 
 /** Synthetic placeholder screens -- no real screenshot exists for a template
- *  that hasn't been applied to a project yet, so the thumbnail shows a
+ *  that hasn't been applied to an application yet, so the thumbnail shows a
  *  varied, plausible app-screen silhouette (list/grid/hero/profile) instead
  *  of the same blank card repeated across every column. */
 /** Synthetic placeholder screens tailored to each template's category, colors,
@@ -873,8 +873,8 @@ const THUMB_SIZE = { width: 720, height: 389 };
  *  template's actual screens rather than a single tall phone shot. */
 const DETAIL_THUMB_SIZE = { width: 1240, height: 420 };
 
-function buildScratchProject(template: MockupStarterTemplate, canvasHeight = THUMB_CANVAS.height): MockupProject {
-  const scratch: MockupProject = {
+function buildScratchApplication(template: MockupStarterTemplate, canvasHeight = THUMB_CANVAS.height): MockupApplication {
+  const scratch: MockupApplication = {
     id: "__template_thumb__",
     createdAt: new Date().toISOString(),
     name: template.name,
@@ -891,7 +891,7 @@ function buildScratchProject(template: MockupStarterTemplate, canvasHeight = THU
 }
 
 export function templateScreenHtml(template: MockupStarterTemplate, columnIndex = 0, canvas = THUMB_CANVAS): string {
-  const scratch = buildScratchProject(template, canvas.height);
+  const scratch = buildScratchApplication(template, canvas.height);
   scratch.sources = scratch.columns.map((_, i) => ({
     id: `template-placeholder-${i}`,
     name: `Template placeholder ${i + 1}`,
@@ -922,7 +922,7 @@ export function templateScreenHtml(template: MockupStarterTemplate, columnIndex 
  *  -- so the thumbnail is literally what applying the template produces,
  *  not a CSS approximation. */
 function templateThumbHtmlSized(template: MockupStarterTemplate, size: { width: number; height: number }, panelCount: number): string {
-  const scratch = buildScratchProject(template);
+  const scratch = buildScratchApplication(template);
   const deviceRow = scratch.devices[0];
   const shownColumns = scratch.columns.slice(0, Math.min(panelCount, scratch.columns.length));
   const n = shownColumns.length;

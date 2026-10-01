@@ -8,9 +8,9 @@ import {
   setSelectedLayerId,
   setMockupDirty,
   mockupId,
-  mockupProject,
-  setMockupProject,
-  saveCurrentMockupProject,
+  mockupApplication,
+  setMockupApplication,
+  saveCurrentMockupApplication,
   mockupFabricCanvas,
   selectedPages,
   pushMockupHistory
@@ -47,11 +47,11 @@ export function routeInspectorForLayer(layerId) {
 }
 
 // Screenshot Source Mapping select -- shared shape across Studio Mockup and
-// Video Studio (project.mockup.sources / project.video.sources both carry
+// Video Studio (application.mockup.sources / application.video.sources both carry
 // {id, name, file, width, height, deviceCategory, resolution, deviceLabel},
 // written once at capture time in src/capture/liveBrowser.ts and
 // androidLive.ts, or backfilled server-side for legacy sources -- see
-// projectStore.ts's loadProject). Device size (deviceCategory: "phone" |
+// applicationStore.ts's loadApplication). Device size (deviceCategory: "phone" |
 // "tablet7" | "tablet10") is the ONLY thing shown next to a screenshot's
 // name here -- resolution/pixel dimensions stay in the data as technical
 // metadata but are never rendered in the UI (see updateSourceDimsReadout).
@@ -308,7 +308,7 @@ export function renderMockupLayersPanel(column) {
 }
 
 /** Resolves any device layer ("deviceOne" | "deviceTwo" | "extra:<idx>") to its
- *  DeviceLayerStyle object -- mirrors src/mockup/project.ts's getDeviceLayer(),
+ *  DeviceLayerStyle object -- mirrors src/mockup/application.ts's getDeviceLayer(),
  *  the one place that knows how to reach a device regardless of which slot
  *  it lives in, so callers don't hand-enumerate deviceOne/deviceTwo/extraDevices. */
 export function resolveDeviceLayer(style, layerId) {
@@ -319,7 +319,7 @@ export function resolveDeviceLayer(style, layerId) {
   return undefined;
 }
 
-/** Client mirror of src/mockup/project.ts's allDeviceLayers() -- the one place
+/** Client mirror of src/mockup/application.ts's allDeviceLayers() -- the one place
  *  that knows how to iterate every device layer on a page (deviceOne,
  *  deviceTwo, all extraDevices[]) regardless of slot, so callers don't
  *  hand-enumerate them (and silently miss deviceTwo/extraDevices as a result). */
@@ -330,18 +330,18 @@ export function allDeviceLayers(style) {
   return refs;
 }
 
-// Two-page device linking (client mirror of src/mockup/project.ts's
+// Two-page device linking (client mirror of src/mockup/application.ts's
 // linkDeviceLayers/unlinkDeviceLayer/syncLinkedDeviceLayer) -- editing a
 // linked device's transform on either page propagates to its counterpart,
 // for compositions intentionally split/continued across a page boundary.
 
-function findPage(project, pageId) {
-  return project?.columns?.find((c) => c.id === pageId);
+function findPage(application, pageId) {
+  return application?.columns?.find((c) => c.id === pageId);
 }
 
-export function linkDeviceLayers(project, pageAId, layerAKey, pageBId, layerBKey) {
-  const pageA = findPage(project, pageAId);
-  const pageB = findPage(project, pageBId);
+export function linkDeviceLayers(application, pageAId, layerAKey, pageBId, layerBKey) {
+  const pageA = findPage(application, pageAId);
+  const pageB = findPage(application, pageBId);
   const layerA = pageA && resolveDeviceLayer(pageA.style, layerAKey);
   const layerB = pageB && resolveDeviceLayer(pageB.style, layerBKey);
   if (!layerA || !layerB) return false;
@@ -350,11 +350,11 @@ export function linkDeviceLayers(project, pageAId, layerAKey, pageBId, layerBKey
   return true;
 }
 
-export function unlinkDeviceLayer(project, pageId, layerKey) {
-  const page = findPage(project, pageId);
+export function unlinkDeviceLayer(application, pageId, layerKey) {
+  const page = findPage(application, pageId);
   const layer = page && resolveDeviceLayer(page.style, layerKey);
   if (!layer?.linkedTo) return;
-  const partnerPage = findPage(project, layer.linkedTo.pageId);
+  const partnerPage = findPage(application, layer.linkedTo.pageId);
   const partnerLayer = partnerPage && resolveDeviceLayer(partnerPage.style, layer.linkedTo.layerKey);
   if (partnerLayer) partnerLayer.linkedTo = undefined;
   layer.linkedTo = undefined;
@@ -362,11 +362,11 @@ export function unlinkDeviceLayer(project, pageId, layerKey) {
 
 /** Call after committing a transform change to a device layer -- if it's
  *  linked, copies its transform onto the linked counterpart. No-op if unlinked. */
-export function syncLinkedDeviceLayer(project, pageId, layerKey) {
-  const page = findPage(project, pageId);
+export function syncLinkedDeviceLayer(application, pageId, layerKey) {
+  const page = findPage(application, pageId);
   const layer = page && resolveDeviceLayer(page.style, layerKey);
   if (!layer?.linkedTo) return;
-  const partnerPage = findPage(project, layer.linkedTo.pageId);
+  const partnerPage = findPage(application, layer.linkedTo.pageId);
   const partnerLayer = partnerPage && resolveDeviceLayer(partnerPage.style, layer.linkedTo.layerKey);
   if (!partnerLayer) return;
   partnerLayer.size = layer.size;
@@ -381,17 +381,17 @@ export function syncLinkedDeviceLayer(project, pageId, layerKey) {
  *  mechanism from syncLinkedDeviceLayer's two-page link feature above:
  *  invoked directly on click, not gated by any toggle, and propagates the
  *  currently selected device layer's borderColor/bezelColor to EVERY column
- *  of the current mockup project (matched by device-layer slot key, e.g.
+ *  of the current mockup application (matched by device-layer slot key, e.g.
  *  "deviceOne"/"deviceTwo"/"extra:0", not by page-specific id), not just
  *  one explicitly linked counterpart. Deliberately does not touch `linkedTo`
  *  or call syncLinkedDeviceLayer -- the two features are independent. */
 async function applyDeviceColorToAllPages() {
-  if (!mockupProject?.columns || !selectedLayerId) return;
+  if (!mockupApplication?.columns || !selectedLayerId) return;
   const style = getSelectedCellStyle() || selectedColumn?.style;
   const sourceDev = style && resolveDeviceLayer(style, selectedLayerId);
   if (!sourceDev) return;
   const { borderColor, bezelColor, borderThickness, bezelThickness } = sourceDev;
-  for (const col of mockupProject.columns) {
+  for (const col of mockupApplication.columns) {
     for (const { layer: dev } of allDeviceLayers(col.style)) {
       if (dev) {
         dev.borderColor = borderColor;
@@ -405,14 +405,14 @@ async function applyDeviceColorToAllPages() {
   loadColumnIntoFabric(selectedColumn);
   // Root cause of the "it doesn't work" report: the Preview Page matrix grid's
   // cells are server-rendered <svg> fetched via GET /api/mockups/.../cell-preview/...,
-  // and that route always reads the project back off disk (loadMockupProject) --
+  // and that route always reads the application back off disk (loadMockupApplication) --
   // it has no way to see this in-memory, unsaved mutation. Re-fetching the iframe
   // src via renderMockupMatrix() alone therefore kept showing the last-SAVED colors,
   // even though the mutation above was real and correct. Other explicit
   // propagating actions in this file already establish the fix pattern (see
   // "Reset to Template" / asset-add handlers in main.js): persist first, then
   // refresh the matrix, so the server has the new data before it's re-rendered.
-  await saveCurrentMockupProject();
+  await saveCurrentMockupApplication();
   pushMockupHistory();
   setMockupDirty(false);
   // Other pages' Preview Page cells aren't touched by loadColumnIntoFabric
@@ -598,7 +598,7 @@ export function populateBgValueSelect(type, selectedVal) {
     ];
     html = patterns.map(p => `<option value="${p.id}">${p.name}</option>`).join("");
   } else if (type === "image" || type === "panoramic") {
-    html = `<option value="${selectedVal || ''}">${selectedVal ? 'Custom File: ' + selectedVal : 'No file selected (upload via project assets)'}</option>`;
+    html = `<option value="${selectedVal || ''}">${selectedVal ? 'Custom File: ' + selectedVal : 'No file selected (upload via application assets)'}</option>`;
   }
   select.innerHTML = html;
   if (selectedVal) select.value = selectedVal;
@@ -758,9 +758,9 @@ export function syncSection2Inputs(col, layerId) {
 
   const sourceEl = document.getElementById("mk-source");
   if (sourceEl && activeDevice) {
-    populateSourceSelect(sourceEl, mockupProject?.sources || [], activeDevice.sourceId);
+    populateSourceSelect(sourceEl, mockupApplication?.sources || [], activeDevice.sourceId);
   }
-  updateSourceDimsReadout(mockupProject?.sources || [], activeDevice?.sourceId);
+  updateSourceDimsReadout(mockupApplication?.sources || [], activeDevice?.sourceId);
 
   const d1SizeEl = document.getElementById("mk-d1-size");
   const d1SizeValEl = document.getElementById("mk-d1-size-val");
@@ -799,9 +799,9 @@ export function syncSection2Inputs(col, layerId) {
   const d1CameraRowEl = document.getElementById("mk-d1-camera-row");
   if (d1CameraEnabledEl && activeDevice) {
     d1CameraEnabledEl.checked = activeDevice.cameraEnabled !== false;
-    // Only offer the toggle when the project's active device row actually
+    // Only offer the toggle when the application's active device row actually
     // has a camera cutout to show/hide (mirrors buildDeviceGroup's gating).
-    const activeDeviceRow = mockupProject?.devices?.[0];
+    const activeDeviceRow = mockupApplication?.devices?.[0];
     const frame = resolveDeviceFrame(activeDeviceRow?.deviceId || "phone", mockupDevicesCatalog);
     if (d1CameraRowEl) d1CameraRowEl.style.display = frame && frame.cutout && frame.cutout !== "none" ? "" : "none";
   }
@@ -811,7 +811,7 @@ export function syncSection2Inputs(col, layerId) {
   // server use) instead of a generic hardcoded slate color, so the picker
   // shows what the device will actually render with when no per-layer
   // override has been set.
-  const activeDeviceRowForColor = mockupProject?.devices?.[0];
+  const activeDeviceRowForColor = mockupApplication?.devices?.[0];
   const colorFrame = resolveDeviceFrame(activeDeviceRowForColor?.deviceId || "phone", mockupDevicesCatalog);
 
   // Border/Bezel Thickness sliders -- undefined means "use the device's own
@@ -1257,7 +1257,7 @@ export function commitOpacityChange(pctVal) {
   if (box) {
     box.opacity = alpha;
     setLayerBox(style, selectedLayerId, box);
-    if (selectedColumn) syncLinkedDeviceLayer(mockupProject, selectedColumn.id, selectedLayerId);
+    if (selectedColumn) syncLinkedDeviceLayer(mockupApplication, selectedColumn.id, selectedLayerId);
     setMockupDirty(true);
   }
 }
@@ -1375,7 +1375,7 @@ export function setupObjectToolbarEvents() {
       dev.borderColor = tbRimPicker.value;
       const sideInput = document.getElementById("mk-d1-border-color");
       if (sideInput) sideInput.value = tbRimPicker.value;
-      if (selectedColumn) syncLinkedDeviceLayer(mockupProject, selectedColumn.id, selectedLayerId);
+      if (selectedColumn) syncLinkedDeviceLayer(mockupApplication, selectedColumn.id, selectedLayerId);
       setMockupDirty(true);
       loadColumnIntoFabric(selectedColumn);
     };
@@ -1390,7 +1390,7 @@ export function setupObjectToolbarEvents() {
       dev.bezelColor = tbBezelPicker.value;
       const sideInput = document.getElementById("mk-d1-bezel-color");
       if (sideInput) sideInput.value = tbBezelPicker.value;
-      if (selectedColumn) syncLinkedDeviceLayer(mockupProject, selectedColumn.id, selectedLayerId);
+      if (selectedColumn) syncLinkedDeviceLayer(mockupApplication, selectedColumn.id, selectedLayerId);
       setMockupDirty(true);
       loadColumnIntoFabric(selectedColumn);
     };
@@ -1517,7 +1517,7 @@ export function setupInspectorEvents() {
       const dev = style && (resolveDeviceLayer(style, selectedLayerId) || style.deviceOne);
       if (!dev) return;
       dev.sourceId = sourceSelectEl.value || undefined;
-      updateSourceDimsReadout(mockupProject?.sources || [], dev.sourceId);
+      updateSourceDimsReadout(mockupApplication?.sources || [], dev.sourceId);
       setMockupDirty(true);
       loadColumnIntoFabric(selectedColumn);
     };
@@ -1534,7 +1534,7 @@ export function setupInspectorEvents() {
       if (!dev) return;
       dev.size = parseInt(d1Size.value, 10);
       if (d1SizeVal) d1SizeVal.textContent = d1Size.value;
-      if (selectedColumn) syncLinkedDeviceLayer(mockupProject, selectedColumn.id, selectedLayerId);
+      if (selectedColumn) syncLinkedDeviceLayer(mockupApplication, selectedColumn.id, selectedLayerId);
       setMockupDirty(true);
       loadColumnIntoFabric(selectedColumn);
     };
@@ -1549,7 +1549,7 @@ export function setupInspectorEvents() {
       if (!dev) return;
       dev.brightness = parseInt(d1Brightness.value, 10);
       if (d1BrightnessVal) d1BrightnessVal.textContent = d1Brightness.value;
-      if (selectedColumn) syncLinkedDeviceLayer(mockupProject, selectedColumn.id, selectedLayerId);
+      if (selectedColumn) syncLinkedDeviceLayer(mockupApplication, selectedColumn.id, selectedLayerId);
       setMockupDirty(true);
       loadColumnIntoFabric(selectedColumn);
     };
@@ -1564,7 +1564,7 @@ export function setupInspectorEvents() {
       dev.frameless = d1Frameless.checked;
       const radiusRow = document.getElementById("mk-d1-frameless-radius-row");
       if (radiusRow) radiusRow.style.display = d1Frameless.checked ? "" : "none";
-      if (selectedColumn) syncLinkedDeviceLayer(mockupProject, selectedColumn.id, selectedLayerId);
+      if (selectedColumn) syncLinkedDeviceLayer(mockupApplication, selectedColumn.id, selectedLayerId);
       setMockupDirty(true);
       loadColumnIntoFabric(selectedColumn);
     };
@@ -1608,7 +1608,7 @@ export function setupInspectorEvents() {
       if (!dev) return;
       dev.borderThickness = parseInt(d1BorderThickness.value, 10);
       if (d1BorderThicknessVal) d1BorderThicknessVal.textContent = d1BorderThickness.value;
-      if (selectedColumn) syncLinkedDeviceLayer(mockupProject, selectedColumn.id, selectedLayerId);
+      if (selectedColumn) syncLinkedDeviceLayer(mockupApplication, selectedColumn.id, selectedLayerId);
       setMockupDirty(true);
       loadColumnIntoFabric(selectedColumn);
     };
@@ -1623,7 +1623,7 @@ export function setupInspectorEvents() {
       if (!dev) return;
       dev.bezelThickness = parseInt(d1BezelThickness.value, 10);
       if (d1BezelThicknessVal) d1BezelThicknessVal.textContent = d1BezelThickness.value;
-      if (selectedColumn) syncLinkedDeviceLayer(mockupProject, selectedColumn.id, selectedLayerId);
+      if (selectedColumn) syncLinkedDeviceLayer(mockupApplication, selectedColumn.id, selectedLayerId);
       setMockupDirty(true);
       loadColumnIntoFabric(selectedColumn);
     };
@@ -1638,7 +1638,7 @@ export function setupInspectorEvents() {
       dev.borderColor = d1BorderColor.value;
       const tbInput = document.getElementById("mk-obj-dev-border-color");
       if (tbInput) tbInput.value = d1BorderColor.value;
-      if (selectedColumn) syncLinkedDeviceLayer(mockupProject, selectedColumn.id, selectedLayerId);
+      if (selectedColumn) syncLinkedDeviceLayer(mockupApplication, selectedColumn.id, selectedLayerId);
       setMockupDirty(true);
       loadColumnIntoFabric(selectedColumn);
     };
@@ -1653,7 +1653,7 @@ export function setupInspectorEvents() {
       dev.bezelColor = d1BezelColor.value;
       const tbInput = document.getElementById("mk-obj-dev-bezel-color");
       if (tbInput) tbInput.value = d1BezelColor.value;
-      if (selectedColumn) syncLinkedDeviceLayer(mockupProject, selectedColumn.id, selectedLayerId);
+      if (selectedColumn) syncLinkedDeviceLayer(mockupApplication, selectedColumn.id, selectedLayerId);
       setMockupDirty(true);
       loadColumnIntoFabric(selectedColumn);
     };
@@ -1671,7 +1671,7 @@ export function setupInspectorEvents() {
   const sendBack = document.getElementById("mk-layer-send-back");
 
   // NOTE: these must NOT gate assignment on `selectedColumn` at setup time --
-  // setupInspectorEvents() runs once at page load, before any project/column is
+  // setupInspectorEvents() runs once at page load, before any application/column is
   // selected, so `selectedColumn` is always null then and the handler would
   // never be attached at all. `selectedColumn` is a live import from state.js;
   // read it fresh inside the click handler instead.
@@ -2004,7 +2004,7 @@ export async function deleteSelectedLayer() {
   } else if (selectedLayerId.startsWith("panoramaDevice:")) {
     // panoramaDevice:<ownerColId>:<key> -- a spanning device mirrored onto this page; delete the owner's device.
     const [, ownerId, key] = selectedLayerId.split(":");
-    const ownerDev = mockupProject?.columns?.find((c) => c.id === ownerId)?.style?.[key];
+    const ownerDev = mockupApplication?.columns?.find((c) => c.id === ownerId)?.style?.[key];
     if (ownerDev) {
       ownerDev.deleted = true;
       ownerDev.visible = false;
@@ -2143,7 +2143,7 @@ export function setupTransformPanelEvents() {
     const ctx = currentBox();
     if (!ctx || !ctx.box) return;
     setLayerBox(ctx.style, selectedLayerId, { ...ctx.box, ...box });
-    if (selectedColumn) syncLinkedDeviceLayer(mockupProject, selectedColumn.id, selectedLayerId);
+    if (selectedColumn) syncLinkedDeviceLayer(mockupApplication, selectedColumn.id, selectedLayerId);
     setMockupDirty(true);
     loadColumnIntoFabric(selectedColumn);
   }
@@ -2219,10 +2219,10 @@ export function setupTransformPanelEvents() {
       const otherPageId = selectedPages.find((id) => id !== selectedColumn.id);
       if (!otherPageId) return;
       if (dev.linkedTo) {
-        unlinkDeviceLayer(mockupProject, selectedColumn.id, selectedLayerId);
+        unlinkDeviceLayer(mockupApplication, selectedColumn.id, selectedLayerId);
         showToast("Unlinked.", "info");
       } else {
-        const ok = linkDeviceLayers(mockupProject, selectedColumn.id, selectedLayerId, otherPageId, selectedLayerId);
+        const ok = linkDeviceLayers(mockupApplication, selectedColumn.id, selectedLayerId, otherPageId, selectedLayerId);
         showToast(ok ? "Linked -- editing this device now syncs to the paired page." : "The paired page doesn't have that device layer.", ok ? "success" : "error");
       }
       setMockupDirty(true);
@@ -2422,8 +2422,8 @@ export async function renderMockupDevicesSection() {
   setupDeviceLibraryHandlers();
 
   const selectEl = document.getElementById("mockup-preview-device");
-  if (selectEl && mockupProject) {
-    selectEl.innerHTML = (mockupProject.devices || []).map((d) => `<option value="${d.id}">${d.label}</option>`).join("");
+  if (selectEl && mockupApplication) {
+    selectEl.innerHTML = (mockupApplication.devices || []).map((d) => `<option value="${d.id}">${d.label}</option>`).join("");
   }
 
   // Filter Pills setup
@@ -2490,20 +2490,20 @@ export async function renderMockupDevicesSection() {
         if (useBtn) {
           useBtn.onclick = async (e) => {
             e.stopPropagation();
-            if (!mockupProject) return showAlert("Please select or create a project first from the Projects tab.");
+            if (!mockupApplication) return showAlert("Please select or create an application first from the Applications tab.");
 
-            // Update project device rows
-            if (!Array.isArray(mockupProject.devices) || mockupProject.devices.length === 0) {
-              mockupProject.devices = [{ id: "row-1", deviceId: dev.id, label: dev.name, previewsVisible: true, isBase: true }];
+            // Update application device rows
+            if (!Array.isArray(mockupApplication.devices) || mockupApplication.devices.length === 0) {
+              mockupApplication.devices = [{ id: "row-1", deviceId: dev.id, label: dev.name, previewsVisible: true, isBase: true }];
             } else {
-              const base = mockupProject.devices.find((d) => d.isBase) || mockupProject.devices[0];
+              const base = mockupApplication.devices.find((d) => d.isBase) || mockupApplication.devices[0];
               base.deviceId = dev.id;
               base.label = dev.name;
             }
 
             // Dynamically update ALL pages of the active template
-            if (Array.isArray(mockupProject.columns)) {
-              for (const col of mockupProject.columns) {
+            if (Array.isArray(mockupApplication.columns)) {
+              for (const col of mockupApplication.columns) {
                 if (col.style) {
                   if (col.style.deviceOne) {
                     const targetW = (col.style.layout || "").includes("two-devices") ? 1080 * 0.72 : 1080 * 0.78;
@@ -2525,11 +2525,11 @@ export async function renderMockupDevicesSection() {
               }
             }
 
-            await saveCurrentMockupProject();
+            await saveCurrentMockupApplication();
             renderMockupCanvas();
             renderMockupMatrix();
             renderMockupDevicesSection();
-            showToast(`Applied "${dev.name}" frame across all ${mockupProject.columns?.length || 0} page(s) of this template.`, "success");
+            showToast(`Applied "${dev.name}" frame across all ${mockupApplication.columns?.length || 0} page(s) of this template.`, "success");
           };
         }
 

@@ -27,8 +27,15 @@ import {
   openMockupTemplateDetail,
   closeMockupTemplateDetail,
   applyTemplate,
-  loadMockupProjectInto,
-  mockupDevicesCatalog
+  loadMockupApplicationInto,
+  mockupDevicesCatalog,
+  showMockupEmptyEditor,
+  loadMockupSavedConfigs,
+  handleMockupSave,
+  handleMockupSaveAs,
+  handleMockupUpdateTemplate,
+  clearMockupDraft,
+  guardLeaveMockupDraft
 } from './templates.js';
 import {
   switchInspectorTab,
@@ -83,7 +90,10 @@ import {
   renderAndroidCaptures
 } from './capture.js';
 import {
-  loadVideoProjectInto,
+  loadVideoApplicationInto,
+  guardLeaveVideoDraft,
+  clearVideoDraft,
+  hasUnsavedVideoDraft,
   renderVideoScenes,
   loadSavedConfigs,
   renderVideoTemplateGrid,
@@ -99,14 +109,15 @@ import {
   openUniversalUploadModal
 } from './settings.js';
 import {
-  activeProjectId,
-  activeProject,
-  setActiveProjectId,
-  setActiveProject,
+  activeApplicationId,
+  activeApplication,
+  setActiveApplicationId,
+  setActiveApplication,
   mockupId,
-  mockupProject,
+  mockupApplication,
+  mockupSessionActive,
   setMockupId,
-  setMockupProject,
+  setMockupApplication,
   rebindSelectedColumn,
   selectedColumn,
   setSelectedColumn,
@@ -117,20 +128,20 @@ import {
   pushMockupHistory,
   undoMockupState,
   redoMockupState,
-  saveCurrentMockupProject,
-  snapshotOfMockupProject,
+  saveCurrentMockupApplication,
+  snapshotOfMockupApplication,
   setSavedSnapshot,
   mockupHistory,
   mockupHistoryIdx
 } from './state.js';
 import { api, uploadFile, showAlert, showConfirm, showPrompt, showSelect, showToast } from './utils.js';
 import {
-  setupProjectsHandlers,
-  refreshProjectsList,
-  selectProject,
+  setupApplicationsHandlers,
+  refreshApplicationsList,
+  selectApplication,
   updateTabGating,
   refreshFileExplorer
-} from './projects.js';
+} from './applications.js';
 
 // Expose globals for window event bindings
 window.$ = (id) => document.getElementById(id);
@@ -144,8 +155,8 @@ window.alert = showAlert;
 window.confirm = showConfirm;
 window.prompt = showPrompt;
 
-window.refreshProjectsList = refreshProjectsList;
-window.selectProject = selectProject;
+window.refreshApplicationsList = refreshApplicationsList;
+window.selectApplication = selectApplication;
 window.updateTabGating = updateTabGating;
 window.refreshFileExplorer = refreshFileExplorer;
 
@@ -190,7 +201,7 @@ window.disconnectAndroidDevice = disconnectAndroidDevice;
 window.loadAndroidDevices = loadAndroidDevices;
 window.triggerAndroidCapture = triggerAndroidCapture;
 window.renderAndroidCaptures = renderAndroidCaptures;
-window.loadVideoProjectInto = loadVideoProjectInto;
+window.loadVideoApplicationInto = loadVideoApplicationInto;
 window.renderVideoScenes = renderVideoScenes;
 window.renderMockupDevicesSection = renderMockupDevicesSection;
 window.loadDevicesCatalogue = loadDevicesCatalogue;
@@ -199,7 +210,7 @@ window.openUniversalUploadModal = openUniversalUploadModal;
 window.pushMockupHistory = pushMockupHistory;
 window.undoMockupState = undoMockupState;
 window.redoMockupState = redoMockupState;
-window.saveCurrentMockupProject = saveCurrentMockupProject;
+window.saveCurrentMockupApplication = saveCurrentMockupApplication;
 
 // Keyboard shortcuts (Undo / Redo / Delete) -- must ignore contenteditable
 // (covers inline TinyMCE, which has no tagName of INPUT/TEXTAREA/SELECT but
@@ -270,7 +281,7 @@ function setupMockupToolbar() {
             method: "POST",
             body: { name: file.name, data: evt.target.result }
           });
-          const col = mockupProject.columns.find((c) => c.id === selectedCell.columnId);
+          const col = mockupApplication.columns.find((c) => c.id === selectedCell.columnId);
           if (!col) return;
           col.style.assetLayers = col.style.assetLayers || [];
           col.style.assetLayers.push({
@@ -300,8 +311,8 @@ function setupMockupToolbar() {
 
   if ($id("mockup-reset-template-btn")) {
     $id("mockup-reset-template-btn").onclick = async () => {
-      if (!selectedCell || !mockupProject) return;
-      const col = mockupProject.columns.find((c) => c.id === selectedCell.columnId);
+      if (!selectedCell || !mockupApplication) return;
+      const col = mockupApplication.columns.find((c) => c.id === selectedCell.columnId);
       if (!col) return;
       const pageLabel = col.style?.title?.text || "this page";
       const ok = await showConfirm(`This discards every change made to "${pageLabel}" and cannot be undone. Other pages are not affected.`, "Reset this page to the original template?", true);
@@ -313,19 +324,19 @@ function setupMockupToolbar() {
       // template's real layout/background/title/device recipe entirely
       // instead of returning to it. Deep-cloned so re-editing after a reset
       // can't mutate the stored snapshot itself. Falls back to the old
-      // generic-defaults behavior only for a project saved before this
+      // generic-defaults behavior only for an application saved before this
       // snapshot existed.
       col.style = col.templateDefaultStyle
         ? JSON.parse(JSON.stringify(col.templateDefaultStyle))
         : defaultColumnStyle("Page");
       // Only THIS page's cell overrides, for THIS page's own device rows --
       // never touches any other column's overrides.
-      if (mockupProject.cells) {
-        for (const key of Object.keys(mockupProject.cells)) {
-          if (key.endsWith(`:${col.id}`)) delete mockupProject.cells[key];
+      if (mockupApplication.cells) {
+        for (const key of Object.keys(mockupApplication.cells)) {
+          if (key.endsWith(`:${col.id}`)) delete mockupApplication.cells[key];
         }
       }
-      await saveCurrentMockupProject();
+      await saveCurrentMockupApplication();
       pushMockupHistory();
       await setActivePage(col.id);
       renderMockupMatrix();
@@ -335,46 +346,29 @@ function setupMockupToolbar() {
 
   if ($id("mk-save")) {
     $id("mk-save").onclick = async () => {
-      if (!mockupId || !mockupProject) return;
-      await saveCurrentMockupProject();
-      setSavedSnapshot(snapshotOfMockupProject(mockupProject));
+      if (!mockupId || !mockupApplication) return;
+      await saveCurrentMockupApplication();
+      setSavedSnapshot(snapshotOfMockupApplication(mockupApplication));
       setMockupDirty(false);
       renderMockupMatrix();
       showToast("Changes saved.", "success");
     };
   }
 
-  if ($id("mk-update-template")) {
-    $id("mk-update-template").onclick = async () => {
-      if (!mockupProject || !mockupId) return showAlert("No active mockup project loaded.");
-      try {
-        const { templates } = await api("/api/mockups/templates");
-        const opts = {};
-        for (const t of templates) (opts[t.category || "Other"] ||= {})[t.id] = t.name;
-        const templateId = await showSelect("Choose the template whose default will be replaced by the current canvas.", opts, "Update Template", "Next");
-        if (!templateId) return;
-        const t = templates.find((x) => x.id === templateId);
-        const ok = await showConfirm(`Overwrite the default of "${t.name}" (${t.category}) with this project's pages? Every future project using it will get these settings.`, "Overwrite template?");
-        if (!ok) return;
-        await saveCurrentMockupProject();
-        await api(`/api/mockups/${mockupId}/update-template`, { method: "POST", body: { templateId } });
-        showToast(`Template "${t.name}" updated.`, "success");
-      } catch (e) {
-        await showAlert("Update Template failed: " + e.message, "error");
-      }
-    };
-  }
+  if ($id("mockup-save-btn")) $id("mockup-save-btn").onclick = () => handleMockupSave();
+  if ($id("mockup-save-as-btn")) $id("mockup-save-as-btn").onclick = () => handleMockupSaveAs();
+  if ($id("mockup-update-template-btn")) $id("mockup-update-template-btn").onclick = () => handleMockupUpdateTemplate();
 
   const downloadFrom = (url) => { if (!url) return; const a = document.createElement("a"); a.href = url; a.download = ""; document.body.appendChild(a); a.click(); a.remove(); };
 
   if ($id("mockup-export-single-btn")) {
     $id("mockup-export-single-btn").onclick = async () => {
-      if (!mockupProject || !mockupId) return showAlert("No active mockup project loaded.");
+      if (!mockupApplication || !mockupId) return showAlert("No active mockup application loaded.");
       const btn = $id("mockup-export-single-btn");
       btn.disabled = true;
       btn.textContent = "Exporting PNG…";
       try {
-        const colId = selectedCell ? selectedCell.columnId : (mockupProject.columns[0]?.id || "");
+        const colId = selectedCell ? selectedCell.columnId : (mockupApplication.columns[0]?.id || "");
         const res = await api(`/api/mockups/${mockupId}/export/single`, { method: "POST", body: { columnId: colId } });
         downloadFrom(res.downloadUrl);
         showToast("Page exported (PNG download started).", "success");
@@ -389,7 +383,7 @@ function setupMockupToolbar() {
 
   if ($id("mockup-export-panoramic-btn")) {
     $id("mockup-export-panoramic-btn").onclick = async () => {
-      if (!mockupProject || !mockupId) return showAlert("No active mockup project loaded.");
+      if (!mockupApplication || !mockupId) return showAlert("No active mockup application loaded.");
       const btn = $id("mockup-export-panoramic-btn");
       btn.disabled = true;
       btn.textContent = "Exporting Banner…";
@@ -408,7 +402,7 @@ function setupMockupToolbar() {
 
   if ($id("mockup-export-store-btn")) {
     $id("mockup-export-store-btn").onclick = async () => {
-      if (!mockupProject || !mockupId) return showAlert("No active mockup project loaded.");
+      if (!mockupApplication || !mockupId) return showAlert("No active mockup application loaded.");
       const btn = $id("mockup-export-store-btn");
       btn.disabled = true;
       btn.textContent = "Generating ZIP Package…";
@@ -438,11 +432,11 @@ function setupMockupToolbar() {
   }
   if ($id("mockup-add-device-btn")) {
     $id("mockup-add-device-btn").onclick = async () => {
-      if (!mockupId) return showAlert("Start a project first.");
+      if (!mockupId) return showAlert("Start an application first.");
       const deviceId = $id("mockup-add-device-select")?.value;
       const label = $id("mockup-add-device-label")?.value.trim() || deviceId;
-      const { project } = await api(`/api/mockups/${mockupId}/devices`, { method: "POST", body: { deviceId, variant: $id("mockup-add-device-variant")?.value || undefined, label } });
-      setMockupProject(project);
+      const { application } = await api(`/api/mockups/${mockupId}/devices`, { method: "POST", body: { deviceId, variant: $id("mockup-add-device-variant")?.value || undefined, label } });
+      setMockupApplication(application);
       rebindSelectedColumn();
       if ($id("mockup-add-device-label")) $id("mockup-add-device-label").value = "";
       renderMockupDevicesSection();
@@ -464,12 +458,12 @@ function setupMockupToolbar() {
 
   if ($id("mockup-export-template-btn")) {
     $id("mockup-export-template-btn").onclick = () => {
-      if (!mockupProject) return showAlert("No active mockup project loaded.");
-      const data = JSON.stringify({ devices: mockupProject.devices, columns: mockupProject.columns, cells: mockupProject.cells }, null, 2);
+      if (!mockupApplication) return showAlert("No active mockup application loaded.");
+      const data = JSON.stringify({ devices: mockupApplication.devices, columns: mockupApplication.columns, cells: mockupApplication.cells }, null, 2);
       const blob = new Blob([data], { type: "application/json" });
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
-      a.download = `${(mockupProject.name || "mockup-template").replace(/[^a-z0-9-_]+/gi, "_")}.json`;
+      a.download = `${(mockupApplication.name || "mockup-template").replace(/[^a-z0-9-_]+/gi, "_")}.json`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -487,7 +481,7 @@ function setupMockupToolbar() {
       try {
         const data = JSON.parse(await file.text());
         const updated = await api(`/api/mockups/${mockupId}`, { method: "PUT", body: { devices: data.devices, columns: data.columns, cells: data.cells } });
-        setMockupProject(updated);
+        setMockupApplication(updated);
         rebindSelectedColumn();
         pushMockupHistory();
         renderMockupMatrix();
@@ -501,11 +495,11 @@ function setupMockupToolbar() {
 
   if ($id("mk-source-upload")) {
     $id("mk-source-upload").onclick = () => {
-      if (!activeProjectId) return showAlert("Select a project first.");
+      if (!activeApplicationId) return showAlert("Select an application first.");
       openUniversalUploadModal((selectedPath) => {
         setTimeout(async () => {
-          const updated = await api(`/api/mockups/${activeProjectId}`);
-          setMockupProject(updated);
+          const updated = await api(`/api/mockups/${activeApplicationId}`);
+          setMockupApplication(updated);
           rebindSelectedColumn();
           await syncEditingAreaToSelectedPages();
           const sourceEl = $id("mk-source");
@@ -520,14 +514,14 @@ function setupMockupToolbar() {
 
   if ($id("mockup-unsaved-save")) {
     $id("mockup-unsaved-save").onclick = async () => {
-      await saveCurrentMockupProject();
+      await saveCurrentMockupApplication();
       setMockupDirty(false);
       $id("mockup-unsaved-modal").style.display = "none";
     };
   }
   if ($id("mockup-unsaved-discard")) {
     $id("mockup-unsaved-discard").onclick = async () => {
-      if (mockupHistoryIdx >= 0) setMockupProject(JSON.parse(mockupHistory[mockupHistoryIdx]));
+      if (mockupHistoryIdx >= 0) setMockupApplication(JSON.parse(mockupHistory[mockupHistoryIdx]));
       rebindSelectedColumn();
       setMockupDirty(false);
       $id("mockup-unsaved-modal").style.display = "none";
@@ -548,6 +542,14 @@ function setupMockupToolbar() {
   });
 }
 
+// Closing/reloading the window with an unsaved draft: browser-native confirmation (custom buttons aren't possible here).
+window.addEventListener("beforeunload", (e) => {
+  if ((mockupApplication && mockupIsDirty) || hasUnsavedVideoDraft()) {
+    e.preventDefault();
+    e.returnValue = "";
+  }
+});
+
 // DOMContentLoaded bootstrapping
 document.addEventListener('DOMContentLoaded', async () => {
   initMockupFabricCanvas();
@@ -559,7 +561,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupObjectToolbarEvents();
   applyStandardIcons();
   setupExportHandlers();
-  setupProjectsHandlers();
+  setupApplicationsHandlers();
   setupSettingsAndModals();
   setupMockupToolbar();
   setupCaptureHandlers();
@@ -568,20 +570,20 @@ document.addEventListener('DOMContentLoaded', async () => {
   const savedTheme = localStorage.getItem("sag-theme") || "dark";
   window.applyTheme(savedTheme);
 
-  // Initial load — restore active project and sync all gating right away
-  if (activeProjectId) {
+  // Initial load — restore active application and sync all gating right away
+  if (activeApplicationId) {
     try {
-      const proj = await api(`/api/projects/${activeProjectId}`);
-      setActiveProject(proj);
+      const proj = await api(`/api/applications/${activeApplicationId}`);
+      setActiveApplication(proj);
     } catch (_) {
-      setActiveProjectId(null);
-      setActiveProject(null);
+      setActiveApplicationId(null);
+      setActiveApplication(null);
     }
   }
   updateTabGating();
 
-  if (typeof window.refreshProjectsList === 'function') {
-    window.refreshProjectsList();
+  if (typeof window.refreshApplicationsList === 'function') {
+    window.refreshApplicationsList();
   }
 
   // Bind rail navigation buttons (Templates / Editor / Devices / etc.)
@@ -600,8 +602,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       if (prefix === "mockup") {
         const inspector = document.getElementById("mockup-inspector");
-        if (inspector) inspector.style.display = railBtn.dataset.section === "mockup-editing" ? "block" : "none";
+        if (inspector) inspector.style.display = railBtn.dataset.section === "mockup-editing" && mockupApplication ? "block" : "none";
         if (railBtn.dataset.section === "devices") renderMockupDevicesSection();
+        if (railBtn.dataset.section === "saved-templates") loadMockupSavedConfigs();
         if (railBtn.dataset.section === "preview") renderLivePreviews();
         if (railBtn.dataset.section === "panoramic") renderLivePanoramic();
         // Viewport was hidden (0 width) while off-screen — re-center now that it's visible.
@@ -619,9 +622,20 @@ document.addEventListener('DOMContentLoaded', async () => {
   for (const tab of document.querySelectorAll(".topbar-tab")) {
     tab.addEventListener("click", async () => {
       const targetTab = tab.dataset.tab;
-      if (targetTab === "capture" && !activeProjectId) {
-        await showAlert("Please select or create a project first from the Projects List.");
+      if (targetTab === "capture" && !activeApplicationId) {
+        await showAlert("Please select or create an application first from the Applications List.");
         return;
+      }
+      // Leaving a studio ends its editing session: guard unsaved work, then drop the draft entirely.
+      const currentTab = document.querySelector(".topbar-tab.active")?.dataset.tab;
+      const switching = currentTab !== targetTab;
+      if (switching && currentTab === "mockup") {
+        if (!(await guardLeaveMockupDraft())) return;
+        clearMockupDraft();
+      }
+      if (switching && currentTab === "video") {
+        if (!(await guardLeaveVideoDraft())) return;
+        clearVideoDraft();
       }
       for (const t of document.querySelectorAll(".topbar-tab")) t.classList.remove("active");
       for (const p of document.querySelectorAll(".tab-page")) p.classList.remove("active");
@@ -629,14 +643,14 @@ document.addEventListener('DOMContentLoaded', async () => {
       const pageEl = document.getElementById("tab-" + targetTab);
       if (pageEl) pageEl.classList.add("active");
 
-      if (targetTab === "projects") {
-        if (typeof window.refreshProjectsList === "function") window.refreshProjectsList();
+      if (targetTab === "applications") {
+        if (typeof window.refreshApplicationsList === "function") window.refreshApplicationsList();
       } else if (targetTab === "capture") {
         loadCaptureTab();
       } else if (targetTab === "mockup") {
-        loadMockupProjectInto(activeProjectId);
+        if (switching || !mockupApplication) showMockupEmptyEditor();
       } else if (targetTab === "video") {
-        loadVideoProjectInto(activeProjectId);
+        if (switching || !videoApplication) loadVideoApplicationInto(activeApplicationId);
       }
     });
   }
@@ -661,4 +675,4 @@ if (document.getElementById("theme-toggle-btn")) {
   };
 }
 
-export { activeProjectId, activeProject, setActiveProjectId, setActiveProject, mockupId, mockupProject, setMockupId, setMockupProject, selectedColumn, setSelectedColumn, mockupIsDirty, setMockupDirty };
+export { activeApplicationId, activeApplication, setActiveApplicationId, setActiveApplication, mockupId, mockupApplication, setMockupId, setMockupApplication, selectedColumn, setSelectedColumn, mockupIsDirty, setMockupDirty };

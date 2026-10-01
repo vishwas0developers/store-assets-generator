@@ -1,5 +1,5 @@
-import { type FlowStep, type VideoProject, type VideoScene, type SlotValue } from "./project.js";
-import { templateConfig, htmlSpanToAsterisk } from "./templateConfig.js";
+import { type FlowStep, type VideoApplication, type VideoScene, type SlotValue } from "./application.js";
+import { templateConfig, htmlSpanToAsterisk, clearTemplateConfigCache, templateHtmlPath } from "./templateConfig.js";
 import { slotSpecsForScene } from "./slots.js";
 import { DEVICE_REGISTRY } from "../devices/registry.js";
 import { listCssDevices } from "../devices/rig-assets.js";
@@ -9,7 +9,7 @@ import path from "path";
 // Scenes below default to sourceId/screenIds like "demo_landscape"/"demo_1" so a
 // freshly-applied template previews with real photo content immediately. These ids are
 // resolved at render time against the shared global demo assets (see demoAssets.ts,
-// used from render.ts/slots.ts) -- never copied into or registered as this project's
+// used from render.ts/slots.ts) -- never copied into or registered as this application's
 // own sources/files.
 
 export interface VideoTemplateScene {
@@ -164,7 +164,7 @@ function seedDemoSlotValues(
   return values;
 }
 
-export function applyVideoTemplate(project: VideoProject, templateId: string): void {
+export function applyVideoTemplate(application: VideoApplication, templateId: string): void {
   const resolvedId = resolveTemplateId(templateId);
   const template = VIDEO_TEMPLATES.find((t) => t.id === resolvedId);
   if (!template) throw new Error(`Unknown video template '${templateId}'.`);
@@ -173,13 +173,13 @@ export function applyVideoTemplate(project: VideoProject, templateId: string): v
   const isDevicePreset = !resolvedId.startsWith("tpl-");
   const isLandscape = template.aspectRatio === "16:9";
 
-  project.template = resolvedId;
-  // ponytail: leave project.bgm unset here -- render/preview already fall back to
+  application.template = resolvedId;
+  // ponytail: leave application.bgm unset here -- render/preview already fall back to
   // the template's own generated BGM preset (BGM_PRESETS) whenever it's null, so
   // there's nothing to default it to here. A prior "bgm_chill" sentinel did not
   // correspond to any real file or preset id and only obscured that fallback.
 
-  project.scenes = template.scenes.map((s, i): VideoScene => {
+  application.scenes = template.scenes.map((s, i): VideoScene => {
     const count = isDevicePreset && s.screenCount && s.screenCount > 1 ? s.screenCount : 1;
     // Slot-driven (tpl-*) templates don't read sourceId/screenIds at render
     // time (they read slotValues instead), but still get a sensible default
@@ -213,8 +213,8 @@ export function applyVideoTemplate(project: VideoProject, templateId: string): v
   });
 }
 
-export function scratchVideoProject(templateId: string, sources: VideoProject["sources"] = []): VideoProject {
-  const scratch: VideoProject = {
+export function scratchVideoApplication(templateId: string, sources: VideoApplication["sources"] = []): VideoApplication {
+  const scratch: VideoApplication = {
     id: "__template_preview__",
     createdAt: new Date().toISOString(),
     name: templateId,
@@ -226,4 +226,105 @@ export function scratchVideoProject(templateId: string, sources: VideoProject["s
   };
   applyVideoTemplate(scratch, templateId);
   return scratch;
+}
+
+
+// ---- Default-template authoring (writes templates/video/*.html) ----
+
+const CONFIG_RE = /(<script type="application\/json" id="template-config">)([\s\S]*?)(<\/script>)/;
+
+function asteriskToSpan(raw: string): string {
+  return raw.replace(/\*([^*]+)\*/g, "<span>$1</span>");
+}
+
+/** Folds the editing scenes back into a template config (inverse of applyVideoTemplate). Scene count must match,
+ *  because each scene is bound to scene-specific markup/slots in the template's HTML. */
+function mergeScenesIntoConfig(config: any, scenes: VideoScene[]): any {
+  const baseScenes: any[] = config.scenes ?? [];
+  if (scenes.length !== baseScenes.length) {
+    throw new Error(`This template has ${baseScenes.length} scenes but the editor has ${scenes.length}. Add or remove scenes to match before updating.`);
+  }
+  const ordered = [...scenes].sort((a, b) => a.order - b.order);
+  const next = JSON.parse(JSON.stringify(config));
+  next.scenes = baseScenes.map((b, i) => {
+    const s = ordered[i];
+    const textVal = s.slotValues?.text;
+    const subVal = s.slotValues?.subtext;
+    const merged: any = {
+      ...b,
+      sceneTemplate: s.sceneTemplate,
+      durationSeconds: s.durationSeconds,
+      background: s.background,
+      rotate: s.rotate,
+      zoom: s.zoom,
+      move: s.move,
+      text: textVal?.kind === "text" ? asteriskToSpan(textVal.value) : s.text,
+      subtext: subVal?.kind === "text" ? asteriskToSpan(subVal.value) : s.subtext,
+    };
+    for (const k of ["layout", "depth", "transition", "deviceMode", "flowSteps"] as const) {
+      if ((s as any)[k] !== undefined) merged[k] = (s as any)[k];
+    }
+    if (s.screenIds && s.screenIds.length > 1) merged.screenCount = s.screenIds.length;
+    return merged;
+  });
+  const first = ordered[0];
+  if (first) {
+    if (first.device) next.device = first.device;
+    if (first.variant !== undefined) next.variant = first.variant;
+    if (first.deviceFraction !== undefined) next.deviceFraction = first.deviceFraction;
+    if (first.deviceMode) next.deviceMode = first.deviceMode;
+  }
+  return next;
+}
+
+function writeConfigIntoHtml(html: string, config: any): string {
+  return html.replace(CONFIG_RE, (_m, a, _b, c) => `${a}
+${JSON.stringify(config, null, 2)}
+${c}`);
+}
+
+/** Overwrites exactly `templateId`'s HTML file (keeping a one-time .bak). */
+export function updateVideoTemplateOnDisk(templateId: string, scenes: VideoScene[]): VideoTemplate {
+  const file = templateHtmlPath(templateId);
+  if (!VIDEO_TEMPLATES.some((t) => t.id === templateId) || !fs.existsSync(file)) throw new Error(`Unknown video template '${templateId}'.`);
+  const html = fs.readFileSync(file, "utf-8");
+  const m = html.match(CONFIG_RE);
+  if (!m) throw new Error(`Template '${templateId}' has no embedded config.`);
+  const config = mergeScenesIntoConfig(JSON.parse(m[2]), scenes);
+  const bak = `${file}.bak`;
+  if (!fs.existsSync(bak)) fs.copyFileSync(file, bak);
+  fs.writeFileSync(file, writeConfigIntoHtml(html, config), "utf-8");
+  clearTemplateConfigCache();
+  loadAllTemplates();
+  return VIDEO_TEMPLATES.find((t) => t.id === templateId)!;
+}
+
+/** Creates a brand-new default template (own id + file) from `baseTemplateId`'s markup with the editing scenes. */
+export function createVideoTemplateOnDisk(
+  baseTemplateId: string,
+  scenes: VideoScene[],
+  meta: { name: string; description?: string },
+): VideoTemplate {
+  const baseFile = templateHtmlPath(baseTemplateId);
+  if (!VIDEO_TEMPLATES.some((t) => t.id === baseTemplateId) || !fs.existsSync(baseFile)) throw new Error(`Unknown video template '${baseTemplateId}'.`);
+  const name = meta.name.trim();
+  if (!name) throw new Error("A template name is required.");
+  if (VIDEO_TEMPLATES.some((t) => t.name.toLowerCase() === name.toLowerCase())) throw new Error(`A template named '${name}' already exists.`);
+  const html = fs.readFileSync(baseFile, "utf-8");
+  const m = html.match(CONFIG_RE);
+  if (!m) throw new Error(`Template '${baseTemplateId}' has no embedded config.`);
+  const baseConfig = JSON.parse(m[2]);
+  const config = mergeScenesIntoConfig(baseConfig, scenes);
+  const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 40) || "template";
+  // "tpl-" ids select the slot-driven render path (see applyVideoTemplate); presets must stay without it.
+  const id = baseTemplateId.startsWith("tpl-") ? `tpl-${Date.now() % 100000000}-${slug}` : `${slug.replace(/^tpl-/, "")}-${Date.now() % 100000}`;
+  config.id = id;
+  config.name = name;
+  if (meta.description !== undefined) config.description = meta.description;
+  const newFile = templateHtmlPath(id);
+  if (fs.existsSync(newFile)) throw new Error("Template id collision; try again.");
+  fs.writeFileSync(newFile, writeConfigIntoHtml(html, config), "utf-8");
+  clearTemplateConfigCache();
+  loadAllTemplates();
+  return VIDEO_TEMPLATES.find((t) => t.id === id)!;
 }

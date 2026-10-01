@@ -1,12 +1,12 @@
 // Matrix module — devices × pages iframe grid, selection + per-cell overrides.
 import {
-  mockupProject,
+  mockupApplication,
   selectedColumn,
   mockupId,
   selectedPages,
   setSelectedColumn,
   setMockupDirty,
-  saveCurrentMockupProject,
+  saveCurrentMockupApplication,
   pushMockupHistory,
   togglePageSelection,
   clearPageSelection,
@@ -75,7 +75,7 @@ function setupMatrixResizeObserver(scrollEl) {
 
 let matrixRenderVersion = 0;
 
-// Mirrors src/mockup/project.ts's effectiveCellStyle(): legacy whole-sub-object
+// Mirrors src/mockup/application.ts's effectiveCellStyle(): legacy whole-sub-object
 // override keys apply first, then sparse "__paths" per-field patches on top.
 const PATCH_KEY = "__paths";
 
@@ -91,8 +91,8 @@ function setPath(obj, path, value) {
 }
 
 // Resolved style for current cell (overrides spread, falls back to base).
-function resolvedStyleFor(project, deviceRowId, columnId) {
-  const col = project?.columns?.find((c) => c.id === columnId);
+function resolvedStyleFor(application, deviceRowId, columnId) {
+  const col = application?.columns?.find((c) => c.id === columnId);
   if (!col) return null;
   return col.style; // page style is the only editable style; cell overrides ignored (matches server)
 }
@@ -114,10 +114,10 @@ export function renderMockupMatrix() {
     document.getElementById("mockup-matrix") ||
     document.getElementById("mockup-matrix-container") ||
     document.getElementById("mockup-matrix-grid");
-  if (!table || !mockupProject) return;
+  if (!table || !mockupApplication) return;
 
-  const columns = mockupProject.columns || [];
-  const devices = mockupProject.devices || [];
+  const columns = mockupApplication.columns || [];
+  const devices = mockupApplication.devices || [];
 
   if (columns.length === 0) {
     table.innerHTML = `<tr><td class="hint" style="padding:1.5rem; text-align:center;">No pages yet.</td></tr>`;
@@ -182,10 +182,10 @@ export function renderMockupMatrix() {
       // got any highlight, so with multiple pages selected only one ever
       // visibly looked selected in the preview grid.
       const isPairedCol = !isActive && selectedPages.includes(col.id);
-      const style = resolvedStyleFor(mockupProject, dev.id === "__base" ? null : dev.id, col.id);
+      const style = resolvedStyleFor(mockupApplication, dev.id === "__base" ? null : dev.id, col.id);
       const title = style?.title?.text || col.style?.title?.text || `Page ${columns.indexOf(col) + 1}`;
       // Prefer real server iframe preview; fall back to mini card if unavailable.
-      const useIframe = !!mockupId && !!mockupProject?.columns?.length;
+      const useIframe = !!mockupId && !!mockupApplication?.columns?.length;
       const cellPreview = useIframe
         ? `<div class="matrix-preview-box" data-design-h="${dh}" style="width:${cellDims.width}px; height:${cellDims.height}px; overflow:hidden; border-radius:6px; background:#0f172a;">
              <iframe class="matrix-preview-frame" title="${escapeHtml(title)}" loading="lazy" src="/api/mockups/${encodeURIComponent(mockupId)}/cell-preview/${encodeURIComponent(dev.id === "__base" ? (devices[0]?.id || dev.id) : dev.id)}/${encodeURIComponent(col.id)}?v=${matrixRenderVersion}" style="width:1080px; height:${dh}px; border:0; display:block; transform:scale(${cellDims.scale}); transform-origin:top left; pointer-events:none;"></iframe>
@@ -280,9 +280,9 @@ export async function syncEditingAreaToSelectedPages() {
   if (selectedPages.length === 0) return;
   const activeId = selectedColumn && selectedPages.includes(selectedColumn.id) ? selectedColumn.id : selectedPages[0];
   await setActivePage(activeId);
-  const col = mockupProject?.columns?.find((c) => c.id === activeId);
+  const col = mockupApplication?.columns?.find((c) => c.id === activeId);
   if (col) {
-    const deviceRowId = (mockupProject.devices && mockupProject.devices[0]?.id) || "__base";
+    const deviceRowId = (mockupApplication.devices && mockupApplication.devices[0]?.id) || "__base";
     selectedCell = { deviceRowId, columnId: activeId };
     renderMockupLayersPanel(col);
     syncSection2Inputs(col, null);
@@ -291,8 +291,8 @@ export async function syncEditingAreaToSelectedPages() {
 
 /** Mirrors app.js:4812 selectCell (devices × screens). */
 export function selectCell(deviceRowId, columnId) {
-  if (!mockupProject) return;
-  const col = mockupProject.columns.find((c) => c.id === columnId);
+  if (!mockupApplication) return;
+  const col = mockupApplication.columns.find((c) => c.id === columnId);
   if (!col) return;
   selectedCell = { deviceRowId, columnId };
   setSelectedColumn(col);
@@ -302,8 +302,8 @@ export function selectCell(deviceRowId, columnId) {
   const isEditorActive = document.getElementById("mockup-section-mockup-editing")?.classList.contains("active");
   const inspector = document.getElementById("mockup-inspector");
   if (inspector) inspector.style.display = isEditorActive ? "block" : "none";
-  const row = mockupProject.devices?.find((d) => d.id === deviceRowId);
-  const colIndex = mockupProject.columns.findIndex((c) => c.id === columnId) + 1;
+  const row = mockupApplication.devices?.find((d) => d.id === deviceRowId);
+  const colIndex = mockupApplication.columns.findIndex((c) => c.id === columnId) + 1;
   const targetEl = document.getElementById("mockup-inspector-target");
   if (targetEl) targetEl.textContent = `${row ? row.label : "Device"} — Page ${colIndex}`;
   renderMockupLayersPanel(col);
@@ -317,8 +317,8 @@ export function selectCell(deviceRowId, columnId) {
  *  selection). Delegates canvas creation/activation to
  *  syncEditingAreaToSelectedPages, same as the checkbox path. */
 export async function selectMockupPage(columnId) {
-  if (!mockupProject) return;
-  const col = mockupProject.columns.find((c) => c.id === columnId);
+  if (!mockupApplication) return;
+  const col = mockupApplication.columns.find((c) => c.id === columnId);
   if (!col) return;
   clearPageSelection();
   togglePageSelection(columnId);
@@ -330,20 +330,20 @@ export async function selectMockupPage(columnId) {
 }
 
 export async function deleteMockupPage(columnId) {
-  if (!mockupProject || mockupProject.columns.length <= 1) {
+  if (!mockupApplication || mockupApplication.columns.length <= 1) {
     if (window.alert) window.alert("Cannot delete the only page.");
     return;
   }
-  const idx = mockupProject.columns.findIndex((c) => c.id === columnId);
+  const idx = mockupApplication.columns.findIndex((c) => c.id === columnId);
   if (idx === -1) return;
 
-  mockupProject.columns.splice(idx, 1);
-  mockupProject.columns.forEach((c, i) => (c.order = i));
+  mockupApplication.columns.splice(idx, 1);
+  mockupApplication.columns.forEach((c, i) => (c.order = i));
 
-  if (typeof saveCurrentMockupProject === "function") await saveCurrentMockupProject();
+  if (typeof saveCurrentMockupApplication === "function") await saveCurrentMockupApplication();
   if (typeof pushMockupHistory === "function") pushMockupHistory();
 
-  const next = mockupProject.columns[Math.min(idx, mockupProject.columns.length - 1)];
+  const next = mockupApplication.columns[Math.min(idx, mockupApplication.columns.length - 1)];
   if (next) selectMockupPage(next.id);
   else renderMockupMatrix();
   refreshLiveIfVisible();
@@ -361,22 +361,22 @@ export function defaultColumnStyle(title) {
 }
 
 export async function addMockupPage() {
-  if (!mockupProject) return;
+  if (!mockupApplication) return;
   const newCol = {
     id: `col_${Date.now()}`,
-    order: mockupProject.columns.length,
-    style: defaultColumnStyle(`New Page ${mockupProject.columns.length + 1}`),
+    order: mockupApplication.columns.length,
+    style: defaultColumnStyle(`New Page ${mockupApplication.columns.length + 1}`),
   };
 
-  mockupProject.columns.push(newCol);
-  if (typeof saveCurrentMockupProject === "function") await saveCurrentMockupProject();
+  mockupApplication.columns.push(newCol);
+  if (typeof saveCurrentMockupApplication === "function") await saveCurrentMockupApplication();
   if (typeof pushMockupHistory === "function") pushMockupHistory();
   selectMockupPage(newCol.id);
   refreshLiveIfVisible();
 }
 
 // ---------------------------------------------------------------------------
-// Live Preview / Panoramic sections: render the CURRENT in-memory project via
+// Live Preview / Panoramic sections: render the CURRENT in-memory application via
 // POST /cell-preview-live (render-only, never saves). Editor's grid stays saved-only.
 // ---------------------------------------------------------------------------
 
@@ -390,12 +390,12 @@ export function refreshLiveIfVisible() {
 }
 
 async function fetchLiveHtml(rowId, colId) {
-  const p = mockupProject;
+  const p = mockupApplication;
   const res = await fetch(`/api/mockups/${encodeURIComponent(mockupId)}/cell-preview-live`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      project: { columns: p.columns, devices: p.devices, sources: p.sources, settings: p.settings, globalPanoramic: p.globalPanoramic },
+      application: { columns: p.columns, devices: p.devices, sources: p.sources, settings: p.settings, globalPanoramic: p.globalPanoramic },
       deviceRowId: rowId,
       columnId: colId,
     }),
@@ -415,16 +415,16 @@ async function fillLiveFrames(root, version) {
 }
 
 function sortedColumns() {
-  return [...(mockupProject?.columns || [])].sort((a, b) => a.order - b.order);
+  return [...(mockupApplication?.columns || [])].sort((a, b) => a.order - b.order);
 }
 
 function rowsByTarget() {
-  return (mockupProject?.devices || []).filter((d) => findSizeTarget(d.sizeKey));
+  return (mockupApplication?.devices || []).filter((d) => findSizeTarget(d.sizeKey));
 }
 
 export async function renderLivePreviews() {
   const host = document.getElementById("mockup-preview-table");
-  if (!host || !mockupProject || !mockupId) return;
+  if (!host || !mockupApplication || !mockupId) return;
   const version = ++liveVersion;
   const rows = rowsByTarget();
   const cols = sortedColumns();
@@ -449,12 +449,12 @@ export async function renderLivePreviews() {
 export async function renderLivePanoramic() {
   const host = document.getElementById("mockup-panoramic-banner");
   const sel = document.getElementById("mockup-panoramic-size");
-  if (!host || !sel || !mockupProject || !mockupId) return;
+  if (!host || !sel || !mockupApplication || !mockupId) return;
   const version = ++liveVersion;
   const rows = rowsByTarget();
   const cols = sortedColumns();
   if (!rows.length || !cols.length) { host.innerHTML = ""; return; }
-  const targets = sizeTargetsFor(mockupProject.platform);
+  const targets = sizeTargetsFor(mockupApplication.platform);
   sel.innerHTML = targets.map((t) => `<option value="${t.key}">${escapeHtml(t.label)} (${t.width}&times;${t.height})</option>`).join("");
   if (!targets.some((t) => t.key === panoramicSizeKey)) panoramicSizeKey = targets[0].key;
   sel.value = panoramicSizeKey;

@@ -1,4 +1,4 @@
-import { type FlowStep, type VideoProject, type VideoScene } from "./project.js";
+import { type FlowStep, type VideoApplication, type VideoScene } from "./application.js";
 
 export interface VideoTemplateScene {
   label: string;
@@ -354,7 +354,7 @@ export const VIDEO_TEMPLATES: VideoTemplate[] = [
         "Navigate through seamless workflows"
       ],
       [
-        { label: "Projects Feed", startSec: 2.0, durationSec: 2.0, side: "left" },
+        { label: "Applications Feed", startSec: 2.0, durationSec: 2.0, side: "left" },
         { label: "Live Performance", startSec: 3.0, durationSec: 2.0, side: "right" },
         { label: "Smart Scheduling", startSec: 4.0, durationSec: 2.0, side: "left" },
         { label: "Team Sync", startSec: 5.0, durationSec: 2.0, side: "right" },
@@ -529,16 +529,16 @@ export function resolveTemplateId(templateId: string): string {
   return TEMPLATE_ID_ALIASES[templateId] ?? templateId;
 }
 
-export function applyVideoTemplate(project: VideoProject, templateId: string): void {
+export function applyVideoTemplate(application: VideoApplication, templateId: string): void {
   const resolvedId = resolveTemplateId(templateId);
   const template = VIDEO_TEMPLATES.find((t) => t.id === resolvedId);
   if (!template) throw new Error(`Unknown video template '${templateId}'.`);
 
   let sourceCursor = 0;
-  project.template = resolvedId;
-  project.scenes = template.scenes.map((s, i): VideoScene => {
+  application.template = resolvedId;
+  application.scenes = template.scenes.map((s, i): VideoScene => {
     const count = s.screenCount && s.screenCount > 1 ? s.screenCount : 1;
-    const slice = project.sources.slice(sourceCursor, sourceCursor + count);
+    const slice = application.sources.slice(sourceCursor, sourceCursor + count);
     sourceCursor += count;
     const screenIds = count > 1 ? Array.from({ length: count }, (_, j) => slice[j]?.id ?? `__placeholder_${i}_${j}__`) : undefined;
     return {
@@ -565,8 +565,8 @@ export function applyVideoTemplate(project: VideoProject, templateId: string): v
   });
 }
 
-export function scratchVideoProject(templateId: string, sources: VideoProject["sources"] = []): VideoProject {
-  const scratch: VideoProject = {
+export function scratchVideoApplication(templateId: string, sources: VideoApplication["sources"] = []): VideoApplication {
+  const scratch: VideoApplication = {
     id: "__template_preview__",
     createdAt: new Date().toISOString(),
     name: templateId,

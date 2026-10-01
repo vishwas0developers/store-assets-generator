@@ -701,17 +701,17 @@ const confirm = (msg) => showConfirm(msg);
 const prompt = (msg, def) => showPrompt(msg, def);
 
 
-/* ================= Project State & Navigation Gating ================= */
+/* ================= Application State & Navigation Gating ================= */
 
-let activeProjectId = localStorage.getItem("activeProjectId") || null;
-let activeProject = null;
+let activeApplicationId = localStorage.getItem("activeApplicationId") || null;
+let activeApplication = null;
 
 // Gated tab navigation click handlers
 for (const tab of document.querySelectorAll(".topbar-tab")) {
   tab.onclick = async () => {
     const targetTab = tab.dataset.tab;
-    if (targetTab === "capture" && !activeProjectId) {
-      await alert("Please select or create a project first from the Projects List.");
+    if (targetTab === "capture" && !activeApplicationId) {
+      await alert("Please select or create an application first from the Applications List.");
       return;
     }
     
@@ -722,58 +722,58 @@ for (const tab of document.querySelectorAll(".topbar-tab")) {
     $("tab-" + targetTab).classList.add("active");
 
     // Load content dynamically for target tab
-    if (targetTab === "projects") {
-      await refreshProjectsList();
+    if (targetTab === "applications") {
+      await refreshApplicationsList();
     } else if (targetTab === "capture") {
       await loadCaptureTab();
     } else if (targetTab === "mockup") {
-      await loadMockupProjectInto(activeProjectId);
+      await loadMockupApplicationInto(activeApplicationId);
     } else if (targetTab === "video") {
-      await loadVideoProjectInto(activeProjectId);
+      await loadVideoApplicationInto(activeApplicationId);
     }
   };
 }
 
-// Enable/disable navigation tabs dynamically based on active project state
+// Enable/disable navigation tabs dynamically based on active application state
 function updateTabGating() {
   const el = $("tab-nav-capture");
-  if (activeProjectId) {
+  if (activeApplicationId) {
     el.classList.remove("disabled");
     el.removeAttribute("title");
   } else {
     el.classList.add("disabled");
-    el.setAttribute("title", "Select a project first");
+    el.setAttribute("title", "Select an application first");
   }
 
   const brand = $("brand-title");
-  if (activeProject) {
-    brand.textContent = `Store Assets Generator - ${activeProject.name}`;
-    $("active-project-card").style.display = "block";
-    $("active-proj-name-display").textContent = activeProject.name;
-    $("active-proj-cat-display").textContent = activeProject.appCategory || "Education";
-    $("active-proj-url-display").textContent = activeProject.targetUrl || "None";
-    $("project-explorer-card").style.display = "block";
+  if (activeApplication) {
+    brand.textContent = `Store Assets Generator - ${activeApplication.name}`;
+    $("active-application-card").style.display = "block";
+    $("active-proj-name-display").textContent = activeApplication.name;
+    $("active-proj-cat-display").textContent = activeApplication.appCategory || "Education";
+    $("active-proj-url-display").textContent = activeApplication.targetUrl || "None";
+    $("application-explorer-card").style.display = "block";
     refreshFileExplorer();
   } else {
     brand.textContent = "Store Assets Generator";
-    $("active-project-card").style.display = "none";
-    $("project-explorer-card").style.display = "none";
+    $("active-application-card").style.display = "none";
+    $("application-explorer-card").style.display = "none";
   }
 }
 
-async function selectProject(id) {
+async function selectApplication(id) {
   try {
-    activeProjectId = id;
-    localStorage.setItem("activeProjectId", id);
-    activeProject = await api(`/api/projects/${id}`);
+    activeApplicationId = id;
+    localStorage.setItem("activeApplicationId", id);
+    activeApplication = await api(`/api/applications/${id}`);
     updateTabGating();
-    await refreshProjectsList();
+    await refreshApplicationsList();
   } catch (e) {
-    await alert("Failed to select project: " + e.message);
+    await alert("Failed to select application: " + e.message);
   }
 }
 
-/* ================= Projects List Tab Logic ================= */
+/* ================= Applications List Tab Logic ================= */
 
 $("proj-create-btn").onclick = async () => {
   const name = $("proj-new-name").value.trim();
@@ -781,12 +781,12 @@ $("proj-create-btn").onclick = async () => {
   const targetUrl = $("proj-new-url").value.trim();
 
   if (!name) {
-    await alert("Project Name is required.");
+    await alert("Application Name is required.");
     return;
   }
 
   try {
-    const project = await api("/api/projects", {
+    const application = await api("/api/applications", {
       method: "POST",
       body: { name, appCategory: category, targetUrl }
     });
@@ -796,54 +796,54 @@ $("proj-create-btn").onclick = async () => {
     $("proj-new-category").value = "Education";
     $("proj-new-url").value = "";
 
-    await selectProject(project.id);
+    await selectApplication(application.id);
   } catch (e) {
-    await alert("Failed to create project: " + e.message);
+    await alert("Failed to create application: " + e.message);
   }
 };
 
-async function refreshProjectsList() {
-  const container = $("projects-list-container");
-  container.innerHTML = "Loading projects...";
+async function refreshApplicationsList() {
+  const container = $("applications-list-container");
+  container.innerHTML = "Loading applications...";
   
   try {
-    const { projects } = await api("/api/projects");
+    const { applications } = await api("/api/applications");
     container.innerHTML = "";
     
-    // Update project count badge in the library title
-    const countBadge = $("projects-count-badge");
+    // Update application count badge in the library title
+    const countBadge = $("applications-count-badge");
     if (countBadge) {
-      countBadge.textContent = `${projects.length} Project${projects.length === 1 ? '' : 's'}`;
+      countBadge.textContent = `${applications.length} Application${applications.length === 1 ? '' : 's'}`;
     }
 
-    if (projects.length === 0) {
-      container.textContent = "No projects found. Create one to get started!";
+    if (applications.length === 0) {
+      container.textContent = "No applications found. Create one to get started!";
       return;
     }
 
     // Assign grid class
-    container.className = "projects-grid";
+    container.className = "applications-grid";
 
-    // If active project is set, make sure we sync it
-    if (activeProjectId && !activeProject) {
-      activeProject = projects.find(p => p.id === activeProjectId);
+    // If active application is set, make sure we sync it
+    if (activeApplicationId && !activeApplication) {
+      activeApplication = applications.find(p => p.id === activeApplicationId);
       updateTabGating();
     }
 
-    for (const p of projects) {
-      const isActive = p.id === activeProjectId;
+    for (const p of applications) {
+      const isActive = p.id === activeApplicationId;
       const card = document.createElement("div");
-      card.className = `project-item ${isActive ? 'active' : ''}`;
+      card.className = `application-item ${isActive ? 'active' : ''}`;
       
       card.innerHTML = `
-        <button class="small project-item-corner left settings-btn" title="Project settings">&#9881;</button>
-        <button class="small danger project-item-corner right delete-btn" title="Delete">&#128465;</button>
-        <div class="project-item-title">
+        <button class="small application-item-corner left settings-btn" title="Application settings">&#9881;</button>
+        <button class="small danger application-item-corner right delete-btn" title="Delete">&#128465;</button>
+        <div class="application-item-title">
           ${isActive ? '<span class="active-check">&#10003;</span>' : ''}
           <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 11ch;">${p.name}</span>
         </div>
-        <div class="project-item-meta">Created: ${new Date(p.createdAt).toLocaleDateString()}</div>
-        <div class="project-stats">
+        <div class="application-item-meta">Created: ${new Date(p.createdAt).toLocaleDateString()}</div>
+        <div class="application-stats">
           <span>📸 ${p.captures?.length ?? 0}</span>
           <span>📱 ${p.mockup?.columns?.length ?? 0}</span>
           <span>🎬 ${p.video?.scenes?.length ?? 0}</span>
@@ -855,87 +855,87 @@ async function refreshProjectsList() {
 
       card.querySelector(".select-btn").onclick = (e) => {
         e.stopPropagation();
-        selectProject(p.id);
+        selectApplication(p.id);
       };
       card.querySelector(".settings-btn").onclick = (e) => {
         e.stopPropagation();
-        openProjectSettingsModal(p);
+        openApplicationSettingsModal(p);
       };
       card.querySelector(".delete-btn").onclick = async (e) => {
         e.stopPropagation();
-        if (await confirm(`Are you sure you want to delete project "${p.name}"? This deletes all files and is irreversible.`)) {
-          await api(`/api/projects/${p.id}`, { method: "DELETE" });
-          if (activeProjectId === p.id) {
-            activeProjectId = null;
-            activeProject = null;
-            localStorage.removeItem("activeProjectId");
+        if (await confirm(`Are you sure you want to delete application "${p.name}"? This deletes all files and is irreversible.`)) {
+          await api(`/api/applications/${p.id}`, { method: "DELETE" });
+          if (activeApplicationId === p.id) {
+            activeApplicationId = null;
+            activeApplication = null;
+            localStorage.removeItem("activeApplicationId");
             updateTabGating();
           }
-          await refreshProjectsList();
+          await refreshApplicationsList();
         }
       };
       
-      card.onclick = () => selectProject(p.id);
+      card.onclick = () => selectApplication(p.id);
 
       container.appendChild(card);
     }
   } catch (e) {
-    container.textContent = "Failed to load projects: " + e.message;
+    container.textContent = "Failed to load applications: " + e.message;
   }
 }
 
-/* ================= Project Settings Modal ================= */
+/* ================= Application Settings Modal ================= */
 
-let projectSettingsTargetId = null;
+let applicationSettingsTargetId = null;
 
-function openProjectSettingsModal(p) {
-  projectSettingsTargetId = p.id;
+function openApplicationSettingsModal(p) {
+  applicationSettingsTargetId = p.id;
   $("proj-settings-name").value = p.name || "";
   $("proj-settings-category").value = p.appCategory || "";
   $("proj-settings-url").value = p.targetUrl || "";
-  $("project-settings-modal").style.display = "flex";
+  $("application-settings-modal").style.display = "flex";
 }
 
-function closeProjectSettingsModal() {
-  $("project-settings-modal").style.display = "none";
-  projectSettingsTargetId = null;
+function closeApplicationSettingsModal() {
+  $("application-settings-modal").style.display = "none";
+  applicationSettingsTargetId = null;
 }
 
-if ($("proj-settings-cancel")) $("proj-settings-cancel").onclick = closeProjectSettingsModal;
-if ($("project-settings-modal")) {
-  $("project-settings-modal").onclick = (e) => {
-    if (e.target.id === "project-settings-modal") closeProjectSettingsModal();
+if ($("proj-settings-cancel")) $("proj-settings-cancel").onclick = closeApplicationSettingsModal;
+if ($("application-settings-modal")) {
+  $("application-settings-modal").onclick = (e) => {
+    if (e.target.id === "application-settings-modal") closeApplicationSettingsModal();
   };
 }
 if ($("proj-settings-save")) {
   $("proj-settings-save").onclick = async () => {
-    if (!projectSettingsTargetId) return;
+    if (!applicationSettingsTargetId) return;
     const body = {
       name: $("proj-settings-name").value.trim(),
       appCategory: $("proj-settings-category").value.trim(),
       targetUrl: $("proj-settings-url").value.trim(),
     };
-    const updated = await api(`/api/projects/${projectSettingsTargetId}`, { method: "PUT", body: JSON.stringify(body) });
-    if (activeProjectId === projectSettingsTargetId) {
-      activeProject = updated;
+    const updated = await api(`/api/applications/${applicationSettingsTargetId}`, { method: "PUT", body: JSON.stringify(body) });
+    if (activeApplicationId === applicationSettingsTargetId) {
+      activeApplication = updated;
       updateTabGating();
     }
-    closeProjectSettingsModal();
-    await refreshProjectsList();
+    closeApplicationSettingsModal();
+    await refreshApplicationsList();
   };
 }
 if ($("active-proj-settings-btn")) {
   $("active-proj-settings-btn").onclick = () => {
-    if (activeProject) openProjectSettingsModal(activeProject);
+    if (activeApplication) openApplicationSettingsModal(activeApplication);
   };
 }
 
-/* ================= Embedded Project File Explorer ================= */
+/* ================= Embedded Application File Explorer ================= */
 
 let currentFileFilter = "all";
-document.querySelectorAll("#project-explorer-card .tab").forEach(tab => {
+document.querySelectorAll("#application-explorer-card .tab").forEach(tab => {
   tab.onclick = () => {
-    document.querySelectorAll("#project-explorer-card .tab").forEach(t => t.classList.remove("active"));
+    document.querySelectorAll("#application-explorer-card .tab").forEach(t => t.classList.remove("active"));
     tab.classList.add("active");
     currentFileFilter = tab.dataset.fileFilter;
     refreshFileExplorer();
@@ -943,20 +943,20 @@ document.querySelectorAll("#project-explorer-card .tab").forEach(tab => {
 });
 
 $("proj-download-zip-btn").onclick = () => {
-  if (!activeProjectId) return;
-  window.open(`/api/projects/${activeProjectId}/download-zip`);
+  if (!activeApplicationId) return;
+  window.open(`/api/applications/${activeApplicationId}/download-zip`);
 };
 
 async function refreshFileExplorer() {
-  const container = $("project-files-list");
-  if (!activeProjectId) {
-    container.innerHTML = "Select a project to inspect files.";
+  const container = $("application-files-list");
+  if (!activeApplicationId) {
+    container.innerHTML = "Select an application to inspect files.";
     return;
   }
   container.innerHTML = "Loading files...";
 
   try {
-    const { files } = await api(`/api/projects/${activeProjectId}/files`);
+    const { files } = await api(`/api/applications/${activeApplicationId}/files`);
     container.innerHTML = "";
 
     // Filter files
@@ -1002,7 +1002,7 @@ async function refreshFileExplorer() {
         </td>
       `;
 
-      const downloadUrl = `/api/projects/${activeProjectId}/file?p=${encodeURIComponent(f.path)}`;
+      const downloadUrl = `/api/applications/${activeApplicationId}/file?p=${encodeURIComponent(f.path)}`;
 
       const triggerPreview = async () => {
         const ext = f.path.split('.').pop().toLowerCase();
@@ -1028,7 +1028,7 @@ async function refreshFileExplorer() {
       tr.querySelector(".download-file-btn").onclick = () => window.open(downloadUrl);
       tr.querySelector(".delete-file-btn").onclick = async () => {
         if (await confirm(`Delete file "${f.path}"?`)) {
-          await api(`/api/projects/${activeProjectId}/file?p=${encodeURIComponent(f.path)}`, { method: "DELETE" });
+          await api(`/api/applications/${activeApplicationId}/file?p=${encodeURIComponent(f.path)}`, { method: "DELETE" });
           refreshFileExplorer();
         }
       };
@@ -1074,9 +1074,9 @@ if (themeToggle) {
 // Initial loading check on start
 setTimeout(() => {
   initTheme();
-  refreshProjectsList();
-  if (activeProjectId) {
-    selectProject(activeProjectId);
+  refreshApplicationsList();
+  if (activeApplicationId) {
+    selectApplication(activeApplicationId);
   } else {
     updateTabGating();
   }
@@ -1100,11 +1100,11 @@ for (const railBtn of document.querySelectorAll(".rail-btn")) {
         if (railBtn.dataset.section === "devices") renderMockupDevicesSection();
       }
       if (prefix === "video" && railBtn.dataset.section === "scenes") {
-        if (videoProject) {
+        if (videoApplication) {
           renderVideoScenes();
-        } else if (activeProjectId) {
-          loadVideoProjectInto(activeProjectId).then(() => {
-            if (videoProject) renderVideoScenes();
+        } else if (activeApplicationId) {
+          loadVideoApplicationInto(activeApplicationId).then(() => {
+            if (videoApplication) renderVideoScenes();
           });
         }
         setTimeout(() => {
@@ -1169,9 +1169,9 @@ let browserConnected = false;
 let frameIntervalId = null;
 
 async function loadCaptureTab() {
-  if (activeProject && activeProject.targetUrl) {
+  if (activeApplication && activeApplication.targetUrl) {
     if (!$("browser-url-input").value) {
-      $("browser-url-input").value = activeProject.targetUrl;
+      $("browser-url-input").value = activeApplication.targetUrl;
     }
   }
   await renderLiveBrowserCaptures();
@@ -1186,14 +1186,14 @@ async function renderCaptureGallery(galleryId, filterFn, emptyMessage) {
   if (!gallery) return;
   gallery.innerHTML = "";
 
-  if (!activeProjectId) return;
+  if (!activeApplicationId) return;
 
   const showEmpty = () => {
     gallery.innerHTML = `<div class="hint" style="grid-column: span 2; text-align: center; padding: 2rem 0;">${emptyMessage}</div>`;
   };
 
   try {
-    const proj = await api(`/api/projects/${activeProjectId}`);
+    const proj = await api(`/api/applications/${activeApplicationId}`);
     const filtered = (proj.captures || []).filter(filterFn);
 
     if (filtered.length === 0) {
@@ -1206,7 +1206,7 @@ async function renderCaptureGallery(galleryId, filterFn, emptyMessage) {
       const item = document.createElement("div");
       item.className = "thumb";
       item.style = "height: fit-content; align-self: start; position: relative;";
-      const fileUrl = `/api/projects/${activeProjectId}/file?p=${encodeURIComponent(c.file)}`;
+      const fileUrl = `/api/applications/${activeApplicationId}/file?p=${encodeURIComponent(c.file)}`;
 
       // Build card manually via DOM (no innerHTML) to guarantee onclick works
       const img = document.createElement(isVideo ? "video" : "img");
@@ -1249,11 +1249,11 @@ async function renderCaptureGallery(galleryId, filterFn, emptyMessage) {
         if (gallery.children.length === 0) showEmpty();
 
         try {
-          await api(`/api/projects/${activeProjectId}/captures/${c.id}`, { method: "DELETE" });
+          await api(`/api/applications/${activeApplicationId}/captures/${c.id}`, { method: "DELETE" });
         } catch (_) {
           // Fallback to file path delete
           try {
-            await api(`/api/projects/${activeProjectId}/file?p=${encodeURIComponent(c.file)}`, { method: "DELETE" });
+            await api(`/api/applications/${activeApplicationId}/file?p=${encodeURIComponent(c.file)}`, { method: "DELETE" });
           } catch (err2) {
             showToast("Delete failed: " + err2.message, "error");
             renderCaptureGallery(galleryId, filterFn, emptyMessage);
@@ -1262,7 +1262,7 @@ async function renderCaptureGallery(galleryId, filterFn, emptyMessage) {
         }
 
         showToast(`${noun} ${c.id} deleted`, "info");
-        activeProject = await api(`/api/projects/${activeProjectId}`).catch(() => activeProject);
+        activeApplication = await api(`/api/applications/${activeApplicationId}`).catch(() => activeApplication);
         if (typeof refreshFileExplorer === "function") refreshFileExplorer();
       });
 
@@ -1384,7 +1384,7 @@ async function connectAndroidDevice() {
     const startRes = await api("/api/android/start", {
       method: "POST",
       body: {
-        projectId: activeProjectId,
+        applicationId: activeApplicationId,
         deviceId: deviceId || undefined,
         screenOff: true,
         nativePreview: isElectron,
@@ -2362,7 +2362,7 @@ androidOverlayEl.addEventListener("wheel", (e) => {
 }, { passive: false });
 
 async function triggerAndroidCapture() {
-  if (!androidConnected || !activeProjectId) {
+  if (!androidConnected || !activeApplicationId) {
     showAlert("Please connect to an Android device first before capturing.", "warning");
     return;
   }
@@ -2387,7 +2387,7 @@ async function triggerAndroidCapture() {
     const capture = await api("/api/android/capture", {
       method: "POST",
       body: {
-        projectId: activeProjectId,
+        applicationId: activeApplicationId,
         imageData,
       }
     });
@@ -2464,11 +2464,11 @@ function setupRecorder(view, btnId, timerId, isConnected, refreshGallery) {
         await finish();
         return;
       }
-      if (!isConnected() || !activeProjectId) {
+      if (!isConnected() || !activeApplicationId) {
         showAlert("Please connect a live session first before recording.", "warning");
         return;
       }
-      await api(`/api/${view}/record/start`, { method: "POST", body: { projectId: activeProjectId } });
+      await api(`/api/${view}/record/start`, { method: "POST", body: { applicationId: activeApplicationId } });
       active = true;
       startedAt = Date.now();
       paint();
@@ -2533,7 +2533,7 @@ async function connectLiveBrowser() {
   try {
     const res = await api("/api/browser/start", {
       method: "POST",
-      body: { projectId: activeProjectId, url, resolution: resolutionKey, width, height }
+      body: { applicationId: activeApplicationId, url, resolution: resolutionKey, width, height }
     });
 
     if (res.sessionExpired) {
@@ -2943,7 +2943,7 @@ $("browser-bottom-reload").onclick = async () => {
 
 // Capture Button Trigger
 async function triggerScreenshotCapture() {
-  if (!browserConnected || !activeProjectId) {
+  if (!browserConnected || !activeApplicationId) {
     await alert("Please connect to a live browser session first before capturing.", "warning");
     return;
   }
@@ -2955,7 +2955,7 @@ async function triggerScreenshotCapture() {
   try {
     const capture = await api("/api/browser/capture", {
       method: "POST",
-      body: { projectId: activeProjectId }
+      body: { applicationId: activeApplicationId }
     });
     showToast(`Captured Screen ${capture.id} (${capture.file})`, "success");
     await renderLiveBrowserCaptures();
@@ -2987,7 +2987,7 @@ document.addEventListener("keydown", async (e) => {
    ============================================================ */
 
 let mockupId = null;
-let mockupProject = null;
+let mockupApplication = null;
 let mockupDevicesCatalog = [];
 let mockupLayouts = { presets: [], grouped: [] };
 let mockupOptions = { gradients: [], solids: [], patterns: [] };
@@ -3100,27 +3100,27 @@ function checkUnsavedMockupChanges(onProceed) {
 }
 
 function selectMockupScreen(columnId) {
-  const baseDevice = mockupProject.devices.find((d) => d.isBase) || mockupProject.devices[0];
+  const baseDevice = mockupApplication.devices.find((d) => d.isBase) || mockupApplication.devices[0];
   const rowId = baseDevice ? baseDevice.id : "dev_default";
   selectCell(rowId, columnId);
   renderMockupStage();
 }
 
 async function deleteMockupScreen(columnId) {
-  if (!mockupProject || mockupProject.columns.length <= 1) {
+  if (!mockupApplication || mockupApplication.columns.length <= 1) {
     await alert("Cannot delete the only screen.");
     return;
   }
-  const idx = mockupProject.columns.findIndex((c) => c.id === columnId);
+  const idx = mockupApplication.columns.findIndex((c) => c.id === columnId);
   if (idx === -1) return;
   checkUnsavedMockupChanges(async () => {
-    mockupProject.columns.splice(idx, 1);
-    mockupProject.columns.forEach((c, i) => c.order = i);
-    await saveCurrentMockupProject();
+    mockupApplication.columns.splice(idx, 1);
+    mockupApplication.columns.forEach((c, i) => c.order = i);
+    await saveCurrentMockupApplication();
     pushMockupHistory();
     renderMockupStage();
     renderMockupMatrix();
-    const next = mockupProject.columns[Math.min(idx, mockupProject.columns.length - 1)];
+    const next = mockupApplication.columns[Math.min(idx, mockupApplication.columns.length - 1)];
     if (next) selectMockupScreen(next.id);
   });
 }
@@ -3131,8 +3131,8 @@ let mockupHistoryIdx = -1;
 const MAX_MOCKUP_HISTORY = 50;
 
 function pushMockupHistory() {
-  if (!mockupProject) return;
-  const snapshot = JSON.stringify(mockupProject);
+  if (!mockupApplication) return;
+  const snapshot = JSON.stringify(mockupApplication);
   if (mockupHistoryIdx >= 0 && mockupHistory[mockupHistoryIdx] === snapshot) return;
   mockupHistory = mockupHistory.slice(0, mockupHistoryIdx + 1);
   mockupHistory.push(snapshot);
@@ -3151,8 +3151,8 @@ function updateMockupUndoRedoButtons() {
 async function undoMockupState() {
   if (mockupHistoryIdx <= 0) return;
   mockupHistoryIdx--;
-  mockupProject = JSON.parse(mockupHistory[mockupHistoryIdx]);
-  await saveCurrentMockupProject();
+  mockupApplication = JSON.parse(mockupHistory[mockupHistoryIdx]);
+  await saveCurrentMockupApplication();
   renderMockupStage();
   renderMockupMatrix();
   updateMockupUndoRedoButtons();
@@ -3161,24 +3161,24 @@ async function undoMockupState() {
 async function redoMockupState() {
   if (mockupHistoryIdx >= mockupHistory.length - 1) return;
   mockupHistoryIdx++;
-  mockupProject = JSON.parse(mockupHistory[mockupHistoryIdx]);
-  await saveCurrentMockupProject();
+  mockupApplication = JSON.parse(mockupHistory[mockupHistoryIdx]);
+  await saveCurrentMockupApplication();
   renderMockupStage();
   renderMockupMatrix();
   updateMockupUndoRedoButtons();
 }
 
-async function saveCurrentMockupProject() {
-  if (!mockupId || !mockupProject) return;
+async function saveCurrentMockupApplication() {
+  if (!mockupId || !mockupApplication) return;
   await api(`/api/mockups/${mockupId}`, {
     method: "PUT",
     body: {
-      devices: mockupProject.devices,
-      columns: mockupProject.columns,
-      cells: mockupProject.cells,
-      sources: mockupProject.sources,
-      globalPanoramic: mockupProject.globalPanoramic,
-      settings: mockupProject.settings
+      devices: mockupApplication.devices,
+      columns: mockupApplication.columns,
+      cells: mockupApplication.cells,
+      sources: mockupApplication.sources,
+      globalPanoramic: mockupApplication.globalPanoramic,
+      settings: mockupApplication.settings
     }
   });
 }
@@ -3201,51 +3201,51 @@ document.addEventListener("keydown", (e) => {
 
 function mockupFileUrl(rel) { return `/api/mockups/${mockupId}/file?p=${encodeURIComponent(rel)}`; }
 
-async function loadMockupProjectInto(id) {
+async function loadMockupApplicationInto(id) {
   mockupId = id;
   if (id) {
     try {
-      mockupProject = await api(`/api/mockups/${id}`);
-      $("mockup-project-label").textContent = mockupProject.name;
-      if ($("mockup-header-name")) $("mockup-header-name").value = mockupProject.name;
-      if ($("mockup-header-category")) $("mockup-header-category").value = mockupProject.appCategory || "";
-      $("mockup-panorama-flip").checked = mockupProject.globalPanoramic?.flip || false;
-      mockupHistory = [JSON.stringify(mockupProject)];
+      mockupApplication = await api(`/api/mockups/${id}`);
+      $("mockup-application-label").textContent = mockupApplication.name;
+      if ($("mockup-header-name")) $("mockup-header-name").value = mockupApplication.name;
+      if ($("mockup-header-category")) $("mockup-header-category").value = mockupApplication.appCategory || "";
+      $("mockup-panorama-flip").checked = mockupApplication.globalPanoramic?.flip || false;
+      mockupHistory = [JSON.stringify(mockupApplication)];
       mockupHistoryIdx = 0;
       updateMockupUndoRedoButtons();
-      validateLoadedTemplate(mockupProject);
+      validateLoadedTemplate(mockupApplication);
     } catch (e) {
-      console.error("Failed to load mockup project:", e);
-      mockupProject = null;
-      $("mockup-project-label").textContent = "No mockup project loaded";
+      console.error("Failed to load mockup application:", e);
+      mockupApplication = null;
+      $("mockup-application-label").textContent = "No mockup application loaded";
     }
   } else {
-    mockupProject = null;
-    $("mockup-project-label").textContent = "No mockup project selected";
+    mockupApplication = null;
+    $("mockup-application-label").textContent = "No mockup application selected";
   }
 
   await ensureMockupReferenceData();
   renderMockupTemplateGrid();
 
-  if (mockupProject) {
+  if (mockupApplication) {
     renderMockupStage();
     renderMockupMatrix();
     renderMockupDevicesSection();
 
-    // Auto-select the first screen/device on project load
+    // Auto-select the first screen/device on application load
     // This ensures the editing canvas shows Screen 1 immediately
-    if (!selectedCell && mockupProject.columns.length > 0) {
-      selectCell(mockupProject.devices[0]?.id ?? "", mockupProject.columns[0].id);
+    if (!selectedCell && mockupApplication.columns.length > 0) {
+      selectCell(mockupApplication.devices[0]?.id ?? "", mockupApplication.columns[0].id);
     }
   } else {
-    $("mockup-matrix").innerHTML = `<tr><td class="hint" style="padding:2rem; text-align:center;">Select or create a project first from the Projects List.</td></tr>`;
-    if ($("mockup-stage-filmstrip")) $("mockup-stage-filmstrip").innerHTML = `<div class="hint" style="padding:2rem;">Select or create a project first.</div>`;
+    $("mockup-matrix").innerHTML = `<tr><td class="hint" style="padding:2rem; text-align:center;">Select or create an application first from the Applications List.</td></tr>`;
+    if ($("mockup-stage-filmstrip")) $("mockup-stage-filmstrip").innerHTML = `<div class="hint" style="padding:2rem;">Select or create an application first.</div>`;
   }
 }
 
 function validateLoadedTemplate(proj) {
   if (!proj) return;
-  console.log(`[Mockup Engine] Project loaded: "${proj.name}" (ID: ${proj.id})`);
+  console.log(`[Mockup Engine] Application loaded: "${proj.name}" (ID: ${proj.id})`);
   console.log(`[Mockup Engine] Devices: ${proj.devices?.length ?? 0}, Columns: ${proj.columns?.length ?? 0}, Sources: ${proj.sources?.length ?? 0}`);
   proj.columns?.forEach((col, idx) => {
     const assetsCount = col.style?.assetLayers?.length ?? 0;
@@ -3913,21 +3913,21 @@ function closeMockupTemplateDetail() {
 
 async function loadMockupTemplateNow(id) {
   if (!mockupId) {
-    await alert("Start a mockup project first.");
+    await alert("Start a mockup application first.");
     return;
   }
   const t = mockupTemplates.find((x) => x.id === id);
-  if (mockupProject && (mockupProject.devices.length > 0 || mockupProject.columns.length > 0)) {
-    const ok = await confirm("You have unsaved screenshots. Are you sure you want a new project?");
+  if (mockupApplication && (mockupApplication.devices.length > 0 || mockupApplication.columns.length > 0)) {
+    const ok = await confirm("You have unsaved screenshots. Are you sure you want a new application?");
     if (!ok) return;
   }
-  mockupProject = await api(`/api/mockups/${mockupId}/apply-template`, { method: "POST", body: { templateId: id } });
+  mockupApplication = await api(`/api/mockups/${mockupId}/apply-template`, { method: "POST", body: { templateId: id } });
   pushMockupHistory();
   renderMockupStage();
   renderMockupMatrix();
   renderMockupDevicesSection();
   closeMockupTemplateDetail();
-  showToast(`Applied "${t ? t.name : id}" — ${mockupProject.devices.length} device row(s), ${mockupProject.columns.length} screen(s).`, "success");
+  showToast(`Applied "${t ? t.name : id}" — ${mockupApplication.devices.length} device row(s), ${mockupApplication.columns.length} screen(s).`, "success");
 }
 
 /* ---- Editor Section: Visual Stage & Matrix ---- */
@@ -4213,14 +4213,14 @@ function commitMoveableTransformToModel(col, layerId, el) {
 
   setMockupDirty(true);
   syncSection2Inputs(col, layerId);
-  saveCurrentMockupProject();
+  saveCurrentMockupApplication();
   pushMockupHistory();
 }
 
 function renderMockupCanvas() {
   const viewport = $("mockup-canvas-viewport");
   if (!viewport) return;
-  if (!mockupProject) {
+  if (!mockupApplication) {
     viewport.style.display = "none";
     return;
   }
@@ -4228,8 +4228,8 @@ function renderMockupCanvas() {
   viewport.style.display = "flex";
 
   const selectedColumn = selectedCell
-    ? mockupProject.columns.find((c) => c.id === selectedCell.columnId)
-    : mockupProject.columns[0];
+    ? mockupApplication.columns.find((c) => c.id === selectedCell.columnId)
+    : mockupApplication.columns[0];
 
   if (!selectedColumn) {
     viewport.innerHTML = "";
@@ -4388,7 +4388,7 @@ function attachGizmoEvents(gizmoEl, col, zoomRatio) {
       gizmoEl.releasePointerCapture(upEv.pointerId);
       gizmoEl.onpointermove = null;
       gizmoEl.onpointerup = null;
-      saveCurrentMockupProject();
+      saveCurrentMockupApplication();
       pushMockupHistory();
     };
 
@@ -4401,14 +4401,14 @@ function renderMockupMatrix() {
   const table = $("mockup-matrix");
   if (!table) return;
   table.innerHTML = "";
-  if (!mockupProject) return;
-  const columns = [...mockupProject.columns].sort((a, b) => a.order - b.order);
+  if (!mockupApplication) return;
+  const columns = [...mockupApplication.columns].sort((a, b) => a.order - b.order);
 
   const headRow = document.createElement("tr");
   headRow.innerHTML = '<th class="row-head">Device</th>' + columns.map((c, i) => `<th class="col-head">Screen ${i + 1}</th>`).join("") + '<th class="matrix-add-col"></th>';
   table.appendChild(headRow);
 
-  for (const row of mockupProject.devices) {
+  for (const row of mockupApplication.devices) {
     const tr = document.createElement("tr");
     const head = document.createElement("td");
     head.className = "row-head";
@@ -4430,7 +4430,7 @@ function renderMockupMatrix() {
     table.appendChild(tr);
   }
 
-  if (mockupProject.devices.length === 0) {
+  if (mockupApplication.devices.length === 0) {
     const tr = document.createElement("tr");
     tr.innerHTML = `<td class="row-head">No device rows yet</td><td colspan="${columns.length + 1}" class="hint" style="padding:1rem;">Add a device row from the Devices section.</td>`;
     table.appendChild(tr);
@@ -4439,20 +4439,20 @@ function renderMockupMatrix() {
 
 $("mockup-add-column").onclick = async () => {
   if (!mockupId) {
-    await alert("Start a project first.");
+    await alert("Start an application first.");
     return;
   }
   try {
-    const { project } = await api(`/api/mockups/${mockupId}/columns`, { method: "POST" });
-    mockupProject = project;
+    const { application } = await api(`/api/mockups/${mockupId}/columns`, { method: "POST" });
+    mockupApplication = application;
   } catch (err) {
-    console.warn("Column API fallback to project PUT:", err.message);
+    console.warn("Column API fallback to application PUT:", err.message);
     const newCol = {
       id: `col_${Date.now()}_${Math.round(Math.random() * 1e4)}`,
-      order: mockupProject.columns ? mockupProject.columns.length : 0,
+      order: mockupApplication.columns ? mockupApplication.columns.length : 0,
       style: {
         layout: "single-title-above",
-        title: { text: `Screen ${(mockupProject.columns ? mockupProject.columns.length : 0) + 1}`, color: "#ffffff", size: 58, align: "center" },
+        title: { text: `Screen ${(mockupApplication.columns ? mockupApplication.columns.length : 0) + 1}`, color: "#ffffff", size: 58, align: "center" },
         subtitle: { text: "", color: "#ffffff", size: 36, align: "center" },
         background: { type: "gradient", value: "ocean" },
         deviceOne: { size: 90, x: 0, y: 0, rotation: 0, brightness: 100, frameless: false },
@@ -4460,9 +4460,9 @@ $("mockup-add-column").onclick = async () => {
         assetLayers: []
       }
     };
-    if (!mockupProject.columns) mockupProject.columns = [];
-    mockupProject.columns.push(newCol);
-    mockupProject = await api(`/api/mockups/${mockupId}`, { method: "PUT", body: mockupProject });
+    if (!mockupApplication.columns) mockupApplication.columns = [];
+    mockupApplication.columns.push(newCol);
+    mockupApplication = await api(`/api/mockups/${mockupId}`, { method: "PUT", body: mockupApplication });
   }
   pushMockupHistory();
   renderMockupStage();
@@ -4824,18 +4824,18 @@ function selectCell(deviceRowId, columnId) {
   }
   const inspector = $("mockup-inspector");
   if (inspector) inspector.style.display = "block";
-  const row = mockupProject.devices.find((d) => d.id === deviceRowId);
-  const colIndex = mockupProject.columns.findIndex((c) => c.id === columnId) + 1;
+  const row = mockupApplication.devices.find((d) => d.id === deviceRowId);
+  const colIndex = mockupApplication.columns.findIndex((c) => c.id === columnId) + 1;
   const targetEl = $("mockup-inspector-target");
   if (targetEl) targetEl.textContent = `${row ? row.label : "Device"} — Screen ${colIndex}`;
 
   const cellKey = `${deviceRowId}:${columnId}`;
-  const hasOverride = Boolean(mockupProject.cells[cellKey]);
+  const hasOverride = Boolean(mockupApplication.cells[cellKey]);
   const overrideEl = $("mk-cell-override");
   if (overrideEl) overrideEl.checked = hasOverride;
-  const column = mockupProject.columns.find((c) => c.id === columnId);
+  const column = mockupApplication.columns.find((c) => c.id === columnId);
   if (!column) return;
-  const style = hasOverride ? { ...column.style, ...mockupProject.cells[cellKey] } : column.style;
+  const style = hasOverride ? { ...column.style, ...mockupApplication.cells[cellKey] } : column.style;
 
   // Build and render the screen-specific layers model
   selectedLayerId = "deviceOne";
@@ -4863,7 +4863,7 @@ function selectCell(deviceRowId, columnId) {
   if (sourceEl) {
     sourceEl.innerHTML = '<option value="">(None)</option>';
     const mockupGroups = {};
-    for (const s of mockupProject.sources || []) {
+    for (const s of mockupApplication.sources || []) {
       const res = s.resolution || "Uploads / General";
       if (!mockupGroups[res]) mockupGroups[res] = [];
       mockupGroups[res].push(s);
@@ -5059,15 +5059,15 @@ function updateZoomLevelBadge() {
 
 if ($("mockup-reset-template-btn")) {
   $("mockup-reset-template-btn").onclick = async () => {
-    if (!selectedCell || !mockupProject) return;
+    if (!selectedCell || !mockupApplication) return;
     const ok = await confirm("Reset active screen style to defaults?");
     if (!ok) return;
-    const column = mockupProject.columns.find((c) => c.id === selectedCell.columnId);
+    const column = mockupApplication.columns.find((c) => c.id === selectedCell.columnId);
     if (column) {
       const defStyle = defaultColumnStyle(`Screen`);
       await api(`/api/mockups/${mockupId}/columns/${selectedCell.columnId}`, { method: "PUT", body: { style: defStyle } });
       await api(`/api/mockups/${mockupId}/cells/${selectedCell.deviceRowId}/${selectedCell.columnId}`, { method: "PUT", body: { override: null } });
-      mockupProject = await api(`/api/mockups/${mockupId}`);
+      mockupApplication = await api(`/api/mockups/${mockupId}`);
       pushMockupHistory();
       renderMockupStage();
       renderMockupMatrix();
@@ -5142,10 +5142,10 @@ if ($("mockup-asset-upload-input")) {
           method: "POST",
           body: { name: file.name, data: base64Data }
         });
-        mockupProject = await api(`/api/mockups/${mockupId}`);
+        mockupApplication = await api(`/api/mockups/${mockupId}`);
 
         if (selectedCell) {
-          const col = mockupProject.columns.find((c) => c.id === selectedCell.columnId);
+          const col = mockupApplication.columns.find((c) => c.id === selectedCell.columnId);
           if (col) {
             col.style.assetLayers = col.style.assetLayers || [];
             col.style.assetLayers.push({
@@ -5159,7 +5159,7 @@ if ($("mockup-asset-upload-input")) {
               opacity: 1,
               zIndex: 10
             });
-            await saveCurrentMockupProject();
+            await saveCurrentMockupApplication();
             pushMockupHistory();
             renderMockupStage();
             renderMockupMatrix();
@@ -5268,8 +5268,8 @@ function buildCellStyleFromForm() {
 
 /* Section 2 Universal Transform & Alignment Wiring */
 function getActiveCellColumn() {
-  if (!selectedCell || !mockupProject) return null;
-  return mockupProject.columns.find((c) => c.id === selectedCell.columnId);
+  if (!selectedCell || !mockupApplication) return null;
+  return mockupApplication.columns.find((c) => c.id === selectedCell.columnId);
 }
 
 function handleSection2InputChange() {
@@ -5516,7 +5516,7 @@ if ($("mk-tab-transform")) {
 
 /* Keyboard shortcuts for nudging and deleting */
 window.addEventListener("keydown", (e) => {
-  if (!selectedCell || !mockupProject) return;
+  if (!selectedCell || !mockupApplication) return;
   if (["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement.tagName)) return;
   const step = e.shiftKey ? 10 : 1;
   const col = getActiveCellColumn();
@@ -5546,16 +5546,16 @@ window.addEventListener("keydown", (e) => {
 
 
 $("mk-source-upload").onclick = async () => {
-  if (!activeProjectId) {
-    await alert("Select a project first.");
+  if (!activeApplicationId) {
+    await alert("Select an application first.");
     return;
   }
   openUniversalUploadModal((selectedPath) => {
     setTimeout(async () => {
-      mockupProject = await api(`/api/mockups/${activeProjectId}`);
+      mockupApplication = await api(`/api/mockups/${activeApplicationId}`);
       // Re-populate the source dropdown and select the newly selected screenshot
-      $("mk-source").innerHTML = (mockupProject.sources || []).map((s) => `<option value="${s.id}">${s.name}</option>`).join("");
-      const src = mockupProject.sources.find(s => s.file === selectedPath);
+      $("mk-source").innerHTML = (mockupApplication.sources || []).map((s) => `<option value="${s.id}">${s.name}</option>`).join("");
+      const src = mockupApplication.sources.find(s => s.file === selectedPath);
       if (src) {
         $("mk-source").value = src.id;
       }
@@ -5573,20 +5573,20 @@ $("mk-save").onclick = async () => {
       await api(`/api/mockups/${mockupId}/columns/${selectedCell.columnId}`, { method: "PUT", body: { style } });
       await api(`/api/mockups/${mockupId}/cells/${selectedCell.deviceRowId}/${selectedCell.columnId}`, { method: "PUT", body: { override: null } });
     }
-    mockupProject = await api(`/api/mockups/${mockupId}`);
+    mockupApplication = await api(`/api/mockups/${mockupId}`);
   } catch (err) {
-    console.warn("Save style API fallback to project PUT:", err.message);
-    const colIdx = mockupProject.columns.findIndex((c) => c.id === selectedCell.columnId);
+    console.warn("Save style API fallback to application PUT:", err.message);
+    const colIdx = mockupApplication.columns.findIndex((c) => c.id === selectedCell.columnId);
     if (colIdx !== -1) {
       const key = `${selectedCell.deviceRowId}:${selectedCell.columnId}`;
-      if (!mockupProject.cells) mockupProject.cells = {};
+      if (!mockupApplication.cells) mockupApplication.cells = {};
       if ($("mk-cell-override").checked) {
-        mockupProject.cells[key] = style;
+        mockupApplication.cells[key] = style;
       } else {
-        mockupProject.columns[colIdx].style = style;
-        delete mockupProject.cells[key];
+        mockupApplication.columns[colIdx].style = style;
+        delete mockupApplication.cells[key];
       }
-      mockupProject = await api(`/api/mockups/${mockupId}`, { method: "PUT", body: mockupProject });
+      mockupApplication = await api(`/api/mockups/${mockupId}`, { method: "PUT", body: mockupApplication });
     }
   }
   pushMockupHistory();
@@ -5599,21 +5599,21 @@ $("mk-copy-style").onclick = async () => {
   const style = buildCellStyleFromForm();
   try {
     await api(`/api/mockups/${mockupId}/columns/${selectedCell.columnId}`, { method: "PUT", body: { style } });
-    for (const row of mockupProject.devices) {
+    for (const row of mockupApplication.devices) {
       await api(`/api/mockups/${mockupId}/cells/${row.id}/${selectedCell.columnId}`, { method: "PUT", body: { override: null } });
     }
-    mockupProject = await api(`/api/mockups/${mockupId}`);
+    mockupApplication = await api(`/api/mockups/${mockupId}`);
   } catch (err) {
-    console.warn("Copy style API fallback to project PUT:", err.message);
-    const colIdx = mockupProject.columns.findIndex((c) => c.id === selectedCell.columnId);
+    console.warn("Copy style API fallback to application PUT:", err.message);
+    const colIdx = mockupApplication.columns.findIndex((c) => c.id === selectedCell.columnId);
     if (colIdx !== -1) {
-      mockupProject.columns[colIdx].style = style;
-      if (mockupProject.cells) {
-        for (const row of mockupProject.devices) {
-          delete mockupProject.cells[`${row.id}:${selectedCell.columnId}`];
+      mockupApplication.columns[colIdx].style = style;
+      if (mockupApplication.cells) {
+        for (const row of mockupApplication.devices) {
+          delete mockupApplication.cells[`${row.id}:${selectedCell.columnId}`];
         }
       }
-      mockupProject = await api(`/api/mockups/${mockupId}`, { method: "PUT", body: mockupProject });
+      mockupApplication = await api(`/api/mockups/${mockupId}`, { method: "PUT", body: mockupApplication });
     }
   }
   pushMockupHistory();
@@ -5638,12 +5638,12 @@ let appActiveDeviceFilter = "all";
 async function renderMockupDevicesSection() {
   const list = $("mockup-device-list");
   if (list) list.innerHTML = "";
-  if (!mockupProject) return;
+  if (!mockupApplication) return;
   const selectEl = $("mockup-preview-device");
-  if (selectEl) selectEl.innerHTML = mockupProject.devices.map((d) => `<option value="${d.id}">${d.label}</option>`).join("");
+  if (selectEl) selectEl.innerHTML = mockupApplication.devices.map((d) => `<option value="${d.id}">${d.label}</option>`).join("");
 
   if (list) {
-    for (const row of mockupProject.devices) {
+    for (const row of mockupApplication.devices) {
       const el = document.createElement("div");
       el.className = "provider-row";
       el.innerHTML = `
@@ -5654,11 +5654,11 @@ async function renderMockupDevicesSection() {
       `;
       el.querySelector(".row-visible").onchange = async (e) => {
         await api(`/api/mockups/${mockupId}/devices/${row.id}`, { method: "PATCH", body: { previewsVisible: e.target.checked } });
-        mockupProject = await api(`/api/mockups/${mockupId}`);
+        mockupApplication = await api(`/api/mockups/${mockupId}`);
       };
       el.querySelector("button.danger").onclick = async () => {
         await api(`/api/mockups/${mockupId}/devices/${row.id}`, { method: "DELETE" });
-        mockupProject = await api(`/api/mockups/${mockupId}`);
+        mockupApplication = await api(`/api/mockups/${mockupId}`);
         renderMockupDevicesSection();
         renderMockupMatrix();
       };
@@ -5688,7 +5688,7 @@ async function renderMockupDevicesSection() {
       const { devices } = await api("/api/mockups/devices-library");
       grid.innerHTML = "";
 
-      const baseDevice = mockupProject.devices.find((d) => d.isBase) || mockupProject.devices[0];
+      const baseDevice = mockupApplication.devices.find((d) => d.isBase) || mockupApplication.devices[0];
 
       const filteredDevices = devices.filter((dev) => {
         if (appActiveDeviceFilter === "all") return true;
@@ -5723,12 +5723,12 @@ async function renderMockupDevicesSection() {
 
         if (!isCurrentBase) {
           card.querySelector("button").onclick = async () => {
-            if (!mockupProject) return;
-            const targetBase = mockupProject.devices.find((d) => d.isBase) || mockupProject.devices[0];
+            if (!mockupApplication) return;
+            const targetBase = mockupApplication.devices.find((d) => d.isBase) || mockupApplication.devices[0];
             if (targetBase) {
               targetBase.deviceId = dev.id;
               targetBase.label = dev.name;
-              await saveCurrentMockupProject();
+              await saveCurrentMockupApplication();
               if (typeof renderMockupStage === "function") renderMockupStage();
               if (typeof renderMockupCanvas === "function") renderMockupCanvas();
               renderMockupMatrix();
@@ -5758,13 +5758,13 @@ if ($("mockup-add-device-select")) {
 if ($("mockup-add-device-btn")) {
   $("mockup-add-device-btn").onclick = async () => {
     if (!mockupId) {
-      await alert("Start a project first.");
+      await alert("Start an application first.");
       return;
     }
     const deviceId = $("mockup-add-device-select").value;
     const label = $("mockup-add-device-label").value.trim() || deviceId;
-    const { project } = await api(`/api/mockups/${mockupId}/devices`, { method: "POST", body: { deviceId, variant: $("mockup-add-device-variant").value || undefined, label } });
-    mockupProject = project;
+    const { application } = await api(`/api/mockups/${mockupId}/devices`, { method: "POST", body: { deviceId, variant: $("mockup-add-device-variant").value || undefined, label } });
+    mockupApplication = application;
     $("mockup-add-device-label").value = "";
     renderMockupDevicesSection();
     renderMockupMatrix();
@@ -5792,12 +5792,12 @@ if ($("mockup-panorama-flip")) {
 /* ---- Three Dedicated Export Workflows ---- */
 if ($("mockup-export-single-btn")) {
   $("mockup-export-single-btn").onclick = async () => {
-    if (!mockupProject || !mockupId) return alert("No active mockup project loaded.");
+    if (!mockupApplication || !mockupId) return alert("No active mockup application loaded.");
     const btn = $("mockup-export-single-btn");
     btn.disabled = true;
     btn.textContent = "Exporting PNG…";
     try {
-      const colId = selectedCell ? selectedCell.columnId : (mockupProject.columns[0]?.id || "");
+      const colId = selectedCell ? selectedCell.columnId : (mockupApplication.columns[0]?.id || "");
       const res = await api(`/api/mockups/${mockupId}/export/single`, { method: "POST", body: { columnId: colId } });
       await alert(`Single Screen exported successfully to:\n${res.path}`);
     } catch (e) {
@@ -5811,7 +5811,7 @@ if ($("mockup-export-single-btn")) {
 
 if ($("mockup-export-panoramic-btn")) {
   $("mockup-export-panoramic-btn").onclick = async () => {
-    if (!mockupProject || !mockupId) return alert("No active mockup project loaded.");
+    if (!mockupApplication || !mockupId) return alert("No active mockup application loaded.");
     const btn = $("mockup-export-panoramic-btn");
     btn.disabled = true;
     btn.textContent = "Exporting Banner…";
@@ -5829,7 +5829,7 @@ if ($("mockup-export-panoramic-btn")) {
 
 if ($("mockup-export-store-btn")) {
   $("mockup-export-store-btn").onclick = async () => {
-    if (!mockupProject || !mockupId) return alert("No active mockup project loaded.");
+    if (!mockupApplication || !mockupId) return alert("No active mockup application loaded.");
     const btn = $("mockup-export-store-btn");
     btn.disabled = true;
     btn.textContent = "Generating ZIP Package…";
@@ -5852,22 +5852,22 @@ if ($("mockup-export-store-btn")) {
 
 /* ---- Screen Management Buttons (aux — real column add is mockup-add-column above) ---- */
 function _dupSelectedScreen(colId) {
-  const origCol = mockupProject.columns.find((c) => c.id === colId);
+  const origCol = mockupApplication.columns.find((c) => c.id === colId);
   if (!origCol) return null;
   const dupId = "col_" + Math.random().toString(36).substring(2, 9);
   const dupCol = JSON.parse(JSON.stringify(origCol));
   dupCol.id = dupId;
   if (dupCol.label) dupCol.label = `${dupCol.label} (Copy)`;
-  dupCol.order = mockupProject.columns.length;
-  mockupProject.columns.push(dupCol);
+  dupCol.order = mockupApplication.columns.length;
+  mockupApplication.columns.push(dupCol);
   return dupId;
 }
 if ($("mk-duplicate-screen-btn")) {
   $("mk-duplicate-screen-btn").onclick = async () => {
-    if (!mockupProject || !selectedCell) return;
+    if (!mockupApplication || !selectedCell) return;
     const dupId = _dupSelectedScreen(selectedCell.columnId);
     if (!dupId) return;
-    await saveCurrentMockupProject();
+    await saveCurrentMockupApplication();
     pushMockupHistory();
     renderMockupStage();
     renderMockupMatrix();
@@ -5876,31 +5876,31 @@ if ($("mk-duplicate-screen-btn")) {
 }
 if ($("mk-delete-screen-btn")) {
   $("mk-delete-screen-btn").onclick = async () => {
-    if (!mockupProject || !selectedCell || mockupProject.columns.length <= 1) {
+    if (!mockupApplication || !selectedCell || mockupApplication.columns.length <= 1) {
       return alert("Cannot delete the only screen.");
     }
-    const colIdx = mockupProject.columns.findIndex((c) => c.id === selectedCell.columnId);
+    const colIdx = mockupApplication.columns.findIndex((c) => c.id === selectedCell.columnId);
     if (colIdx === -1) return;
-    mockupProject.columns.splice(colIdx, 1);
-    mockupProject.columns.forEach((c, idx) => c.order = idx);
-    await saveCurrentMockupProject();
+    mockupApplication.columns.splice(colIdx, 1);
+    mockupApplication.columns.forEach((c, idx) => c.order = idx);
+    await saveCurrentMockupApplication();
     pushMockupHistory();
     renderMockupStage();
     renderMockupMatrix();
-    const nextCol = mockupProject.columns[Math.min(colIdx, mockupProject.columns.length - 1)];
+    const nextCol = mockupApplication.columns[Math.min(colIdx, mockupApplication.columns.length - 1)];
     if (nextCol) selectMockupScreen(nextCol.id);
   };
 }
 if ($("mk-move-left-btn")) {
   $("mk-move-left-btn").onclick = async () => {
-    if (!mockupProject || !selectedCell) return;
-    const idx = mockupProject.columns.findIndex((c) => c.id === selectedCell.columnId);
+    if (!mockupApplication || !selectedCell) return;
+    const idx = mockupApplication.columns.findIndex((c) => c.id === selectedCell.columnId);
     if (idx <= 0) return;
-    const temp = mockupProject.columns[idx];
-    mockupProject.columns[idx] = mockupProject.columns[idx - 1];
-    mockupProject.columns[idx - 1] = temp;
-    mockupProject.columns.forEach((c, i) => c.order = i);
-    await saveCurrentMockupProject();
+    const temp = mockupApplication.columns[idx];
+    mockupApplication.columns[idx] = mockupApplication.columns[idx - 1];
+    mockupApplication.columns[idx - 1] = temp;
+    mockupApplication.columns.forEach((c, i) => c.order = i);
+    await saveCurrentMockupApplication();
     pushMockupHistory();
     renderMockupStage();
     renderMockupMatrix();
@@ -5908,14 +5908,14 @@ if ($("mk-move-left-btn")) {
 }
 if ($("mk-move-right-btn")) {
   $("mk-move-right-btn").onclick = async () => {
-    if (!mockupProject || !selectedCell) return;
-    const idx = mockupProject.columns.findIndex((c) => c.id === selectedCell.columnId);
-    if (idx === -1 || idx >= mockupProject.columns.length - 1) return;
-    const temp = mockupProject.columns[idx];
-    mockupProject.columns[idx] = mockupProject.columns[idx + 1];
-    mockupProject.columns[idx + 1] = temp;
-    mockupProject.columns.forEach((c, i) => c.order = i);
-    await saveCurrentMockupProject();
+    if (!mockupApplication || !selectedCell) return;
+    const idx = mockupApplication.columns.findIndex((c) => c.id === selectedCell.columnId);
+    if (idx === -1 || idx >= mockupApplication.columns.length - 1) return;
+    const temp = mockupApplication.columns[idx];
+    mockupApplication.columns[idx] = mockupApplication.columns[idx + 1];
+    mockupApplication.columns[idx + 1] = temp;
+    mockupApplication.columns.forEach((c, i) => c.order = i);
+    await saveCurrentMockupApplication();
     pushMockupHistory();
     renderMockupStage();
     renderMockupMatrix();
@@ -5925,7 +5925,7 @@ if ($("mk-move-right-btn")) {
 /* ---- Unsaved Modal & Header Sync ---- */
 if ($("mockup-unsaved-save")) {
   $("mockup-unsaved-save").onclick = async () => {
-    await saveCurrentMockupProject();
+    await saveCurrentMockupApplication();
     setMockupDirty(false);
     $("mockup-unsaved-modal").style.display = "none";
     const cb = pendingNavigationCallback;
@@ -5935,7 +5935,7 @@ if ($("mockup-unsaved-save")) {
 }
 if ($("mockup-unsaved-discard")) {
   $("mockup-unsaved-discard").onclick = async () => {
-    if (mockupHistoryIdx >= 0) mockupProject = JSON.parse(mockupHistory[mockupHistoryIdx]);
+    if (mockupHistoryIdx >= 0) mockupApplication = JSON.parse(mockupHistory[mockupHistoryIdx]);
     setMockupDirty(false);
     $("mockup-unsaved-modal").style.display = "none";
     const cb = pendingNavigationCallback;
@@ -5953,18 +5953,18 @@ if ($("mockup-unsaved-cancel")) {
 }
 if ($("mockup-header-name")) {
   $("mockup-header-name").addEventListener("change", async () => {
-    if (!mockupProject) return;
-    mockupProject.name = $("mockup-header-name").value.trim() || mockupProject.name;
-    await saveCurrentMockupProject();
-    $("mockup-project-label").textContent = mockupProject.name;
+    if (!mockupApplication) return;
+    mockupApplication.name = $("mockup-header-name").value.trim() || mockupApplication.name;
+    await saveCurrentMockupApplication();
+    $("mockup-application-label").textContent = mockupApplication.name;
     setMockupDirty(false);
   });
 }
 if ($("mockup-header-category")) {
   $("mockup-header-category").addEventListener("change", async () => {
-    if (!mockupProject) return;
-    mockupProject.appCategory = $("mockup-header-category").value.trim();
-    await saveCurrentMockupProject();
+    if (!mockupApplication) return;
+    mockupApplication.appCategory = $("mockup-header-category").value.trim();
+    await saveCurrentMockupApplication();
     setMockupDirty(false);
   });
 }
@@ -5973,9 +5973,9 @@ if ($("mockup-header-category")) {
 let clipboardLayer = null;
 
 window.addEventListener("keydown", (e) => {
-  if (!mockupProject || !selectedCell) return;
+  if (!mockupApplication || !selectedCell) return;
   if (document.activeElement && ["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement.tagName)) return;
-  const col = mockupProject.columns.find((c) => c.id === selectedCell.columnId);
+  const col = mockupApplication.columns.find((c) => c.id === selectedCell.columnId);
   if (!col) return;
   const step = e.shiftKey ? 10 : 1;
 
@@ -6123,27 +6123,27 @@ if ($("mockup-export-run")) {
    ============================================================ */
 
 let videoId = null;
-let videoProject = null;
+let videoApplication = null;
 let videoSceneOptions = { animations: [], backgrounds: [], layouts: { "9:16": [], "16:9": [] } };
 let videoDevices = [];
 let selectedSceneId = null;
 
 function videoFileUrl(rel) { return `/api/videos/${videoId}/file?p=${encodeURIComponent(rel)}`; }
 
-async function loadVideoProjectInto(id) {
+async function loadVideoApplicationInto(id) {
   videoId = id;
   if (id) {
     try {
-      videoProject = await api(`/api/videos/${id}`);
-      $("video-project-label").textContent = videoProject.name;
+      videoApplication = await api(`/api/videos/${id}`);
+      $("video-application-label").textContent = videoApplication.name;
     } catch (e) {
-      console.error("Failed to load video project:", e);
-      videoProject = null;
-      $("video-project-label").textContent = "No video project loaded";
+      console.error("Failed to load video application:", e);
+      videoApplication = null;
+      $("video-application-label").textContent = "No video application loaded";
     }
   } else {
-    videoProject = null;
-    $("video-project-label").textContent = "No video project selected";
+    videoApplication = null;
+    $("video-application-label").textContent = "No video application selected";
   }
 
   try {
@@ -6157,7 +6157,7 @@ async function loadVideoProjectInto(id) {
   }
 
   renderVideoTemplateGrid();
-  if (videoProject && videoProject.template && videoProject.scenes?.length) {
+  if (videoApplication && videoApplication.template && videoApplication.scenes?.length) {
     renderVideoScenes();
     const scenesRailBtn = document.querySelector('#tab-video .rail-btn[data-section="scenes"]');
     if (scenesRailBtn) scenesRailBtn.classList.add("active");
@@ -6241,7 +6241,7 @@ async function renderVideoTemplateGrid() {
 
 function videoDetailPreviewQuery() {
   const q = new URLSearchParams({ t: Date.now() });
-  if (videoId) q.set("projectId", videoId);
+  if (videoId) q.set("applicationId", videoId);
   return q;
 }
 
@@ -6606,17 +6606,17 @@ function videoDetailKeyHandler(ev) {
 
 async function loadVideoTemplateNow(id) {
   if (!videoId) {
-    await alert("Start a video project first.");
+    await alert("Start a video application first.");
     return;
   }
   const t = videoTemplates.find((x) => x.id === id);
-  if (videoProject && videoProject.scenes.length > 0) {
+  if (videoApplication && videoApplication.scenes.length > 0) {
     const ok = await confirm("You have an existing scene sequence. Are you sure you want to load a new template?");
     if (!ok) return;
   }
-  videoProject = await api(`/api/videos/${videoId}/apply-template`, { method: "POST", body: { templateId: id } });
+  videoApplication = await api(`/api/videos/${videoId}/apply-template`, { method: "POST", body: { templateId: id } });
   renderVideoScenes();
-  showToast(`Applied "${t ? t.name : id}" — ${videoProject.scenes.length} scene(s) ready. Switch to Scenes to customize.`, "success");
+  showToast(`Applied "${t ? t.name : id}" — ${videoApplication.scenes.length} scene(s) ready. Switch to Scenes to customize.`, "success");
 }
 
 
@@ -6625,11 +6625,11 @@ function renderVideoScenes() {
   $("sc-template").innerHTML = videoSceneOptions.animations.map((a) => `<option value="${a.id}">${a.name}</option>`).join("");
   $("sc-background").innerHTML = videoSceneOptions.backgrounds.map((b) => `<option value="${b}">${b}</option>`).join("");
   $("sc-device").innerHTML = videoDevices.map((d) => `<option value="${d.id}">${d.vendor} — ${d.name}</option>`).join("");
-  const orientation = (videoProject.scenes[0] && videoProject.scenes[0].aspectRatio) === "16:9" ? "16:9" : "9:16";
+  const orientation = (videoApplication.scenes[0] && videoApplication.scenes[0].aspectRatio) === "16:9" ? "16:9" : "9:16";
   const layouts = (videoSceneOptions.layouts && videoSceneOptions.layouts[orientation]) || [];
   $("sc-layout").innerHTML = layouts.map((l) => `<option value="${l.id}">${l.name}</option>`).join("");
   const videoGroups = {};
-  for (const s of videoProject.sources || []) {
+  for (const s of videoApplication.sources || []) {
     const res = s.resolution || "Uploads / General";
     if (!videoGroups[res]) videoGroups[res] = [];
     videoGroups[res].push(s);
@@ -6646,13 +6646,13 @@ function renderVideoScenes() {
 
   const templateLabel = $("video-selected-template-label");
   if (templateLabel) {
-    const t = videoTemplates.find((x) => x.id === videoProject.template);
-    templateLabel.textContent = videoProject.template ? `Template: ${t ? t.name : videoProject.template}` : "";
+    const t = videoTemplates.find((x) => x.id === videoApplication.template);
+    templateLabel.textContent = videoApplication.template ? `Template: ${t ? t.name : videoApplication.template}` : "";
   }
 
   const nav = $("video-scene-nav");
   nav.innerHTML = "";
-  videoProject.scenes.forEach((s, i) => {
+  videoApplication.scenes.forEach((s, i) => {
     const chip = document.createElement("div");
     chip.className = "scene-chip" + (i === 0 ? " active" : "");
     chip.dataset.sceneId = s.id;
@@ -6664,7 +6664,7 @@ function renderVideoScenes() {
     chip.appendChild(document.createTextNode(`Scene ${i + 1}`));
     nav.appendChild(chip);
   });
-  if (videoProject.scenes.length) selectScene(videoProject.scenes[0].id);
+  if (videoApplication.scenes.length) selectScene(videoApplication.scenes[0].id);
   refreshSceneCompleteness();
 }
 
@@ -6754,7 +6754,7 @@ $("sc-template").onchange = () => {
 function selectScene(sceneId) {
   selectedSceneId = sceneId;
   for (const chip of document.querySelectorAll(".scene-chip")) chip.classList.toggle("active", chip.dataset.sceneId === sceneId);
-  const scene = videoProject.scenes.find((s) => s.id === sceneId);
+  const scene = videoApplication.scenes.find((s) => s.id === sceneId);
   $("sc-template").value = scene.sceneTemplate;
   $("sc-layout").value = scene.layout || "";
   $("sc-depth").value = scene.depth || "flat";
@@ -6809,7 +6809,7 @@ function showScenePreview() {
  *  rendered page uniformly inside a clipping box -- same technique as the
  *  Templates-tab stage's .video-preview-scale (see videoDetailRefreshUi). */
 function updateScenePreviewScale() {
-  const scene = videoProject?.scenes.find((s) => s.id === selectedSceneId);
+  const scene = videoApplication?.scenes.find((s) => s.id === selectedSceneId);
   if (!scene) return;
   // Native canvas for THIS scene's own device/aspect ratio -- portrait
   // (9:16) and landscape (16:9) templates are genuinely different shapes,
@@ -6866,7 +6866,7 @@ let scTransport = { playing: false, elapsedMs: 0, durationMs: 5000, timer: null,
 
 function scTransportReset() {
   scTransportStop();
-  const scene = videoProject?.scenes.find((s) => s.id === selectedSceneId);
+  const scene = videoApplication?.scenes.find((s) => s.id === selectedSceneId);
   scTransport.durationMs = Math.max(1, scene?.durationSeconds || 5) * 1000;
   scTransport.elapsedMs = 0;
   scTransportSeek(0);
@@ -6949,8 +6949,8 @@ function scTransportPlay() {
   if (loopBtn) {
     loopBtn.onclick = () => {
       scTransport.loop = !scTransport.loop;
-      loopBtn.style.background = scTransport.loop ? "#3b82f6" : "";
-      loopBtn.style.color = scTransport.loop ? "#ffffff" : "";
+      loopBtn.classList.toggle("active", scTransport.loop);
+      loopBtn.setAttribute("aria-pressed", scTransport.loop ? "true" : "false");
     };
   }
 
@@ -6958,7 +6958,12 @@ function scTransportPlay() {
   if (muteBtn) {
     muteBtn.onclick = () => {
       scTransport.muted = !scTransport.muted;
-      muteBtn.innerHTML = scTransport.muted ? "🔇" : "🔊";
+      muteBtn.innerHTML = scTransport.muted
+        ? '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>'
+        : '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>';
+      muteBtn.classList.toggle("active", scTransport.muted);
+      muteBtn.setAttribute("aria-pressed", scTransport.muted ? "true" : "false");
+      muteBtn.title = scTransport.muted ? "Unmute" : "Mute";
       const audio = ensureVideoDetailAudio();
       if (audio) audio.muted = scTransport.muted;
       const frame = $("sc-preview");
@@ -7021,7 +7026,7 @@ function renderSlotEditor(specs, values, issues, sceneId) {
     panel.innerHTML = '<p class="hint">This scene needs no content.</p>';
     return;
   }
-  const legacyScene = videoProject.scenes.find((s) => s.id === sceneId) || {};
+  const legacyScene = videoApplication.scenes.find((s) => s.id === sceneId) || {};
   const issuesByKey = {};
   for (const issue of issues || []) (issuesByKey[issue.slotKey] ??= []).push(issue);
 
@@ -7082,8 +7087,8 @@ async function saveLegacySceneField(sceneId, patch) {
       $("sc-content-save-state").textContent = "Saving...";
       try {
         const updated = await api(`/api/videos/${videoId}/scenes/${sceneId}`, { method: "PUT", body: patch });
-        const idx = videoProject.scenes.findIndex((s) => s.id === sceneId);
-        if (idx !== -1) videoProject.scenes[idx] = updated;
+        const idx = videoApplication.scenes.findIndex((s) => s.id === sceneId);
+        if (idx !== -1) videoApplication.scenes[idx] = updated;
         $("sc-content-save-state").textContent = `Saved · ${new Date().toLocaleTimeString()}`;
         refreshSceneCompleteness();
         if (sceneId === selectedSceneId) showScenePreview();
@@ -7131,7 +7136,7 @@ function legacyImageListField(spec, legacyScene, sceneId) {
 function legacyImageField(sourceId, sceneId, index, count) {
   const wrap = document.createElement("div");
   wrap.className = "content-slot-image";
-  const source = sourceId ? (videoProject.sources || []).find((s) => s.id === sourceId) : null;
+  const source = sourceId ? (videoApplication.sources || []).find((s) => s.id === sourceId) : null;
   const thumb = document.createElement("div");
   thumb.className = "content-slot-thumb";
   if (source) {
@@ -7153,8 +7158,8 @@ function legacyImageField(sourceId, sceneId, index, count) {
     if (!file) return;
     try {
       const uploaded = await uploadFile(`/api/videos/${videoId}/sources?name=${encodeURIComponent(file.name)}`, file);
-      videoProject.sources.push(uploaded);
-      const legacyScene = videoProject.scenes.find((s) => s.id === sceneId);
+      videoApplication.sources.push(uploaded);
+      const legacyScene = videoApplication.scenes.find((s) => s.id === sceneId);
       const ids = legacyScene.screenIds || (legacyScene.sourceId ? [legacyScene.sourceId] : []);
       ids[index] = uploaded.id;
       const patch = count > 1 ? { screenIds: ids } : { sourceId: ids[0] };
@@ -7270,7 +7275,7 @@ function aiButton() {
 function imageField(spec, sourceId, sceneId, index) {
   const wrap = document.createElement("div");
   wrap.className = "content-slot-image";
-  const source = sourceId ? (videoProject.sources || []).find((s) => s.id === sourceId) : null;
+  const source = sourceId ? (videoApplication.sources || []).find((s) => s.id === sourceId) : null;
   const thumb = document.createElement("div");
   thumb.className = "content-slot-thumb";
   if (source) {
@@ -7299,7 +7304,7 @@ function imageField(spec, sourceId, sceneId, index) {
     try {
       const slotParam = spec.kind === "imageList" ? `${sceneId}:${spec.key}:${index}` : `${sceneId}:${spec.key}`;
       const uploaded = await uploadFile(`/api/videos/${videoId}/sources?name=${encodeURIComponent(file.name)}&slot=${encodeURIComponent(slotParam)}`, file);
-      videoProject.sources.push(uploaded);
+      videoApplication.sources.push(uploaded);
       loadSceneContentPanel(sceneId);
       refreshSceneCompleteness();
       showScenePreview();
@@ -7318,7 +7323,7 @@ function imageField(spec, sourceId, sceneId, index) {
     removeBtn.textContent = "Remove";
     removeBtn.onclick = async () => {
       if (spec.kind === "imageList") {
-        const scene = videoProject.scenes.find((s) => s.id === sceneId);
+        const scene = videoApplication.scenes.find((s) => s.id === sceneId);
         const existing = scene?.slotValues?.[spec.key];
         const ids = existing?.kind === "imageList" ? [...existing.sourceIds] : [];
         ids[index] = null;
@@ -7405,7 +7410,7 @@ function saveSlotValueDebounced(sceneId, key, value) {
 async function saveSlotValue(sceneId, key, value) {
   try {
     await api(`/api/videos/${videoId}/scenes/${sceneId}/slots`, { method: "PUT", body: { slotValues: { [key]: value } } });
-    const scene = videoProject.scenes.find((s) => s.id === sceneId);
+    const scene = videoApplication.scenes.find((s) => s.id === sceneId);
     if (scene) scene.slotValues = { ...(scene.slotValues || {}), [key]: value };
     $("sc-content-save-state").textContent = `Saved · ${new Date().toLocaleTimeString()}`;
     refreshSceneCompleteness();
@@ -7474,7 +7479,7 @@ function renderSegmentsPanel(sceneId, specs, values) {
 
       const thumb = document.createElement("div");
       thumb.className = "segment-thumb";
-      const source = seg.sourceId ? (videoProject.sources || []).find((s) => s.id === seg.sourceId) : null;
+      const source = seg.sourceId ? (videoApplication.sources || []).find((s) => s.id === seg.sourceId) : null;
       if (source) {
         const img = document.createElement("img");
         img.src = `/api/videos/${videoId}/file?p=${encodeURIComponent(source.file)}`;
@@ -7490,7 +7495,7 @@ function renderSegmentsPanel(sceneId, specs, values) {
         if (!file) return;
         try {
           const uploaded = await uploadFile(`/api/videos/${videoId}/sources?name=${encodeURIComponent(file.name)}`, file);
-          videoProject.sources.push(uploaded);
+          videoApplication.sources.push(uploaded);
           seg.sourceId = uploaded.id;
           persist();
           draw();
@@ -7529,15 +7534,15 @@ function renderSegmentsPanel(sceneId, specs, values) {
 }
 
 $("sc-source-upload").onclick = async () => {
-  if (!activeProjectId) {
-    await alert("Select a project first.");
+  if (!activeApplicationId) {
+    await alert("Select an application first.");
     return;
   }
   openUniversalUploadModal((selectedPath) => {
     setTimeout(async () => {
-      videoProject = await api(`/api/videos/${activeProjectId}`);
-      $("sc-source").innerHTML = (videoProject.sources || []).map((s) => `<option value="${s.id}">${s.name}</option>`).join("");
-      const src = videoProject.sources.find(s => s.file === selectedPath);
+      videoApplication = await api(`/api/videos/${activeApplicationId}`);
+      $("sc-source").innerHTML = (videoApplication.sources || []).map((s) => `<option value="${s.id}">${s.name}</option>`).join("");
+      const src = videoApplication.sources.find(s => s.file === selectedPath);
       if (src) {
         $("sc-source").value = src.id;
       }
@@ -7565,8 +7570,8 @@ async function saveCurrentScene() {
     },
   };
   const updated = await api(`/api/videos/${videoId}/scenes/${selectedSceneId}`, { method: "PUT", body });
-  const idx = videoProject.scenes.findIndex((s) => s.id === selectedSceneId);
-  videoProject.scenes[idx] = updated;
+  const idx = videoApplication.scenes.findIndex((s) => s.id === selectedSceneId);
+  videoApplication.scenes[idx] = updated;
   showScenePreview();
 }
 
@@ -7579,39 +7584,39 @@ $("sc-save").onclick = async () => {
 };
 
 $("sc-add").onclick = async () => {
-  if (!videoId || !videoProject || videoProject.scenes.length === 0) {
+  if (!videoId || !videoApplication || videoApplication.scenes.length === 0) {
     await alert("Load a template first.");
     return;
   }
   try {
-    videoProject = await api(`/api/videos/${videoId}/scenes`, { method: "POST" });
+    videoApplication = await api(`/api/videos/${videoId}/scenes`, { method: "POST" });
     renderVideoScenes();
-    selectScene(videoProject.scenes.at(-1).id);
-    showToast(`Scene ${videoProject.scenes.length} added.`, "success");
+    selectScene(videoApplication.scenes.at(-1).id);
+    showToast(`Scene ${videoApplication.scenes.length} added.`, "success");
   } catch (e) {
     await alert("Could not add scene: " + e.message);
   }
 };
 
 $("sc-remove").onclick = async () => {
-  if (!selectedSceneId || !videoProject) return;
+  if (!selectedSceneId || !videoApplication) return;
   const ok = await confirm("Remove this scene? This cannot be undone.");
   if (!ok) return;
   try {
-    videoProject = await api(`/api/videos/${videoId}/scenes/${selectedSceneId}`, { method: "DELETE" });
+    videoApplication = await api(`/api/videos/${videoId}/scenes/${selectedSceneId}`, { method: "DELETE" });
     renderVideoScenes();
   } catch (e) {
     await alert("Could not remove scene: " + e.message);
   }
 };
 
-// "Save Template Configuration" opens a named-snapshot modal (project.savedConfigs);
+// "Save Template Configuration" opens a named-snapshot modal (application.savedConfigs);
 // individual scene edits already persist live via saveCurrentScene()/the Content
-// panel, so this doesn't need to re-flush the whole project first.
+// panel, so this doesn't need to re-flush the whole application first.
 let savedConfigsCache = [];
 
 $("video-save-config-btn").onclick = () => {
-  if (!videoId || !videoProject || !videoProject.template) {
+  if (!videoId || !videoApplication || !videoApplication.template) {
     alert("Load a template first.");
     return;
   }
@@ -7651,7 +7656,7 @@ $("save-config-confirm").onclick = () => submitSaveConfig(false);
 async function loadSavedConfigs() {
   const grid = $("saved-configs-grid");
   if (!videoId) {
-    grid.innerHTML = '<div class="hint">No project loaded.</div>';
+    grid.innerHTML = '<div class="hint">No application loaded.</div>';
     return;
   }
   grid.innerHTML = '<div class="hint">Loading...</div>';
@@ -7689,7 +7694,7 @@ function renderSavedConfigsGrid() {
     btn.onclick = async () => {
       const id = btn.closest("[data-config-id]").dataset.configId;
       try {
-        videoProject = await api(`/api/videos/${videoId}/configs/${id}/apply`, { method: "POST" });
+        videoApplication = await api(`/api/videos/${videoId}/configs/${id}/apply`, { method: "POST" });
         showToast("Configuration applied.", "success");
         renderVideoScenes();
       } catch (e) {
@@ -8042,13 +8047,13 @@ function openUniversalUploadModal(onSelectCallback) {
   currentUploadCallback = onSelectCallback;
   $("universal-upload-backdrop").classList.add("open");
   
-  // Reset tabs to project view
+  // Reset tabs to application view
   document.querySelectorAll("#universal-upload-backdrop .tab").forEach(t => t.classList.remove("active"));
   document.querySelectorAll("#universal-upload-backdrop .tab-panel").forEach(p => p.classList.remove("active"));
-  $("tab-btn-project-assets").classList.add("active");
-  $("upload-panel-project").classList.add("active");
+  $("tab-btn-application-assets").classList.add("active");
+  $("upload-panel-application").classList.add("active");
   
-  refreshUniversalProjectAssets();
+  refreshUniversalApplicationAssets();
 }
 
 $("universal-upload-close").onclick = () => {
@@ -8065,15 +8070,15 @@ document.querySelectorAll("#universal-upload-backdrop .tab").forEach(tab => {
   };
 });
 
-async function refreshUniversalProjectAssets() {
-  const grid = $("universal-project-assets-grid");
+async function refreshUniversalApplicationAssets() {
+  const grid = $("universal-application-assets-grid");
   grid.innerHTML = "Loading assets...";
   $("universal-use-selected-btn").disabled = true;
   
-  if (!activeProjectId) return;
+  if (!activeApplicationId) return;
 
   try {
-    const { files } = await api(`/api/projects/${activeProjectId}/files`);
+    const { files } = await api(`/api/applications/${activeApplicationId}/files`);
     grid.innerHTML = "";
     
     // Only captures (screenshots) or uploads
@@ -8089,7 +8094,7 @@ async function refreshUniversalProjectAssets() {
     for (const asset of assets) {
       const card = document.createElement("div");
       card.className = "asset-select-card";
-      const fileUrl = `/api/projects/${activeProjectId}/file?p=${encodeURIComponent(asset.path)}`;
+      const fileUrl = `/api/applications/${activeApplicationId}/file?p=${encodeURIComponent(asset.path)}`;
       card.innerHTML = `
         <img src="${fileUrl}" />
         <div class="badge-overlay">${asset.path.startsWith("captures/") ? 'Cap ' : ''}${asset.name}</div>
@@ -8152,16 +8157,16 @@ async function handleDirectComputerUpload(file) {
   statusEl.style.color = "#9aa0a6";
 
   try {
-    const url = `/api/projects/${activeProjectId}/upload?name=${encodeURIComponent(file.name)}`;
+    const url = `/api/applications/${activeApplicationId}/upload?name=${encodeURIComponent(file.name)}`;
     const source = await uploadFile(url, file);
     
     statusEl.textContent = `Upload successful: ${file.name}`;
     statusEl.style.color = "#10b981";
     
-    // Switch to project assets tab, refresh list, and auto-select new upload
+    // Switch to application assets tab, refresh list, and auto-select new upload
     setTimeout(() => {
-      document.querySelector('#universal-upload-backdrop .tab[data-upload-tab="project"]').click();
-      refreshUniversalProjectAssets();
+      document.querySelector('#universal-upload-backdrop .tab[data-upload-tab="application"]').click();
+      refreshUniversalApplicationAssets();
     }, 800);
   } catch (e) {
     statusEl.textContent = "Upload failed: " + e.message;

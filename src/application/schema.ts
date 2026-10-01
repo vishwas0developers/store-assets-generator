@@ -149,8 +149,8 @@ export const TemplateSchema = z.object({
 export type Template = z.infer<typeof TemplateSchema>;
 
 
-// --- PROJECT DOCUMENT SCHEMA ---
-export const ProjectDocumentSchema = z.object({
+// --- APPLICATION DOCUMENT SCHEMA ---
+export const ApplicationDocumentSchema = z.object({
   app: z.object({
     name: z.string(),
     url: z.string().optional(),
@@ -187,4 +187,4 @@ export const ProjectDocumentSchema = z.object({
   }),
 });
 
-export type ProjectDocument = z.infer<typeof ProjectDocumentSchema>;
+export type ApplicationDocument = z.infer<typeof ApplicationDocumentSchema>;

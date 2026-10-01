@@ -1,11 +1,12 @@
 // State module — single source of truth for the Studio Mockup editor & Studio ecosystem.
 // All other modules import from here; never write to these variables directly from outside.
 
-export let activeProjectId = localStorage.getItem("activeProjectId") || null;
-export let activeProject = null;
+try { localStorage.removeItem("activeApplicationId"); } catch {}
+export let activeApplicationId = localStorage.getItem("activeApplicationId") || null;
+export let activeApplication = null;
 
 export let mockupId = null;
-export let mockupProject = null;
+export let mockupApplication = null;
 export let mockupFabricCanvas = null;
 export let selectedColumn = null;
 export let selectedLayerId = "deviceOne";
@@ -49,8 +50,16 @@ let restoringHistory = false;
 let historyDebounceTimer = null;
 const HISTORY_DEBOUNCE_MS = 400; // ponytail: edits <400ms apart merge into one undo step; shorten if that's ever reported as a problem.
 
+/** In-memory only (never persisted): false after every page load, so the Editing section stays empty until the
+ *  user explicitly loads a template. */
+export let mockupSessionActive = false;
+export function setMockupSessionActive(v) { mockupSessionActive = !!v; }
+/** What the current draft was loaded from: {kind:"saved"|"builtin", id, name} -- drives the Save Template dialog. */
+export let mockupLoadedFrom = null;
+export function setMockupLoadedFrom(v) { mockupLoadedFrom = v || null; }
+
 export let videoId = null;
-export let videoProject = null;
+export let videoApplication = null;
 export let selectedSceneId = null;
 export let videoTemplates = [];
 export let videoDevices = [];
@@ -59,22 +68,22 @@ export function setVideoDevices(devs) {
   videoDevices = devs;
 }
 
-export function setActiveProjectId(id) {
-  activeProjectId = id;
-  if (id) localStorage.setItem("activeProjectId", id);
-  else localStorage.removeItem("activeProjectId");
+export function setActiveApplicationId(id) {
+  activeApplicationId = id;
+  if (id) localStorage.setItem("activeApplicationId", id);
+  else localStorage.removeItem("activeApplicationId");
 }
 
-export function setActiveProject(proj) {
-  activeProject = proj;
+export function setActiveApplication(proj) {
+  activeApplication = proj;
 }
 
 export function setMockupId(id) {
   mockupId = id;
 }
 
-export function setMockupProject(proj) {
-  mockupProject = proj;
+export function setMockupApplication(proj) {
+  mockupApplication = proj;
 }
 
 export function setMockupFabricCanvas(canvas) {
@@ -85,12 +94,12 @@ export function setSelectedColumn(col) {
   selectedColumn = col;
 }
 
-/** Re-points selectedColumn at the same-id column of the CURRENT mockupProject
+/** Re-points selectedColumn at the same-id column of the CURRENT mockupApplication
  *  (first column, else null, if it no longer exists). Call after any
- *  setMockupProject() that isn't followed by selectMockupPage(), so edits and
- *  deletes never land on a stale column object from the replaced project. */
+ *  setMockupApplication() that isn't followed by selectMockupPage(), so edits and
+ *  deletes never land on a stale column object from the replaced application. */
 export function rebindSelectedColumn() {
-  const cols = mockupProject?.columns ?? [];
+  const cols = mockupApplication?.columns ?? [];
   selectedColumn = cols.find((c) => c.id === selectedColumn?.id) ?? cols[0] ?? null;
 }
 
@@ -133,13 +142,13 @@ export function clearSelection() {
 /** The only fields a history step stores -- editable content, never the
  *  server-owned `devices`/`sources` rows (dropping a device/screenshot on
  *  Undo was a real bug this excludes by construction). */
-export function snapshotOfMockupProject(project) {
-  if (!project) return null;
+export function snapshotOfMockupApplication(application) {
+  if (!application) return null;
   return JSON.stringify({
-    columns: project.columns,
-    cells: project.cells,
-    settings: project.settings,
-    globalPanoramic: project.globalPanoramic,
+    columns: application.columns,
+    cells: application.cells,
+    settings: application.settings,
+    globalPanoramic: application.globalPanoramic,
   });
 }
 
@@ -219,16 +228,16 @@ export async function redoMockupState() {
 }
 
 /** Restores a history snapshot IN PLACE (Object.assign onto the existing
- *  mockupProject object, never reassigning the binding) -- reassigning it
+ *  mockupApplication object, never reassigning the binding) -- reassigning it
  *  left every other live reference (selectedColumn, etc.) pointing at the
  *  stale old object, so edits made right after an Undo were silently lost.
  *  Never writes to disk -- Undo/Redo are purely in-memory/history
  *  operations; only Save persists. */
 async function restoreHistorySnapshot(snapshot) {
-  if (!mockupProject || snapshot == null) return;
-  Object.assign(mockupProject, JSON.parse(snapshot));
+  if (!mockupApplication || snapshot == null) return;
+  Object.assign(mockupApplication, JSON.parse(snapshot));
   const currentId = selectedColumn?.id;
-  selectedColumn = mockupProject.columns?.find((c) => c.id === currentId) || mockupProject.columns?.[0] || null;
+  selectedColumn = mockupApplication.columns?.find((c) => c.id === currentId) || mockupApplication.columns?.[0] || null;
   mockupIsDirty = snapshot !== savedSnapshot;
   const badge = document.getElementById("mockup-dirty-badge") || document.getElementById("mockup-save-indicator");
   if (badge) {
@@ -249,8 +258,8 @@ export function pushMockupHistory() {
   clearTimeout(historyDebounceTimer);
   historyDebounceTimer = null;
   if (restoringHistory) return;
-  if (!mockupProject) return;
-  const snapshot = snapshotOfMockupProject(mockupProject);
+  if (!mockupApplication) return;
+  const snapshot = snapshotOfMockupApplication(mockupApplication);
   if (mockupHistoryIdx >= 0 && mockupHistory[mockupHistoryIdx] === snapshot) return;
   mockupHistory = mockupHistory.slice(0, mockupHistoryIdx + 1);
   mockupHistory.push(snapshot);
@@ -280,8 +289,8 @@ export function setVideoId(id) {
   videoId = id;
 }
 
-export function setVideoProject(proj) {
-  videoProject = proj;
+export function setVideoApplication(proj) {
+  videoApplication = proj;
 }
 
 export function setSelectedSceneId(id) {
@@ -299,18 +308,18 @@ export function updateUndoRedoButtons() {
   if (redoBtn) redoBtn.disabled = mockupHistoryIdx >= mockupHistory.length - 1;
 }
 
-export async function saveCurrentMockupProject() {
-  if (!mockupId || !mockupProject) return;
+export async function saveCurrentMockupApplication() {
+  if (!mockupId || !mockupApplication) return;
   const { api } = await import('./utils.js');
   await api(`/api/mockups/${mockupId}`, {
     method: "PUT",
     body: {
-      devices: mockupProject.devices,
-      columns: mockupProject.columns,
-      cells: mockupProject.cells,
-      sources: mockupProject.sources,
-      globalPanoramic: mockupProject.globalPanoramic,
-      settings: mockupProject.settings
+      devices: mockupApplication.devices,
+      columns: mockupApplication.columns,
+      cells: mockupApplication.cells,
+      sources: mockupApplication.sources,
+      globalPanoramic: mockupApplication.globalPanoramic,
+      settings: mockupApplication.settings
     }
   });
 }

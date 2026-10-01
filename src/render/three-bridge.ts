@@ -74,7 +74,14 @@ export async function installThreeJsRoutes(page: Page, deviceIds: string[]): Pro
  *  before resolving. This makes the 3D device rig mirror whatever motion
  *  the scene's CSS animation already computes, instead of re-deriving it. */
 export const THREE_BRIDGE_SCRIPT = `
-<script type="importmap">{"imports":{"three":"${ORIGIN}/three/build/three.module.js"}}</script>
+<script>
+// The bare "three" import (used by GLTFLoader) must resolve to a reachable URL: the virtual bridge host only exists
+// inside the Playwright renderer; live preview iframes load from the app server's /vendor route instead.
+document.head.appendChild(Object.assign(document.createElement("script"), {
+  type: "importmap",
+  textContent: JSON.stringify({ imports: { three: location.origin.includes("device-bridge.local") ? "${ORIGIN}/three/build/three.module.js" : "/vendor/three/build/three.module.js" } }),
+}));
+</script>
 <script type="module">
 const isLocalBridge = location.origin.includes("device-bridge.local");
 const threeBase = isLocalBridge ? "${ORIGIN}/three" : "/vendor/three";

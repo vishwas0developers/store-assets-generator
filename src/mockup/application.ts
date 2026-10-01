@@ -2,10 +2,10 @@ import fs from "fs";
 import path from "path";
 
 /**
- * Studio Mockup tab storage — a devices x pages matrix project, modeled
+ * Studio Mockup tab storage — a devices x pages matrix application, modeled
  * on studio.app-mockup.com's normalized store (verified against its bundle):
  *
- *   - devices[]  = ROWS  (a device/size class the whole project previews at)
+ *   - devices[]  = ROWS  (a device/size class the whole application previews at)
  *   - columns[]  = PAGES (one logical page -- content, not a device; a page
  *                  can hold multiple devices/layers -- see MockupPage/
  *                  ColumnStyle). Field name is still `columns` on the wire
@@ -22,7 +22,7 @@ import path from "path";
  * Independent of the Screen Capture and Video tabs -- its own root, its own
  * uploaded source images, no shared state.
  *
- *   output/mockups/<id>/project.json
+ *   output/mockups/<id>/application.json
  *   output/mockups/<id>/sources/     uploaded screenshot images
  *   output/mockups/<id>/exports/     Export section output (zips)
  */
@@ -30,7 +30,7 @@ import path from "path";
 export interface MockupSourceImage {
   id: string;
   name: string;
-  file: string; // relative to project dir, e.g. "sources/img_1.png"
+  file: string; // relative to application dir, e.g. "sources/img_1.png"
   width: number;
   height: number;
   /** Primary, user-facing categorization -- "phone" | "tablet7" | "tablet10". */
@@ -81,7 +81,7 @@ export interface TextStyle {
   /** Numeric weight (400-900) from the toolbar's weight dropdown -- takes
    *  precedence over `bold` when set (bold just toggles this between
    *  400/700); read as `fontWeightNum ?? (bold ? 700 : 400)` so older
-   *  projects that only ever set `bold` keep rendering correctly. */
+   *  applications that only ever set `bold` keep rendering correctly. */
   fontWeightNum?: number;
   /** Solid highlight/background color drawn behind the text (Fabric's
    *  textBackgroundColor / CSS background-color on the text element) --
@@ -129,7 +129,7 @@ export interface DeviceLayerStyle {
    *  device bezel to clip the screenshot to, so this lets a frameless
    *  screenshot still read as a rounded phone screen. Additive/optional;
    *  undefined/0 = no rounding (unchanged behavior for every existing
-   *  project). No effect when `frameless` is false. */
+   *  application). No effect when `frameless` is false. */
   framelessCornerRadius?: number;
   borderColor?: string; // Device frame outer rim / stroke color
   bezelColor?: string; // Device frame body / bezel fill color
@@ -164,12 +164,12 @@ export interface DeviceLayerStyle {
    *  editing either side propagates to the other. Used for a device
    *  composition intentionally split/continued across two pages (e.g. a
    *  panoramic banner). Additive/optional, same lazy-compat pattern as
-   *  extraDevices -- unset for every existing project until a user links
+   *  extraDevices -- unset for every existing application until a user links
    *  two pages together. See syncLinkedDeviceLayer(). */
   linkedTo?: { pageId: string; layerKey: string };
   /** True cross-page panorama positioning (distinct from `linkedTo`'s
    *  mirror-two-copies mechanic): when set, this is the device's absolute
-   *  horizontal center in project-wide panorama space (column 0's left edge,
+   *  horizontal center in application-wide panorama space (column 0's left edge,
    *  by `order`, is x=0), and it REPLACES the normal x/preset-offset
    *  positioning for the X axis only -- Y/size/rotation/brightness/frameless
    *  stay exactly as governed by this column's own fields, unaffected. The
@@ -177,7 +177,7 @@ export interface DeviceLayerStyle {
    *  intersects, as ONE continuous object rather than a duplicated copy per
    *  page. Unset (the default) means "normal single-page device, positioned
    *  as always" -- additive/optional, zero behavior change for any existing
-   *  project until a user drags a device far enough to cross a page boundary. */
+   *  application until a user drags a device far enough to cross a page boundary. */
   panoramaXPx?: number;
 }
 
@@ -266,7 +266,7 @@ export interface ColumnStyle {
   assetLayers?: MockupAssetLayer[];
   /** Free-form, multi-instance text layers -- distinct from the single
    *  fixed title/subtitle slots above. Additive/optional, same lazy-compat
-   *  pattern as assetLayers -- unset for every existing project until a
+   *  pattern as assetLayers -- unset for every existing application until a
    *  user adds one via "+ Add Text". */
   textLayers?: TextLayer[];
 }
@@ -307,14 +307,14 @@ export function addExtraDeviceLayer(style: ColumnStyle): DeviceLayerStyle {
  *  each. Overwrites any prior link either side had (a device can only be
  *  linked to one counterpart at a time in this v1). */
 export function linkDeviceLayers(
-  project: MockupProject,
+  application: MockupApplication,
   pageAId: string,
   layerAKey: string,
   pageBId: string,
   layerBKey: string,
 ): void {
-  const pageA = project.columns.find((c) => c.id === pageAId);
-  const pageB = project.columns.find((c) => c.id === pageBId);
+  const pageA = application.columns.find((c) => c.id === pageAId);
+  const pageB = application.columns.find((c) => c.id === pageBId);
   const layerA = pageA && getDeviceLayer(pageA.style, layerAKey);
   const layerB = pageB && getDeviceLayer(pageB.style, layerBKey);
   if (!layerA || !layerB) throw new Error("Both linked layers must exist.");
@@ -322,11 +322,11 @@ export function linkDeviceLayers(
   layerB.linkedTo = { pageId: pageAId, layerKey: layerAKey };
 }
 
-export function unlinkDeviceLayer(project: MockupProject, pageId: string, layerKey: string): void {
-  const page = project.columns.find((c) => c.id === pageId);
+export function unlinkDeviceLayer(application: MockupApplication, pageId: string, layerKey: string): void {
+  const page = application.columns.find((c) => c.id === pageId);
   const layer = page && getDeviceLayer(page.style, layerKey);
   if (!layer?.linkedTo) return;
-  const partnerPage = project.columns.find((c) => c.id === layer.linkedTo!.pageId);
+  const partnerPage = application.columns.find((c) => c.id === layer.linkedTo!.pageId);
   const partnerLayer = partnerPage && getDeviceLayer(partnerPage.style, layer.linkedTo!.layerKey);
   if (partnerLayer) partnerLayer.linkedTo = undefined;
   layer.linkedTo = undefined;
@@ -335,11 +335,11 @@ export function unlinkDeviceLayer(project: MockupProject, pageId: string, layerK
 /** Call after committing a transform change to a device layer -- if it's
  *  linked, copies its transform fields onto the linked counterpart (on
  *  whichever page that is) so the two stay in sync. No-op if unlinked. */
-export function syncLinkedDeviceLayer(project: MockupProject, pageId: string, layerKey: string): void {
-  const page = project.columns.find((c) => c.id === pageId);
+export function syncLinkedDeviceLayer(application: MockupApplication, pageId: string, layerKey: string): void {
+  const page = application.columns.find((c) => c.id === pageId);
   const layer = page && getDeviceLayer(page.style, layerKey);
   if (!layer?.linkedTo) return;
-  const partnerPage = project.columns.find((c) => c.id === layer.linkedTo!.pageId);
+  const partnerPage = application.columns.find((c) => c.id === layer.linkedTo!.pageId);
   const partnerLayer = partnerPage && getDeviceLayer(partnerPage.style, layer.linkedTo!.layerKey);
   if (!partnerLayer) return;
   partnerLayer.size = layer.size;
@@ -383,7 +383,7 @@ export interface MockupColumn {
    *  taken once at template-apply time -- lets "Reset to Template" restore
    *  THIS page's original state precisely, without guessing at generic
    *  defaults and without touching any other page. Additive/optional: a
-   *  project created before this field existed simply has none, and the
+   *  application created before this field existed simply has none, and the
    *  reset falls back to the old generic-defaults behavior for it. */
   templateDefaultStyle?: ColumnStyle;
 }
@@ -392,15 +392,31 @@ export interface MockupColumn {
  *  not a "Screen" or "Column" -- those names are used interchangeably
  *  throughout this file/module and the client for the same concept, which
  *  is exactly the confusion this alias exists to start resolving. The
- *  underlying field name (`MockupProject.columns`) and `MockupColumn` type
+ *  underlying field name (`MockupApplication.columns`) and `MockupColumn` type
  *  are NOT renamed yet -- that's a much larger, riskier sweep (400+
  *  references across server.ts and every client module) deferred until
  *  the terminology has proven itself at the edges (types, primary function
  *  names, UI labels) first. New code should prefer `MockupPage`. */
 export type MockupPage = MockupColumn;
 
-export interface MockupProject {
+/** A user-saved template: an isolated snapshot of the editing state, owned by one Application. */
+export interface MockupSavedConfig {
   id: string;
+  name: string;
+  sourceTemplateId?: string;
+  snapshot: {
+    devices: MockupDeviceRow[];
+    columns: MockupColumn[];
+    cells: Record<string, Partial<ColumnStyle>>;
+    globalPanoramic: { file?: string; flip: boolean };
+    settings: MockupApplication["settings"];
+  };
+  savedAt: string;
+}
+
+export interface MockupApplication {
+  id: string;
+  savedConfigs?: MockupSavedConfig[];
   createdAt: string;
   name: string;
   appCategory: string;
@@ -413,16 +429,16 @@ export interface MockupProject {
   settings: { inspectorPosition: "left" | "right"; screenshotSizeLabel: string; palette: string[] };
 }
 
-import { loadProject, saveProject, listProjects } from "../project/projectStore.js";
+import { loadApplication, saveApplication, listApplications } from "../application/applicationStore.js";
 import { sizeTargetsFor } from "./sizeTargets.js";
 
-const ROOT = path.join(process.cwd(), "output", "projects");
+const ROOT = path.join(process.cwd(), "output", "applications");
 
 export function mockupDir(id: string): string {
   const dir = path.join(ROOT, id, "mockup");
   // Containment guard
   const rel = path.relative(ROOT, dir);
-  if (rel.startsWith("..") || path.isAbsolute(rel)) throw new Error(`Invalid mockup project id '${id}'.`);
+  if (rel.startsWith("..") || path.isAbsolute(rel)) throw new Error(`Invalid mockup application id '${id}'.`);
   return dir;
 }
 
@@ -455,25 +471,25 @@ export function defaultColumnStyle(title = ""): ColumnStyle {
   };
 }
 
-export function createMockupProject(init: { name: string; appCategory?: string }): MockupProject {
+export function createMockupApplication(init: { name: string; appCategory?: string }): MockupApplication {
   const id = `mockup-${Date.now()}`;
-  throw new Error("Deprecated: Use createProject from projectStore instead");
+  throw new Error("Deprecated: Use createApplication from applicationStore instead");
 }
 
-export function saveMockupProject(project: MockupProject): void {
-  const unified = loadProject(project.id);
-  unified.mockup = project;
-  saveProject(unified);
+export function saveMockupApplication(application: MockupApplication): void {
+  const unified = loadApplication(application.id);
+  unified.mockup = application;
+  saveApplication(unified);
 }
 
-export function loadMockupProject(id: string): MockupProject {
-  const unified = loadProject(id);
+export function loadMockupApplication(id: string): MockupApplication {
+  const unified = loadApplication(id);
   ensureSizeRows(unified.mockup, unified.platform);
   return unified.mockup;
 }
 
-export function listMockupProjects(): Array<{ id: string; createdAt: string; name: string; columns: number; devices: number }> {
-  return listProjects().map((p) => {
+export function listMockupApplications(): Array<{ id: string; createdAt: string; name: string; columns: number; devices: number }> {
+  return listApplications().map((p) => {
     const m = p.mockup;
     return { id: p.id, createdAt: p.createdAt, name: p.name, columns: m.columns?.length ?? 0, devices: m.devices?.length ?? 0 };
   });
@@ -482,20 +498,20 @@ export function listMockupProjects(): Array<{ id: string; createdAt: string; nam
 /** Column edit: applies to the column, so every device row picks it up --
  *  this IS the "propagate across all devices" behaviour; cell overrides
  *  (below) are the explicit per-row exception. */
-export function updateColumnStyle(project: MockupProject, columnId: string, style: ColumnStyle): void {
-  const idx = project.columns.findIndex((c) => c.id === columnId);
+export function updateColumnStyle(application: MockupApplication, columnId: string, style: ColumnStyle): void {
+  const idx = application.columns.findIndex((c) => c.id === columnId);
   if (idx === -1) throw new Error(`Column '${columnId}' not found.`);
-  project.columns[idx] = { ...project.columns[idx], style };
+  application.columns[idx] = { ...application.columns[idx], style };
 }
 
 export function cellKey(deviceRowId: string, columnId: string): string {
   return `${deviceRowId}:${columnId}`;
 }
 
-export function setCellOverride(project: MockupProject, deviceRowId: string, columnId: string, override: Partial<ColumnStyle> | null): void {
+export function setCellOverride(application: MockupApplication, deviceRowId: string, columnId: string, override: Partial<ColumnStyle> | null): void {
   const key = cellKey(deviceRowId, columnId);
-  if (override === null) delete project.cells[key];
-  else project.cells[key] = override;
+  if (override === null) delete application.cells[key];
+  else application.cells[key] = override;
 }
 
 /** Reserved key inside a cell-override object holding sparse per-field
@@ -520,20 +536,20 @@ function setPath(obj: any, path: string, value: any): void {
 
 /** Sets (or, with value === undefined, clears) one sparse per-field override
  *  path for a cell, e.g. setCellOverridePath(p, row, col, "deviceOne.rotation", 12). */
-export function setCellOverridePath(project: MockupProject, deviceRowId: string, columnId: string, path: string, value: unknown): void {
+export function setCellOverridePath(application: MockupApplication, deviceRowId: string, columnId: string, path: string, value: unknown): void {
   const key = cellKey(deviceRowId, columnId);
-  const existing = project.cells[key] ?? {};
+  const existing = application.cells[key] ?? {};
   const paths = { ...((existing as any)[PATCH_KEY] ?? {}) };
   if (value === undefined) delete paths[path];
   else paths[path] = value;
   const nextOverride: any = { ...existing, [PATCH_KEY]: paths };
   const hasLegacyKeys = Object.keys(nextOverride).some((k) => k !== PATCH_KEY);
-  if (Object.keys(paths).length === 0 && !hasLegacyKeys) delete project.cells[key];
-  else project.cells[key] = nextOverride;
+  if (Object.keys(paths).length === 0 && !hasLegacyKeys) delete application.cells[key];
+  else application.cells[key] = nextOverride;
 }
 
-export function clearCellOverridePath(project: MockupProject, deviceRowId: string, columnId: string, path: string): void {
-  setCellOverridePath(project, deviceRowId, columnId, path, undefined);
+export function clearCellOverridePath(application: MockupApplication, deviceRowId: string, columnId: string, path: string): void {
+  setCellOverridePath(application, deviceRowId, columnId, path, undefined);
 }
 
 /** Effective style for one (device row, column) cell = column style with
@@ -542,10 +558,10 @@ export function clearCellOverridePath(project: MockupProject, deviceRowId: strin
  *  first; sparse per-field path patches (the reserved `__paths` key) are
  *  applied on top and can override a single field without resending its
  *  containing sub-object. */
-export function effectiveCellStyle(project: MockupProject, deviceRowId: string, columnId: string): ColumnStyle {
-  const column = project.columns.find((c) => c.id === columnId);
+export function effectiveCellStyle(application: MockupApplication, deviceRowId: string, columnId: string): ColumnStyle {
+  const column = application.columns.find((c) => c.id === columnId);
   if (!column) throw new Error(`Column '${columnId}' not found.`);
-  // ponytail: per-cell overrides (project.cells) are retained only so old files still load; they are no longer applied.
+  // ponytail: per-cell overrides (application.cells) are retained only so old files still load; they are no longer applied.
   return column.style;
 }
 
@@ -553,22 +569,22 @@ export function effectiveCellStyle(project: MockupProject, deviceRowId: string, 
  *  implicitly (there is nothing to clone into -- cells are sparse and a
  *  missing cell just falls back to the column style), matching the
  *  reference's "new device row starts from the base device's screenshots". */
-export function addDeviceRow(project: MockupProject, row: Omit<MockupDeviceRow, "id">): MockupDeviceRow {
+export function addDeviceRow(application: MockupApplication, row: Omit<MockupDeviceRow, "id">): MockupDeviceRow {
   const created: MockupDeviceRow = { ...row, id: `dev_${Date.now()}_${Math.round(Math.random() * 1e4)}` };
-  project.devices.push(created);
+  application.devices.push(created);
   return created;
 }
 
-export function addColumn(project: MockupProject, style: ColumnStyle): MockupColumn {
-  const created: MockupColumn = { id: `col_${Date.now()}_${Math.round(Math.random() * 1e4)}`, order: project.columns.length, style };
-  project.columns.push(created);
+export function addColumn(application: MockupApplication, style: ColumnStyle): MockupColumn {
+  const created: MockupColumn = { id: `col_${Date.now()}_${Math.round(Math.random() * 1e4)}`, order: application.columns.length, style };
+  application.columns.push(created);
   return created;
 }
 
-/** Makes project.devices match the platform's size targets exactly (order included). The first existing row (the
+/** Makes application.devices match the platform's size targets exactly (order included). The first existing row (the
  *  template's) becomes the primary row and keeps its device/variant; rows already carrying a matching sizeKey keep
  *  their ids so `cells` keys stay valid; anything else is dropped. Idempotent; never touches columns/styles. */
-export function ensureSizeRows(mockup: MockupProject, platform?: string): void {
+export function ensureSizeRows(mockup: MockupApplication, platform?: string): void {
   const targets = sizeTargetsFor(platform);
   const old = mockup.devices ?? [];
   const templateRow = old[0];

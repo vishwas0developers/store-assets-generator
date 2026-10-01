@@ -1,5 +1,5 @@
 // Templates module — template discovery, grid rendering, filter tabs,
-// client-side template HTML screen generator, and applying templates to project.
+// client-side template HTML screen generator, and applying templates to application.
 
 import {
   mockupTemplates,
@@ -9,18 +9,24 @@ import {
   setMockupTemplateCategory,
   setMockupTemplateDetailId,
   mockupId,
-  mockupProject,
+  mockupApplication,
+  mockupIsDirty,
+  mockupLoadedFrom,
+  activeApplicationId,
+  setMockupSessionActive,
+  setSelectedColumn,
+  setMockupLoadedFrom,
   setMockupId,
-  setMockupProject,
+  setMockupApplication,
   setMockupHistory,
   pushMockupHistory,
-  snapshotOfMockupProject,
+  snapshotOfMockupApplication,
   setSavedSnapshot,
   setMockupDirty,
   updateUndoRedoButtons
 } from './state.js';
-import { api, showAlert, showConfirm, showToast } from './utils.js';
-import { renderMockupCanvas, syncArtboardHeightFromProject } from './canvas.js';
+import { api, showAlert, showConfirm, showToast, showSaveAsDialog, showUpdateTemplateDialog, showUnsavedDialog, setEditingEmpty } from './utils.js';
+import { renderMockupCanvas, syncArtboardHeightFromApplication } from './canvas.js';
 import { renderMockupMatrix, selectMockupPage } from './matrix.js';
 
 export let mockupDevicesCatalog = [];
@@ -49,13 +55,13 @@ export async function ensureMockupReferenceData() {
   }
 }
 
-/** Loads (or clears) the mockup project for a given project id — the entry point when switching into the Studio Mockup tab. */
-export async function loadMockupProjectInto(id, force = false) {
-  // Switching to the Mockup tab while the SAME project is already loaded
+/** Loads (or clears) the mockup application for a given application id — the entry point when switching into the Studio Mockup tab. */
+export async function loadMockupApplicationInto(id, force = false) {
+  // Switching to the Mockup tab while the SAME application is already loaded
   // (e.g. clicking away and back) must not reload from disk -- that would
   // silently wipe any unsaved in-memory edits and their undo history. Just
   // re-render what's already there instead.
-  if (!force && id && id === mockupId && mockupProject) {
+  if (!force && id && id === mockupId && mockupApplication) {
     await ensureMockupReferenceData();
     await renderMockupTemplateGrid();
     renderMockupCanvas();
@@ -63,29 +69,30 @@ export async function loadMockupProjectInto(id, force = false) {
     return;
   }
   setMockupId(id);
-  const label = document.getElementById("mockup-project-label");
+  setMockupLoadedFrom(null);
+  const label = document.getElementById("mockup-application-label");
   if (id) {
     try {
       const proj = await api(`/api/mockups/${id}`);
-      setMockupProject(proj);
+      setMockupApplication(proj);
       // Server already ran ensureSizeRows; size the page canvases (before any is created) from the primary target.
-      syncArtboardHeightFromProject(proj);
-      if (label) label.textContent = proj.name || "Mockup Project";
-      const snap = snapshotOfMockupProject(proj);
+      syncArtboardHeightFromApplication(proj);
+      if (label) label.textContent = proj.name || "Mockup";
+      const snap = snapshotOfMockupApplication(proj);
       setMockupHistory([snap], 0);
       setSavedSnapshot(snap);
       updateUndoRedoButtons();
       setMockupDirty(false);
     } catch (e) {
-      console.error("Failed to load mockup project:", e);
-      setMockupProject(null);
-      if (label) label.textContent = "No mockup project loaded";
+      console.error("Failed to load mockup application:", e);
+      setMockupApplication(null);
+      if (label) label.textContent = "No mockups loaded";
       setMockupHistory([], -1);
       updateUndoRedoButtons();
     }
   } else {
-    setMockupProject(null);
-    if (label) label.textContent = "No mockup project selected";
+    setMockupApplication(null);
+    if (label) label.textContent = "No application selected";
     setMockupHistory([], -1);
     updateUndoRedoButtons();
   }
@@ -93,16 +100,64 @@ export async function loadMockupProjectInto(id, force = false) {
   await ensureMockupReferenceData();
   await renderMockupTemplateGrid();
 
-  if (mockupProject) {
+  if (mockupApplication) {
     renderMockupCanvas();
     renderMockupMatrix();
-    if (mockupProject.columns?.length > 0) {
-      selectMockupPage(mockupProject.columns[0].id);
+    if (mockupApplication.columns?.length > 0) {
+      selectMockupPage(mockupApplication.columns[0].id);
     }
   } else {
     const table = document.getElementById("mockup-matrix");
-    if (table) table.innerHTML = `<tr><td class="hint" style="padding:2rem; text-align:center;">Select or create a project first from the Projects List.</td></tr>`;
+    if (table) table.innerHTML = `<tr><td class="hint" style="padding:2rem; text-align:center;">Select or create an application first from the Applications List.</td></tr>`;
   }
+  setEditingEmpty("mockup-section-mockup-editing", !mockupApplication);
+}
+
+/** Drops the whole editing draft and its identity. The next Editing session starts empty. */
+export function clearMockupDraft() {
+  setMockupApplication(null);
+  setMockupId(null);
+  setMockupHistory([], -1);
+  setSavedSnapshot(null);
+  setMockupLoadedFrom(null);
+  setMockupSessionActive(false);
+  setSelectedColumn(null);
+  setMockupDirty(false);
+  setEditingEmpty("mockup-section-mockup-editing", true);
+  const inspector = document.getElementById("mockup-inspector");
+  if (inspector) inspector.style.display = "none";
+}
+
+/** Before leaving the editing context (tab/application switch): Save / Discard / Cancel. Resolves false on cancel. */
+export async function guardLeaveMockupDraft() {
+  if (!mockupApplication || !mockupIsDirty) return true;
+  const choice = await showUnsavedDialog("You have unsaved changes. Do you want to save them before leaving?");
+  if (choice === "cancel") return false;
+  if (choice === "save") return handleMockupSave();
+  return true;
+}
+
+/** Fresh page load / no explicit load yet: Editing stays empty until a template is loaded on purpose. */
+export async function showMockupEmptyEditor() {
+  await loadMockupApplicationInto(null);
+  const label = document.getElementById("mockup-application-label");
+  if (activeApplicationId) {
+    if (label) label.textContent = "No template loaded";
+    const table = document.getElementById("mockup-matrix");
+    if (table) table.innerHTML = `<tr><td class="hint" style="padding:2rem; text-align:center;">Nothing loaded. Pick a template in Templates, or use Edit/Load in Saved Templates.</td></tr>`;
+  }
+}
+
+export async function confirmDiscardDraft() {
+  if (!mockupApplication || !mockupIsDirty) return true;
+  const choice = await showUnsavedDialog(
+    "You have unsaved changes in the current template. Do you want to save them before loading another template?",
+    "Save & Load New Template",
+    "Discard & Load New Template",
+  );
+  if (choice === "cancel") return false;
+  if (choice === "save") return handleMockupSave();
+  return true;
 }
 
 export const CATEGORY_LABELS = {
@@ -663,35 +718,240 @@ export function closeMockupTemplateDetail() {
 }
 
 export async function loadMockupTemplateNow(id) {
-  if (!mockupId) {
-    await showAlert("Start a mockup project first.");
+  const appId = activeApplicationId;
+  if (!appId) {
+    await showAlert("Select an application first.");
     return;
   }
   const t = mockupTemplates.find((x) => x.id === id);
-  if (mockupProject && (mockupProject.devices?.length > 0 || mockupProject.columns?.length > 0)) {
-    const ok = await showConfirm("You have unsaved screenshots. Are you sure you want a new project?");
-    if (!ok) return;
-  }
+  if (!(await confirmDiscardDraft())) return;
   let updatedProj;
   try {
-    updatedProj = await api(`/api/mockups/${mockupId}/apply-template`, { method: "POST", body: { templateId: id } });
+    updatedProj = await api(`/api/mockups/${appId}/apply-template`, { method: "POST", body: { templateId: id } });
   } catch (e) {
     showAlert("Failed to apply template: " + e.message, "error");
     return;
   }
-  setMockupProject(updatedProj);
-  pushMockupHistory();
+  await enterLoadedDraft(appId, updatedProj, { source: "default", id, name: t ? t.name : id, category: t?.category });
   closeMockupTemplateDetail();
-  showToast(`Applied "${t ? t.name : id}" — ${updatedProj.devices?.length || 0} device row(s), ${updatedProj.columns?.length || 0} screen(s).`, "success");
+  showToast(`Loaded "${t ? t.name : id}" — ${updatedProj.devices?.length || 0} device row(s), ${updatedProj.columns?.length || 0} screen(s).`, "success");
+}
 
-  // Switch rail navigation to Editor section after template is applied
-  const editorRailBtn = document.querySelector('#tab-mockup .rail-btn[data-section="mockup-editing"]');
-  if (editorRailBtn) {
-    editorRailBtn.click();
-  }
+/** Installs a server-returned application as the fresh draft and opens the Editing section. */
+async function enterLoadedDraft(appId, proj, loadedFrom) {
+  setMockupId(appId);
+  setMockupSessionActive(true);
+  setMockupApplication(proj);
+  syncArtboardHeightFromApplication(proj);
+  const snap = snapshotOfMockupApplication(proj);
+  setMockupHistory([snap], 0);
+  setSavedSnapshot(snap);
+  updateUndoRedoButtons();
+  setMockupDirty(false);
+  setMockupLoadedFrom(loadedFrom);
+  const label = document.getElementById("mockup-application-label");
+  if (label) label.textContent = loadedFrom.name || proj.name || "Mockup";
+  setEditingEmpty("mockup-section-mockup-editing", false);
+  document.querySelector('#tab-mockup .rail-btn[data-section="mockup-editing"]')?.click();
   renderMockupCanvas();
   renderMockupMatrix();
-  if (updatedProj.columns?.length > 0) selectMockupPage(updatedProj.columns[0].id);
+  if (proj.columns?.length > 0) selectMockupPage(proj.columns[0].id);
+}
+
+// ---- Saved Templates (per Application) ----
+let mockupSavedConfigs = [];
+
+function esc(t) {
+  return String(t ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+export async function loadMockupSavedConfigs() {
+  const grid = document.getElementById("mockup-saved-grid");
+  if (!grid) return;
+  if (!activeApplicationId) {
+    grid.innerHTML = '<div class="hint">No application selected.</div>';
+    return;
+  }
+  grid.innerHTML = '<div class="hint">Loading saved templates...</div>';
+  try {
+    mockupSavedConfigs = await api(`/api/mockups/${activeApplicationId}/configs`);
+    renderMockupSavedGrid();
+  } catch (e) {
+    grid.innerHTML = `<div class="hint slot-issue error">Failed to load saved templates: ${esc(e.message)}</div>`;
+  }
+}
+
+export function renderMockupSavedGrid() {
+  const grid = document.getElementById("mockup-saved-grid");
+  if (!grid) return;
+  if (mockupSavedConfigs.length === 0) {
+    grid.innerHTML = '<div class="hint">No saved templates yet. Use "Save Template" in the Editing section.</div>';
+    return;
+  }
+  grid.innerHTML = mockupSavedConfigs.map((c) => `
+    <div class="saved-template-card" data-id="${esc(c.id)}">
+      <div style="font-weight:600;">${esc(c.name)}</div>
+      <div class="hint" style="margin:0.25rem 0;">${c.snapshot?.columns?.length ?? 0} page(s) &middot; ${c.snapshot?.devices?.length ?? 0} device row(s)</div>
+      <div class="hint" style="margin:0 0 0.5rem 0;">Saved ${esc(new Date(c.savedAt).toLocaleString())}</div>
+      <div style="display:flex; gap:0.4rem;">
+        <button class="primary small" data-act="load" type="button">Edit / Load</button>
+        <button class="danger-ghost small" data-act="delete" type="button">Delete</button>
+      </div>
+    </div>`).join("");
+  grid.querySelectorAll(".saved-template-card").forEach((card) => {
+    const cfg = mockupSavedConfigs.find((c) => c.id === card.dataset.id);
+    card.querySelector('[data-act="load"]').onclick = () => loadMockupSavedConfig(cfg);
+    card.querySelector('[data-act="delete"]').onclick = async () => {
+      if (!(await showConfirm(`Delete "${cfg.name}"? This cannot be undone.`, "Delete template", true))) return;
+      try {
+        mockupSavedConfigs = await api(`/api/mockups/${activeApplicationId}/configs/${cfg.id}`, { method: "DELETE" });
+        if (mockupLoadedFrom?.source === "saved" && mockupLoadedFrom.id === cfg.id) setMockupLoadedFrom(null);
+        renderMockupSavedGrid();
+      } catch (e) {
+        showAlert("Delete failed: " + e.message, "error");
+      }
+    };
+  });
+}
+
+async function loadMockupSavedConfig(cfg) {
+  if (!(await confirmDiscardDraft())) return;
+  try {
+    const proj = await api(`/api/mockups/${activeApplicationId}/configs/${cfg.id}/apply`, { method: "POST" });
+    await enterLoadedDraft(activeApplicationId, proj, { source: "saved", id: cfg.id, name: cfg.name, sourceTemplateId: cfg.sourceTemplateId });
+    showToast(`Loaded "${cfg.name}".`, "success");
+  } catch (e) {
+    showAlert("Load failed: " + e.message, "error");
+  }
+}
+
+function draftSnapshot() {
+  const p = mockupApplication;
+  return { devices: p.devices, columns: p.columns, cells: p.cells, globalPanoramic: p.globalPanoramic, settings: p.settings };
+}
+
+// ---- Template ownership rules (Mockup) ----
+// Draft = in-memory `mockupApplication`; every save action below posts that snapshot explicitly.
+//   Save                          -> updates the loaded SAVED template only (default/none -> Save As).
+//   Save As                       -> creates a new SAVED template only.
+//   Update Template: Update       -> overwrites the loaded DEFAULT template (by its id) only.
+//   Update Template: Create New   -> creates a new DEFAULT template only.
+
+async function ensureMockupSavedConfigs() {
+  if (!mockupSavedConfigs.length && activeApplicationId) {
+    try { mockupSavedConfigs = await api(`/api/mockups/${activeApplicationId}/configs`); } catch (_) {}
+  }
+}
+
+function markDraftSaved() {
+  setSavedSnapshot(snapshotOfMockupApplication(mockupApplication));
+  setMockupDirty(false);
+}
+
+function setLoadedLabel(name) {
+  const label = document.getElementById("mockup-application-label");
+  if (label) label.textContent = name;
+}
+
+function requireMockupTemplate() {
+  if (!mockupApplication || !mockupId || !mockupLoadedFrom) {
+    showAlert("Please load a template before saving.");
+    return false;
+  }
+  return true;
+}
+
+export async function handleMockupSave() {
+  if (!requireMockupTemplate()) return false;
+  const cur = mockupLoadedFrom;
+  if (cur?.source !== "saved") return handleMockupSaveAs(true);
+  try {
+    const res = await api(`/api/mockups/${mockupId}/configs`, {
+      method: "POST",
+      body: { name: cur.name, mode: "update", configId: cur.id, sourceTemplateId: cur.sourceTemplateId, snapshot: draftSnapshot() },
+    });
+    mockupSavedConfigs = res.savedConfigs;
+    markDraftSaved();
+    renderMockupSavedGrid();
+    showToast(`Saved template "${cur.name}" updated.`, "success");
+    return true;
+  } catch (e) {
+    showAlert("Save failed: " + e.message, "error");
+    return false;
+  }
+}
+
+export async function handleMockupSaveAs(fromDefaultSave = false) {
+  if (!requireMockupTemplate()) return false;
+  await ensureMockupSavedConfigs();
+  const cur = mockupLoadedFrom;
+  const base = cur?.name || mockupApplication.name || "Template";
+  const taken = new Set(mockupSavedConfigs.map((c) => c.name.toLowerCase()));
+  let suggested = `${base} - My Version`;
+  for (let n = 2; taken.has(suggested.toLowerCase()); n++) suggested = `${base} - My Version ${n}`;
+  const name = await showSaveAsDialog({
+    suggestedName: suggested,
+    existingNames: mockupSavedConfigs.map((c) => c.name),
+    note: fromDefaultSave
+      ? "You are editing a default template. Saving stores a copy in this application's Saved Templates; the default is not changed."
+      : "Creates a new template in this application's Saved Templates.",
+  });
+  if (!name) return false;
+  try {
+    const res = await api(`/api/mockups/${mockupId}/configs`, {
+      method: "POST",
+      body: {
+        name,
+        mode: "new",
+        sourceTemplateId: cur?.source === "default" ? cur.id : cur?.sourceTemplateId,
+        snapshot: draftSnapshot(),
+      },
+    });
+    mockupSavedConfigs = res.savedConfigs;
+    setMockupLoadedFrom({ source: "saved", id: res.id, name, sourceTemplateId: cur?.source === "default" ? cur.id : cur?.sourceTemplateId });
+    setLoadedLabel(name);
+    markDraftSaved();
+    renderMockupSavedGrid();
+    showToast(`Saved as new template "${name}".`, "success");
+    return true;
+  } catch (e) {
+    showAlert("Save failed: " + e.message, "error");
+    return false;
+  }
+}
+
+export async function handleMockupUpdateTemplate() {
+  if (!requireMockupTemplate()) return;
+  const templates = await ensureMockupTemplates();
+  const cur = mockupLoadedFrom;
+  const loadedDefault = cur?.source === "default" && templates.some((t) => t.id === cur.id) ? cur : null;
+  const choice = await showUpdateTemplateDialog({
+    loaded: loadedDefault,
+    categories: [...new Set(templates.map((t) => t.category).filter(Boolean))].sort(),
+    existingNames: templates.map((t) => t.name),
+    suggestedName: loadedDefault ? `${loadedDefault.name} - Copy` : "",
+  });
+  if (!choice) return;
+  try {
+    if (choice.action === "update") {
+      // Target is always the loaded default's own id; there is no way to pick a different one here.
+      await api(`/api/mockups/${mockupId}/update-template`, { method: "POST", body: { templateId: loadedDefault.id, snapshot: draftSnapshot() } });
+      showToast(`Default template "${loadedDefault.name}" updated.`, "success");
+    } else {
+      const res = await api(`/api/mockups/${mockupId}/create-template`, {
+        method: "POST",
+        body: { name: choice.name, category: choice.category, description: choice.description, snapshot: draftSnapshot() },
+      });
+      setMockupLoadedFrom({ source: "default", id: res.templateId, name: res.name, category: res.category });
+      setLoadedLabel(res.name);
+      showToast(`New default template "${res.name}" created.`, "success");
+    }
+    markDraftSaved();
+    setMockupTemplates([]);
+    await renderMockupTemplateGrid();
+  } catch (e) {
+    showAlert("Update Template failed: " + e.message, "error");
+  }
 }
 
 export const applyTemplate = loadMockupTemplateNow;

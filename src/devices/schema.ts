@@ -108,7 +108,7 @@ export interface DeviceDefinition {
    *  at a hand-modeled GLB instead of the procedural builder's output. */
   overrideGlbPath?: string;
   /** Set by `archiveDevice()` — drops out of `listDevices()`'s default
-   *  results but stays resolvable by id so existing projects don't break.
+   *  results but stays resolvable by id so existing applications don't break.
    *  See plan "Device lifecycle (CRUD)". */
   archived?: boolean;
   /** Optional custom SVG string for uploaded SVG device templates */

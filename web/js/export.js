@@ -1,7 +1,7 @@
 // Export module — rendering to PNG, store package ZIP generation,
 // and progress indicators.
 
-import { mockupId, mockupProject, activeProjectId } from './state.js';
+import { mockupId, mockupApplication, activeApplicationId } from './state.js';
 import { api } from './utils.js';
 
 /**
@@ -9,7 +9,7 @@ import { api } from './utils.js';
  * Downloads via a hidden anchor to trigger browser save dialog.
  */
 export async function generateStorePackage() {
-  if (!mockupId || !mockupProject) return;
+  if (!mockupId || !mockupApplication) return;
 
   const exportBtn = document.getElementById("mockup-export-btn");
   if (exportBtn) exportBtn.disabled = true;
@@ -17,7 +17,7 @@ export async function generateStorePackage() {
   try {
     const res = await api(`/api/mockups/${mockupId}/render`, {
       method: "POST",
-      body: { columns: mockupProject.columns, devices: mockupProject.devices, cells: mockupProject.cells },
+      body: { columns: mockupApplication.columns, devices: mockupApplication.devices, cells: mockupApplication.cells },
     });
 
     // res.files contains URLs for rendered PNGs; trigger download
@@ -46,13 +46,13 @@ export async function generateStorePackage() {
  * Single-screen renderer — fetches and displays a server-rendered preview.
  */
 export async function previewSingleScreen(columnId) {
-  if (!mockupId || !mockupProject) return;
-  const col = mockupProject.columns.find(c => c.id === columnId);
+  if (!mockupId || !mockupApplication) return;
+  const col = mockupApplication.columns.find(c => c.id === columnId);
   if (!col) return;
 
   const res = await api(`/api/mockups/${mockupId}/render/preview`, {
     method: "POST",
-    body: { column: col, device: mockupProject.devices?.[0] },
+    body: { column: col, device: mockupApplication.devices?.[0] },
   });
 
   return res.previewUrl || null;

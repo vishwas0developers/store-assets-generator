@@ -3,7 +3,7 @@ import { templateHtmlPath } from "./templateConfig.js";
 
 /** Prefix that marks a background reference as "the native background of
  *  template <id>" rather than an uploaded source id -- stored in the same
- *  fields (project.backgroundImage / scene.slotValues.background.sourceId). */
+ *  fields (application.backgroundImage / scene.slotValues.background.sourceId). */
 export const TEMPLATE_BG_PREFIX = "template:";
 
 const cache = new Map<string, string | null>();

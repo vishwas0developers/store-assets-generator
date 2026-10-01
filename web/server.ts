@@ -31,15 +31,15 @@ import { listVideoDevices, listCssDevices, reloadCssDevices, resolveRigAsset, is
 import { loadPlatformSpec } from "../src/platform/index.js";
 
 import {
-  createProject,
-  listProjects,
-  loadProject,
-  saveProject,
-  deleteProject,
-  deleteProjectCapture,
-  projectDir,
-  projectFile,
-} from "../src/project/projectStore.js";
+  createApplication,
+  listApplications,
+  loadApplication,
+  saveApplication,
+  deleteApplication,
+  deleteApplicationCapture,
+  applicationDir,
+  applicationFile,
+} from "../src/application/applicationStore.js";
 import {
   startBrowserSession,
   stopBrowserSession,
@@ -87,42 +87,42 @@ import {
   addColumn,
   addDeviceRow,
   defaultColumnStyle,
-  listMockupProjects,
-  loadMockupProject,
+  listMockupApplications,
+  loadMockupApplication,
   mockupDir,
   mockupFile,
-  saveMockupProject,
+  saveMockupApplication,
   setCellOverride,
   setCellOverridePath,
   updateColumnStyle,
   type ColumnStyle,
   type MockupDeviceRow,
-} from "../src/mockup/project.js";
+} from "../src/mockup/application.js";
 import { groupedLayoutPresets, listLayoutPresets } from "../src/mockup/layouts.js";
 import { cellPreviewHtml, renderTemplateDetailThumbs, renderTemplateThumbs, templateThumbHtml, templateDetailThumbHtml, templateScreenHtml } from "../src/mockup/render.js";
-import { exportMockupProject, exportSingleScreen, exportPanoramicBanner } from "../src/mockup/export.js";
-import { MOCKUP_TEMPLATES, applyMockupTemplate, getMockupTemplateFromDisk, updateTemplateFromProject } from "../src/mockup/templates.js";
+import { exportMockupApplication, exportSingleScreen, exportPanoramicBanner } from "../src/mockup/export.js";
+import { MOCKUP_TEMPLATES, applyMockupTemplate, getMockupTemplateFromDisk, updateTemplateFromApplication, createTemplateFromApplication } from "../src/mockup/templates.js";
 import { sizeTargetsFor } from "../src/mockup/sizeTargets.js";
 
 import {
-  listVideoProjects,
-  loadVideoProject,
-  saveVideoProject,
+  listVideoApplications,
+  loadVideoApplication,
+  saveVideoApplication,
   videoDir,
   videoFile,
   type VideoExportRecord,
-} from "../src/video/project.js";
+} from "../src/video/application.js";
 import { SCENE_ANIMATIONS, detectBestH264Encoder, ensureGeneratedBgm, listSceneAnimations, listSceneLayouts, listVideoBackgrounds, renderVideo, RenderCancelled, type RenderOptions, type RenderProgress, renderVideoTemplateThumbs, sceneHtml, scenePreviewHtml, sourceKindsFor, sourceUrisFor, templatePreviewHtml } from "../src/video/render.js";
 import { EXPORT_PRESETS } from "../src/video/exportPresets.js";
 import { listTemplateBackgrounds } from "../src/video/templateBackgrounds.js";
-import { VIDEO_TEMPLATES, applyVideoTemplate, resolveTemplateId, scratchVideoProject, loadAllTemplates } from "../src/video/templates.js";
+import { VIDEO_TEMPLATES, applyVideoTemplate, resolveTemplateId, scratchVideoApplication, loadAllTemplates, updateVideoTemplateOnDisk, createVideoTemplateOnDisk } from "../src/video/templates.js";
 import { BGM_PRESETS, renderBgmWav } from "../src/video/bgm.js";
 import { slotSpecsForScene, validateScene, type SlotIssue } from "../src/video/slots.js";
-import { type SlotValue } from "../src/video/project.js";
+import { type SlotValue } from "../src/video/application.js";
 
 /**
  * Local-only manual workflow surface -- a thin HTTP adapter over three
- * fully independent project stores (Screen Capture / Studio Mockup /
+ * fully independent application stores (Screen Capture / Studio Mockup /
  * Video, see src/{capture,mockup,video}/*), matching the three-tab shell
  * in web/index.html. Nothing here carries state from one namespace to
  * another; that is by design (see docs/ARCHITECTURE.md).
@@ -156,7 +156,7 @@ const MAX_UPLOAD_BYTES = (Number(process.env.SAG_MAX_UPLOAD_MB) || 25) * 1024 * 
 
 interface RenderJob {
   id: string;
-  projectId: string;
+  applicationId: string;
   configId?: string;
   state: "running" | "done" | "error" | "cancelled";
   cancelRequested?: boolean;
@@ -188,15 +188,15 @@ function cleanupOldRenderJobs() {
 }
 setInterval(cleanupOldRenderJobs, 10 * 60 * 1000);
 
-function getRunningJobForProject(projectId: string): RenderJob | undefined {
+function getRunningJobForApplication(applicationId: string): RenderJob | undefined {
   for (const job of renderJobs.values()) {
-    if (job.projectId === projectId && job.state === "running") return job;
+    if (job.applicationId === applicationId && job.state === "running") return job;
   }
   return undefined;
 }
 
-function startRenderJob(project: any, opts: RenderOptions = {}, meta: { configId?: string } = {}): { job: RenderJob; isNew: boolean } {
-  const existing = getRunningJobForProject(project.id);
+function startRenderJob(application: any, opts: RenderOptions = {}, meta: { configId?: string } = {}): { job: RenderJob; isNew: boolean } {
+  const existing = getRunningJobForApplication(application.id);
   if (existing) {
     return { job: existing, isNew: false };
   }
@@ -207,7 +207,7 @@ function startRenderJob(project: any, opts: RenderOptions = {}, meta: { configId
 
   const job: RenderJob = {
     id: jobId,
-    projectId: project.id,
+    applicationId: application.id,
     configId: meta.configId,
     state: "running",
     progress: {
@@ -232,7 +232,7 @@ function startRenderJob(project: any, opts: RenderOptions = {}, meta: { configId
       };
 
       const finalVideoPath = await renderVideo(
-        project,
+        application,
         renderOpts,
         (progress) => {
           job.progress = { ...progress };
@@ -253,8 +253,8 @@ function startRenderJob(project: any, opts: RenderOptions = {}, meta: { configId
 
       // Calculate width, height, durationSec
       const scenes = opts.sceneRange
-        ? [...project.scenes].sort((a, b) => a.order - b.order).slice(opts.sceneRange[0] - 1, opts.sceneRange[1])
-        : project.scenes;
+        ? [...application.scenes].sort((a, b) => a.order - b.order).slice(opts.sceneRange[0] - 1, opts.sceneRange[1])
+        : application.scenes;
       const totalSec = scenes.reduce((s: number, sc: any) => s + Math.max(1, sc.durationSeconds), 0);
       job.durationSec = Math.round(totalSec * 10) / 10;
 
@@ -269,13 +269,13 @@ function startRenderJob(project: any, opts: RenderOptions = {}, meta: { configId
         }
       }
 
-      // If this was a main project render, update project.outputs.video
+      // If this was a main application render, update application.outputs.video
       if (!meta.configId) {
         try {
-          const freshProj = loadVideoProject(project.id);
-          freshProj.outputs.video = path.relative(videoDir(project.id), finalVideoPath).split(path.sep).join("/");
+          const freshProj = loadVideoApplication(application.id);
+          freshProj.outputs.video = path.relative(videoDir(application.id), finalVideoPath).split(path.sep).join("/");
 
-          // Also record in project export history (up to 20 newest)
+          // Also record in application export history (up to 20 newest)
           freshProj.exports = freshProj.exports || [];
           freshProj.exports.unshift({
             id: `exp_${Date.now()}`,
@@ -292,17 +292,17 @@ function startRenderJob(project: any, opts: RenderOptions = {}, meta: { configId
             createdAt: new Date().toISOString(),
           });
           freshProj.exports = freshProj.exports.slice(0, 20);
-          saveVideoProject(freshProj);
+          saveVideoApplication(freshProj);
         } catch (err) {
-          console.warn("Could not record export in project.json:", err);
+          console.warn("Could not record export in application.json:", err);
         }
       } else {
         // Also copy to config_<cfgId>.<ext> for legacy download compatibility
         try {
-          const cfgPath = path.join(videoDir(project.id), `config_${meta.configId}.${format}`);
+          const cfgPath = path.join(videoDir(application.id), `config_${meta.configId}.${format}`);
           fs.copyFileSync(finalVideoPath, cfgPath);
 
-          const freshProj = loadVideoProject(project.id);
+          const freshProj = loadVideoApplication(application.id);
           freshProj.exports = freshProj.exports || [];
           freshProj.exports.unshift({
             id: `exp_${Date.now()}`,
@@ -319,7 +319,7 @@ function startRenderJob(project: any, opts: RenderOptions = {}, meta: { configId
             createdAt: new Date().toISOString(),
           });
           freshProj.exports = freshProj.exports.slice(0, 20);
-          saveVideoProject(freshProj);
+          saveVideoApplication(freshProj);
         } catch (err) {
           console.warn("Could not copy config export:", err);
         }
@@ -410,10 +410,10 @@ function sendFileRanged(req: http.IncomingMessage, res: http.ServerResponse, fil
   fs.createReadStream(filePath, { start, end }).pipe(res);
 }
 
-function validateProject(project: { template: string | null; scenes: { id: string; order: number; slotValues?: Record<string, SlotValue>; sourceId?: string; screenIds?: string[]; text?: string; subtext?: string }[] }) {
-  const scenes = project.template
-    ? project.scenes.map((scene) => {
-        const specs = slotSpecsForScene(project.template as string, scene.order);
+function validateApplication(application: { template: string | null; scenes: { id: string; order: number; slotValues?: Record<string, SlotValue>; sourceId?: string; screenIds?: string[]; text?: string; subtext?: string }[] }) {
+  const scenes = application.template
+    ? application.scenes.map((scene) => {
+        const specs = slotSpecsForScene(application.template as string, scene.order);
         const slotValues = { ...(scene.slotValues ?? {}) };
         if (!slotValues.text && scene.text) {
           slotValues.text = { kind: "text", value: scene.text };
@@ -885,51 +885,51 @@ export async function startWebServer(options: { port?: number; host?: string; op
       }
     }
 
-    // Projects API (Screen Capture Tab)
-    if (method === "GET" && p === "/api/projects") {
-      sendJson(res, 200, { projects: listProjects() });
+    // Applications API (Screen Capture Tab)
+    if (method === "GET" && p === "/api/applications") {
+      sendJson(res, 200, { applications: listApplications() });
       return;
     }
 
-    if (method === "POST" && p === "/api/projects") {
+    if (method === "POST" && p === "/api/applications") {
       const body = await readJsonBody(req);
       if (!body.name) return sendError(res, 400, "name is required");
       // Trust boundary: the client must state the store explicitly.
       if (body.platform !== "play-store" && body.platform !== "app-store") return sendError(res, 400, "platform must be 'play-store' or 'app-store'");
-      const project = createProject(body.name, body.appCategory || "Utility", body.targetUrl || "", body.platform);
-      sendJson(res, 200, project);
+      const application = createApplication(body.name, body.appCategory || "Utility", body.targetUrl || "", body.platform);
+      sendJson(res, 200, application);
       return;
     }
 
     {
-      const m = p.match(/^\/api\/projects\/([^/]+)$/);
-      if (m && method === "GET") return sendJson(res, 200, loadProject(decodeURIComponent(m[1])));
+      const m = p.match(/^\/api\/applications\/([^/]+)$/);
+      if (m && method === "GET") return sendJson(res, 200, loadApplication(decodeURIComponent(m[1])));
       if (m && method === "PUT") {
         const body = await readJsonBody(req);
-        const project = loadProject(decodeURIComponent(m[1]));
-        if (body.name !== undefined) project.name = body.name;
-        if (body.appCategory !== undefined) project.appCategory = body.appCategory;
-        if (body.targetUrl !== undefined) project.targetUrl = body.targetUrl;
+        const application = loadApplication(decodeURIComponent(m[1]));
+        if (body.name !== undefined) application.name = body.name;
+        if (body.appCategory !== undefined) application.appCategory = body.appCategory;
+        if (body.targetUrl !== undefined) application.targetUrl = body.targetUrl;
         if (body.platform !== undefined) {
           if (body.platform !== "play-store" && body.platform !== "app-store") return sendError(res, 400, "platform must be 'play-store' or 'app-store'");
-          project.platform = body.platform;
+          application.platform = body.platform;
         }
-        saveProject(project);
-        sendJson(res, 200, project);
+        saveApplication(application);
+        sendJson(res, 200, application);
         return;
       }
       if (m && method === "DELETE") {
-        deleteProject(decodeURIComponent(m[1]));
+        deleteApplication(decodeURIComponent(m[1]));
         sendJson(res, 200, { ok: true });
         return;
       }
     }
 
     {
-      const m = p.match(/^\/api\/projects\/([^/]+)\/files$/);
+      const m = p.match(/^\/api\/applications\/([^/]+)\/files$/);
       if (m && method === "GET") {
         const id = decodeURIComponent(m[1]);
-        const dir = projectDir(id);
+        const dir = applicationDir(id);
         const files: Array<{ path: string; size: number; mtime: number }> = [];
 
         function scan(sub: string) {
@@ -958,22 +958,22 @@ export async function startWebServer(options: { port?: number; host?: string; op
     }
 
     {
-      const m = p.match(/^\/api\/projects\/([^/]+)\/captures\/([^/]+)$/);
+      const m = p.match(/^\/api\/applications\/([^/]+)\/captures\/([^/]+)$/);
       if (m && method === "DELETE") {
         const projId = decodeURIComponent(m[1]);
         const captureId = decodeURIComponent(m[2]);
-        deleteProjectCapture(projId, captureId);
+        deleteApplicationCapture(projId, captureId);
         sendJson(res, 200, { ok: true });
         return;
       }
     }
 
     {
-      const m = p.match(/^\/api\/projects\/([^/]+)\/file$/);
+      const m = p.match(/^\/api\/applications\/([^/]+)\/file$/);
       if (m && method === "GET") {
         const rel = url.searchParams.get("p");
         if (!rel) return sendError(res, 400, "query param 'p' is required");
-        const abs = projectFile(decodeURIComponent(m[1]), rel);
+        const abs = applicationFile(decodeURIComponent(m[1]), rel);
         const ext = path.extname(abs).toLowerCase();
         let mime = "image/png";
         if (ext === ".jpg" || ext === ".jpeg") mime = "image/jpeg";
@@ -987,7 +987,7 @@ export async function startWebServer(options: { port?: number; host?: string; op
         const rel = url.searchParams.get("p");
         if (!rel) return sendError(res, 400, "query param 'p' is required");
         const projId = decodeURIComponent(m[1]);
-        deleteProjectCapture(projId, rel);
+        deleteApplicationCapture(projId, rel);
         sendJson(res, 200, { ok: true });
         return;
       }
@@ -1023,13 +1023,13 @@ export async function startWebServer(options: { port?: number; host?: string; op
     // Live Web Browser endpoints
     if (method === "POST" && p === "/api/browser/start") {
       const body = await readJsonBody(req);
-      if (!body.projectId || !body.url) {
-        return sendError(res, 400, "projectId and url are required");
+      if (!body.applicationId || !body.url) {
+        return sendError(res, 400, "applicationId and url are required");
       }
       try {
         const deviceCategory = isDeviceCategory(body.deviceCategory) ? body.deviceCategory : "phone";
         const resolutionKey = resolveResolutionKeyForCategory(deviceCategory);
-        const result = await startBrowserSession(body.projectId, body.url, resolutionKey);
+        const result = await startBrowserSession(body.applicationId, body.url, resolutionKey);
         sendJson(res, 200, { ok: true, deviceCategory, ...result });
       } catch (err: any) {
         sendError(res, 500, err.message || "Failed to start browser session");
@@ -1067,11 +1067,11 @@ export async function startWebServer(options: { port?: number; host?: string; op
 
     if (method === "POST" && p === "/api/browser/capture") {
       const body = await readJsonBody(req);
-      if (!body.projectId) {
-        return sendError(res, 400, "projectId is required");
+      if (!body.applicationId) {
+        return sendError(res, 400, "applicationId is required");
       }
       try {
-        const capture = await captureBrowserScreen(body.projectId);
+        const capture = await captureBrowserScreen(body.applicationId);
         sendJson(res, 200, capture);
       } catch (err: any) {
         sendError(res, 500, err.message || "Failed to capture browser screen");
@@ -1081,9 +1081,9 @@ export async function startWebServer(options: { port?: number; host?: string; op
 
     if (method === "POST" && p === "/api/browser/record/start") {
       const body = await readJsonBody(req);
-      if (!body.projectId) return sendError(res, 400, "projectId is required");
+      if (!body.applicationId) return sendError(res, 400, "applicationId is required");
       try {
-        sendJson(res, 200, startBrowserRecording(body.projectId));
+        sendJson(res, 200, startBrowserRecording(body.applicationId));
       } catch (err: any) {
         sendError(res, 500, err.message || "Failed to start browser recording");
       }
@@ -1113,11 +1113,11 @@ export async function startWebServer(options: { port?: number; host?: string; op
 
     if (method === "POST" && p === "/api/android/start") {
       const body = await readJsonBody(req);
-      if (!body.projectId) {
-        return sendError(res, 400, "projectId is required");
+      if (!body.applicationId) {
+        return sendError(res, 400, "applicationId is required");
       }
       try {
-        const result = await startAndroidSession(body.projectId, body.deviceId, {
+        const result = await startAndroidSession(body.applicationId, body.deviceId, {
           screenOff: body.screenOff,
           nativePreview: Boolean(body.nativePreview),
         });
@@ -1224,10 +1224,10 @@ export async function startWebServer(options: { port?: number; host?: string; op
 
     if (method === "POST" && p === "/api/android/capture") {
       const body = await readJsonBody(req);
-      if (!body.projectId) {
-        return sendError(res, 400, "projectId is required");
+      if (!body.applicationId) {
+        return sendError(res, 400, "applicationId is required");
       }
-      const capture = await captureAndroidScreen(body.projectId, body.imageData);
+      const capture = await captureAndroidScreen(body.applicationId, body.imageData);
       sendJson(res, 200, capture);
       return;
     }
@@ -1240,9 +1240,9 @@ export async function startWebServer(options: { port?: number; host?: string; op
 
     if (method === "POST" && p === "/api/android/record/start") {
       const body = await readJsonBody(req);
-      if (!body.projectId) return sendError(res, 400, "projectId is required");
+      if (!body.applicationId) return sendError(res, 400, "applicationId is required");
       try {
-        sendJson(res, 200, startAndroidRecording(body.projectId));
+        sendJson(res, 200, startAndroidRecording(body.applicationId));
       } catch (err: any) {
         sendError(res, 500, err.message || "Failed to start recording");
       }
@@ -1302,7 +1302,7 @@ export async function startWebServer(options: { port?: number; host?: string; op
 
     // Fallback legacy routes
     if (method === "GET" && p === "/api/captures") {
-      const sessions = listProjects().map((p) => ({
+      const sessions = listApplications().map((p) => ({
         id: p.id,
         createdAt: p.createdAt,
         name: p.name,
@@ -1315,14 +1315,14 @@ export async function startWebServer(options: { port?: number; host?: string; op
 
     if (method === "POST" && p === "/api/captures") {
       const body = await readJsonBody(req);
-      // ponytail: API path with no platform picker -> createProject default (play-store).
-      const project = createProject(body.name || body.url || "Untitled Project", "Utility", body.url);
+      // ponytail: API path with no platform picker -> createApplication default (play-store).
+      const application = createApplication(body.name || body.url || "Untitled Application", "Utility", body.url);
       sendJson(res, 200, {
-        id: project.id,
-        createdAt: project.createdAt,
-        name: project.name,
+        id: application.id,
+        createdAt: application.createdAt,
+        name: application.name,
         source: "website",
-        url: project.targetUrl,
+        url: application.targetUrl,
         platforms: ["google-play"],
         raw: [],
       });
@@ -1332,15 +1332,15 @@ export async function startWebServer(options: { port?: number; host?: string; op
     {
       const m = p.match(/^\/api\/captures\/([^/]+)$/);
       if (m && method === "GET") {
-        const project = loadProject(decodeURIComponent(m[1]));
+        const application = loadApplication(decodeURIComponent(m[1]));
         sendJson(res, 200, {
-          id: project.id,
-          createdAt: project.createdAt,
-          name: project.name,
+          id: application.id,
+          createdAt: application.createdAt,
+          name: application.name,
           source: "website",
-          url: project.targetUrl,
+          url: application.targetUrl,
           platforms: ["google-play"],
-          raw: project.captures.map((c) => ({
+          raw: application.captures.map((c) => ({
             file: c.file,
             width: c.width,
             height: c.height,
@@ -1351,7 +1351,7 @@ export async function startWebServer(options: { port?: number; host?: string; op
       }
     }
 
-    // Mockup projects
+    // Mockup applications
     if (method === "GET" && p === "/api/mockups/layouts") {
       sendJson(res, 200, {
         presets: listLayoutPresets(),
@@ -1361,7 +1361,7 @@ export async function startWebServer(options: { port?: number; host?: string; op
     }
 
     if (method === "GET" && p === "/api/mockups") {
-      sendJson(res, 200, { projects: listMockupProjects() });
+      sendJson(res, 200, { applications: listMockupApplications() });
       return;
     }
 
@@ -1448,26 +1448,26 @@ export async function startWebServer(options: { port?: number; host?: string; op
     if (method === "POST" && p === "/api/mockups") {
       const body = await readJsonBody(req);
       if (!body.name) return sendError(res, 400, "name is required");
-      const project = createProject(body.name);
-      sendJson(res, 200, project.mockup);
+      const application = createApplication(body.name);
+      sendJson(res, 200, application.mockup);
       return;
     }
 
     {
       const m = p.match(/^\/api\/mockups\/(?!templates$|layouts$|export$)([^/]+)$/);
       // platform is exposed (not stored on the mockup) so the client can pick size targets without a second fetch.
-      if (m && method === "GET") { const id = decodeURIComponent(m[1]); return sendJson(res, 200, { ...loadMockupProject(id), platform: loadProject(id).platform }); }
+      if (m && method === "GET") { const id = decodeURIComponent(m[1]); return sendJson(res, 200, { ...loadMockupApplication(id), platform: loadApplication(id).platform }); }
       if (m && method === "PUT") {
         const body = await readJsonBody(req);
-        const project = loadMockupProject(decodeURIComponent(m[1]));
-        if (body.devices !== undefined) project.devices = body.devices;
-        if (body.columns !== undefined) project.columns = body.columns;
-        if (body.cells !== undefined) project.cells = body.cells;
-        if (body.sources !== undefined) project.sources = body.sources;
-        if (body.globalPanoramic !== undefined) project.globalPanoramic = body.globalPanoramic;
-        if (body.settings !== undefined) project.settings = body.settings;
-        saveMockupProject(project);
-        sendJson(res, 200, project);
+        const application = loadMockupApplication(decodeURIComponent(m[1]));
+        if (body.devices !== undefined) application.devices = body.devices;
+        if (body.columns !== undefined) application.columns = body.columns;
+        if (body.cells !== undefined) application.cells = body.cells;
+        if (body.sources !== undefined) application.sources = body.sources;
+        if (body.globalPanoramic !== undefined) application.globalPanoramic = body.globalPanoramic;
+        if (body.settings !== undefined) application.settings = body.settings;
+        saveMockupApplication(application);
+        sendJson(res, 200, application);
         return;
       }
     }
@@ -1477,11 +1477,11 @@ export async function startWebServer(options: { port?: number; host?: string; op
       if (m && method === "POST") {
         const id = decodeURIComponent(m[1]);
         const body = (await readJsonBody(req).catch(() => ({}))) || {};
-        const project = loadMockupProject(id);
-        const style = body.style || defaultColumnStyle(`Screen ${project.columns.length + 1}`);
-        const col = addColumn(project, style);
-        saveMockupProject(project);
-        sendJson(res, 200, { project, column: col });
+        const application = loadMockupApplication(id);
+        const style = body.style || defaultColumnStyle(`Screen ${application.columns.length + 1}`);
+        const col = addColumn(application, style);
+        saveMockupApplication(application);
+        sendJson(res, 200, { application, column: col });
         return;
       }
     }
@@ -1492,12 +1492,12 @@ export async function startWebServer(options: { port?: number; host?: string; op
         const id = decodeURIComponent(m[1]);
         const colId = decodeURIComponent(m[2]);
         const body = await readJsonBody(req);
-        const project = loadMockupProject(id);
+        const application = loadMockupApplication(id);
         if (body.style) {
-          updateColumnStyle(project, colId, body.style);
-          saveMockupProject(project);
+          updateColumnStyle(application, colId, body.style);
+          saveMockupApplication(application);
         }
-        sendJson(res, 200, { project });
+        sendJson(res, 200, { application });
         return;
       }
     }
@@ -1509,18 +1509,18 @@ export async function startWebServer(options: { port?: number; host?: string; op
         const rowId = decodeURIComponent(m[2]);
         const colId = decodeURIComponent(m[3]);
         const body = await readJsonBody(req);
-        const project = loadMockupProject(id);
+        const application = loadMockupApplication(id);
         if (body.path !== undefined) {
           // Sparse per-field override: { path: "deviceOne.rotation", value: 12 }
-          setCellOverridePath(project, rowId, colId, body.path, body.value);
+          setCellOverridePath(application, rowId, colId, body.path, body.value);
         } else if (body.paths && typeof body.paths === "object") {
-          for (const [path, value] of Object.entries(body.paths)) setCellOverridePath(project, rowId, colId, path, value);
+          for (const [path, value] of Object.entries(body.paths)) setCellOverridePath(application, rowId, colId, path, value);
         } else {
           // Legacy whole-sub-object override, e.g. { override: { deviceOne: {...} } } or { override: null } to clear.
-          setCellOverride(project, rowId, colId, body.override ?? body.style ?? null);
+          setCellOverride(application, rowId, colId, body.override ?? body.style ?? null);
         }
-        saveMockupProject(project);
-        sendJson(res, 200, { project });
+        saveMockupApplication(application);
+        sendJson(res, 200, { application });
         return;
       }
     }
@@ -1530,24 +1530,24 @@ export async function startWebServer(options: { port?: number; host?: string; op
       if (m) {
         const id = decodeURIComponent(m[1]);
         const rowId = m[2] ? decodeURIComponent(m[2]) : null;
-        const project = loadMockupProject(id);
+        const application = loadMockupApplication(id);
         if (method === "POST") {
           const body = await readJsonBody(req);
-          const dev = addDeviceRow(project, {
+          const dev = addDeviceRow(application, {
             deviceId: body.deviceId || "phone",
             variant: body.variant,
             label: body.label || "Row",
             previewsVisible: true,
-            isBase: project.devices.length === 0,
+            isBase: application.devices.length === 0,
           });
-          saveMockupProject(project);
-          sendJson(res, 200, { project, device: dev });
+          saveMockupApplication(application);
+          sendJson(res, 200, { application, device: dev });
           return;
         }
         if (method === "DELETE" && rowId) {
-          project.devices = project.devices.filter((d) => d.id !== rowId);
-          saveMockupProject(project);
-          sendJson(res, 200, { project });
+          application.devices = application.devices.filter((d) => d.id !== rowId);
+          saveMockupApplication(application);
+          sendJson(res, 200, { application });
           return;
         }
       }
@@ -1561,15 +1561,15 @@ export async function startWebServer(options: { port?: number; host?: string; op
         if (!body.data) return sendError(res, 400, "data (base64) is required");
         const filename = body.name || `asset_${Date.now()}.png`;
         const base64Data = body.data.replace(/^data:image\/\w+;base64,/, "");
-        const project = loadMockupProject(id);
+        const application = loadMockupApplication(id);
         const rel = `sources/${Date.now()}_${filename}`;
         const abs = mockupFile(id, rel);
         fs.mkdirSync(path.dirname(abs), { recursive: true });
         fs.writeFileSync(abs, Buffer.from(base64Data, "base64"));
         // This endpoint is for decorative Asset Layers (stickers, badges,
         // panorama assets) -- a completely different concept from a
-        // project's screenshot sources. It must NOT push into
-        // project.sources: that array is exactly what populates the
+        // application's screenshot sources. It must NOT push into
+        // application.sources: that array is exactly what populates the
         // Screenshot Source Mapping dropdown (mk-source, see
         // web/js/editor.js's populateSourceSelect), so doing so previously
         // let every asset-layer upload masquerade as a selectable screenshot.
@@ -1580,7 +1580,7 @@ export async function startWebServer(options: { port?: number; host?: string; op
           width: body.width || 1080,
           height: body.height || 1920,
         };
-        sendJson(res, 200, { project, source: sourceObj });
+        sendJson(res, 200, { application, source: sourceObj });
         return;
       }
     }
@@ -1589,9 +1589,9 @@ export async function startWebServer(options: { port?: number; host?: string; op
       const m = p.match(/^\/api\/mockups\/([^/]+)\/export$/);
       if (m && method === "POST") {
         const id = decodeURIComponent(m[1]);
-        const project = loadMockupProject(id);
+        const application = loadMockupApplication(id);
         try {
-          const result = await exportMockupProject(project);
+          const result = await exportMockupApplication(application);
           sendJson(res, 200, { ok: true, result, downloadUrl: `/api/mockups/${id}/file?p=exports/mockup-export.zip` });
         } catch (err: any) {
           sendError(res, 500, err?.message || "Export failed");
@@ -1604,10 +1604,10 @@ export async function startWebServer(options: { port?: number; host?: string; op
       const m = p.match(/^\/api\/mockups\/([^/]+)\/export\/single$/);
       if (m && method === "POST") {
         const id = decodeURIComponent(m[1]);
-        const project = loadMockupProject(id);
+        const application = loadMockupApplication(id);
         const body = await readJsonBody(req);
         try {
-          const file = await exportSingleScreen(project, body?.columnId);
+          const file = await exportSingleScreen(application, body?.columnId);
           const rel = path.relative(mockupDir(id), file).replace(/\\/g, "/");
           sendJson(res, 200, { ok: true, downloadUrl: `/api/mockups/${id}/file?p=${encodeURIComponent(rel)}` });
         } catch (err: any) {
@@ -1621,12 +1621,12 @@ export async function startWebServer(options: { port?: number; host?: string; op
       const m = p.match(/^\/api\/mockups\/([^/]+)\/export\/panoramic$/);
       if (m && method === "POST") {
         const id = decodeURIComponent(m[1]);
-        const project = loadMockupProject(id);
+        const application = loadMockupApplication(id);
         const body = await readJsonBody(req).catch(() => ({}));
         const sizeKey = body?.sizeKey ?? url.searchParams.get("sizeKey") ?? undefined;
-        if (sizeKey !== undefined && !sizeTargetsFor(loadProject(id).platform).some((t) => t.key === sizeKey)) return sendError(res, 400, "unknown sizeKey for this project's platform");
+        if (sizeKey !== undefined && !sizeTargetsFor(loadApplication(id).platform).some((t) => t.key === sizeKey)) return sendError(res, 400, "unknown sizeKey for this application's platform");
         try {
-          const file = await exportPanoramicBanner(project, sizeKey);
+          const file = await exportPanoramicBanner(application, sizeKey);
           const rel = path.relative(mockupDir(id), file).replace(/\\/g, "/");
           sendJson(res, 200, { ok: true, downloadUrl: `/api/mockups/${id}/file?p=${encodeURIComponent(rel)}` });
         } catch (err: any) {
@@ -1644,7 +1644,7 @@ export async function startWebServer(options: { port?: number; host?: string; op
         if (!rel) return sendError(res, 400, "query param 'p' is required");
         const id = decodeURIComponent(m[1]);
         let abs = mockupFile(id, rel);
-        if (!fs.existsSync(abs)) abs = projectFile(id, rel);
+        if (!fs.existsSync(abs)) abs = applicationFile(id, rel);
         const ext = path.extname(abs).toLowerCase();
         sendFile(res, abs, ext === ".zip" ? "application/zip" : ext === ".svg" ? "image/svg+xml" : ext === ".webp" ? "image/webp" : ext === ".jpg" || ext === ".jpeg" ? "image/jpeg" : "image/png");
         return;
@@ -1779,14 +1779,112 @@ export async function startWebServer(options: { port?: number; host?: string; op
     }
 
     {
+      const m = p.match(/^\/api\/mockups\/([^/]+)\/configs$/);
+      if (m && method === "GET") {
+        sendJson(res, 200, loadMockupApplication(decodeURIComponent(m[1])).savedConfigs ?? []);
+        return;
+      }
+      if (m && method === "POST") {
+        const body = await readJsonBody(req);
+        const name = String(body.name ?? "").trim();
+        if (!name) return sendError(res, 400, "A template name is required.");
+        const snap = body.snapshot;
+        if (!snap || !Array.isArray(snap.columns) || snap.columns.length === 0) return sendError(res, 400, "Nothing to save: load a template into the editor first.");
+        const application = loadMockupApplication(decodeURIComponent(m[1]));
+        const list = (application.savedConfigs = application.savedConfigs ?? []);
+        const mode = body.mode === "update" ? "update" : "new";
+        const target = mode === "update" ? list.find((c) => c.id === body.configId) : undefined;
+        if (mode === "update" && !target) return sendError(res, 404, "The template to update no longer exists.");
+        if (list.some((c) => c.name === name && c.id !== target?.id)) return sendError(res, 409, `A template named '${name}' already exists.`);
+        const cfg = {
+          id: target?.id ?? `mcfg_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+          name,
+          sourceTemplateId: typeof body.sourceTemplateId === "string" ? body.sourceTemplateId : target?.sourceTemplateId,
+          snapshot: JSON.parse(JSON.stringify({
+            devices: snap.devices ?? [],
+            columns: snap.columns,
+            cells: snap.cells ?? {},
+            globalPanoramic: snap.globalPanoramic ?? { flip: false },
+            settings: snap.settings ?? application.settings,
+          })),
+          savedAt: new Date().toISOString(),
+        };
+        if (target) Object.assign(target, cfg);
+        else list.push(cfg);
+        saveMockupApplication(application);
+        sendJson(res, 200, { savedConfigs: list, id: cfg.id });
+        return;
+      }
+    }
+
+    {
+      const m = p.match(/^\/api\/mockups\/([^/]+)\/configs\/([^/]+)\/apply$/);
+      if (m && method === "POST") {
+        const id = decodeURIComponent(m[1]);
+        const application = loadMockupApplication(id);
+        const cfg = (application.savedConfigs ?? []).find((c) => c.id === decodeURIComponent(m[2]));
+        if (!cfg) return sendError(res, 404, "Saved template not found");
+        const snap = JSON.parse(JSON.stringify(cfg.snapshot));
+        application.devices = snap.devices;
+        application.columns = snap.columns;
+        application.cells = snap.cells;
+        application.globalPanoramic = snap.globalPanoramic;
+        application.settings = snap.settings;
+        saveMockupApplication(application);
+        sendJson(res, 200, { ...application, platform: loadApplication(id).platform });
+        return;
+      }
+    }
+
+    {
+      const m = p.match(/^\/api\/mockups\/([^/]+)\/configs\/([^/]+)$/);
+      if (m && method === "DELETE") {
+        const application = loadMockupApplication(decodeURIComponent(m[1]));
+        const before = application.savedConfigs?.length ?? 0;
+        application.savedConfigs = (application.savedConfigs ?? []).filter((c) => c.id !== decodeURIComponent(m[2]));
+        if (application.savedConfigs.length === before) return sendError(res, 404, "Saved template not found");
+        saveMockupApplication(application);
+        sendJson(res, 200, application.savedConfigs);
+        return;
+      }
+    }
+
+    {
+      const m = p.match(/^\/api\/mockups\/([^/]+)\/create-template$/);
+      if (m && method === "POST") {
+        const body = await readJsonBody(req);
+        const id = decodeURIComponent(m[1]);
+        const application = loadMockupApplication(id);
+        const draft = body.snapshot;
+        if (!draft || !Array.isArray(draft.columns)) return sendError(res, 400, "snapshot is required");
+        application.devices = draft.devices ?? application.devices;
+        application.columns = draft.columns;
+        try {
+          const t = createTemplateFromApplication(application, { name: String(body.name ?? ""), category: String(body.category ?? ""), description: body.description }, loadApplication(id).platform);
+          sendJson(res, 200, { ok: true, templateId: t.id, name: t.name, category: t.category });
+        } catch (e: any) {
+          sendError(res, 400, e.message);
+        }
+        return;
+      }
+    }
+
+    {
       const m = p.match(/^\/api\/mockups\/([^/]+)\/update-template$/);
       if (m && method === "POST") {
         const body = await readJsonBody(req);
         if (!body.templateId) return sendError(res, 400, "templateId is required");
         const id = decodeURIComponent(m[1]);
-        const project = loadMockupProject(id);
+        const application = loadMockupApplication(id);
+        const draft = body.snapshot;
+        if (draft && Array.isArray(draft.columns)) {
+          // Source of truth is the posted in-memory draft; nothing here is persisted to the application file.
+          application.devices = draft.devices ?? application.devices;
+          application.columns = draft.columns;
+        }
         try {
-          const name = updateTemplateFromProject(project, body.templateId, loadProject(id).platform);
+          const name = updateTemplateFromApplication(application, body.templateId, loadApplication(id).platform);
+          try { fs.rmSync(path.join(process.cwd(), "output", ".template-thumbs", `${body.templateId}.png`), { force: true }); } catch { /* thumbnail is regenerated on demand */ }
           sendJson(res, 200, { ok: true, templateId: body.templateId, name });
         } catch (e: any) {
           sendError(res, 400, e.message);
@@ -1801,11 +1899,11 @@ export async function startWebServer(options: { port?: number; host?: string; op
         const body = await readJsonBody(req);
         if (!body.templateId) return sendError(res, 400, "templateId is required");
         const id = decodeURIComponent(m[1]);
-        const project = loadMockupProject(id);
-        const platform = loadProject(id).platform;
-        applyMockupTemplate(project, body.templateId, platform);
-        saveMockupProject(project);
-        sendJson(res, 200, { ...project, platform });
+        const application = loadMockupApplication(id);
+        const platform = loadApplication(id).platform;
+        applyMockupTemplate(application, body.templateId, platform);
+        saveMockupApplication(application);
+        sendJson(res, 200, { ...application, platform });
         return;
       }
     }
@@ -1816,27 +1914,27 @@ export async function startWebServer(options: { port?: number; host?: string; op
         const id = decodeURIComponent(m[1]);
         const deviceRowId = decodeURIComponent(m[2]);
         const columnId = decodeURIComponent(m[3]);
-        const project = loadMockupProject(id);
-        const html = cellPreviewHtml(project, deviceRowId, columnId);
+        const application = loadMockupApplication(id);
+        const html = cellPreviewHtml(application, deviceRowId, columnId);
         res.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-cache" });
         res.end(html);
         return;
       }
-      // Live variant: renders the posted in-memory state merged over the saved project. Render-only, never writes.
+      // Live variant: renders the posted in-memory state merged over the saved application. Render-only, never writes.
       const ml = p.match(/^\/api\/mockups\/([^/]+)\/cell-preview-live$/);
       if (ml && method === "POST") {
         const body = await readJsonBody(req);
-        const posted = body?.project ?? {};
-        const project: any = loadMockupProject(decodeURIComponent(ml[1]));
+        const posted = body?.application ?? {};
+        const application: any = loadMockupApplication(decodeURIComponent(ml[1]));
         for (const k of ["columns", "devices", "sources"]) {
-          if (posted[k] !== undefined) { if (!Array.isArray(posted[k])) return sendError(res, 400, `project.${k} must be an array`); project[k] = posted[k]; }
+          if (posted[k] !== undefined) { if (!Array.isArray(posted[k])) return sendError(res, 400, `application.${k} must be an array`); application[k] = posted[k]; }
         }
         for (const k of ["settings", "globalPanoramic"]) {
-          if (posted[k] !== undefined) { if (typeof posted[k] !== "object" || posted[k] === null) return sendError(res, 400, `project.${k} must be an object`); project[k] = posted[k]; }
+          if (posted[k] !== undefined) { if (typeof posted[k] !== "object" || posted[k] === null) return sendError(res, 400, `application.${k} must be an object`); application[k] = posted[k]; }
         }
         if (typeof body.deviceRowId !== "string" || typeof body.columnId !== "string") return sendError(res, 400, "deviceRowId and columnId are required");
-        if (!project.devices.some((d: any) => d.id === body.deviceRowId) || !project.columns.some((c: any) => c.id === body.columnId)) return sendError(res, 404, "row or page not found");
-        const html = cellPreviewHtml(project, body.deviceRowId, body.columnId);
+        if (!application.devices.some((d: any) => d.id === body.deviceRowId) || !application.columns.some((c: any) => c.id === body.columnId)) return sendError(res, 404, "row or page not found");
+        const html = cellPreviewHtml(application, body.deviceRowId, body.columnId);
         res.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-cache" });
         res.end(html);
         return;
@@ -1845,32 +1943,37 @@ export async function startWebServer(options: { port?: number; host?: string; op
 
     // Video tab
     if (method === "GET" && p === "/api/videos") {
-      sendJson(res, 200, { projects: listVideoProjects() });
+      sendJson(res, 200, { applications: listVideoApplications() });
       return;
     }
 
     if (method === "POST" && p === "/api/videos") {
       const body = await readJsonBody(req);
       if (!body.name) return sendError(res, 400, "name is required");
-      const project = createProject(body.name);
-      sendJson(res, 200, project.video);
+      const application = createApplication(body.name);
+      sendJson(res, 200, application.video);
       return;
     }
 
     {
       const m = p.match(/^\/api\/videos\/(?!templates$|scene-options$|template-backgrounds$)([^/]+)$/);
-      if (m && method === "GET") return sendJson(res, 200, loadVideoProject(decodeURIComponent(m[1])));
+      if (m && method === "GET") {
+        const application = loadVideoApplication(decodeURIComponent(m[1]));
+        // editing=none: a fresh Editing session starts with no template; never hand back the old working scenes.
+        if (url.searchParams.get("editing") === "none") return sendJson(res, 200, { ...application, template: null, scenes: [] });
+        return sendJson(res, 200, application);
+      }
       if (m && method === "PUT") {
         const body = await readJsonBody(req);
-        const project = loadVideoProject(decodeURIComponent(m[1]));
-        if (body.template !== undefined) project.template = body.template;
-        if (body.scenes !== undefined) project.scenes = body.scenes;
-        if (body.bgm !== undefined) project.bgm = body.bgm;
-        if (body.bgmVolume !== undefined) project.bgmVolume = body.bgmVolume;
-        if (body.brand !== undefined) project.brand = body.brand;
-        if (body.backgroundImage !== undefined) project.backgroundImage = body.backgroundImage;
-        saveVideoProject(project);
-        sendJson(res, 200, project);
+        const application = loadVideoApplication(decodeURIComponent(m[1]));
+        if (body.template !== undefined) application.template = body.template;
+        if (body.scenes !== undefined) application.scenes = body.scenes;
+        if (body.bgm !== undefined) application.bgm = body.bgm;
+        if (body.bgmVolume !== undefined) application.bgmVolume = body.bgmVolume;
+        if (body.brand !== undefined) application.brand = body.brand;
+        if (body.backgroundImage !== undefined) application.backgroundImage = body.backgroundImage;
+        saveVideoApplication(application);
+        sendJson(res, 200, application);
         return;
       }
     }
@@ -1882,7 +1985,7 @@ export async function startWebServer(options: { port?: number; host?: string; op
         if (!rel) return sendError(res, 400, "query param 'p' is required");
         const id = decodeURIComponent(m[1]);
         let abs = videoFile(id, rel);
-        if (!fs.existsSync(abs)) abs = projectFile(id, rel);
+        if (!fs.existsSync(abs)) abs = applicationFile(id, rel);
         const ext = path.extname(abs).toLowerCase();
         let mime = "image/png";
         if (ext === ".jpg" || ext === ".jpeg") mime = "image/jpeg";
@@ -1899,8 +2002,8 @@ export async function startWebServer(options: { port?: number; host?: string; op
 
     {
       // Deterministic, per-template generated BGM track -- the same one renderVideo
-      // falls back to when a project has no BGM upload of its own. Purely a function
-      // of the template id (no project/ownership scoping needed): serves the cached
+      // falls back to when an application has no BGM upload of its own. Purely a function
+      // of the template id (no application/ownership scoping needed): serves the cached
       // wav, generating it on first request. This is what lets the interactive
       // preview (Editing section / Saved Templates / Template picker) actually play
       // the default background music instead of the export-only ffmpeg mix being the
@@ -1933,9 +2036,9 @@ export async function startWebServer(options: { port?: number; host?: string; op
         const templateId = resolveTemplateId(decodeURIComponent(m[1]));
         const template = VIDEO_TEMPLATES.find((t) => t.id === templateId);
         if (!template) return sendError(res, 404, `Unknown video template '${m[1]}'.`);
-        const sourceProjectId = url.searchParams.get("projectId");
-        const sources = sourceProjectId ? loadVideoProject(decodeURIComponent(sourceProjectId)).sources : [];
-        const scratch = scratchVideoProject(templateId, sources);
+        const sourceApplicationId = url.searchParams.get("applicationId");
+        const sources = sourceApplicationId ? loadVideoApplication(decodeURIComponent(sourceApplicationId)).sources : [];
+        const scratch = scratchVideoApplication(templateId, sources);
         res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
         res.end(templatePreviewHtml(scratch));
         return;
@@ -1949,9 +2052,9 @@ export async function startWebServer(options: { port?: number; host?: string; op
         const sceneIndex = Number(m[2]);
         const template = VIDEO_TEMPLATES.find((t) => t.id === templateId);
         if (!template) return sendError(res, 404, `Unknown video template '${m[1]}'.`);
-        const sourceProjectId = url.searchParams.get("projectId");
-        const sources = sourceProjectId ? loadVideoProject(decodeURIComponent(sourceProjectId)).sources : [];
-        const scratch = scratchVideoProject(templateId, sources);
+        const sourceApplicationId = url.searchParams.get("applicationId");
+        const sources = sourceApplicationId ? loadVideoApplication(decodeURIComponent(sourceApplicationId)).sources : [];
+        const scratch = scratchVideoApplication(templateId, sources);
         const scene = scratch.scenes[sceneIndex];
         if (!scene) return sendError(res, 404, `Scene index ${sceneIndex} out of range for '${templateId}'.`);
         const resolveUri = (rel: string) => `/api/videos/${scratch.id}/file?p=${encodeURIComponent(rel)}`;
@@ -1998,10 +2101,10 @@ export async function startWebServer(options: { port?: number; host?: string; op
       const m = p.match(/^\/api\/videos\/([^/]+)\/apply-template$/);
       if (m && method === "POST") {
         const body = await readJsonBody(req);
-        const project = loadVideoProject(decodeURIComponent(m[1]));
-        applyVideoTemplate(project, body.templateId);
-        saveVideoProject(project);
-        sendJson(res, 200, project);
+        const application = loadVideoApplication(decodeURIComponent(m[1]));
+        applyVideoTemplate(application, body.templateId);
+        saveVideoApplication(application);
+        sendJson(res, 200, application);
         return;
       }
     }
@@ -2009,9 +2112,9 @@ export async function startWebServer(options: { port?: number; host?: string; op
     {
       const m = p.match(/^\/api\/videos\/([^/]+)\/template-preview$/);
       if (m && method === "GET") {
-        const project = loadVideoProject(decodeURIComponent(m[1]));
+        const application = loadVideoApplication(decodeURIComponent(m[1]));
         res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
-        res.end(templatePreviewHtml(project));
+        res.end(templatePreviewHtml(application));
         return;
       }
     }
@@ -2029,8 +2132,8 @@ export async function startWebServer(options: { port?: number; host?: string; op
       const m = p.match(/^\/api\/videos\/([^/]+)\/sources$/);
       if (m && method === "POST") {
         const id = decodeURIComponent(m[1]);
-        const project = loadVideoProject(id);
-        const name = url.searchParams.get("name") ?? `image_${project.sources.length + 1}`;
+        const application = loadVideoApplication(id);
+        const name = url.searchParams.get("name") ?? `image_${application.sources.length + 1}`;
         const contentType = req.headers["content-type"] ?? "";
         const isVideo = contentType.includes("video/");
         if (isVideo) {
@@ -2038,8 +2141,8 @@ export async function startWebServer(options: { port?: number; host?: string; op
           const relPath = `sources/rec_${Date.now()}.${ext}`;
           fs.writeFileSync(videoFile(id, relPath), await readRawBody(req));
           const source = { id: `src_${Date.now()}`, name, file: relPath, width: 0, height: 0, kind: "video" as const };
-          project.sources.push(source);
-          saveVideoProject(project);
+          application.sources.push(source);
+          saveVideoApplication(application);
           sendJson(res, 200, source);
           return;
         }
@@ -2053,15 +2156,15 @@ export async function startWebServer(options: { port?: number; host?: string; op
         const purposeParam = url.searchParams.get("purpose");
         const purpose = purposeParam === "background" ? ("background" as const) : ("screenshot" as const);
         const source = { id: `src_${Date.now()}`, name, file: relPath, width: dims?.width ?? 0, height: dims?.height ?? 0, kind: "image" as const, purpose };
-        project.sources.push(source);
+        application.sources.push(source);
 
         const slotParam = url.searchParams.get("slot");
         if (slotParam) {
           const [sceneId, slotKey, indexStr] = slotParam.split(":");
-          const scene = project.scenes.find((s) => s.id === sceneId);
+          const scene = application.scenes.find((s) => s.id === sceneId);
           if (scene) {
             scene.slotValues = scene.slotValues ?? {};
-            const spec = slotSpecsForScene(project.template ?? "", scene.order).find((sp) => sp.key === slotKey);
+            const spec = slotSpecsForScene(application.template ?? "", scene.order).find((sp) => sp.key === slotKey);
             if (spec?.kind === "imageList") {
               const index = indexStr ? Number(indexStr) : 0;
               const existing = scene.slotValues[slotKey];
@@ -2074,7 +2177,7 @@ export async function startWebServer(options: { port?: number; host?: string; op
           }
         }
 
-        saveVideoProject(project);
+        saveVideoApplication(application);
         sendJson(res, 200, source);
         return;
       }
@@ -2083,12 +2186,12 @@ export async function startWebServer(options: { port?: number; host?: string; op
     {
       const m = p.match(/^\/api\/videos\/([^/]+)\/sources\/([^/]+)$/);
       if (m && method === "DELETE") {
-        const project = loadVideoProject(decodeURIComponent(m[1]));
+        const application = loadVideoApplication(decodeURIComponent(m[1]));
         const sourceId = decodeURIComponent(m[2]);
-        const idx = project.sources.findIndex((s) => s.id === sourceId);
+        const idx = application.sources.findIndex((s) => s.id === sourceId);
         if (idx === -1) return sendError(res, 404, "Source not found");
-        project.sources.splice(idx, 1);
-        saveVideoProject(project);
+        application.sources.splice(idx, 1);
+        saveVideoApplication(application);
         sendJson(res, 200, { ok: true });
         return;
       }
@@ -2097,15 +2200,15 @@ export async function startWebServer(options: { port?: number; host?: string; op
     {
       const m = p.match(/^\/api\/videos\/([^/]+)\/scenes$/);
       if (m && method === "POST") {
-        const project = loadVideoProject(decodeURIComponent(m[1]));
-        if (project.scenes.length === 0) return sendError(res, 400, "Apply a template before adding scenes.");
-        if (project.scenes.length >= 24) return sendError(res, 400, "24 scenes is the maximum for this project.");
-        const last = [...project.scenes].sort((a, b) => a.order - b.order).at(-1)!;
-        const order = project.scenes.length;
+        const application = loadVideoApplication(decodeURIComponent(m[1]));
+        if (application.scenes.length === 0) return sendError(res, 400, "Apply a template before adding scenes.");
+        if (application.scenes.length >= 24) return sendError(res, 400, "24 scenes is the maximum for this application.");
+        const last = [...application.scenes].sort((a, b) => a.order - b.order).at(-1)!;
+        const order = application.scenes.length;
         const newScene = { ...last, id: `scene_${Date.now()}`, order, screenIds: undefined, text: "", subtext: "" };
-        project.scenes.push(newScene);
-        saveVideoProject(project);
-        sendJson(res, 200, project);
+        application.scenes.push(newScene);
+        saveVideoApplication(application);
+        sendJson(res, 200, application);
         return;
       }
     }
@@ -2114,15 +2217,47 @@ export async function startWebServer(options: { port?: number; host?: string; op
       const m = p.match(/^\/api\/videos\/([^/]+)\/scenes\/order$/);
       if (m && method === "PATCH") {
         const body = await readJsonBody(req);
-        const project = loadVideoProject(decodeURIComponent(m[1]));
+        const application = loadVideoApplication(decodeURIComponent(m[1]));
         const order: string[] = body.order ?? [];
-        for (const scene of project.scenes) {
+        for (const scene of application.scenes) {
           const idx = order.indexOf(scene.id);
           if (idx !== -1) scene.order = idx;
         }
-        project.scenes.sort((a, b) => a.order - b.order);
-        saveVideoProject(project);
-        sendJson(res, 200, project);
+        application.scenes.sort((a, b) => a.order - b.order);
+        saveVideoApplication(application);
+        sendJson(res, 200, application);
+        return;
+      }
+    }
+
+    {
+      const m = p.match(/^\/api\/videos\/([^/]+)\/update-template$/);
+      if (m && method === "POST") {
+        const body = await readJsonBody(req);
+        if (!body.templateId) return sendError(res, 400, "templateId is required");
+        if (!Array.isArray(body.scenes) || body.scenes.length === 0) return sendError(res, 400, "scenes are required");
+        try {
+          const t = updateVideoTemplateOnDisk(String(body.templateId), body.scenes);
+          sendJson(res, 200, { ok: true, templateId: t.id, name: t.name });
+        } catch (e: any) {
+          sendError(res, 400, e.message);
+        }
+        return;
+      }
+    }
+
+    {
+      const m = p.match(/^\/api\/videos\/([^/]+)\/create-template$/);
+      if (m && method === "POST") {
+        const body = await readJsonBody(req);
+        if (!body.baseTemplateId) return sendError(res, 400, "baseTemplateId is required");
+        if (!Array.isArray(body.scenes) || body.scenes.length === 0) return sendError(res, 400, "scenes are required");
+        try {
+          const t = createVideoTemplateOnDisk(String(body.baseTemplateId), body.scenes, { name: String(body.name ?? ""), description: body.description });
+          sendJson(res, 200, { ok: true, templateId: t.id, name: t.name });
+        } catch (e: any) {
+          sendError(res, 400, e.message);
+        }
         return;
       }
     }
@@ -2130,41 +2265,57 @@ export async function startWebServer(options: { port?: number; host?: string; op
     {
       const m = p.match(/^\/api\/videos\/([^/]+)\/configs$/);
       if (m && method === "GET") {
-        const project = loadVideoProject(decodeURIComponent(m[1]));
-        sendJson(res, 200, project.savedConfigs ?? []);
+        const application = loadVideoApplication(decodeURIComponent(m[1]));
+        sendJson(res, 200, application.savedConfigs ?? []);
         return;
       }
       if (m && method === "POST") {
         const body = await readJsonBody(req);
         const name = String(body.name ?? "").trim();
         if (!name) return sendError(res, 400, "A configuration name is required.");
-        const project = loadVideoProject(decodeURIComponent(m[1]));
-        if (!project.template || project.scenes.length === 0) return sendError(res, 400, "Apply a template before saving a configuration.");
-        project.savedConfigs = project.savedConfigs ?? [];
-        const existing = project.savedConfigs.find((c) => c.name === name);
+        const application = loadVideoApplication(decodeURIComponent(m[1]));
+        // The client posts the editing snapshot explicitly; the working document is only a fallback for older callers.
+        const snap: any = body.snapshot && Array.isArray(body.snapshot.scenes) && body.snapshot.template
+          ? body.snapshot
+          : { template: application.template, scenes: application.scenes, bgm: application.bgm, bgmVolume: application.bgmVolume, bgmFadeInMs: application.bgmFadeInMs, bgmFadeOutMs: application.bgmFadeOutMs };
+        if (!snap.template || snap.scenes.length === 0) return sendError(res, 400, "Apply a template before saving a configuration.");
+        application.savedConfigs = application.savedConfigs ?? [];
+        // mode "new": always a fresh id, never touches an existing config. mode "update": replace exactly `configId`.
+        // No mode (legacy): overwrite-by-name.
+        const mode = body.mode === "new" || body.mode === "update" ? body.mode : undefined;
+        let existing: (typeof application.savedConfigs)[number] | undefined;
+        if (mode === "update") {
+          existing = application.savedConfigs.find((c) => c.id === body.configId);
+          if (!existing) return sendError(res, 404, "The template to update no longer exists.");
+          if (application.savedConfigs.some((c) => c.id !== existing!.id && c.name === name)) return sendError(res, 409, `A configuration named '${name}' already exists.`);
+        } else if (mode === "new") {
+          if (application.savedConfigs.some((c) => c.name === name)) return sendError(res, 409, `A configuration named '${name}' already exists.`);
+        } else {
+          existing = application.savedConfigs.find((c) => c.name === name);
+        }
         const snapshot = {
-          id: existing?.id ?? `cfg_${Date.now()}`,
+          id: existing?.id ?? `cfg_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
           name,
-          template: project.template,
-          scenes: JSON.parse(JSON.stringify(project.scenes)),
+          template: snap.template,
+          scenes: JSON.parse(JSON.stringify(snap.scenes)),
           // Snapshot whatever BGM is in effect right now -- the template's own
           // default if the user never touched it, or their explicit choice if
           // they did -- so this saved config keeps that audio forever, even if
-          // the live project's bgm changes later.
-          bgm: project.bgm,
-          bgmVolume: project.bgmVolume,
-          bgmFadeInMs: project.bgmFadeInMs,
-          bgmFadeOutMs: project.bgmFadeOutMs,
+          // the live application's bgm changes later.
+          bgm: snap.bgm,
+          bgmVolume: snap.bgmVolume,
+          bgmFadeInMs: snap.bgmFadeInMs,
+          bgmFadeOutMs: snap.bgmFadeOutMs,
           savedAt: new Date().toISOString(),
         };
         if (existing) {
-          if (!body.overwrite) return sendError(res, 409, `A configuration named '${name}' already exists.`);
+          if (!mode && !body.overwrite) return sendError(res, 409, `A configuration named '${name}' already exists.`);
           Object.assign(existing, snapshot);
         } else {
-          project.savedConfigs.push(snapshot);
+          application.savedConfigs.push(snapshot);
         }
-        saveVideoProject(project);
-        sendJson(res, 200, project.savedConfigs);
+        saveVideoApplication(application);
+        sendJson(res, 200, application.savedConfigs);
         return;
       }
     }
@@ -2172,17 +2323,17 @@ export async function startWebServer(options: { port?: number; host?: string; op
     {
       const m = p.match(/^\/api\/videos\/([^/]+)\/configs\/([^/]+)\/apply$/);
       if (m && method === "POST") {
-        const project = loadVideoProject(decodeURIComponent(m[1]));
-        const cfg = (project.savedConfigs ?? []).find((c) => c.id === decodeURIComponent(m[2]));
+        const application = loadVideoApplication(decodeURIComponent(m[1]));
+        const cfg = (application.savedConfigs ?? []).find((c) => c.id === decodeURIComponent(m[2]));
         if (!cfg) return sendError(res, 404, "Saved configuration not found");
-        project.template = cfg.template;
-        project.scenes = JSON.parse(JSON.stringify(cfg.scenes));
-        project.bgm = cfg.bgm ?? null;
-        project.bgmVolume = cfg.bgmVolume;
-        project.bgmFadeInMs = cfg.bgmFadeInMs;
-        project.bgmFadeOutMs = cfg.bgmFadeOutMs;
-        saveVideoProject(project);
-        sendJson(res, 200, project);
+        application.template = cfg.template;
+        application.scenes = JSON.parse(JSON.stringify(cfg.scenes));
+        application.bgm = cfg.bgm ?? null;
+        application.bgmVolume = cfg.bgmVolume;
+        application.bgmFadeInMs = cfg.bgmFadeInMs;
+        application.bgmFadeOutMs = cfg.bgmFadeOutMs;
+        saveVideoApplication(application);
+        sendJson(res, 200, application);
         return;
       }
     }
@@ -2190,12 +2341,12 @@ export async function startWebServer(options: { port?: number; host?: string; op
     {
       const m = p.match(/^\/api\/videos\/([^/]+)\/configs\/([^/]+)$/);
       if (m && method === "DELETE") {
-        const project = loadVideoProject(decodeURIComponent(m[1]));
-        const before = project.savedConfigs?.length ?? 0;
-        project.savedConfigs = (project.savedConfigs ?? []).filter((c) => c.id !== decodeURIComponent(m[2]));
-        if (project.savedConfigs.length === before) return sendError(res, 404, "Saved configuration not found");
-        saveVideoProject(project);
-        sendJson(res, 200, project.savedConfigs);
+        const application = loadVideoApplication(decodeURIComponent(m[1]));
+        const before = application.savedConfigs?.length ?? 0;
+        application.savedConfigs = (application.savedConfigs ?? []).filter((c) => c.id !== decodeURIComponent(m[2]));
+        if (application.savedConfigs.length === before) return sendError(res, 404, "Saved configuration not found");
+        saveVideoApplication(application);
+        sendJson(res, 200, application.savedConfigs);
         return;
       }
     }
@@ -2203,11 +2354,11 @@ export async function startWebServer(options: { port?: number; host?: string; op
     {
       const m = p.match(/^\/api\/videos\/([^/]+)\/configs\/([^/]+)\/preview$/);
       if (m && method === "GET") {
-        const project = loadVideoProject(decodeURIComponent(m[1]));
-        const cfg = (project.savedConfigs ?? []).find((c) => c.id === decodeURIComponent(m[2]));
+        const application = loadVideoApplication(decodeURIComponent(m[1]));
+        const cfg = (application.savedConfigs ?? []).find((c) => c.id === decodeURIComponent(m[2]));
         if (!cfg) return sendError(res, 404, "Saved configuration not found");
-        const overrideProject = {
-          ...project,
+        const overrideApplication = {
+          ...application,
           template: cfg.template,
           scenes: JSON.parse(JSON.stringify(cfg.scenes)),
           bgm: cfg.bgm ?? null,
@@ -2216,7 +2367,7 @@ export async function startWebServer(options: { port?: number; host?: string; op
           bgmFadeOutMs: cfg.bgmFadeOutMs,
         };
         res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
-        res.end(templatePreviewHtml(overrideProject));
+        res.end(templatePreviewHtml(overrideApplication));
         return;
       }
     }
@@ -2227,11 +2378,11 @@ export async function startWebServer(options: { port?: number; host?: string; op
         const vid = decodeURIComponent(m[1]);
         const cfgId = decodeURIComponent(m[2]);
         const body = (await readJsonBody(req)) || {};
-        const project = loadVideoProject(vid);
-        const cfg = (project.savedConfigs ?? []).find((c) => c.id === cfgId);
+        const application = loadVideoApplication(vid);
+        const cfg = (application.savedConfigs ?? []).find((c) => c.id === cfgId);
         if (!cfg) return sendError(res, 404, "Saved configuration not found");
-        const overrideProject = {
-          ...project,
+        const overrideApplication = {
+          ...application,
           template: cfg.template,
           scenes: JSON.parse(JSON.stringify(cfg.scenes)),
           bgm: cfg.bgm ?? null,
@@ -2239,17 +2390,17 @@ export async function startWebServer(options: { port?: number; host?: string; op
           bgmFadeInMs: cfg.bgmFadeInMs,
           bgmFadeOutMs: cfg.bgmFadeOutMs,
         };
-        const preflight = validateProject(overrideProject as any);
+        const preflight = validateApplication(overrideApplication as any);
         if (!preflight.ready) {
           res.writeHead(400, { "Content-Type": "application/json; charset=utf-8" });
           res.end(JSON.stringify({ error: "Some scenes are missing required content.", ...preflight }));
           return;
         }
 
-        const { job, isNew } = startRenderJob(overrideProject, body, { configId: cfgId });
+        const { job, isNew } = startRenderJob(overrideApplication, body, { configId: cfgId });
         if (!isNew) {
           res.writeHead(409, { "Content-Type": "application/json; charset=utf-8" });
-          res.end(JSON.stringify({ error: "A render is already running for this project.", jobId: job.id, job }));
+          res.end(JSON.stringify({ error: "A render is already running for this application.", jobId: job.id, job }));
           return;
         }
         sendJson(res, 202, { ok: true, jobId: job.id, configId: cfgId });
@@ -2277,36 +2428,36 @@ export async function startWebServer(options: { port?: number; host?: string; op
       const m = p.match(/^\/api\/videos\/([^/]+)\/scenes\/([^/]+)$/);
       if (m && method === "PUT") {
         const body = await readJsonBody(req);
-        const project = loadVideoProject(decodeURIComponent(m[1]));
-        const idx = project.scenes.findIndex((s) => s.id === decodeURIComponent(m[2]));
+        const application = loadVideoApplication(decodeURIComponent(m[1]));
+        const idx = application.scenes.findIndex((s) => s.id === decodeURIComponent(m[2]));
         if (idx === -1) return sendError(res, 404, "Scene not found");
-        const nextAspect = body.aspectRatio ?? project.scenes[idx].aspectRatio;
-        if (project.scenes.some((s, i) => i !== idx && (s.aspectRatio ?? "9:16") !== (nextAspect ?? "9:16"))) {
-          return sendError(res, 400, "Every scene in a project must share the same aspect ratio.");
+        const nextAspect = body.aspectRatio ?? application.scenes[idx].aspectRatio;
+        if (application.scenes.some((s, i) => i !== idx && (s.aspectRatio ?? "9:16") !== (nextAspect ?? "9:16"))) {
+          return sendError(res, 400, "Every scene in an application must share the same aspect ratio.");
         }
         // Free (non-template) scenes take their mode from the chosen scene animation.
-        if (!project.template && body.sceneTemplate && body.deviceMode === undefined) body.deviceMode = SCENE_ANIMATIONS[body.sceneTemplate]?.deviceMode ?? "3D";
+        if (!application.template && body.sceneTemplate && body.deviceMode === undefined) body.deviceMode = SCENE_ANIMATIONS[body.sceneTemplate]?.deviceMode ?? "3D";
         if (body.device !== undefined || body.deviceMode !== undefined) {
           // A scene only accepts devices of its own mode -- reject, don't silently coerce, an explicit bad pick.
-          const tpl = VIDEO_TEMPLATES.find((t) => t.id === project.template);
-          const mode = body.deviceMode ?? project.scenes[idx].deviceMode ?? tpl?.scenes?.[idx]?.deviceMode ?? tpl?.deviceMode ?? "3D";
-          const device = body.device ?? project.scenes[idx].device;
+          const tpl = VIDEO_TEMPLATES.find((t) => t.id === application.template);
+          const mode = body.deviceMode ?? application.scenes[idx].deviceMode ?? tpl?.scenes?.[idx]?.deviceMode ?? tpl?.deviceMode ?? "3D";
+          const device = body.device ?? application.scenes[idx].device;
           if (!isDeviceCompatible(device, mode)) return sendError(res, 400, `'${device}' is not a ${mode} device -- this scene requires a ${mode} device.`);
         }
-        project.scenes[idx] = { ...project.scenes[idx], ...body };
-        saveVideoProject(project);
-        sendJson(res, 200, project.scenes[idx]);
+        application.scenes[idx] = { ...application.scenes[idx], ...body };
+        saveVideoApplication(application);
+        sendJson(res, 200, application.scenes[idx]);
         return;
       }
       if (m && method === "DELETE") {
-        const project = loadVideoProject(decodeURIComponent(m[1]));
-        const idx = project.scenes.findIndex((s) => s.id === decodeURIComponent(m[2]));
+        const application = loadVideoApplication(decodeURIComponent(m[1]));
+        const idx = application.scenes.findIndex((s) => s.id === decodeURIComponent(m[2]));
         if (idx === -1) return sendError(res, 404, "Scene not found");
-        if (project.scenes.length <= 1) return sendError(res, 400, "A project needs at least one scene.");
-        project.scenes.splice(idx, 1);
-        project.scenes.sort((a, b) => a.order - b.order).forEach((s, i) => (s.order = i));
-        saveVideoProject(project);
-        sendJson(res, 200, project);
+        if (application.scenes.length <= 1) return sendError(res, 400, "An application needs at least one scene.");
+        application.scenes.splice(idx, 1);
+        application.scenes.sort((a, b) => a.order - b.order).forEach((s, i) => (s.order = i));
+        saveVideoApplication(application);
+        sendJson(res, 200, application);
         return;
       }
     }
@@ -2329,9 +2480,9 @@ export async function startWebServer(options: { port?: number; host?: string; op
     {
       const m = p.match(/^\/api\/videos\/([^/]+)\/scene-preview\/([^/]+)$/);
       if (m && method === "GET") {
-        const project = loadVideoProject(decodeURIComponent(m[1]));
+        const application = loadVideoApplication(decodeURIComponent(m[1]));
         res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
-        res.end(scenePreviewHtml(project, decodeURIComponent(m[2])));
+        res.end(scenePreviewHtml(application, decodeURIComponent(m[2])));
         return;
       }
     }
@@ -2339,10 +2490,10 @@ export async function startWebServer(options: { port?: number; host?: string; op
     {
       const m = p.match(/^\/api\/videos\/([^/]+)\/scene-spec\/([^/]+)$/);
       if (m && method === "GET") {
-        const project = loadVideoProject(decodeURIComponent(m[1]));
-        const scene = project.scenes.find((s) => s.id === decodeURIComponent(m[2]));
-        if (!scene || !project.template) return sendError(res, 404, "Scene not found");
-        const specs = slotSpecsForScene(project.template, scene.order);
+        const application = loadVideoApplication(decodeURIComponent(m[1]));
+        const scene = application.scenes.find((s) => s.id === decodeURIComponent(m[2]));
+        if (!scene || !application.template) return sendError(res, 404, "Scene not found");
+        const specs = slotSpecsForScene(application.template, scene.order);
         const issues = validateScene(specs, scene.slotValues);
         sendJson(res, 200, { specs, values: scene.slotValues ?? {}, issues });
         return;
@@ -2353,12 +2504,12 @@ export async function startWebServer(options: { port?: number; host?: string; op
       const m = p.match(/^\/api\/videos\/([^/]+)\/scenes\/([^/]+)\/slots$/);
       if (m && method === "PUT") {
         const body = await readJsonBody(req);
-        const project = loadVideoProject(decodeURIComponent(m[1]));
-        const scene = project.scenes.find((s) => s.id === decodeURIComponent(m[2]));
+        const application = loadVideoApplication(decodeURIComponent(m[1]));
+        const scene = application.scenes.find((s) => s.id === decodeURIComponent(m[2]));
         if (!scene) return sendError(res, 404, "Scene not found");
         scene.slotValues = { ...(scene.slotValues ?? {}), ...(body.slotValues ?? {}) };
-        saveVideoProject(project);
-        const specs = project.template ? slotSpecsForScene(project.template, scene.order) : [];
+        saveVideoApplication(application);
+        const specs = application.template ? slotSpecsForScene(application.template, scene.order) : [];
         sendJson(res, 200, { values: scene.slotValues, issues: validateScene(specs, scene.slotValues) });
         return;
       }
@@ -2367,8 +2518,8 @@ export async function startWebServer(options: { port?: number; host?: string; op
     {
       const m = p.match(/^\/api\/videos\/([^/]+)\/validate$/);
       if (m && method === "GET") {
-        const project = loadVideoProject(decodeURIComponent(m[1]));
-        const result = validateProject(project);
+        const application = loadVideoApplication(decodeURIComponent(m[1]));
+        const result = validateApplication(application);
         sendJson(res, 200, result);
         return;
       }
@@ -2378,13 +2529,13 @@ export async function startWebServer(options: { port?: number; host?: string; op
       const m = p.match(/^\/api\/videos\/([^/]+)\/bgm$/);
       if (m && method === "POST") {
         const id = decodeURIComponent(m[1]);
-        const project = loadVideoProject(id);
+        const application = loadVideoApplication(id);
         const contentType = req.headers["content-type"] ?? "audio/mpeg";
         const ext = contentType.includes("wav") ? "wav" : contentType.includes("ogg") ? "ogg" : "mp3";
         const relPath = `bgm.${ext}`;
         fs.writeFileSync(videoFile(id, relPath), await readRawBody(req));
-        project.bgm = relPath;
-        saveVideoProject(project);
+        application.bgm = relPath;
+        saveVideoApplication(application);
         sendJson(res, 200, { ok: true, bgm: relPath });
         return;
       }
@@ -2418,10 +2569,10 @@ export async function startWebServer(options: { port?: number; host?: string; op
         const vid = decodeURIComponent(m[1]);
         const jobId = decodeURIComponent(m[2]);
         const job = renderJobs.get(jobId);
-        if (!job || job.projectId !== vid) return sendError(res, 404, "Render job not found");
+        if (!job || job.applicationId !== vid) return sendError(res, 404, "Render job not found");
         sendJson(res, 200, {
           id: job.id,
-          projectId: job.projectId,
+          applicationId: job.applicationId,
           configId: job.configId,
           state: job.state,
           progress: job.progress,
@@ -2447,7 +2598,7 @@ export async function startWebServer(options: { port?: number; host?: string; op
         const vid = decodeURIComponent(m[1]);
         const jobId = decodeURIComponent(m[2]);
         const job = renderJobs.get(jobId);
-        if (!job || job.projectId !== vid) return sendError(res, 404, "Render job not found");
+        if (!job || job.applicationId !== vid) return sendError(res, 404, "Render job not found");
         if (job.state === "running" && job.abortController) {
           job.cancelRequested = true;
           job.abortController.abort();
@@ -2463,7 +2614,7 @@ export async function startWebServer(options: { port?: number; host?: string; op
         const vid = decodeURIComponent(m[1]);
         const jobId = decodeURIComponent(m[2]);
         const job = renderJobs.get(jobId);
-        if (!job || job.projectId !== vid || !job.outputFile) return sendError(res, 404, "Render job output not found");
+        if (!job || job.applicationId !== vid || !job.outputFile) return sendError(res, 404, "Render job output not found");
         if (!fs.existsSync(job.outputFile)) return sendError(res, 404, "Output file does not exist on disk");
 
         const isDownload = url.searchParams.get("download") === "1";
@@ -2487,7 +2638,7 @@ export async function startWebServer(options: { port?: number; host?: string; op
         const vid = decodeURIComponent(m[1]);
         const jobId = decodeURIComponent(m[2]);
         const job = renderJobs.get(jobId);
-        if (!job || job.projectId !== vid || !job.outputFile) return sendError(res, 404, "Render job output not found");
+        if (!job || job.applicationId !== vid || !job.outputFile) return sendError(res, 404, "Render job output not found");
         if (!fs.existsSync(job.outputFile)) return sendError(res, 404, "Output file does not exist on disk");
         const body = await readJsonBody(req);
         const target = String(body.path || "").trim();
@@ -2507,15 +2658,15 @@ export async function startWebServer(options: { port?: number; host?: string; op
       const m = p.match(/^\/api\/videos\/([^/]+)\/exports$/);
       if (m && method === "GET") {
         const vid = decodeURIComponent(m[1]);
-        const project = loadVideoProject(vid);
+        const application = loadVideoApplication(vid);
         // Filter out records whose file no longer exists
-        const validExports = (project.exports ?? []).filter((exp) => {
+        const validExports = (application.exports ?? []).filter((exp) => {
           const fileP = path.join(videoDir(vid), "exports", exp.fileName);
           return fs.existsSync(fileP) || (exp.savedPath && fs.existsSync(exp.savedPath));
         });
-        if (validExports.length !== (project.exports?.length ?? 0)) {
-          project.exports = validExports;
-          saveVideoProject(project);
+        if (validExports.length !== (application.exports?.length ?? 0)) {
+          application.exports = validExports;
+          saveVideoApplication(application);
         }
         sendJson(res, 200, validExports);
         return;
@@ -2527,15 +2678,15 @@ export async function startWebServer(options: { port?: number; host?: string; op
       if (m && method === "DELETE") {
         const vid = decodeURIComponent(m[1]);
         const expId = decodeURIComponent(m[2]);
-        const project = loadVideoProject(vid);
-        const exp = (project.exports ?? []).find((e) => e.id === expId);
+        const application = loadVideoApplication(vid);
+        const exp = (application.exports ?? []).find((e) => e.id === expId);
         if (exp) {
           try {
             const fileP = path.join(videoDir(vid), "exports", exp.fileName);
             if (fs.existsSync(fileP)) fs.rmSync(fileP, { force: true });
           } catch {}
-          project.exports = (project.exports ?? []).filter((e) => e.id !== expId);
-          saveVideoProject(project);
+          application.exports = (application.exports ?? []).filter((e) => e.id !== expId);
+          saveVideoApplication(application);
         }
         sendJson(res, 200, { ok: true });
         return;
@@ -2547,8 +2698,8 @@ export async function startWebServer(options: { port?: number; host?: string; op
       if (m && method === "GET") {
         const vid = decodeURIComponent(m[1]);
         const expId = decodeURIComponent(m[2]);
-        const project = loadVideoProject(vid);
-        const exp = (project.exports ?? []).find((e) => e.id === expId);
+        const application = loadVideoApplication(vid);
+        const exp = (application.exports ?? []).find((e) => e.id === expId);
         if (!exp) return sendError(res, 404, "Export record not found");
         const fileP = path.join(videoDir(vid), "exports", exp.fileName);
         const targetP = fs.existsSync(fileP) ? fileP : (exp.savedPath && fs.existsSync(exp.savedPath)) ? exp.savedPath : null;
@@ -2569,18 +2720,18 @@ export async function startWebServer(options: { port?: number; host?: string; op
       if (m && method === "POST") {
         const id = decodeURIComponent(m[1]);
         const body = (await readJsonBody(req)) || {};
-        const project = loadVideoProject(id);
-        const preflight = validateProject(project);
+        const application = loadVideoApplication(id);
+        const preflight = validateApplication(application);
         if (!preflight.ready) {
           res.writeHead(400, { "Content-Type": "application/json; charset=utf-8" });
           res.end(JSON.stringify({ error: "Some scenes are missing required content.", ...preflight }));
           return;
         }
 
-        const { job, isNew } = startRenderJob(project, body);
+        const { job, isNew } = startRenderJob(application, body);
         if (!isNew) {
           res.writeHead(409, { "Content-Type": "application/json; charset=utf-8" });
-          res.end(JSON.stringify({ error: "A render is already running for this project.", jobId: job.id, job }));
+          res.end(JSON.stringify({ error: "A render is already running for this application.", jobId: job.id, job }));
           return;
         }
         sendJson(res, 202, { ok: true, jobId: job.id });

@@ -55,7 +55,7 @@ export function presentationTransformClient(presentation) {
  * NOT as the everyday path. (Previously this WAS the everyday path: nothing
  * ever passed a real device id in, and the stub doesn't contain any of the
  * actual catalog's device ids, so every editor render silently fell back to
- * a generic "phone" entry regardless of which device the project actually used.)
+ * a generic "phone" entry regardless of which device the application actually used.)
  * @param {string} id - real device catalog id (e.g. "apple-iphone-16-pro-max"), or a stub fallback key.
  * @param {Array<{id:string,geometry:object,variants?:Array<{id:string,geometry:object}>}>} [catalog] - mockupDevicesCatalog from templates.js.
  * @param {string} [variantId]
@@ -240,7 +240,7 @@ export function showAlert(message, type = "warning", title = "Alert") {
   });
 }
 
-export function showConfirm(message, title = "Confirm Action", danger = false) {
+export function showConfirm(message, title = "Confirm Action", danger = false, confirmText) {
   if (typeof window === "undefined" || !window.Swal) {
     return Promise.resolve(window.confirm(message));
   }
@@ -250,7 +250,7 @@ export function showConfirm(message, title = "Confirm Action", danger = false) {
     text: message,
     icon: danger ? "warning" : "question",
     showCancelButton: true,
-    confirmButtonText: danger ? "Delete" : "Confirm",
+    confirmButtonText: confirmText || (danger ? "Delete" : "Confirm"),
     cancelButtonText: "Cancel",
     background: colors.background,
     color: colors.color,
@@ -277,6 +277,139 @@ export function showPrompt(message, defaultValue = "", title = "Input Required")
     confirmButtonColor: "#3b82f6",
     cancelButtonColor: colors.cancelButtonColor,
   }).then((result) => (result.value !== undefined ? result.value : null));
+}
+
+function escHtml(t) {
+  return String(t ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+/** "save" | "discard" | "cancel" -- three-way unsaved-changes prompt. */
+export function showUnsavedDialog(message, saveText = "Save", discardText = "Discard") {
+  const colors = getSwalColors();
+  return window.Swal.fire({
+    title: "Unsaved changes",
+    text: message,
+    icon: "warning",
+    showDenyButton: true,
+    showCancelButton: true,
+    confirmButtonText: saveText,
+    denyButtonText: discardText,
+    cancelButtonText: "Cancel",
+    background: colors.background,
+    color: colors.color,
+    confirmButtonColor: "#16a34a",
+    denyButtonColor: "#dc2626",
+    cancelButtonColor: colors.cancelButtonColor,
+  }).then((r) => (r.isConfirmed ? "save" : r.isDenied ? "discard" : "cancel"));
+}
+
+/** Toggles a studio's Editing section between the empty "no template loaded" state and the live editor. */
+export function setEditingEmpty(sectionId, empty) {
+  document.getElementById(sectionId)?.classList.toggle("editing-empty", !!empty);
+}
+
+/** Save As: always creates a NEW Saved Template. Resolves the trimmed name, or null if cancelled.
+ *  Saved Templates only carry a name (id/snapshot/savedAt are generated), so no other metadata is collected. */
+export function showSaveAsDialog({ suggestedName, existingNames = [], note = "" }) {
+  const colors = getSwalColors();
+  const taken = new Set(existingNames.map((n) => String(n).trim().toLowerCase()));
+  return window.Swal.fire({
+    title: "Save as New Template",
+    html: `
+      <div style="text-align:left; display:flex; flex-direction:column; gap:0.5rem;">
+        ${note ? `<small>${escHtml(note)}</small>` : ""}
+        <small>Template name</small>
+        <input id="sv-name" class="swal2-input" style="margin:0; width:100%;" value="${escHtml(suggestedName)}" maxlength="60">
+      </div>`,
+    showCancelButton: true,
+    confirmButtonText: "Save",
+    cancelButtonText: "Cancel",
+    background: colors.background,
+    color: colors.color,
+    confirmButtonColor: "#16a34a",
+    cancelButtonColor: colors.cancelButtonColor,
+    didOpen: () => window.Swal.getPopup().querySelector("#sv-name")?.select(),
+    preConfirm: () => {
+      const name = window.Swal.getPopup().querySelector("#sv-name").value.trim();
+      if (name.length < 2 || name.length > 60) { window.Swal.showValidationMessage("Name must be 2-60 characters."); return false; }
+      if (taken.has(name.toLowerCase())) { window.Swal.showValidationMessage("A saved template with this name already exists."); return false; }
+      return name;
+    },
+  }).then((r) => (r.isConfirmed ? r.value : null));
+}
+
+/** Update Template (default/system templates only). `loaded` = the currently loaded DEFAULT template
+ *  ({id,name}) or null. "Update Existing" is bound to that exact template -- there is no target picker.
+ *  Resolves { action: "update" } | { action: "create", name, category?, description } | null.
+ *  `categories`: pass an array to require a category on Create New (Mockup); omit for studios without categories (Video). */
+export function showUpdateTemplateDialog({ loaded, categories, existingNames = [], suggestedName = "" }) {
+  const colors = getSwalColors();
+  const taken = new Set(existingNames.map((n) => String(n).trim().toLowerCase()));
+  const canUpdate = !!loaded;
+  const catOptions = (categories || []).map((c) => `<option value="${escHtml(c)}">${escHtml(c)}</option>`).join("");
+  const html = `
+    <div style="text-align:left; display:flex; flex-direction:column; gap:0.7rem;">
+      <label style="display:flex; gap:0.5rem; align-items:flex-start; ${canUpdate ? "cursor:pointer;" : "opacity:0.55;"}">
+        <input type="radio" name="ut-mode" value="update" ${canUpdate ? "checked" : "disabled"} style="margin-top:0.25rem;">
+        <span><strong>Update Existing${canUpdate ? `: "${escHtml(loaded.name)}"` : ""}</strong><br>
+          <small>${canUpdate
+            ? "Overwrites this exact default template (the one you loaded) for every application. A .bak copy of the original is kept."
+            : "Unavailable: the editor does not currently hold a default template. Load one from the Templates section first."}</small></span>
+      </label>
+      <label style="display:flex; gap:0.5rem; align-items:flex-start; cursor:pointer;">
+        <input type="radio" name="ut-mode" value="create" ${canUpdate ? "" : "checked"} style="margin-top:0.25rem;">
+        <span><strong>Create New</strong><br><small>Adds a new default template to the Templates section. Nothing existing is changed.</small></span>
+      </label>
+      <div id="ut-create" style="display:${canUpdate ? "none" : "flex"}; flex-direction:column; gap:0.4rem; padding-left:1.4rem;">
+        <small>Template name (required)</small>
+        <input id="ut-name" class="swal2-input" style="margin:0; width:100%;" value="${escHtml(suggestedName)}" maxlength="60">
+        ${categories ? `
+        <small>Category (required)</small>
+        <select id="ut-cat" class="swal2-select" style="margin:0; width:100%;">${catOptions}<option value="__new__">New category…</option></select>
+        <input id="ut-newcat" class="swal2-input" style="margin:0; width:100%; display:none;" placeholder="New category name" maxlength="40">` : ""}
+        <small>Description (optional)</small>
+        <textarea id="ut-desc" class="swal2-textarea" style="margin:0; width:100%;" rows="2"></textarea>
+      </div>
+    </div>`;
+  return window.Swal.fire({
+    title: "Update Template",
+    html,
+    showCancelButton: true,
+    confirmButtonText: canUpdate ? "Overwrite Default Template" : "Create Default Template",
+    cancelButtonText: "Cancel",
+    background: colors.background,
+    color: colors.color,
+    confirmButtonColor: "#dc2626",
+    cancelButtonColor: colors.cancelButtonColor,
+    didOpen: () => {
+      const pop = window.Swal.getPopup();
+      const modeNow = () => pop.querySelector('input[name="ut-mode"]:checked')?.value;
+      const sync = () => {
+        const create = modeNow() === "create";
+        pop.querySelector("#ut-create").style.display = create ? "flex" : "none";
+        window.Swal.getConfirmButton().textContent = create ? "Create Default Template" : "Overwrite Default Template";
+        const nc = pop.querySelector("#ut-newcat");
+        if (nc) nc.style.display = pop.querySelector("#ut-cat").value === "__new__" ? "block" : "none";
+      };
+      pop.querySelectorAll('input[name="ut-mode"]').forEach((r) => r.addEventListener("change", sync));
+      pop.querySelector("#ut-cat")?.addEventListener("change", sync);
+      sync();
+    },
+    preConfirm: () => {
+      const pop = window.Swal.getPopup();
+      if (pop.querySelector('input[name="ut-mode"]:checked')?.value !== "create") return { action: "update" };
+      const name = pop.querySelector("#ut-name").value.trim();
+      if (name.length < 2 || name.length > 60) { window.Swal.showValidationMessage("Name must be 2-60 characters."); return false; }
+      if (taken.has(name.toLowerCase())) { window.Swal.showValidationMessage("A default template with this name already exists."); return false; }
+      let category;
+      if (categories) {
+        const sel = pop.querySelector("#ut-cat").value;
+        category = (sel === "__new__" ? pop.querySelector("#ut-newcat").value : sel).trim();
+        if (!category) { window.Swal.showValidationMessage("A category is required."); return false; }
+      }
+      return { action: "create", name, category, description: pop.querySelector("#ut-desc").value.trim() };
+    },
+  }).then((r) => (r.isConfirmed ? r.value : null));
 }
 
 /** options: { "Group": { value: "label" } } or { value: "label" }. Resolves to the chosen value or null. */

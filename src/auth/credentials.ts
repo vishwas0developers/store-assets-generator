@@ -5,7 +5,7 @@ import { readEnvValues, saveEnvValues } from "../config/env.js";
  * Demo-account credential persistence — env-var-only, matching
  * 5.demo-assets-generator/app/config.py exactly: the email is plaintext
  * (not a secret), the password is Fernet ciphertext in .env
- * (DEMO_GEN_DEMO_ACCOUNT_PASSWORD_ENC there); this project uses the same
+ * (DEMO_GEN_DEMO_ACCOUNT_PASSWORD_ENC there); this application uses the same
  * shape with Node's built-in AES-256-GCM instead of Fernet
  * (src/auth/crypto.ts), keyed by the local, gitignored .auth/.secret.key.
  *

@@ -28,7 +28,7 @@
  * drifted once in production, as the first slice of that larger migration.
  */
 
-import type { ColumnStyle, DeviceLayerStyle, MockupAssetLayer, TextLayer, TextStyle } from "./project.js";
+import type { ColumnStyle, DeviceLayerStyle, MockupAssetLayer, TextLayer, TextStyle } from "./application.js";
 
 /** Resolved device transform, in the abstract percent/degree units both
  *  callers already agreed on before this module existed:
@@ -58,7 +58,7 @@ export interface ResolvedDeviceTransform {
  *  size=90) rendered width in the 1080-wide stage, used only to test/convert
  *  the panorama pixel math -- both render.ts and canvas.js already resolve
  *  this the same way via their own device-geometry lookups before calling in.
- *  `panoramaColumnIndex` is the page's index in the project's own column
+ *  `panoramaColumnIndex` is the page's index in the application's own column
  *  order (NOT any renderer-local index -- see render.ts's cellHtml and
  *  canvas.js's loadColumnIntoFabric for why that distinction matters). */
 export function resolveDeviceOneTransform(

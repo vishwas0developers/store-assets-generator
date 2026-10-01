@@ -8,6 +8,11 @@ export function templateHtmlPath(templateId: string): string {
 
 const templateConfigCache = new Map<string, any | null>();
 
+/** Call after a template HTML file is rewritten on disk. */
+export function clearTemplateConfigCache(): void {
+  templateConfigCache.clear();
+}
+
 /** Cached parse of a template's embedded `#template-config` JSON. Returns
  *  null when the template has no HTML file or no config block. Kept in its
  *  own module (no dependency on render.ts/templates.ts) so both can read it

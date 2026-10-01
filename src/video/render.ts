@@ -19,8 +19,8 @@ import {
   type DecorationLike,
 } from "../render/shared.js";
 import { DEVICE_REGISTRY, resolveGeometry, frameSvgFor, type DeviceModel } from "../devices/registry.js";
-import { videoDir, videoFile, type VideoProject, type VideoScene } from "./project.js";
-import { projectFile } from "../project/projectStore.js";
+import { videoDir, videoFile, type VideoApplication, type VideoScene } from "./application.js";
+import { applicationFile } from "../application/applicationStore.js";
 import { VIDEO_TEMPLATES, type VideoTemplate } from "./templates.js";
 import { templateHtmlPath, templateConfig } from "./templateConfig.js";
 import { placeholderScreenUri } from "./placeholder.js";
@@ -99,7 +99,7 @@ export function buildVfFilter(
 
 /**
  * Video tab renderer -- one scene per animation beat, independent of
- * Screen Capture and Studio Mockup (its own VideoProject/VideoScene,
+ * Screen Capture and Studio Mockup (its own VideoApplication/VideoScene,
  * own uploaded sources). HTML/CSS/JS animation only, never an AI video
  * engine (PRD requirement).
  *
@@ -708,8 +708,8 @@ function canvasFor(scene: VideoScene): { width: number; height: number } {
   return scene.aspectRatio === "16:9" ? CANVAS_LANDSCAPE : CANVAS;
 }
 
-function sourceUriFor(project: VideoProject, scene: VideoScene, resolveUri: (rel: string) => string, allowDemo: boolean): string {
-  const source = project.sources.find((s) => s.id === scene.sourceId) ?? project.sources[0];
+function sourceUriFor(application: VideoApplication, scene: VideoScene, resolveUri: (rel: string) => string, allowDemo: boolean): string {
+  const source = application.sources.find((s) => s.id === scene.sourceId) ?? application.sources[0];
   if (source) return resolveUri(source.file);
   const demo = allowDemo ? resolveDemoAsset(scene.sourceId) : undefined;
   return demo ? dataUri(demo.absPath) : "";
@@ -724,7 +724,7 @@ function sourceUriFor(project: VideoProject, scene: VideoScene, resolveUri: (rel
  *  fallback -- it is only ever off for the actual `renderVideo()` export, so
  *  demo/template-preview assets never end up baked into a real rendered
  *  video, only the interactive editor preview. */
-export function sourceUrisFor(project: VideoProject, scene: VideoScene, resolveUri: (rel: string) => string, allowDemo = true): string[] {
+export function sourceUrisFor(application: VideoApplication, scene: VideoScene, resolveUri: (rel: string) => string, allowDemo = true): string[] {
   const slotShot = scene.slotValues?.screenshot?.kind === "image" ? scene.slotValues.screenshot.sourceId : undefined;
   const slotShots = scene.slotValues?.screenshots?.kind === "imageList" ? scene.slotValues.screenshots.sourceIds : undefined;
   const screenIds = (slotShots && slotShots.length > 1) ? slotShots : scene.screenIds;
@@ -732,13 +732,13 @@ export function sourceUrisFor(project: VideoProject, scene: VideoScene, resolveU
 
   if (screenIds && screenIds.length > 1) {
     return screenIds.map((id, i) => {
-      const source = project.sources.find((s) => s.id === id);
+      const source = application.sources.find((s) => s.id === id);
       if (source) return resolveUri(source.file);
       const demo = allowDemo ? resolveDemoAsset(id) : undefined;
       return demo ? dataUri(demo.absPath) : placeholderScreenUri(i);
     });
   }
-  const source = project.sources.find((s) => s.id === effectiveSourceId) ?? (effectiveSourceId ? null : project.sources[0]);
+  const source = application.sources.find((s) => s.id === effectiveSourceId) ?? (effectiveSourceId ? null : application.sources[0]);
   if (source) return [resolveUri(source.file)];
   const demo = allowDemo ? resolveDemoAsset(effectiveSourceId) : undefined;
   return demo ? [dataUri(demo.absPath)] : [];
@@ -747,11 +747,11 @@ export function sourceUrisFor(project: VideoProject, scene: VideoScene, resolveU
 /** Parallel to `sourceUrisFor` -- which of those URIs is a real screen
  *  recording ("video") vs a still screenshot ("image"), so the render path
  *  can pick `<video>`/`<img>` per slot and window.seek can frame-step it. */
-export function sourceKindsFor(project: VideoProject, scene: VideoScene): ("image" | "video")[] {
+export function sourceKindsFor(application: VideoApplication, scene: VideoScene): ("image" | "video")[] {
   if (scene.screenIds && scene.screenIds.length > 1) {
-    return scene.screenIds.map((id) => (project.sources.find((s) => s.id === id)?.kind === "video" ? "video" : "image"));
+    return scene.screenIds.map((id) => (application.sources.find((s) => s.id === id)?.kind === "video" ? "video" : "image"));
   }
-  const source = project.sources.find((s) => s.id === scene.sourceId) ?? project.sources[0];
+  const source = application.sources.find((s) => s.id === scene.sourceId) ?? application.sources[0];
   if (!source) return [];
   return [source.kind === "video" ? "video" : "image"];
 }
@@ -991,37 +991,37 @@ function flowLabelsHtml(scene: VideoScene, durationMs: number): string {
 }
 
 /** Precedence, most to least specific: scene.slotValues.background (the
- *  left-side per-scene override) -> project.backgroundImage (the right-side
+ *  left-side per-scene override) -> application.backgroundImage (the right-side
  *  global default) -> the scene's own named theme via backgroundCss. Mirrors
  *  resolveSlots' brand-fallback pattern in slots.ts, just for a field that
  *  lives outside the slot-target system (background paints `.backdrop`
  *  directly, it has no DOM slot target to resolve through). */
-function sceneBackgroundRef(scene: VideoScene, project: VideoProject): string | null {
+function sceneBackgroundRef(scene: VideoScene, application: VideoApplication): string | null {
   const override = scene.slotValues?.background;
   const overrideId = override?.kind === "image" ? override.sourceId : undefined;
-  return overrideId ?? project.backgroundImage ?? null;
+  return overrideId ?? application.backgroundImage ?? null;
 }
 
 /** A ref is either `template:<id>` (that template's own native background) or
  *  an uploaded source id. Returns null for "leave the template as it is":
- *  no ref, or a ref pointing at the project's own template. */
-function backgroundCssForRef(ref: string | null, project: VideoProject, resolveUri: (rel: string) => string): string | null {
+ *  no ref, or a ref pointing at the application's own template. */
+function backgroundCssForRef(ref: string | null, application: VideoApplication, resolveUri: (rel: string) => string): string | null {
   if (!ref) return null;
   if (ref.startsWith(TEMPLATE_BG_PREFIX)) {
     const id = ref.slice(TEMPLATE_BG_PREFIX.length);
-    return id === project.template ? null : templateBackgroundCss(id);
+    return id === application.template ? null : templateBackgroundCss(id);
   }
-  const source = project.sources.find((s) => s.id === ref);
+  const source = application.sources.find((s) => s.id === ref);
   return source ? `center / cover no-repeat url(${resolveUri(source.file)})` : null;
 }
 
 function resolveSceneBackgroundCss(
   scene: VideoScene,
-  project?: VideoProject,
+  application?: VideoApplication,
   resolveUri?: (rel: string) => string,
 ): string {
-  if (project && resolveUri) {
-    const css = backgroundCssForRef(sceneBackgroundRef(scene, project), project, resolveUri);
+  if (application && resolveUri) {
+    const css = backgroundCssForRef(sceneBackgroundRef(scene, application), application, resolveUri);
     if (css) return css;
   }
   return backgroundCss(scene.background);
@@ -1034,7 +1034,7 @@ function sceneLayoutCss(
   selector: string,
   keyframeSuffix: string,
   gateSelector: string = selector,
-  project?: VideoProject,
+  application?: VideoApplication,
   resolveUri?: (rel: string) => string,
 ): string {
   const layout = layoutFor(scene);
@@ -1049,7 +1049,7 @@ function sceneLayoutCss(
     ${selector} .copy { text-align: ${layout.copyAlign}; flex: ${layout.copyFlex}; ${layout.copyMaxWidth ? `max-width:${layout.copyMaxWidth};` : ""} z-index: 4; ${isStackedTop ? "margin-bottom: clamp(32px, 4.5vh, 60px);" : ""} ${isStackedBottom ? "margin-top: clamp(32px, 4.5vh, 60px);" : ""} }
     ${selector} .label { font-size: ${isLandscape ? 64 : 54}px; }
     ${selector} .subtext { font-size: ${isLandscape ? 32 : 28}px; }
-    ${selector} .backdrop { background: ${resolveSceneBackgroundCss(scene, project, resolveUri)}; }
+    ${selector} .backdrop { background: ${resolveSceneBackgroundCss(scene, application, resolveUri)}; }
     ${!isLandscape ? `${selector} .stage { margin: 0 auto; align-self: center !important; }` : ""}
     ${
       scene.depth === "float" || scene.depth === "showcase"
@@ -1104,7 +1104,7 @@ function sceneContentHtml(scene: VideoScene, device: DeviceModel, uris: string[]
   `;
 }
 
-/** Injects a project's dynamic content into a slot-driven template's own
+/** Injects an application's dynamic content into a slot-driven template's own
  *  HTML (config parsed once, verbatim markup/CSS/keyframes untouched). Both
  *  the live preview (`resolveUri` -> `/api/videos/:id/file?p=...`) and the
  *  final render (`resolveUri` -> a `data:` URI read off disk) share this one
@@ -1114,8 +1114,8 @@ function sceneContentHtml(scene: VideoScene, device: DeviceModel, uris: string[]
  *  scene's markup in isolation -- some templates reference `<defs>` (e.g.
  *  an SVG gradient) declared in an earlier scene (tpl-62155880 scene 4
  *  reuses `url(#pinGrad)` from scene 1). */
-export function composeStandaloneHtml(project: VideoProject, activeSceneIndex?: number, resolveUri?: (rel: string) => string, allowDemo = true): string {
-  const templateId = project.template || "iphone-15-pro-portrait";
+export function composeStandaloneHtml(application: VideoApplication, activeSceneIndex?: number, resolveUri?: (rel: string) => string, allowDemo = true): string {
+  const templateId = application.template || "iphone-15-pro-portrait";
   const htmlPath = templateHtmlPath(templateId);
   if (!fs.existsSync(htmlPath)) {
     throw new Error(`Standalone template HTML not found at ${htmlPath}`);
@@ -1124,7 +1124,7 @@ export function composeStandaloneHtml(project: VideoProject, activeSceneIndex?: 
 
   const config = templateConfig(templateId);
   if (!config) return html;
-  // Durations come from the PROJECT's scenes (what the user actually edited),
+  // Durations come from the APPLICATION's scenes (what the user actually edited),
   // not the template's own defaults -- config.scenes is a cached parse shared
   // across every render, so clone before overriding it. Without this, a scene
   // whose duration was changed (e.g. a screen-recording clip lengthening it to
@@ -1133,9 +1133,9 @@ export function composeStandaloneHtml(project: VideoProject, activeSceneIndex?: 
   // ever shows as the next scene's opening frame, held and slightly jittering
   // (the transition's own motion) -- exactly the "stuck on Scene 2, flickering"
   // symptom, for every scene after the one whose length was ever edited.
-  const projectScenesByOrder = [...project.scenes].sort((a, b) => a.order - b.order);
+  const applicationScenesByOrder = [...application.scenes].sort((a, b) => a.order - b.order);
   const scenes = (config.scenes || []).map((s: any, i: number) => {
-    const projScene = projectScenesByOrder[i];
+    const projScene = applicationScenesByOrder[i];
     if (!projScene) return s;
     const durationSeconds = Math.max(0.1, projScene.durationSeconds || 5);
     return { ...s, durationSeconds, durationMs: durationSeconds * 1000 };
@@ -1148,31 +1148,31 @@ export function composeStandaloneHtml(project: VideoProject, activeSceneIndex?: 
   }
 
   // Device layer: each rig in the template carries `data-device`; swap in the
-  // device the project's scene asks for (validated against the scene's
+  // device the application's scene asks for (validated against the scene's
   // deviceMode) without touching the template's own animation/layout.
   html = applyRigDevices(html, {
     pick: (i) => {
-      const scene = projectScenesByOrder[i];
+      const scene = applicationScenesByOrder[i];
       if (!scene) return null;
       const { device, deviceMode } = sanitizeSceneDevice(scene, { device: config.device, deviceMode: config.scenes?.[i]?.deviceMode ?? config.deviceMode });
       return resolveRigAsset(device, deviceMode);
     },
   });
-  const uriFor = resolveUri ?? previewResolveUri(project.id);
+  const uriFor = resolveUri ?? previewResolveUri(application.id);
 
   // Resolve the same BGM renderVideo would mix into the export -- a real
   // upload if one is set, else the template's own generated track -- so the
   // interactive preview (this function) can actually play it too, instead of
   // background music only ever being audible in the final rendered file.
   let bgmUrl: string | null = null;
-  if (project.bgm) {
-    const candidate = videoFile(project.id, project.bgm);
-    if (fs.existsSync(candidate)) bgmUrl = uriFor(project.bgm);
+  if (application.bgm) {
+    const candidate = videoFile(application.id, application.bgm);
+    if (fs.existsSync(candidate)) bgmUrl = uriFor(application.bgm);
   }
   if (!bgmUrl && BGM_PRESETS[templateId]) {
     bgmUrl = `/api/bgm-presets/${encodeURIComponent(templateId)}`;
   }
-  const bgmVolume = project.bgmVolume ?? 1;
+  const bgmVolume = application.bgmVolume ?? 1;
 
   // Calculate scene offset if activeSceneIndex is set
   let sceneStartMs = 0;
@@ -1187,7 +1187,7 @@ export function composeStandaloneHtml(project: VideoProject, activeSceneIndex?: 
   // Build one flat payload for every scene the template declares slots for
   // -- resolveSlots is the single normalizer both the studio editor and this
   // renderer use, so there is no second description of what a scene needs.
-  const payload = project.scenes.flatMap((_pScene, idx) => resolveSlots(project, idx, uriFor, allowDemo));
+  const payload = application.scenes.flatMap((_pScene, idx) => resolveSlots(application, idx, uriFor, allowDemo));
   // Slots templates never populate `scene.background` (that field only feeds
   // the code-gen device-preset path's baked-in theme names) -- so only inject
   // when a real image override/global default is actually set, and leave a
@@ -1196,27 +1196,27 @@ export function composeStandaloneHtml(project: VideoProject, activeSceneIndex?: 
   // scene for both the edit-preview and the final per-scene render capture,
   // so `.canvas` here always belongs to just the scene being rendered -- see
   // this function's activeScene below.
-  // Within-scene multi-screenshot timelines (project-wide -- see
+  // Within-scene multi-screenshot timelines (application-wide -- see
   // resolveImageSequences's doc comment for why this can't be per-scene).
-  const sequences = resolveImageSequences(project, uriFor, allowDemo);
+  const sequences = resolveImageSequences(application, uriFor, allowDemo);
 
   // Screenshot -> video hand-off for the active scene (see VideoScene.videoSourceId).
-  const activeScene = activeSceneIndex === undefined ? undefined : project.scenes.find((sc) => sc.order === activeSceneIndex);
+  const activeScene = activeSceneIndex === undefined ? undefined : application.scenes.find((sc) => sc.order === activeSceneIndex);
   // Two background shapes exist across templates: the device presets keep one
   // `#scene-N > .backdrop` div per scene (inline gradient), while the tpl-*
   // promos paint a single shared `.canvas`. Each scene with an image override
-  // or a project default gets its own backdrop written (so the full-sequence
+  // or an application default gets its own backdrop written (so the full-sequence
   // player shows per-scene backgrounds too); the active scene additionally
   // writes `.canvas`, which is what a tpl-* document renders for that scene.
-  projectScenesByOrder.forEach((sc, i) => {
-    const value = backgroundCssForRef(sceneBackgroundRef(sc, project), project, uriFor);
+  applicationScenesByOrder.forEach((sc, i) => {
+    const value = backgroundCssForRef(sceneBackgroundRef(sc, application), application, uriFor);
     if (!value) return;
     payload.push({ targets: [`#scene-${i} > .backdrop`], op: "bg", value });
     if (activeScene && sc.id === activeScene.id) payload.push({ targets: [".canvas"], op: "bg", value });
   });
-  const videoSource = activeScene?.videoSourceId ? project.sources.find((src) => src.id === activeScene.videoSourceId && src.kind === "video") : undefined;
-  const videoTargets = activeScene && videoSource && project.template
-    ? slotSpecsForScene(project.template, activeScene.order)
+  const videoSource = activeScene?.videoSourceId ? application.sources.find((src) => src.id === activeScene.videoSourceId && src.kind === "video") : undefined;
+  const videoTargets = activeScene && videoSource && application.template
+    ? slotSpecsForScene(application.template, activeScene.order)
         .filter((sp) => sp.key === "screenshot" || sp.key === "screenshots")
         .flatMap((sp) => sp.targets)
     : [];
@@ -1442,19 +1442,19 @@ export function sceneHtml(
   screenshotUris: string[],
   seekable = false,
   screenshotKinds: ("image" | "video")[] = [],
-  project?: VideoProject,
+  application?: VideoApplication,
   resolveUri?: (rel: string) => string,
   allowDemo = true,
 ): string {
-  if (project && project.template) {
+  if (application && application.template) {
     // Only templates that declare `slots` (the replicated tpl-* promos) go
     // through the standalone-HTML injector. The 10 device presets carry a
     // template HTML (for the Templates-tab preview player) but no slots, so
     // they fall through to the code-generated path below, which is what
     // actually understands their screenshots/screenCount/word-split text.
-    const cfg = templateConfig(project.template);
+    const cfg = templateConfig(application.template);
     if (cfg?.scenes?.some((s: any) => s.slots)) {
-      return composeStandaloneHtml(project, scene.order, resolveUri ?? previewResolveUri(project.id), allowDemo);
+      return composeStandaloneHtml(application, scene.order, resolveUri ?? previewResolveUri(application.id), allowDemo);
     }
   }
 
@@ -1476,7 +1476,7 @@ export function sceneHtml(
   ${textAnimCss(scene)}
   ${FLOW_LABEL_CSS}
   ${foldRigCss(durationMs)}
-  ${sceneLayoutCss(scene, animation, durationMs, ".canvas", "", undefined, project, resolveUri)}
+  ${sceneLayoutCss(scene, animation, durationMs, ".canvas", "", undefined, application, resolveUri)}
 </style></head>
 <body>
   <div class="canvas">${contentHtml}</div>
@@ -1501,18 +1501,18 @@ export function sceneHtml(
 </body></html>`;
 }
 
-function previewResolveUri(projectId: string) {
-  return (rel: string) => `/api/videos/${projectId}/file?p=${encodeURIComponent(rel)}`;
+function previewResolveUri(applicationId: string) {
+  return (rel: string) => `/api/videos/${applicationId}/file?p=${encodeURIComponent(rel)}`;
 }
 
-export function scenePreviewHtml(project: VideoProject, sceneId: string): string {
-  const scene = project.scenes.find((s) => s.id === sceneId);
-  if (!scene) throw new Error(`Scene '${sceneId}' not found in project ${project.id}`);
-  const resolveUri = previewResolveUri(project.id);
-  return sceneHtml(scene, sourceUrisFor(project, scene, resolveUri), false, sourceKindsFor(project, scene), project, resolveUri);
+export function scenePreviewHtml(application: VideoApplication, sceneId: string): string {
+  const scene = application.scenes.find((s) => s.id === sceneId);
+  if (!scene) throw new Error(`Scene '${sceneId}' not found in application ${application.id}`);
+  const resolveUri = previewResolveUri(application.id);
+  return sceneHtml(scene, sourceUrisFor(application, scene, resolveUri), false, sourceKindsFor(application, scene), application, resolveUri);
 }
 
-/** Concatenated full-template preview: every scene of the project is laid
+/** Concatenated full-template preview: every scene of the application is laid
  *  out ahead of time, but nothing plays until the page's `window.seek`-free
  *  companion API (`window.__videoPreview`) is told to -- see the player
  *  script below. Each scene is its own absolutely-positioned layer with its
@@ -1520,16 +1520,16 @@ export function scenePreviewHtml(project: VideoProject, sceneId: string): string
  *  shows exactly one scene at a time and (re)starts its CSS animations by
  *  toggling a class, timed via setTimeout against each scene's own duration
  *  -- plain JS scheduling, not an AI video engine. */
-export function templatePreviewHtml(project: VideoProject): string {
-  if (project.template) {
-    const htmlPath = templateHtmlPath(project.template);
+export function templatePreviewHtml(application: VideoApplication): string {
+  if (application.template) {
+    const htmlPath = templateHtmlPath(application.template);
     if (fs.existsSync(htmlPath)) {
-      return composeStandaloneHtml(project);
+      return composeStandaloneHtml(application);
     }
   }
 
-  const resolveUri = previewResolveUri(project.id);
-  const scenes = [...project.scenes].sort((a, b) => a.order - b.order);
+  const resolveUri = previewResolveUri(application.id);
+  const scenes = [...application.scenes].sort((a, b) => a.order - b.order);
 
   const canvas = canvasFor(scenes[0] ?? ({} as VideoScene));
 
@@ -1537,7 +1537,7 @@ export function templatePreviewHtml(project: VideoProject): string {
     .map((scene, i) => {
       const animation = SCENE_ANIMATIONS[scene.sceneTemplate] ?? SCENE_ANIMATIONS["hero-rise"];
       const durationMs = Math.max(1, scene.durationSeconds) * 1000;
-      return sceneLayoutCss(scene, animation, durationMs, `.scene-${i}`, `-${i}`, `.scene-${i}.playing`, project, resolveUri) + textAnimCss(scene, `.scene-${i}`, `-${i}`);
+      return sceneLayoutCss(scene, animation, durationMs, `.scene-${i}`, `-${i}`, `.scene-${i}.playing`, application, resolveUri) + textAnimCss(scene, `.scene-${i}`, `-${i}`);
     })
     .join("\n");
 
@@ -1545,8 +1545,8 @@ export function templatePreviewHtml(project: VideoProject): string {
     .map((scene, i) => {
       const device = DEVICE_REGISTRY[scene.device] ?? DEVICE_REGISTRY["phone"];
       const durationMs = Math.max(1, scene.durationSeconds) * 1000;
-      const uris = sourceUrisFor(project, scene, resolveUri);
-      const kinds = sourceKindsFor(project, scene);
+      const uris = sourceUrisFor(application, scene, resolveUri);
+      const kinds = sourceKindsFor(application, scene);
       return `<div class="scene scene-${i}" id="scene-${i}">${sceneContentHtml(scene, device, uris, kinds, durationMs)}</div>`;
     })
     .join("\n");
@@ -1826,11 +1826,11 @@ export async function detectBestH264Encoder(crf: string): Promise<EncoderChoice>
 /** Renders every scene deterministically with GPU acceleration,
  *  multi-page scene parallelism, fast frame streaming, and hardware NVENC encoding. */
 export async function renderVideo(
-  project: VideoProject,
+  application: VideoApplication,
   opts: RenderOptions = {},
   onProgress?: (p: RenderProgress) => void
 ): Promise<string> {
-  if (project.scenes.length === 0) throw new Error("No scenes configured -- pick a template first.");
+  if (application.scenes.length === 0) throw new Error("No scenes configured -- pick a template first.");
   await ensureFfmpegAvailable();
 
   const signal = opts.signal;
@@ -1849,9 +1849,9 @@ export async function renderVideo(
   const fps = opts.fps || 30;
   const quality = opts.quality || "standard";
   const includeAudio = opts.includeAudio !== false;
-  const audioVolume = opts.audioVolume ?? (project.bgmVolume ?? 1);
+  const audioVolume = opts.audioVolume ?? (application.bgmVolume ?? 1);
 
-  let scenes = [...project.scenes].sort((a, b) => a.order - b.order);
+  let scenes = [...application.scenes].sort((a, b) => a.order - b.order);
   if (opts.sceneRange) {
     const [from, to] = opts.sceneRange;
     scenes = scenes.filter((s, idx) => (idx + 1) >= from && (idx + 1) <= to);
@@ -1859,13 +1859,13 @@ export async function renderVideo(
   }
 
   const orientations = new Set(scenes.map((s) => orientationOf(s)));
-  if (orientations.size > 1) throw new Error("Mixed-orientation project: every scene must share the same aspect ratio (9:16 or 16:9) before rendering.");
+  if (orientations.size > 1) throw new Error("Mixed-orientation application: every scene must share the same aspect ratio (9:16 or 16:9) before rendering.");
 
-  const outDir = videoDir(project.id);
+  const outDir = videoDir(application.id);
 
   const resolveUri = (rel: string) => {
-    const abs = videoFile(project.id, rel);
-    return dataUri(fs.existsSync(abs) ? abs : projectFile(project.id, rel));
+    const abs = videoFile(application.id, rel);
+    return dataUri(fs.existsSync(abs) ? abs : applicationFile(application.id, rel));
   };
 
   // Compute total frames up front
@@ -1889,7 +1889,7 @@ export async function renderVideo(
   let totalRenderedFrames = 0;
 
   // Scenes render strictly in order, one at a time: Scene 1's frames are all
-  // captured and encoded before Scene 2 starts, matching how the project is
+  // captured and encoded before Scene 2 starts, matching how the application is
   // edited scene-by-scene and making "scene N of {total}" progress and the
   // final concat order unambiguous. Throughput instead comes from a pool of
   // pages capturing *within* one scene concurrently -- see POOL_SIZE below.
@@ -2058,7 +2058,7 @@ export async function renderVideo(
 
     // Every distinct device across the whole render, routed once per pool page
     // instead of once per scene.
-    const allDeviceIds = [...new Set([...scenes.map((s) => s.device), ...(project.template ? [templateConfig(project.template)?.device] : [])].filter((d): d is string => !!d))];
+    const allDeviceIds = [...new Set([...scenes.map((s) => s.device), ...(application.template ? [templateConfig(application.template)?.device] : [])].filter((d): d is string => !!d))];
 
     // A fresh pool of pages *for every scene* -- within one scene, all pool
     // pages seek+screenshot different frames at once (a single page's
@@ -2088,10 +2088,10 @@ export async function renderVideo(
         const sceneFrames = sceneFrameCounts[sIdx];
         const html = sceneHtml(
           scene,
-          sourceUrisFor(project, scene, resolveUri, false),
+          sourceUrisFor(application, scene, resolveUri, false),
           true,
-          sourceKindsFor(project, scene),
-          project,
+          sourceKindsFor(application, scene),
+          application,
           resolveUri,
           false
         );
@@ -2300,22 +2300,22 @@ export async function renderVideo(
   let bgmPath: string | null = null;
   if (includeAudio) {
     report({ phase: "audio", percent: 93, message: "Mixing background music & audio..." });
-    if (project.bgm) {
-      const candidate = videoFile(project.id, project.bgm);
+    if (application.bgm) {
+      const candidate = videoFile(application.id, application.bgm);
       if (fs.existsSync(candidate)) {
         bgmPath = candidate;
       }
     }
-    if (!bgmPath && project.template && BGM_PRESETS[project.template]) {
+    if (!bgmPath && application.template && BGM_PRESETS[application.template]) {
       try {
-        bgmPath = ensureGeneratedBgm(project.template, totalSeconds);
+        bgmPath = ensureGeneratedBgm(application.template, totalSeconds);
       } catch {}
     }
   }
 
   if (bgmPath && includeAudio) {
-    const fadeInMs = project.bgmFadeInMs ?? 1500;
-    const fadeOutMs = project.bgmFadeOutMs ?? 2000;
+    const fadeInMs = application.bgmFadeInMs ?? 1500;
+    const fadeOutMs = application.bgmFadeOutMs ?? 2000;
     const fadeOutStart = Math.max(0, totalSeconds - fadeOutMs / 1000);
     // loudnorm first: the generated BGM track is soft on its own (mean ~-22dB),
     // easy to miss under any scene audio -- normalize to a standard broadcast

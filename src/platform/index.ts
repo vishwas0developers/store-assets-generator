@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import YAML from "yaml";
-import { PlatformSpecSchema, type PlatformSpec } from "../project/schema.js";
+import { PlatformSpecSchema, type PlatformSpec } from "../application/schema.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

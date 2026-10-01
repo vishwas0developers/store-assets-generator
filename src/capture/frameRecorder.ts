@@ -2,7 +2,7 @@ import { spawn, ChildProcess } from "child_process";
 import fs from "fs";
 import path from "path";
 import { resolveTool } from "../toolchain/binaries.js";
-import { loadProject, saveProject, projectFile } from "../project/projectStore.js";
+import { loadApplication, saveApplication, applicationFile } from "../application/applicationStore.js";
 import { classifyDeviceCategory } from "./deviceCategories.js";
 
 // Both live views (Android via scrcpy, Web via Chrome DevTools screencast)
@@ -124,16 +124,16 @@ export function startFrameRecorder(outPath: string, fps = 30): FrameRecorder {
 }
 
 /** Next free capture id + its `captures/<id>.mp4` path, same numbering as screenshots. */
-export function nextRecordingPath(projectId: string): { id: number; rel: string; abs: string } {
-  const project = loadProject(projectId);
-  const id = project.captures.length > 0 ? Math.max(...project.captures.map((c) => c.id)) + 1 : 1;
+export function nextRecordingPath(applicationId: string): { id: number; rel: string; abs: string } {
+  const application = loadApplication(applicationId);
+  const id = application.captures.length > 0 ? Math.max(...application.captures.map((c) => c.id)) + 1 : 1;
   const rel = `captures/${id}.mp4`;
-  return { id, rel, abs: projectFile(projectId, rel) };
+  return { id, rel, abs: applicationFile(applicationId, rel) };
 }
 
-/** Registers a finished recording in project.captures + video.sources (kind: "video"). */
+/** Registers a finished recording in application.captures + video.sources (kind: "video"). */
 export function registerRecording(opts: {
-  projectId: string;
+  applicationId: string;
   id: number;
   rel: string;
   url: string;
@@ -142,11 +142,11 @@ export function registerRecording(opts: {
   durationSec: number;
   deviceLabel: string;
 }): { id: number; file: string; durationSec: number } {
-  const project = loadProject(opts.projectId);
+  const application = loadApplication(opts.applicationId);
   const resolution = `${opts.width}x${opts.height}`;
   const deviceCategory = classifyDeviceCategory(opts.width, opts.height);
 
-  project.captures.push({
+  application.captures.push({
     id: opts.id,
     file: opts.rel,
     url: opts.url,
@@ -162,7 +162,7 @@ export function registerRecording(opts: {
 
   // Video sources only -- the mockup renderer composites still images, so a
   // recording has nothing to contribute there.
-  project.video.sources.push({
+  application.video.sources.push({
     id: `src_${Date.now()}`,
     // Name stays free of pixel dimensions -- the UI appends the device-size
     // label at display time (see web/js/editor.js's populateSourceSelect).
@@ -177,6 +177,6 @@ export function registerRecording(opts: {
     kind: "video",
   });
 
-  saveProject(project);
+  saveApplication(application);
   return { id: opts.id, file: opts.rel, durationSec: opts.durationSec };
 }
