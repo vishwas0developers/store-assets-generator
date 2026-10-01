@@ -239,7 +239,7 @@ output/                   Runtime data (git-ignored)
 
 ## 🤝 Contributing
 
-Contributions are welcome — bug reports, template and device additions, and fixes alike.
+Contributions are welcome (under the terms of the [LICENSE](LICENSE)) — bug reports, template and device additions, and fixes alike.
 
 1. **Fork and clone** the repository, then run `setup.bat` (or `npm install && npm run build`).
 2. **Create a branch** off `main`: `git checkout -b fix/short-description` (or `feat/…`).
@@ -255,4 +255,11 @@ Have an idea or found a bug? Open a GitHub Issue.
 
 ## 📄 License
 
-No license file is currently included in the repository. Until one is added, all rights are reserved by the author; open an issue to discuss usage.
+Released under the **Store Assets Generator Personal Use Source-Available License** — see [LICENSE](LICENSE).
+
+- ✅ Personal, non-commercial use.
+- ✅ Contributing improvements and upgrades to this repository.
+- ❌ Distributing the software or any build of it.
+- ❌ Reusing or redistributing any library, module, component, template or asset developed for it.
+
+This is a custom source-available license, **not** an open-source (OSI) license. Third-party dependencies keep their own licenses.

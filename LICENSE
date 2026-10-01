@@ -1,0 +1,68 @@
+Store Assets Generator - Personal Use Source-Available License
+Version 1.0
+
+Copyright (c) 2026 vishwas0developers. All rights reserved.
+
+1. DEFINITIONS
+"Software" means all source code, templates, device assets, libraries, modules,
+components, scripts, documentation and other original material in this
+repository, in source or compiled form, including installers built from it.
+"You" means any individual obtaining a copy of the Software.
+"Distribute" means to copy, publish, sell, sublicense, lease, host, share, or
+otherwise make the Software, or any part of it, available to any third party,
+by any means.
+
+2. GRANT (PERSONAL USE)
+Subject to this license, You may download, build, install and run the Software
+for Your own personal, non-commercial use.
+
+3. CONTRIBUTIONS AND MODIFICATIONS
+You may modify the Software for Your own personal use, and You may submit
+improvements, fixes and upgrades to the official repository
+(https://github.com/vishwas0developers/store-assets-generator), for example by
+pull request. By submitting a contribution You grant the copyright holder a
+perpetual, worldwide, irrevocable, royalty-free license to use, modify,
+sublicense and distribute it as part of the Software, and You confirm that You
+have the right to do so. Contributions remain subject to this license.
+
+4. RESTRICTIONS
+Except as expressly permitted in Section 3, You may NOT, under any
+circumstances:
+  a. Distribute the Software, any modified version of it, or any build of it;
+  b. Distribute, publish, reuse, extract, re-implement or incorporate any
+     library, module, component, template, device asset, script or other part
+     of the Software in any other project, product or service, whether
+     commercial or not;
+  c. Use the Software or any part of it to provide a service to third parties,
+     or for any commercial purpose;
+  d. Sublicense, sell, rent or lease the Software;
+  e. Remove or alter any copyright, license or attribution notice.
+Public forks hosted on the platform that hosts the official repository are
+permitted solely to the extent needed to prepare contributions under Section 3;
+such forks remain subject to this license and may not be used to distribute the
+Software.
+
+5. THIRD-PARTY COMPONENTS
+This license covers only material original to this project. Third-party
+software and assets (for example Electron, Fabric.js, Three.js, Playwright and
+other npm dependencies, and any bundled binaries such as ffmpeg, scrcpy and adb)
+remain under their own licenses, which apply to them and are not changed by this
+license.
+
+6. OWNERSHIP
+The Software is licensed, not sold. All rights not expressly granted are
+reserved by the copyright holder.
+
+7. TERMINATION
+This license terminates automatically if You breach any of its terms. On
+termination You must stop using the Software and delete all copies.
+
+8. NO WARRANTY AND LIMITATION OF LIABILITY
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM,
+DAMAGES OR OTHER LIABILITY ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR ITS USE.
+
+For permission requests beyond this license, open an issue on the official
+repository.

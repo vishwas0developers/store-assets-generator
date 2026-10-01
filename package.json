@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Standalone Studio application for Store Assets Generation (screenshots, device frames, and promotional videos)",
   "private": true,
+  "license": "SEE LICENSE IN LICENSE",
   "type": "module",
   "main": "main.js",
   "build": {
