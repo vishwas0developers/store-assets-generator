@@ -102,7 +102,7 @@ Releases: bump `MINOR`/`MAJOR` manually (`npm version minor --no-git-tag-version
 
 ### What gets packaged
 
-The app is packaged with `asar: false`, so templates, devices and output folders are real directories on disk (the backend reads and writes them relative to the working directory, and `main.js` sets `process.chdir` to the app folder at launch). Included: `main.js`, `preload.cjs`, `dist/`, `web/`, `devices/`, `templates/`, `assets/`, `config/`, `fonts/`, `apps/`, `vendor/`, `src/platform/specs/`, `build/` (icon + splash), plus `three/examples` (electron-builder strips `examples/` folders by default; it is re-added through `extraResources`).
+The app is packaged with `asar: false`, so templates, devices and output folders are real directories on disk (the backend reads and writes them relative to the working directory, and `main.js` sets `process.chdir` to the app folder at launch). Included: `main.js`, `preload.cjs`, `dist/`, `web/`, `devices/`, `templates/`, `assets/`, `config/`, `fonts/`, `vendor/`, `src/platform/specs/`, `build/` (icon + splash), plus `three/examples` (electron-builder strips `examples/` folders by default; it is re-added through `extraResources`).
 
 The NSIS installer closes any running copy before replacing files, so reinstalling over an existing install updates it in place. The installer is per-user by default (`%LOCALAPPDATA%\Programs\store-assets-generator`), which keeps `output/` and `logs/` writable.
 
