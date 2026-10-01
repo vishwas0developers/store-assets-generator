@@ -298,7 +298,7 @@ export const SCENE_ANIMATIONS: Record<string, SceneAnimation> = {
       50%  { transform: scale(1.15); filter: brightness(0.85); }
       100% { transform: scale(1.2); filter: brightness(0.7); }
     `,
-    renderDevice: (device, uris, kinds, scene, durationMs) => device3dMarkup(device, uris, scene.variant, durationMs, kinds),
+    renderDevice: (device, uris, kinds, scene, durationMs) => device3dMarkup(device, uris, undefined, durationMs, kinds),
     // The bezel/back/sides/reflection fade out as the rig scales past frame,
     // so only the screen content remains -- a genuine merge with the canvas
     // rather than just a big scaled-up phone with a darkened backdrop.
@@ -336,35 +336,7 @@ export const SCENE_ANIMATIONS: Record<string, SceneAnimation> = {
       50%  { transform: scale(1.08); filter: brightness(1.02); }
       100% { transform: scale(1.12); filter: brightness(1); }
     `,
-    renderDevice: (device, uris, kinds, scene, durationMs) => device3dMarkup(device, uris, scene.variant, durationMs, kinds),
-  },
-  "fold-open": {
-    id: "fold-open",
-    deviceMode: "2D",
-    name: "Fold open",
-    easing: "cubic-bezier(.2,.9,.2,1.05)",
-    deviceKeyframes: (s) => `
-      0%   { transform: perspective(1800px) rotateY(${-10 - s.rotate / 2}deg) scale(${0.94 - s.zoom / 260}); opacity: 0; }
-      18%  { opacity: 1; }
-      60%  { transform: perspective(1800px) rotateY(${s.rotate / 6}deg) scale(${1 + s.zoom / 100}); opacity: 1; }
-      100% { transform: perspective(1800px) rotateY(0deg) scale(${1 + s.zoom / 110}); opacity: 1; }
-    `,
-    backdropKeyframes: (s) => `
-      0%   { transform: scale(1.08) translate3d(0,2%,0); }
-      100% { transform: scale(${1 + s.zoom / 240}) translate3d(0,-2%,0); }
-    `,
-    renderDevice: (device, uris, kinds, scene) => {
-      const foldedMarkup = deviceMarkup(device, uris[0] ?? "", "folded", kinds[0] ?? "image");
-      const unfoldedMarkup = deviceMarkup(device, uris[0] ?? "", "unfolded", kinds[0] ?? "image");
-      const foldedG = resolveGeometry(device, "folded");
-      const unfoldedG = resolveGeometry(device, "unfolded");
-      const areaRatio = (unfoldedG.width * unfoldedG.height) / (foldedG.width * foldedG.height);
-      const foldedScale = Math.min(2.6, Math.max(1, Math.sqrt(areaRatio) * 0.62));
-      return `<div class="fold-rig">
-        <div class="fold-layer fold-folded" style="transform:scale(${foldedScale.toFixed(2)})">${foldedMarkup}</div>
-        <div class="fold-layer fold-unfolded">${unfoldedMarkup}</div>
-      </div>`;
-    },
+    renderDevice: (device, uris, kinds, scene, durationMs) => device3dMarkup(device, uris, undefined, durationMs, kinds),
   },
   "tablet-pan": {
     id: "tablet-pan",
@@ -396,7 +368,7 @@ export const SCENE_ANIMATIONS: Record<string, SceneAnimation> = {
       45%  { transform: scale(1.04); filter: brightness(1.04); }
       100% { transform: scale(1); filter: brightness(1.08); }
     `,
-    renderDevice: (device, uris, kinds, scene, durationMs) => device3dMarkup(device, uris, scene.variant, durationMs, kinds),
+    renderDevice: (device, uris, kinds, scene, durationMs) => device3dMarkup(device, uris, undefined, durationMs, kinds),
   },
   "trio-lineup": {
     id: "trio-lineup",
@@ -415,12 +387,12 @@ export const SCENE_ANIMATIONS: Record<string, SceneAnimation> = {
       const rightUri = uris[2] ?? uris[0] ?? "";
       const flank = (uri: string, kind: "image" | "video", tx: string, rot: string) => `
         <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; transform:translateX(${tx}) translateZ(-140px) rotateY(${rot}) scale(.8); opacity:.7; filter:brightness(.72);">
-          ${deviceMarkup(device, uri, scene.variant, kind)}
+          ${deviceMarkup(device, uri, undefined, kind)}
         </div>`;
       return `<div style="position:relative; width:100%; height:100%;">
         ${flank(leftUri, kinds[1] ?? "image", "-56%", "26deg")}
         ${flank(rightUri, kinds[2] ?? "image", "56%", "-26deg")}
-        <div style="position:relative; z-index:2;">${deviceMarkup(device, centerUri, scene.variant, kinds[0] ?? "image")}</div>
+        <div style="position:relative; z-index:2;">${deviceMarkup(device, centerUri, undefined, kinds[0] ?? "image")}</div>
       </div>`;
     },
   },
@@ -441,7 +413,7 @@ export const SCENE_ANIMATIONS: Record<string, SceneAnimation> = {
     `,
     renderDevice: (device, uris, kinds, scene, durationMs) => {
       // Add custom SVG blueprint overlay inside the device wrapper
-      const dev = deviceMarkup(device, uris[0] ?? "", scene.variant, kinds[0] ?? "image");
+      const dev = deviceMarkup(device, uris[0] ?? "", undefined, kinds[0] ?? "image");
       return `<div style="position:relative; width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
         <div style="position:absolute; inset:-10%; z-index:1; pointer-events:none; border: 1px solid rgba(0,198,184,.15); clip-path: polygon(0 0, 100% 0, 90% 100%, 10% 100%);"></div>
         ${dev}
@@ -464,7 +436,7 @@ export const SCENE_ANIMATIONS: Record<string, SceneAnimation> = {
       100% { transform: rotate(15deg) scale(1.1); }
     `,
     renderDevice: (device, uris, kinds, scene, durationMs) => {
-      const dev = deviceMarkup(device, uris[0] ?? "", scene.variant, kinds[0] ?? "image");
+      const dev = deviceMarkup(device, uris[0] ?? "", undefined, kinds[0] ?? "image");
       return `<div style="position:relative; width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
         <!-- Concentric neon crimson rings background -->
         <div style="position:absolute; width:480px; height:480px; border-radius:50%; border:2px dashed rgba(232,23,93,.35); animation: spinRing 25s linear infinite;"></div>
@@ -494,7 +466,7 @@ export const SCENE_ANIMATIONS: Record<string, SceneAnimation> = {
     `,
     renderDevice: (device, uris, kinds, scene, durationMs) => {
       // Auto-scrolling screen overlay in screen styles
-      const g = resolveGeometry(device, scene.variant);
+      const g = resolveGeometry(device, undefined);
       const r = g.cornerRadius ?? 0;
       const screenStyle = `top:${g.screenInset.top - 1}px;left:${g.screenInset.left - 1}px;width:${g.screenInset.width + 2}px;height:${g.screenInset.height + 2}px;border-radius:${r}px;clip-path:inset(0 round ${r}px);object-fit:cover;object-position:top center;animation: screenScroll ${durationMs}ms cubic-bezier(.1,.9,.2,1) forwards;`;
       
@@ -504,7 +476,7 @@ export const SCENE_ANIMATIONS: Record<string, SceneAnimation> = {
 
       return `<div class="device" style="width:${g.width}px;height:${g.height}px">
         ${media}
-        <div class="device-frame">${frameSvgFor(device, scene.variant)}</div>
+        <div class="device-frame">${frameSvgFor(device, undefined)}</div>
         <style>
           @keyframes screenScroll {
             0% { object-position: top center; }
@@ -526,7 +498,7 @@ export const SCENE_ANIMATIONS: Record<string, SceneAnimation> = {
       100% { transform: perspective(1800px) rotateY(0deg) rotateZ(0deg) scale(${1 + s.zoom / 115}); opacity: 1; }
     `,
     renderDevice: (device, uris, kinds, scene, durationMs) => {
-      const dev = deviceMarkup(device, uris[0] ?? "", scene.variant, kinds[0] ?? "image");
+      const dev = deviceMarkup(device, uris[0] ?? "", undefined, kinds[0] ?? "image");
       return `<div style="position:relative; width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
         <!-- Matte Spheres Background elements -->
         <div style="position:absolute; left:12%; top:25%; width:100px; height:100px; border-radius:50%; background:radial-gradient(circle at 35% 35%, #333, #0a0a0c 75%); filter: blur(1px); animation: driftOne 8s ease-in-out infinite alternate;"></div>
@@ -556,7 +528,7 @@ export const SCENE_ANIMATIONS: Record<string, SceneAnimation> = {
       100% { transform: translateX(0) scale(1); opacity: 1; }
     `,
     renderDevice: (device, uris, kinds, scene, durationMs) => {
-      const dev = deviceMarkup(device, uris[0] ?? "", scene.variant, kinds[0] ?? "image");
+      const dev = deviceMarkup(device, uris[0] ?? "", undefined, kinds[0] ?? "image");
       return `<div style="position:relative; width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
         <!-- Dashed Curved connection path -->
         <svg style="position:absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index:0;" viewBox="0 0 1920 1080">
@@ -583,12 +555,12 @@ export const SCENE_ANIMATIONS: Record<string, SceneAnimation> = {
       const rightUri = uris[2] ?? uris[0] ?? "";
       const flank = (uri: string, kind: "image" | "video", tx: string, rot: string, isLeft: boolean) => `
         <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; transform:translateX(${tx}) translateZ(-160px) rotateY(${rot}) scale(.82); opacity:.8; filter:brightness(.75);">
-          ${deviceMarkup(device, uri, scene.variant, kind)}
+          ${deviceMarkup(device, uri, undefined, kind)}
         </div>`;
       return `<div style="position:relative; width:100%; height:100%;">
         ${flank(leftUri, kinds[1] ?? "image", "-45%", "22deg", true)}
         ${flank(rightUri, kinds[2] ?? "image", "45%", "-22deg", false)}
-        <div style="position:relative; z-index:2; filter: drop-shadow(0 25px 50px rgba(0,0,0,0.55));">${deviceMarkup(device, centerUri, scene.variant, kinds[0] ?? "image")}</div>
+        <div style="position:relative; z-index:2; filter: drop-shadow(0 25px 50px rgba(0,0,0,0.55));">${deviceMarkup(device, centerUri, undefined, kinds[0] ?? "image")}</div>
         <!-- Bottom Floor Gloss reflection shadow -->
         <div style="position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:80%; height:80px; background:radial-gradient(ellipse at center, rgba(140,122,230,0.2) 0%, transparent 70%); filter:blur(15px); pointer-events:none; z-index:1;"></div>
       </div>`;
@@ -658,40 +630,21 @@ export interface SceneLayout {
   copyAlign: "left" | "center" | "right";
   copyFlex: string;
   copyMaxWidth?: string;
-  overlay?: "lower-third";
-  canvasClass?: "edge-left" | "edge-right" | "panel-split";
 }
 
+/** The two built-in compositions: landscape puts the copy beside the device, portrait stacks it above. There is no
+ *  per-scene layout choice -- a different composition is a different template. */
 export const LAYOUTS: Record<string, SceneLayout> = {
   "copy-left": { id: "copy-left", name: "Copy left, device right", orientation: "16:9", direction: "row", copyAlign: "left", copyFlex: "1 1 44%", copyMaxWidth: "640px" },
-  "copy-right": { id: "copy-right", name: "Copy right, device left", orientation: "16:9", direction: "row-reverse", copyAlign: "left", copyFlex: "1 1 44%", copyMaxWidth: "640px" },
-  "hero-device": { id: "hero-device", name: "Hero device, minimal copy", orientation: "16:9", direction: "row", copyAlign: "left", copyFlex: "0 0 26%", copyMaxWidth: "420px" },
-  "centre-flank": { id: "centre-flank", name: "Centred device", orientation: "16:9", direction: "column", copyAlign: "center", copyFlex: "0 0 auto", copyMaxWidth: "900px" },
-  "split-panel": { id: "split-panel", name: "Split panel", orientation: "16:9", direction: "row-reverse", copyAlign: "left", copyFlex: "1 1 40%", copyMaxWidth: "600px", canvasClass: "panel-split" },
-
   "stacked-top": { id: "stacked-top", name: "Copy above device (centered)", orientation: "9:16", direction: "column", copyAlign: "center", copyFlex: "0 0 auto" },
-  "stacked-bottom": { id: "stacked-bottom", name: "Copy below device (centered)", orientation: "9:16", direction: "column-reverse", copyAlign: "center", copyFlex: "0 0 auto" },
-  "edge-offset-left": { id: "edge-offset-left", name: "Device slight left", orientation: "9:16", direction: "column", copyAlign: "left", copyFlex: "0 0 auto", canvasClass: "edge-left" },
-  "edge-offset-right": { id: "edge-offset-right", name: "Device slight right", orientation: "9:16", direction: "column", copyAlign: "right", copyFlex: "0 0 auto", canvasClass: "edge-right" },
-
-  "full-bleed": { id: "full-bleed", name: "Full-bleed device, overlay caption", orientation: "both", direction: "column", copyAlign: "center", copyFlex: "0 0 auto", overlay: "lower-third" },
 };
-
-export function listSceneLayouts(orientation?: "9:16" | "16:9") {
-  return Object.values(LAYOUTS)
-    .filter((l) => !orientation || l.orientation === "both" || l.orientation === orientation)
-    .map((l) => ({ id: l.id, name: l.name, orientation: l.orientation }));
-}
 
 function orientationOf(scene: VideoScene): "9:16" | "16:9" {
   return scene.aspectRatio === "16:9" ? "16:9" : "9:16";
 }
 
 function layoutFor(scene: VideoScene): SceneLayout {
-  const orientation = orientationOf(scene);
-  const requested = scene.layout ? LAYOUTS[scene.layout] : undefined;
-  if (requested && (requested.orientation === "both" || requested.orientation === orientation)) return requested;
-  return LAYOUTS[orientation === "16:9" ? "copy-left" : "stacked-top"];
+  return LAYOUTS[orientationOf(scene) === "16:9" ? "copy-left" : "stacked-top"];
 }
 
 /** Safe-margin inset (percent) applied to every canvas -- titles, badges,
@@ -765,14 +718,14 @@ export function sourceKindsFor(application: VideoApplication, scene: VideoScene)
  *  animation, "flat"/"showcase" render the rig directly. */
 function deviceRigMarkup(device: DeviceModel, uris: string[], kinds: ("image" | "video")[], scene: VideoScene, durationMs: number): string {
   const depth = scene.depth ?? "flat";
-  const rig = device3dMarkup(device, uris, scene.variant, durationMs, kinds);
+  const rig = device3dMarkup(device, uris, undefined, durationMs, kinds);
   if (depth === "perspective") return `<div class="device-tilt">${rig}</div>`;
   if (depth === "float") return `<div class="device-float">${rig}</div>`;
   return rig;
 }
 
 /** Resolves what to actually draw inside the device box for a scene: a
- *  custom `renderDevice` hook (fold-open, showcase-3d, trio-lineup) takes
+ *  custom `renderDevice` hook (showcase-3d, trio-lineup) takes
  *  precedence; otherwise the scene's `depth` mode picks flat/perspective/
  *  float/showcase rendering. */
 function deviceInnerMarkup(animation: SceneAnimation, device: DeviceModel, scene: VideoScene, uris: string[], kinds: ("image" | "video")[], durationMs: number): string {
@@ -833,56 +786,60 @@ function textBlockHtml(scene: VideoScene): string {
   return `<div class="copy" style="color:${textColorFor(scene.background)};text-shadow:${textShadowFor(scene.background)}">${title}${sub}</div>`;
 }
 
-/** CSS for the fold-open device hook -- both variant frames stacked and
- *  flex-centred (their native sizes differ), cross-fading over `durationMs`. */
-function foldRigCss(durationMs: number): string {
-  return `
-    .fold-rig { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
-    /* Deliberately plain block flow, NOT flex-centered: .stage-scale (an
-       ancestor) scales everything down from its TOP-LEFT corner
-       (transform-origin: top left). Centering an oversized device inside a
-       small flex container assumes the eventual scale-down also happens
-       from the CENTER -- it doesn't, so centering-then-scale-from-top-left
-       shifts the whole device hundreds of pixels up and left of where it
-       visually belongs. Every non-fold scene's device sits in plain block
-       flow for exactly this reason (it overflows toward bottom-right,
-       anchored at the same top-left corner the scale is anchored to);
-       fold-layer now matches that same anchor instead of fighting it. */
-    .fold-layer { position: absolute; inset: 0; }
-    .fold-folded { animation: foldFadeOut ${durationMs}ms ease-in-out forwards; }
-    .fold-unfolded { animation: foldFadeIn ${durationMs}ms ease-in-out forwards; opacity: 0; }
-    @keyframes foldFadeOut { 0% { opacity: 1; } 45% { opacity: 1; } 65% { opacity: 0; } 100% { opacity: 0; } }
-    @keyframes foldFadeIn { 0% { opacity: 0; } 45% { opacity: 0; } 65% { opacity: 1; } 100% { opacity: 1; } }
-  `;
-}
-
-/** Entrance-only transition applied to a scene's first ~400ms via a
- *  full-canvas overlay layer -- a CSS animation like everything else here,
- *  so it stays deterministic under window.seek and needs no ffmpeg xfade /
- *  extra encode pass. Deliberately entrance-only: every scene here is its
- *  own isolated document (one Playwright page per scene, see renderVideo),
- *  so there is no "next scene" underneath to reveal on exit -- an exit
- *  fade-to-opaque would just leave the frame painted over with nothing
- *  behind it once the scene (and the whole sequence) ends. The overlay
- *  therefore always resolves back to fully transparent well before 100%,
- *  so the final frame is never obscured. "cut" (the default) renders an
- *  always-invisible overlay. */
-function transitionKeyframeBody(scene: VideoScene, durationMs: number): string {
-  const t = scene.transition ?? "cut";
-  const inEnd = Math.min(14, (400 / durationMs) * 100).toFixed(2);
-  switch (t) {
+/** Scene Transition = how the video enters THIS scene from the previous one. Every scene is rendered as its own
+ *  isolated document, so there is no "next scene" to reveal on exit: the transition is an overlay that covers the
+ *  scene's first moments and then clears, which is deterministic under window.seek and needs no ffmpeg xfade.
+ *  "cut" renders nothing. `endPct` is where the overlay is fully gone (100 for fixed-length template overlays). */
+function transitionFrames(kind: string, endPct: string): string {
+  const gone = (state: string) => `${endPct}% { ${state} } 100% { ${state} }`;
+  switch (kind) {
     case "fade":
-      return `0% { opacity: 1; } ${inEnd}% { opacity: 0; } 100% { opacity: 0; }`;
+    case "fade-white":
+      return `0% { opacity: 1; } ${gone("opacity: 0;")}`;
     case "slide":
-      return `0% { opacity: 1; transform: translateX(-6%); } ${inEnd}% { opacity: 0; transform: translateX(0); } 100% { opacity: 0; transform: translateX(0); }`;
+      return `0% { opacity: 1; transform: translateX(0); } ${gone("opacity: 0; transform: translateX(-100%);")}`;
+    case "slide-right":
+      return `0% { opacity: 1; transform: translateX(0); } ${gone("opacity: 0; transform: translateX(100%);")}`;
+    case "slide-up":
+      return `0% { opacity: 1; transform: translateY(0); } ${gone("opacity: 0; transform: translateY(-100%);")}`;
     case "wipe":
-      return `0% { opacity: 1; clip-path: inset(0 100% 0 0); } ${inEnd}% { opacity: 0; clip-path: inset(0 0 0 0); } 100% { opacity: 0; clip-path: inset(0 0 0 0); }`;
+      return `0% { opacity: 1; clip-path: inset(0 0 0 0); } ${gone("opacity: 0; clip-path: inset(0 0 0 100%);")}`;
+    case "wipe-down":
+      return `0% { opacity: 1; clip-path: inset(0 0 0 0); } ${gone("opacity: 0; clip-path: inset(100% 0 0 0);")}`;
     case "zoom":
-      return `0% { opacity: 1; transform: scale(1.3); } ${inEnd}% { opacity: 0; transform: scale(1); } 100% { opacity: 0; transform: scale(1); }`;
+      return `0% { opacity: 1; transform: scale(1.3); } ${gone("opacity: 0; transform: scale(1);")}`;
     case "cut":
     default:
       return `0% { opacity: 0; } 100% { opacity: 0; }`;
   }
+}
+
+function transitionKeyframeBody(scene: VideoScene, durationMs: number): string {
+  const inEnd = Math.min(14, (400 / durationMs) * 100).toFixed(2);
+  return transitionFrames(scene.transition ?? "cut", inEnd);
+}
+
+const STANDALONE_TRANSITION_MS = 600;
+
+/** Standalone templates cut between scenes in their own JS; this adds each scene's chosen Scene Transition on top
+ *  without touching the template's markup, layout or animations. The overlay is the scene's first child and uses a
+ *  CSS animation, which every template's seek logic already drives from the scene-relative time. */
+function injectSceneTransitions(html: string, scenes: VideoScene[]): string {
+  const kinds = new Set<string>();
+  const out = html.replace(/(<div class="scene[^"]*" id="scene-(\d+)"[^>]*>)/g, (tag, _open, idx) => {
+    const kind = scenes[Number(idx)]?.transition ?? "cut";
+    if (kind === "cut") return tag;
+    kinds.add(kind);
+    return `${tag}<div class="sg-transition" data-kind="${kind}"></div>`;
+  });
+  if (kinds.size === 0) return html;
+  const css = `
+    .sg-transition { position: absolute; inset: 0; z-index: 99990; pointer-events: none; background: #05060a; opacity: 0; }
+    .sg-transition[data-kind="fade-white"] { background: #ffffff; }
+    ${[...kinds].map((k) => `@keyframes sgTransition-${k} { ${transitionFrames(k, "100")} }
+    .scene.playing > .sg-transition[data-kind="${k}"] { animation: sgTransition-${k} ${STANDALONE_TRANSITION_MS}ms ease-in-out forwards; }`).join("\n    ")}
+  `;
+  return out.replace("</head>", `<style data-scene-transitions>${css}</style></head>`);
 }
 
 const CANVAS_BASE_CSS = `
@@ -1042,11 +999,10 @@ function sceneLayoutCss(
   const backdropKf = (animation.backdropKeyframes ?? defaultBackdrop)(scene);
   const exitDelay = Math.max(0, durationMs - 480);
   const isStackedTop = layout.id === "stacked-top";
-  const isStackedBottom = layout.id === "stacked-bottom";
 
   return `
     ${selector} { flex-direction: ${layout.direction}; padding: ${SAFE_INSET.y}% ${SAFE_INSET.x}%; justify-content: center; align-items: center; }
-    ${selector} .copy { text-align: ${layout.copyAlign}; flex: ${layout.copyFlex}; ${layout.copyMaxWidth ? `max-width:${layout.copyMaxWidth};` : ""} z-index: 4; ${isStackedTop ? "margin-bottom: clamp(32px, 4.5vh, 60px);" : ""} ${isStackedBottom ? "margin-top: clamp(32px, 4.5vh, 60px);" : ""} }
+    ${selector} .copy { text-align: ${layout.copyAlign}; flex: ${layout.copyFlex}; ${layout.copyMaxWidth ? `max-width:${layout.copyMaxWidth};` : ""} z-index: 4; ${isStackedTop ? "margin-bottom: clamp(32px, 4.5vh, 60px);" : ""} }
     ${selector} .label { font-size: ${isLandscape ? 64 : 54}px; }
     ${selector} .subtext { font-size: ${isLandscape ? 32 : 28}px; }
     ${selector} .backdrop { background: ${resolveSceneBackgroundCss(scene, application, resolveUri)}; }
@@ -1056,22 +1012,11 @@ function sceneLayoutCss(
         ? `${selector} .stage, ${selector} .stage-scale, ${selector} .stage-inner { transform-style: preserve-3d; }`
         : ""
     }
-    ${layout.canvasClass === "edge-left" && isLandscape ? `${selector} .stage { align-self: flex-start; }` : ""}
-    ${layout.canvasClass === "edge-right" && isLandscape ? `${selector} .stage { align-self: flex-end; }` : ""}
-    ${layout.canvasClass === "panel-split" ? `${selector}::before { content:""; position:absolute; inset:0; width:46%; background:linear-gradient(160deg, rgba(0,0,0,.4), rgba(0,0,0,0) 65%); z-index:0; }` : ""}
-    ${
-      layout.overlay
-        ? `${selector} .copy { position:absolute; left:0; right:0; bottom:6%; z-index:4; text-align:center; padding:0 8%; }
-    ${selector} .copy::before { content:""; position:absolute; inset:-14% -8% -22% -8%; background:linear-gradient(to top, rgba(0,0,0,.62), rgba(0,0,0,0)); z-index:-1; }
-    ${selector} .stage { position: relative; margin: 0 auto; align-self: center !important; }`
-        : ""
-    }
     ${gateSelector} .stage-inner { animation: play${keyframeSuffix} ${durationMs}ms ${animation.easing} forwards; }
     ${gateSelector} .backdrop { animation: bg${keyframeSuffix} ${durationMs}ms ease-out forwards; }
     ${gateSelector} .copy { animation: copyExit${keyframeSuffix} 420ms ${exitDelay}ms cubic-bezier(.4,0,1,1) forwards; }
+    ${scene.transition === "fade-white" ? `${selector} .transition-overlay { background: #ffffff; }` : ""}
     ${gateSelector} .transition-overlay { animation: trans${keyframeSuffix} ${durationMs}ms linear forwards; }
-    ${gateSelector} .fold-folded { animation-duration: ${durationMs}ms; }
-    ${gateSelector} .fold-unfolded { animation-duration: ${durationMs}ms; }
     @keyframes play${keyframeSuffix} { ${animation.deviceKeyframes(scene)} }
     @keyframes bg${keyframeSuffix} { ${backdropKf} }
     @keyframes copyExit${keyframeSuffix} { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-14px); } }
@@ -1085,8 +1030,8 @@ function sceneLayoutCss(
 function sceneContentHtml(scene: VideoScene, device: DeviceModel, uris: string[], kinds: ("image" | "video")[], durationMs: number): string {
   const animation = SCENE_ANIMATIONS[scene.sceneTemplate] ?? SCENE_ANIMATIONS["hero-rise"];
   const canvas = canvasFor(scene);
-  const deviceScale = deviceScaleFor(device, canvas.height, scene.variant, scene.deviceFraction ?? 0.58);
-  const geometry = resolveGeometry(device, scene.variant);
+  const deviceScale = deviceScaleFor(device, canvas.height, undefined, scene.deviceFraction ?? 0.58);
+  const geometry = resolveGeometry(device, undefined);
   const stageWidth = Math.round(geometry.width * deviceScale);
   const stageHeight = Math.round(geometry.height * deviceScale);
   return `
@@ -1432,6 +1377,7 @@ export function composeStandaloneHtml(application: VideoApplication, activeScene
 
   // GLB device shells (3D devices) are painted by the three.js bridge.
   if (html.includes("device-shell-canvas")) html = html.replace("</body>", `${THREE_BRIDGE_SCRIPT}</body>`);
+  html = injectSceneTransitions(html, applicationScenesByOrder);
   html = html.replace("</body>", `${injectionScript}</body>`);
   return html;
 }
@@ -1475,7 +1421,6 @@ export function sceneHtml(
   ${DEVICE_CSS}
   ${textAnimCss(scene)}
   ${FLOW_LABEL_CSS}
-  ${foldRigCss(durationMs)}
   ${sceneLayoutCss(scene, animation, durationMs, ".canvas", "", undefined, application, resolveUri)}
 </style></head>
 <body>
@@ -1559,7 +1504,6 @@ export function templatePreviewHtml(application: VideoApplication): string {
     .scene { position:absolute; inset:0; width:${canvas.width}px; height:${canvas.height}px; display:none; }
     .scene.playing { display:flex; }
     ${DEVICE_CSS}
-    ${foldRigCss(0)}
     ${scenesCss}
   </style></head><body>${scenesHtml}
   <script>
@@ -1615,7 +1559,7 @@ export function templatePreviewHtml(application: VideoApplication): string {
       // visible, nothing exited yet.
       const dur = durations[i] || 1000;
       // 72% clears every device animation's own settle point (most land by
-      // 55-65%, e.g. fold-open's cross-fade doesn't finish until 65%) with
+      // 55-65%, e.g. a cross-fade that doesn't finish until 65%) with
       // margin, while staying well before the copy's exit fade, which only
       // starts at dur-480ms (typically ~85-90% of a scene's duration).
       const target = Math.max(0, Math.min(dur - 600, Math.max(1600, dur * 0.72)));
@@ -2386,7 +2330,7 @@ const CARD_THUMB_SIZE = { width: 520, height: 360 };
 function videoTemplateThumbHtml(template: VideoTemplate): string {
   const device = DEVICE_REGISTRY[template.device] ?? DEVICE_REGISTRY["phone"];
   const firstScene = template.scenes[0];
-  const deviceScale = deviceScaleFor(device, CARD_THUMB_SIZE.height, template.variant, 0.82);
+  const deviceScale = deviceScaleFor(device, CARD_THUMB_SIZE.height, undefined, 0.82);
 
   return `<!doctype html>
 <html><head><meta charset="utf-8" /><style>
@@ -2400,7 +2344,7 @@ function videoTemplateThumbHtml(template: VideoTemplate): string {
 <body>
   <div class="card">
     <div class="vignette"></div>
-    <div class="rig">${deviceMarkup(device, placeholderScreenUri(), template.variant)}</div>
+    <div class="rig">${deviceMarkup(device, placeholderScreenUri(), undefined)}</div>
   </div>
 </body></html>`;
 }
