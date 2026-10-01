@@ -3,6 +3,7 @@
 @font-face { font-family: "Inter"; font-weight: 800; font-display: block; src: url("/fonts/Inter/Inter-800.woff2") format("woff2"); }
 @font-face { font-family: "Inter"; font-weight: 900; font-display: block; src: url("/fonts/Inter/Inter-900.woff2") format("woff2"); }
 :root {
+  --footer-h: 28px;
   --bg-main: #0b0d12;
   --bg-card: #14161c;
   --bg-card-hover: #181b24;
@@ -174,7 +175,7 @@ html.light .topbar-tab.active { background: #e2e8f0; color: #0f172a; }
 .icon-btn.active { background: #3b82f6; color: #fff; border-color: #3b82f6; }
 
 /* ---------- App body: [optional 80px rail] [content] [optional 300px inspector] ---------- */
-.app-body { flex: 1; display: flex; min-height: 0; height: calc(100vh - 50px); overflow: hidden; }
+.app-body { flex: 1; display: flex; min-height: 0; height: calc(100vh - 50px - var(--footer-h)); overflow: hidden; }
 
 .rail {
   width: 80px; flex: 0 0 80px; background: var(--bg-rail); border-right: 2px solid var(--border-rail);
@@ -199,7 +200,7 @@ html.light .rail-btn.active { background: #cbd5e1; color: #0f172a; }
 .inspector.left { border-left: none; border-right: 1px solid var(--border-subtle); order: -1; }
 
 /* ---------- Panels ---------- */
-.tab-page { display: none; flex: 1; min-height: 0; height: calc(100vh - 50px); flex-direction: column; }
+.tab-page { display: none; flex: 1; min-height: 0; height: calc(100vh - 50px - var(--footer-h)); flex-direction: column; }
 .tab-page.active { display: flex; }
 .section-page { display: none !important; }
 .section-page.active { display: flex !important; flex-direction: column; flex: 1; min-height: 0; }
@@ -367,7 +368,7 @@ pre { background: var(--bg-main); border: 1px solid var(--border-subtle); border
 #tab-mockup .content {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 50px);
+  height: calc(100vh - 50px - var(--footer-h));
   padding: 0.75rem 1rem !important;
   overflow-y: auto !important;
   scrollbar-width: none !important;
@@ -4331,3 +4332,14 @@ html.light .saved-template-badge {
   gap: 0.4rem; min-height: 320px; text-align: center; padding: 2rem; opacity: 0.85;
 }
 .editing-empty-banner h3 { margin: 0; }
+
+/* ---------- Footer credit (global, in the app shell) ---------- */
+.app-footer {
+  height: var(--footer-h); flex: 0 0 var(--footer-h); display: flex; align-items: center; justify-content: center;
+  gap: .6rem; padding: 0 1rem; white-space: nowrap; overflow: hidden;
+  background: var(--bg-topbar); border-top: 1px solid var(--border-subtle);
+  font-size: .78rem; color: var(--text-secondary);
+}
+.app-footer a { color: var(--accent-active-text); text-decoration: none; font-weight: 500; }
+.app-footer a:hover { text-decoration: underline; }
+.app-footer .sep { color: var(--text-muted); }

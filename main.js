@@ -171,6 +171,8 @@ function createWindow() {
 
     // Show the main window only after the UI has actually loaded, then drop the splash.
     mainWindow.webContents.once('did-finish-load', () => {
+      // maximize() before show(): the window appears once, already full-size (no resize flash).
+      mainWindow.maximize();
       mainWindow.show();
       if (splash && !splash.isDestroyed()) splash.close();
       resolve();

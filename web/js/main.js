@@ -552,6 +552,7 @@ window.addEventListener("beforeunload", (e) => {
 
 // DOMContentLoaded bootstrapping
 document.addEventListener('DOMContentLoaded', async () => {
+  api('/api/app-info').then((i) => { const el = document.getElementById('app-version'); if (el && i && i.version) el.textContent = 'v' + i.version; }).catch(() => {});
   initMockupFabricCanvas();
   initCanvasPanZoomEvents();
   // Inter (templates/mockup redesigns) must be loaded before Fabric measures text, or widths are computed with the fallback face.

@@ -2559,6 +2559,12 @@ export async function startWebServer(options: { port?: number; host?: string; op
       }
     }
 
+    if (method === "GET" && p === "/api/app-info") {
+      // package.json is the single source of truth for the version shown in the footer.
+      const pkg = JSON.parse(fs.readFileSync(path.join(process.cwd(), "package.json"), "utf-8"));
+      return sendJson(res, 200, { version: pkg.version });
+    }
+
     if (method === "GET" && p === "/api/render-hardware") {
       // Same probe renderVideo itself runs (NVENC -> QSV -> libx264), cached after
       // the first call -- lets the export modal show which GPU/CPU will actually
