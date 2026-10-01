@@ -1,6 +1,6 @@
 {
   "name": "store-assets-generator",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Standalone Studio application for Store Assets Generation (screenshots, device frames, and promotional videos)",
   "private": true,
   "license": "SEE LICENSE IN LICENSE",
@@ -40,7 +40,10 @@
       "installerHeaderIcon": "build/icon.ico"
     },
     "extraResources": [
-      { "from": "node_modules/three/examples", "to": "app/node_modules/three/examples" }
+      {
+        "from": "node_modules/three/examples",
+        "to": "app/node_modules/three/examples"
+      }
     ],
     "win": {
       "icon": "build/icon.ico",
