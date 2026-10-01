@@ -487,7 +487,9 @@ export function applyRigDevices(html: string, ctx: ApplyContext): string {
 
   const plan = rigs.map((r) => {
     const asset = ctx.pick(sceneIndexAt(r.start, starts));
-    return { r, asset: asset && asset.id !== r.deviceId ? asset : null };
+    // A catalogue GLB device is rebuilt even when it is the template's own device, so its screen box/radius always
+    // come from the device's real geometry instead of the legacy flat-CSS numbers baked into the template.
+    return { r, asset: asset && (asset.id !== r.deviceId || asset.sourceType === "GLB") ? asset : null };
   });
   if (!plan.some((p) => p.asset)) return html;
 
@@ -506,11 +508,7 @@ export function applyRigDevices(html: string, ctx: ApplyContext): string {
     const hasShell = /device-shell-canvas/.test(inner);
     let open = r.open;
     let newInner: string;
-    if (asset.markup.shell && hasShell && asset.sourceType === "GLB") {
-      // GLB -> GLB: swap the model only, keep the template's own frame/insets.
-      newInner = retargetShell(inner, asset.markup.shell);
-      used.set(r.deviceId, { assetRig: rigClass, actualRig: rigClass, css: blockCss.get(r.deviceId) ?? "" });
-    } else {
+    {
       newInner = rebuildRig(inner, asset);
       const oldClasses = (getAttr(r.open, "data-device-rig-classes") ?? "").split(/\s+/).filter(Boolean);
       open = editClasses(open, oldClasses, asset.rigClasses);

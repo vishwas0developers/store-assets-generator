@@ -14,21 +14,27 @@ function roundedRectShape(width: number, height: number, radius: number): THREE.
   const h = height * PX_TO_M;
   const r = Math.min(radius * PX_TO_M, w / 2, h / 2);
   const shape = new THREE.Shape();
+  // True circular corner arcs (constant curvature) -- the same curve as the SVG frames' `rx`. A single quadratic
+  // Bezier per corner has varying curvature (flatter at the tangents, tighter at the apex), which looks less smooth.
   shape.moveTo(-w / 2 + r, -h / 2);
   shape.lineTo(w / 2 - r, -h / 2);
-  shape.quadraticCurveTo(w / 2, -h / 2, w / 2, -h / 2 + r);
+  shape.absarc(w / 2 - r, -h / 2 + r, r, -Math.PI / 2, 0, false);
   shape.lineTo(w / 2, h / 2 - r);
-  shape.quadraticCurveTo(w / 2, h / 2, w / 2 - r, h / 2);
+  shape.absarc(w / 2 - r, h / 2 - r, r, 0, Math.PI / 2, false);
   shape.lineTo(-w / 2 + r, h / 2);
-  shape.quadraticCurveTo(-w / 2, h / 2, -w / 2, h / 2 - r);
+  shape.absarc(-w / 2 + r, h / 2 - r, r, Math.PI / 2, Math.PI, false);
   shape.lineTo(-w / 2, -h / 2 + r);
-  shape.quadraticCurveTo(-w / 2, -h / 2, -w / 2 + r, -h / 2);
+  shape.absarc(-w / 2 + r, -h / 2 + r, r, Math.PI, (3 * Math.PI) / 2, false);
   return shape;
 }
 
 function buildBody(def: DeviceDefinition): THREE.Mesh {
   const { width, height, cornerRadius, thickness } = def.geometry;
-  const shape = roundedRectShape(width, height, cornerRadius);
+  // ExtrudeGeometry's bevel grows OUTWARD from the shape by bevelSize, so the base shape is inset by the same amount:
+  // the finished body's outline then equals geometry.width x height with corner radius == cornerRadius, which is what
+  // the 2D frame, the screen aperture and the DOM screen box are all derived from.
+  const bevelPx = def.edgeProfile === "flat" ? 0 : thickness * (def.edgeProfile === "chamfered" ? 0.1 : 0.18);
+  const shape = roundedRectShape(width - 2 * bevelPx, height - 2 * bevelPx, Math.max(0, cornerRadius - bevelPx));
   const t = thickness * PX_TO_M;
   const bevel = def.edgeProfile === "flat" ? { bevelEnabled: false } : def.edgeProfile === "chamfered"
     ? { bevelEnabled: true, bevelThickness: t * 0.15, bevelSize: t * 0.1, bevelSegments: 1 }

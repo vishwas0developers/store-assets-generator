@@ -170,11 +170,9 @@ export const DEVICE_CSS = `
      the canvas path -- ponytail: cosmetic-only, add a mirrored second
      render pass if the floor-reflection look is needed again. -- */
   .device-rig-wrap { position: relative; filter: drop-shadow(0 24px 42px rgba(0,0,0,.48)); }
-  /* Plausible placeholder in case the bridge script can't reach the device
-     GLB (e.g. the live browser preview -- see three-bridge.ts's top
-     comment on where the bridge is wired vs. not yet). Painted over once
-     the canvas actually renders. */
-  .device-rig-canvas { display: block; background: #1a1a1a; border-radius: 6%; }
+  /* The WebGL canvas is transparent (alpha) and rectangular, so it must never paint its own background or corner
+     radius: both would show as a dark box around the device silhouette (and stay there if the bridge fails). */
+  .device-rig-canvas { display: block; background: transparent; border-radius: 0; }
 `;
 
 /** Solid colours — a flat swatch, distinct from a gradient preset. */

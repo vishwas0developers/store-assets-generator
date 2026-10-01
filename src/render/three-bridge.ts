@@ -74,6 +74,11 @@ export async function installThreeJsRoutes(page: Page, deviceIds: string[]): Pro
  *  before resolving. This makes the 3D device rig mirror whatever motion
  *  the scene's CSS animation already computes, instead of re-deriving it. */
 export const THREE_BRIDGE_SCRIPT = `
+<style data-rig-neutral>
+/* A WebGL canvas is rectangular and transparent: it never paints a background or corners of its own. */
+canvas.device-rig-canvas, canvas.device-shell-canvas { background: transparent; border-radius: 0; }
+canvas.device-shell-canvas { filter: drop-shadow(0 20px 36px rgba(0,0,0,.4)); }
+</style>
 <script>
 // The bare "three" import (used by GLTFLoader) must resolve to a reachable URL: the virtual bridge host only exists
 // inside the Playwright renderer; live preview iframes load from the app server's /vendor route instead.
@@ -170,7 +175,9 @@ async function initCanvas(canvas) {
 
   const scene = new THREE.Scene();
   const fov = 2 * Math.atan((h / 2) / PERSPECTIVE_PX) * (180 / Math.PI);
-  const camera = new THREE.PerspectiveCamera(fov, w / h, 0.001, 100);
+  const camera = shellOnly
+    ? new THREE.OrthographicCamera(-w * PX_TO_M / 2, w * PX_TO_M / 2, h * PX_TO_M / 2, -h * PX_TO_M / 2, 0.001, 100)
+    : new THREE.PerspectiveCamera(fov, w / h, 0.001, 100);
   camera.position.set(0, 0, PERSPECTIVE_PX * PX_TO_M);
   camera.lookAt(0, 0, 0);
 
@@ -179,7 +186,7 @@ async function initCanvas(canvas) {
   let root;
   const screenLayers = [];
   try {
-    const url = isLocalBridge ? \`\${ORIGIN}/devices/\${deviceId}.glb\` : \`/api/devices/\${encodeURIComponent(deviceId)}/glb\`;
+    const url = isLocalBridge ? \`\${deviceApiBase}/\${deviceId}.glb\` : \`/api/devices/\${encodeURIComponent(deviceId)}/glb\`;
     const buf = await fetch(url).then((r) => r.arrayBuffer());
     const gltf = await new Promise((resolve, reject) => new GLTFLoader().parse(buf, "", resolve, reject));
     root = gltf.scene.children.find((n) => n.userData && n.userData.role === "device-root") || gltf.scene.children[0];
@@ -243,7 +250,7 @@ async function initCanvas(canvas) {
   // the same way via getComputedStyle, so no other bridge logic needs to
   // know which template family produced this canvas.
   const rigEl = canvas.closest(".stage-inner") || canvas.closest(".phone-3d-rig") || canvas.parentElement;
-  rigs.push({ canvas, renderer, scene, camera, root, rigEl, gl, screenLayers, durationMs });
+  rigs.push({ canvas, renderer, scene, camera, root, rigEl, gl, screenLayers, durationMs, shellOnly });
 }
 
 function decomposeCssTransform(el) {
@@ -276,7 +283,9 @@ window.seek = async (ms) => {
   if (typeof prevSeek === "function") result = await prevSeek(ms);
   if (rigs.length === 0 && canvases.length > 0) await window.__deviceRigsReady;
   for (const rig of rigs) {
-    if (rig.root && rig.rigEl) {
+    // Shell-only canvases sit inside the CSS-rotated rig: the browser already applies that transform to the canvas
+    // plane, so mirroring it into the scene as well would rotate the device twice.
+    if (rig.root && rig.rigEl && !rig.shellOnly) {
       const { pos, quat, scale } = decomposeCssTransform(rig.rigEl);
       // CSS Y grows downward, three.js Y grows upward -- flip the Y
       // translation component; the rotation itself is applied as-is

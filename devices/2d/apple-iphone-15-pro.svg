@@ -1,10 +1,10 @@
 <svg viewBox="0 0 1179 2556" xmlns="http://www.w3.org/2000/svg">
-    <mask id="bezel-hole-apple-iphone-15-pro">
+    <mask id="bezel-hole-apple-iphone-15-pro-1179_2556_40_40_1099_2476_80">
       <rect x="0" y="0" width="1179" height="2556" fill="#fff" />
       <rect x="40" y="40" width="1099" height="2476" rx="80" fill="#000" />
     </mask>
     <rect x="10" y="10" width="1159" height="2536"
-          rx="90" fill="#8a8478" stroke="#6e685e" stroke-width="20" mask="url(#bezel-hole-apple-iphone-15-pro)" />
+          rx="90" fill="#8a8478" stroke="#6e685e" stroke-width="20" mask="url(#bezel-hole-apple-iphone-15-pro-1179_2556_40_40_1099_2476_80)" />
     <g id="camera-cutout"><rect x="439.5" y="30" width="300" height="70" rx="35" fill="#000" /></g>
     <rect x="-10" y="370.62000000000006" width="20" height="76.67999999999999" rx="4" fill="#6e685e" />
     <rect x="-10" y="562.3199999999999" width="20" height="102.24000000000001" rx="4" fill="#6e685e" />

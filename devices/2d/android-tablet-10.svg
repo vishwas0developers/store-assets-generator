@@ -1,10 +1,10 @@
 <svg viewBox="0 0 1600 2560" xmlns="http://www.w3.org/2000/svg">
-    <mask id="bezel-hole-android-tablet-10">
+    <mask id="bezel-hole-android-tablet-10-1600_2560_36_36_1528_2488_29">
       <rect x="0" y="0" width="1600" height="2560" fill="#fff" />
       <rect x="36" y="36" width="1528" height="2488" rx="29" fill="#000" />
     </mask>
     <rect x="11" y="11" width="1578" height="2538"
-          rx="40" fill="#202020" stroke="#454545" stroke-width="22" mask="url(#bezel-hole-android-tablet-10)" />
+          rx="40" fill="#202020" stroke="#454545" stroke-width="22" mask="url(#bezel-hole-android-tablet-10-1600_2560_36_36_1528_2488_29)" />
     <g id="camera-cutout"><circle cx="800" cy="37" r="11" fill="#000" stroke="#454545" stroke-width="2" /></g>
     <rect x="760" y="-11" width="80" height="22" rx="4" fill="#454545" />
     <rect x="1589" y="204.8" width="22" height="102.4" rx="4" fill="#454545" />
