@@ -220,9 +220,9 @@ app.whenReady().then(async () => {
     console.warn('[SAG-ELECTRON] Cache clear failed:', err.message);
   }
   try {
-    setSplashStatus('Starting services�');
+    setSplashStatus('Starting services...');
     await startBackgroundServer();
-    setSplashStatus('Loading interface�');
+    setSplashStatus('Loading interface...');
     await createWindow();
   } catch (err) {
     return failStartup(err && err.message ? err.message : String(err));

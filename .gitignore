@@ -12,6 +12,8 @@ tools/
 *.py
 scripts/*
 !scripts/generate/
+!scripts/devices/
+!scripts/icons/
 scratch/
 .claude/
 .agents/
