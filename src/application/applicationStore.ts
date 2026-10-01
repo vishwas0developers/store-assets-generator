@@ -113,10 +113,68 @@ export function createApplication(name: string, appCategory = "Utility", targetU
   return application;
 }
 
+// ---- Editing drafts ----
+// What a studio's Editing section is working on is held in server memory only. It is never written to
+// application.json: only an explicit Save / Save As / Update Template persists anything (savedConfigs or a default
+// template file). Restarting the server, or discarding the draft, drops it.
+const MOCKUP_DRAFT_FIELDS = ["devices", "columns", "cells", "globalPanoramic", "settings"] as const;
+const VIDEO_DRAFT_FIELDS = ["template", "scenes", "bgm", "bgmVolume", "bgmFadeInMs", "bgmFadeOutMs", "backgroundImage", "brand"] as const;
+
+interface DraftEntry { values: Record<string, unknown>; unset: string[] }
+const drafts = new Map<string, { mockup?: DraftEntry; video?: DraftEntry }>();
+
+const clone = <T>(v: T): T => JSON.parse(JSON.stringify(v));
+
+function captureDraft(doc: any, fields: readonly string[]): DraftEntry {
+  const entry: DraftEntry = { values: {}, unset: [] };
+  for (const f of fields) {
+    if (doc[f] === undefined) entry.unset.push(f);
+    else entry.values[f] = clone(doc[f]);
+  }
+  return entry;
+}
+
+function applyDraft(doc: any, entry: DraftEntry | undefined): void {
+  if (!doc || !entry) return;
+  for (const [k, v] of Object.entries(entry.values)) doc[k] = clone(v);
+  for (const k of entry.unset) delete doc[k];
+}
+
+/** Forgets the in-memory editing draft of one studio; the next load shows what is on disk again. */
+export function discardDraft(id: string, studio: "mockup" | "video"): void {
+  const d = drafts.get(id);
+  if (d) delete d[studio];
+}
+
 export function saveApplication(application: ApplicationState): void {
   const dir = applicationDir(application.id);
   fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(path.join(dir, APPLICATION_FILE), JSON.stringify(application, null, 2), "utf-8");
+  const file = path.join(dir, APPLICATION_FILE);
+  const entry = drafts.get(application.id) ?? {};
+  let toWrite: any = application;
+  if (fs.existsSync(file) && (application.mockup || application.video)) {
+    // Keep the editing-draft fields out of the file: re-use the on-disk values and park the new ones in memory.
+    const disk = JSON.parse(fs.readFileSync(file, "utf-8"));
+    toWrite = { ...application };
+    if (application.mockup) {
+      entry.mockup = captureDraft(application.mockup, MOCKUP_DRAFT_FIELDS);
+      toWrite.mockup = { ...application.mockup };
+      for (const f of MOCKUP_DRAFT_FIELDS) {
+        if (disk.mockup && disk.mockup[f] !== undefined) toWrite.mockup[f] = disk.mockup[f];
+        else delete toWrite.mockup[f];
+      }
+    }
+    if (application.video) {
+      entry.video = captureDraft(application.video, VIDEO_DRAFT_FIELDS);
+      toWrite.video = { ...application.video };
+      for (const f of VIDEO_DRAFT_FIELDS) {
+        if (disk.video && disk.video[f] !== undefined) toWrite.video[f] = disk.video[f];
+        else delete toWrite.video[f];
+      }
+    }
+    drafts.set(application.id, entry);
+  }
+  fs.writeFileSync(file, JSON.stringify(toWrite, null, 2), "utf-8");
 }
 
 // Matches the "(1242x2688)" suffix that source names carried before device
@@ -156,6 +214,9 @@ export function loadApplication(id: string): ApplicationState {
   if (application.video && Array.isArray(application.video.sources)) {
     application.video.sources = application.video.sources.map(withDeviceCategory);
   }
+  const draft = drafts.get(id);
+  applyDraft(application.mockup, draft?.mockup);
+  applyDraft(application.video, draft?.video);
   return application;
 }
 
@@ -170,6 +231,7 @@ export function listApplications(): Array<ApplicationState> {
 }
 
 export function deleteApplication(id: string): void {
+  drafts.delete(id);
   const dir = applicationDir(id);
   fs.rmSync(dir, { recursive: true, force: true });
 }

@@ -1795,6 +1795,7 @@ export function hasUnsavedVideoDraft() {
 
 /** Drops the whole editing draft and its identity. The next Editing session starts empty. */
 export function clearVideoDraft() {
+  if (videoId && videoLoadedTemplate) api(`/api/videos/${videoId}/draft`, { method: "DELETE" }).catch(() => {});
   clearTimeout(contentSaveTimer);
   pendingSlotSave = null;
   setVideoLoaded(null);
@@ -1846,6 +1847,8 @@ function videoDraftSnapshot() {
     bgmVolume: p.bgmVolume,
     bgmFadeInMs: p.bgmFadeInMs,
     bgmFadeOutMs: p.bgmFadeOutMs,
+    backgroundImage: p.backgroundImage ?? null,
+    brand: p.brand,
   }));
 }
 

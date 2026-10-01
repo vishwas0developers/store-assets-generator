@@ -115,6 +115,7 @@ export async function loadMockupApplicationInto(id, force = false) {
 
 /** Drops the whole editing draft and its identity. The next Editing session starts empty. */
 export function clearMockupDraft() {
+  if (mockupId && mockupLoadedFrom) api(`/api/mockups/${mockupId}/draft`, { method: "DELETE" }).catch(() => {});
   setMockupApplication(null);
   setMockupId(null);
   setMockupHistory([], -1);

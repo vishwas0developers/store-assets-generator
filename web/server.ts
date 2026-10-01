@@ -37,6 +37,7 @@ import {
   saveApplication,
   deleteApplication,
   deleteApplicationCapture,
+  discardDraft,
   applicationDir,
   applicationFile,
 } from "../src/application/applicationStore.js";
@@ -1779,6 +1780,15 @@ export async function startWebServer(options: { port?: number; host?: string; op
     }
 
     {
+      const m = p.match(/^\/api\/(mockups|videos)\/([^/]+)\/draft$/);
+      if (m && method === "DELETE") {
+        discardDraft(decodeURIComponent(m[2]), m[1] === "mockups" ? "mockup" : "video");
+        sendJson(res, 200, { ok: true });
+        return;
+      }
+    }
+
+    {
       const m = p.match(/^\/api\/mockups\/([^/]+)\/configs$/);
       if (m && method === "GET") {
         sendJson(res, 200, loadMockupApplication(decodeURIComponent(m[1])).savedConfigs ?? []);
@@ -2277,7 +2287,7 @@ export async function startWebServer(options: { port?: number; host?: string; op
         // The client posts the editing snapshot explicitly; the working document is only a fallback for older callers.
         const snap: any = body.snapshot && Array.isArray(body.snapshot.scenes) && body.snapshot.template
           ? body.snapshot
-          : { template: application.template, scenes: application.scenes, bgm: application.bgm, bgmVolume: application.bgmVolume, bgmFadeInMs: application.bgmFadeInMs, bgmFadeOutMs: application.bgmFadeOutMs };
+          : { template: application.template, scenes: application.scenes, bgm: application.bgm, bgmVolume: application.bgmVolume, bgmFadeInMs: application.bgmFadeInMs, bgmFadeOutMs: application.bgmFadeOutMs, backgroundImage: application.backgroundImage, brand: application.brand };
         if (!snap.template || snap.scenes.length === 0) return sendError(res, 400, "Apply a template before saving a configuration.");
         application.savedConfigs = application.savedConfigs ?? [];
         // mode "new": always a fresh id, never touches an existing config. mode "update": replace exactly `configId`.
@@ -2306,6 +2316,8 @@ export async function startWebServer(options: { port?: number; host?: string; op
           bgmVolume: snap.bgmVolume,
           bgmFadeInMs: snap.bgmFadeInMs,
           bgmFadeOutMs: snap.bgmFadeOutMs,
+          backgroundImage: snap.backgroundImage ?? null,
+          brand: snap.brand,
           savedAt: new Date().toISOString(),
         };
         if (existing) {
@@ -2332,6 +2344,8 @@ export async function startWebServer(options: { port?: number; host?: string; op
         application.bgmVolume = cfg.bgmVolume;
         application.bgmFadeInMs = cfg.bgmFadeInMs;
         application.bgmFadeOutMs = cfg.bgmFadeOutMs;
+        application.backgroundImage = cfg.backgroundImage ?? null;
+        application.brand = cfg.brand;
         saveVideoApplication(application);
         sendJson(res, 200, application);
         return;
@@ -2365,6 +2379,8 @@ export async function startWebServer(options: { port?: number; host?: string; op
           bgmVolume: cfg.bgmVolume,
           bgmFadeInMs: cfg.bgmFadeInMs,
           bgmFadeOutMs: cfg.bgmFadeOutMs,
+          backgroundImage: cfg.backgroundImage ?? null,
+          brand: cfg.brand,
         };
         res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
         res.end(templatePreviewHtml(overrideApplication));
@@ -2389,6 +2405,8 @@ export async function startWebServer(options: { port?: number; host?: string; op
           bgmVolume: cfg.bgmVolume,
           bgmFadeInMs: cfg.bgmFadeInMs,
           bgmFadeOutMs: cfg.bgmFadeOutMs,
+          backgroundImage: cfg.backgroundImage ?? null,
+          brand: cfg.brand,
         };
         const preflight = validateApplication(overrideApplication as any);
         if (!preflight.ready) {
