@@ -29,7 +29,6 @@
       "assets/**/*",
       "config/**/*",
       "fonts/**/*",
-      "apps/**/*",
       "src/platform/specs/**/*"
     ],
     "nsis": {
