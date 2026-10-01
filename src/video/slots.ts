@@ -2,7 +2,7 @@ import fs from "fs";
 import qrcode from "qrcode-generator";
 import { templateConfig, templateHtmlPath } from "./templateConfig.js";
 import { placeholderScreenUri } from "./placeholder.js";
-import { type VideoProject, type VideoScene, type SlotValue } from "./project.js";
+import { type VideoApplication, type VideoScene, type SlotValue } from "./application.js";
 import { resolveDemoAsset } from "./demoAssets.js";
 import { dataUri } from "../render/shared.js";
 
@@ -405,13 +405,13 @@ if (typeof process !== "undefined" && process.argv[1] && import.meta.url === pat
 }
 
 export function resolveSlots(
-  project: VideoProject,
+  application: VideoApplication,
   sceneIndex: number,
   resolveUri: (rel: string) => string,
   allowDemo = true,
 ): ResolvedSlot[] {
-  const templateId = project.template;
-  // Precedence, most to least specific: scene.slotValues[key] -> project.brand
+  const templateId = application.template;
+  // Precedence, most to least specific: scene.slotValues[key] -> application.brand
   // (only `logo`/`platforms` have a brand fallback -- brand doesn't define a
   // headline or a screenshot) -> the template's own baked default, which is
   // what's left on the page when nothing here resolves to a value (see the
@@ -420,7 +420,7 @@ export function resolveSlots(
   // an unfilled required slot still previews with the template's default so
   // editing never shows a blank/broken scene, it just blocks final render.
   if (!templateId) return [];
-  const scene = project.scenes[sceneIndex];
+  const scene = application.scenes[sceneIndex];
   if (!scene) return [];
   const specs = slotSpecsForScene(templateId, sceneIndex);
   const rawValues = scene.slotValues ?? {};
@@ -437,12 +437,12 @@ export function resolveSlots(
   if (!values.screenshots && (scene.screenIds || scene.sourceId)) {
     values.screenshots = { kind: "imageList", sourceIds: scene.screenIds || (scene.sourceId ? [scene.sourceId] : []) };
   }
-  const brand = project.brand;
+  const brand = application.brand;
   const resolved: ResolvedSlot[] = [];
 
   const sourceUri = (sourceId: string | null | undefined, placeholderIndex = 0): string => {
     if (sourceId) {
-      const source = project.sources.find((s) => s.id === sourceId);
+      const source = application.sources.find((s) => s.id === sourceId);
       if (source) return resolveUri(source.file);
       const demo = allowDemo ? resolveDemoAsset(sourceId) : undefined;
       if (demo) return dataUri(demo.absPath);
@@ -505,24 +505,24 @@ export interface ImageSequenceEntry {
   targets: string[];
   /** Absolute document-time windows (ms), cumulative across every scene --
    *  the whole multi-scene document is one continuous timeline, and this is
-   *  built once for the whole project so the swap script only needs a
+   *  built once for the whole application so the swap script only needs a
    *  single absolute `ms` to know which segment (if any, in any scene) is
    *  currently on screen. */
   segments: { src: string; startMs: number; endMs: number }[];
 }
 
-/** Project-wide (not per-scene, unlike resolveSlots) because a segment's
+/** Application-wide (not per-scene, unlike resolveSlots) because a segment's
  *  absolute time window depends on every earlier scene's duration. Only the
  *  `screenshot` role supports sequence mode today -- it is the one
  *  single-image slot present on nearly every scene across all 16 templates;
  *  extending to other image roles is a ROLE_TABLE/SlotKind change, not a
  *  rewrite of this function. */
-export function resolveImageSequences(project: VideoProject, resolveUri: (rel: string) => string, allowDemo = true): ImageSequenceEntry[] {
-  const templateId = project.template;
+export function resolveImageSequences(application: VideoApplication, resolveUri: (rel: string) => string, allowDemo = true): ImageSequenceEntry[] {
+  const templateId = application.template;
   if (!templateId) return [];
   const entries: ImageSequenceEntry[] = [];
   let cumMs = 0;
-  const scenes = [...project.scenes].sort((a, b) => a.order - b.order);
+  const scenes = [...application.scenes].sort((a, b) => a.order - b.order);
   for (const scene of scenes) {
     const durMs = Math.max(1, scene.durationSeconds) * 1000;
     const value = scene.slotValues?.screenshot;
@@ -532,7 +532,7 @@ export function resolveImageSequences(project: VideoProject, resolveUri: (rel: s
         let segStart = cumMs;
         const segments = value.segments.map((seg) => {
           const segDurMs = Math.max(100, seg.durationSec * 1000);
-          const source = seg.sourceId ? project.sources.find((s) => s.id === seg.sourceId) : undefined;
+          const source = seg.sourceId ? application.sources.find((s) => s.id === seg.sourceId) : undefined;
           const demo = !source && seg.sourceId && allowDemo ? resolveDemoAsset(seg.sourceId) : undefined;
           const src = source ? resolveUri(source.file) : demo ? dataUri(demo.absPath) : placeholderScreenUri();
           const entry = { src, startMs: segStart, endMs: segStart + segDurMs };
@@ -547,14 +547,14 @@ export function resolveImageSequences(project: VideoProject, resolveUri: (rel: s
   return entries;
 }
 
-/** Only `logo` and `platforms` read a project-wide default -- these are the
- *  two roles that are genuinely the same across every scene of a project
+/** Only `logo` and `platforms` read an application-wide default -- these are the
+ *  two roles that are genuinely the same across every scene of an application
  *  (one app icon, one set of store links), so setting them once in the
  *  brand panel is expected to reach every scene that has that slot (e.g.
  *  tpl-62155880's opener AND outro both show the same icon). A scene-level
  *  value always overrides this; there is no per-scene override of `text`
  *  from brand because headlines are scene-specific by nature. */
-function fallbackFromBrand(key: string, brand: VideoProject["brand"] | undefined): SlotValue | undefined {
+function fallbackFromBrand(key: string, brand: VideoApplication["brand"] | undefined): SlotValue | undefined {
   if (!brand) return undefined;
   if (key === "logo" && brand.appIcon) return { kind: "image", sourceId: brand.appIcon };
   if (key === "platforms" && brand.platforms?.length) return { kind: "platformList", items: brand.platforms };

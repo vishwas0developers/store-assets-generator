@@ -41,6 +41,11 @@ export const ICONS = {
   download: svg('<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>'),
   listView: svg('<line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>'),
   gridView: svg('<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>'),
+
+  // Video player transport controls
+  loop: svg('<polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>'),
+  volumeHigh: svg('<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>'),
+  volumeMute: svg('<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>'),
 };
 
 /** Applies the standard icon set to the object toolbar (icon-only) and the
@@ -68,6 +73,8 @@ export function applyStandardIcons() {
     "mk-obj-opacity-btn": ICONS.opacity,
     "mk-obj-duplicate": ICONS.duplicate,
     "mk-obj-delete": ICONS.delete,
+    "sc-tr-loop": ICONS.loop,
+    "sc-tr-mute": ICONS.volumeHigh,
   };
   for (const [id, icon] of Object.entries(iconOnly)) {
     const el = document.getElementById(id);

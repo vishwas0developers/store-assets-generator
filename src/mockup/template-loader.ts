@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import type { ColumnStyle, Decoration, DeviceLayerStyle, MockupAssetLayer, TextLayer } from "./project.js";
+import type { ColumnStyle, Decoration, DeviceLayerStyle, MockupAssetLayer, TextLayer } from "./application.js";
 
 export interface MockupTemplatePage {
   title?: string;
@@ -191,6 +191,20 @@ export function writeTemplateToDisk(template: MockupTemplateDefinition): void {
   const { folderPath, filePath, titles, subtitles, columnCount, ...clean } = template;
   const bak = `${file}.bak`;
   if (!fs.existsSync(bak)) fs.copyFileSync(file, bak);
+  fs.writeFileSync(file, JSON.stringify(clean, null, 2) + "\n", "utf-8");
+  loadMockupTemplatesFromDisk(true);
+}
+
+/** Writes a NEW template file under templates/mockup/<category-folder>/<id>.json; never overwrites. */
+export function createTemplateOnDisk(template: MockupTemplateDefinition): void {
+  const folder = template.category.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "custom";
+  const dir = path.join(TEMPLATES_ROOT, folder);
+  const file = path.join(dir, `${template.id}.json`);
+  const rel = path.relative(TEMPLATES_ROOT, file);
+  if (rel.startsWith("..") || path.isAbsolute(rel)) throw new Error("Template path is outside the templates folder.");
+  if (fs.existsSync(file)) throw new Error(`Template file '${template.id}.json' already exists.`);
+  fs.mkdirSync(dir, { recursive: true });
+  const { folderPath, filePath, titles, subtitles, columnCount, ...clean } = template;
   fs.writeFileSync(file, JSON.stringify(clean, null, 2) + "\n", "utf-8");
   loadMockupTemplatesFromDisk(true);
 }

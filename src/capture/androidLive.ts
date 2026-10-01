@@ -2,7 +2,7 @@ import { execFile } from "child_process";
 import { promisify } from "util";
 import fs from "fs";
 import path from "path";
-import { projectFile, loadProject, saveProject } from "../project/projectStore.js";
+import { applicationFile, loadApplication, saveApplication } from "../application/applicationStore.js";
 import { AndroidCaptureBackend } from "../android/capture.js";
 import { resolveTool } from "../toolchain/binaries.js";
 import {
@@ -71,7 +71,7 @@ async function queryScreenSize(deviceId: string): Promise<{ width: number; heigh
 }
 
 export async function startAndroidSession(
-  projectId: string,
+  applicationId: string,
   deviceId?: string,
   options?: { screenOff?: boolean; nativePreview?: boolean; autoRotate?: boolean }
 ): Promise<{ deviceId: string; width: number; height: number; deviceCategory: DeviceCategory; screenOff: boolean; autoRotate: boolean }> {
@@ -120,7 +120,7 @@ export function stopAndroidSession(): void {
 // as interaction speed demands while recordings stay at source quality.
 
 let recording: {
-  projectId: string;
+  applicationId: string;
   id: number;
   rel: string;
   recorder: RawRecording;
@@ -130,12 +130,12 @@ export function isAndroidRecording(): boolean {
   return recording !== null;
 }
 
-export function startAndroidRecording(projectId: string): { id: number; file: string } {
+export function startAndroidRecording(applicationId: string): { id: number; file: string } {
   if (!currentDeviceId) throw new Error("No active Android session.");
   if (recording) throw new Error("A recording is already in progress.");
 
-  const { id, rel, abs } = nextRecordingPath(projectId);
-  recording = { projectId, id, rel, recorder: startRawRecording(abs) };
+  const { id, rel, abs } = nextRecordingPath(applicationId);
+  recording = { applicationId, id, rel, recorder: startRawRecording(abs) };
   return { id, file: rel };
 }
 
@@ -146,7 +146,7 @@ export async function stopAndroidRecording(): Promise<{ id: number; file: string
 
   const { width, height, durationSec } = await r.recorder.stop();
   return registerRecording({
-    projectId: r.projectId,
+    applicationId: r.applicationId,
     id: r.id,
     rel: r.rel,
     url: `android:${currentDeviceId}`,
@@ -404,18 +404,18 @@ function pngSize(buf: Buffer): { width: number; height: number } {
 }
 
 export async function captureAndroidScreen(
-  projectId: string,
+  applicationId: string,
   imageBase64?: string
 ): Promise<{ id: number; file: string }> {
   if (!currentDeviceId) {
     throw new Error("No active Android session.");
   }
 
-  const project = loadProject(projectId);
-  const nextId = project.captures.length > 0 ? Math.max(...project.captures.map((c) => c.id)) + 1 : 1;
+  const application = loadApplication(applicationId);
+  const nextId = application.captures.length > 0 ? Math.max(...application.captures.map((c) => c.id)) + 1 : 1;
   const filename = `${nextId}.png`;
   const relPath = path.posix.join("captures", filename);
-  const absPath = projectFile(projectId, relPath);
+  const absPath = applicationFile(applicationId, relPath);
 
   let buffer: Buffer | null = null;
 
@@ -477,7 +477,7 @@ export async function captureAndroidScreen(
     resolution: resolutionKey,
     deviceLabel,
   };
-  project.captures.push(captureInfo);
+  application.captures.push(captureInfo);
 
   const srcId = `src_${Date.now()}`;
   // Name stays free of pixel dimensions -- device size and resolution are
@@ -493,9 +493,9 @@ export async function captureAndroidScreen(
     resolution: resolutionKey,
     deviceLabel,
   };
-  project.mockup.sources.push(source);
-  project.video.sources.push(source);
+  application.mockup.sources.push(source);
+  application.video.sources.push(source);
 
-  saveProject(project);
+  saveApplication(application);
   return { id: nextId, file: relPath };
 }

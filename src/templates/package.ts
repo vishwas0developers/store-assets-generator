@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import archiver from "archiver";
 import unzipper from "unzipper";
-import { TemplateSchema, type Template } from "../project/schema.js";
+import { TemplateSchema, type Template } from "../application/schema.js";
 
 export class TemplatePackager {
   /**

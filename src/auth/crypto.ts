@@ -4,7 +4,7 @@ import path from "path";
 
 /**
  * Shared AES-256-GCM encrypt-at-rest helper. One key file (`.auth/.secret.key`)
- * backs every secret store in the project (demo credentials, AI provider
+ * backs every secret store in the application (demo credentials, AI provider
  * keys) — same key, same cipher, so there's exactly one place that can leak
  * or rotate it, not one per store.
  */

@@ -27,12 +27,12 @@ import {
   escapeHtml,
 } from './utils.js';
 import { syncSection2Inputs, syncLinkedDeviceLayer } from './editor.js';
-import { saveCurrentMockupProject, pushMockupHistory, mockupProject } from './state.js';
+import { saveCurrentMockupApplication, pushMockupHistory, mockupApplication } from './state.js';
 // mockupDevicesCatalog: templates.js already fetches the real /api/devices
 // catalog (dozens of real devices) for the "add device row" picker; canvas.js
 // reuses that same live array instead of the tiny 4-entry stub previously
 // baked into resolveDeviceGeometry(), which didn't contain any device this
-// project actually uses. (templates.js also imports from canvas.js --
+// application actually uses. (templates.js also imports from canvas.js --
 // editor.js/matrix.js already have the same mutual-import shape in this
 // codebase and it works fine, since both sides only read the live binding
 // inside function bodies, never at module-evaluation time.)
@@ -45,10 +45,10 @@ export function setArtboardHeight(h) {
   ARTBOARD_H = h;
 }
 
-/** Sets ARTBOARD_H from the project's platform primary size target (editing canvas == primary preview) and, if it
+/** Sets ARTBOARD_H from the application's platform primary size target (editing canvas == primary preview) and, if it
  *  changed, disposes every page canvas (they are sized at creation) so the next render rebuilds them. Call right after
- *  the project is set. */
-export function syncArtboardHeightFromProject(proj) {
+ *  the application is set. */
+export function syncArtboardHeightFromApplication(proj) {
   const h = designSizeFor(primaryTargetFor(proj?.platform)).height;
   if (h === ARTBOARD_H) return;
   setArtboardHeight(h);
@@ -156,14 +156,14 @@ function positionForRotation(L, T, W, H, angle) {
   return { left: L + W / 2, top: T + H / 2, originX: 'center', originY: 'center' };
 }
 
-/** This page's index within project.columns.order-sorted sequence, or -1 if
+/** This page's index within application.columns.order-sorted sequence, or -1 if
  *  not found -- the one authoritative page-sequence numbering panorama math
  *  uses everywhere (editor canvas, cell-preview, every export path), kept
  *  deliberately independent of whatever a given render.ts caller's own
  *  columnIndex convention happens to mean for OTHER purposes (see the
  *  matching comment in render.ts's cellHtml). */
 function orderedColumnIndex(pageId) {
-  return (mockupProject?.columns ?? []).slice().sort((a, b) => a.order - b.order).findIndex((c) => c.id === pageId);
+  return (mockupApplication?.columns ?? []).slice().sort((a, b) => a.order - b.order).findIndex((c) => c.id === pageId);
 }
 
 /** The panorama's visual left-to-right order must always follow the
@@ -182,7 +182,7 @@ function orderedColumnIndex(pageId) {
 export function reorderStageArtboards() {
   const stage = document.getElementById("mockup-canvas-stage");
   if (!stage) return;
-  const orderedIds = (mockupProject?.columns ?? [])
+  const orderedIds = (mockupApplication?.columns ?? [])
     .slice()
     .sort((a, b) => a.order - b.order)
     .map((c) => c.id)
@@ -471,13 +471,13 @@ async function setActivePageInner(pageId) {
   const targetCanvas = pageCanvases.get(pageId) || createPageCanvas(pageId);
   if (!targetCanvas) return;
 
-  const col = mockupProject?.columns?.find((c) => c.id === pageId);
+  const col = mockupApplication?.columns?.find((c) => c.id === pageId);
   if (col) setSelectedColumn(col);
   // Selection belongs to the page that owns it; a different page starts unselected.
   if (selectionPageId && selectionPageId !== pageId) clearSelection();
 
   for (const [pid, canvas] of pageCanvases) {
-    const pcol = mockupProject?.columns?.find((c) => c.id === pid);
+    const pcol = mockupApplication?.columns?.find((c) => c.id === pid);
     if (!pcol) continue;
     setMockupFabricCanvas(canvas);
     await loadColumnIntoFabric(pcol, { interactive: pid === pageId });
@@ -496,7 +496,7 @@ async function setActivePageInner(pageId) {
  *  is now purely a defensive no-op fallback for loadColumnIntoFabric's
  *  `if (!mockupFabricCanvas)` guard: normally covered by setActivePage
  *  (called before loadColumnIntoFabric everywhere), but also legitimately
- *  hit once on a fresh project load (renderMockupCanvas() firing before
+ *  hit once on a fresh application load (renderMockupCanvas() firing before
  *  the first ever page selection) -- loadColumnIntoFabric's own `!column`
  *  check bails out right after regardless, so there's nothing to do here. */
 export function initMockupFabricCanvas() {
@@ -582,7 +582,7 @@ function dispatchObjectSync(obj, group, originPageId) {
  *  object -- fires continuously (unlike object:modified, which only fires
  *  once on release), so neighboring canvases' mirror objects stay visually
  *  in sync in real time as the device crosses a page boundary. Only ever
- *  touches Fabric objects directly (never mockupProject, never a full
+ *  touches Fabric objects directly (never mockupApplication, never a full
  *  loadColumnIntoFabric rebuild) -- a full page rebuild on every mousemove
  *  tick would be far too slow for a smooth drag. The authoritative model
  *  write-back happens once, on release, in syncPanoramaDeviceObjectToModel. */
@@ -595,7 +595,7 @@ function onPanoramaObjectLiveTransform(e, canvas, originPageId) {
     // Home device, possibly mid-crossing into panorama territory for the
     // first time this drag -- live-sync unconditionally; the sync function
     // itself is a no-op on every other open canvas while the device is
-    // still fully within its own page (nothing projects anywhere yet). A
+    // still fully within its own page (nothing applications anywhere yet). A
     // real (non-mirror) 'deviceOne' object is only ever interactive (thus
     // draggable) on its own home page, so originPageId IS its owner here.
     syncPanoramaDeviceAcrossCanvasesSync(originPageId, originPageId, obj);
@@ -657,7 +657,7 @@ function cloneDeviceGroupSync(originGroup, layerId, interactive) {
 
 /** Live per-tick cross-canvas mirror sync for Device Frame 1, for a Group
  *  instead of an Image, reading position from the OWNER column's own
- *  DeviceLayerStyle (there's no project-level array for devices -- each
+ *  DeviceLayerStyle (there's no application-level array for devices -- each
  *  column's ColumnStyle.deviceOne is the one authoritative record, whether
  *  or not it's currently spanning). */
 function syncPanoramaDeviceAcrossCanvasesSync(ownerId, originPageId, liveObject) {
@@ -666,7 +666,7 @@ function syncPanoramaDeviceAcrossCanvasesSync(ownerId, originPageId, liveObject)
     || originCanvas?.getObjects().find((o) => o.layerId === 'deviceOne' || (o.panoramaDeviceOwnerId === ownerId && o.panoramaDeviceKey === 'deviceOne'));
   if (!originCanvas || !originObj || !ownerId) return;
   const originIndex = orderedColumnIndex(originPageId);
-  const ownerCol = mockupProject?.columns?.find((c) => c.id === ownerId);
+  const ownerCol = mockupApplication?.columns?.find((c) => c.id === ownerId);
   if (originIndex < 0 || !ownerCol) return;
 
   const w = typeof originObj.getScaledWidth === 'function' ? originObj.getScaledWidth() : originObj.width;
@@ -727,7 +727,7 @@ async function syncPanoramaDeviceObjectToModel(obj, originPageId) {
   const ownerId = obj.panoramaDeviceOwnerId;
   const layerKey = obj.panoramaDeviceKey;
   if (!ownerId || layerKey !== 'deviceOne') return;
-  const ownerCol = mockupProject?.columns?.find((c) => c.id === ownerId);
+  const ownerCol = mockupApplication?.columns?.find((c) => c.id === ownerId);
   const originIndex = orderedColumnIndex(originPageId);
   if (!ownerCol || originIndex < 0) return;
 
@@ -750,7 +750,7 @@ async function syncPanoramaDeviceObjectToModel(obj, originPageId) {
     // x the same way the home-page drag case does, so it lands exactly
     // where this drag left it instead of snapping to whatever x it had
     // before it started spanning.
-    const deviceGeo = resolveDeviceGeometry(mockupProject?.devices?.[0]?.deviceId || 'phone', mockupDevicesCatalog, mockupProject?.devices?.[0]?.variant);
+    const deviceGeo = resolveDeviceGeometry(mockupApplication?.devices?.[0]?.deviceId || 'phone', mockupDevicesCatalog, mockupApplication?.devices?.[0]?.variant);
     const ownerStageCenter = fabricStageCenter(ownerCol);
     const coords = getDeviceCoordsFromFabricObject({ left: centerXOnHomePage - w / 2, top, getScaledWidth: () => w, getScaledHeight: () => h }, ownerCol, 'deviceOne', ownerStageCenter, deviceGeo);
     if (coords) d1.x = coords.xPct;
@@ -853,8 +853,8 @@ export async function syncFabricObjectToModel(obj, group, originPageId) {
   // of a hardcoded 480x960/960 reference the model was never actually built at.
   const { selectedCell } = await import('./matrix.js');
   const activeDeviceRow =
-    mockupProject?.devices?.find((d) => d.id === selectedCell?.deviceRowId) ||
-    mockupProject?.devices?.[0];
+    mockupApplication?.devices?.find((d) => d.id === selectedCell?.deviceRowId) ||
+    mockupApplication?.devices?.[0];
   const deviceGeo = resolveDeviceGeometry(activeDeviceRow?.deviceId || 'phone', mockupDevicesCatalog, activeDeviceRow?.variant);
   const stageCenter = fabricStageCenter(selectedColumn);
 
@@ -1023,7 +1023,7 @@ export async function syncFabricObjectToModel(obj, group, originPageId) {
       break;
     }
   }
-  if (selectedColumn) syncLinkedDeviceLayer(mockupProject, selectedColumn.id, obj.layerId);
+  if (selectedColumn) syncLinkedDeviceLayer(mockupApplication, selectedColumn.id, obj.layerId);
   setMockupDirty(true);
   if (typeof window.syncSection2Inputs === 'function') window.syncSection2Inputs(selectedColumn, obj.layerId);
   if (typeof window.renderMockupMatrix === 'function') window.renderMockupMatrix();
@@ -1144,8 +1144,8 @@ export async function loadColumnIntoFabric(column, { interactive = true } = {}) 
   // on the screen (the model is per-row, not per-layer).
   const { selectedCell } = await import('./matrix.js');
   const activeDeviceRow =
-    mockupProject?.devices?.find((d) => d.id === selectedCell?.deviceRowId) ||
-    mockupProject?.devices?.[0];
+    mockupApplication?.devices?.find((d) => d.id === selectedCell?.deviceRowId) ||
+    mockupApplication?.devices?.[0];
   const activeDeviceId = activeDeviceRow?.deviceId || 'phone';
   const activeDeviceVariant = activeDeviceRow?.variant;
 
@@ -1155,8 +1155,8 @@ export async function loadColumnIntoFabric(column, { interactive = true } = {}) 
   // screenshot manually mapped yet (true for every freshly-applied
   // template) renders blank in the editor while the real server-rendered
   // preview/export already shows a screenshot via this same fallback.
-  const columnIndex = Math.max(0, mockupProject?.columns?.findIndex((c) => c.id === column.id) ?? 0);
-  const sources = mockupProject?.sources || [];
+  const columnIndex = Math.max(0, mockupApplication?.columns?.findIndex((c) => c.id === column.id) ?? 0);
+  const sources = mockupApplication?.sources || [];
   const resolveSourceFor = (sourceId) => sources.find((s) => s.id === sourceId) ?? sources[columnIndex] ?? sources[0];
 
   // 1. Background Layer -- mirrors src/render/shared.ts resolveBackground()
@@ -1329,7 +1329,7 @@ export async function loadColumnIntoFabric(column, { interactive = true } = {}) 
   // Always interactive regardless of this page's `interactive` flag, same
   // as panorama assets -- a cross-page device must stay draggable from any
   // page it overlaps.
-  for (const otherCol of mockupProject?.columns ?? []) {
+  for (const otherCol of mockupApplication?.columns ?? []) {
     if (otherCol.id === column.id) continue;
     const otherD1 = otherCol.style?.deviceOne;
     if (otherD1?.panoramaXPx == null || otherD1.deleted || otherD1.visible === false) continue;
@@ -1457,7 +1457,7 @@ export async function buildDeviceGroup(device, layerId, left, top, width, height
   // Resolve real device geometry from the actual server-backed catalog
   // (previously a 4-entry hardcoded stub, keyed off a `device.id` field that
   // DeviceLayerStyle doesn't even have -- so this always silently fell back
-  // to a generic "phone" stub regardless of the project's real device).
+  // to a generic "phone" stub regardless of the application's real device).
   const geo = resolveDeviceGeometry(deviceId || 'phone', mockupDevicesCatalog, variantId);
   const devW = geo.width;
   const devH = geo.height;
@@ -1513,7 +1513,7 @@ export async function buildDeviceGroup(device, layerId, left, top, width, height
     items.push(bezel);
   }
 
-  // Screenshot image -- resolvedSource.file is the real project-relative path
+  // Screenshot image -- resolvedSource.file is the real application-relative path
   // (e.g. "captures/1.png"), matching how render.ts resolves it server-side.
   if (resolvedSource?.file && mockupId) {
     const imgUrl = `/api/mockups/${mockupId}/file?p=${encodeURIComponent(resolvedSource.file)}`;
@@ -1970,7 +1970,7 @@ export function commitMoveableTransformToModel(col, layerId, el) {
   syncSection2Inputs(col, layerId);
   // Persisting here (autosave-on-drag) was removed: the Save button
   // (main.js) is the only place allowed to write to disk -- see this
-  // project's CLAUDE.md / the sync-fix plan for why. pushMockupHistory is
+  // application's CLAUDE.md / the sync-fix plan for why. pushMockupHistory is
   // purely in-memory (local undo stack), so it's fine to keep.
   pushMockupHistory();
 }

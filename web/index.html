@@ -21,7 +21,7 @@
   <div class="topbar">
     <div class="brand" id="brand-title">Store Assets Generator</div>
     <div class="topbar-tabs">
-      <div class="topbar-tab active" data-tab="projects">Projects List</div>
+      <div class="topbar-tab active" data-tab="applications">Applications List</div>
       <div class="topbar-tab disabled" data-tab="capture" id="tab-nav-capture">Screen Capture</div>
       <div class="topbar-tab" data-tab="mockup" id="tab-nav-mockup">Mockup Studio</div>
       <div class="topbar-tab" data-tab="video" id="tab-nav-video">Video Studio</div>
@@ -34,20 +34,20 @@
     </div>
   </div>
 
-  <!-- ============ TAB: Projects List ============ -->
-  <div class="tab-page active" id="tab-projects">
+  <!-- ============ TAB: Applications List ============ -->
+  <div class="tab-page active" id="tab-applications">
     <div class="app-body">
       <div class="content" style="display: flex; gap: 1.5rem; width: 100%; padding: 1.5rem; min-height: 0;">
         
-        <!-- Left: Project Creation & Active Project Inspector -->
+        <!-- Left: Application Creation & Active Application Inspector -->
         <div style="flex: 0 0 380px; display: flex; flex-direction: column; gap: 1.25rem; min-height: 0;">
-          <!-- Create New Project Card -->
+          <!-- Create New Application Card -->
           <div class="card" style="margin-top: 0;">
-            <h3>Create New Project</h3>
-            <label>Project Name</label>
-            <input id="proj-new-name" type="text" placeholder="e.g. My Shopping App" />
+            <h3>Create New Application</h3>
+            <label>Application Name</label>
+            <input id="app-new-name" type="text" placeholder="e.g. My Shopping App" />
             <label>App Category</label>
-            <select id="proj-new-category" style="width: 100%; margin-bottom: 0.5rem;">
+            <select id="app-new-category" style="width: 100%; margin-bottom: 0.5rem;">
               <option value="Education">Education</option>
               <option value="Shopping & E-Commerce">Shopping & E-Commerce</option>
               <option value="Finance & Banking">Finance & Banking</option>
@@ -58,19 +58,19 @@
               <option value="Entertainment & Games">Entertainment & Games</option>
             </select>
             <label>Starting URL</label>
-            <input id="proj-new-url" type="text" placeholder="https://example.com" />
+            <input id="app-new-url" type="text" placeholder="https://example.com" />
             <!-- "Two options, only one at a time" = native radios (same name), so picking one clears the other. -->
             <label>Target Platform</label>
             <div style="display:flex; gap:1.25rem; margin-bottom:0.5rem;">
-              <label class="checkbox-row" style="margin:0;"><input type="radio" name="proj-new-platform" value="play-store" /> Play Store</label>
-              <label class="checkbox-row" style="margin:0;"><input type="radio" name="proj-new-platform" value="app-store" /> App Store</label>
+              <label class="checkbox-row" style="margin:0;"><input type="radio" name="app-new-platform" value="play-store" /> Play Store</label>
+              <label class="checkbox-row" style="margin:0;"><input type="radio" name="app-new-platform" value="app-store" /> App Store</label>
             </div>
-            <button id="proj-create-btn" style="margin-top: 1rem; width: 100%;">Create Project</button>
+            <button id="app-create-btn" style="margin-top: 1rem; width: 100%;">Create Application</button>
           </div>
           
-          <!-- Active Project HUD Card -->
-          <div class="card" id="active-project-card" style="display: none; margin-top: 0;">
-            <h3>Active Project Details</h3>
+          <!-- Active Application HUD Card -->
+          <div class="card" id="active-application-card" style="display: none; margin-top: 0;">
+            <h3>Active Application Details</h3>
             <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.85rem;">
               <div><strong>Name:</strong> <span id="active-proj-name-display">-</span></div>
               <div><strong>Category:</strong> <span id="active-proj-cat-display">-</span></div>
@@ -80,25 +80,25 @@
           </div>
         </div>
 
-        <!-- Right: Projects Catalog & File Explorer Workstation -->
+        <!-- Right: Applications Catalog & File Explorer Workstation -->
         <div style="flex: 1; display: flex; flex-direction: column; gap: 1.25rem; min-height: 0;">
-          <!-- Projects Catalog Card -->
+          <!-- Applications Catalog Card -->
           <div class="card" style="flex: 1; display: flex; flex-direction: column; min-height: 280px; margin-top: 0;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-              <h3 style="margin: 0;">Projects Library</h3>
-              <span id="projects-count-badge" class="badge">0 Projects</span>
+              <h3 style="margin: 0;">Applications Library</h3>
+              <span id="applications-count-badge" class="badge">0 Applications</span>
             </div>
-            <div id="projects-list-container" style="overflow-y: auto; flex: 1;">
-              Loading projects...
+            <div id="applications-list-container" style="overflow-y: auto; flex: 1;">
+              Loading applications...
             </div>
           </div>
 
           <!-- Embedded File Explorer -->
-          <div class="card" id="project-explorer-card" style="flex: 1; display: none; flex-direction: column; min-height: 320px; margin-top: 0;">
+          <div class="card" id="application-explorer-card" style="flex: 1; display: none; flex-direction: column; min-height: 320px; margin-top: 0;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-              <h3 style="margin: 0;">Project Files & Outputs</h3>
+              <h3 style="margin: 0;">Application Files & Outputs</h3>
               <div>
-                <button id="proj-download-zip-btn" class="secondary small">Download All as ZIP</button>
+                <button id="app-download-zip-btn" class="secondary small">Download All as ZIP</button>
               </div>
             </div>
             <div class="tabs" style="margin-bottom: 1rem; align-items: center; justify-content: space-between;">
@@ -118,8 +118,8 @@
                 </button>
               </div>
             </div>
-            <div id="project-files-list" style="overflow-y: auto; flex: 1; min-height: 0;">
-              Select a project to inspect files.
+            <div id="application-files-list" style="overflow-y: auto; flex: 1; min-height: 0;">
+              Select an application to inspect files.
             </div>
           </div>
         </div>
@@ -354,6 +354,7 @@
       <div class="rail">
         <div class="rail-btn active" data-section="templates"><span class="ico">&#9636;</span>Templates</div>
         <div class="rail-btn" data-section="mockup-editing"><span class="ico">&#9998;</span>Editing</div>
+        <div class="rail-btn" data-section="saved-templates"><span class="ico">&#128190;</span>Saved Templates</div>
         <div class="rail-btn" data-section="panoramic"><span class="ico">&#127916;</span>Panoramic</div>
         <div class="rail-btn" data-section="preview"><span class="ico">&#128065;</span>Preview</div>
         <div class="rail-btn" data-section="devices"><span class="ico">&#128241;</span>Devices</div>
@@ -364,7 +365,7 @@
           <div class="card" id="mockup-template-browse">
             <h3>Templates</h3>
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
-              <div class="hint" style="margin:0;">Click a template to preview it, then choose Load to apply it to your project.</div>
+              <div class="hint" style="margin:0;">Click a template to preview it, then choose Load to apply it to your application.</div>
               <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
                 <div class="template-search-wrapper">
                   <svg class="template-search-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
@@ -373,8 +374,8 @@
                     <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                   </button>
                 </div>
-                <button id="mockup-export-template-btn" class="secondary small" type="button" title="Export current project configuration as a template JSON file">Export Template</button>
-                <button id="mockup-import-template-btn" class="secondary small" type="button" title="Import a template JSON file to apply to the current project">Import Template</button>
+                <button id="mockup-export-template-btn" class="secondary small" type="button" title="Export current application configuration as a template JSON file">Export Template</button>
+                <button id="mockup-import-template-btn" class="secondary small" type="button" title="Import a template JSON file to apply to the current application">Import Template</button>
                 <input type="file" id="mockup-import-file-input" accept=".json" style="display:none;" />
               </div>
             </div>
@@ -386,11 +387,12 @@
           <div class="card" id="mockup-template-detail" style="display:none;"></div>
         </div>
 
-        <div class="section-page" id="mockup-section-mockup-editing">
+        <div class="section-page editing-empty" id="mockup-section-mockup-editing">
+          <div class="editing-empty-banner"><h3>No template loaded</h3><div class="hint">Please load a template from Saved Templates or Default Templates (Templates section) to begin editing.</div></div>
           <div class="studio-editor-container">
             <!-- Real-Time Stage Controls Toolbar -->
             <div class="mockup-toolbar">
-              <span id="mockup-project-label" style="font-weight:600; font-size:0.9rem; white-space:nowrap;">No mockup project</span>
+              <span id="mockup-application-label" style="font-weight:600; font-size:0.9rem; white-space:nowrap;">No application selected</span>
               <div class="divider"></div>
               <button id="mockup-undo-btn" class="secondary small icon-btn" title="Undo (Ctrl+Z)" disabled>&#8617; Undo</button>
               <button id="mockup-redo-btn" class="secondary small icon-btn" title="Redo (Ctrl+Y)" disabled>&#8618; Redo</button>
@@ -414,7 +416,9 @@
                 <span id="mockup-dirty-badge" class="badge" style="display:none; background:#eab308; color:#000; font-weight:600; font-size:0.7rem; padding:2px 8px; border-radius:4px;">Unsaved Changes</span>
                 <button id="mk-save" class="primary small" type="button">Save Changes</button>
                 <button id="mockup-export-single-btn" class="primary small" type="button">Export Page (PNG)</button>
-                <button id="mk-update-template" class="danger small" type="button" title="Overwrite a template's default with this canvas">Update Template</button>
+                <button id="mockup-save-btn" class="secondary small" type="button" title="Save to the loaded Saved Template (a default template is saved as a new Saved Template)">Save</button>
+                <button id="mockup-save-as-btn" class="secondary small" type="button" title="Save the current work as a new Saved Template">Save As</button>
+                <button id="mockup-update-template-btn" class="danger small" type="button" title="Update the loaded default template, or create a new default template">Update Template</button>
               </div>
             </div>
 
@@ -517,6 +521,14 @@
                 <table class="matrix" id="mockup-matrix"></table>
               </div>
             </div>
+          </div>
+        </div>
+
+        <div class="section-page" id="mockup-section-saved-templates">
+          <div class="card">
+            <h3 style="margin-top:0;">Saved Templates</h3>
+            <div class="hint">Templates you saved for this application. Edit/Load always opens the last saved version.</div>
+            <div id="mockup-saved-grid" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:0.75rem; margin-top:0.75rem;"><div class="hint">No saved templates yet.</div></div>
           </div>
         </div>
 
@@ -846,30 +858,30 @@
     </div>
   </div>
 
-  <!-- Project Settings Modal -->
-  <div id="project-settings-modal" class="modal-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:9999; align-items:center; justify-content:center;">
+  <!-- Application Settings Modal -->
+  <div id="application-settings-modal" class="modal-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:9999; align-items:center; justify-content:center;">
     <div class="card" style="width:100%; max-width:420px; padding:1.5rem; background:var(--bg-card); border-radius:12px; box-shadow:0 20px 40px rgba(0,0,0,0.5);">
-      <h3 style="margin-top:0;">Project Settings</h3>
+      <h3 style="margin-top:0;">Application Settings</h3>
       <div style="display:flex; flex-direction:column; gap:0.75rem;">
-        <label style="font-size:0.8rem; color:#94a3b8;">Project Name
-          <input id="proj-settings-name" type="text" style="width:100%; margin-top:0.25rem;" />
+        <label style="font-size:0.8rem; color:#94a3b8;">Application Name
+          <input id="app-settings-name" type="text" style="width:100%; margin-top:0.25rem;" />
         </label>
         <label style="font-size:0.8rem; color:#94a3b8;">Category
-          <input id="proj-settings-category" type="text" style="width:100%; margin-top:0.25rem;" />
+          <input id="app-settings-category" type="text" style="width:100%; margin-top:0.25rem;" />
         </label>
         <label style="font-size:0.8rem; color:#94a3b8;">Starting URL / Domain
-          <input id="proj-settings-url" type="text" style="width:100%; margin-top:0.25rem;" placeholder="https://example.com" />
+          <input id="app-settings-url" type="text" style="width:100%; margin-top:0.25rem;" placeholder="https://example.com" />
         </label>
         <div style="font-size:0.8rem; color:#94a3b8;">Target Platform
           <div style="display:flex; gap:1.25rem; margin-top:0.35rem;">
-            <label class="checkbox-row" style="margin:0;"><input type="radio" name="proj-settings-platform" value="play-store" /> Play Store</label>
-            <label class="checkbox-row" style="margin:0;"><input type="radio" name="proj-settings-platform" value="app-store" /> App Store</label>
+            <label class="checkbox-row" style="margin:0;"><input type="radio" name="app-settings-platform" value="play-store" /> Play Store</label>
+            <label class="checkbox-row" style="margin:0;"><input type="radio" name="app-settings-platform" value="app-store" /> App Store</label>
           </div>
         </div>
       </div>
       <div style="display:flex; justify-content:flex-end; gap:0.5rem; margin-top:1.5rem;">
-        <button id="proj-settings-cancel" class="secondary" type="button">Cancel</button>
-        <button id="proj-settings-save" class="primary" type="button">Save</button>
+        <button id="app-settings-cancel" class="secondary" type="button">Cancel</button>
+        <button id="app-settings-save" class="primary" type="button">Save</button>
       </div>
     </div>
   </div>
@@ -878,7 +890,7 @@
   <div id="mockup-unsaved-modal" class="modal-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:9999; align-items:center; justify-content:center;">
     <div class="card" style="width:100%; max-width:420px; padding:1.5rem; background:var(--bg-card); border-radius:12px; box-shadow:0 20px 40px rgba(0,0,0,0.5);">
       <h3 style="margin-top:0; color:#f8fafc;">Save changes before switching?</h3>
-      <p style="color:#94a3b8; font-size:0.9rem; margin-bottom:1.5rem;">You have unsaved edits in your mockup project. What would you like to do?</p>
+      <p style="color:#94a3b8; font-size:0.9rem; margin-bottom:1.5rem;">You have unsaved edits in this application's mockups. What would you like to do?</p>
       <div style="display:flex; justify-content:flex-end; gap:0.5rem;">
         <button id="mockup-unsaved-cancel" class="secondary" type="button">Cancel</button>
         <button id="mockup-unsaved-discard" class="secondary" type="button" style="color:#ef4444; border-color:rgba(239,68,68,0.3);">Discard</button>
@@ -898,7 +910,7 @@
       </div>
       <div class="content">
         <div class="row" style="margin-bottom:1rem;">
-          <span id="video-project-label" style="font-weight:600;">No video project</span>
+          <span id="video-application-label" style="font-weight:600;">No application selected</span>
         </div>
 
         <div class="section-page active" id="video-section-templates">
@@ -911,7 +923,8 @@
           </div>
         </div>
 
-        <div class="section-page" id="video-section-scene-editing">
+        <div class="section-page editing-empty" id="video-section-scene-editing">
+          <div class="editing-empty-banner"><h3>No template loaded</h3><div class="hint">Please load a template from Saved Templates or Default Templates (Templates section) to begin editing.</div></div>
           <div class="card video-scenes-nav-card scene-navigation-container" id="video-scenes-nav-card">
             <div id="video-selected-template-label" class="hint" style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 6px;"></div>
             <div class="row" style="align-items: center; justify-content: space-between;">
@@ -919,7 +932,10 @@
               <div class="row" style="gap: 8px; align-items: center; margin-left: 12px;">
                 <button id="sc-add" class="secondary small" type="button" title="Add a scene">+ Add scene</button>
                 <button id="sc-remove" class="secondary small" type="button" title="Remove this scene">&times; Remove scene</button>
-                <button id="video-save-config-btn" class="secondary small" type="button" title="Save this project's template configuration">&#128190; Save Template Configuration</button>
+                <button id="video-save-btn" class="secondary small" type="button" title="Save to the loaded Saved Template (a default template is saved as a new Saved Template)">&#128190; Save</button>
+                <button id="video-save-as-btn" class="secondary small" type="button" title="Save the current work as a new Saved Template">Save As</button>
+                <button id="video-update-template-btn" class="danger small" type="button" title="Update the loaded default template, or create a new default template">Update Template</button>
+                <span id="video-dirty-badge" class="badge" style="display:none; background:#eab308; color:#000; font-weight:600; font-size:0.7rem; padding:2px 8px; border-radius:4px;">Unsaved Changes</span>
                 <div class="nav-divider" style="width: 1px; height: 24px; background: rgba(255,255,255,0.15); margin: 0 8px;"></div>
                 <button id="video-render" class="btn-render-primary" style="padding: 6px 16px; font-weight: 600; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer; transition: all 0.15s ease;">Render Final Video</button>
                 <a id="video-download" href="#" style="display:none;"><button type="button" class="secondary small" style="padding: 6px 12px;">Download</button></a>
@@ -975,8 +991,8 @@
                   
                   <div class="nav-divider"></div>
                   
-                  <button type="button" class="secondary small" id="sc-tr-loop" title="Toggle Loop" style="padding: 4px 8px;">🔁</button>
-                  <button type="button" class="secondary small" id="sc-tr-mute" title="Mute/Unmute" style="padding: 4px 8px;">🔊</button>
+                  <button type="button" class="secondary small transport-btn" id="sc-tr-loop" title="Toggle Loop" aria-label="Toggle Loop"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></button>
+                  <button type="button" class="secondary small transport-btn" id="sc-tr-mute" title="Mute/Unmute" aria-label="Mute/Unmute"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg></button>
                   <select id="sc-tr-speed" class="transport-speed-select">
                     <option value="0.5">0.5x</option>
                     <option value="1.0" selected>1.0x</option>
@@ -1132,7 +1148,7 @@
               </div>
             </div>
             <div id="saved-configs-grid" class="saved-templates-grid">
-              <div class="hint">No project loaded.</div>
+              <div class="hint">No application loaded.</div>
             </div>
           </div>
         </div>
@@ -1189,25 +1205,6 @@
   </div>
 </div>
 
-<!-- Save Template Configuration modal -->
-<div class="modal-backdrop" id="save-config-backdrop">
-  <div class="modal" style="width: 420px; max-width: 90%;">
-    <div class="modal-header">
-      <h2>Save Template</h2>
-      <button class="close-btn" id="save-config-close">&times;</button>
-    </div>
-    <div style="padding: 1rem;">
-      <label>Configuration Name</label>
-      <input type="text" id="save-config-name" placeholder="e.g. Samsung Galaxy S25 - 1" style="width:100%;" />
-      <p id="save-config-warning" class="hint slot-issue error" style="display:none; margin-top:.6rem;"></p>
-      <div class="row" style="justify-content:flex-end; gap:8px; margin-top:1.2rem;">
-        <button class="secondary small" id="save-config-cancel" type="button">Cancel</button>
-        <button id="save-config-confirm" type="button" style="font-weight:600; background:#10b981; border:none; border-radius:4px; padding:6px 14px; color:white; cursor:pointer;">Save</button>
-      </div>
-    </div>
-  </div>
-</div>
-
 <!-- Universal Screenshot Upload modal -->
 <div class="modal-backdrop" id="universal-upload-backdrop">
   <div class="modal" style="width: 700px; max-width: 90%;">
@@ -1216,14 +1213,14 @@
       <button class="close-btn" id="universal-upload-close">&times;</button>
     </div>
     <div class="tabs">
-      <div class="tab active" id="tab-btn-project-assets" data-upload-tab="project">From Current Project</div>
+      <div class="tab active" id="tab-btn-application-assets" data-upload-tab="application">From Current Application</div>
       <div class="tab" id="tab-btn-computer-upload" data-upload-tab="computer">Upload from Computer</div>
     </div>
     
-    <!-- Project Assets Grid -->
-    <div class="tab-panel active" id="upload-panel-project">
-      <div id="universal-project-assets-grid" class="thumb-grid" style="grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); max-height: 350px; overflow-y: auto;">
-        Loading project screenshots...
+    <!-- Application Assets Grid -->
+    <div class="tab-panel active" id="upload-panel-application">
+      <div id="universal-application-assets-grid" class="thumb-grid" style="grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); max-height: 350px; overflow-y: auto;">
+        Loading application screenshots...
       </div>
       <div style="display: flex; justify-content: flex-end; margin-top: 1rem;">
         <button id="universal-use-selected-btn" disabled>Use Selected</button>
@@ -1426,7 +1423,7 @@
     <div class="modal-header">
       <div>
         <h3 id="export-modal-title" style="margin:0; font-size:1.2rem; font-weight:700;">Export Video</h3>
-        <p id="export-modal-subject" class="hint" style="margin: 0.2rem 0 0 0; font-size: 0.85rem;">Project export</p>
+        <p id="export-modal-subject" class="hint" style="margin: 0.2rem 0 0 0; font-size: 0.85rem;">Application export</p>
       </div>
       <button class="close-btn" id="export-modal-close" type="button" aria-label="Close dialog">&times;</button>
     </div>

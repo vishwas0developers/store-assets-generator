@@ -3,7 +3,7 @@
  * Screen Capture, Studio Mockup, and Video Studio. Device size (Phone /
  * 7-inch Tablet / 10-inch Tablet) is the primary, user-facing way assets are
  * categorized, filtered, and reused -- exact pixel resolution is kept only as
- * secondary technical metadata (see ProjectCapture / MockupSourceImage).
+ * secondary technical metadata (see ApplicationCapture / MockupSourceImage).
  *
  * No Watch category by product decision -- classifyDeviceCategory() never
  * returns anything outside DeviceCategory, so a watch-sized capture still

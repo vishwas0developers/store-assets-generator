@@ -80,18 +80,18 @@ async function demo() {
     assert.ok(listDevices().some((d) => d.id === def.id), "unarchived device must reappear in listDevices() by default");
 
     const refs = findDeviceReferences(def.id);
-    assert.deepStrictEqual(refs, [], "a device with no stored projects must have zero references");
+    assert.deepStrictEqual(refs, [], "a device with no stored applications must have zero references");
 
-    // -- Hard delete is blocked when a project references the device --
-    const fakeProjectDir = path.join(process.cwd(), "output", "projects", "__test_project__");
-    fs.mkdirSync(fakeProjectDir, { recursive: true });
-    fs.writeFileSync(path.join(fakeProjectDir, "project.json"), JSON.stringify({ screens: [{ device: def.id }] }));
+    // -- Hard delete is blocked when an application references the device --
+    const fakeApplicationDir = path.join(process.cwd(), "output", "applications", "__test_application__");
+    fs.mkdirSync(fakeApplicationDir, { recursive: true });
+    fs.writeFileSync(path.join(fakeApplicationDir, "application.json"), JSON.stringify({ screens: [{ device: def.id }] }));
     try {
-      const refsWithProject = findDeviceReferences(def.id);
-      assert.deepStrictEqual(refsWithProject, ["__test_project__"], "a referencing project must be found by the reverse-reference scan");
+      const refsWithApplication = findDeviceReferences(def.id);
+      assert.deepStrictEqual(refsWithApplication, ["__test_application__"], "a referencing application must be found by the reverse-reference scan");
       assert.throws(() => deleteDevice(def.id), DeviceInUseError, "deleting a referenced device must be blocked");
     } finally {
-      fs.rmSync(fakeProjectDir, { recursive: true, force: true });
+      fs.rmSync(fakeApplicationDir, { recursive: true, force: true });
     }
 
     deleteDevice(dup.id);

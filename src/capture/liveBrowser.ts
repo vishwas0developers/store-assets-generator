@@ -1,7 +1,7 @@
 import { chromium, type Browser, type BrowserContext, type CDPSession, type Page } from "playwright";
 import fs from "fs";
 import path from "path";
-import { projectDir, projectFile, loadProject, saveProject } from "../project/projectStore.js";
+import { applicationDir, applicationFile, loadApplication, saveApplication } from "../application/applicationStore.js";
 import { resolveAuthConfig, slugify } from "../auth/appConfig.js";
 import { defaultSessionStatePath, authenticate } from "./auth.js";
 import { startFrameRecorder, nextRecordingPath, registerRecording, type FrameRecorder } from "./frameRecorder.js";
@@ -23,7 +23,7 @@ export interface MobileDevicePreset {
 // Keyed by resolutionKey (technical detail) but every preset carries the
 // device-size `category` it belongs to -- that category, not this key, is
 // what the UI shows and filters by. "1242x2688" is kept only so older
-// projects that reference it still resolve; the user-facing "connect"
+// applications that reference it still resolve; the user-facing "connect"
 // dropdown offers just the one canonical preset per category (see
 // CATEGORY_RESOLUTION / resolveResolutionKeyForCategory below).
 export const STORE_DEVICE_PRESETS: Record<string, MobileDevicePreset> = {
@@ -86,21 +86,21 @@ export function resolveResolutionKeyForCategory(category: DeviceCategory): strin
 let activeBrowser: Browser | null = null;
 let activeContext: BrowserContext | null = null;
 let activePage: Page | null = null;
-let currentProjectId: string | null = null;
+let currentApplicationId: string | null = null;
 let currentPreset: MobileDevicePreset = STORE_DEVICE_PRESETS["1290x2796"];
 
 export async function startBrowserSession(
-  projectId: string,
+  applicationId: string,
   url: string,
   resolutionKey = "1290x2796"
 ): Promise<{ sessionExpired?: boolean; message?: string }> {
-  console.log(`[SAG-BROWSER] [${new Date().toLocaleTimeString()}] Starting true mobile Playwright browser for project ${projectId} (${resolutionKey}) at URL: ${url}`);
+  console.log(`[SAG-BROWSER] [${new Date().toLocaleTimeString()}] Starting true mobile Playwright browser for application ${applicationId} (${resolutionKey}) at URL: ${url}`);
   
   if (activeBrowser) {
     await stopBrowserSession();
   }
 
-  currentProjectId = projectId;
+  currentApplicationId = applicationId;
   currentPreset = STORE_DEVICE_PRESETS[resolutionKey] || STORE_DEVICE_PRESETS["1290x2796"];
 
   activeBrowser = await chromium.launch({
@@ -232,7 +232,7 @@ export async function stopBrowserSession(): Promise<void> {
   activeBrowser = null;
   activeContext = null;
   activePage = null;
-  currentProjectId = null;
+  currentApplicationId = null;
 }
 
 // --- Screen recording ---------------------------------------------------
@@ -241,7 +241,7 @@ export async function stopBrowserSession(): Promise<void> {
 // page.screenshot() loop -- so recording doesn't compete with the live view.
 
 let recording: {
-  projectId: string;
+  applicationId: string;
   id: number;
   rel: string;
   cdp: CDPSession;
@@ -252,11 +252,11 @@ export function isBrowserRecording(): boolean {
   return recording !== null;
 }
 
-export async function startBrowserRecording(projectId: string): Promise<{ id: number; file: string }> {
+export async function startBrowserRecording(applicationId: string): Promise<{ id: number; file: string }> {
   if (!activePage || !activeContext) throw new Error("No active browser session.");
   if (recording) throw new Error("A recording is already in progress.");
 
-  const { id, rel, abs } = nextRecordingPath(projectId);
+  const { id, rel, abs } = nextRecordingPath(applicationId);
   const recorder = startFrameRecorder(abs);
   const cdp = await activeContext.newCDPSession(activePage);
 
@@ -277,7 +277,7 @@ export async function startBrowserRecording(projectId: string): Promise<{ id: nu
     maxWidth: currentPreset.outputWidth,
     maxHeight: currentPreset.outputHeight,
   });
-  recording = { projectId, id, rel, cdp, recorder };
+  recording = { applicationId, id, rel, cdp, recorder };
   console.log(`[SAG-BROWSER] Recording ${id} started -> ${rel}`);
   return { id, file: rel };
 }
@@ -293,7 +293,7 @@ export async function stopBrowserRecording(): Promise<{ id: number; file: string
   const { width, height, durationSec } = await r.recorder.stop();
   console.log(`[SAG-BROWSER] Recording ${r.id} stopped (${durationSec}s, ${width}x${height})`);
   return registerRecording({
-    projectId: r.projectId,
+    applicationId: r.applicationId,
     id: r.id,
     rel: r.rel,
     url: activePage?.url() ?? "",
@@ -407,16 +407,16 @@ export async function getBrowserFrame(): Promise<Buffer> {
   return await activePage.screenshot({ type: "jpeg", quality: 70 });
 }
 
-export async function captureBrowserScreen(projectId: string): Promise<{ id: number; file: string }> {
+export async function captureBrowserScreen(applicationId: string): Promise<{ id: number; file: string }> {
   if (!activePage) {
     throw new Error("No active browser session.");
   }
 
-  const project = loadProject(projectId);
-  const nextId = project.captures.length > 0 ? Math.max(...project.captures.map((c) => c.id)) + 1 : 1;
+  const application = loadApplication(applicationId);
+  const nextId = application.captures.length > 0 ? Math.max(...application.captures.map((c) => c.id)) + 1 : 1;
   const filename = `${nextId}.png`;
   const relPath = path.posix.join("captures", filename);
-  const absPath = projectFile(projectId, relPath);
+  const absPath = applicationFile(applicationId, relPath);
 
   console.log(`[SAG-BROWSER] Capturing pristine high-res mobile screen ${nextId} (${currentPreset.outputWidth}x${currentPreset.outputHeight})`);
 
@@ -442,7 +442,7 @@ export async function captureBrowserScreen(projectId: string): Promise<{ id: num
     deviceLabel: deviceLabelClean,
   };
 
-  project.captures.push(captureInfo);
+  application.captures.push(captureInfo);
 
   const srcId = `src_${Date.now()}`;
 
@@ -452,7 +452,7 @@ export async function captureBrowserScreen(projectId: string): Promise<{ id: num
   // rather than baking it into the name here.
   const sourceName = `Screenshot ${nextId}`;
 
-  project.mockup.sources.push({
+  application.mockup.sources.push({
     id: srcId,
     name: sourceName,
     file: `captures/${filename}`,
@@ -463,7 +463,7 @@ export async function captureBrowserScreen(projectId: string): Promise<{ id: num
     deviceLabel: deviceLabelClean,
   });
 
-  project.video.sources.push({
+  application.video.sources.push({
     id: srcId,
     name: sourceName,
     file: `captures/${filename}`,
@@ -474,8 +474,8 @@ export async function captureBrowserScreen(projectId: string): Promise<{ id: num
     deviceLabel: deviceLabelClean,
   });
 
-  saveProject(project);
-  console.log(`[SAG-BROWSER] Capture registered successfully for project ${projectId}`);
+  saveApplication(application);
+  console.log(`[SAG-BROWSER] Capture registered successfully for application ${applicationId}`);
 
   return { id: nextId, file: relPath };
 }

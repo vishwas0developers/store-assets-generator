@@ -1,18 +1,19 @@
 // Video Studio module — template & scene management, timeline, 3D device preview, and player bridge.
 import {
-  activeProjectId,
+  activeApplicationId,
   videoId,
-  videoProject,
+  videoApplication,
   selectedSceneId,
   videoTemplates,
   setVideoId,
-  setVideoProject,
+  setVideoApplication,
   setSelectedSceneId,
   setVideoTemplates
 } from './state.js';
-import { api, uploadFile, showAlert, showConfirm, showToast } from './utils.js';
+import { api, uploadFile, showAlert, showConfirm, showToast, showSaveAsDialog, showUpdateTemplateDialog, showUnsavedDialog, setEditingEmpty } from './utils.js';
 import { populateSourceSelect } from './editor.js';
 import { loadDeviceCategories, deviceCategoryLabel } from './deviceCategories.js';
+import { ICONS } from './icons.js';
 
 loadDeviceCategories();
 
@@ -46,24 +47,26 @@ let savedConfigsCache = [];
 
 const $ = (id) => document.getElementById(id);
 
-export async function loadVideoProjectInto(id) {
+export async function loadVideoApplicationInto(id) {
+  if (id !== videoId) setVideoLoaded(null);
   setVideoId(id);
   if (id) {
     try {
-      const proj = await api(`/api/videos/${id}`);
-      setVideoProject(proj);
-      const label = $("video-project-label");
+      // No explicitly loaded template -> neutral fetch: the server's stale working scenes are never handed to the editor.
+      const proj = await api(`/api/videos/${id}${videoLoadedTemplate ? "" : "?editing=none"}`);
+      setVideoApplication(proj);
+      const label = $("video-application-label");
       if (label) label.textContent = proj.name;
     } catch (e) {
-      console.error("Failed to load video project:", e);
-      setVideoProject(null);
-      const label = $("video-project-label");
-      if (label) label.textContent = "No video project loaded";
+      console.error("Failed to load video application:", e);
+      setVideoApplication(null);
+      const label = $("video-application-label");
+      if (label) label.textContent = "No video loaded";
     }
   } else {
-    setVideoProject(null);
-    const label = $("video-project-label");
-    if (label) label.textContent = "No video project selected";
+    setVideoApplication(null);
+    const label = $("video-application-label");
+    if (label) label.textContent = "No application selected";
   }
 
   try {
@@ -82,9 +85,9 @@ export async function loadVideoProjectInto(id) {
   }
 
   await renderVideoTemplateGrid();
-  if (videoProject && videoProject.template && videoProject.scenes?.length) {
-    renderVideoScenes();
-  }
+  const hasDraft = !!(videoLoadedTemplate && videoApplication && videoApplication.template && videoApplication.scenes?.length);
+  setEditingEmpty("video-section-scene-editing", !hasDraft);
+  if (hasDraft) renderVideoScenes();
 }
 
 export async function ensureVideoTemplates() {
@@ -142,7 +145,7 @@ function renderVideoTemplateList(templates, activeId) {
 
 function videoDetailPreviewQuery() {
   const q = new URLSearchParams({ t: Date.now() });
-  if (videoId) q.set("projectId", videoId);
+  if (videoId) q.set("applicationId", videoId);
   return q;
 }
 
@@ -504,22 +507,21 @@ export function closeVideoTemplateDetail() {
 
 export async function loadVideoTemplateNow(id) {
   if (!videoId) {
-    await showAlert("Start a video project first.");
+    await showAlert("Select an application first.");
     return;
   }
   const t = videoTemplates.find((x) => x.id === id);
-  if (videoProject && videoProject.scenes?.length > 0) {
-    const ok = await showConfirm("You have an existing scene sequence. Are you sure you want to load a new template?");
-    if (!ok) return;
-  }
+  if (!(await confirmDiscardVideoDraft())) return;
   const updatedProj = await api(`/api/videos/${videoId}/apply-template`, { method: "POST", body: { templateId: id } });
-  setVideoProject(updatedProj);
+  setVideoLoaded({ source: "default", id, name: t ? t.name : id });
+  setVideoApplication(updatedProj);
   renderVideoScenes();
   showToast(`Applied "${t ? t.name : id}" — ${updatedProj.scenes.length} scene(s) ready. Switch to Scenes to customize.`, "success");
 }
 
 export function renderVideoScenes() {
-  if (!videoProject || !videoProject.scenes) return;
+  // Nothing is rendered into the editor unless the user explicitly loaded a template.
+  if (!videoLoadedTemplate || !videoApplication || !videoApplication.scenes) return;
 
   const scTemplate = $("sc-template");
   if (scTemplate && videoSceneOptions.animations) {
@@ -534,7 +536,7 @@ export function renderVideoScenes() {
   // keeps its own baked CSS, so showing the dropdown there would be a dead
   // control with no visible effect.
   const themeSection = $("sc-background-theme-section");
-  if (themeSection) themeSection.style.display = videoProject.template ? "none" : "";
+  if (themeSection) themeSection.style.display = videoApplication.template ? "none" : "";
   renderGlobalBackgroundPanel();
   if (!templateBackgrounds.length) {
     ensureTemplateBackgrounds().then(() => {
@@ -542,9 +544,9 @@ export function renderVideoScenes() {
       if (selectedSceneId) renderSceneBackgroundSlot(selectedSceneId);
     });
   }
-  populateSceneDeviceSelect(videoProject.scenes.find((s) => s.id === selectedSceneId));
+  populateSceneDeviceSelect(videoApplication.scenes.find((s) => s.id === selectedSceneId));
 
-  const orientation = (videoProject.scenes[0] && videoProject.scenes[0].aspectRatio) === "16:9" ? "16:9" : "9:16";
+  const orientation = (videoApplication.scenes[0] && videoApplication.scenes[0].aspectRatio) === "16:9" ? "16:9" : "9:16";
   const layouts = (videoSceneOptions.layouts && videoSceneOptions.layouts[orientation]) || [];
   const scLayout = $("sc-layout");
   if (scLayout) {
@@ -555,18 +557,18 @@ export function renderVideoScenes() {
   // Tablet), matching Screen Capture / Screenshot Source Mapping -- never by
   // resolution/pixel dimensions.
   const scSource = $("sc-source");
-  if (scSource) populateSourceSelect(scSource, videoProject.sources || [], null, { blankLabel: "(None)" });
+  if (scSource) populateSourceSelect(scSource, videoApplication.sources || [], null, { blankLabel: "(None)" });
 
   const templateLabel = $("video-selected-template-label");
   if (templateLabel) {
-    const t = videoTemplates.find((x) => x.id === videoProject.template);
-    templateLabel.textContent = videoProject.template ? `Template: ${t ? t.name : videoProject.template}` : "";
+    const t = videoTemplates.find((x) => x.id === videoApplication.template);
+    templateLabel.textContent = videoApplication.template ? `Template: ${t ? t.name : videoApplication.template}` : "";
   }
 
   const nav = $("video-scene-nav");
   if (nav) {
     nav.innerHTML = "";
-    videoProject.scenes.forEach((s, i) => {
+    videoApplication.scenes.forEach((s, i) => {
       const chip = document.createElement("div");
       chip.className = "scene-chip" + (i === 0 ? " active" : "");
       chip.dataset.sceneId = s.id;
@@ -580,8 +582,8 @@ export function renderVideoScenes() {
     });
   }
 
-  if (videoProject.scenes.length) {
-    const targetId = selectedSceneId && videoProject.scenes.some(s => s.id === selectedSceneId) ? selectedSceneId : videoProject.scenes[0].id;
+  if (videoApplication.scenes.length) {
+    const targetId = selectedSceneId && videoApplication.scenes.some(s => s.id === selectedSceneId) ? selectedSceneId : videoApplication.scenes[0].id;
     selectScene(targetId);
   }
   refreshSceneCompleteness();
@@ -604,16 +606,16 @@ async function refreshSceneCompleteness() {
       renderBtn.disabled = false;
       renderBtn.textContent = incomplete > 0 ? `Render Final Video (${incomplete} scene${incomplete === 1 ? "" : "s"} incomplete)` : "Render Final Video";
       renderBtn.onclick = () => {
-        if (!videoId || !videoProject) {
-          showAlert("Please load a video project first.");
+        if (!videoId || !videoApplication) {
+          showAlert("Please select an application first.");
           return;
         }
         openExportModal({
           title: "Export Video",
-          subject: videoProject.name || "Video Project",
+          subject: videoApplication.name || "Video Application",
           startUrl: `/api/videos/${videoId}/render`,
-          project: videoProject,
-          defaultFileName: (videoProject.name || "video-export").toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+          application: videoApplication,
+          defaultFileName: (videoApplication.name || "video-export").toLowerCase().replace(/[^a-z0-9]+/g, "-"),
         });
       };
     }
@@ -669,11 +671,12 @@ function updateSceneSpecialPanels(templateVal) {
 }
 
 function selectScene(sceneId) {
+  if (!videoLoadedTemplate) return;
   setSelectedSceneId(sceneId);
   for (const chip of document.querySelectorAll(".scene-chip")) {
     chip.classList.toggle("active", chip.dataset.sceneId === sceneId);
   }
-  const scene = videoProject?.scenes?.find((s) => s.id === sceneId);
+  const scene = videoApplication?.scenes?.find((s) => s.id === sceneId);
   if (!scene) return;
 
   if ($("sc-template")) $("sc-template").value = scene.sceneTemplate || "";
@@ -714,19 +717,19 @@ function populateSceneDeviceSelect(scene) {
   const scDevice = $("sc-device");
   if (!scDevice) return;
   const mode = sceneDeviceMode(scene);
-  const usable = videoDeviceRegistry.filter((d) => d.deviceType === mode && (d.sourceType !== "CSS" || videoProject?.template));
+  const usable = videoDeviceRegistry.filter((d) => d.deviceType === mode && (d.sourceType !== "CSS" || videoApplication?.template));
   const opts = usable.map((d) => `<option value="${d.id}">${d.vendor} — ${d.name} (${d.sourceType})</option>`).join("");
   scDevice.innerHTML = `<optgroup label="${mode} Devices">${opts}</optgroup>`;
 }
 
 /** Device Management -> "Use in selected scene". */
 window.assignDeviceToSelectedScene = async (id, mode) => {
-  const scene = videoProject?.scenes?.find((s) => s.id === selectedSceneId);
-  if (!scene) return { ok: false, message: "Open a video project and select a scene first." };
+  const scene = videoApplication?.scenes?.find((s) => s.id === selectedSceneId);
+  if (!scene) return { ok: false, message: "Open an application and select a scene first." };
   if (sceneDeviceMode(scene) !== mode) return { ok: false, message: `This scene requires a ${sceneDeviceMode(scene)} device.` };
   populateSceneDeviceSelect(scene);
   const dev = $("sc-device");
-  if (!dev || ![...dev.options].some((o) => o.value === id)) return { ok: false, message: "That device can't be used by this project's scenes." };
+  if (!dev || ![...dev.options].some((o) => o.value === id)) return { ok: false, message: "That device can't be used by this application's scenes." };
   dev.value = id;
   await saveCurrentScene();
   return { ok: true, message: "Device applied to the selected scene." };
@@ -745,6 +748,7 @@ function updateVariantSelect(deviceSelectId, variantSelectId, current, catalog) 
 }
 
 function showScenePreview() {
+  if (!videoLoadedTemplate) return;
   const frame = $("sc-preview");
   if (!frame || !videoId || !selectedSceneId) return;
   frame.src = `/api/videos/${videoId}/scene-preview/${selectedSceneId}?t=${Date.now()}`;
@@ -755,7 +759,7 @@ function showScenePreview() {
 }
 
 function updateScenePreviewScale() {
-  const scene = videoProject?.scenes?.find((s) => s.id === selectedSceneId);
+  const scene = videoApplication?.scenes?.find((s) => s.id === selectedSceneId);
   if (!scene) return;
   const isLandscape = scene.aspectRatio === "16:9";
   const nativeWidth = isLandscape ? 1920 : 1080;
@@ -785,7 +789,7 @@ function updateScenePreviewScale() {
 
 function scTransportReset() {
   scTransportStop();
-  const scene = videoProject?.scenes?.find((s) => s.id === selectedSceneId);
+  const scene = videoApplication?.scenes?.find((s) => s.id === selectedSceneId);
   scTransport.durationMs = Math.max(1, scene?.durationSeconds || 5) * 1000;
   scTransport.elapsedMs = 0;
   scTransportSeek(0);
@@ -899,10 +903,10 @@ async function ensureTemplateBackgrounds() {
   }
 }
 
-/** The ref meaning "this project's own template, untouched" -- what every
+/** The ref meaning "this application's own template, untouched" -- what every
  *  background control shows selected until something else is chosen. */
 function nativeBackgroundRef() {
-  return videoProject?.template ? `template:${videoProject.template}` : "";
+  return videoApplication?.template ? `template:${videoApplication.template}` : "";
 }
 
 /** Thumbnail + dropdown + Upload New Source + Remove, shared by the global
@@ -914,7 +918,7 @@ function backgroundControl({ selectedRef, badge, canRemove, onChange }) {
   wrap.className = "content-slot-image";
 
   const tb = templateBackgrounds.find((b) => b.ref === selectedRef);
-  const source = !tb && selectedRef ? (videoProject.sources || []).find((s) => s.id === selectedRef) : null;
+  const source = !tb && selectedRef ? (videoApplication.sources || []).find((s) => s.id === selectedRef) : null;
 
   const thumb = document.createElement("div");
   thumb.className = "content-slot-thumb";
@@ -954,7 +958,7 @@ function backgroundControl({ selectedRef, badge, canRemove, onChange }) {
   }
   if (tGroup.children.length) select.appendChild(tGroup);
   // Uploads only ever appear here because the user added them.
-  const uploads = (videoProject.sources || []).filter((s) => s.kind !== "video" && s.purpose === "background");
+  const uploads = (videoApplication.sources || []).filter((s) => s.kind !== "video" && s.purpose === "background");
   if (uploads.length) {
     const uGroup = document.createElement("optgroup");
     uGroup.label = "Uploaded";
@@ -973,7 +977,7 @@ function backgroundControl({ selectedRef, badge, canRemove, onChange }) {
     if (!file) return;
     try {
       const uploaded = await uploadFile(`/api/videos/${videoId}/sources?name=${encodeURIComponent(file.name)}&purpose=background`, file);
-      videoProject.sources.push(uploaded);
+      videoApplication.sources.push(uploaded);
       onChange(uploaded.id);
     } catch (e) {
       await showAlert("Upload failed: " + e.message);
@@ -994,15 +998,15 @@ function backgroundControl({ selectedRef, badge, canRemove, onChange }) {
   return wrap;
 }
 
-/** Global default background (project.backgroundImage). Null means "each scene
+/** Global default background (application.backgroundImage). Null means "each scene
  *  keeps its template's own background", which the dropdown shows as the
  *  current template's entry. */
 function renderGlobalBackgroundPanel() {
   const host = $("global-background-panel");
-  if (!host || !videoProject) return;
+  if (!host || !videoApplication) return;
   host.innerHTML = "";
   const native = nativeBackgroundRef();
-  const explicit = videoProject.backgroundImage || null;
+  const explicit = videoApplication.backgroundImage || null;
   host.appendChild(backgroundControl({
     selectedRef: explicit || native,
     badge: explicit ? null : "template default",
@@ -1010,7 +1014,7 @@ function renderGlobalBackgroundPanel() {
     onChange: async (ref) => {
       const value = !ref || ref === native ? null : ref;
       const updated = await api(`/api/videos/${videoId}`, { method: "PUT", body: { backgroundImage: value } });
-      videoProject.backgroundImage = updated.backgroundImage ?? null;
+      videoApplication.backgroundImage = updated.backgroundImage ?? null;
       renderGlobalBackgroundPanel();
       if (selectedSceneId) renderSceneBackgroundSlot(selectedSceneId);
       showScenePreview();
@@ -1023,9 +1027,9 @@ function renderGlobalBackgroundPanel() {
  *  shows the global default, else its template's own background. */
 function renderSceneBackgroundSlot(sceneId) {
   const host = $("sc-background-panel");
-  if (!host || !videoProject) return;
+  if (!host || !videoApplication) return;
   host.innerHTML = "";
-  const scene = videoProject.scenes.find((s) => s.id === sceneId);
+  const scene = videoApplication.scenes.find((s) => s.id === sceneId);
   if (!scene) return;
   const wrap = document.createElement("div");
   wrap.className = "content-slot";
@@ -1034,7 +1038,7 @@ function renderSceneBackgroundSlot(sceneId) {
   wrap.appendChild(label);
   const value = scene.slotValues?.background;
   const override = value?.kind === "image" ? value.sourceId : null;
-  const global = videoProject.backgroundImage || null;
+  const global = videoApplication.backgroundImage || null;
   wrap.appendChild(backgroundControl({
     selectedRef: override || global || nativeBackgroundRef(),
     badge: override ? null : global ? "global default" : "template default",
@@ -1076,7 +1080,7 @@ function renderSlotEditor(specs, values, issues, sceneId) {
     panel.innerHTML = '<p class="hint">This scene needs no content.</p>';
     return;
   }
-  const legacyScene = videoProject?.scenes?.find((s) => s.id === sceneId) || {};
+  const legacyScene = videoApplication?.scenes?.find((s) => s.id === sceneId) || {};
   const issuesByKey = {};
   for (const issue of issues || []) (issuesByKey[issue.slotKey] ??= []).push(issue);
 
@@ -1155,7 +1159,7 @@ const round1 = (n) => Math.round(n * 10) / 10;
 /** "Select Video" control under the screenshot slot(s): pick or upload a recording
  *  that plays after the screenshot has been shown for its hold time. */
 function videoSelectBlock(sceneId) {
-  const scene = videoProject.scenes.find((sc) => sc.id === sceneId) || {};
+  const scene = videoApplication.scenes.find((sc) => sc.id === sceneId) || {};
   const row = document.createElement("div");
   row.className = "content-slot";
   const label = document.createElement("label");
@@ -1163,7 +1167,7 @@ function videoSelectBlock(sceneId) {
   row.appendChild(label);
 
   const select = document.createElement("select");
-  populateSourceSelect(select, videoProject.sources || [], scene.videoSourceId || "", { kind: "video", blankLabel: "No video (static screenshot)" });
+  populateSourceSelect(select, videoApplication.sources || [], scene.videoSourceId || "", { kind: "video", blankLabel: "No video (static screenshot)" });
   select.onchange = () => setSceneVideo(sceneId, select.value || null);
   row.appendChild(select);
 
@@ -1175,7 +1179,7 @@ function videoSelectBlock(sceneId) {
     if (!file) return;
     try {
       const uploaded = await uploadFile(`/api/videos/${videoId}/sources?name=${encodeURIComponent(file.name)}`, file);
-      videoProject.sources.push(uploaded);
+      videoApplication.sources.push(uploaded);
       await setSceneVideo(sceneId, uploaded.id);
     } catch (e) {
       await showAlert("Upload failed: " + e.message);
@@ -1190,11 +1194,11 @@ function videoSelectBlock(sceneId) {
 
 /** Links (or, with null, unlinks) a recording to a scene and re-derives the scene length. */
 async function setSceneVideo(sceneId, sourceId) {
-  const scene = videoProject.scenes.find((sc) => sc.id === sceneId);
+  const scene = videoApplication.scenes.find((sc) => sc.id === sceneId);
   if (!scene) return;
   let patch;
   if (sourceId) {
-    const source = videoProject.sources.find((src) => src.id === sourceId);
+    const source = videoApplication.sources.find((src) => src.id === sourceId);
     const clip = source ? await probeVideoDuration(source) : 0;
     const hold = scene.screenshotHoldSec ?? 2;
     patch = {
@@ -1207,7 +1211,7 @@ async function setSceneVideo(sceneId, sourceId) {
   }
   await saveLegacySceneField(sceneId, patch);
   if (sceneId !== selectedSceneId) return;
-  const fresh = videoProject.scenes.find((sc) => sc.id === sceneId);
+  const fresh = videoApplication.scenes.find((sc) => sc.id === sceneId);
   if ($("sc-duration") && fresh) $("sc-duration").value = fresh.durationSeconds;
   syncVideoTimingUi(fresh);
   loadSceneContentPanel(sceneId);
@@ -1219,7 +1223,7 @@ async function syncVideoTimingUi(scene) {
   const box = $("sc-video-timing");
   const total = $("sc-duration");
   if (!box || !total) return;
-  const source = scene?.videoSourceId ? (videoProject.sources || []).find((src) => src.id === scene.videoSourceId && src.kind === "video") : null;
+  const source = scene?.videoSourceId ? (videoApplication.sources || []).find((src) => src.id === scene.videoSourceId && src.kind === "video") : null;
   box.style.display = source ? "" : "none";
   total.readOnly = !!source;
   total.title = source ? "Screenshot time + video clip length (edit those instead)" : "";
@@ -1263,8 +1267,8 @@ async function saveLegacySceneField(sceneId, patch) {
       if (stateEl) stateEl.textContent = "Saving...";
       try {
         const updated = await api(`/api/videos/${videoId}/scenes/${sceneId}`, { method: "PUT", body: patch });
-        const idx = videoProject.scenes.findIndex((s) => s.id === sceneId);
-        if (idx !== -1) videoProject.scenes[idx] = updated;
+        const idx = videoApplication.scenes.findIndex((s) => s.id === sceneId);
+        if (idx !== -1) videoApplication.scenes[idx] = updated;
         if (stateEl) stateEl.textContent = `Saved · ${new Date().toLocaleTimeString()}`;
         refreshSceneCompleteness();
         if (sceneId === selectedSceneId) showScenePreview();
@@ -1308,7 +1312,7 @@ function legacyImageListField(spec, legacyScene, sceneId) {
 function legacyImageField(sourceId, sceneId, index, count) {
   const wrap = document.createElement("div");
   wrap.className = "content-slot-image";
-  const source = sourceId ? (videoProject.sources || []).find((s) => s.id === sourceId) : null;
+  const source = sourceId ? (videoApplication.sources || []).find((s) => s.id === sourceId) : null;
   const thumb = document.createElement("div");
   thumb.className = "content-slot-thumb";
   if (source) {
@@ -1330,8 +1334,8 @@ function legacyImageField(sourceId, sceneId, index, count) {
     if (!file) return;
     try {
       const uploaded = await uploadFile(`/api/videos/${videoId}/sources?name=${encodeURIComponent(file.name)}`, file);
-      videoProject.sources.push(uploaded);
-      const legacyScene = videoProject.scenes.find((s) => s.id === sceneId);
+      videoApplication.sources.push(uploaded);
+      const legacyScene = videoApplication.scenes.find((s) => s.id === sceneId);
       const ids = legacyScene.screenIds || (legacyScene.sourceId ? [legacyScene.sourceId] : []);
       ids[index] = uploaded.id;
       const patch = count > 1 ? { screenIds: ids } : { sourceId: ids[0] };
@@ -1432,7 +1436,7 @@ function aiButton() {
 function imageField(spec, sourceId, sceneId, index) {
   const wrap = document.createElement("div");
   wrap.className = "content-slot-image";
-  const source = sourceId ? (videoProject.sources || []).find((s) => s.id === sourceId) : null;
+  const source = sourceId ? (videoApplication.sources || []).find((s) => s.id === sourceId) : null;
   const thumb = document.createElement("div");
   thumb.className = "content-slot-thumb";
   if (source) {
@@ -1462,14 +1466,14 @@ function imageField(spec, sourceId, sceneId, index) {
   const controls = document.createElement("div");
   controls.className = "content-slot-image-controls";
 
-  // Reuse a screenshot already captured for this project -- same {device size
-  // -> resolution -> screenshot} data (project.video.sources) the Screen
+  // Reuse a screenshot already captured for this application -- same {device size
+  // -> resolution -> screenshot} data (application.video.sources) the Screen
   // Capture tab writes and Studio Mockup's Screenshot Source Mapping reads
   // (see editor.js's populateSourceSelect), so picking here is consistent
   // with both other tabs instead of forcing a fresh upload every time.
   // Excludes background-purpose uploads too -- see backgroundImageControl's
   // matching filter, which excludes screenshots from its own dropdown.
-  const sources = (videoProject.sources || []).filter((src) => src.kind !== "video" && (src.purpose || "screenshot") !== "background");
+  const sources = (videoApplication.sources || []).filter((src) => src.kind !== "video" && (src.purpose || "screenshot") !== "background");
   if (sources.length > 0) {
     const existingSelect = document.createElement("select");
     existingSelect.style.cssText = "width:100%; font-size:0.78rem; margin-bottom:0.35rem;";
@@ -1477,7 +1481,7 @@ function imageField(spec, sourceId, sceneId, index) {
     existingSelect.onchange = async () => {
       const chosenId = existingSelect.value || null;
       if (spec.kind === "imageList") {
-        const scene = videoProject.scenes.find((s) => s.id === sceneId);
+        const scene = videoApplication.scenes.find((s) => s.id === sceneId);
         const existing = scene?.slotValues?.[spec.key];
         const ids = existing?.kind === "imageList" ? [...existing.sourceIds] : [];
         ids[index] = chosenId;
@@ -1503,7 +1507,7 @@ function imageField(spec, sourceId, sceneId, index) {
     try {
       const slotParam = spec.kind === "imageList" ? `${sceneId}:${spec.key}:${index}` : `${sceneId}:${spec.key}`;
       const uploaded = await uploadFile(`/api/videos/${videoId}/sources?name=${encodeURIComponent(file.name)}&slot=${encodeURIComponent(slotParam)}`, file);
-      videoProject.sources.push(uploaded);
+      videoApplication.sources.push(uploaded);
       loadSceneContentPanel(sceneId);
       refreshSceneCompleteness();
       showScenePreview();
@@ -1523,7 +1527,7 @@ function imageField(spec, sourceId, sceneId, index) {
     removeBtn.textContent = "Remove";
     removeBtn.onclick = async () => {
       if (spec.kind === "imageList") {
-        const scene = videoProject.scenes.find((s) => s.id === sceneId);
+        const scene = videoApplication.scenes.find((s) => s.id === sceneId);
         const existing = scene?.slotValues?.[spec.key];
         const ids = existing?.kind === "imageList" ? [...existing.sourceIds] : [];
         ids[index] = null;
@@ -1605,14 +1609,16 @@ function saveSlotValueDebounced(sceneId, key, value) {
   const stateEl = $("sc-content-save-state");
   if (stateEl) stateEl.textContent = "Saving...";
   clearTimeout(contentSaveTimer);
-  contentSaveTimer = setTimeout(() => saveSlotValue(sceneId, key, value), 400);
+  pendingSlotSave = { sceneId, key, value };
+  contentSaveTimer = setTimeout(() => { pendingSlotSave = null; saveSlotValue(sceneId, key, value); }, 400);
 }
 
 async function saveSlotValue(sceneId, key, value) {
   try {
     await api(`/api/videos/${videoId}/scenes/${sceneId}/slots`, { method: "PUT", body: { slotValues: { [key]: value } } });
-    const scene = videoProject.scenes.find((s) => s.id === sceneId);
+    const scene = videoApplication.scenes.find((s) => s.id === sceneId);
     if (scene) scene.slotValues = { ...(scene.slotValues || {}), [key]: value };
+    setVideoDirty(true);
     const stateEl = $("sc-content-save-state");
     if (stateEl) stateEl.textContent = `Saved · ${new Date().toLocaleTimeString()}`;
     refreshSceneCompleteness();
@@ -1674,7 +1680,7 @@ function renderSegmentsPanel(sceneId, specs, values) {
 
       const thumb = document.createElement("div");
       thumb.className = "segment-thumb";
-      const source = seg.sourceId ? (videoProject.sources || []).find((s) => s.id === seg.sourceId) : null;
+      const source = seg.sourceId ? (videoApplication.sources || []).find((s) => s.id === seg.sourceId) : null;
       if (source) {
         const img = document.createElement("img");
         img.src = `/api/videos/${videoId}/file?p=${encodeURIComponent(source.file)}`;
@@ -1690,7 +1696,7 @@ function renderSegmentsPanel(sceneId, specs, values) {
         if (!file) return;
         try {
           const uploaded = await uploadFile(`/api/videos/${videoId}/sources?name=${encodeURIComponent(file.name)}`, file);
-          videoProject.sources.push(uploaded);
+          videoApplication.sources.push(uploaded);
           seg.sourceId = uploaded.id;
           persist();
           draw();
@@ -1732,7 +1738,7 @@ function renderSegmentsPanel(sceneId, specs, values) {
 }
 
 export async function saveCurrentScene() {
-  if (!videoId || !selectedSceneId || !videoProject) return;
+  if (!videoId || !selectedSceneId || !videoApplication) return;
   const body = {
     sceneTemplate: $("sc-template")?.value,
     layout: $("sc-layout")?.value || undefined,
@@ -1740,7 +1746,7 @@ export async function saveCurrentScene() {
     transition: $("sc-transition")?.value || "cut",
     device: $("sc-device")?.value,
     // Template scenes keep the template-declared mode; free scenes follow their animation.
-    deviceMode: videoProject.template ? sceneDeviceMode(videoProject.scenes.find((s) => s.id === selectedSceneId)) : (videoSceneOptions.animations.find((a) => a.id === $("sc-template")?.value)?.deviceMode ?? "3D"),
+    deviceMode: videoApplication.template ? sceneDeviceMode(videoApplication.scenes.find((s) => s.id === selectedSceneId)) : (videoSceneOptions.animations.find((a) => a.id === $("sc-template")?.value)?.deviceMode ?? "3D"),
     variant: $("sc-variant")?.value || undefined,
     background: $("sc-background")?.value,
     durationSeconds: Number($("sc-duration")?.value) || 3,
@@ -1757,37 +1763,186 @@ export async function saveCurrentScene() {
     },
   };
   const updated = await api(`/api/videos/${videoId}/scenes/${selectedSceneId}`, { method: "PUT", body });
-  const idx = videoProject.scenes.findIndex((s) => s.id === selectedSceneId);
-  if (idx !== -1) videoProject.scenes[idx] = updated;
+  const idx = videoApplication.scenes.findIndex((s) => s.id === selectedSceneId);
+  if (idx !== -1) videoApplication.scenes[idx] = updated;
+  setVideoDirty(true);
   showScenePreview();
 }
 
-export async function submitSaveConfig(overwrite) {
-  const name = $("save-config-name")?.value.trim();
-  if (!name) {
-    const warn = $("save-config-warning");
-    if (warn) {
-      warn.textContent = "A configuration name is required.";
-      warn.style.display = "block";
-    }
-    return;
+// ---- Template ownership rules (Video) ----
+// Editing snapshot: the working document `application.video` (what every scene/slot edit endpoint mutates and what
+// previews render). `videoApplication` mirrors it and is only updated after a successful server write. It is a separate
+// store from Saved Templates (`application.video.savedConfigs`) and Default Templates (`templates/video/*.html`);
+// scene/slot edits never touch either. Every action below flushes pending edits, then POSTS the snapshot explicitly:
+//   Save                        -> {scenes,template,bgm*} to configs (mode "update", configId = loaded SAVED template)
+//   Save As                     -> same payload to configs (mode "new")
+//   Update Template: Update     -> {templateId = loaded DEFAULT template, scenes} to update-template
+//   Update Template: Create New -> {baseTemplateId, name, description, scenes} to create-template
+/** What the editor currently holds: {source:"default"|"saved", id, name, sourceTemplateId?}; in-memory only. */
+let videoLoadedTemplate = null;
+let videoIsDirty = false;
+let pendingSlotSave = null;
+
+function setVideoLoaded(v) {
+  videoLoadedTemplate = v || null;
+  setVideoDirty(false);
+  setEditingEmpty("video-section-scene-editing", !videoLoadedTemplate);
+}
+
+export function hasUnsavedVideoDraft() {
+  return !!(videoLoadedTemplate && videoIsDirty);
+}
+
+/** Drops the whole editing draft and its identity. The next Editing session starts empty. */
+export function clearVideoDraft() {
+  clearTimeout(contentSaveTimer);
+  pendingSlotSave = null;
+  setVideoLoaded(null);
+  setSelectedSceneId(null);
+  if (videoApplication) setVideoApplication({ ...videoApplication, template: null, scenes: [] });
+}
+
+/** Before leaving the editing context (tab/application switch): Save / Discard / Cancel. Resolves false on cancel. */
+export async function guardLeaveVideoDraft() {
+  if (!hasUnsavedVideoDraft()) return true;
+  const choice = await showUnsavedDialog("You have unsaved changes. Do you want to save them before leaving?");
+  if (choice === "cancel") return false;
+  if (choice === "save") return handleVideoSave();
+  return true;
+}
+
+export function setVideoDirty(v) {
+  videoIsDirty = !!v;
+  const badge = $("video-dirty-badge");
+  if (badge) badge.style.display = videoIsDirty ? "inline-block" : "none";
+}
+
+async function flushPendingEdits() {
+  if (!pendingSlotSave) return;
+  clearTimeout(contentSaveTimer);
+  const { sceneId, key, value } = pendingSlotSave;
+  pendingSlotSave = null;
+  await saveSlotValue(sceneId, key, value);
+}
+
+async function confirmDiscardVideoDraft() {
+  if (!hasUnsavedVideoDraft()) return true;
+  const choice = await showUnsavedDialog(
+    "You have unsaved changes in the current template. Do you want to save them before loading another template?",
+    "Save & Load New Template",
+    "Discard & Load New Template",
+  );
+  if (choice === "cancel") return false;
+  if (choice === "save") return handleVideoSave();
+  return true;
+}
+
+function videoDraftSnapshot() {
+  const p = videoApplication;
+  return JSON.parse(JSON.stringify({
+    template: p.template,
+    scenes: p.scenes,
+    bgm: p.bgm,
+    bgmVolume: p.bgmVolume,
+    bgmFadeInMs: p.bgmFadeInMs,
+    bgmFadeOutMs: p.bgmFadeOutMs,
+  }));
+}
+
+function requireVideoDraft() {
+  if (!videoId || !videoLoadedTemplate || !videoApplication || !videoApplication.template || !videoApplication.scenes?.length) {
+    showAlert("Please load a template before saving.");
+    return false;
   }
+  return true;
+}
+
+async function handleVideoSave() {
+  if (!requireVideoDraft()) return false;
+  const cur = videoLoadedTemplate;
+  if (cur?.source !== "saved") return handleVideoSaveAs(true);
   try {
-    savedConfigsCache = await api(`/api/videos/${videoId}/configs`, { method: "POST", body: { name, overwrite } });
-    $("save-config-backdrop")?.classList.remove("open");
-    showToast(`Configuration "${name}" saved.`, "success");
+    await flushPendingEdits();
+    savedConfigsCache = await api(`/api/videos/${videoId}/configs`, {
+      method: "POST",
+      body: { name: cur.name, mode: "update", configId: cur.id, snapshot: videoDraftSnapshot() },
+    });
+    setVideoDirty(false);
     renderSavedConfigsGrid();
+    showToast(`Saved template "${cur.name}" updated.`, "success");
+    return true;
   } catch (e) {
-    if (!overwrite && /already exists/i.test(e.message)) {
-      const ok = await showConfirm(`A configuration named "${name}" already exists. Overwrite it?`);
-      if (ok) return submitSaveConfig(true);
-      return;
+    await showAlert("Save failed: " + e.message);
+    return false;
+  }
+}
+
+async function handleVideoSaveAs(fromDefaultSave = false) {
+  if (!requireVideoDraft()) return false;
+  try {
+    if (!savedConfigsCache.length) savedConfigsCache = await api(`/api/videos/${videoId}/configs`);
+  } catch (_) {}
+  const cur = videoLoadedTemplate;
+  const base = cur?.name || templateLabel(videoApplication.template);
+  const taken = new Set(savedConfigsCache.map((c) => c.name.toLowerCase()));
+  let suggested = `${base} - My Version`;
+  for (let n = 2; taken.has(suggested.toLowerCase()); n++) suggested = `${base} - My Version ${n}`;
+  const name = await showSaveAsDialog({
+    suggestedName: suggested,
+    existingNames: savedConfigsCache.map((c) => c.name),
+    note: fromDefaultSave
+      ? "You are editing a default template. Saving stores a copy in this application's Saved Templates; the default is not changed."
+      : "Creates a new template in this application's Saved Templates.",
+  });
+  if (!name) return false;
+  try {
+    await flushPendingEdits();
+    const before = new Set(savedConfigsCache.map((c) => c.id));
+    savedConfigsCache = await api(`/api/videos/${videoId}/configs`, { method: "POST", body: { name, mode: "new", snapshot: videoDraftSnapshot() } });
+    const created = savedConfigsCache.find((c) => !before.has(c.id));
+    videoLoadedTemplate = { source: "saved", id: created?.id, name, sourceTemplateId: videoApplication.template };
+    setVideoDirty(false);
+    renderSavedConfigsGrid();
+    showToast(`Saved as new template "${name}".`, "success");
+    return true;
+  } catch (e) {
+    await showAlert("Save failed: " + e.message);
+    return false;
+  }
+}
+
+async function handleVideoUpdateTemplate() {
+  if (!requireVideoDraft()) return;
+  await ensureVideoTemplates();
+  const cur = videoLoadedTemplate;
+  const loadedDefault = cur?.source === "default" && videoTemplates.some((t) => t.id === cur.id) ? cur : null;
+  const choice = await showUpdateTemplateDialog({
+    loaded: loadedDefault,
+    existingNames: videoTemplates.map((t) => t.name),
+    suggestedName: loadedDefault ? `${loadedDefault.name} - Copy` : "",
+  });
+  if (!choice) return;
+  try {
+    await flushPendingEdits();
+    const scenes = videoDraftSnapshot().scenes;
+    if (choice.action === "update") {
+      // Target is always the loaded default's own id; there is no way to pick a different one here.
+      await api(`/api/videos/${videoId}/update-template`, { method: "POST", body: { templateId: loadedDefault.id, scenes } });
+      showToast(`Default template "${loadedDefault.name}" updated.`, "success");
+    } else {
+      const res = await api(`/api/videos/${videoId}/create-template`, {
+        method: "POST",
+        body: { baseTemplateId: videoApplication.template, name: choice.name, description: choice.description, scenes },
+      });
+      videoLoadedTemplate = { source: "default", id: res.templateId, name: res.name };
+      showToast(`New default template "${res.name}" created.`, "success");
     }
-    const warn = $("save-config-warning");
-    if (warn) {
-      warn.textContent = e.message;
-      warn.style.display = "block";
-    }
+    setVideoDirty(false);
+    setVideoTemplates([]);
+    await ensureVideoTemplates();
+    await renderVideoTemplateGrid();
+  } catch (e) {
+    await showAlert("Update Template failed: " + e.message);
   }
 }
 
@@ -1795,7 +1950,7 @@ export async function loadSavedConfigs() {
   const grid = $("saved-configs-grid");
   if (!grid) return;
   if (!videoId) {
-    grid.innerHTML = '<div class="hint">No project loaded.</div>';
+    grid.innerHTML = '<div class="hint">No application loaded.</div>';
     return;
   }
   grid.innerHTML = '<div class="hint">Loading saved templates...</div>';
@@ -1824,7 +1979,7 @@ export function renderSavedConfigsGrid() {
     const devicesUsed = [...new Set(c.scenes.map((s) => s.device || "default"))].join(", ");
     const totalSec = c.scenes.reduce((sum, s) => sum + Math.max(1, s.durationSeconds || 5), 0);
     const durationLabel = `${Math.floor(totalSec / 60)}:${String(Math.round(totalSec % 60)).padStart(2, "0")}`;
-    // A saved config is a snapshot -- editing the live project's scenes afterward
+    // A saved config is a snapshot -- editing the live application's scenes afterward
     // (e.g. trimming a scene's duration) does not change what's already saved,
     // so this render/export still uses the durations as of savedAt. Surfacing
     // the total here is the visible cue to re-save if that's since gone stale.
@@ -1908,8 +2063,7 @@ export function renderSavedConfigsGrid() {
       const id = btn.dataset.id;
       const cfg = savedConfigsCache.find((c) => c.id === id);
       const name = cfg?.name || "this saved template";
-      const ok = await showConfirm(`Apply "${name}" to your current editing sequence? Any unsaved edits in the editor will be replaced.`);
-      if (!ok) return;
+      if (!(await confirmDiscardVideoDraft())) return;
 
       const originalHtml = btn.innerHTML;
       btn.disabled = true;
@@ -1917,7 +2071,8 @@ export function renderSavedConfigsGrid() {
 
       try {
         const updated = await api(`/api/videos/${videoId}/configs/${id}/apply`, { method: "POST" });
-        setVideoProject(updated);
+        setVideoApplication(updated);
+        setVideoLoaded({ source: "saved", id, name: cfg?.name || name, sourceTemplateId: cfg?.template });
         renderVideoScenes();
         if (updated.scenes?.length) {
           selectScene(updated.scenes[0].id);
@@ -1944,7 +2099,7 @@ export function renderSavedConfigsGrid() {
         title: "Export Template Video",
         subject: `Saved Template: ${savedTemplateDisplayName(cfg)}`,
         startUrl: `/api/videos/${videoId}/configs/${id}/render`,
-        project: cfg,
+        application: cfg,
         configId: id,
         defaultFileName: (cfg.name || "template-export").toLowerCase().replace(/[^a-z0-9]+/g, "-"),
       });
@@ -1965,7 +2120,7 @@ export function renderSavedConfigsGrid() {
 
       try {
         savedConfigsCache = await api(`/api/videos/${videoId}/configs/${id}`, { method: "DELETE" });
-        if (videoProject) videoProject.savedConfigs = savedConfigsCache;
+        if (videoApplication) videoApplication.savedConfigs = savedConfigsCache;
         renderSavedConfigsGrid();
         showToast(`Saved template "${name}" deleted.`, "success");
       } catch (e) {
@@ -2039,8 +2194,8 @@ export function renderSavedConfigsGrid() {
   if (loopBtn) {
     loopBtn.onclick = () => {
       scTransport.loop = !scTransport.loop;
-      loopBtn.style.background = scTransport.loop ? "#3b82f6" : "";
-      loopBtn.style.color = scTransport.loop ? "#ffffff" : "";
+      loopBtn.classList.toggle("active", scTransport.loop);
+      loopBtn.setAttribute("aria-pressed", scTransport.loop ? "true" : "false");
     };
   }
 
@@ -2048,7 +2203,10 @@ export function renderSavedConfigsGrid() {
   if (muteBtn) {
     muteBtn.onclick = () => {
       scTransport.muted = !scTransport.muted;
-      muteBtn.innerHTML = scTransport.muted ? "🔇" : "🔊";
+      muteBtn.innerHTML = scTransport.muted ? (ICONS.volumeMute || "") : (ICONS.volumeHigh || "");
+      muteBtn.classList.toggle("active", scTransport.muted);
+      muteBtn.setAttribute("aria-pressed", scTransport.muted ? "true" : "false");
+      muteBtn.title = scTransport.muted ? "Unmute" : "Mute";
       const audio = ensureVideoDetailAudio();
       if (audio) audio.muted = scTransport.muted;
       const frame = $("sc-preview");
@@ -2086,8 +2244,8 @@ export function renderSavedConfigsGrid() {
       const file = fileInput.files[0];
       try {
         const uploaded = await uploadFile(`/api/videos/${videoId}/sources?name=${encodeURIComponent(file.name)}`, file);
-        videoProject.sources = videoProject.sources || [];
-        videoProject.sources.push(uploaded);
+        videoApplication.sources = videoApplication.sources || [];
+        videoApplication.sources.push(uploaded);
         renderVideoScenes();
         showToast(`Uploaded "${file.name}".`, "success");
       } catch (e) {
@@ -2103,8 +2261,8 @@ export function renderSavedConfigsGrid() {
       if (!file) return;
       try {
         const uploaded = await uploadFile(`/api/videos/${videoId}/sources?name=${encodeURIComponent(file.name)}`, file);
-        videoProject.sources = videoProject.sources || [];
-        videoProject.sources.push(uploaded);
+        videoApplication.sources = videoApplication.sources || [];
+        videoApplication.sources.push(uploaded);
         renderVideoScenes();
         showToast(`Uploaded "${file.name}".`, "success");
       } catch (e) {
@@ -2128,13 +2286,14 @@ export function renderSavedConfigsGrid() {
   const scAddBtn = $("sc-add");
   if (scAddBtn) {
     scAddBtn.onclick = async () => {
-      if (!videoId || !videoProject || videoProject.scenes.length === 0) {
+      if (!videoId || !videoApplication || videoApplication.scenes.length === 0) {
         await showAlert("Load a template first.");
         return;
       }
       try {
         const updated = await api(`/api/videos/${videoId}/scenes`, { method: "POST" });
-        setVideoProject(updated);
+        setVideoApplication(updated);
+        setVideoDirty(true);
         renderVideoScenes();
         selectScene(updated.scenes.at(-1).id);
         showToast(`Scene ${updated.scenes.length} added.`, "success");
@@ -2147,12 +2306,13 @@ export function renderSavedConfigsGrid() {
   const scRemoveBtn = $("sc-remove");
   if (scRemoveBtn) {
     scRemoveBtn.onclick = async () => {
-      if (!selectedSceneId || !videoProject) return;
+      if (!selectedSceneId || !videoApplication) return;
       const ok = await showConfirm("Remove this scene? This cannot be undone.");
       if (!ok) return;
       try {
         const updated = await api(`/api/videos/${videoId}/scenes/${selectedSceneId}`, { method: "DELETE" });
-        setVideoProject(updated);
+        setVideoApplication(updated);
+        setVideoDirty(true);
         renderVideoScenes();
       } catch (e) {
         await showAlert("Could not remove scene: " + e.message);
@@ -2160,26 +2320,9 @@ export function renderSavedConfigsGrid() {
     };
   }
 
-  const saveConfigBtn = $("video-save-config-btn");
-  if (saveConfigBtn) {
-    saveConfigBtn.onclick = () => {
-      if (!videoId || !videoProject || !videoProject.template) {
-        showAlert("Load a template first.");
-        return;
-      }
-      if ($("save-config-name")) $("save-config-name").value = nextSavedTemplateName();
-      if ($("save-config-warning")) $("save-config-warning").style.display = "none";
-      $("save-config-backdrop")?.classList.add("open");
-      $("save-config-name")?.select();
-    };
-  }
-
-  const saveConfigClose = $("save-config-close");
-  if (saveConfigClose) saveConfigClose.onclick = () => $("save-config-backdrop")?.classList.remove("open");
-  const saveConfigCancel = $("save-config-cancel");
-  if (saveConfigCancel) saveConfigCancel.onclick = () => $("save-config-backdrop")?.classList.remove("open");
-  const saveConfigConfirm = $("save-config-confirm");
-  if (saveConfigConfirm) saveConfigConfirm.onclick = () => submitSaveConfig(false);
+  if ($("video-save-btn")) $("video-save-btn").onclick = () => handleVideoSave();
+  if ($("video-save-as-btn")) $("video-save-as-btn").onclick = () => handleVideoSaveAs();
+  if ($("video-update-template-btn")) $("video-update-template-btn").onclick = () => handleVideoUpdateTemplate();
 
   const bgmUploadBtn = $("bgm-upload");
   const bgmFile = $("bgm-file");
@@ -2201,16 +2344,16 @@ export function renderSavedConfigsGrid() {
   const videoRenderBtn = $("video-render");
   if (videoRenderBtn) {
     videoRenderBtn.onclick = () => {
-      if (!videoId || !videoProject) {
-        showAlert("Please load a video project first.");
+      if (!videoId || !videoApplication) {
+        showAlert("Please select an application first.");
         return;
       }
       openExportModal({
         title: "Export Video",
-        subject: videoProject.name || "Video Project",
+        subject: videoApplication.name || "Video Application",
         startUrl: `/api/videos/${videoId}/render`,
-        project: videoProject,
-        defaultFileName: (videoProject.name || "video-export").toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+        application: videoApplication,
+        defaultFileName: (videoApplication.name || "video-export").toLowerCase().replace(/[^a-z0-9]+/g, "-"),
       });
     };
   }
@@ -2282,16 +2425,6 @@ function templateLabel(id) {
   return videoTemplates.find((t) => t.id === id)?.name || id || "Template";
 }
 
-/** "<Template name> - 1", "- 2", ... first number not already taken. */
-function nextSavedTemplateName() {
-  const base = templateLabel(videoProject?.template);
-  const taken = new Set(savedConfigsCache.map((c) => (c.name || "").trim().toLowerCase()));
-  for (let n = 1; ; n++) {
-    const name = `${base} - ${n}`;
-    if (!taken.has(name.toLowerCase())) return name;
-  }
-}
-
 /** Card/popup title. Bare numbers ("1") and blank names from older saves read as "<Template name> - N". */
 function savedTemplateDisplayName(cfg) {
   const name = (cfg.name || "").trim();
@@ -2306,7 +2439,7 @@ let currentExportPollTimer = null;
 let exportModalLocked = false;
 let exportModalStartTime = 0;
 
-// A chosen save folder must survive a page reload/new project ("remember this
+// A chosen save folder must survive a page reload/new application ("remember this
 // location by default for future rendering sessions"), and Electron paths are
 // plain strings (localStorage is enough) while the browser's File System Access
 // API hands back a FileSystemDirectoryHandle, which only IndexedDB can store.
@@ -2345,7 +2478,7 @@ async function setSavedDirHandle(handle) {
   }
 }
 
-export function openExportModal({ title, subject, startUrl, project, configId, defaultFileName }) {
+export function openExportModal({ title, subject, startUrl, application, configId, defaultFileName }) {
   const backdrop = $("export-video-backdrop");
   const modal = backdrop?.querySelector(".export-modal");
   if (!backdrop || !modal) return;
@@ -2354,11 +2487,11 @@ export function openExportModal({ title, subject, startUrl, project, configId, d
 
   // Set titles
   if ($("export-modal-title")) $("export-modal-title").textContent = title || "Export Video";
-  if ($("export-modal-subject")) $("export-modal-subject").textContent = subject || "Project Export";
+  if ($("export-modal-subject")) $("export-modal-subject").textContent = subject || "Application Export";
 
   // Pre-fill filename
   const filenameInput = $("export-filename-input");
-  const initialName = defaultFileName || (project?.name || "video-export").toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  const initialName = defaultFileName || (application?.name || "video-export").toLowerCase().replace(/[^a-z0-9]+/g, "-");
   if (filenameInput) filenameInput.value = initialName;
 
   // Save location -- required before Start is enabled, remembered across sessions.
@@ -2471,7 +2604,7 @@ export function openExportModal({ title, subject, startUrl, project, configId, d
   const rangeFrom = $("export-range-from");
   const rangeTo = $("export-range-to");
 
-  const scenes = project?.scenes || [];
+  const scenes = application?.scenes || [];
   const sceneCount = scenes.length || 1;
 
   if (rangeFrom) { rangeFrom.max = sceneCount; rangeFrom.value = 1; }

@@ -4,7 +4,7 @@ import path from "path";
 import { applyRigDevices, topLevelNodes, elementEnd, type RigDeviceAsset } from "./rig-engine.js";
 import { listVideoDevices, resolveRigAsset, sanitizeSceneDevice, listDevicesForType, listCssDevices } from "./rig-assets.js";
 import { composeStandaloneHtml } from "../video/render.js";
-import { scratchVideoProject, VIDEO_TEMPLATES } from "../video/templates.js";
+import { scratchVideoApplication, VIDEO_TEMPLATES } from "../video/templates.js";
 
 const SCREEN = "<!--SCREEN-->";
 const dir = path.join(process.cwd(), "templates", "video");
@@ -77,9 +77,9 @@ for (const t of VIDEO_TEMPLATES) {
   assert.ok(!/<canvass/.test(toCss) && toCss.includes("phone-side"));
 }
 
-// --- compose: per-scene device + mode from the project ----------------------
+// --- compose: per-scene device + mode from the application ----------------------
 {
-  const p = scratchVideoProject("tpl-38180229-minimal-skyblue");
+  const p = scratchVideoApplication("tpl-38180229-minimal-skyblue");
   const html = composeStandaloneHtml(p, 0);
   assert.ok(html.includes('data-device="css-minimal-chassis-phone"'));
   p.scenes.forEach((sc) => { sc.device = "css-studio-box-phone"; });
@@ -89,7 +89,7 @@ for (const t of VIDEO_TEMPLATES) {
   const fallback = composeStandaloneHtml(p, 0);
   assert.ok(!fallback.includes('data-device="css-studio-box-phone"'));
 
-  const g = scratchVideoProject("iphone-15-pro-portrait");
+  const g = scratchVideoApplication("iphone-15-pro-portrait");
   assert.ok(composeStandaloneHtml(g, 0).includes("device-shell-canvas"));
   g.scenes[1].device = "google-pixel-9";
   g.scenes[1].deviceMode = "2D";

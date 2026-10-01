@@ -1,50 +1,50 @@
-// Projects module — Project management, tab gating, file explorer & settings modal.
+// Applications module — Application management, tab gating, file explorer & settings modal.
 
 import {
-  activeProjectId,
-  activeProject,
-  setActiveProjectId,
-  setActiveProject,
+  activeApplicationId,
+  activeApplication,
+  setActiveApplicationId,
+  setActiveApplication,
   mockupId
 } from './state.js';
-import { loadMockupProjectInto } from './templates.js';
+import { loadMockupApplicationInto } from './templates.js';
 import { api, showAlert, showConfirm } from './utils.js';
 import { ICONS } from './icons.js';
 
-let projectSettingsTargetId = null;
+let applicationSettingsTargetId = null;
 let currentFileFilter = 'all';
 let currentFileViewMode = 'grid'; // 'list' | 'grid'
 let currentSortField = 'name'; // 'name' | 'size' | 'mtime' | 'type'
 let currentSortOrder = 'asc'; // 'asc' | 'desc'
 
 /**
- * Updates navigation tabs accessibility based on active project state.
+ * Updates navigation tabs accessibility based on active application state.
  */
 export function updateTabGating() {
   const el = document.getElementById('tab-nav-capture');
   if (el) {
-    if (activeProjectId) {
+    if (activeApplicationId) {
       el.classList.remove('disabled');
       el.removeAttribute('title');
     } else {
       el.classList.add('disabled');
-      el.setAttribute('title', 'Select a project first');
+      el.setAttribute('title', 'Select an application first');
     }
   }
 
   const brand = document.getElementById('brand-title');
-  const activeCard = document.getElementById('active-project-card');
-  const explorerCard = document.getElementById('project-explorer-card');
+  const activeCard = document.getElementById('active-application-card');
+  const explorerCard = document.getElementById('application-explorer-card');
 
-  if (activeProject) {
-    if (brand) brand.textContent = `Store Assets Generator - ${activeProject.name}`;
+  if (activeApplication) {
+    if (brand) brand.textContent = `Store Assets Generator - ${activeApplication.name}`;
     if (activeCard) activeCard.style.display = 'block';
     const nameDisp = document.getElementById('active-proj-name-display');
     const catDisp = document.getElementById('active-proj-cat-display');
     const urlDisp = document.getElementById('active-proj-url-display');
-    if (nameDisp) nameDisp.textContent = activeProject.name;
-    if (catDisp) catDisp.textContent = activeProject.appCategory || 'Education';
-    if (urlDisp) urlDisp.textContent = activeProject.targetUrl || 'None';
+    if (nameDisp) nameDisp.textContent = activeApplication.name;
+    if (catDisp) catDisp.textContent = activeApplication.appCategory || 'Education';
+    if (urlDisp) urlDisp.textContent = activeApplication.targetUrl || 'None';
     if (explorerCard) explorerCard.style.display = 'block';
     refreshFileExplorer();
   } else {
@@ -55,67 +55,76 @@ export function updateTabGating() {
 }
 
 /**
- * Selects an active project by id.
+ * Selects an active application by id.
  * @param {string} id
  */
-export async function selectProject(id) {
+export async function selectApplication(id) {
+  if (id !== activeApplicationId) {
+    // Switching applications ends any editing session: guard unsaved work, then drop both drafts.
+    const tpl = await import('./templates.js');
+    const vid = await import('./video.js');
+    if (!(await tpl.guardLeaveMockupDraft())) return;
+    if (!(await vid.guardLeaveVideoDraft())) return;
+    tpl.clearMockupDraft();
+    vid.clearVideoDraft();
+  }
   try {
-    setActiveProjectId(id);
-    const proj = await api(`/api/projects/${id}`);
-    setActiveProject(proj);
+    setActiveApplicationId(id);
+    const proj = await api(`/api/applications/${id}`);
+    setActiveApplication(proj);
     updateTabGating();
-    await refreshProjectsList();
+    await refreshApplicationsList();
   } catch (e) {
-    await showAlert('Failed to select project: ' + e.message);
+    await showAlert('Failed to select application: ' + e.message);
   }
 }
 
 /**
- * Refreshes the projects list view.
+ * Refreshes the applications list view.
  */
-export async function refreshProjectsList() {
-  const container = document.getElementById('projects-list-container');
+export async function refreshApplicationsList() {
+  const container = document.getElementById('applications-list-container');
   if (!container) return;
-  container.innerHTML = 'Loading projects...';
+  container.innerHTML = 'Loading applications...';
 
   try {
-    const { projects } = await api('/api/projects');
+    const { applications } = await api('/api/applications');
     container.innerHTML = '';
 
-    const countBadge = document.getElementById('projects-count-badge');
+    const countBadge = document.getElementById('applications-count-badge');
     if (countBadge) {
-      countBadge.textContent = `${projects.length} Project${projects.length === 1 ? '' : 's'}`;
+      countBadge.textContent = `${applications.length} Application${applications.length === 1 ? '' : 's'}`;
     }
 
-    if (projects.length === 0) {
-      container.textContent = 'No projects found. Create one to get started!';
+    if (applications.length === 0) {
+      container.textContent = 'No applications found. Create one to get started!';
       return;
     }
 
-    container.className = 'projects-grid';
+    container.className = 'applications-grid';
 
-    if (activeProjectId && !activeProject) {
-      const p = projects.find((x) => x.id === activeProjectId);
+    if (activeApplicationId && !activeApplication) {
+      const p = applications.find((x) => x.id === activeApplicationId);
       if (p) {
-        setActiveProject(p);
+        setActiveApplication(p);
         updateTabGating();
       }
     }
 
-    for (const p of projects) {
-      const isActive = Boolean(activeProjectId && activeProject && p.id === activeProjectId);
+    for (const p of applications) {
+      const isActive = Boolean(activeApplicationId && activeApplication && p.id === activeApplicationId);
       const card = document.createElement('div');
-      card.className = `project-item ${isActive ? 'active' : ''}`;
+      card.className = `application-item ${isActive ? 'active' : ''}`;
 
       card.innerHTML = `
-        <button class="small project-item-corner left settings-btn" title="Project settings">&#9881;</button>
-        <button class="small danger project-item-corner right delete-btn" title="Delete">&#128465;</button>
-        <div class="project-item-title">
+        <button class="small application-item-corner left settings-btn" title="Application settings">&#9881;</button>
+        <button class="small danger application-item-corner right delete-btn" title="Delete">&#128465;</button>
+        <div class="application-item-title">
           ${isActive ? '<span class="active-check">&#10003;</span>' : ''}
           <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 11ch;">${p.name}</span>
         </div>
-        <div class="project-item-meta">Created: ${new Date(p.createdAt).toLocaleDateString()}</div>
-        <div class="project-stats">
+        <div class="application-item-meta">Created: ${new Date(p.createdAt).toLocaleDateString()}</div>
+        <div class="application-stats">
           <span>📸 ${p.captures?.length ?? 0}</span>
           <span>📱 ${p.mockup?.columns?.length ?? 0}</span>
           <span>🎬 ${p.video?.scenes?.length ?? 0}</span>
@@ -127,51 +136,51 @@ export async function refreshProjectsList() {
 
       card.querySelector('.select-btn').onclick = (e) => {
         e.stopPropagation();
-        selectProject(p.id);
+        selectApplication(p.id);
       };
       card.querySelector('.settings-btn').onclick = (e) => {
         e.stopPropagation();
-        openProjectSettingsModal(p);
+        openApplicationSettingsModal(p);
       };
       card.querySelector('.delete-btn').onclick = async (e) => {
         e.stopPropagation();
-        if (await showConfirm(`Are you sure you want to delete project "${p.name}"? This deletes all files and is irreversible.`)) {
-          await api(`/api/projects/${p.id}`, { method: 'DELETE' });
-          if (activeProjectId === p.id) {
-            setActiveProjectId(null);
-            setActiveProject(null);
+        if (await showConfirm(`Are you sure you want to delete application "${p.name}"? This deletes all files and is irreversible.`)) {
+          await api(`/api/applications/${p.id}`, { method: 'DELETE' });
+          if (activeApplicationId === p.id) {
+            setActiveApplicationId(null);
+            setActiveApplication(null);
             updateTabGating();
           }
-          await refreshProjectsList();
+          await refreshApplicationsList();
         }
       };
 
-      card.onclick = () => selectProject(p.id);
+      card.onclick = () => selectApplication(p.id);
       container.appendChild(card);
     }
   } catch (e) {
-    container.textContent = 'Failed to load projects: ' + e.message;
+    container.textContent = 'Failed to load applications: ' + e.message;
   }
 }
 
-export function openProjectSettingsModal(p) {
-  projectSettingsTargetId = p.id;
-  const nameEl = document.getElementById('proj-settings-name');
-  const catEl = document.getElementById('proj-settings-category');
-  const urlEl = document.getElementById('proj-settings-url');
-  const modalEl = document.getElementById('project-settings-modal');
+export function openApplicationSettingsModal(p) {
+  applicationSettingsTargetId = p.id;
+  const nameEl = document.getElementById('app-settings-name');
+  const catEl = document.getElementById('app-settings-category');
+  const urlEl = document.getElementById('app-settings-url');
+  const modalEl = document.getElementById('application-settings-modal');
 
   if (nameEl) nameEl.value = p.name || '';
   if (catEl) catEl.value = p.appCategory || '';
   if (urlEl) urlEl.value = p.targetUrl || '';
-  for (const r of document.querySelectorAll('input[name="proj-settings-platform"]')) r.checked = r.value === (p.platform || 'play-store');
+  for (const r of document.querySelectorAll('input[name="app-settings-platform"]')) r.checked = r.value === (p.platform || 'play-store');
   if (modalEl) modalEl.style.display = 'flex';
 }
 
-export function closeProjectSettingsModal() {
-  const modalEl = document.getElementById('project-settings-modal');
+export function closeApplicationSettingsModal() {
+  const modalEl = document.getElementById('application-settings-modal');
   if (modalEl) modalEl.style.display = 'none';
-  projectSettingsTargetId = null;
+  applicationSettingsTargetId = null;
 }
 
 function getFileExtension(filePath) {
@@ -209,16 +218,16 @@ function openFilePreview(downloadUrl, filePath) {
 }
 
 export async function refreshFileExplorer() {
-  const container = document.getElementById('project-files-list');
+  const container = document.getElementById('application-files-list');
   if (!container) return;
-  if (!activeProjectId) {
-    container.innerHTML = 'Select a project to inspect files.';
+  if (!activeApplicationId) {
+    container.innerHTML = 'Select an application to inspect files.';
     return;
   }
   container.innerHTML = 'Loading files...';
 
   try {
-    const { files } = await api(`/api/projects/${activeProjectId}/files`);
+    const { files } = await api(`/api/applications/${activeApplicationId}/files`);
     container.innerHTML = '';
 
     const filtered = files.filter((f) => {
@@ -274,7 +283,7 @@ export async function refreshFileExplorer() {
         const fileName = f.path.split('/').pop();
         const isImage = ['png', 'jpg', 'jpeg', 'webp', 'gif', 'svg'].includes(ext);
         const isVideo = ['mp4', 'webm'].includes(ext);
-        const downloadUrl = `/api/projects/${activeProjectId}/file?p=${encodeURIComponent(f.path)}`;
+        const downloadUrl = `/api/applications/${activeApplicationId}/file?p=${encodeURIComponent(f.path)}`;
         const sizeKB = (f.size / 1024).toFixed(1);
         const typeLabel = getFileType(f.path);
 
@@ -330,7 +339,7 @@ export async function refreshFileExplorer() {
         card.querySelector('.delete-file-btn').onclick = async (e) => {
           e.stopPropagation();
           if (await showConfirm(`Delete file "${f.path}"?`)) {
-            await api(`/api/projects/${activeProjectId}/file?p=${encodeURIComponent(f.path)}`, { method: 'DELETE' });
+            await api(`/api/applications/${activeApplicationId}/file?p=${encodeURIComponent(f.path)}`, { method: 'DELETE' });
             refreshFileExplorer();
           }
         };
@@ -384,7 +393,7 @@ export async function refreshFileExplorer() {
         const tr = document.createElement('tr');
         const sizeKB = (f.size / 1024).toFixed(1);
         const typeLabel = getFileType(f.path);
-        const downloadUrl = `/api/projects/${activeProjectId}/file?p=${encodeURIComponent(f.path)}`;
+        const downloadUrl = `/api/applications/${activeApplicationId}/file?p=${encodeURIComponent(f.path)}`;
         const fileName = f.path.split('/').pop();
 
         tr.innerHTML = `
@@ -406,7 +415,7 @@ export async function refreshFileExplorer() {
         tr.querySelector('.download-file-btn').onclick = () => window.open(downloadUrl);
         tr.querySelector('.delete-file-btn').onclick = async () => {
           if (await showConfirm(`Delete file "${f.path}"?`)) {
-            await api(`/api/projects/${activeProjectId}/file?p=${encodeURIComponent(f.path)}`, { method: 'DELETE' });
+            await api(`/api/applications/${activeApplicationId}/file?p=${encodeURIComponent(f.path)}`, { method: 'DELETE' });
             refreshFileExplorer();
           }
         };
@@ -422,98 +431,98 @@ export async function refreshFileExplorer() {
 }
 
 /**
- * Sets up project event listeners and bindings.
+ * Sets up application event listeners and bindings.
  */
-export function setupProjectsHandlers() {
-  const createBtn = document.getElementById('proj-create-btn');
+export function setupApplicationsHandlers() {
+  const createBtn = document.getElementById('app-create-btn');
   if (createBtn) {
     createBtn.onclick = async () => {
-      const name = document.getElementById('proj-new-name')?.value.trim();
-      const category = document.getElementById('proj-new-category')?.value;
-      const targetUrl = document.getElementById('proj-new-url')?.value.trim();
+      const name = document.getElementById('app-new-name')?.value.trim();
+      const category = document.getElementById('app-new-category')?.value;
+      const targetUrl = document.getElementById('app-new-url')?.value.trim();
 
       if (!name) {
-        await showAlert('Project Name is required.');
+        await showAlert('Application Name is required.');
         return;
       }
-      const platform = document.querySelector('input[name="proj-new-platform"]:checked')?.value;
+      const platform = document.querySelector('input[name="app-new-platform"]:checked')?.value;
       if (!platform) {
         await showAlert('Choose Play Store or App Store.');
         return;
       }
 
       try {
-        const project = await api('/api/projects', {
+        const application = await api('/api/applications', {
           method: 'POST',
           body: { name, appCategory: category, targetUrl, platform }
         });
 
-        const nameEl = document.getElementById('proj-new-name');
-        const catEl = document.getElementById('proj-new-category');
-        const urlEl = document.getElementById('proj-new-url');
+        const nameEl = document.getElementById('app-new-name');
+        const catEl = document.getElementById('app-new-category');
+        const urlEl = document.getElementById('app-new-url');
         if (nameEl) nameEl.value = '';
         if (catEl) catEl.value = 'Education';
         if (urlEl) urlEl.value = '';
-        for (const r of document.querySelectorAll('input[name="proj-new-platform"]')) r.checked = false;
+        for (const r of document.querySelectorAll('input[name="app-new-platform"]')) r.checked = false;
 
-        await selectProject(project.id);
+        await selectApplication(application.id);
       } catch (e) {
-        await showAlert('Failed to create project: ' + e.message);
+        await showAlert('Failed to create application: ' + e.message);
       }
     };
   }
 
-  const cancelBtn = document.getElementById('proj-settings-cancel');
-  if (cancelBtn) cancelBtn.onclick = closeProjectSettingsModal;
+  const cancelBtn = document.getElementById('app-settings-cancel');
+  if (cancelBtn) cancelBtn.onclick = closeApplicationSettingsModal;
 
-  const modalEl = document.getElementById('project-settings-modal');
+  const modalEl = document.getElementById('application-settings-modal');
   if (modalEl) {
     modalEl.onclick = (e) => {
-      if (e.target.id === 'project-settings-modal') closeProjectSettingsModal();
+      if (e.target.id === 'application-settings-modal') closeApplicationSettingsModal();
     };
   }
 
-  const saveBtn = document.getElementById('proj-settings-save');
+  const saveBtn = document.getElementById('app-settings-save');
   if (saveBtn) {
     saveBtn.onclick = async () => {
-      if (!projectSettingsTargetId) return;
+      if (!applicationSettingsTargetId) return;
       const body = {
-        name: document.getElementById('proj-settings-name')?.value.trim(),
-        appCategory: document.getElementById('proj-settings-category')?.value.trim(),
-        targetUrl: document.getElementById('proj-settings-url')?.value.trim(),
-        platform: document.querySelector('input[name="proj-settings-platform"]:checked')?.value,
+        name: document.getElementById('app-settings-name')?.value.trim(),
+        appCategory: document.getElementById('app-settings-category')?.value.trim(),
+        targetUrl: document.getElementById('app-settings-url')?.value.trim(),
+        platform: document.querySelector('input[name="app-settings-platform"]:checked')?.value,
       };
-      const previousPlatform = (activeProjectId === projectSettingsTargetId ? activeProject?.platform : null) || 'play-store';
-      const updated = await api(`/api/projects/${projectSettingsTargetId}`, { method: 'PUT', body });
-      if (activeProjectId === projectSettingsTargetId) {
-        setActiveProject(updated);
+      const previousPlatform = (activeApplicationId === applicationSettingsTargetId ? activeApplication?.platform : null) || 'play-store';
+      const updated = await api(`/api/applications/${applicationSettingsTargetId}`, { method: 'PUT', body });
+      if (activeApplicationId === applicationSettingsTargetId) {
+        setActiveApplication(updated);
         updateTabGating();
-        // Platform decides the size rows: if the mockup for this project is loaded, force a reload so they reconcile.
-        if (updated.platform !== previousPlatform && mockupId === updated.id) await loadMockupProjectInto(updated.id, true);
+        // Platform decides the size rows: if the mockup for this application is loaded, force a reload so they reconcile.
+        if (updated.platform !== previousPlatform && mockupId === updated.id) await loadMockupApplicationInto(updated.id, true);
       }
-      closeProjectSettingsModal();
-      await refreshProjectsList();
+      closeApplicationSettingsModal();
+      await refreshApplicationsList();
     };
   }
 
   const activeSettingsBtn = document.getElementById('active-proj-settings-btn');
   if (activeSettingsBtn) {
     activeSettingsBtn.onclick = () => {
-      if (activeProject) openProjectSettingsModal(activeProject);
+      if (activeApplication) openApplicationSettingsModal(activeApplication);
     };
   }
 
-  const downloadZipBtn = document.getElementById('proj-download-zip-btn');
+  const downloadZipBtn = document.getElementById('app-download-zip-btn');
   if (downloadZipBtn) {
     downloadZipBtn.onclick = () => {
-      if (!activeProjectId) return;
-      window.open(`/api/projects/${activeProjectId}/download-zip`);
+      if (!activeApplicationId) return;
+      window.open(`/api/applications/${activeApplicationId}/download-zip`);
     };
   }
 
-  document.querySelectorAll('#project-explorer-card .tab').forEach((tab) => {
+  document.querySelectorAll('#application-explorer-card .tab').forEach((tab) => {
     tab.onclick = () => {
-      document.querySelectorAll('#project-explorer-card .tab').forEach((t) => t.classList.remove('active'));
+      document.querySelectorAll('#application-explorer-card .tab').forEach((t) => t.classList.remove('active'));
       tab.classList.add('active');
       currentFileFilter = tab.dataset.fileFilter;
       refreshFileExplorer();

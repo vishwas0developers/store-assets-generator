@@ -167,7 +167,7 @@ export interface ListDevicesFilter {
 /** Powers the device dropdowns in Studio Mockups (Step 2) and Animation
  *  Video (Step 4) — grouped by vendor, filterable by platform/form factor.
  *  Archived devices are excluded by default so they stop appearing for new
- *  selections while staying resolvable by id for existing projects. */
+ *  selections while staying resolvable by id for existing applications. */
 export function listDevices(filter: ListDevicesFilter = {}): DeviceModel[] {
   return Object.values(DEVICE_REGISTRY).filter((d) => {
     if (!filter.includeArchived && d.definition.archived) return false;

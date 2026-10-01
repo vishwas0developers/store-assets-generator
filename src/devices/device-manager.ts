@@ -15,7 +15,7 @@ import { CATALOGUE_PATH, DEVICES_3D_DIR } from "./paths.js";
 
 const CONFIG_PATH = CATALOGUE_PATH;
 const GLB_CACHE_DIR = DEVICES_3D_DIR;
-const PROJECTS_ROOT = path.join(process.cwd(), "output", "projects");
+const APPLICATIONS_ROOT = path.join(process.cwd(), "output", "applications");
 
 // ---------------------------------------------------------------------------
 // GLB build cache (procedural path)
@@ -310,19 +310,19 @@ export async function importDevice(buffer: Buffer, storedGlbPath: string, opts: 
   return minimalDef;
 }
 
-/** Scans stored project JSON (`output/projects/<id>/project.json`) for any
+/** Scans stored application JSON (`output/applications/<id>/application.json`) for any
  *  reference to `deviceId` (Mockup Studio) or `device` (Video Studio) equal
  *  to the given device id. Best-effort text/JSON scan, not schema-typed
- *  against every project shape — see plan CRUD "reverse-reference scan". */
+ *  against every application shape — see plan CRUD "reverse-reference scan". */
 export function findDeviceReferences(deviceId: string): string[] {
-  if (!fs.existsSync(PROJECTS_ROOT)) return [];
+  if (!fs.existsSync(APPLICATIONS_ROOT)) return [];
   const referencing: string[] = [];
-  for (const entry of fs.readdirSync(PROJECTS_ROOT, { withFileTypes: true })) {
+  for (const entry of fs.readdirSync(APPLICATIONS_ROOT, { withFileTypes: true })) {
     if (!entry.isDirectory()) continue;
-    const projectFile = path.join(PROJECTS_ROOT, entry.name, "project.json");
-    if (!fs.existsSync(projectFile)) continue;
+    const applicationFile = path.join(APPLICATIONS_ROOT, entry.name, "application.json");
+    if (!fs.existsSync(applicationFile)) continue;
     try {
-      const raw = fs.readFileSync(projectFile, "utf-8");
+      const raw = fs.readFileSync(applicationFile, "utf-8");
       const doc = JSON.parse(raw);
       const json = JSON.stringify(doc);
       // Cheap, deliberately loose check: any "deviceId":"<id>" or
@@ -331,7 +331,7 @@ export function findDeviceReferences(deviceId: string): string[] {
         referencing.push(entry.name);
       }
     } catch {
-      // Unreadable/corrupt project file — skip rather than block the scan.
+      // Unreadable/corrupt application file — skip rather than block the scan.
     }
   }
   return referencing;
@@ -342,7 +342,7 @@ export interface ArchivedDeviceEntry extends DeviceDefinition {
 }
 
 /** Archive: drop out of default `listDevices()` results but keep resolvable
- *  by id (existing projects keep working). Used when a device has
+ *  by id (existing applications keep working). Used when a device has
  *  references; hard delete is reserved for zero-reference devices. */
 export function archiveDevice(id: string): void {
   const devices = readCatalogueRaw();
@@ -362,11 +362,11 @@ export function unarchiveDevice(id: string): void {
 
 export class DeviceInUseError extends Error {
   constructor(id: string, refs: string[]) {
-    super(`Cannot delete device "${id}" — referenced by ${refs.length} project(s): ${refs.join(", ")}. Archive it instead.`);
+    super(`Cannot delete device "${id}" — referenced by ${refs.length} application(s): ${refs.join(", ")}. Archive it instead.`);
   }
 }
 
-/** Hard delete — permitted only for devices with zero project references
+/** Hard delete — permitted only for devices with zero application references
  *  (reverse-reference scan runs first). */
 export function deleteDevice(id: string): void {
   const refs = findDeviceReferences(id);

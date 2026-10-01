@@ -1,7 +1,7 @@
 import assert from "node:assert";
 import { LAYOUTS, SCENE_ANIMATIONS, sceneHtml, templatePreviewHtml, EXPORT_PRESETS, RenderCancelled, cleanExportFileName, clampEven, buildVfFilter, renderVideo } from "./render.js";
-import type { VideoProject, VideoScene } from "./project.js";
-import { VIDEO_TEMPLATES, applyVideoTemplate, resolveTemplateId, scratchVideoProject } from "./templates.js";
+import type { VideoApplication, VideoScene } from "./application.js";
+import { VIDEO_TEMPLATES, applyVideoTemplate, resolveTemplateId, scratchVideoApplication } from "./templates.js";
 import { DEVICE_REGISTRY, frameSvgFor } from "../devices/registry.js";
 import { deviceMarkupMultiScreen } from "../render/shared.js";
 import { BGM_PRESETS, renderBgmWav } from "./bgm.js";
@@ -51,7 +51,7 @@ async function demo() {
   assert.ok(copyRightHtml.includes("flex-direction: row-reverse;"), "copy-right must render flex-direction: row-reverse (device moves to the opposite side)");
 
   // -- Player script: no autoplay, no loop, exposes the full scene-specific API --
-  const project: VideoProject = {
+  const application: VideoApplication = {
     id: "test",
     createdAt: new Date().toISOString(),
     name: "test",
@@ -61,8 +61,8 @@ async function demo() {
     bgm: null,
     outputs: {},
   };
-  const html = templatePreviewHtml(project);
-  for (let i = 0; i < project.scenes.length; i++) {
+  const html = templatePreviewHtml(application);
+  for (let i = 0; i < application.scenes.length; i++) {
     assert.ok(html.includes(`@keyframes play-${i}`), `templatePreviewHtml must emit @keyframes play-${i}`);
     assert.ok(html.includes(`id="scene-${i}"`), `templatePreviewHtml must emit scene-${i} element`);
   }
@@ -111,11 +111,11 @@ async function demo() {
 
   // -- Old template ids still resolve (migration alias) --
   assert.strictEqual(resolveTemplateId("feature-showcase"), "iphone-15-pro-portrait");
-  const migrated = scratchVideoProject("feature-showcase");
+  const migrated = scratchVideoApplication("feature-showcase");
   assert.strictEqual(migrated.template, "iphone-15-pro-portrait");
 
   // -- A multi-screen scene resolves to screenIds and renders a screen-swap --
-  const showcase = scratchVideoProject("iphone-15-pro-portrait");
+  const showcase = scratchVideoApplication("iphone-15-pro-portrait");
   const swapScene = showcase.scenes.find((s) => (s.screenIds?.length ?? 0) > 1);
   assert.ok(swapScene, "iphone-15-pro-portrait must include at least one multi-screen scene");
   const swapHtml = sceneHtml(swapScene!, ["data:x", "data:y", "data:z"], false);
@@ -129,7 +129,7 @@ async function demo() {
   assert.ok(screens.every((s: any) => typeof s.src === "string" && s.src.length > 0), "every screen entry must carry its source URI");
 
   // -- The 3D showcase scene renders the real GLB rig canvas, not a flat device --
-  const cinematic = scratchVideoProject("iphone-15-pro-landscape");
+  const cinematic = scratchVideoApplication("iphone-15-pro-landscape");
   const rigScene = cinematic.scenes.find((s) => s.sceneTemplate === "landscape-flow" || s.sceneTemplate === "showcase-3d");
   assert.ok(rigScene, "iphone-15-pro-landscape must include a 3D showcase / landscape-flow scene");
   const rigHtml = sceneHtml(rigScene!, ["data:x"], false);
@@ -172,14 +172,14 @@ async function demo() {
   assert.ok(VIDEO_TEMPLATES.some((t) => t.aspectRatio !== "16:9"), "at least one template must stay portrait (9:16)");
 
   const landscapeTemplate = VIDEO_TEMPLATES.find((t) => t.aspectRatio === "16:9")!;
-  const landscapeProject = scratchVideoProject(landscapeTemplate.id);
-  assert.strictEqual(landscapeProject.scenes[0].aspectRatio, "16:9");
-  const landscapeHtml = sceneHtml(landscapeProject.scenes[0], [], false);
+  const landscapeApplication = scratchVideoApplication(landscapeTemplate.id);
+  assert.strictEqual(landscapeApplication.scenes[0].aspectRatio, "16:9");
+  const landscapeHtml = sceneHtml(landscapeApplication.scenes[0], [], false);
   assert.ok(landscapeHtml.includes("width: 1920px; height: 1080px"), "a 16:9 scene must render at a 1920x1080 canvas");
 
   const portraitTemplate = VIDEO_TEMPLATES.find((t) => t.aspectRatio !== "16:9")!;
-  const portraitProject = scratchVideoProject(portraitTemplate.id);
-  const portraitHtml = sceneHtml(portraitProject.scenes[0], [], false);
+  const portraitApplication = scratchVideoApplication(portraitTemplate.id);
+  const portraitHtml = sceneHtml(portraitApplication.scenes[0], [], false);
   assert.ok(portraitHtml.includes("width: 1080px; height: 1920px"), "a 9:16 scene must keep the app-store-standard 1080x1920 canvas");
 
   // -- Text contrast on pale backgrounds, across every template --
@@ -253,15 +253,15 @@ async function demo() {
   assert.strictEqual(filterNative, "", "native matching canvas must produce empty vf filter");
 
   // -- Validation: Scene range picks only the right scenes and duration --
-  const multiSceneProject = scratchVideoProject(VIDEO_TEMPLATES[0].id);
-  multiSceneProject.scenes = [
+  const multiSceneApplication = scratchVideoApplication(VIDEO_TEMPLATES[0].id);
+  multiSceneApplication.scenes = [
     sampleScene({ id: "s1", order: 0, durationSeconds: 3 }),
     sampleScene({ id: "s2", order: 1, durationSeconds: 4 }),
     sampleScene({ id: "s3", order: 2, durationSeconds: 5 }),
     sampleScene({ id: "s4", order: 3, durationSeconds: 6 }),
   ];
   const range: [number, number] = [2, 3];
-  const pickedScenes = [...multiSceneProject.scenes]
+  const pickedScenes = [...multiSceneApplication.scenes]
     .sort((a, b) => a.order - b.order)
     .filter((_, idx) => (idx + 1) >= range[0] && (idx + 1) <= range[1]);
   assert.strictEqual(pickedScenes.length, 2, "sceneRange [2, 3] must select 2 scenes");
@@ -275,7 +275,7 @@ async function demo() {
   abortController.abort();
   let cancelledThrown = false;
   try {
-    await renderVideo(multiSceneProject, { signal: abortController.signal });
+    await renderVideo(multiSceneApplication, { signal: abortController.signal });
   } catch (err: any) {
     if (err instanceof RenderCancelled || err?.name === "RenderCancelled") {
       cancelledThrown = true;

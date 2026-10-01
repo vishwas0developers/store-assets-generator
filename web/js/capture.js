@@ -1,6 +1,6 @@
 // Capture module — Live browser (Playwright) stream + Android (ADB/scrcpy) capture,
 // screenshots, H.264/WebCodecs demuxer, and stream recorder.
-import { activeProjectId, activeProject } from './state.js';
+import { activeApplicationId, activeApplication } from './state.js';
 import { api, uploadFile, showAlert, showToast, showConfirm } from './utils.js';
 import { loadDeviceCategories, getDeviceCategoriesSync, deviceCategoryLabel } from './deviceCategories.js';
 
@@ -34,9 +34,9 @@ let selectedAndroidApp = null;
 let activeComboboxIndex = -1;
 
 export function loadCaptureTab() {
-  if (activeProject && activeProject.targetUrl) {
+  if (activeApplication && activeApplication.targetUrl) {
     const urlEl = document.getElementById("browser-url-input");
-    if (urlEl && !urlEl.value) urlEl.value = activeProject.targetUrl;
+    if (urlEl && !urlEl.value) urlEl.value = activeApplication.targetUrl;
   }
   renderLiveBrowserCaptures();
   loadAndroidDevices();
@@ -45,21 +45,21 @@ export function loadCaptureTab() {
 
 // Shared by both the Live Web and Android galleries — same card markup/delete/
 // lightbox behavior, differing only in which captures to show and what to say
-// when there are none. Always scoped to the current activeProjectId (#state.js),
-// so switching projects never shows another project's screenshots.
+// when there are none. Always scoped to the current activeApplicationId (#state.js),
+// so switching applications never shows another application's screenshots.
 async function renderCaptureGallery(galleryId, filterFn, emptyMessage) {
   const gallery = document.getElementById(galleryId);
   if (!gallery) return;
   gallery.innerHTML = "";
 
-  if (!activeProjectId) return;
+  if (!activeApplicationId) return;
 
   const showEmpty = () => {
     gallery.innerHTML = `<div class="hint" style="grid-column: span 2; text-align: center; padding: 2rem 0;">${emptyMessage}</div>`;
   };
 
   try {
-    const proj = await api(`/api/projects/${activeProjectId}`);
+    const proj = await api(`/api/applications/${activeApplicationId}`);
     const filtered = (proj.captures || []).filter(filterFn);
 
     if (filtered.length === 0) {
@@ -72,7 +72,7 @@ async function renderCaptureGallery(galleryId, filterFn, emptyMessage) {
       const item = document.createElement("div");
       item.className = "thumb";
       item.style = "height: fit-content; align-self: start; position: relative;";
-      const fileUrl = `/api/projects/${activeProjectId}/file?p=${encodeURIComponent(c.file)}`;
+      const fileUrl = `/api/applications/${activeApplicationId}/file?p=${encodeURIComponent(c.file)}`;
 
       const img = document.createElement(isVideo ? "video" : "img");
       img.src = fileUrl;
@@ -121,10 +121,10 @@ async function renderCaptureGallery(galleryId, filterFn, emptyMessage) {
         if (gallery.children.length === 0) showEmpty();
 
         try {
-          await api(`/api/projects/${activeProjectId}/captures/${c.id}`, { method: "DELETE" });
+          await api(`/api/applications/${activeApplicationId}/captures/${c.id}`, { method: "DELETE" });
         } catch (_) {
           try {
-            await api(`/api/projects/${activeProjectId}/file?p=${encodeURIComponent(c.file)}`, { method: "DELETE" });
+            await api(`/api/applications/${activeApplicationId}/file?p=${encodeURIComponent(c.file)}`, { method: "DELETE" });
           } catch (err2) {
             showToast("Delete failed: " + err2.message, "error");
             renderCaptureGallery(galleryId, filterFn, emptyMessage);
@@ -167,7 +167,7 @@ async function renderCaptureGallery(galleryId, filterFn, emptyMessage) {
 // user-facing categorization for every screenshot and video -- not
 // resolution. Every capture carries a `deviceCategory` written at capture
 // time (src/capture/liveBrowser.ts, androidLive.ts) or backfilled from its
-// pixel dimensions for legacy records (projectStore.ts's loadProject), so it
+// pixel dimensions for legacy records (applicationStore.ts's loadApplication), so it
 // is always present. `resolution`/`deviceLabel` remain as secondary,
 // technical metadata only -- shown, never used as the primary grouping key.
 
@@ -179,7 +179,7 @@ function isAndroidCapture(c) {
   return typeof c.url === "string" && c.url.startsWith("android:");
 }
 
-// Repopulate a device-size + resolution filter pair from the project's
+// Repopulate a device-size + resolution filter pair from the application's
 // actual captures (not a hardcoded list), so a filter option only ever
 // exists if a matching screenshot does. Preserves the user's current
 // selection where still valid. Shared by both the Live Web and Android
@@ -187,13 +187,13 @@ function isAndroidCapture(c) {
 async function populateCaptureFilters(deviceSelId, resSelId, sectionFilterFn) {
   const deviceSel = document.getElementById(deviceSelId);
   const resSel = document.getElementById(resSelId);
-  if (!deviceSel || !resSel || !activeProjectId) return;
+  if (!deviceSel || !resSel || !activeApplicationId) return;
 
   await loadDeviceCategories();
 
   let captures = [];
   try {
-    const proj = await api(`/api/projects/${activeProjectId}`);
+    const proj = await api(`/api/applications/${activeApplicationId}`);
     captures = (proj.captures || []).filter(sectionFilterFn);
   } catch (_) {
     return;
@@ -431,7 +431,7 @@ export async function connectLiveBrowser() {
   if (statusEl) statusEl.textContent = "Launching Playwright mobile Chromium browser...";
 
   try {
-    await api("/api/browser/start", { method: "POST", body: { projectId: activeProjectId, url, deviceCategory } });
+    await api("/api/browser/start", { method: "POST", body: { applicationId: activeApplicationId, url, deviceCategory } });
 
     browserConnected = true;
     if (connectBtn) { connectBtn.style.display = "none"; connectBtn.disabled = false; connectBtn.textContent = "Connect"; }
@@ -493,14 +493,14 @@ async function browserNavAction(type) {
 }
 
 export async function triggerScreenshotCapture() {
-  if (!browserConnected || !activeProjectId) {
+  if (!browserConnected || !activeApplicationId) {
     await showAlert("Please connect to a live browser session first before capturing.");
     return;
   }
   const imgEl = document.getElementById("browser-frame-img");
   if (imgEl) { imgEl.style.opacity = "0.3"; setTimeout(() => { imgEl.style.opacity = "1"; }, 150); }
   try {
-    const capture = await api("/api/browser/capture", { method: "POST", body: { projectId: activeProjectId } });
+    const capture = await api("/api/browser/capture", { method: "POST", body: { applicationId: activeApplicationId } });
     showToast(`Captured Screen ${capture.id} (${capture.file})`, "success");
     await renderLiveBrowserCaptures();
   } catch (e) {
@@ -608,7 +608,7 @@ export async function connectAndroidDevice() {
     const startRes = await api("/api/android/start", {
       method: "POST",
       body: {
-        projectId: activeProjectId,
+        applicationId: activeApplicationId,
         deviceId: deviceId || undefined,
         screenOff: true,
         nativePreview: isElectron,
@@ -915,7 +915,7 @@ async function loadAndroidApps(forceRefresh = false) {
 }
 
 export async function triggerAndroidCapture() {
-  if (!androidConnected || !activeProjectId) {
+  if (!androidConnected || !activeApplicationId) {
     showAlert("Please connect to an Android device first before capturing.", "warning");
     return;
   }
@@ -929,7 +929,7 @@ export async function triggerAndroidCapture() {
   try {
     const capture = await api("/api/android/capture", {
       method: "POST",
-      body: { projectId: activeProjectId, imageData }
+      body: { applicationId: activeApplicationId, imageData }
     });
     showToast(`Captured Screen ${capture.id} (${capture.file})`, "success");
     await renderAndroidCaptures();

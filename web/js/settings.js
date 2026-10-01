@@ -1,5 +1,5 @@
 // Settings, Modals, Toolchain, Credentials, and 3D Device Catalogue Management
-import { activeProjectId } from './state.js';
+import { activeApplicationId } from './state.js';
 import { api, uploadFile, showAlert, showToast } from './utils.js';
 
 const $ = (id) => document.getElementById(id);
@@ -197,25 +197,25 @@ export function openUniversalUploadModal(onSelectCallback) {
 
   document.querySelectorAll("#universal-upload-backdrop .tab").forEach((t) => t.classList.remove("active"));
   document.querySelectorAll("#universal-upload-backdrop .tab-panel").forEach((p) => p.classList.remove("active"));
-  const tabBtn = $("tab-btn-project-assets");
+  const tabBtn = $("tab-btn-application-assets");
   if (tabBtn) tabBtn.classList.add("active");
-  const panel = $("upload-panel-project");
+  const panel = $("upload-panel-application");
   if (panel) panel.classList.add("active");
 
-  refreshUniversalProjectAssets();
+  refreshUniversalApplicationAssets();
 }
 
-export async function refreshUniversalProjectAssets() {
-  const grid = $("universal-project-assets-grid");
+export async function refreshUniversalApplicationAssets() {
+  const grid = $("universal-application-assets-grid");
   const useBtn = $("universal-use-selected-btn");
   if (!grid) return;
   grid.innerHTML = "Loading assets...";
   if (useBtn) useBtn.disabled = true;
 
-  if (!activeProjectId) return;
+  if (!activeApplicationId) return;
 
   try {
-    const { files } = await api(`/api/projects/${activeProjectId}/files`);
+    const { files } = await api(`/api/applications/${activeApplicationId}/files`);
     grid.innerHTML = "";
     const assets = files.filter((f) => f.path.startsWith("captures/") || f.path.startsWith("uploads/"));
 
@@ -228,7 +228,7 @@ export async function refreshUniversalProjectAssets() {
     for (const asset of assets) {
       const card = document.createElement("div");
       card.className = "asset-select-card";
-      const fileUrl = `/api/projects/${activeProjectId}/file?p=${encodeURIComponent(asset.path)}`;
+      const fileUrl = `/api/applications/${activeApplicationId}/file?p=${encodeURIComponent(asset.path)}`;
       card.innerHTML = `
         <img src="${fileUrl}" />
         <div class="badge-overlay">${asset.path.startsWith("captures/") ? "Cap " : ""}${asset.name}</div>
@@ -265,15 +265,15 @@ async function handleDirectComputerUpload(file) {
   }
 
   try {
-    const url = `/api/projects/${activeProjectId}/upload?name=${encodeURIComponent(file.name)}`;
+    const url = `/api/applications/${activeApplicationId}/upload?name=${encodeURIComponent(file.name)}`;
     await uploadFile(url, file);
     if (statusEl) {
       statusEl.textContent = `Upload successful: ${file.name}`;
       statusEl.style.color = "#10b981";
     }
     setTimeout(() => {
-      document.querySelector('#universal-upload-backdrop .tab[data-upload-tab="project"]')?.click();
-      refreshUniversalProjectAssets();
+      document.querySelector('#universal-upload-backdrop .tab[data-upload-tab="application"]')?.click();
+      refreshUniversalApplicationAssets();
     }, 800);
   } catch (e) {
     if (statusEl) {

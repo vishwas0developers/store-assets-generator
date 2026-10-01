@@ -4,18 +4,18 @@ import path from "path";
 /**
  * Video tab storage -- completely independent of Screen Capture and Studio
  * Mockup (own root, own uploaded source images, no shared state). A video
- * project picks a template (a full multi-scene animation sequence), then
+ * application picks a template (a full multi-scene animation sequence), then
  * each scene is edited independently.
  *
- *   output/projects/<id>/video/project.json  (via the unified project store)
- *   output/projects/<id>/video/sources/      uploaded screenshot/recording sources
- *   output/projects/<id>/video/video/        rendered promo.mp4 + bgm
+ *   output/applications/<id>/video/application.json  (via the unified application store)
+ *   output/applications/<id>/video/sources/      uploaded screenshot/recording sources
+ *   output/applications/<id>/video/video/        rendered promo.mp4 + bgm
  */
 
 export interface VideoSourceImage {
   id: string;
   name: string;
-  file: string; // relative to project dir, e.g. "sources/img_1.png"
+  file: string; // relative to application dir, e.g. "sources/img_1.png"
   width: number;
   height: number;
   /** "video" sources play a real screen recording inside the device instead
@@ -144,13 +144,13 @@ export interface VideoExportRecord {
   createdAt: string;
 }
 
-export interface VideoProject {
+export interface VideoApplication {
   id: string;
   createdAt: string;
   name: string;
   /** The chosen top-level template (a full ~60s sequence recipe). */
   template: string | null;
-  /** Optional project-wide default device override (e.g. "apple-iphone-15-pro" or "2d:apple-iphone-16-pro-max"). */
+  /** Optional application-wide default device override (e.g. "apple-iphone-15-pro" or "2d:apple-iphone-16-pro-max"). */
   device?: string;
   sources: VideoSourceImage[];
   scenes: VideoScene[];
@@ -162,7 +162,7 @@ export interface VideoProject {
   bgmFadeInMs?: number;
   bgmFadeOutMs?: number;
   outputs: { video?: string };
-  /** Project-wide defaults a slot falls back to when the scene has no value
+  /** Application-wide defaults a slot falls back to when the scene has no value
    *  of its own -- e.g. set the app icon once, it appears in every scene
    *  that has a `logo` slot. */
   brand?: {
@@ -177,7 +177,7 @@ export interface VideoProject {
   backgroundImage?: string | null; // VideoSourceImage id
   /** Named snapshots of `template` + `scenes`, saved by the user from the
    *  Scenes tab and restored later via the "Saved Configs" section -- lets
-   *  someone keep several fully-configured variants of a project side by
+   *  someone keep several fully-configured variants of an application side by
    *  side without losing whichever one is currently loaded. */
   savedConfigs?: SavedTemplateConfig[];
   /** Recent video exports history (up to 20 newest). */
@@ -192,7 +192,7 @@ export interface SavedTemplateConfig {
   /** BGM state snapshotted at save time, so this config always plays/renders
    *  with whatever audio was in effect when it was saved -- the default
    *  template BGM unless the user had explicitly changed it -- regardless
-   *  of what the live project's own `bgm` later becomes. */
+   *  of what the live application's own `bgm` later becomes. */
   bgm?: string | null;
   bgmVolume?: number;
   bgmFadeInMs?: number;
@@ -200,16 +200,16 @@ export interface SavedTemplateConfig {
   savedAt: string;
 }
 
-import { loadProject, saveProject, listProjects } from "../project/projectStore.js";
+import { loadApplication, saveApplication, listApplications } from "../application/applicationStore.js";
 import { templateConfig, htmlSpanToAsterisk } from "./templateConfig.js";
 import { sanitizeSceneDevice } from "../devices/rig-assets.js";
 
-const ROOT = path.join(process.cwd(), "output", "projects");
+const ROOT = path.join(process.cwd(), "output", "applications");
 
 export function videoDir(id: string): string {
   const dir = path.join(ROOT, id, "video");
   const rel = path.relative(ROOT, dir);
-  if (rel.startsWith("..") || path.isAbsolute(rel)) throw new Error(`Invalid video project id '${id}'.`);
+  if (rel.startsWith("..") || path.isAbsolute(rel)) throw new Error(`Invalid video application id '${id}'.`);
   return dir;
 }
 
@@ -221,28 +221,28 @@ export function videoFile(id: string, relative: string): string {
   return full;
 }
 
-export function createVideoProject(name: string): VideoProject {
-  throw new Error("Deprecated: Use createProject from projectStore instead");
+export function createVideoApplication(name: string): VideoApplication {
+  throw new Error("Deprecated: Use createApplication from applicationStore instead");
 }
 
 /** Data-model rule: a scene's device must match its deviceMode (2D/3D). */
-export function sanitizeProjectDevices(project: VideoProject): void {
-  const cfg = project.template ? templateConfig(project.template) : null;
-  (project.scenes ?? []).forEach((scene, i) => {
+export function sanitizeApplicationDevices(application: VideoApplication): void {
+  const cfg = application.template ? templateConfig(application.template) : null;
+  (application.scenes ?? []).forEach((scene, i) => {
     const tpl = cfg ? { device: cfg.device, deviceMode: cfg.scenes?.[i]?.deviceMode ?? cfg.deviceMode } : null;
     Object.assign(scene, sanitizeSceneDevice(scene, tpl));
   });
 }
 
-export function saveVideoProject(project: VideoProject): void {
-  sanitizeProjectDevices(project);
-  const unified = loadProject(project.id);
-  unified.video = project;
-  saveProject(unified);
+export function saveVideoApplication(application: VideoApplication): void {
+  sanitizeApplicationDevices(application);
+  const unified = loadApplication(application.id);
+  unified.video = application;
+  saveApplication(unified);
 }
 
 /** Seeds `slotValues` for a scene saved before the slot system existed, from
- *  its legacy text/subtext/sourceId/screenIds fields -- old projects open
+ *  its legacy text/subtext/sourceId/screenIds fields -- old applications open
  *  with nothing lost. Reads `templateConfig` only (not slots.ts's full
  *  `slotSpecsForScene`) to avoid a circular import back through render.ts;
  *  it only needs to know each declared role's DOM key, not its resolved
@@ -262,19 +262,19 @@ function migrateScene(scene: VideoScene, cfgScene: any): void {
   scene.slotValues = values;
 }
 
-export function loadVideoProject(id: string): VideoProject {
-  const unified = loadProject(id);
-  const project: VideoProject = unified.video;
-  if (project?.template && project.scenes?.length) {
-    const cfg = templateConfig(project.template);
-    project.scenes.forEach((scene: VideoScene, i: number) => migrateScene(scene, cfg?.scenes?.[i]));
+export function loadVideoApplication(id: string): VideoApplication {
+  const unified = loadApplication(id);
+  const application: VideoApplication = unified.video;
+  if (application?.template && application.scenes?.length) {
+    const cfg = templateConfig(application.template);
+    application.scenes.forEach((scene: VideoScene, i: number) => migrateScene(scene, cfg?.scenes?.[i]));
   }
-  if (project?.scenes?.length) sanitizeProjectDevices(project);
-  return project;
+  if (application?.scenes?.length) sanitizeApplicationDevices(application);
+  return application;
 }
 
-export function listVideoProjects(): Array<{ id: string; createdAt: string; name: string; scenes: number }> {
-  return listProjects().map((p) => {
+export function listVideoApplications(): Array<{ id: string; createdAt: string; name: string; scenes: number }> {
+  return listApplications().map((p) => {
     const v = p.video;
     return { id: p.id, createdAt: p.createdAt, name: p.name, scenes: v.scenes?.length ?? 0 };
   });

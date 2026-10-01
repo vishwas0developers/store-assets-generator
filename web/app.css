@@ -332,13 +332,13 @@ pre { background: var(--bg-main); border: 1px solid var(--border-subtle); border
 .template-filmstrip,
 .detail-filmstrip,
 .studio-editor-container,
-#projects-list-container,
-#project-files-list,
+#applications-list-container,
+#application-files-list,
 #live-captures-gallery,
 #android-captures-gallery,
 #mockup-panoramic-viewport,
 #mockup-preview-strip,
-#universal-project-assets-grid,
+#universal-application-assets-grid,
 #mk-layers-list {
   scrollbar-width: none !important;
   -ms-overflow-style: none !important;
@@ -350,13 +350,13 @@ pre { background: var(--bg-main); border: 1px solid var(--border-subtle); border
 .template-filmstrip::-webkit-scrollbar,
 .detail-filmstrip::-webkit-scrollbar,
 .studio-editor-container::-webkit-scrollbar,
-#projects-list-container::-webkit-scrollbar,
-#project-files-list::-webkit-scrollbar,
+#applications-list-container::-webkit-scrollbar,
+#application-files-list::-webkit-scrollbar,
 #live-captures-gallery::-webkit-scrollbar,
 #android-captures-gallery::-webkit-scrollbar,
 #mockup-panoramic-viewport::-webkit-scrollbar,
 #mockup-preview-strip::-webkit-scrollbar,
-#universal-project-assets-grid::-webkit-scrollbar,
+#universal-application-assets-grid::-webkit-scrollbar,
 #mk-layers-list::-webkit-scrollbar {
   display: none !important;
   width: 0 !important;
@@ -1568,8 +1568,8 @@ button.xsmall {
 
 .player-transport {
   display: flex; align-items: center; gap: .4rem; justify-content: center;
-  margin: .75rem auto 0; padding: .5rem .75rem; background: #14161c; border: 1px solid #21252f;
-  border-radius: 8px; width: fit-content;
+  margin: .75rem auto 0; padding: .5rem .75rem; background: var(--bg-surface-secondary); border: 1px solid var(--border-subtle);
+  border-radius: 8px; width: fit-content; color: var(--text-primary);
 }
 .player-transport button { padding: .4rem .7rem; }
 
@@ -1609,7 +1609,7 @@ button.xsmall {
 .discovery-msg { font-size: .8rem; padding: .5rem; border-radius: 6px; margin-top: .5rem; }
 .discovery-msg.error { background: var(--status-bad-bg); color: var(--status-bad-text); }
 
-/* ---------- New Project-Centric UI Styles ---------- */
+/* ---------- New Application-Centric UI Styles ---------- */
 .topbar-tab.disabled {
   opacity: 0.4;
   cursor: not-allowed;
@@ -1619,14 +1619,14 @@ button.xsmall {
   background: transparent;
 }
 
-.projects-grid {
+.applications-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1.25rem;
   align-content: start;
 }
 
-.project-item {
+.application-item {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -1642,7 +1642,7 @@ button.xsmall {
   min-height: 150px;
   gap: 0.35rem;
 }
-.project-item-corner {
+.application-item-corner {
   position: absolute;
   top: 0.45rem;
   width: 28px;
@@ -1653,26 +1653,26 @@ button.xsmall {
   border-radius: 6px;
   font-size: 0.85rem;
 }
-.project-item-corner.left { left: 0.45rem; }
-.project-item-corner.right { right: 0.45rem; }
-.project-item .select-btn {
+.application-item-corner.left { left: 0.45rem; }
+.application-item-corner.right { right: 0.45rem; }
+.application-item .select-btn {
   min-width: 90px;
   max-width: 140px;
   flex: none !important;
   padding: 0.3rem 1rem;
 }
-.project-item:hover {
+.application-item:hover {
   border-color: #3b82f6;
   background: var(--bg-card);
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
-.project-item.active {
+.application-item.active {
   border-color: #10b981;
   background: var(--bg-card);
   box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.15);
 }
 
-.project-item-title {
+.application-item-title {
   font-weight: 600;
   font-size: 0.95rem;
   display: flex;
@@ -1682,20 +1682,20 @@ button.xsmall {
   color: var(--text-primary);
   text-align: center;
 }
-.project-item-title span { text-align: center; }
+.application-item-title span { text-align: center; }
 
 .active-check {
   color: #10b981;
   font-weight: bold;
 }
 
-.project-item-meta {
+.application-item-meta {
   font-size: 0.75rem;
   color: var(--text-secondary);
   margin-top: 0.25rem;
 }
 
-.project-stats {
+.application-stats {
   display: flex;
   justify-content: center;
   gap: 0.5rem;
@@ -1704,7 +1704,7 @@ button.xsmall {
   flex-wrap: wrap;
 }
 
-.project-stats span {
+.application-stats span {
   background: var(--bg-main);
   border: 1px solid var(--border-subtle);
   padding: 0.2rem 0.5rem;
@@ -3418,6 +3418,36 @@ html:not(.light) .export-summary-banner {
   color: var(--text-primary);
 }
 
+.player-transport button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 28px;
+  padding: 4px 8px;
+  line-height: 1;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.player-transport button svg {
+  display: block;
+  flex-shrink: 0;
+}
+
+.player-transport button.transport-btn {
+  min-width: 32px;
+}
+
+.player-transport button.transport-btn.active {
+  background: var(--accent-primary) !important;
+  color: var(--text-on-accent) !important;
+  border-color: var(--accent-hover) !important;
+}
+
+.player-transport button.transport-btn:hover:not(.active) {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+}
+
 .nav-divider {
   width: 1px;
   height: 20px;
@@ -4291,3 +4321,13 @@ html.light .saved-template-badge {
 .swal2-container {
   z-index: 10050 !important;
 }
+
+
+/* Editing section with no template loaded: only the banner shows. */
+.section-page .editing-empty-banner { display: none; }
+.section-page.editing-empty > *:not(.editing-empty-banner) { display: none !important; }
+.section-page.editing-empty > .editing-empty-banner {
+  display: flex !important; flex-direction: column; align-items: center; justify-content: center;
+  gap: 0.4rem; min-height: 320px; text-align: center; padding: 2rem; opacity: 0.85;
+}
+.editing-empty-banner h3 { margin: 0; }

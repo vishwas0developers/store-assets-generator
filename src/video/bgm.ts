@@ -7,7 +7,7 @@
  * This yields ambient/electronic beds (sine/saw/triangle oscillators over a
  * chord progression, filtered and soft-clipped) -- the right register for
  * app promos, not a substitute for orchestral or vocal music. A user's own
- * `bgm` upload (video/project.ts) still overrides the generated track.
+ * `bgm` upload (video/application.ts) still overrides the generated track.
  */
 
 export interface BgmPreset {
