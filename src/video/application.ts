@@ -197,6 +197,9 @@ export interface SavedTemplateConfig {
   bgmVolume?: number;
   bgmFadeInMs?: number;
   bgmFadeOutMs?: number;
+  /** Global background + brand in effect at save time (so previews/loads never borrow the live draft's). */
+  backgroundImage?: string | null;
+  brand?: VideoApplication["brand"];
   savedAt: string;
 }
 
