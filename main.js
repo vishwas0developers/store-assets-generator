@@ -1,10 +1,15 @@
 import { app, BrowserWindow, ipcMain, session, dialog, shell } from 'electron';
 import path from 'path';
 import fs from 'fs';
+import { execFileSync } from 'child_process';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// All backend code resolves templates/devices/output via process.cwd(); pin it to the app folder
+// (installed apps start with cwd = install dir, not resources/app).
+process.chdir(__dirname);
 
 // GPU Hardware Acceleration Switches
 app.commandLine.appendSwitch('enable-gpu-rasterization');
@@ -60,60 +65,151 @@ function logBuildStatus() {
 }
 
 let mainWindow = null;
+let splash = null;
 let serverPort = 8787;
+const ICON = path.join(__dirname, 'build', 'icon.png');
 
-async function startBackgroundServer() {
-  try {
-    const serverModule = await import('./dist/web/server.js');
-    if (serverModule && typeof serverModule.startWebServer === 'function') {
-      const server = await serverModule.startWebServer({ port: 8787, host: '127.0.0.1', openBrowser: false });
-      const addr = server.address();
-      if (addr && typeof addr === 'object') {
-        serverPort = addr.port;
-      }
-    }
-  } catch (err) {
-    console.error('[SAG-ELECTRON] Failed to start internal services:', err);
+function createSplash() {
+  splash = new BrowserWindow({
+    width: 460, height: 320, frame: false, transparent: true, resizable: false,
+    movable: true, show: false, skipTaskbar: true, alwaysOnTop: true, icon: ICON,
+    webPreferences: { contextIsolation: true, nodeIntegration: false },
+  });
+  splash.once('ready-to-show', () => splash && splash.show());
+  splash.loadFile(path.join(__dirname, 'build', 'splash.html'));
+}
+
+function setSplashStatus(text, isError = false) {
+  if (splash && !splash.isDestroyed()) {
+    splash.webContents.executeJavaScript(`setStatus(${JSON.stringify(text)}, ${isError})`).catch(() => {});
   }
 }
 
-function createWindow() {
-  mainWindow = new BrowserWindow({
-    width: 1440,
-    height: 900,
-    minWidth: 1024,
-    minHeight: 700,
-    title: 'Store Assets Generator',
-    backgroundColor: '#0f172a',
-    titleBarStyle: 'default',
-    autoHideMenuBar: true,
-    webPreferences: {
-      preload: path.join(__dirname, 'preload.cjs'),
-      nodeIntegration: false,
-      contextIsolation: true,
-      webSecurity: true,
-      backgroundThrottling: false,
-    },
-  });
+/** Startup failed: say so (never leave a blank window), point at the log, quit. */
+function failStartup(message) {
+  console.error('[SAG-ELECTRON] Startup failed:', message);
+  if (splash && !splash.isDestroyed()) splash.close();
+  if (mainWindow && !mainWindow.isDestroyed()) mainWindow.destroy();
+  dialog.showErrorBox('Store Assets Generator could not start', `${message}
 
-  mainWindow.loadURL(`http://127.0.0.1:${serverPort}`);
+Details: ${LOG_FILE}`);
+  app.quit();
+}
 
-  // Prevent window.open or target="_blank" from spawning blank native windows
-  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-    if (url.startsWith('http://') || url.startsWith('https://')) {
-      if (!url.startsWith(`http://127.0.0.1:${serverPort}`)) {
-        shell.openExternal(url);
+/**
+ * Port 8787 held by a stale copy of THIS app (an older build or an orphan from a crashed
+ * launch)? End it so we can bind. Anything that isn't our own executable is left alone.
+ */
+function freePortFromStaleInstance(port) {
+  if (process.platform !== 'win32') return false;
+  try {
+    const out = execFileSync('netstat', ['-ano', '-p', 'TCP'], { encoding: 'utf8' });
+    const pids = new Set();
+    for (const line of out.split(/\r?\n/)) {
+      const c = line.trim().split(/\s+/);
+      if (c[3] === 'LISTENING' && c[1].endsWith(`:${port}`)) pids.add(Number(c[4]));
+    }
+    pids.delete(process.pid);
+    const ours = path.basename(process.execPath).toLowerCase();
+    let killed = false;
+    for (const pid of pids) {
+      const row = execFileSync('tasklist', ['/FI', `PID eq ${pid}`, '/FO', 'CSV', '/NH'], { encoding: 'utf8' });
+      if (row.toLowerCase().includes(`"${ours}"`)) {
+        execFileSync('taskkill', ['/PID', String(pid), '/T', '/F']);
+        console.warn(`[SAG-ELECTRON] Ended stale instance (pid ${pid}) holding port ${port}`);
+        killed = true;
+      } else {
+        console.warn(`[SAG-ELECTRON] Port ${port} is held by another program (pid ${pid}); not touching it`);
       }
     }
-    return { action: 'deny' };
-  });
+    return killed;
+  } catch (err) {
+    console.warn('[SAG-ELECTRON] Stale-instance check failed:', err.message);
+    return false;
+  }
+}
 
-  mainWindow.on('closed', () => {
-    mainWindow = null;
+// Resolves only once the HTTP server is really listening; rejects on any startup error.
+async function startBackgroundServer() {
+  const serverModule = await import('./dist/web/server.js');
+  const start = (port) => serverModule.startWebServer({ port, host: '127.0.0.1', openBrowser: false });
+  // Prefer 8787: reclaim it from a stale copy of this app; if a foreign program owns it, use any free port.
+  const server = await start(8787).catch(async (err) => {
+    if (!err || err.code !== 'EADDRINUSE') throw err;
+    if (freePortFromStaleInstance(8787)) {
+      await new Promise((r) => setTimeout(r, 500));
+      try { return await start(8787); } catch (e) { if (e.code !== 'EADDRINUSE') throw e; }
+    }
+    console.warn('[SAG-ELECTRON] Port 8787 unavailable, falling back to a free port');
+    return start(0);
+  });
+  const addr = server.address();
+  if (addr && typeof addr === 'object') serverPort = addr.port;
+}
+
+function createWindow() {
+  return new Promise((resolve, reject) => {
+    mainWindow = new BrowserWindow({
+      width: 1440,
+      height: 900,
+      minWidth: 1024,
+      minHeight: 700,
+      show: false,
+      icon: ICON,
+      title: 'Store Assets Generator',
+      backgroundColor: '#0f172a',
+      titleBarStyle: 'default',
+      autoHideMenuBar: true,
+      webPreferences: {
+        preload: path.join(__dirname, 'preload.cjs'),
+        nodeIntegration: false,
+        contextIsolation: true,
+        webSecurity: true,
+        backgroundThrottling: false,
+      },
+    });
+
+    // Show the main window only after the UI has actually loaded, then drop the splash.
+    mainWindow.webContents.once('did-finish-load', () => {
+      mainWindow.show();
+      if (splash && !splash.isDestroyed()) splash.close();
+      resolve();
+    });
+    mainWindow.webContents.once('did-fail-load', (_e, code, desc, url) => reject(new Error(`Could not load ${url}: ${desc} (${code})`)));
+    mainWindow.loadURL(`http://127.0.0.1:${serverPort}`);
+
+    // Prevent window.open or target="_blank" from spawning blank native windows
+    mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+      if (url.startsWith('http://') || url.startsWith('https://')) {
+        if (!url.startsWith(`http://127.0.0.1:${serverPort}`)) {
+          shell.openExternal(url);
+        }
+      }
+      return { action: 'deny' };
+    });
+
+    mainWindow.on('closed', () => {
+      mainWindow = null;
+    });
+  });
+}
+
+// Only one instance: a second launch just focuses the first window.
+const gotLock = app.requestSingleInstanceLock();
+if (!gotLock) {
+  app.quit();
+} else {
+  app.on('second-instance', () => {
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore();
+      mainWindow.focus();
+    }
   });
 }
 
 app.whenReady().then(async () => {
+  if (!gotLock) return;
+  createSplash();
   logBuildStatus();
   // Never let Chromium reuse a previously cached copy of the UI/templates.
   try {
@@ -123,11 +219,17 @@ app.whenReady().then(async () => {
   } catch (err) {
     console.warn('[SAG-ELECTRON] Cache clear failed:', err.message);
   }
-  await startBackgroundServer();
-  createWindow();
+  try {
+    setSplashStatus('Starting services�');
+    await startBackgroundServer();
+    setSplashStatus('Loading interface�');
+    await createWindow();
+  } catch (err) {
+    return failStartup(err && err.message ? err.message : String(err));
+  }
 
   app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+    if (BrowserWindow.getAllWindows().length === 0) createWindow().catch((e) => failStartup(e.message));
   });
 
   ipcMain.handle('choose-save-path', async (event, { defaultName, ext } = {}) => {
