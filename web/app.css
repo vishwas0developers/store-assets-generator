@@ -3,7 +3,7 @@
 @font-face { font-family: "Inter"; font-weight: 800; font-display: block; src: url("/fonts/Inter/Inter-800.woff2") format("woff2"); }
 @font-face { font-family: "Inter"; font-weight: 900; font-display: block; src: url("/fonts/Inter/Inter-900.woff2") format("woff2"); }
 :root {
-  --footer-h: 28px;
+  --footer-h: 32px;
   --bg-main: #0b0d12;
   --bg-card: #14161c;
   --bg-card-hover: #181b24;
@@ -4338,7 +4338,7 @@ html.light .saved-template-badge {
   height: var(--footer-h); flex: 0 0 var(--footer-h); display: flex; align-items: center; justify-content: center;
   gap: .6rem; padding: 0 1rem; white-space: nowrap; overflow: hidden;
   background: var(--bg-topbar); border-top: 1px solid var(--border-subtle);
-  font-size: .78rem; color: var(--text-secondary);
+  font-size: .8rem; color: var(--text-secondary);
 }
 .app-footer a { color: var(--accent-active-text); text-decoration: none; font-weight: 500; }
 .app-footer a:hover { text-decoration: underline; }
