@@ -11,15 +11,39 @@
     "directories": {
       "output": "dist"
     },
+    "asar": false,
+    "icon": "build/icon.ico",
     "files": [
       "main.js",
       "preload.cjs",
+      "build/icon.png",
+      "build/splash.html",
       "dist/**/*",
+      "!dist/win-unpacked/**",
+      "!dist/*.exe",
+      "!dist/*.blockmap",
       "web/**/*",
       "devices/**/*",
-      "vendor/**/*"
+      "vendor/**/*",
+      "templates/**/*",
+      "assets/**/*",
+      "config/**/*",
+      "fonts/**/*",
+      "apps/**/*",
+      "src/platform/specs/**/*"
+    ],
+    "nsis": {
+      "include": "build/installer.nsh",
+      "runAfterFinish": true,
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "installerHeaderIcon": "build/icon.ico"
+    },
+    "extraResources": [
+      { "from": "node_modules/three/examples", "to": "app/node_modules/three/examples" }
     ],
     "win": {
+      "icon": "build/icon.ico",
       "target": [
         "nsis",
         "portable"

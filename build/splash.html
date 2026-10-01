@@ -1,0 +1,16 @@
+<!doctype html><meta charset="utf-8">
+<style>
+html,body{margin:0;height:100%;background:transparent;font-family:"Segoe UI",system-ui,sans-serif;-webkit-user-select:none;user-select:none}
+.card{box-sizing:border-box;height:100%;border-radius:20px;background:linear-gradient(160deg,#0f172a,#0b1220);border:1px solid #1e293b;
+display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:#e2e8f0;-webkit-app-region:drag}
+img{width:96px;height:96px}
+h1{margin:6px 0 0;font-size:20px;font-weight:600;letter-spacing:.3px}
+#status{font-size:12.5px;color:#94a3b8;min-height:16px;text-align:center;padding:0 24px}
+.bar{width:200px;height:3px;border-radius:3px;background:#1e293b;overflow:hidden}
+.bar i{display:block;width:40%;height:100%;background:#22c55e;border-radius:3px;animation:s 1.1s ease-in-out infinite}
+@keyframes s{0%{margin-left:-40%}100%{margin-left:100%}}
+.err .bar{display:none}.err #status{color:#fca5a5}
+</style>
+<div class="card" id="c"><img src="icon.png"><h1>Store Assets Generator</h1>
+<div class="bar"><i></i></div><div id="status">Starting…</div></div>
+<script>function setStatus(t,e){document.getElementById('status').textContent=t;document.getElementById('c').classList.toggle('err',!!e)}</script>

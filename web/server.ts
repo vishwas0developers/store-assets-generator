@@ -2773,8 +2773,10 @@ export async function startWebServer(options: { port?: number; host?: string; op
     sendError(res, 404, `Endpoint not found: ${method} ${p}`);
   }
 
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
+    server.once("error", reject); // e.g. EADDRINUSE: surface it instead of hanging forever
     server.listen(port, host, () => {
+      server.off("error", reject);
       // High-speed WebSocket server for low-latency live Android mirroring
       const androidWss = new WebSocketServer({
         noServer: true,
