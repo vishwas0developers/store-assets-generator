@@ -43,6 +43,20 @@ export interface FlowStep {
   side: "left" | "right";
 }
 
+/** Every Scene Transition the editor offers (id -> label); the renderer implements each id. */
+export const SCENE_TRANSITIONS = [
+  { id: "cut", name: "Cut" },
+  { id: "fade", name: "Fade from black" },
+  { id: "fade-white", name: "Flash from white" },
+  { id: "slide", name: "Slide left" },
+  { id: "slide-right", name: "Slide right" },
+  { id: "slide-up", name: "Slide up" },
+  { id: "wipe", name: "Wipe right" },
+  { id: "wipe-down", name: "Wipe down" },
+  { id: "zoom", name: "Zoom in" },
+] as const;
+export type SceneTransition = (typeof SCENE_TRANSITIONS)[number]["id"];
+
 export interface VideoScene {
   id: string;
   order: number;
@@ -66,7 +80,6 @@ export interface VideoScene {
   /** Device mode this scene requires; only devices of this type are selectable/applicable. */
   deviceMode?: "2D" | "3D";
   device: string;
-  variant?: string;
   /** Fraction of canvas height the device fills (see deviceScaleFor) --
    *  template-specific so a tablet and a phone aren't forced to the same
    *  on-screen size. Falls back to 0.58 when unset. */
@@ -74,19 +87,15 @@ export interface VideoScene {
   /** "16:9" renders a landscape canvas (1920x1080); anything else (or unset)
    *  keeps the app-store-standard 9:16 portrait canvas (1080x1920). */
   aspectRatio?: "9:16" | "16:9";
-  /** Composition id from LAYOUTS (render.ts) -- which side the device sits
-   *  on and how the copy block is sized/aligned. Falls back to a
-   *  per-orientation default (copy-left / stacked-top) when unset. */
-  layout?: string;
   /** How much physical depth the device renders with. "flat" is today's
    *  plain 2D frame; "perspective" tilts the same flat plane with a matched
    *  shadow; "float" and "showcase" use the full six-face 3D rig ("showcase"
    *  additionally implies the showcase-3d entrance animation). Falls back to
    *  "flat". */
   depth?: "flat" | "perspective" | "float" | "showcase";
-  /** In/out transition applied to this scene's first/last ~400ms. Falls
-   *  back to "cut" (no transition). */
-  transition?: "cut" | "fade" | "slide" | "wipe" | "zoom";
+  /** Scene Transition: how the video moves from the PREVIOUS scene into this one (for the first scene: how the video
+   *  opens). Each scene owns its own entry, so changing 1 -> 2 never touches 2 -> 3. Falls back to "cut". */
+  transition?: SceneTransition;
   /** Dynamic flow labels for landscape screen-recording walkthroughs. */
   flowSteps?: FlowStep[];
   /** Percent-positioned icon/badge/shape callouts -- see decorationsMarkup. */

@@ -113,13 +113,13 @@ import {
   videoFile,
   type VideoExportRecord,
 } from "../src/video/application.js";
-import { SCENE_ANIMATIONS, detectBestH264Encoder, ensureGeneratedBgm, listSceneAnimations, listSceneLayouts, listVideoBackgrounds, renderVideo, RenderCancelled, type RenderOptions, type RenderProgress, renderVideoTemplateThumbs, sceneHtml, scenePreviewHtml, sourceKindsFor, sourceUrisFor, templatePreviewHtml } from "../src/video/render.js";
+import { SCENE_ANIMATIONS, detectBestH264Encoder, ensureGeneratedBgm, listSceneAnimations, listVideoBackgrounds, renderVideo, RenderCancelled, type RenderOptions, type RenderProgress, renderVideoTemplateThumbs, sceneHtml, scenePreviewHtml, sourceKindsFor, sourceUrisFor, templatePreviewHtml } from "../src/video/render.js";
 import { EXPORT_PRESETS } from "../src/video/exportPresets.js";
 import { listTemplateBackgrounds } from "../src/video/templateBackgrounds.js";
 import { VIDEO_TEMPLATES, applyVideoTemplate, resolveTemplateId, scratchVideoApplication, loadAllTemplates, updateVideoTemplateOnDisk, createVideoTemplateOnDisk } from "../src/video/templates.js";
 import { BGM_PRESETS, renderBgmWav } from "../src/video/bgm.js";
 import { slotSpecsForScene, validateScene, type SlotIssue } from "../src/video/slots.js";
-import { type SlotValue } from "../src/video/application.js";
+import { type SlotValue, SCENE_TRANSITIONS } from "../src/video/application.js";
 
 /**
  * Local-only manual workflow surface -- a thin HTTP adapter over three
@@ -1970,7 +1970,7 @@ export async function startWebServer(options: { port?: number; host?: string; op
       if (m && method === "GET") {
         const application = loadVideoApplication(decodeURIComponent(m[1]));
         // editing=none: a fresh Editing session starts with no template; never hand back the old working scenes.
-        if (url.searchParams.get("editing") === "none") return sendJson(res, 200, { ...application, template: null, scenes: [] });
+        if (url.searchParams.get("editing") === "none") return sendJson(res, 200, { ...application, template: null, scenes: [], backgroundImage: null, bgm: null, brand: undefined });
         return sendJson(res, 200, application);
       }
       if (m && method === "PUT") {
@@ -2133,7 +2133,7 @@ export async function startWebServer(options: { port?: number; host?: string; op
       sendJson(res, 200, {
         animations: listSceneAnimations(),
         backgrounds: listVideoBackgrounds(),
-        layouts: { "9:16": listSceneLayouts("9:16"), "16:9": listSceneLayouts("16:9") }
+        transitions: SCENE_TRANSITIONS,
       });
       return;
     }

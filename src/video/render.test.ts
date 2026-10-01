@@ -1,6 +1,6 @@
 import assert from "node:assert";
-import { LAYOUTS, SCENE_ANIMATIONS, sceneHtml, templatePreviewHtml, EXPORT_PRESETS, RenderCancelled, cleanExportFileName, clampEven, buildVfFilter, renderVideo } from "./render.js";
-import type { VideoApplication, VideoScene } from "./application.js";
+import { SCENE_ANIMATIONS, sceneHtml, templatePreviewHtml, EXPORT_PRESETS, RenderCancelled, cleanExportFileName, clampEven, buildVfFilter, renderVideo } from "./render.js";
+import { SCENE_TRANSITIONS, type VideoApplication, type VideoScene } from "./application.js";
 import { VIDEO_TEMPLATES, applyVideoTemplate, resolveTemplateId, scratchVideoApplication } from "./templates.js";
 import { DEVICE_REGISTRY, frameSvgFor } from "../devices/registry.js";
 import { deviceMarkupMultiScreen } from "../render/shared.js";
@@ -33,22 +33,19 @@ async function demo() {
     const hundredPctBlock = kf.split("100%")[1] ?? "";
     assert.ok(hundredPctBlock.includes("opacity: 1"), `${anim.id} must resolve to opacity:1 at 100% (device stays in frame)`);
   }
-  assert.ok(SCENE_ANIMATIONS["fold-open"].renderDevice, "fold-open must declare a renderDevice hook");
   assert.ok(SCENE_ANIMATIONS["showcase-3d"]?.renderDevice, "showcase-3d must declare a renderDevice hook using the 3D rig");
   assert.ok(SCENE_ANIMATIONS["trio-lineup"], "trio-lineup animation must exist");
   assert.ok(SCENE_ANIMATIONS["tablet-pan"], "tablet-pan animation must exist");
 
-  // -- Layouts: every orientation has at least 3 distinct options --
-  const landscapeLayouts = Object.values(LAYOUTS).filter((l) => l.orientation === "16:9" || l.orientation === "both");
-  const portraitLayouts = Object.values(LAYOUTS).filter((l) => l.orientation === "9:16" || l.orientation === "both");
-  assert.ok(landscapeLayouts.length >= 3, "at least 3 landscape layouts expected");
-  assert.ok(portraitLayouts.length >= 3, "at least 3 portrait layouts expected");
-  assert.notStrictEqual(LAYOUTS["copy-left"].direction, LAYOUTS["copy-right"].direction, "copy-left and copy-right must place the device on opposite sides");
+  // -- Layout: no per-scene control; each orientation has exactly its built-in composition --
+  assert.ok(sceneHtml(sampleScene({ aspectRatio: "16:9" }), []).includes("flex-direction: row;"), "landscape scenes use the copy-left composition");
+  assert.ok(sceneHtml(sampleScene({ aspectRatio: "9:16" }), []).includes("flex-direction: column;"), "portrait scenes use the stacked composition");
 
-  const copyLeftHtml = sceneHtml(sampleScene({ aspectRatio: "16:9", layout: "copy-left" }), []);
-  const copyRightHtml = sceneHtml(sampleScene({ aspectRatio: "16:9", layout: "copy-right" }), []);
-  assert.ok(copyLeftHtml.includes("flex-direction: row;") && !copyLeftHtml.includes("flex-direction: row-reverse;"), "copy-left must render flex-direction: row");
-  assert.ok(copyRightHtml.includes("flex-direction: row-reverse;"), "copy-right must render flex-direction: row-reverse (device moves to the opposite side)");
+  // -- Scene Transition: every offered transition renders; "cut" renders an always-invisible overlay --
+  for (const tr of SCENE_TRANSITIONS) {
+    const html = sceneHtml(sampleScene({ transition: tr.id }), []);
+    assert.ok(html.includes("transition-overlay"), `transition '${tr.id}' must render the overlay layer`);
+  }
 
   // -- Player script: no autoplay, no loop, exposes the full scene-specific API --
   const application: VideoApplication = {
@@ -86,24 +83,16 @@ async function demo() {
 
     const orientation = t.aspectRatio === "16:9" ? "16:9" : "9:16";
     const seen = seenByOrientation[orientation];
-    const key = `${t.device}::${t.variant ?? ""}`;
+    const key = t.device;
     seen.add(key);
 
 
 
-    const layoutsUsed = new Set<string | undefined>();
     for (const s of t.scenes) {
       if (!t.id.startsWith("tpl-")) {
         assert.ok(s.text && s.text.trim().length > 0, `template '${t.id}' scene '${s.label}' must have non-empty text`);
       }
       assert.ok(SCENE_ANIMATIONS[s.sceneTemplate], `template '${t.id}' scene '${s.label}' references unknown animation '${s.sceneTemplate}'`);
-      if (s.layout && !t.id.startsWith("tpl-")) {
-        assert.ok(LAYOUTS[s.layout], `template '${t.id}' scene '${s.label}' references unknown layout '${s.layout}'`);
-      }
-      layoutsUsed.add(s.layout);
-    }
-    if (!t.id.startsWith("tpl-")) {
-      assert.ok(layoutsUsed.size >= 2, `template '${t.id}' must vary layout across its scenes, not use one layout for all six`);
     }
   }
   assert.ok(seenByOrientation["16:9"].size >= 4, "at least 4 landscape templates expected");

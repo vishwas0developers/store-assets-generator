@@ -1,4 +1,4 @@
-import { type FlowStep, type VideoApplication, type VideoScene, type SlotValue } from "./application.js";
+import { type FlowStep, type SceneTransition, type VideoApplication, type VideoScene, type SlotValue } from "./application.js";
 import { templateConfig, htmlSpanToAsterisk, clearTemplateConfigCache, templateHtmlPath } from "./templateConfig.js";
 import { slotSpecsForScene } from "./slots.js";
 import { DEVICE_REGISTRY } from "../devices/registry.js";
@@ -21,9 +21,8 @@ export interface VideoTemplateScene {
   zoom: number;
   move: number;
   screenCount?: number;
-  layout?: string;
   depth?: "flat" | "perspective" | "float" | "showcase";
-  transition?: "cut" | "fade" | "slide" | "wipe" | "zoom";
+  transition?: SceneTransition;
   flowSteps?: FlowStep[];
   /** Explicit device mode this scene expects (defaults to the template's). */
   deviceMode?: "2D" | "3D";
@@ -44,7 +43,6 @@ export interface VideoTemplate {
   /** Store platforms this template targets (google-play / apple-app-store). */
   platforms: string[];
   device: string;
-  variant?: string;
   deviceFraction: number;
   scenes: VideoTemplateScene[];
 }
@@ -174,6 +172,14 @@ export function applyVideoTemplate(application: VideoApplication, templateId: st
   const isLandscape = template.aspectRatio === "16:9";
 
   application.template = resolvedId;
+  // Loading a template must start from ITS defaults only: nothing from a previous (unsaved or discarded) editing
+  // session -- background, music, brand -- may survive into the new template.
+  application.backgroundImage = null;
+  application.bgm = null;
+  application.bgmVolume = undefined;
+  application.bgmFadeInMs = undefined;
+  application.bgmFadeOutMs = undefined;
+  application.brand = undefined;
   // ponytail: leave application.bgm unset here -- render/preview already fall back to
   // the template's own generated BGM preset (BGM_PRESETS) whenever it's null, so
   // there's nothing to default it to here. A prior "bgm_chill" sentinel did not
@@ -195,12 +201,10 @@ export function applyVideoTemplate(application: VideoApplication, templateId: st
       screenIds,
       deviceMode: s.deviceMode ?? template.deviceMode ?? "3D",
       device: template.device,
-      variant: template.variant,
       deviceFraction: template.deviceFraction,
       aspectRatio: template.aspectRatio === "16:9" ? "16:9" : "9:16",
-      layout: s.layout,
       depth: s.depth,
-      transition: s.transition,
+      transition: "cut",
       background: s.background,
       text: s.text,
       subtext: s.subtext,
@@ -261,7 +265,7 @@ function mergeScenesIntoConfig(config: any, scenes: VideoScene[]): any {
       text: textVal?.kind === "text" ? asteriskToSpan(textVal.value) : s.text,
       subtext: subVal?.kind === "text" ? asteriskToSpan(subVal.value) : s.subtext,
     };
-    for (const k of ["layout", "depth", "transition", "deviceMode", "flowSteps"] as const) {
+    for (const k of ["depth", "transition", "deviceMode", "flowSteps"] as const) {
       if ((s as any)[k] !== undefined) merged[k] = (s as any)[k];
     }
     if (s.screenIds && s.screenIds.length > 1) merged.screenCount = s.screenIds.length;
@@ -270,7 +274,6 @@ function mergeScenesIntoConfig(config: any, scenes: VideoScene[]): any {
   const first = ordered[0];
   if (first) {
     if (first.device) next.device = first.device;
-    if (first.variant !== undefined) next.variant = first.variant;
     if (first.deviceFraction !== undefined) next.deviceFraction = first.deviceFraction;
     if (first.deviceMode) next.deviceMode = first.deviceMode;
   }

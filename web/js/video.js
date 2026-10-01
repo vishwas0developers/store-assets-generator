@@ -356,7 +356,7 @@ export function openVideoTemplateDetail(id) {
               <div class="video-screen-num">Scene ${i + 1}</div>
               <button type="button" class="video-screen-play" data-scene-play="${i}" title="Play only this scene">&#9654;</button>
               <div class="video-screen-name">${s.label}</div>
-              <div class="hint">${s.durationSeconds}s &middot; ${(s.sceneTemplate || s.layout || "scene").replace(/-/g, " ")} &middot; ${s.background || "dark-studio"}</div>
+              <div class="hint">${s.durationSeconds}s &middot; ${(s.sceneTemplate || "scene").replace(/-/g, " ")} &middot; ${s.background || "dark-studio"}</div>
             </div>`
             )
             .join("")}
@@ -546,11 +546,9 @@ export function renderVideoScenes() {
   }
   populateSceneDeviceSelect(videoApplication.scenes.find((s) => s.id === selectedSceneId));
 
-  const orientation = (videoApplication.scenes[0] && videoApplication.scenes[0].aspectRatio) === "16:9" ? "16:9" : "9:16";
-  const layouts = (videoSceneOptions.layouts && videoSceneOptions.layouts[orientation]) || [];
-  const scLayout = $("sc-layout");
-  if (scLayout) {
-    scLayout.innerHTML = layouts.map((l) => `<option value="${l.id}">${l.name}</option>`).join("");
+  const scTransition = $("sc-transition");
+  if (scTransition && videoSceneOptions.transitions) {
+    scTransition.innerHTML = videoSceneOptions.transitions.map((t) => `<option value="${t.id}">${t.name}</option>`).join("");
   }
 
   // Grouped and labeled by device size (Phone / 7-inch Tablet / 10-inch
@@ -680,7 +678,6 @@ function selectScene(sceneId) {
   if (!scene) return;
 
   if ($("sc-template")) $("sc-template").value = scene.sceneTemplate || "";
-  if ($("sc-layout")) $("sc-layout").value = scene.layout || "";
   if ($("sc-depth")) $("sc-depth").value = scene.depth || "flat";
   if ($("sc-transition")) $("sc-transition").value = scene.transition || "cut";
   populateSceneDeviceSelect(scene);
@@ -697,7 +694,6 @@ function selectScene(sceneId) {
   if ($("sc-text-scale")) { $("sc-text-scale").value = textAnim.scale ?? 1; $("sc-text-scale-val").textContent = (textAnim.scale ?? 1).toFixed(2); }
   if (scene.sourceId && $("sc-source")) $("sc-source").value = scene.sourceId;
 
-  updateVariantSelect("sc-device", "sc-variant", scene.variant, videoDevices);
   updateSceneSpecialPanels(scene.sceneTemplate);
   syncVideoTimingUi(scene);
   renderFlowStepsEditor(scene.flowSteps);
@@ -787,18 +783,6 @@ window.assignDeviceToSelectedScene = async (id, mode) => {
   await applySelectedSceneDevice();
   return { ok: true, message: "Device applied to the selected scene." };
 };
-
-function updateVariantSelect(deviceSelectId, variantSelectId, current, catalog) {
-  const devSelect = $(deviceSelectId);
-  const varSelect = $(variantSelectId);
-  if (!devSelect || !varSelect) return;
-  const device = catalog.find((d) => d.id === String(devSelect.value).replace(DEVICE_VALUE_RE, ""));
-  varSelect.innerHTML = '<option value="">default</option>';
-  if (device?.variants) {
-    for (const v of device.variants) varSelect.innerHTML += `<option value="${v.id}">${v.name}</option>`;
-  }
-  varSelect.value = current || "";
-}
 
 function showScenePreview() {
   if (!videoLoadedTemplate) return;
@@ -988,7 +972,7 @@ function backgroundControl({ selectedRef, badge, canRemove, onChange }) {
   if (badge) {
     const b = document.createElement("span");
     b.className = "file-card-badge";
-    b.style.cssText = "position:absolute; bottom:4px; left:4px; top:auto; right:auto;";
+    b.style.cssText = "position:absolute; bottom:4px; left:4px; right:4px; top:auto; box-sizing:border-box; text-align:center; white-space:normal; line-height:1.25; padding:2px 4px;";
     b.textContent = badge;
     thumb.appendChild(b);
   }
@@ -1799,14 +1783,11 @@ export async function saveCurrentScene() {
   const selectedDevice = parseDeviceValue($("sc-device")?.value);
   const body = {
     sceneTemplate: $("sc-template")?.value,
-    layout: $("sc-layout")?.value || undefined,
     depth: $("sc-depth")?.value || "flat",
     transition: $("sc-transition")?.value || "cut",
     device: selectedDevice.id || undefined,
     // The picked device decides the mode (3D model / 2D frame / CSS rig); only a scene with no device picked falls back.
     deviceMode: selectedDevice.mode ?? (videoApplication.template ? sceneDeviceMode(videoApplication.scenes.find((s) => s.id === selectedSceneId)) : (videoSceneOptions.animations.find((a) => a.id === $("sc-template")?.value)?.deviceMode ?? "3D")),
-    // null (not undefined) so switching device really clears the previous device's variant on the server.
-    variant: $("sc-variant")?.value || null,
     background: $("sc-background")?.value,
     durationSeconds: Number($("sc-duration")?.value) || 3,
     rotate: Number($("sc-rotate")?.value || 0),
@@ -2222,7 +2203,6 @@ export function renderSavedConfigsGrid() {
   const scDevice = $("sc-device");
   if (scDevice) {
     scDevice.onchange = async () => {
-      updateVariantSelect("sc-device", "sc-variant", "", videoDevices);
       await applySelectedSceneDevice();
     };
   }
