@@ -1,6 +1,6 @@
 {
   "name": "store-assets-generator",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Standalone Studio application for Store Assets Generation (screenshots, device frames, and promotional videos)",
   "private": true,
   "license": "SEE LICENSE IN LICENSE",
@@ -34,6 +34,7 @@
     ],
     "nsis": {
       "include": "build/installer.nsh",
+      "useZip": true,
       "runAfterFinish": true,
       "installerIcon": "build/icon.ico",
       "uninstallerIcon": "build/icon.ico",
