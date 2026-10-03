@@ -17,7 +17,7 @@ import { createRequire } from "module";
  */
 
 export type DependencyKey = "chromium" | "scrcpy" | "ffmpeg";
-export type ProgressFn = (message: string, percent?: number) => void;
+export type ProgressFn = (message: string, percent?: number, bytes?: { done: number; total: number }) => void;
 
 const FOLDER_NAMES: Record<DependencyKey, string> = { chromium: "Chromium", scrcpy: "scrcpy-bin", ffmpeg: "FFmpeg" };
 
@@ -106,8 +106,12 @@ export async function ensureChromium(onProgress?: ProgressFn): Promise<void> {
     const onData = (d: Buffer) => {
       const text = d.toString();
       tail = (tail + text).slice(-600);
-      const pct = [...text.matchAll(/(\d{1,3})%/g)].pop();
-      if (pct) onProgress?.("Downloading Chromium...", Math.min(100, Number(pct[1])));
+      const pct = [...text.matchAll(/(\d{1,3})%\s+of\s+([\d.]+)\s*(KiB|MiB|GiB)/g)].pop();
+      if (pct) {
+        const p = Math.min(100, Number(pct[1]));
+        const total = Number(pct[2]) * { KiB: 1024, MiB: 1024 ** 2, GiB: 1024 ** 3 }[pct[3] as "KiB" | "MiB" | "GiB"];
+        onProgress?.("Downloading Chromium...", p, { done: (total * p) / 100, total });
+      }
     };
     child.stdout.on("data", onData);
     child.stderr.on("data", onData);

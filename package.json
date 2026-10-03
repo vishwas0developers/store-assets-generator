@@ -1,6 +1,6 @@
 {
   "name": "store-assets-generator",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Standalone Studio application for Store Assets Generation (screenshots, device frames, and promotional videos)",
   "private": true,
   "license": "SEE LICENSE IN LICENSE",
@@ -17,6 +17,7 @@
     "files": [
       "main.js",
       "preload.cjs",
+      "splash-preload.cjs",
       "build/icon.png",
       "build/splash.html",
       "dist/**/*",

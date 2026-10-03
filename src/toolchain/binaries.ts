@@ -165,7 +165,7 @@ export function resolveTool(name: ToolName): string {
 
 export function getToolVersion(name: ToolName, exePath: string): string | null {
   try {
-    const flag = name === "scrcpy" ? "--version" : "version";
+    const flag = name === "scrcpy" ? "--version" : name === "ffmpeg" ? "-version" : "version";
     const out = execFileSync(exePath, [flag], { encoding: "utf-8", stdio: ["ignore", "pipe", "ignore"], timeout: 3000 });
     if (name === "adb") {
       const m = out.match(/Android Debug Bridge version ([\d.]+)/i);
@@ -233,38 +233,51 @@ function calculateSha256(buf: Buffer): string {
   return crypto.createHash("sha256").update(buf).digest("hex");
 }
 
-async function downloadAndExtractZip(url: string, destDir: string, label: string, onProgress?: ProgressFn): Promise<void> {
+/** Downloads a zip next to destDir and returns its path; installZip() then extracts it into destDir. */
+export async function downloadZip(url: string, destDir: string, label: string, onProgress?: ProgressFn): Promise<string> {
   onProgress?.(`Downloading ${label}...`, 0);
   const res = await fetch(url, { headers: { "User-Agent": "store-assets-generator" }, redirect: "follow" });
   if (!res.ok || !res.body) throw new Error(`Download failed (${res.status}): ${url}`);
   const total = Number(res.headers.get("content-length")) || 0;
-  const chunks: Buffer[] = [];
-  let got = 0;
-  const reader = res.body.getReader();
-  for (;;) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    chunks.push(Buffer.from(value));
-    got += value.length;
-    onProgress?.(`Downloading ${label}...`, total ? Math.round((got / total) * 95) : undefined);
-  }
-
   fs.mkdirSync(path.dirname(destDir), { recursive: true });
   const tmpZip = `${destDir}.tmp.zip`;
-  const tmpExtract = `${destDir}.tmp`;
-  fs.writeFileSync(tmpZip, Buffer.concat(chunks));
+  const out = fs.createWriteStream(tmpZip);
+  let got = 0;
+  const reader = res.body.getReader();
+  try {
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      if (!out.write(value)) await new Promise<void>((r) => out.once("drain", () => r()));
+      got += value.length;
+      onProgress?.(`Downloading ${label}...`, total ? Math.round((got / total) * 100) : undefined, { done: got, total });
+    }
+  } finally {
+    await new Promise<void>((r) => out.end(() => r()));
+  }
+  return tmpZip;
+}
 
-  onProgress?.(`Extracting ${label}...`, 96);
+export async function installZip(tmpZip: string, destDir: string, label: string, onProgress?: ProgressFn): Promise<void> {
+  const tmpExtract = `${destDir}.tmp`;
+  onProgress?.(`Extracting ${label}...`);
   fs.rmSync(tmpExtract, { recursive: true, force: true });
   const directory = await unzipper.Open.file(tmpZip);
   await directory.extract({ path: tmpExtract });
   fs.rmSync(tmpZip, { force: true });
-
   // destDir is always an application-managed folder (never a user override), so replacing it is safe.
   fs.rmSync(destDir, { recursive: true, force: true });
   fs.renameSync(tmpExtract, destDir);
   onProgress?.(`${label} ready`, 100);
 }
+
+async function downloadAndExtractZip(url: string, destDir: string, label: string, onProgress?: ProgressFn): Promise<void> {
+  const zip = await downloadZip(url, destDir, label, (m, p, b) => onProgress?.(m, p === undefined ? undefined : Math.round(p * 0.95), b));
+  await installZip(zip, destDir, label, onProgress);
+}
+
+export const COMPONENT_URLS = { scrcpy: SCRCPY_URL, ffmpeg: FFMPEG_WINDOWS_URL };
+export function resetToolCache(): void { resolvedCache.clear(); }
 
 /** Scale a 0-100 sub-task onto a slice of the overall 0-100 progress bar. */
 function slice(onProgress: ProgressFn | undefined, from: number, to: number): ProgressFn {
