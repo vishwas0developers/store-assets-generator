@@ -37,10 +37,10 @@
   <!-- ============ TAB: Applications List ============ -->
   <div class="tab-page active" id="tab-applications">
     <div class="app-body">
-      <div class="content" style="display: flex; gap: 1.5rem; width: 100%; padding: 1.5rem; min-height: 0;">
+      <div class="content" style="display: flex; gap: 1.5rem; width: 100%; padding: 1.5rem; min-height: 0; height: 100%; box-sizing: border-box; overflow: hidden;">
         
         <!-- Left: Application Creation & Active Application Inspector -->
-        <div style="flex: 0 0 380px; display: flex; flex-direction: column; gap: 1.25rem; min-height: 0;">
+        <div style="flex: 0 0 380px; display: flex; flex-direction: column; gap: 1.25rem; min-height: 0; overflow-y: auto;">
           <!-- Create New Application Card -->
           <div class="card" style="margin-top: 0;">
             <h3>Create New Application</h3>
@@ -81,20 +81,20 @@
         </div>
 
         <!-- Right: Applications Catalog & File Explorer Workstation -->
-        <div style="flex: 1; display: flex; flex-direction: column; gap: 1.25rem; min-height: 0;">
+        <div style="flex: 1; display: flex; flex-direction: column; gap: 1.25rem; min-height: 0; min-width: 0; overflow: hidden;">
           <!-- Applications Catalog Card -->
-          <div class="card" style="flex: 1; display: flex; flex-direction: column; min-height: 280px; margin-top: 0;">
+          <div class="card" style="flex: 1 1 0; display: flex; flex-direction: column; min-height: 0; min-width: 0; overflow: hidden; margin-top: 0;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
               <h3 style="margin: 0;">Applications Library</h3>
               <span id="applications-count-badge" class="badge">0 Applications</span>
             </div>
-            <div id="applications-list-container" style="overflow-y: auto; flex: 1;">
+            <div id="applications-list-container" style="overflow-y: auto; overflow-x: hidden; flex: 1; min-height: 0;">
               Loading applications...
             </div>
           </div>
 
           <!-- Embedded File Explorer -->
-          <div class="card" id="application-explorer-card" style="flex: 1; display: none; flex-direction: column; min-height: 320px; margin-top: 0;">
+          <div class="card" id="application-explorer-card" style="flex: 1 1 0; display: none; flex-direction: column; min-height: 0; min-width: 0; overflow: hidden; margin-top: 0;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
               <h3 style="margin: 0;">Application Files & Outputs</h3>
               <div>
@@ -118,7 +118,7 @@
                 </button>
               </div>
             </div>
-            <div id="application-files-list" style="overflow-y: auto; flex: 1; min-height: 0;">
+            <div id="application-files-list" style="overflow-y: auto; overflow-x: hidden; flex: 1; min-height: 0; min-width: 0;">
               Select an application to inspect files.
             </div>
           </div>

@@ -4347,3 +4347,7 @@ html.light .saved-template-badge {
 /* Toolchain dependency rows: compact icon buttons, input takes the remaining width */
 .tc-icon-btn { width: 34px; height: 34px; padding: 0; flex: none; display: inline-flex; align-items: center; justify-content: center; }
 #toolchain-locations input { min-width: 0; }
+
+/* Applications page: long file names wrap inside the table instead of widening it */
+.file-table { table-layout: auto; }
+.file-table td { overflow-wrap: anywhere; word-break: break-word; }
