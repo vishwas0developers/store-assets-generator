@@ -73,7 +73,7 @@ function createSplash() {
   splash = new BrowserWindow({
     width: 460, height: 320, frame: false, transparent: true, resizable: false,
     movable: true, show: false, skipTaskbar: true, alwaysOnTop: true, icon: ICON,
-    webPreferences: { contextIsolation: true, nodeIntegration: false },
+    webPreferences: { contextIsolation: true, nodeIntegration: false, preload: path.join(__dirname, 'splash-preload.cjs') },
   });
   splash.once('ready-to-show', () => splash && splash.show());
   splash.loadFile(path.join(__dirname, 'build', 'splash.html'));
@@ -83,6 +83,40 @@ function setSplashStatus(text, isError = false, percent) {
   if (splash && !splash.isDestroyed()) {
     splash.webContents.executeJavaScript(`setStatus(${JSON.stringify(text)}, ${isError}, ${typeof percent === 'number' ? percent : 'undefined'})`).catch(() => {});
   }
+}
+
+const waitForAction = () => new Promise((resolve) => ipcMain.once('setup-action', (_e, action) => resolve(action)));
+
+function sendSetup(state) {
+  if (splash && !splash.isDestroyed()) {
+    splash.webContents.executeJavaScript(`window.setup(${JSON.stringify(state)})`).catch(() => {});
+  }
+}
+
+/**
+ * One continuous first-run flow inside the splash window: detect -> download -> install -> configure -> verify
+ * -> finalize, every step visible. Skipped entirely (plain splash) when everything is already in place.
+ */
+async function runSetupFlow() {
+  const { getToolchainStatus } = await import('./dist/src/toolchain/binaries.js');
+  if (getToolchainStatus().ready) return;
+  const { runSetup } = await import('./dist/src/toolchain/setup.js');
+  splash.setSize(620, 720);
+  splash.center();
+  sendSetup({ mode: 'start' });
+  for (;;) {
+    try {
+      await runSetup(sendSetup);
+      break;
+    } catch (err) {
+      console.error('[SAG-ELECTRON] Setup step failed:', err && err.message ? err.message : err);
+      if ((await waitForAction()) === 'skip') return;
+    }
+  }
+  await waitForAction(); // "Launch Application"
+  splash.setSize(460, 320);
+  splash.center();
+  splash.webContents.executeJavaScript('window.simple()').catch(() => {});
 }
 
 /** Startup failed: say so (never leave a blank window), point at the log, quit. */
@@ -224,19 +258,11 @@ app.whenReady().then(async () => {
     console.warn('[SAG-ELECTRON] Cache clear failed:', err.message);
   }
   try {
+    // dependencies.js first: it points Playwright at the managed Chromium folder before Playwright is imported.
+    await import('./dist/src/toolchain/dependencies.js');
+    await runSetupFlow();
     setSplashStatus('Starting services...');
     await startBackgroundServer();
-    // Detect (and, on first run, download) Chromium / scrcpy-bin / FFmpeg in the managed Dependencies folder.
-    // Never fatal: offline users still reach the UI, where the Toolchain panel can retry or redirect a dependency.
-    try {
-      const { ensureDependencies, getToolchainStatus } = await import('./dist/src/toolchain/binaries.js');
-      if (!getToolchainStatus().ready) {
-        setSplashStatus('Preparing required components...', false, 0);
-        await ensureDependencies((msg, pct) => setSplashStatus(typeof pct === 'number' ? `${msg} ${pct}%` : msg, false, pct));
-      }
-    } catch (err) {
-      console.warn('[SAG-ELECTRON] Dependency setup incomplete:', err && err.message ? err.message : err);
-    }
     setSplashStatus('Loading interface...');
     await createWindow();
   } catch (err) {
