@@ -42,35 +42,36 @@ export function closeToolchainModal() {
 export async function refreshToolchainStatus() {
   const summaryEl = $("toolchain-status-summary");
   const listEl = $("toolchain-tools-list");
-  const customDirInput = $("toolchain-custom-dir");
   if (!summaryEl || !listEl) return;
 
   try {
     const status = await api("/api/toolchain/status");
-    if (customDirInput) customDirInput.value = status.customDir || "";
+    renderToolchainLocations(status);
 
     if (status.ready) {
       summaryEl.style.background = "rgba(16, 185, 129, 0.15)";
       summaryEl.style.border = "1px solid rgba(16, 185, 129, 0.3)";
       summaryEl.style.color = "#10b981";
-      summaryEl.innerHTML = "&#10003; Toolchain Ready: ADB, scrcpy, and FFmpeg are installed and accessible.";
+      summaryEl.innerHTML = "&#10003; All set: Chromium, scrcpy and FFmpeg are installed and accessible.";
     } else {
       summaryEl.style.background = "rgba(239, 68, 68, 0.15)";
       summaryEl.style.border = "1px solid rgba(239, 68, 68, 0.3)";
       summaryEl.style.color = "#ef4444";
-      summaryEl.innerHTML = "&#9888; Action Required: One or more required binaries are missing.";
+      summaryEl.innerHTML = "&#9888; Action Required: One or more required components are missing. Use Download below.";
     }
 
     listEl.innerHTML = "";
-    const toolNames = ["adb", "scrcpy", "ffmpeg"];
+    const toolNames = ["chromium", "adb", "scrcpy", "ffmpeg"];
     for (const name of toolNames) {
-      const t = status.tools?.[name];
+      const t = name === "chromium"
+        ? { name, available: status.chromium?.available, path: status.chromium?.path, version: null, source: status.overrides?.chromium ? "custom" : "vendor" }
+        : status.tools?.[name];
       if (!t) continue;
       const row = document.createElement("div");
       row.style.cssText = "display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0.8rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px;";
 
       const badgeBg = t.available ? (t.source === "custom" ? "#8b5cf6" : "#10b981") : "#ef4444";
-      const badgeText = t.available ? (t.source === "custom" ? "Custom" : t.source === "vendor" ? "Vendor" : "PATH") : "Missing";
+      const badgeText = t.available ? (t.source === "custom" ? "Custom" : t.source === "vendor" ? "Managed" : "PATH") : "Missing";
 
       row.innerHTML = `
         <div>
@@ -84,6 +85,61 @@ export async function refreshToolchainStatus() {
     }
   } catch (e) {
     summaryEl.textContent = "Failed to load status: " + e.message;
+  }
+}
+
+const DEPENDENCY_ROWS = [
+  { key: "chromium", label: "Chromium (browser folder)" },
+  { key: "scrcpy", label: "scrcpy-bin (scrcpy + adb)" },
+  { key: "ffmpeg", label: "FFmpeg" },
+];
+
+function renderToolchainLocations(status) {
+  const box = $("toolchain-locations");
+  if (!box) return;
+  const nativeInvoke = window.electronNative?.invoke;
+  box.innerHTML = "";
+
+  const root = document.createElement("div");
+  root.style.cssText = "display:flex; gap:0.5rem; align-items:center; font-size:0.8rem; color:#9aa0a6;";
+  root.innerHTML = `<span style="flex:1; font-family:monospace; word-break:break-all;">Managed folder: ${status.dependenciesRoot}</span>`;
+  if (nativeInvoke) {
+    const open = document.createElement("button");
+    open.className = "secondary"; open.type = "button"; open.textContent = "Open";
+    open.onclick = () => nativeInvoke("show-in-folder", status.dependenciesRoot);
+    root.appendChild(open);
+  }
+  box.appendChild(root);
+
+  for (const { key, label } of DEPENDENCY_ROWS) {
+    const row = document.createElement("div");
+    row.style.cssText = "display:flex; gap:0.5rem; align-items:center;";
+    row.innerHTML = `<span style="width:11rem; font-size:0.8rem; flex:none;">${label}</span>`;
+    const input = document.createElement("input");
+    input.type = "text"; input.style.cssText = "flex:1; margin-bottom:0;";
+    input.placeholder = "Default (managed folder)";
+    input.value = status.overrides?.[key] || "";
+    row.appendChild(input);
+    const save = async (dir) => {
+      try {
+        await api("/api/toolchain/override", { method: "POST", body: { key, dir } });
+        await refreshToolchainStatus();
+      } catch (e) { await showAlert("Failed to update location: " + e.message); }
+    };
+    if (nativeInvoke) {
+      const browse = document.createElement("button");
+      browse.className = "secondary"; browse.type = "button"; browse.textContent = "Browse";
+      browse.onclick = async () => { const d = await nativeInvoke("choose-save-folder"); if (d) save(d); };
+      row.appendChild(browse);
+    }
+    const set = document.createElement("button");
+    set.className = "secondary"; set.type = "button"; set.textContent = "Save";
+    set.onclick = () => save(input.value.trim() || null);
+    const reset = document.createElement("button");
+    reset.className = "secondary"; reset.type = "button"; reset.textContent = "Reset"; reset.title = "Use the managed default folder";
+    reset.onclick = () => save(null);
+    row.append(set, reset);
+    box.appendChild(row);
   }
 }
 
@@ -634,32 +690,6 @@ export function setupSettingsAndModals() {
   const toolchainBackdrop = $("toolchain-backdrop");
   if (toolchainBackdrop) toolchainBackdrop.onclick = (e) => { if (e.target === toolchainBackdrop) closeToolchainModal(); };
 
-  const toolchainSaveDir = $("toolchain-save-dir");
-  if (toolchainSaveDir) {
-    toolchainSaveDir.onclick = async () => {
-      const customDir = $("toolchain-custom-dir")?.value.trim();
-      try {
-        await api("/api/toolchain/config", { method: "POST", body: { customDir: customDir || null } });
-        await refreshToolchainStatus();
-      } catch (e) {
-        await showAlert("Failed to set directory: " + e.message);
-      }
-    };
-  }
-
-  const toolchainResetDir = $("toolchain-reset-dir");
-  if (toolchainResetDir) {
-    toolchainResetDir.onclick = async () => {
-      if ($("toolchain-custom-dir")) $("toolchain-custom-dir").value = "";
-      try {
-        await api("/api/toolchain/config", { method: "POST", body: { customDir: null } });
-        await refreshToolchainStatus();
-      } catch (e) {
-        await showAlert("Failed to reset directory: " + e.message);
-      }
-    };
-  }
-
   const toolchainDownloadBtn = $("toolchain-download-btn");
   if (toolchainDownloadBtn) {
     toolchainDownloadBtn.onclick = async () => {
@@ -698,14 +728,8 @@ export function setupSettingsAndModals() {
       eventSource.onerror = () => {
         eventSource.close();
         btn.disabled = false;
+        refreshToolchainStatus();
       };
-      try {
-        await api("/api/toolchain/download", { method: "POST" });
-      } catch (e) {
-        eventSource.close();
-        btn.disabled = false;
-        await showAlert("Failed to start download: " + e.message);
-      }
     };
   }
 

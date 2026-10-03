@@ -36,6 +36,14 @@ export interface ApplicationState {
 const ROOT = path.join(process.cwd(), "output", "applications");
 export const APPLICATION_FILE = "application.json";
 
+/** Internal bookkeeping (application.json, other JSON/config/log files, dotfiles) must never be listed,
+ *  served or deleted through the user-facing file API; only the user's own assets are. */
+export function isInternalApplicationFile(rel: string): boolean {
+  const segments = rel.replace(/\\/g, "/").split("/");
+  if (segments.some((s) => s.startsWith("."))) return true;
+  return /\.(json|ya?ml|toml|ini|env|log|tmp|lock)$/i.test(segments[segments.length - 1]);
+}
+
 export function getApplicationRootDir(): string {
   if (!fs.existsSync(ROOT)) {
     fs.mkdirSync(ROOT, { recursive: true });

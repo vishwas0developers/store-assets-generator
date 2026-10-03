@@ -1325,20 +1325,16 @@
       <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 0.5rem 0;" />
 
       <div>
-        <label style="font-weight: 600; display: block; margin-bottom: 0.4rem;">Custom Binaries Directory</label>
-        <div style="display: flex; gap: 0.5rem;">
-          <input type="text" id="toolchain-custom-dir" placeholder="e.g. C:\Tools\bin or leave blank for vendor/bin" style="flex: 1; margin-bottom: 0;" />
-          <button id="toolchain-save-dir" class="secondary" type="button">Save Path</button>
-          <button id="toolchain-reset-dir" class="secondary" type="button" title="Reset to default vendor/bin">Reset</button>
-        </div>
-        <p class="hint" style="margin-top: 0.4rem;">Specify a folder containing `adb.exe`, `scrcpy.exe`, and `ffmpeg.exe` if you prefer your own local installation.</p>
+        <label style="font-weight: 600; display: block; margin-bottom: 0.4rem;">Dependency Locations</label>
+        <div id="toolchain-locations" style="display: flex; flex-direction: column; gap: 0.5rem;"></div>
+        <p class="hint" style="margin-top: 0.4rem;">Components are stored in the managed folder above by default and reused on every launch. Advanced: point any single dependency at your own install. Chromium changes apply after restarting the app.</p>
       </div>
 
       <div id="toolchain-download-section" style="border: 1px solid rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px; background: rgba(0,0,0,0.2);">
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <div>
             <strong style="display: block; font-size: 0.95rem;">Automated Binary Downloader</strong>
-            <span class="hint">Downloads pinned scrcpy v2.7 (with ADB) & FFmpeg for Windows</span>
+            <span class="hint">Downloads Chromium, scrcpy v2.7 (with ADB) & FFmpeg into the managed folder</span>
           </div>
           <button id="toolchain-download-btn" style="background: #3b82f6; color: white; border: none; border-radius: 4px; padding: 6px 14px; font-weight: 600; cursor: pointer;">
             Download / Reinstall Binaries
