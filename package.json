@@ -1,6 +1,6 @@
 {
   "name": "store-assets-generator",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Standalone Studio application for Store Assets Generation (screenshots, device frames, and promotional videos)",
   "private": true,
   "license": "SEE LICENSE IN LICENSE",
@@ -75,6 +75,9 @@
     "ws": "^8.21.3",
     "yaml": "^2.5.0",
     "zod": "^3.23.8"
+  },
+  "overrides": {
+    "@electron/get": "^5.1.0"
   },
   "devDependencies": {
     "@types/archiver": "^6.0.2",
