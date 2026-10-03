@@ -45,7 +45,7 @@ export function updateTabGating() {
     if (nameDisp) nameDisp.textContent = activeApplication.name;
     if (catDisp) catDisp.textContent = activeApplication.appCategory || 'Education';
     if (urlDisp) urlDisp.textContent = activeApplication.targetUrl || 'None';
-    if (explorerCard) explorerCard.style.display = 'block';
+    if (explorerCard) explorerCard.style.display = 'flex';
     refreshFileExplorer();
   } else {
     if (brand) brand.textContent = 'Store Assets Generator';
