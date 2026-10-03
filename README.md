@@ -35,9 +35,17 @@ If you find this project useful, consider giving it a ⭐ on GitHub!
 | **Windows** | 10 / 11 (x64) for the packaged installer | — |
 
 > [!NOTE]
-> `npm install` runs a `postinstall` step that downloads Playwright's Chromium (`playwright install chromium`). Screen capture and video/mockup rendering use it. The installer **does not bundle Chromium**: on a machine that only ran the installed app, install it once with `npx playwright install chromium` or the first capture/render will fail.
+> `npm install` runs a `postinstall` step (`playwright install chromium`) for developers. The installer bundles none of the third-party binaries; the installed app downloads them on first launch as described below.
 
-`scrcpy`, `adb` and `ffmpeg` binaries are expected in `vendor/bin/` (git-ignored). The app's toolchain panel can point at an existing install or download them.
+**Dependencies are managed automatically.** On launch the app checks `%LOCALAPPDATA%\Store Assets Generator\Dependencies\` (override with `SAG_DEPENDENCIES_DIR`) and, if anything is missing, downloads it there with progress shown on the splash screen:
+
+| Folder | Contents |
+| :--- | :--- |
+| `Chromium/` | Playwright browsers (`PLAYWRIGHT_BROWSERS_PATH` points here) |
+| `scrcpy-bin/` | scrcpy + adb |
+| `FFmpeg/` | ffmpeg |
+
+The folder survives reinstalls, so components are downloaded once. In the Toolchain panel (folder icon) you can redirect any single dependency to your own install; Chromium changes apply after a restart. Lookup order per tool: manual override → managed folder → legacy `vendor/bin/` → `PATH`. An internet connection is needed the first time.
 
 ---
 
@@ -102,7 +110,7 @@ Releases: bump `MINOR`/`MAJOR` manually (`npm version minor --no-git-tag-version
 
 ### What gets packaged
 
-The app is packaged with `asar: false`, so templates, devices and output folders are real directories on disk (the backend reads and writes them relative to the working directory, and `main.js` sets `process.chdir` to the app folder at launch). Included: `main.js`, `preload.cjs`, `dist/`, `web/`, `devices/`, `templates/`, `assets/`, `config/`, `fonts/`, `vendor/`, `src/platform/specs/`, `build/` (icon + splash), plus `three/examples` (electron-builder strips `examples/` folders by default; it is re-added through `extraResources`).
+The app is packaged with `asar: false`, so templates, devices and output folders are real directories on disk (the backend reads and writes them relative to the working directory, and `main.js` sets `process.chdir` to the app folder at launch). Included: `main.js`, `preload.cjs`, `dist/`, `web/`, `devices/`, `templates/`, `assets/`, `config/`, `fonts/`, `src/platform/specs/`, `build/` (icon + splash), plus `three/examples` (electron-builder strips `examples/` folders by default; it is re-added through `extraResources`).
 
 The NSIS installer closes any running copy before replacing files, so reinstalling over an existing install updates it in place. The installer is per-user by default (`%LOCALAPPDATA%\Programs\store-assets-generator`), which keeps `output/` and `logs/` writable.
 

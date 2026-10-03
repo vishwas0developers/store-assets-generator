@@ -79,9 +79,9 @@ function createSplash() {
   splash.loadFile(path.join(__dirname, 'build', 'splash.html'));
 }
 
-function setSplashStatus(text, isError = false) {
+function setSplashStatus(text, isError = false, percent) {
   if (splash && !splash.isDestroyed()) {
-    splash.webContents.executeJavaScript(`setStatus(${JSON.stringify(text)}, ${isError})`).catch(() => {});
+    splash.webContents.executeJavaScript(`setStatus(${JSON.stringify(text)}, ${isError}, ${typeof percent === 'number' ? percent : 'undefined'})`).catch(() => {});
   }
 }
 
@@ -131,6 +131,8 @@ function freePortFromStaleInstance(port) {
 
 // Resolves only once the HTTP server is really listening; rejects on any startup error.
 async function startBackgroundServer() {
+  // dependencies.js must load first: it points Playwright at the managed Chromium folder before Playwright is imported.
+  await import('./dist/src/toolchain/dependencies.js');
   const serverModule = await import('./dist/web/server.js');
   const start = (port) => serverModule.startWebServer({ port, host: '127.0.0.1', openBrowser: false });
   // Prefer 8787: reclaim it from a stale copy of this app; if a foreign program owns it, use any free port.
@@ -224,6 +226,17 @@ app.whenReady().then(async () => {
   try {
     setSplashStatus('Starting services...');
     await startBackgroundServer();
+    // Detect (and, on first run, download) Chromium / scrcpy-bin / FFmpeg in the managed Dependencies folder.
+    // Never fatal: offline users still reach the UI, where the Toolchain panel can retry or redirect a dependency.
+    try {
+      const { ensureDependencies, getToolchainStatus } = await import('./dist/src/toolchain/binaries.js');
+      if (!getToolchainStatus().ready) {
+        setSplashStatus('Preparing required components...', false, 0);
+        await ensureDependencies((msg, pct) => setSplashStatus(typeof pct === 'number' ? `${msg} ${pct}%` : msg, false, pct));
+      }
+    } catch (err) {
+      console.warn('[SAG-ELECTRON] Dependency setup incomplete:', err && err.message ? err.message : err);
+    }
     setSplashStatus('Loading interface...');
     await createWindow();
   } catch (err) {

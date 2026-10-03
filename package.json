@@ -1,6 +1,6 @@
 {
   "name": "store-assets-generator",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Standalone Studio application for Store Assets Generation (screenshots, device frames, and promotional videos)",
   "private": true,
   "license": "SEE LICENSE IN LICENSE",
@@ -25,7 +25,6 @@
       "!dist/*.blockmap",
       "web/**/*",
       "devices/**/*",
-      "vendor/**/*",
       "templates/**/*",
       "assets/**/*",
       "config/**/*",

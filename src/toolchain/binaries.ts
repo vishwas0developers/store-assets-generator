@@ -3,8 +3,12 @@ import path from "path";
 import crypto from "crypto";
 import { execFileSync } from "child_process";
 import unzipper from "unzipper";
+import {
+  dependencyDir, dependenciesRoot, getDependencyOverrides, setDependencyOverride, isChromiumInstalled, chromiumLocation,
+  ensureChromium, type DependencyKey, type ProgressFn,
+} from "./dependencies.js";
 
-// Managed local vendor directory directly inside the application installation directory
+// Legacy location (binaries bundled with older builds); still honoured as a fallback after the managed folder.
 const VENDOR_DIR = path.join(process.cwd(), "vendor", "bin");
 const CONFIG_FILE = path.join(process.cwd(), "output", ".toolchain-config.json");
 const EXE = process.platform === "win32" ? ".exe" : "";
@@ -27,6 +31,10 @@ export interface ToolchainStatus {
   ready: boolean;
   customDir: string | null;
   tools: Record<ToolName, ToolStatus>;
+  /** Default managed dependency folder + per-dependency manual overrides + Chromium state. */
+  dependenciesRoot: string;
+  overrides: Partial<Record<DependencyKey, string>>;
+  chromium: { available: boolean; path: string };
 }
 
 // Pinned Windows binary release endpoints
@@ -53,6 +61,12 @@ function saveConfig(cfg: ToolchainConfig): void {
 
 export function getCustomDir(): string | null {
   return loadConfig().customDir;
+}
+
+export function setOverride(key: DependencyKey, dir: string | null): ToolchainStatus {
+  setDependencyOverride(key, dir);
+  resolvedCache.clear();
+  return getToolchainStatus();
 }
 
 export function setCustomDir(dir: string | null): ToolchainStatus {
@@ -104,6 +118,18 @@ export function resolveToolInfo(name: ToolName): { path: string; source: "custom
   const cached = resolvedCache.get(name);
   if (cached && fs.existsSync(cached.path)) return cached;
 
+  // 1. manual per-dependency override, 2. legacy single custom dir, 3. managed Dependencies folder, 4. legacy vendor/bin, 5. PATH
+  const depKey: DependencyKey = name === "ffmpeg" ? "ffmpeg" : "scrcpy";
+  const overrideDir = getDependencyOverrides()[depKey];
+  if (overrideDir) {
+    const foundOverride = findExecutable(overrideDir, name);
+    if (foundOverride) {
+      const res = { path: foundOverride, source: "custom" as const };
+      resolvedCache.set(name, res);
+      return res;
+    }
+  }
+
   const customDir = getCustomDir();
   if (customDir) {
     const foundCustom = findExecutable(customDir, name);
@@ -114,7 +140,7 @@ export function resolveToolInfo(name: ToolName): { path: string; source: "custom
     }
   }
 
-  const foundVendor = findExecutable(path.join(VENDOR_DIR, vendorSubdir(name)), name);
+  const foundVendor = findExecutable(dependencyDir(depKey), name) ?? findExecutable(path.join(VENDOR_DIR, vendorSubdir(name)), name);
   if (foundVendor) {
     const res = { path: foundVendor, source: "vendor" as const };
     resolvedCache.set(name, res);
@@ -192,10 +218,14 @@ export function getToolchainStatus(): ToolchainStatus {
     }
   }
 
+  const chromium = { available: isChromiumInstalled(), path: chromiumLocation() };
   return {
-    ready: allReady,
+    ready: allReady && chromium.available,
     customDir,
     tools,
+    dependenciesRoot: dependenciesRoot(),
+    overrides: getDependencyOverrides(),
+    chromium,
   };
 }
 
@@ -203,61 +233,72 @@ function calculateSha256(buf: Buffer): string {
   return crypto.createHash("sha256").update(buf).digest("hex");
 }
 
-async function downloadAndExtractZip(
-  url: string,
-  destDir: string,
-  onProgress?: (msg: string) => void,
-  expectedSha256?: string
-): Promise<void> {
-  onProgress?.(`Downloading ${path.basename(destDir)} from ${url}...`);
-  const res = await fetch(url, { headers: { "User-Agent": "store-assets-generator" } });
-  if (!res.ok) throw new Error(`Download failed (${res.status}): ${url}`);
-  const buf = Buffer.from(await res.arrayBuffer());
-
-  if (expectedSha256) {
-    const actualSha = calculateSha256(buf);
-    if (actualSha !== expectedSha256) {
-      throw new Error(`Integrity check failed for ${url}. Expected SHA-256 ${expectedSha256}, got ${actualSha}`);
-    }
-    onProgress?.(`SHA-256 verification passed for ${path.basename(destDir)}`);
+async function downloadAndExtractZip(url: string, destDir: string, label: string, onProgress?: ProgressFn): Promise<void> {
+  onProgress?.(`Downloading ${label}...`, 0);
+  const res = await fetch(url, { headers: { "User-Agent": "store-assets-generator" }, redirect: "follow" });
+  if (!res.ok || !res.body) throw new Error(`Download failed (${res.status}): ${url}`);
+  const total = Number(res.headers.get("content-length")) || 0;
+  const chunks: Buffer[] = [];
+  let got = 0;
+  const reader = res.body.getReader();
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    chunks.push(Buffer.from(value));
+    got += value.length;
+    onProgress?.(`Downloading ${label}...`, total ? Math.round((got / total) * 95) : undefined);
   }
 
   fs.mkdirSync(path.dirname(destDir), { recursive: true });
   const tmpZip = `${destDir}.tmp.zip`;
   const tmpExtract = `${destDir}.tmp`;
-  fs.writeFileSync(tmpZip, buf);
+  fs.writeFileSync(tmpZip, Buffer.concat(chunks));
 
-  onProgress?.(`Extracting ${path.basename(destDir)}...`);
+  onProgress?.(`Extracting ${label}...`, 96);
   fs.rmSync(tmpExtract, { recursive: true, force: true });
   const directory = await unzipper.Open.file(tmpZip);
   await directory.extract({ path: tmpExtract });
   fs.rmSync(tmpZip, { force: true });
 
+  // destDir is always an application-managed folder (never a user override), so replacing it is safe.
   fs.rmSync(destDir, { recursive: true, force: true });
   fs.renameSync(tmpExtract, destDir);
+  onProgress?.(`${label} ready`, 100);
 }
 
-/**
- * Ensures required external binaries (scrcpy, adb, ffmpeg) exist in vendor/bin/ or custom path
- */
-export async function ensureBinaries(onProgress?: (msg: string) => void): Promise<void> {
+/** Scale a 0-100 sub-task onto a slice of the overall 0-100 progress bar. */
+function slice(onProgress: ProgressFn | undefined, from: number, to: number): ProgressFn {
+  return (msg, pct) => onProgress?.(msg, pct === undefined ? undefined : Math.round(from + ((to - from) * pct) / 100));
+}
+
+/** Downloads scrcpy (+adb) and ffmpeg into the managed Dependencies folder when they cannot be resolved. */
+export async function ensureBinaries(onProgress?: ProgressFn): Promise<void> {
   if (process.platform !== "win32") {
     onProgress?.("Auto-download is only implemented for Windows; ensure scrcpy, adb, and ffmpeg are on PATH.");
     return;
   }
+  const missing = (n: ToolName) => { try { resolveToolInfo(n); return false; } catch { return true; } };
 
-  const customDir = getCustomDir();
-  const targetDir = customDir || VENDOR_DIR;
-
-  const scrcpyDir = customDir ? customDir : path.join(VENDOR_DIR, "scrcpy");
-  if (!findExecutable(scrcpyDir, "scrcpy") || !findExecutable(scrcpyDir, "adb")) {
-    await downloadAndExtractZip(SCRCPY_URL, scrcpyDir, onProgress);
+  if (missing("scrcpy") || missing("adb")) {
+    await downloadAndExtractZip(SCRCPY_URL, dependencyDir("scrcpy"), "scrcpy", slice(onProgress, 0, 20));
   }
-
-  const ffmpegDir = customDir ? customDir : path.join(VENDOR_DIR, "ffmpeg");
-  if (!findExecutable(ffmpegDir, "ffmpeg")) {
-    await downloadAndExtractZip(FFMPEG_WINDOWS_URL, ffmpegDir, onProgress);
-  }
-
   resolvedCache.clear();
+  if (missing("ffmpeg")) {
+    await downloadAndExtractZip(FFMPEG_WINDOWS_URL, dependencyDir("ffmpeg"), "FFmpeg", slice(onProgress, 20, 100));
+  }
+  resolvedCache.clear();
+}
+
+let inFlight: Promise<void> | null = null;
+const listeners = new Set<ProgressFn>();
+
+/** Detect-or-download every required dependency (Chromium, scrcpy-bin, FFmpeg). Concurrent callers share one run. */
+export function ensureDependencies(onProgress?: ProgressFn): Promise<void> {
+  if (onProgress) listeners.add(onProgress);
+  const emit: ProgressFn = (m, p) => listeners.forEach((l) => l(m, p));
+  inFlight ??= (async () => {
+    await ensureChromium(slice(emit, 0, 45));
+    await ensureBinaries(slice(emit, 45, 100));
+  })().finally(() => { inFlight = null; listeners.clear(); });
+  return inFlight;
 }

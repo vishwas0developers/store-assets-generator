@@ -1,3 +1,5 @@
+// Must stay the first import: sets PLAYWRIGHT_BROWSERS_PATH before Playwright is loaded.
+import "../src/toolchain/dependencies.js";
 import http from "http";
 import fs from "fs";
 import path from "path";
@@ -40,6 +42,7 @@ import {
   discardDraft,
   applicationDir,
   applicationFile,
+  isInternalApplicationFile,
 } from "../src/application/applicationStore.js";
 import {
   startBrowserSession,
@@ -81,7 +84,8 @@ import {
 import {
   getToolchainStatus,
   setCustomDir,
-  ensureBinaries,
+  setOverride,
+  ensureDependencies,
 } from "../src/toolchain/binaries.js";
 
 import {
@@ -653,9 +657,32 @@ export async function startWebServer(options: { port?: number; host?: string; op
       return;
     }
 
+    if (method === "POST" && p === "/api/toolchain/override") {
+      const body = await readJsonBody(req);
+      if (!["chromium", "scrcpy", "ffmpeg"].includes(body.key)) return sendError(res, 400, "key must be chromium, scrcpy or ffmpeg");
+      sendJson(res, 200, setOverride(body.key, typeof body.dir === "string" && body.dir.trim() ? body.dir.trim() : null));
+      return;
+    }
+
+    // Server-sent progress for the dependency download shown in the Toolchain modal.
+    if (method === "GET" && p === "/api/toolchain/download-stream") {
+      res.writeHead(200, { "Content-Type": "text/event-stream", "Cache-Control": "no-cache", Connection: "keep-alive" });
+      const send = (data: object) => res.write(`data: ${JSON.stringify(data)}
+
+`);
+      try {
+        await ensureDependencies((message, progress) => send({ status: "running", message, progress: progress ?? 0 }));
+        send({ status: "complete", message: "All dependencies are ready", progress: 100 });
+      } catch (err: any) {
+        send({ status: "error", message: err?.message || "Dependency download failed" });
+      }
+      res.end();
+      return;
+    }
+
     if (method === "POST" && p === "/api/toolchain/download") {
       try {
-        await ensureBinaries();
+        await ensureDependencies();
         sendJson(res, 200, { ok: true, status: getToolchainStatus() });
       } catch (err: any) {
         sendError(res, 500, err.message || "Failed to download binaries");
@@ -941,7 +968,7 @@ export async function startWebServer(options: { port?: number; host?: string; op
             const relPath = sub ? `${sub}/${ent.name}` : ent.name;
             if (ent.isDirectory()) {
               scan(relPath);
-            } else {
+            } else if (!isInternalApplicationFile(relPath)) {
               const stat = fs.statSync(path.join(dir, relPath));
               files.push({
                 path: relPath.replace(/\\/g, "/"),
@@ -974,6 +1001,7 @@ export async function startWebServer(options: { port?: number; host?: string; op
       if (m && method === "GET") {
         const rel = url.searchParams.get("p");
         if (!rel) return sendError(res, 400, "query param 'p' is required");
+        if (isInternalApplicationFile(rel)) return sendError(res, 404, "File not found");
         const abs = applicationFile(decodeURIComponent(m[1]), rel);
         const ext = path.extname(abs).toLowerCase();
         let mime = "image/png";
@@ -987,6 +1015,7 @@ export async function startWebServer(options: { port?: number; host?: string; op
       if (m && method === "DELETE") {
         const rel = url.searchParams.get("p");
         if (!rel) return sendError(res, 400, "query param 'p' is required");
+        if (isInternalApplicationFile(rel)) return sendError(res, 404, "File not found");
         const projId = decodeURIComponent(m[1]);
         deleteApplicationCapture(projId, rel);
         sendJson(res, 200, { ok: true });

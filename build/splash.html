@@ -13,4 +13,5 @@ h1{margin:6px 0 0;font-size:20px;font-weight:600;letter-spacing:.3px}
 </style>
 <div class="card" id="c"><img src="icon.png"><h1>Store Assets Generator</h1>
 <div class="bar"><i></i></div><div id="status">Starting…</div></div>
-<script>function setStatus(t,e){document.getElementById('status').textContent=t;document.getElementById('c').classList.toggle('err',!!e)}</script>
+<script>function setStatus(t,e,p){document.getElementById('status').textContent=t;document.getElementById('c').classList.toggle('err',!!e);
+var i=document.querySelector('.bar i');if(typeof p==='number'){i.style.animation='none';i.style.marginLeft='0';i.style.width=p+'%'}else{i.style.cssText=''}}</script>
