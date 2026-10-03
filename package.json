@@ -1,6 +1,6 @@
 {
   "name": "store-assets-generator",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Standalone Studio application for Store Assets Generation (screenshots, device frames, and promotional videos)",
   "private": true,
   "license": "SEE LICENSE IN LICENSE",
