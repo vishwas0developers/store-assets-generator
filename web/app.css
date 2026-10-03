@@ -4343,3 +4343,7 @@ html.light .saved-template-badge {
 .app-footer a { color: var(--accent-active-text); text-decoration: none; font-weight: 500; }
 .app-footer a:hover { text-decoration: underline; }
 .app-footer .sep { color: var(--text-muted); }
+
+/* Toolchain dependency rows: compact icon buttons, input takes the remaining width */
+.tc-icon-btn { width: 34px; height: 34px; padding: 0; flex: none; display: inline-flex; align-items: center; justify-content: center; }
+#toolchain-locations input { min-width: 0; }

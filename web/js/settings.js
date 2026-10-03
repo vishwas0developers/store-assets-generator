@@ -88,6 +88,20 @@ export async function refreshToolchainStatus() {
   }
 }
 
+const SVG = (p) => `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+const TC_ICONS = {
+  open: SVG('<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>'),
+  browse: SVG('<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M12 11v5M9.5 13.5 12 11l2.5 2.5"/>'),
+  save: SVG('<path d="M5 12l5 5L20 7"/>'),
+  reset: SVG('<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>'),
+};
+function iconBtn(kind, title, onclick) {
+  const b = document.createElement("button");
+  b.type = "button"; b.className = "secondary tc-icon-btn"; b.title = title; b.setAttribute("aria-label", title);
+  b.innerHTML = TC_ICONS[kind]; b.onclick = onclick;
+  return b;
+}
+
 const DEPENDENCY_ROWS = [
   { key: "chromium", label: "Chromium (browser folder)" },
   { key: "scrcpy", label: "scrcpy-bin (scrcpy + adb)" },
@@ -103,18 +117,13 @@ function renderToolchainLocations(status) {
   const root = document.createElement("div");
   root.style.cssText = "display:flex; gap:0.5rem; align-items:center; font-size:0.8rem; color:#9aa0a6;";
   root.innerHTML = `<span style="flex:1; font-family:monospace; word-break:break-all;">Managed folder: ${status.dependenciesRoot}</span>`;
-  if (nativeInvoke) {
-    const open = document.createElement("button");
-    open.className = "secondary"; open.type = "button"; open.textContent = "Open";
-    open.onclick = () => nativeInvoke("show-in-folder", status.dependenciesRoot);
-    root.appendChild(open);
-  }
+  if (nativeInvoke) root.appendChild(iconBtn("open", "Open managed folder", () => nativeInvoke("show-in-folder", status.dependenciesRoot)));
   box.appendChild(root);
 
   for (const { key, label } of DEPENDENCY_ROWS) {
     const row = document.createElement("div");
     row.style.cssText = "display:flex; gap:0.5rem; align-items:center;";
-    row.innerHTML = `<span style="width:11rem; font-size:0.8rem; flex:none;">${label}</span>`;
+    row.innerHTML = `<span style="width:9rem; font-size:0.8rem; flex:none;">${label}</span>`;
     const input = document.createElement("input");
     input.type = "text"; input.style.cssText = "flex:1; margin-bottom:0;";
     input.placeholder = "Default (managed folder)";
@@ -126,19 +135,11 @@ function renderToolchainLocations(status) {
         await refreshToolchainStatus();
       } catch (e) { await showAlert("Failed to update location: " + e.message); }
     };
-    if (nativeInvoke) {
-      const browse = document.createElement("button");
-      browse.className = "secondary"; browse.type = "button"; browse.textContent = "Browse";
-      browse.onclick = async () => { const d = await nativeInvoke("choose-save-folder"); if (d) save(d); };
-      row.appendChild(browse);
-    }
-    const set = document.createElement("button");
-    set.className = "secondary"; set.type = "button"; set.textContent = "Save";
-    set.onclick = () => save(input.value.trim() || null);
-    const reset = document.createElement("button");
-    reset.className = "secondary"; reset.type = "button"; reset.textContent = "Reset"; reset.title = "Use the managed default folder";
-    reset.onclick = () => save(null);
-    row.append(set, reset);
+    if (nativeInvoke) row.appendChild(iconBtn("browse", "Browse for a folder", async () => { const d = await nativeInvoke("choose-save-folder"); if (d) save(d); }));
+    row.append(
+      iconBtn("save", "Save this location", () => save(input.value.trim() || null)),
+      iconBtn("reset", "Reset to the managed default folder", () => save(null)),
+    );
     box.appendChild(row);
   }
 }
