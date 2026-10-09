@@ -1,0 +1,13 @@
+title = "gitleaks config (security rollout)"
+[extend]
+useDefault = true
+
+[[rules]]
+id = "openai-legacy-key"
+description = "OpenAI legacy sk- key"
+regex = '''\bsk-(?:proj-)?[A-Za-z0-9_\-]{32,}'''
+keywords = ["sk-"]
+
+[allowlist]
+description = "Templates and generated artifacts"
+paths = ['''\.env\.example$''', '''(^|/)node_modules/''', '''(^|/)venv/''', '''(^|/)vendor/''']
