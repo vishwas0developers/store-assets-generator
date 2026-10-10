@@ -4,7 +4,7 @@ No arguments scans all indexed files. All SQLite databases are forbidden, includ
 Filename arguments also use index blobs, never a possibly different working copy.
 Reports contain filenames, detector names and counts; no credential values.
 """
-import pathlib,re,sqlite3,subprocess,sys,io,zipfile
+import pathlib,re,sqlite3,subprocess,sys,io,zipfile,tarfile,gzip,bz2,lzma
 PATTERNS={
  'google_api_key':rb'AIza[0-9A-Za-z_-]{35}',
  'openai_key':rb'sk-(?:proj-[A-Za-z0-9_-]{40,}|[A-Za-z0-9]{32,})(?![A-Za-z0-9_-])',
@@ -53,45 +53,86 @@ def inspect(data,name):
  if KEY.search(name) and re.fullmatch(rb'[A-Za-z0-9_-]{43}=',data.strip()):findings.append(('fernet_key',1))
  if data.startswith(b'SQLite format 3\x00') or name.lower().endswith(EXT):
   findings.append(('sqlite_database_forbidden',1))
- if name.lower().endswith(('.7z','.rar','.tar','.tar.gz','.tgz','.gz','.bz2','.xz')):
-  raise RuntimeError('Opaque archive requires verified review before publication')
- if data.startswith(b'PK'):
-  try:
+ if data.startswith(b'PK') or name.lower().endswith(('.7z','.rar','.tar','.tar.gz','.tgz','.gz','.bz2','.xz')):
+  findings.extend(archive_databases(data,name))
+ return findings
+def archive_databases(data,name,depth=0):
+ if depth>=3:raise RuntimeError('Archive nesting requires review')
+ findings=[];members=[]
+ try:
+  if data.startswith(b'PK'):
    with zipfile.ZipFile(io.BytesIO(data)) as z:
     entries=z.infolist()
-    if len(entries)>20000:raise RuntimeError('Archive member limit exceeded')
-    total=0
-    for entry in entries:
-     total+=entry.file_size
-     if total>200*1024*1024:raise RuntimeError('Archive inspection limit exceeded')
-     if entry.is_dir():continue
-     with z.open(entry) as member:header=member.read(16)
-     if entry.filename.lower().endswith(EXT) or header==b'SQLite format 3\x00':
-      findings.append(('archive_contains_sqlite_forbidden',1))
-     if header.startswith(b'PK'):raise RuntimeError('Nested archive requires explicit review')
-  except (zipfile.BadZipFile,RuntimeError,NotImplementedError,OSError) as e:
-   raise RuntimeError('Archive could not be fully checked') from e
+    if len(entries)>20000 or sum(x.file_size for x in entries)>200*1024*1024:raise RuntimeError('Archive inspection limit exceeded')
+    for x in entries:
+     if x.is_dir():continue
+     if x.file_size>LIMIT:raise RuntimeError('Archive member exceeds limit')
+     members.append((x.filename,z.read(x)))
+  elif name.lower().endswith(('.7z','.rar')):raise RuntimeError('Archive format requires verified review')
+  else:
+   payload=data
+   if data.startswith(b'\x1f\x8b'):
+    with gzip.GzipFile(fileobj=io.BytesIO(data)) as f:payload=f.read(LIMIT+1)
+   elif data.startswith(b'BZh'):
+    with bz2.BZ2File(io.BytesIO(data)) as f:payload=f.read(LIMIT+1)
+   elif data.startswith(b'\xfd7zXZ\x00'):
+    with lzma.LZMAFile(io.BytesIO(data)) as f:payload=f.read(LIMIT+1)
+   if len(payload)>LIMIT:raise RuntimeError('Compressed payload exceeds limit')
+   try:
+    with tarfile.open(fileobj=io.BytesIO(payload),mode='r:') as t:
+     entries=t.getmembers()
+     if len(entries)>20000 or sum(x.size for x in entries)>200*1024*1024:raise RuntimeError('Archive inspection limit exceeded')
+     for x in entries:
+      if not x.isfile():continue
+      if x.size>LIMIT:raise RuntimeError('Archive member exceeds limit')
+      with t.extractfile(x) as f:members.append((x.name,f.read()))
+   except tarfile.ReadError:
+    if payload==data:raise RuntimeError('Archive could not be fully checked')
+    members.append((name.rsplit('.',1)[0],payload))
+  for member,content in members:
+   if content.startswith(b'SQLite format 3\x00') or member.lower().endswith(EXT):findings.append(('archive_contains_sqlite_forbidden',1))
+   if content.startswith(b'PK') or member.lower().endswith(('.7z','.rar','.tar','.tar.gz','.tgz','.gz','.bz2','.xz')):findings.extend(archive_databases(content,member,depth+1))
+ except (zipfile.BadZipFile,tarfile.TarError,ValueError,NotImplementedError,OSError) as e:raise RuntimeError('Archive could not be fully checked') from e
  return findings
+
+class IndexBlobs:
+ def __enter__(self):
+  self.proc=subprocess.Popen(['git','cat-file','--batch'],stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE);return self
+ def read(self,oid):
+  self.proc.stdin.write(oid+b'\n');self.proc.stdin.flush();header=self.proc.stdout.readline().split()
+  if len(header)!=3 or header[1]!=b'blob':raise RuntimeError('Indexed object unavailable')
+  size=int(header[2])
+  if size>LIMIT:raise RuntimeError('Indexed file exceeds scanner limit; review required')
+  data=self.proc.stdout.read(size)
+  if len(data)!=size or self.proc.stdout.read(1)!=b'\n':raise RuntimeError('Indexed blob was truncated')
+  return data
+ def __exit__(self,kind,value,traceback):
+  if kind:
+   self.proc.kill();self.proc.wait();return False
+  self.proc.stdin.close()
+  try:self.proc.wait(timeout=10)
+  except subprocess.TimeoutExpired:self.proc.kill();self.proc.wait();raise RuntimeError('Git index process timed out')
+  if self.proc.returncode:raise RuntimeError('Git index process failed')
+
 def main(args):
  staged='--staged' in args;requested={p.replace('\\','/') for p in args if p!='--staged'}
  try:
   changed=set(git('diff','--cached','--name-only','--diff-filter=ACMR','-z').decode('utf-8',errors='surrogateescape').split('\x00')) if staged else None
-  records=git('ls-files','--stage','-z').split(b'\x00');found=set();bad=0
-  for record in records:
-   if not record:continue
-   meta,rawname=record.split(b'\t',1);mode,oid,stage=meta.split();name=rawname.decode('utf-8',errors='surrogateescape')
-   if stage!=b'0':raise RuntimeError('Unresolved index conflict')
-   if requested and name not in requested:continue
-   if changed is not None and name not in changed:continue
-   found.add(name)
-   if mode==b'160000':continue
-   if mode not in (b'100644',b'100755',b'120000'):raise RuntimeError('Unsupported indexed file mode')
-   # Read exact indexed bytes, including headers of files with misleading names.
-   size=int(git('cat-file','-s',oid.decode()).strip())
-   if size>LIMIT:raise RuntimeError('Indexed file exceeds scanner memory limit; review required')
-   try:items=inspect(git('cat-file','blob',oid.decode()),name)
-   except RuntimeError as e:print('SCAN-ERROR',name,str(e));bad=2;continue
-   for rule,n in items:print('SECRET-CANDIDATE',name,rule,'count='+str(n));bad=max(bad,1)
+  records=git('ls-files','--full-name','--stage','-z','--',':/').split(b'\x00');found=set();bad=0
+  with IndexBlobs() as blobs:
+   for record in records:
+    if not record:continue
+    meta,rawname=record.split(b'\t',1);mode,oid,stage=meta.split();name=rawname.decode('utf-8',errors='surrogateescape')
+    if stage!=b'0':raise RuntimeError('Unresolved index conflict')
+    if requested and name not in requested:continue
+    if changed is not None and name not in changed:continue
+    found.add(name)
+    if mode==b'160000':continue
+    if mode not in (b'100644',b'100755',b'120000'):raise RuntimeError('Unsupported indexed file mode')
+    # Read exact indexed bytes, including headers of files with misleading names.
+    try:items=inspect(blobs.read(oid),name)
+    except RuntimeError as e:print('SCAN-ERROR',name,str(e));bad=2;continue
+    for rule,n in items:print('SECRET-CANDIDATE',name,rule,'count='+str(n));bad=max(bad,1)
   if requested-found:raise RuntimeError('Requested file is not present in the scanned index')
   return bad
  except (RuntimeError,ValueError) as e:print('SCAN-ERROR',str(e));return 2
