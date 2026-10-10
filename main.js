@@ -11,12 +11,26 @@ const __dirname = path.dirname(__filename);
 // (installed apps start with cwd = install dir, not resources/app).
 process.chdir(__dirname);
 
-// GPU Hardware Acceleration Switches
-app.commandLine.appendSwitch('enable-gpu-rasterization');
-app.commandLine.appendSwitch('enable-zero-copy');
-app.commandLine.appendSwitch('ignore-gpu-blocklist');
-app.commandLine.appendSwitch('enable-hardware-overlays', 'single-fullscreen,single-on-top');
-app.commandLine.appendSwitch('enable-features', 'VaapiVideoDecoder,D3D11VideoDecoder,WebGPU');
+// GPU acceleration with automatic CPU fallback. If the GPU process ever crashes (no/broken GPU or driver), a marker
+// is stored and the app relaunches once with software rendering (SwiftShader/CPU); SAG_DISABLE_GPU=1 forces it too.
+const GPU_MARKER = path.join(app.getPath('userData'), 'gpu-fallback');
+const useCpuRendering = process.env.SAG_DISABLE_GPU === '1' || fs.existsSync(GPU_MARKER);
+if (useCpuRendering) {
+  app.disableHardwareAcceleration();
+} else {
+  app.commandLine.appendSwitch('enable-gpu-rasterization');
+  app.commandLine.appendSwitch('enable-zero-copy');
+  app.commandLine.appendSwitch('ignore-gpu-blocklist');
+  app.commandLine.appendSwitch('enable-hardware-overlays', 'single-fullscreen,single-on-top');
+  app.commandLine.appendSwitch('enable-features', 'VaapiVideoDecoder,D3D11VideoDecoder,WebGPU');
+  app.on('child-process-gone', (_e, details) => {
+    if (details.type !== 'GPU') return;
+    console.error('[SAG-ELECTRON] GPU process gone (' + details.reason + ') - switching to CPU rendering');
+    try { fs.mkdirSync(path.dirname(GPU_MARKER), { recursive: true }); fs.writeFileSync(GPU_MARKER, details.reason || 'gpu-crash'); } catch {}
+    app.relaunch();
+    app.exit(0);
+  });
+}
 
 // ---- Logging: mirror everything to logs/app.log (recreated each launch) ----
 const LOG_DIR = path.join(__dirname, 'logs');
@@ -50,6 +64,7 @@ function newestMtime(dir, exts) {
 function logBuildStatus() {
   console.log(`[SAG-ELECTRON] Electron ${process.versions.electron} / Chrome ${process.versions.chrome} / Node ${process.versions.node}`);
   console.log(`[SAG-ELECTRON] App dir: ${__dirname}`);
+  console.log(`[SAG-ELECTRON] Rendering: ${useCpuRendering ? 'CPU (software fallback)' : 'GPU accelerated'}`);
   console.log(`[SAG-ELECTRON] Logs: ${LOG_FILE}`);
   try {
     const distServer = path.join(__dirname, 'dist', 'web', 'server.js');

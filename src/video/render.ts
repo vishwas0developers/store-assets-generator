@@ -1978,21 +1978,25 @@ export async function renderVideo(
   }
 
   const { chromium } = await import("playwright");
-  const browser = await chromium.launch({
-    headless: true,
-    args: [
-      "--enable-gpu",
-      "--use-gl=angle",
-      "--use-angle=d3d11",
-      "--enable-accelerated-2d-canvas",
-      "--enable-accelerated-video-decode",
-      "--gpu-rasterization-msaa-sample-count=0",
-      "--disable-background-timer-throttling",
-      "--disable-renderer-backgrounding",
-      "--disable-backgrounding-occluded-windows",
-      "--no-sandbox",
-    ],
-  });
+  const baseArgs = [
+    "--disable-background-timer-throttling",
+    "--disable-renderer-backgrounding",
+    "--disable-backgrounding-occluded-windows",
+    "--no-sandbox",
+  ];
+  const gpuArgs = ["--enable-gpu", "--use-gl=angle", "--use-angle=d3d11", "--enable-accelerated-2d-canvas", "--enable-accelerated-video-decode", "--gpu-rasterization-msaa-sample-count=0"];
+  // CPU fallback for machines without a usable GPU: software WebGL through SwiftShader.
+  const cpuArgs = ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist"];
+  const hasWebGL = async (b: import("playwright").Browser) => {
+    const page = await b.newPage();
+    try { return await page.evaluate(() => !!document.createElement("canvas").getContext("webgl")); } catch { return false; } finally { await page.close(); }
+  };
+  let browser = await chromium.launch({ headless: true, args: process.env.SAG_DISABLE_GPU === "1" ? [...cpuArgs, ...baseArgs] : [...gpuArgs, ...baseArgs] });
+  if (process.env.SAG_DISABLE_GPU !== "1" && !(await hasWebGL(browser))) {
+    console.warn("[render] GPU WebGL unavailable - falling back to CPU (SwiftShader) rendering");
+    await browser.close();
+    browser = await chromium.launch({ headless: true, args: [...cpuArgs, ...baseArgs] });
+  }
 
   try {
     let lastReportTime = 0;
