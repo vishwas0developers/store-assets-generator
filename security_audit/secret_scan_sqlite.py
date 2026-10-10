@@ -1,10 +1,10 @@
 """Fail-closed scan of Git index blobs, SQLite credential columns, and key files.
 
-No arguments scans all indexed database/key files. --staged scans changed paths.
+No arguments scans all indexed files. All SQLite databases are forbidden, including archive members. --staged scans changed paths.
 Filename arguments also use index blobs, never a possibly different working copy.
 Reports contain filenames, detector names and counts; no credential values.
 """
-import pathlib,re,sqlite3,subprocess,sys
+import pathlib,re,sqlite3,subprocess,sys,io,zipfile
 PATTERNS={
  'google_api_key':rb'AIza[0-9A-Za-z_-]{35}',
  'openai_key':rb'sk-(?:proj-[A-Za-z0-9_-]{40,}|[A-Za-z0-9]{32,})(?![A-Za-z0-9_-])',
@@ -14,7 +14,7 @@ PATTERNS={
  'jwt':rb'eyJ[\w-]{8,}\.eyJ[\w-]{8,}\.[\w-]{8,}',
  'oauth_secret':rb'GOCSPX-[A-Za-z0-9_-]{20,}',
 }
-EXT=('.sqlite','.sqlite3','.db','.db3')
+EXT=('.sqlite','.sqlite3','.db','.db3','.sqlite-wal','.sqlite-shm','.sqlite-journal','.sqlite3-wal','.sqlite3-shm','.sqlite3-journal','.db-wal','.db-shm','.db-journal','.db3-wal','.db3-shm','.db3-journal')
 KEY=re.compile(r'(?i)(^|/)\.[a-z0-9_]*(key|secret|token)$')
 LIMIT=64*1024*1024
 def git(*args):
@@ -45,14 +45,32 @@ def database(data):
  return count
 def inspect(data,name):
  findings=[]
- for rule,pat in PATTERNS.items():
+ # Gitleaks checks source credentials with its contextual allowlist.
+ # Preserve this helper's original key-file scope while checking EVERY blob for SQLite.
+ for rule,pat in (PATTERNS.items() if KEY.search(name) or name.lower().endswith(EXT) else []):
   n=len(re.findall(pat,data))
   if n:findings.append((rule,n))
  if KEY.search(name) and re.fullmatch(rb'[A-Za-z0-9_-]{43}=',data.strip()):findings.append(('fernet_key',1))
- if data.startswith(b'SQLite format 3\x00'):
-  n=database(data)
-  if n:findings.append(('plaintext_credential_column',n))
- elif name.lower().endswith(EXT):raise RuntimeError('Database extension without readable SQLite header')
+ if data.startswith(b'SQLite format 3\x00') or name.lower().endswith(EXT):
+  findings.append(('sqlite_database_forbidden',1))
+ if name.lower().endswith(('.7z','.rar','.tar','.tar.gz','.tgz','.gz','.bz2','.xz')):
+  raise RuntimeError('Opaque archive requires verified review before publication')
+ if data.startswith(b'PK'):
+  try:
+   with zipfile.ZipFile(io.BytesIO(data)) as z:
+    entries=z.infolist()
+    if len(entries)>20000:raise RuntimeError('Archive member limit exceeded')
+    total=0
+    for entry in entries:
+     total+=entry.file_size
+     if total>200*1024*1024:raise RuntimeError('Archive inspection limit exceeded')
+     if entry.is_dir():continue
+     with z.open(entry) as member:header=member.read(16)
+     if entry.filename.lower().endswith(EXT) or header==b'SQLite format 3\x00':
+      findings.append(('archive_contains_sqlite_forbidden',1))
+     if header.startswith(b'PK'):raise RuntimeError('Nested archive requires explicit review')
+  except (zipfile.BadZipFile,RuntimeError,NotImplementedError,OSError) as e:
+   raise RuntimeError('Archive could not be fully checked') from e
  return findings
 def main(args):
  staged='--staged' in args;requested={p.replace('\\','/') for p in args if p!='--staged'}
@@ -66,10 +84,11 @@ def main(args):
    if requested and name not in requested:continue
    if changed is not None and name not in changed:continue
    found.add(name)
-   if not (name.lower().endswith(EXT) or KEY.search(name)):continue
-   if mode not in (b'100644',b'100755'):raise RuntimeError('Database or key is not a regular indexed file')
+   if mode==b'160000':continue
+   if mode not in (b'100644',b'100755',b'120000'):raise RuntimeError('Unsupported indexed file mode')
+   # Read exact indexed bytes, including headers of files with misleading names.
    size=int(git('cat-file','-s',oid.decode()).strip())
-   if size>LIMIT:raise RuntimeError('Database/key exceeds scanner memory limit')
+   if size>LIMIT:raise RuntimeError('Indexed file exceeds scanner memory limit; review required')
    try:items=inspect(git('cat-file','blob',oid.decode()),name)
    except RuntimeError as e:print('SCAN-ERROR',name,str(e));bad=2;continue
    for rule,n in items:print('SECRET-CANDIDATE',name,rule,'count='+str(n));bad=max(bad,1)

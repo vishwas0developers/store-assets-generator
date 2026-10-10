@@ -47,3 +47,13 @@ cookies_*.json
 # Track only the reviewed security scanner source files
 !security_audit/secret_scan_sqlite.py
 !security_audit/guard_commit.py
+
+# SQLite databases stay local; never publish database files or journals.
+*.sqlite
+*.sqlite3
+*.db
+*.db3
+*.sqlite-*
+*.sqlite3-*
+*.db-*
+*.db3-*
