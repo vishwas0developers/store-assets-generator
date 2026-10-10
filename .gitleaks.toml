@@ -11,3 +11,17 @@ keywords = ["sk-"]
 [allowlist]
 description = "Templates and generated artifacts"
 paths = ['''\.env\.example$''', '''(^|/)node_modules/''', '''(^|/)venv/''', '''(^|/)vendor/''']
+
+[[rules]]
+
+id = "fernet-key-dotfile"
+description = "Fernet encryption key in dedicated key dotfile"
+path = '''(?i)(^|/)\.[a-z0-9_]*(key|secret|token)$'''
+regex = '''(?m)^[A-Za-z0-9_-]{43}=\s*$'''
+
+[[rules]]
+
+id = "huggingface-private-token"
+description = "Hugging Face access token"
+regex = '''\bhf_[A-Za-z0-9]{30,}\b'''
+keywords = ["hf_"]

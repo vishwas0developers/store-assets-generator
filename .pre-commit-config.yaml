@@ -4,3 +4,12 @@ repos:
     hooks:
       - id: gitleaks
         args: ["--config", ".gitleaks.toml", "--redact"]
+
+  - repo: local
+    hooks:
+      - id: sqlite-index-exclusion
+        name: prevent SQLite databases and key files
+        entry: python security_audit/secret_scan_sqlite.py --staged
+        language: system
+        always_run: true
+        pass_filenames: false
