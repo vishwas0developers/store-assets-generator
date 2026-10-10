@@ -25,3 +25,25 @@ logs/
 .sandbox/
 extra/
 graphify-out/.graphify_labels.json
+
+# Credential protection (2026-10-10)
+.env
+.env.*
+!.env.example
+!.env.*.example
+*.pem
+*.key
+*.p12
+*.pfx
+.ocr_key
+.fernet_key
+.encryption_key
+credentials.json
+service-account*.json
+*_credentials.json
+cookies.json
+cookies_*.json
+
+# Track only the reviewed security scanner source files
+!security_audit/secret_scan_sqlite.py
+!security_audit/guard_commit.py

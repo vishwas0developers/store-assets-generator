@@ -1,0 +1,14 @@
+repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.1
+    hooks:
+      - id: gitleaks
+        args: ["--config", ".gitleaks.toml", "--redact=100"]
+  - repo: local
+    hooks:
+      - id: database-and-key-index-guard
+        name: Database and key-file credential guard
+        entry: python security_audit/secret_scan_sqlite.py --staged
+        language: system
+        pass_filenames: false
+        always_run: true
