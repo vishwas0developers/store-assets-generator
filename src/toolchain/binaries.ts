@@ -38,7 +38,9 @@ export interface ToolchainStatus {
 }
 
 // Pinned Windows binary release endpoints
-const SCRCPY_PINNED_VERSION = "v2.7";
+// Must match the scrcpy protocol implemented in src/capture/scrcpyProtocol.ts (the pushed scrcpy-server rejects any other version).
+export const SCRCPY_PROTOCOL_VERSION = "4.1";
+const SCRCPY_PINNED_VERSION = `v${SCRCPY_PROTOCOL_VERSION}`;
 const SCRCPY_URL = `https://github.com/Genymobile/scrcpy/releases/download/${SCRCPY_PINNED_VERSION}/scrcpy-win64-${SCRCPY_PINNED_VERSION}.zip`;
 const FFMPEG_WINDOWS_URL = "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip";
 
@@ -140,7 +142,10 @@ export function resolveToolInfo(name: ToolName): { path: string; source: "custom
     }
   }
 
-  const foundVendor = findExecutable(dependencyDir(depKey), name) ?? findExecutable(path.join(VENDOR_DIR, vendorSubdir(name)), name);
+  // A managed scrcpy-bin of another version (e.g. downloaded by an older build) is ignored so it gets replaced.
+  let managed = findExecutable(dependencyDir(depKey), name);
+  if (managed && depKey === "scrcpy" && !managed.includes(`scrcpy-win64-${SCRCPY_PINNED_VERSION}`)) managed = null;
+  const foundVendor = managed ?? findExecutable(path.join(VENDOR_DIR, vendorSubdir(name)), name);
   if (foundVendor) {
     const res = { path: foundVendor, source: "vendor" as const };
     resolvedCache.set(name, res);

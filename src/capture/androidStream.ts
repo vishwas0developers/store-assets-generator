@@ -4,7 +4,7 @@ import net from "net";
 import fs from "fs";
 import path from "path";
 import { EventEmitter } from "events";
-import { resolveTool } from "../toolchain/binaries.js";
+import { resolveTool, SCRCPY_PROTOCOL_VERSION } from "../toolchain/binaries.js";
 import {
   serializeInjectTouchEvent,
   serializeInjectKeyCode,
@@ -138,7 +138,7 @@ async function _startAndroidStream(deviceId: string, options: { screenOff?: bool
   const serverArgs = [
     "-s", deviceId, "shell",
     "CLASSPATH=/data/local/tmp/scrcpy-server.jar",
-    "app_process", "/", "com.genymobile.scrcpy.Server", "4.1",
+    "app_process", "/", "com.genymobile.scrcpy.Server", SCRCPY_PROTOCOL_VERSION,
     `scid=${scid}`,
     "tunnel_forward=false",
     "video=true",
