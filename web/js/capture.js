@@ -545,7 +545,444 @@ export function setupCaptureHandlers() {
   if ($id("browser-top-capture-btn")) $id("browser-top-capture-btn").onclick = triggerScreenshotCapture;
   if ($id("browser-bottom-capture")) $id("browser-bottom-capture").onclick = triggerScreenshotCapture;
   if ($id("android-refresh-devices-btn")) $id("android-refresh-devices-btn").onclick = () => loadAndroidDevices();
+  setupAndroidControls();
   if ($id("android-connect-btn")) $id("android-connect-btn").onclick = () => (androidConnected ? disconnectAndroidDevice() : connectAndroidDevice());
+}
+
+// ---- Android controls (restored: these bindings were dropped when app.js was split into modules) ----
+const $g = (id) => document.getElementById(id);
+function floatToI16fp(val) {
+  const clamped = Math.max(-1, Math.min(1, val));
+  return Math.floor(clamped === 1 ? 0x7fff : clamped * 0x8000);
+}
+
+function serializeBinaryTouch(action, x, y, width, height) {
+  const buf = new ArrayBuffer(32);
+  const v = new DataView(buf);
+  v.setUint8(0, 2); // INJECT_TOUCH_EVENT
+  v.setUint8(1, action === "down" ? 0 : action === "up" ? 1 : 2);
+  v.setBigInt64(2, -2n, false); // SC_POINTER_ID_GENERIC_FINGER (-2n)
+  v.setInt32(10, Math.round(x), false);
+  v.setInt32(14, Math.round(y), false);
+  v.setUint16(18, Math.max(1, Math.round(width)), false);
+  v.setUint16(20, Math.max(1, Math.round(height)), false);
+  v.setUint16(22, action === "up" ? 0 : 0xffff, false); // pressure
+  v.setUint32(24, 1, false); // actionButton = AMOTION_EVENT_BUTTON_PRIMARY
+  v.setUint32(28, action === "up" ? 0 : 1, false); // buttons
+  return buf;
+}
+
+function serializeBinaryKey(action, keycode) {
+  const buf = new ArrayBuffer(14);
+  const v = new DataView(buf);
+  v.setUint8(0, 0); // INJECT_KEYCODE
+  v.setUint8(1, action); // 0=DOWN, 1=UP
+  v.setUint32(2, keycode, false);
+  v.setUint32(6, 0, false);
+  v.setUint32(10, 0, false);
+  return buf;
+}
+
+function serializeBinaryScroll(x, y, width, height, hscroll, vscroll) {
+  const buf = new ArrayBuffer(21);
+  const v = new DataView(buf);
+  v.setUint8(0, 3); // INJECT_SCROLL_EVENT
+  v.setInt32(1, Math.round(x), false);
+  v.setInt32(5, Math.round(y), false);
+  v.setUint16(9, Math.max(1, Math.round(width)), false);
+  v.setUint16(11, Math.max(1, Math.round(height)), false);
+  v.setInt16(13, floatToI16fp(hscroll), false);
+  v.setInt16(15, floatToI16fp(vscroll), false);
+  v.setUint32(17, 0, false);
+  return buf;
+}
+
+function getActiveStreamDimensions() {
+  const canvas = $g("android-frame-canvas");
+  if (canvas && canvas.width > 0 && canvas.height > 0) {
+    return { width: canvas.width, height: canvas.height };
+  }
+  return {
+    width: window.androidStreamWidth || window.androidDeviceWidth || 1080,
+    height: window.androidStreamHeight || window.androidDeviceHeight || 2400,
+  };
+}
+
+function renderComboboxDropdown(filterText = "") {
+  const dropdown = $g("android-app-dropdown-list");
+  if (!dropdown) return;
+  const query = filterText.trim().toLowerCase();
+  const matches = allAndroidApps.filter((app) =>
+    app.label.toLowerCase().includes(query) || app.packageName.toLowerCase().includes(query)
+  );
+
+  dropdown.innerHTML = "";
+  if (matches.length === 0) {
+    const empty = document.createElement("div");
+    empty.className = "combobox-empty";
+    empty.textContent = query ? "No matching applications found" : "No applications available";
+    dropdown.appendChild(empty);
+    dropdown.style.display = "block";
+    return;
+  }
+
+  matches.forEach((app, idx) => {
+    const item = document.createElement("div");
+    item.className = `combobox-item ${idx === activeComboboxIndex ? "active" : ""}`;
+    item.dataset.pkg = app.packageName;
+
+    const labelSpan = document.createElement("span");
+    labelSpan.className = "combobox-item-label";
+    labelSpan.textContent = app.label;
+
+    const pkgSpan = document.createElement("span");
+    pkgSpan.className = "combobox-item-pkg";
+    pkgSpan.textContent = `(${app.packageName})`;
+
+    item.appendChild(labelSpan);
+    item.appendChild(pkgSpan);
+
+    item.addEventListener("mousedown", (e) => {
+      e.preventDefault();
+      selectAndroidApp(app);
+    });
+
+    dropdown.appendChild(item);
+  });
+
+  dropdown.style.display = "block";
+}
+
+function selectAndroidApp(app) {
+  selectedAndroidApp = app;
+  const input = $g("android-app-search-input");
+  const dropdown = $g("android-app-dropdown-list");
+  if (input) {
+    input.value = `${app.label} (${app.packageName})`;
+  }
+  if (dropdown) {
+    dropdown.style.display = "none";
+  }
+  $g("android-app-select").value = app.packageName;
+  $g("android-launch-app-btn").disabled = false;
+}
+
+
+function sendAndroidAction(action) {
+  if (!androidConnected) return;
+  const { width: streamW, height: streamH } = getActiveStreamDimensions();
+
+  if (androidWs && androidWs.readyState === WebSocket.OPEN) {
+    if (action.type === "touch" && action.xPct !== undefined && action.yPct !== undefined) {
+      const x = Math.round((action.xPct / 100) * streamW);
+      const y = Math.round((action.yPct / 100) * streamH);
+      const bin = serializeBinaryTouch(action.action || "down", x, y, streamW, streamH);
+      androidWs.send(bin);
+      if (action.action !== "move") {
+        console.log(`[SAG-CLIENT] Sent binary touch: ${action.action} x=${x}, y=${y}, w=${streamW}, h=${streamH}`);
+      }
+      return;
+    } else if (action.type === "scroll" && action.xPct !== undefined && action.yPct !== undefined) {
+      const x = Math.round((action.xPct / 100) * streamW);
+      const y = Math.round((action.yPct / 100) * streamH);
+      const bin = serializeBinaryScroll(x, y, streamW, streamH, action.hscroll || 0, action.vscroll || 0);
+      androidWs.send(bin);
+      console.log(`[SAG-CLIENT] Sent binary scroll: x=${x}, y=${y}, w=${streamW}, h=${streamH}, vscroll=${action.vscroll}`);
+      return;
+    } else if (action.type === "key" && action.keycode !== undefined) {
+      const down = serializeBinaryKey(0, action.keycode);
+      const up = serializeBinaryKey(1, action.keycode);
+      androidWs.send(down);
+      androidWs.send(up);
+      console.log(`[SAG-CLIENT] Sent binary keycode: ${action.keycode}`);
+      return;
+    } else if (action.type === "rotate") {
+      // ROTATE_DEVICE = opcode 11 (1 byte)
+      androidWs.send(new Uint8Array([11]));
+      console.log(`[SAG-CLIENT] Sent binary ROTATE_DEVICE opcode 11`);
+      return;
+    }
+    androidWs.send(JSON.stringify(action));
+  } else {
+    api("/api/android/action", { method: "POST", body: action }).catch(() => {});
+  }
+}
+
+let androidScreenOffState = true;
+function updateScreenOffUI(isOff) {
+  androidScreenOffState = isOff;
+  const btn = $g("android-screen-off-btn");
+  if (btn) {
+    btn.style.color = isOff ? "#10b981" : "var(--text-secondary)";
+    btn.title = isOff ? "Screen Off (Phone display light is OFF -- click to turn on)" : "Screen Off (Phone display light is ON -- click to turn off)";
+  }
+}
+let androidAutoRotateState = false;
+function updateAutoRotateUI(enabled) {
+  androidAutoRotateState = Boolean(enabled);
+  const btn = $g("android-rotation-lock-btn");
+  if (!btn) return;
+  const locked = !androidAutoRotateState;
+  btn.style.color = locked ? "#10b981" : "var(--text-secondary)";
+  btn.title = locked ? "Rotation Disabled (Auto-rotation is OFF -- click to enable)" : "Rotation Enabled (Auto-rotation is ON -- click to lock)";
+}
+
+const REC_ICON = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7"></circle><circle cx="12" cy="12" r="3.5" fill="currentColor" stroke="none"></circle></svg>`;
+const STOP_ICON = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor" stroke="none"></rect></svg>`;
+
+function setupRecorder(view, btnId, timerId, isConnected, refreshGallery) {
+  const btn = $g(btnId);
+  const timer = $g(timerId);
+  if (!btn) return { stopIfActive: async () => {} };
+
+  let active = false;
+  let busy = false;
+  let startedAt = 0;
+  let tick = null;
+
+  const paint = () => {
+    btn.classList.toggle("recording", active);
+    btn.innerHTML = active ? STOP_ICON : REC_ICON;
+    btn.title = active ? "Stop Screen Recording" : "Start Screen Recording (MP4)";
+    if (timer) timer.classList.toggle("active", active);
+  };
+
+  const showElapsed = () => {
+    if (!timer) return;
+    const s = Math.floor((Date.now() - startedAt) / 1000);
+    const pad = (n) => String(n).padStart(2, "0");
+    timer.textContent = `REC ${pad(Math.floor(s / 60))}:${pad(s % 60)}`;
+  };
+
+  const finish = async () => {
+    clearInterval(tick);
+    tick = null;
+    active = false;
+    paint();
+    try {
+      const rec = await api(`/api/${view}/record/stop`, { method: "POST" });
+      showToast(`Recorded Video ${rec.id} (${rec.durationSec}s)`, "success");
+      await refreshGallery();
+    } catch (e) {
+      showAlert("Recording failed: " + e.message, "error", "Recording Error");
+    }
+  };
+
+  btn.onclick = async () => {
+    if (busy) return;
+    busy = true;
+    try {
+      if (active) {
+        await finish();
+        return;
+      }
+      if (!isConnected() || !activeApplicationId) {
+        showAlert("Please connect a live session first before recording.", "warning");
+        return;
+      }
+      await api(`/api/${view}/record/start`, { method: "POST", body: { applicationId: activeApplicationId } });
+      active = true;
+      startedAt = Date.now();
+      paint();
+      showElapsed();
+      tick = setInterval(showElapsed, 500);
+      showToast("Recording started", "info");
+    } catch (e) {
+      active = false;
+      paint();
+      showAlert("Could not start recording: " + e.message, "error", "Recording Error");
+    } finally {
+      busy = false;
+    }
+  };
+
+  paint();
+  // Called before a disconnect: finalise rather than let the server abort and
+  // throw the footage away.
+  return { stopIfActive: async () => { if (active) await finish(); } };
+}
+
+let browserRecorder = { stopIfActive: async () => {} };
+let androidRecorder = { stopIfActive: async () => {} };
+
+function setupAndroidControls() {
+  const $ = $g;
+  const searchInput = $("android-app-search-input");
+  const comboboxDropdown = $("android-app-dropdown-list");
+  if (!searchInput) return;
+  
+  
+  
+  searchInput.addEventListener("focus", () => {
+    if (!searchInput.disabled && allAndroidApps.length > 0) {
+      activeComboboxIndex = -1;
+      renderComboboxDropdown(selectedAndroidApp ? "" : searchInput.value);
+    }
+  });
+  
+  searchInput.addEventListener("input", () => {
+    selectedAndroidApp = null;
+    $g("android-launch-app-btn").disabled = true;
+    activeComboboxIndex = -1;
+    renderComboboxDropdown(searchInput.value);
+  });
+  
+  searchInput.addEventListener("keydown", (e) => {
+    if (comboboxDropdown.style.display === "none") return;
+    const items = comboboxDropdown.querySelectorAll(".combobox-item");
+    if (!items.length) return;
+  
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      activeComboboxIndex = (activeComboboxIndex + 1) % items.length;
+      renderComboboxDropdown(searchInput.value);
+      items[activeComboboxIndex]?.scrollIntoView({ block: "nearest" });
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      activeComboboxIndex = (activeComboboxIndex - 1 + items.length) % items.length;
+      renderComboboxDropdown(searchInput.value);
+      items[activeComboboxIndex]?.scrollIntoView({ block: "nearest" });
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      if (activeComboboxIndex >= 0 && activeComboboxIndex < items.length) {
+        const pkg = items[activeComboboxIndex].dataset.pkg;
+        const app = allAndroidApps.find((a) => a.packageName === pkg);
+        if (app) selectAndroidApp(app);
+      }
+    } else if (e.key === "Escape") {
+      comboboxDropdown.style.display = "none";
+    }
+  });
+  
+  document.addEventListener("click", (e) => {
+    const container = $g("android-app-combobox");
+    if (container && !container.contains(e.target)) {
+      comboboxDropdown.style.display = "none";
+    }
+  });
+  
+  $("android-refresh-apps-btn").onclick = () => loadAndroidApps(true);
+  // Run/Launch app button handler
+  $g("android-launch-app-btn").onclick = async () => {
+    const pkg = selectedAndroidApp?.packageName || $g("android-app-select").value;
+    if (!pkg || !androidConnected) return;
+    $g("android-launch-app-btn").disabled = true;
+    try {
+      await api("/api/android/launch", { method: "POST", body: { packageName: pkg } });
+      $g("android-status").textContent = `Opened ${selectedAndroidApp ? selectedAndroidApp.label : pkg}. Explore the app in the preview below.`;
+    } catch (e) {
+      showAlert("Failed to launch app: " + e.message);
+    } finally {
+      $g("android-launch-app-btn").disabled = false;
+    }
+  };
+  
+  $("android-back-btn").onclick = () => sendAndroidAction({ type: "key", keycode: 4 });
+  $("android-home-btn").onclick = () => sendAndroidAction({ type: "key", keycode: 3 });
+  $("android-recents-btn").onclick = () => sendAndroidAction({ type: "key", keycode: 187 });
+  $("android-power-btn").onclick = () => sendAndroidAction({ type: "key", keycode: 26 });
+  $("android-screen-off-btn").onclick = async () => {
+    if (!androidConnected) return;
+    try {
+      const res = await api("/api/android/screen-off", { method: "POST", body: { screenOff: !androidScreenOffState } });
+      updateScreenOffUI(res.screenOff);
+    } catch (e) { console.error("Failed to toggle screen off:", e); }
+  };
+  $("android-rotation-lock-btn").onclick = async () => {
+    if (!androidConnected) return;
+    try {
+      const res = await api("/api/android/auto-rotate", { method: "POST", body: { autoRotate: !androidAutoRotateState } });
+      updateAutoRotateUI(res.autoRotate);
+    } catch (e) { console.error("Failed to toggle auto-rotation:", e); }
+  };
+  $("android-rotate-btn").onclick = () => { if (androidConnected) sendAndroidAction({ type: "rotate" }); };
+  $("android-bottom-capture").onclick = triggerAndroidCapture;
+  browserRecorder = setupRecorder("browser", "browser-bottom-record", "browser-rec-timer", () => browserConnected, renderLiveBrowserCaptures);
+  androidRecorder = setupRecorder("android", "android-bottom-record", "android-rec-timer", () => androidConnected, renderAndroidCaptures);
+  // Interactive real-time continuous touch & drag on the Android device frame
+  const androidOverlayEl = $g("android-interaction-overlay");
+  let androidPointerDown = false;
+  let androidDragged = false;
+  let androidStartX = 0;
+  let androidStartY = 0;
+  let androidLastMoveTime = 0;
+  
+  function showTouchRipple(x, y) {
+    const ripple = document.createElement("div");
+    ripple.className = "android-touch-ripple";
+    ripple.style.left = `${x}px`;
+    ripple.style.top = `${y}px`;
+    androidOverlayEl.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 400);
+  }
+  
+  function getPointerCoords(e) {
+    const rect = androidOverlayEl.getBoundingClientRect();
+    const clamp = (val, min, max) => Math.min(Math.max(val, min), max);
+    const xPct = clamp(((e.clientX - rect.left) / rect.width) * 100, 0, 100);
+    const yPct = clamp(((e.clientY - rect.top) / rect.height) * 100, 0, 100);
+    return { xPct, yPct, relX: e.clientX - rect.left, relY: e.clientY - rect.top };
+  }
+  
+  androidOverlayEl.addEventListener("pointerdown", (e) => {
+    if (!androidConnected) return;
+    e.preventDefault();
+    androidPointerDown = true;
+    androidDragged = false;
+    androidStartX = e.clientX;
+    androidStartY = e.clientY;
+    try { androidOverlayEl.setPointerCapture(e.pointerId); } catch (err) {}
+  
+    const coords = getPointerCoords(e);
+    showTouchRipple(coords.relX, coords.relY);
+    sendAndroidAction({ type: "touch", action: "down", xPct: coords.xPct, yPct: coords.yPct });
+  });
+  
+  androidOverlayEl.addEventListener("pointermove", (e) => {
+    if (!androidConnected || !androidPointerDown) return;
+    e.preventDefault();
+    const dist = Math.hypot(e.clientX - androidStartX, e.clientY - androidStartY);
+    if (dist > 5) androidDragged = true;
+  
+    const now = Date.now();
+    if (now - androidLastMoveTime >= 16) {
+      androidLastMoveTime = now;
+      const coords = getPointerCoords(e);
+      sendAndroidAction({ type: "touch", action: "move", xPct: coords.xPct, yPct: coords.yPct });
+    }
+  });
+  
+  const handleAndroidPointerEnd = async (e) => {
+    if (!androidConnected || !androidPointerDown) return;
+    try { androidOverlayEl.releasePointerCapture(e.pointerId); } catch (err) {}
+  
+    const coords = getPointerCoords(e);
+    const wasDragged = androidDragged;
+    androidPointerDown = false;
+    androidDragged = false;
+  
+    sendAndroidAction({ type: "touch", action: "up", xPct: coords.xPct, yPct: coords.yPct, wasDragged });
+  };
+  
+  androidOverlayEl.addEventListener("pointerup", handleAndroidPointerEnd);
+  androidOverlayEl.addEventListener("pointercancel", handleAndroidPointerEnd);
+  
+  androidOverlayEl.addEventListener("wheel", (e) => {
+    if (!androidConnected) return;
+    e.preventDefault();
+    const coords = getPointerCoords(e);
+    // scrcpy v4.1: vscroll < 0 scrolls down, vscroll > 0 scrolls up
+    const vscroll = -Math.sign(e.deltaY);
+    const hscroll = Math.sign(e.deltaX);
+    sendAndroidAction({
+      type: "scroll",
+      xPct: coords.xPct,
+      yPct: coords.yPct,
+      hscroll: hscroll,
+      vscroll: vscroll,
+    });
+  }, { passive: false });
+  
 }
 
 // Android device functions
@@ -617,6 +1054,8 @@ export async function connectAndroidDevice() {
     });
 
     androidConnected = true;
+    updateScreenOffUI(startRes.screenOff !== false);
+    updateAutoRotateUI(startRes.autoRotate === true);
     setAndroidConnectButtonState(true);
     const deviceFrame = document.getElementById("android-device-frame");
     if (deviceFrame) deviceFrame.style.display = "block";
@@ -655,6 +1094,7 @@ export async function connectAndroidDevice() {
 }
 
 export async function disconnectAndroidDevice() {
+  await androidRecorder.stopIfActive();
   const overlay = document.getElementById("android-interaction-overlay");
   if (overlay) overlay.style.pointerEvents = "auto";
 
