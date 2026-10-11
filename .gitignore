@@ -3,7 +3,71 @@ dist/
 vendor/
 output/
 .auth/
+*.log
+.DS_Store
+graphify-out/
+tools/
+*.rar
+scripts/*
+!scripts/generate/
+!scripts/devices/
+!scripts/icons/
+scratch/
+.claude/
+.agents/
+.playwright-mcp
+.graphifyignore
+.vscode/mcp.json
+.claude-harness-mcp/
+logs/
+.sandbox/
+extra/
+graphify-out/.graphify_labels.json
+
+# Credential protection (2026-10-10)
+
+# Track only the reviewed security scanner source files
+!security_audit/secret_scan_sqlite.py
+!security_audit/guard_commit.py
+
+# SQLite databases stay local; never publish database files or journals.
+
+
+# Preserve previously ignored project paths.
+*.py
+
+
+
+# Security protections: private credentials and SQLite stay outside Git.
 .env
+.env.*
+.ocr_key
+.fernet_key
+.encryption_key
+*.pem
+*.key
+*.p12
+*.pfx
+credentials.json
+service-account*.json
+*_credentials.json
+cookies.json
+cookies_*.json
+*.sqlite
+*.sqlite3
+*.db
+*.db3
+*.sqlite-*
+*.sqlite3-*
+*.db-*
+*.db3-*
+!.env.example
+!.env.*.example
+node_modules/
+dist/
+vendor/
+output/
+.auth/
 *.log
 .DS_Store
 graphify-out/
@@ -27,28 +91,28 @@ extra/
 graphify-out/.graphify_labels.json
 
 # Credential protection (2026-10-10)
-.env
-.env.*
-!.env.example
-!.env.*.example
-*.pem
-*.key
-*.p12
-*.pfx
-.ocr_key
-.fernet_key
-.encryption_key
-credentials.json
-service-account*.json
-*_credentials.json
-cookies.json
-cookies_*.json
 
 # Track only the reviewed security scanner source files
 !security_audit/secret_scan_sqlite.py
 !security_audit/guard_commit.py
 
 # SQLite databases stay local; never publish database files or journals.
+
+# Security protections: private credentials and SQLite stay outside Git.
+.env
+.env.*
+.ocr_key
+.fernet_key
+.encryption_key
+*.pem
+*.key
+*.p12
+*.pfx
+credentials.json
+service-account*.json
+*_credentials.json
+cookies.json
+cookies_*.json
 *.sqlite
 *.sqlite3
 *.db
@@ -57,3 +121,8 @@ cookies_*.json
 *.sqlite3-*
 *.db-*
 *.db3-*
+!.env.example
+!.env.*.example
+
+# Preserve previously ignored project paths.
+*.py

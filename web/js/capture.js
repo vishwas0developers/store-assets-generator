@@ -545,6 +545,7 @@ export function setupCaptureHandlers() {
   if ($id("browser-top-capture-btn")) $id("browser-top-capture-btn").onclick = triggerScreenshotCapture;
   if ($id("browser-bottom-capture")) $id("browser-bottom-capture").onclick = triggerScreenshotCapture;
   if ($id("android-refresh-devices-btn")) $id("android-refresh-devices-btn").onclick = () => loadAndroidDevices();
+  if ($id("android-connect-btn")) $id("android-connect-btn").onclick = () => (androidConnected ? disconnectAndroidDevice() : connectAndroidDevice());
 }
 
 // Android device functions
