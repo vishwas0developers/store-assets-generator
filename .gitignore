@@ -132,3 +132,17 @@ id_ed25519
 **/client_secret*.json
 **/service_account*.json
 **/creds.json
+*.pyc
+
+# Python bytecode / caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# OCR models, scraped third-party sites, local scratch
+*.traineddata
+studio.app-mockup.com/
