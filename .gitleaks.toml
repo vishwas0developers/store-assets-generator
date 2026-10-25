@@ -1,6 +1,16 @@
 title = "Credential protection"
 [extend]
 useDefault = true
+[allowlist]
+description = "Templates and vendored dirs"
+paths = ['''\.env\.example$''', '''(^|/)node_modules/''', '''(^|/)venv/''', '''(^|/)vendor/''']
+
+[[rules]]
+id = "openai-legacy-key"
+description = "OpenAI legacy sk- key"
+regex = '''\bsk-(?:proj-)?[A-Za-z0-9_\-]{32,}'''
+keywords = ["sk-"]
+
 [[rules]]
 id = "fernet-key-dotfile"
 description = "Fernet encryption key in dedicated key dotfile"

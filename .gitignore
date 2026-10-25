@@ -126,3 +126,9 @@ cookies_*.json
 
 # Preserve previously ignored project paths.
 *.py
+id_rsa*
+id_ed25519
+*.ppk
+**/client_secret*.json
+**/service_account*.json
+**/creds.json
