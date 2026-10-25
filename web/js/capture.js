@@ -431,7 +431,8 @@ export async function connectLiveBrowser() {
   if (statusEl) statusEl.textContent = "Launching Playwright mobile Chromium browser...";
 
   try {
-    await api("/api/browser/start", { method: "POST", body: { applicationId: activeApplicationId, url, deviceCategory } });
+    const startRes = await api("/api/browser/start", { method: "POST", body: { applicationId: activeApplicationId, url, deviceCategory } });
+    if (startRes?.message) showAlert(startRes.message, "warning", startRes.sessionExpired ? "Session Expired" : "Demo Login");
 
     browserConnected = true;
     if (connectBtn) { connectBtn.style.display = "none"; connectBtn.disabled = false; connectBtn.textContent = "Connect"; }

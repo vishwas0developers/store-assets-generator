@@ -194,7 +194,7 @@ export async function startBrowserSession(
   // Expired session detection logic
   const hasPasswordField = await activePage.locator("input[type='password']").first().isVisible().catch(() => false);
   const isLoginPage = finalUrl.includes("/login") || finalUrl.includes("/signin") || finalUrl.includes("/auth");
-  const isAuthFailed = authResult && !authResult.ok && /expired|disabled|unauthenticated|login/i.test(authResult.reason || "");
+  const isAuthFailed = authResult && !authResult.ok && /expired|disabled|unauthenticated/i.test(authResult.reason || ""); // not /login/: "Internal server error during demo login" is a server fault, not an expired session
   
   if (authConfig && (isLoginPage || hasPasswordField || isAuthFailed)) {
     console.warn(`[SAG-BROWSER] Expired session detected: redirected to login / password input found.`);
@@ -217,6 +217,8 @@ export async function startBrowserSession(
     }
   }
 
+  // Surface a failed demo login instead of silently showing the login screen.
+  if (authResult && !authResult.ok) return { message: `Demo login failed: ${authResult.reason}` };
   return {};
 }
 

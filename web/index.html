@@ -1243,11 +1243,11 @@
     <label>Demo account email</label>
     <input id="cred-email" type="text" placeholder="demo@example.com" />
     <label>Demo account password <span class="hint">(blank = keep existing)</span></label>
-    <input id="cred-password" type="password" placeholder="••••••••" />
+    <input id="cred-password" type="password" placeholder="Enter password" autocomplete="new-password" />
     <label>Admin panel domain <span class="hint">(where /api/demo/status and /api/demo/login live)</span></label>
-    <input id="cred-admin-domain" type="text" placeholder="http://localhost:8000" />
+    <input id="cred-admin-domain" type="text" placeholder="e.g. http://localhost:8000" />
     <label>Application code <span class="hint">(so the session lands in the right app)</span></label>
-    <input id="cred-app-code" type="text" placeholder="mocktest" />
+    <input id="cred-app-code" type="text" placeholder="e.g. mocktest" />
     <div class="hint" style="margin-top:.75rem;">
       Saved as persistent config — the demo account then logs in automatically for any captured URL, once demo access is enabled with a password on the admin panel.
     </div>

@@ -111,14 +111,18 @@ export async function authenticate(page: Page, context: BrowserContext, config: 
   const strategies = config.strategies ?? ["storage-state", "api-session", "form"];
   const sessionStatePath = config.sessionStatePath;
 
-  if (strategies.includes("storage-state") && sessionStatePath && hasStoredSession(sessionStatePath)) {
-    // storageState is applied at context-creation time by the caller (see
-    // capture/browser.ts) — nothing further to do here; the caller's
-    // post-navigation verify confirms it still holds.
+  const creds = resolveCredentials();
+  const canApiLogin =
+    strategies.includes("api-session") && !!config.apiSession && !!((config.apiSession.email ?? creds?.email) && (config.apiSession.password ?? creds?.password));
+
+  // A cached storageState is applied at context-creation time by the caller
+  // (see capture/browser.ts) and can't be verified before navigation — it may
+  // be a stale logged-out snapshot. When demo credentials are configured, a
+  // fresh api-session login is cheap (the server reuses the session) and
+  // authoritative, so it takes priority over the cache.
+  if (!canApiLogin && strategies.includes("storage-state") && sessionStatePath && hasStoredSession(sessionStatePath)) {
     return { ok: true, stage: "storage-state", shouldSave: false };
   }
-
-  const creds = resolveCredentials();
 
   if (strategies.includes("api-session") && config.apiSession) {
     const email = config.apiSession.email ?? creds?.email;

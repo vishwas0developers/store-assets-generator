@@ -21,6 +21,12 @@ export async function refreshAuthStatus() {
     if ($("cred-email") && document.activeElement !== $("cred-email")) $("cred-email").value = status.email || "";
     if ($("cred-admin-domain") && document.activeElement !== $("cred-admin-domain")) $("cred-admin-domain").value = status.adminApiBaseUrl || "";
     if ($("cred-app-code") && document.activeElement !== $("cred-app-code")) $("cred-app-code").value = status.appCode || "";
+    // One dot per saved character; flagged so Save knows it is not a new password.
+    const pw = $("cred-password");
+    if (pw && document.activeElement !== pw) {
+      pw.value = "•".repeat(status.passwordLength || 0);
+      pw.dataset.masked = status.passwordLength ? "1" : "";
+    }
   } catch (e) {
     const el = $("cred-status");
     if (el) { el.textContent = "error"; el.className = "status bad"; }
@@ -591,13 +597,17 @@ export function setupSettingsAndModals() {
   const closeCred = $("credentials-close");
   if (closeCred) closeCred.onclick = () => $("credentials-backdrop")?.classList.remove("open");
   const credBackdrop = $("credentials-backdrop");
-  if (credBackdrop) credBackdrop.onclick = (e) => { if (e.target === credBackdrop) credBackdrop.classList.remove("open"); };
+  const credPw = $("cred-password");
+  if (credPw) {
+    credPw.onfocus = () => { if (credPw.dataset.masked) credPw.select(); }; // typing replaces the saved dots
+    credPw.oninput = () => { credPw.dataset.masked = ""; };
+  }
 
   const credSave = $("cred-save");
   if (credSave) {
     credSave.onclick = async () => {
       const email = $("cred-email")?.value.trim();
-      const password = $("cred-password")?.value;
+      const password = credPw?.dataset.masked ? "" : credPw?.value;
       if (!email) return await showAlert("Email is required.");
       await api("/api/auth/credentials", {
         method: "POST",
@@ -608,7 +618,7 @@ export function setupSettingsAndModals() {
           appCode: $("cred-app-code")?.value.trim(),
         },
       });
-      if ($("cred-password")) $("cred-password").value = "";
+      credPw?.blur();
       refreshAuthStatus();
     };
   }
@@ -621,7 +631,6 @@ export function setupSettingsAndModals() {
   if (openSettings) openSettings.onclick = () => { if (settingsBackdrop) settingsBackdrop.classList.add("open"); loadProviders(); loadModelsTab(); };
   const closeSettings = $("settings-close");
   if (closeSettings) closeSettings.onclick = () => { if (settingsBackdrop) settingsBackdrop.classList.remove("open"); };
-  if (settingsBackdrop) settingsBackdrop.onclick = (e) => { if (e.target === settingsBackdrop) settingsBackdrop.classList.remove("open"); };
 
   for (const tab of document.querySelectorAll("#settings-backdrop .tab")) {
     tab.onclick = () => {
@@ -689,7 +698,6 @@ export function setupSettingsAndModals() {
   const toolchainClose = $("toolchain-close");
   if (toolchainClose) toolchainClose.onclick = () => closeToolchainModal();
   const toolchainBackdrop = $("toolchain-backdrop");
-  if (toolchainBackdrop) toolchainBackdrop.onclick = (e) => { if (e.target === toolchainBackdrop) closeToolchainModal(); };
 
   const toolchainDownloadBtn = $("toolchain-download-btn");
   if (toolchainDownloadBtn) {
@@ -738,7 +746,6 @@ export function setupSettingsAndModals() {
   const uploadClose = $("universal-upload-close");
   if (uploadClose) uploadClose.onclick = () => $("universal-upload-backdrop")?.classList.remove("open");
   const uploadBackdrop = $("universal-upload-backdrop");
-  if (uploadBackdrop) uploadBackdrop.onclick = (e) => { if (e.target === uploadBackdrop) uploadBackdrop.classList.remove("open"); };
 
   document.querySelectorAll("#universal-upload-backdrop .tab").forEach((tab) => {
     tab.onclick = () => {

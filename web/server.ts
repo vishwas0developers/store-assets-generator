@@ -10,7 +10,10 @@ import {
   setCredentials,
   getCredentialStatus,
   clearCredentials,
+  resolveCredentials,
 } from "../src/auth/credentials.js";
+import { getDemoAccessConfig, setDemoAccessConfig } from "../src/auth/appConfig.js";
+import { loadEnvFile } from "../src/config/env.js";
 import {
   listProviders,
   getProvider,
@@ -509,6 +512,7 @@ function installProcessGuards(): void {
 }
 
 export async function startWebServer(options: { port?: number; host?: string; openBrowser?: boolean } = {}): Promise<http.Server> {
+  loadEnvFile(); // demo-access settings saved in .env must survive restarts
   try { sync2dDeviceFiles(); } catch (e) { console.error("[devices] 2D asset sync failed:", e); }
   installProcessGuards();
   console.log(`[SAG-SERVER] Starting -- cwd=${process.cwd()} node=${process.version} file=${import.meta.url}`);
@@ -1025,7 +1029,12 @@ export async function startWebServer(options: { port?: number; host?: string; op
 
     // Auth status & credentials
     if (method === "GET" && p === "/api/auth/status") {
-      sendJson(res, 200, getCredentialStatus());
+      // passwordLength lets the UI show one dot per saved character without ever exposing the password
+      sendJson(res, 200, {
+        ...getCredentialStatus(),
+        ...getDemoAccessConfig(),
+        passwordLength: resolveCredentials()?.password.length ?? 0,
+      });
       return;
     }
 
@@ -1033,6 +1042,7 @@ export async function startWebServer(options: { port?: number; host?: string; op
       const body = await readJsonBody(req);
       if (!body.email) return sendError(res, 400, "email is required");
       setCredentials(body.email, body.password);
+      setDemoAccessConfig({ adminApiBaseUrl: body.adminApiBaseUrl, appCode: body.appCode });
       sendJson(res, 200, { ok: true });
       return;
     }
